@@ -88,7 +88,7 @@ import java.text.MessageFormat;
  * then read and write buffers. (or write and read for the initiator).
  */
 public class SocketServer {
-
+	
     private transient PeerGroup netPeerGroup = null;
     public final static String SOCKETIDSTR = "urn:jxta:uuid-59616261646162614E5047205032503393B5C2F6CA7A41FBB0F890173088E79404";
 
