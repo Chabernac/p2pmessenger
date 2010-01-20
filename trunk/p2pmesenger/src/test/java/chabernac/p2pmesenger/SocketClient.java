@@ -110,6 +110,7 @@ public class SocketClient {
         if (waitForRendezvous) {
             manager.waitForRendezvousConnection(0);
         }
+        System.out.println("Initializing of client done");
     }
 
     /**
