@@ -93,7 +93,7 @@ public class SocketServer {
     public final static String SOCKETIDSTR = "urn:jxta:uuid-59616261646162614E5047205032503393B5C2F6CA7A41FBB0F890173088E79404";
 
     public SocketServer() throws IOException, PeerGroupException {
-        NetworkManager manager = new NetworkManager(NetworkManager.ConfigMode.ADHOC, "SocketServer",
+        NetworkManager manager = new NetworkManager(NetworkManager.ConfigMode.RENDEZVOUS, "SocketServer",
                 new File(new File(".cache"), "SocketServer").toURI());
         manager.startNetwork();
         netPeerGroup = manager.getNetPeerGroup();
