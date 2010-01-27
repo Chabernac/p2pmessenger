@@ -53,7 +53,7 @@
  *  
  *  This license is based on the BSD license adopted by the Apache Foundation. 
  */
-package chabernac.p2pmesenger;
+package tutorial.socket;
 
 import net.jxta.peergroup.PeerGroup;
 import net.jxta.platform.NetworkManager;
@@ -110,7 +110,6 @@ public class SocketClient {
         if (waitForRendezvous) {
             manager.waitForRendezvousConnection(0);
         }
-        System.out.println("Initializing of client done");
     }
 
     /**
