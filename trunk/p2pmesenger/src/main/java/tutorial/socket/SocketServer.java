@@ -208,6 +208,22 @@ public class SocketServer {
    * @param args command line args
    */
   public static void main(String args[]) {
+//    ProxyConfigurator.configureProxy( "proxy.axa.be", 8080 , "dgch804", "antranet");
+//
+//    //try if we can access internet
+//
+//    try{
+//      URL theURL =new URL("http://www.google.com");
+//      BufferedReader theReader = new BufferedReader(new InputStreamReader(theURL.openStream()));
+//      String theLine = null;
+//      while((theLine = theReader.readLine()) != null){
+//        System.out.println(theLine);
+//      }
+//    }catch(Exception e){
+//      e.printStackTrace();
+//    }
+
+
     /*
          System.setProperty("net.jxta.logging.Logging", "FINEST");
          System.setProperty("net.jxta.level", "FINEST");
