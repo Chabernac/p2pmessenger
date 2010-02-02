@@ -2,7 +2,7 @@
 
 How to run the P2P Socket/Client example
 
--  Make sure server and client run in a different directory
--  Add the following arguments when you're behind a proxy: -Dhttp.proxyHost=[proxyserver] Dhttp.proxyPort=[proxyport] Djxta.proxy.user=[proxyuser] Djxta.proxy.password=[proxypassword]
+||-  Make sure server and client run in a different directory||
+||-  Add the following arguments when you're behind a proxy: -Dhttp.proxyHost=[proxyserver] Dhttp.proxyPort=\[proxyport\] Djxta.proxy.user=\[proxyuser\] Djxta.proxy.password=\[proxypassword\]||
 
 Replace the text's between brackets with correct values.
