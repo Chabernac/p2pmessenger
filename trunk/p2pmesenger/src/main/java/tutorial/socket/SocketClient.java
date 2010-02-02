@@ -55,14 +55,23 @@
  */
 package tutorial.socket;
 
+import java.io.DataInput;
+import java.io.DataInputStream;
+import java.io.DataOutput;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.text.MessageFormat;
+import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import net.jxta.peergroup.PeerGroup;
 import net.jxta.platform.NetworkManager;
 import net.jxta.protocol.PipeAdvertisement;
 import net.jxta.socket.JxtaSocket;
-
-import java.io.*;
-import java.util.Arrays;
-import java.text.MessageFormat;
 
 /**
  * This tutorial illustrates the use JxtaSocket. It attempts to bind a
@@ -132,6 +141,7 @@ public class SocketClient {
                     // reliable connection
                     true);
 
+            System.out.println("Socket created");
             // get the socket output stream
             OutputStream out = socket.getOutputStream();
             DataOutput dos = new DataOutputStream(out);
@@ -186,12 +196,13 @@ public class SocketClient {
      * @param args none recognized.
      */
     public static void main(String args[]) {
-
-        /*
-         System.setProperty("net.jxta.logging.Logging", "FINEST");
-         System.setProperty("net.jxta.level", "FINEST");
-         System.setProperty("java.util.logging.config.file", "logging.properties");
-         */
+      
+        Logger.getLogger( "net.jxta" ).setLevel( Level.FINEST );
+//        
+//         System.setProperty("net.jxta.logging.Logging", "FINEST");
+//         System.setProperty("net.jxta.level", "FINEST");
+        // System.setProperty("java.util.logging.config.file", "logging.properties");
+         
         try {
             Thread.currentThread().setName(SocketClient.class.getName() + ".main()");
             String value = System.getProperty("RDVWAIT", "false");
