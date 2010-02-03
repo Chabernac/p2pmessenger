@@ -33,7 +33,6 @@ import net.jxta.platform.NetworkManager;
 import net.jxta.protocol.PipeAdvertisement;
 import net.jxta.socket.JxtaServerSocket;
 import net.jxta.socket.JxtaSocket;
-import net.jxta.util.AdvertisementUtilities;
 
 public class PeerDiscovery {
   private static final String ADV_NAME = "Peer discovery";
