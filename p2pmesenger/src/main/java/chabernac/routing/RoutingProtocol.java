@@ -8,19 +8,21 @@ import chabernac.protocol.Protocol;
 
 public class RoutingProtocol extends Protocol {
 
-  public RoutingProtocol (  ) {
-    super( "ROU" );
-  }
+	private RoutingTable myRoutingTable = new RoutingTable();
 
-  @Override
-  public String getDescription() {
-    return "Routing protocol";
-  }
+	public RoutingProtocol (  ) {
+		super( "ROU" );
+	}
 
-  @Override
-  protected String handleCommand( long aSessionId, String anInput ) {
-    // TODO Auto-generated method stub
-    return null;
-  }
+	@Override
+	public String getDescription() {
+		return "Routing protocol";
+	}
+
+	@Override
+	protected String handleCommand( long aSessionId, String anInput ) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 }
