@@ -19,6 +19,12 @@ public class Peer {
   
   public Peer (){}
   
+  public Peer(long aPeerId, String aHost, int aPort){
+    myPeerId = aPeerId;
+    myHost = aHost;
+    myPort = aPort;
+  }
+  
   public Peer ( long anPeerId ) {
     super();
     myPeerId = anPeerId;
@@ -82,6 +88,5 @@ public class Peer {
         theReader.close();
       }
     }
-    
   }
 }

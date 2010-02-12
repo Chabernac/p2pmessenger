@@ -16,7 +16,10 @@ public class XMLTools {
     theEncoder.writeObject( anObject);
     theEncoder.flush();
     theEncoder.close();
-    return theOut.toString();
+    String theString = theOut.toString();
+    theString = theString.replaceAll( "\r", "" );
+    theString = theString.replaceAll( "\n", "" );
+    return theString;
   }
   
   public static Object fromXML(String anXML){
