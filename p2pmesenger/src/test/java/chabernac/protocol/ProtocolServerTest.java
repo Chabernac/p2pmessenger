@@ -16,6 +16,8 @@ import junit.framework.TestCase;
 
 import org.apache.log4j.BasicConfigurator;
 
+import chabernac.protocol.routing.Peer;
+
 public class ProtocolServerTest extends TestCase {
   public void setUp(){
     BasicConfigurator.configure();
@@ -41,6 +43,25 @@ public class ProtocolServerTest extends TestCase {
     BufferedReader theReader = new BufferedReader(new InputStreamReader(theClientSocket.getInputStream()));
     
     assertEquals( "pong", theReader.readLine() );
+    
+    theServer.stop();
+  }
+  
+  public void testProtocolServerWithPeer() throws UnknownHostException, IOException{
+    MasterProtocol theMasterProtocol = new MasterProtocol();
+    PingProtocol thePingProtocol = new PingProtocol();
+    theMasterProtocol.addSubProtocol( thePingProtocol );
+    
+    int thePort = 12027;
+    
+    ProtocolServer theServer = new ProtocolServer(theMasterProtocol, thePort, 5);
+    assertTrue( theServer.start() );
+    
+    Peer thePeer = new Peer();
+    thePeer.setHost( "localhost" );
+    thePeer.setPort( thePort );
+    
+    assertEquals( "pong", thePeer.send( thePingProtocol.createMessage( "ping" ) ));
     
     theServer.stop();
   }

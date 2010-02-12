@@ -38,19 +38,21 @@ public abstract class Protocol {
   protected abstract String handleCommand(long aSessionId, String anInput);
   
   public String handle(long aSessionId, String  anInput){
-    Protocol theSubProtocol = findMatchingProtocol(anInput);
-    if(theSubProtocol != null){
+    Protocol theProtocol = findMatchingProtocol(anInput);
+    if(theProtocol != null){
       String theInput = anInput.substring( 3 );
-      return theSubProtocol.handle( aSessionId,  theInput);
+      return theProtocol.handle( aSessionId,  theInput);
     } else {
       return handleCommand( aSessionId, anInput );
     }
   }
   
   private Protocol findMatchingProtocol(String anInput){
-    if(mySubProtocols == null) return null;
-    
     String theIdString = anInput.substring( 0, 3 );
+    
+    if(myId.equals( theIdString )) return this;
+    
+    if(mySubProtocols == null) return null;
     
     if(mySubProtocols.containsKey( theIdString )){
       return mySubProtocols.get(theIdString);
@@ -74,5 +76,15 @@ public abstract class Protocol {
     }
     
     mySubProtocols.put(aSubProtocol.getId(), aSubProtocol);
+  }
+  
+  /**
+   * prefix the message with the id of the protocol
+   * 
+   * @param aMessage
+   * @return
+   */
+  public String createMessage(String aMessage){
+    return myId + aMessage;
   }
 }
