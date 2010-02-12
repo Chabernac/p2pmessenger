@@ -4,6 +4,9 @@
  */
 package chabernac.protocol.routing;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import chabernac.protocol.Protocol;
 import chabernac.tools.XMLTools;
 
@@ -17,6 +20,9 @@ import chabernac.tools.XMLTools;
  */
 
 public class RoutingProtocol extends Protocol {
+  public static final int START_PORT = 12700;
+  public static final int END_PORT = 12720;
+  
   private static enum Command { REQUEST_TABLE, WHO_ARE_YOU };
   private static enum Status { UNKNOWN_COMMAND };
 
@@ -27,6 +33,11 @@ public class RoutingProtocol extends Protocol {
 		super( "ROU" );
 		myRoutingTable = aRoutingTable;
 		myLocalPeerId = aLocalPeerId;
+		scanLocalSystem();
+	}
+	
+	public void scanLocalSystem(){
+	  new Thread(new ScanLocalSystem()).start();
 	}
 
 	@Override
@@ -48,5 +59,35 @@ public class RoutingProtocol extends Protocol {
 	public RoutingTable getRoutingTable(){
 	  return myRoutingTable;
 	}
+	
+	private class ScanSystem implements Runnable{
+	  private String myHost;
+	  private int myPort;
+	  
+    public ScanSystem ( String anHost , int anPort ) {
+      super();
+      myHost = anHost;
+      myPort = anPort;
+    }
 
+    @Override
+    public void run() {
+      try{
+        Peer thePeer = new Peer(-1, myHost, myPort);
+        String theId = thePeer.send( createMessage( Command.WHO_ARE_YOU.name() ));
+        thePeer.setPeerId( Long.parseLong( theId ) );
+        myRoutingTable.addRoutingTableEntry( new RoutingTableEntry(thePeer, 1, thePeer) );
+      }catch(Exception e){
+      }
+    }
+	}
+	
+	private class ScanLocalSystem implements Runnable{
+	  public void run(){
+	    ExecutorService theService = Executors.newFixedThreadPool( 20 );
+	    for(int i=START_PORT;i<=END_PORT;i++){
+	      theService.execute( new  ScanSystem("localhost", i));
+	    }
+	  }
+	}
 }
