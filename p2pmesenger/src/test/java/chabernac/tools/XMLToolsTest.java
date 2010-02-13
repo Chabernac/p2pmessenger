@@ -14,21 +14,27 @@ public class XMLToolsTest extends TestCase {
     Peer thePeer0 = new Peer(1, "localhost", 1001);
     RoutingTable theTable = new RoutingTable(thePeer0);
 
-    Peer thePeer = new Peer(2, "localhost", 1002);
+    Peer thePeer = new Peer(2, "x20d1148", 1002);
     RoutingTableEntry theEntry = new RoutingTableEntry(thePeer, 1, thePeer);
-    RoutingTableEntry theEntry2 = new RoutingTableEntry(thePeer, 2, thePeer);
+    
+    Peer thePeer2 = new Peer(3, "x01p0880", 1003);
+    RoutingTableEntry theEntry2 = new RoutingTableEntry(thePeer2, 2, thePeer);
 
+    theTable.addRoutingTableEntry( theEntry );
     theTable.addRoutingTableEntry( theEntry2 );
+    
+    RoutingTable theTable2 = (RoutingTable)XMLTools.fromXML(XMLTools.toXML( theTable ));
+    
+    assertEquals(2, theTable2.getEntries().size());
+    
+   assertEquals("x20d1148", theTable2.getEntries().get(0).getPeer().getHost());
+   assertEquals(1002, theTable2.getEntries().get(0).getPeer().getPort());
+   assertEquals(2, theTable2.getEntries().get(0).getPeer().getPeerId());
+   
+   assertEquals("x01p0880", theTable2.getEntries().get(1).getPeer().getHost());
+   assertEquals(1003, theTable2.getEntries().get(1).getPeer().getPort());
+   assertEquals(3, theTable2.getEntries().get(1).getPeer().getPeerId());
 
-    String theString = "<?xml version=\"1.0\" encoding=\"UTF-8\"?> <java version=\"1.6.0_05\" class=\"java.beans.XMLDecoder\">  <object class=\"chabernac.protocol.routing.RoutingTable\">   <void property=\"peer\">    <object class=\"chabernac.protocol.routing.Peer\">     <void property=\"host\">      <string>localhost</string>     </void>     <void property=\"peerId\">      <long>1</long>     </void>     <void property=\"port\">      <int>1001</int>     </void>    </object>   </void>   <void property=\"routingTable\">    <void method=\"put\">     <object id=\"Peer0\" class=\"chabernac.protocol.routing.Peer\">      <void property=\"host\">       <string>localhost</string>      </void>      <void property=\"peerId\">       <long>2</long>      </void>      <void property=\"port\">       <int>1002</int>      </void>     </object>     <object class=\"chabernac.protocol.routing.RoutingTableEntry\">      <void property=\"gateway\">       <object idref=\"Peer0\"/>      </void>      <void property=\"hopDistance\">       <int>2</int>      </void>      <void property=\"peer\">       <object idref=\"Peer0\"/>      </void>     </object>    </void>   </void>  </object> </java> ";
-    assertEquals( theString, XMLTools.toXML( theTable ));
   }
   
-  public void fromXML(){
-    String theString = "<?xml version=\"1.0\" encoding=\"UTF-8\"?> <java version=\"1.6.0_05\" class=\"java.beans.XMLDecoder\">  <object class=\"chabernac.protocol.routing.RoutingTable\">   <void property=\"peer\">    <object class=\"chabernac.protocol.routing.Peer\">     <void property=\"host\">      <string>localhost</string>     </void>     <void property=\"peerId\">      <long>1</long>     </void>     <void property=\"port\">      <int>1001</int>     </void>    </object>   </void>   <void property=\"routingTable\">    <void method=\"put\">     <object id=\"Peer0\" class=\"chabernac.protocol.routing.Peer\">      <void property=\"host\">       <string>localhost</string>      </void>      <void property=\"peerId\">       <long>2</long>      </void>      <void property=\"port\">       <int>1002</int>      </void>     </object>     <object class=\"chabernac.protocol.routing.RoutingTableEntry\">      <void property=\"gateway\">       <object idref=\"Peer0\"/>      </void>      <void property=\"hopDistance\">       <int>2</int>      </void>      <void property=\"peer\">       <object idref=\"Peer0\"/>      </void>     </object>    </void>   </void>  </object> </java> ";
-    RoutingTable theTable = (RoutingTable)XMLTools.fromXML( theString );
-    assertNotNull( theTable );
-    assertEquals( "localhost", theTable.getEntries().get( 0 ).getPeer().getHost());
-    assertEquals( 1, theTable.getEntries().get( 0 ).getHopDistance());
-  }
 }

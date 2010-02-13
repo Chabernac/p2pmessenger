@@ -6,55 +6,66 @@ package chabernac.protocol.routing;
 
 
 public class RoutingTableEntry {
-  //the peer for which this is an entry
-  private Peer myPeer = null;
+	//the peer for which this is an entry
+	private Peer myPeer = null;
 
-  //the hop distance of the peer.  this indicates how many peers must 
-  //be travelled to reach the destination peer
-  private int myHopDistance = 1000;
+	//the hop distance of the peer.  this indicates how many peers must 
+	//be travelled to reach the destination peer
+	private int myHopDistance = 1000;
 
-  //the gateway for accessing this peer.  this is the same as the target peer
-  //if the target peer can be reached directly
-  private Peer myGateway = null;
+	//indicates if this peer is responding
+	private boolean isResponding = false;
 
-  public RoutingTableEntry (){}
-  
-  public RoutingTableEntry ( Peer anHost , int anHopDistance , Peer anGateway ) {
-    super();
-    myPeer = anHost;
-    myHopDistance = anHopDistance;
-    myGateway = anGateway;
-  }
+	//the gateway for accessing this peer.  this is the same as the target peer
+	//if the target peer can be reached directly
+	private Peer myGateway = null;
 
-  public Peer getPeer() {
-    return myPeer;
-  }
+	public RoutingTableEntry (){}
 
-  public void setPeer( Peer anPeer ) {
-    myPeer = anPeer;
-  }
+	public RoutingTableEntry ( Peer anHost , int anHopDistance , Peer anGateway ) {
+		super();
+		myPeer = anHost;
+		myHopDistance = anHopDistance;
+		myGateway = anGateway;
+	}
 
-  public int getHopDistance() {
-    return myHopDistance;
-  }
+	public Peer getPeer() {
+		return myPeer;
+	}
 
-  public void setHopDistance( int anHopDistance ) {
-    myHopDistance = anHopDistance;
-  }
+	public void setPeer( Peer anPeer ) {
+		myPeer = anPeer;
+	}
 
-  public Peer getGateway() {
-    return myGateway;
-  }
+	public int getHopDistance() {
+		return myHopDistance;
+	}
 
-  public void setGateway( Peer anGateway ) {
-    myGateway = anGateway;
-  }
+	public void setHopDistance( int anHopDistance ) {
+		myHopDistance = anHopDistance;
+	}
 
-  public boolean closerThen(RoutingTableEntry anEntry){
-    return myHopDistance < anEntry.getHopDistance();
-  }
-  
-  public void incrementHopDistance(){
-    myHopDistance++;
-  }
+	public Peer getGateway() {
+		return myGateway;
+	}
+
+	public void setGateway( Peer anGateway ) {
+		myGateway = anGateway;
+	}
+
+	public boolean isResponding() {
+		return isResponding;
+	}
+
+	public void setResponding(boolean isResponding) {
+		this.isResponding = isResponding;
+	}
+
+	public boolean closerThen(RoutingTableEntry anEntry){
+		return myHopDistance < anEntry.getHopDistance();
+	}
+
+	public void incrementHopDistance(){
+		myHopDistance++;
+	}
 }
