@@ -24,7 +24,7 @@ public class RoutingTable implements Iterable< RoutingTableEntry >{
   public synchronized void addRoutingTableEntry(RoutingTableEntry anEntry){
     if(myRoutingTable.containsKey( anEntry.getPeer() )){
       RoutingTableEntry thePeerEntry = myRoutingTable.get( anEntry.getPeer() );
-      if(anEntry.closerThen( thePeerEntry )){
+      if(anEntry.closerThen( thePeerEntry ) || (!thePeerEntry.isResponding() && anEntry.isResponding())){
         myRoutingTable.put( anEntry.getPeer(), anEntry );
       }
     } else {

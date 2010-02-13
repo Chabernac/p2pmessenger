@@ -46,7 +46,45 @@ public class RoutingTableTest extends TestCase {
     assertEquals( 1, theEntries.get(0).getHopDistance());
     assertEquals( thePeer00, theEntries.get(1).getGateway());
     assertEquals( 2, theEntries.get(1).getHopDistance());
+  }
+  
+  public void testRespondingEntry(){
+    Peer thePeer0 = new Peer(1, "localhost", 1001);
+    RoutingTable theTable = new RoutingTable(thePeer0);
 
+    Peer thePeer = new Peer(2, "localhost", 1002);
+    RoutingTableEntry theEntry = new RoutingTableEntry(thePeer, 1, thePeer);
+    theEntry.setResponding(false);
+    RoutingTableEntry theEntry2 = new RoutingTableEntry(thePeer, 2, thePeer);
+    theEntry2.setResponding(true);
     
+    theTable.addRoutingTableEntry(theEntry);
+    theTable.addRoutingTableEntry(theEntry2);
+    
+    assertEquals(1, theTable.getEntries().size());
+    
+    assertEquals(theEntry2, theTable.getEntries().get(0));
+  }
+  
+  
+  public void testSameEntryDifferentPort(){
+    Peer thePeer0 = new Peer(1, "localhost", 1001);
+    RoutingTable theTable = new RoutingTable(thePeer0);
+
+    Peer thePeer = new Peer(2, "localhost", 1002);
+    RoutingTableEntry theEntry = new RoutingTableEntry(thePeer, 1, thePeer);
+    theEntry.setResponding(false);
+    
+    Peer thePeer2 = new Peer(2, "localhost", 1003);
+    RoutingTableEntry theEntry2 = new RoutingTableEntry(thePeer2, 2, thePeer);
+    theEntry2.setResponding(true);
+    
+    theTable.addRoutingTableEntry(theEntry);
+    theTable.addRoutingTableEntry(theEntry2);
+    
+    assertEquals(1, theTable.getEntries().size());
+    
+    assertEquals(theEntry2, theTable.getEntries().get(0));
+    assertEquals(1003, theTable.getEntries().get(0).getPeer().getPort());
   }
 }

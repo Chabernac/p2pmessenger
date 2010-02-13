@@ -19,14 +19,12 @@ public class RoutingProtocolTest extends TestCase {
     MasterProtocol theProtocol = new MasterProtocol();
     RoutingProtocol theRoutingProtocol1 = new RoutingProtocol(theLocalPeerId, theRoutingTable);
     theProtocol.addSubProtocol( theRoutingProtocol1 );
-
     ProtocolServer theServer = new ProtocolServer(theProtocol, RoutingProtocol.START_PORT, 5);
     
-    long theLocalPeerId2 = 1;
+    long theLocalPeerId2 = 2;
     RoutingTable theRoutingTable2 = new RoutingTable();
     MasterProtocol theProtocol2 = new MasterProtocol();
     theProtocol2.addSubProtocol( new RoutingProtocol(theLocalPeerId2, theRoutingTable2) );
-
     ProtocolServer theServer2 = new ProtocolServer(theProtocol2, RoutingProtocol.START_PORT + 1, 5);
     try{
       theServer.start();
@@ -42,6 +40,12 @@ public class RoutingProtocolTest extends TestCase {
       assertEquals( RoutingProtocol.START_PORT, theEntry.getPeer().getPort());
       assertEquals( "localhost", theEntry.getPeer().getHost());
       assertEquals( theLocalPeerId, theEntry.getPeer().getPeerId());
+      assertEquals( 1, theEntry.getHopDistance());
+      
+      theEntry = theRoutingTable.getEntries().get( 1 );
+      assertEquals( RoutingProtocol.START_PORT + 1, theEntry.getPeer().getPort());
+      assertEquals( "localhost", theEntry.getPeer().getHost());
+      assertEquals( theLocalPeerId2, theEntry.getPeer().getPeerId());
       assertEquals( 1, theEntry.getHopDistance());
     } finally {
       theServer.stop();
