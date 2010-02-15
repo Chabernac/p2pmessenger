@@ -6,8 +6,6 @@ package chabernac.protocol.message;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
-import java.util.HashSet;
-import java.util.Set;
 
 import chabernac.protocol.Protocol;
 import chabernac.protocol.routing.Peer;
@@ -21,11 +19,10 @@ import chabernac.tools.XMLTools;
  *
  */
 public class MessageProtocol extends Protocol {
-  private static enum STATUS_MESSAGE {UKWNONW_PEER, UNKNOWN_HOST, UNDELIVERABLE, DELIVERED};
+  private static enum STATUS_MESSAGE {UKWNONW_PEER, UNKNOWN_HOST, UNDELIVERABLE, DELIVERED, UNCRECOGNIZED_MESSAGE};
   
   private RoutingTable myRoutingTable = null;
   private Peer myMyself = null;
-  private Set<iMessageReceiveListener> myListeners = new HashSet< iMessageReceiveListener >();
 
   public MessageProtocol ( Peer aMySelf, RoutingTable aRoutingTable ) {
     super( "MSG" );
@@ -38,27 +35,21 @@ public class MessageProtocol extends Protocol {
     return "Message protocol";
   }
   
-  public void addMessageReceiveListener(iMessageReceiveListener aListener){
-    myListeners.add( aListener );
-  }
-  
-  public void removeMessageReceiveListener(iMessageReceiveListener aListener){
-    myListeners.remove( aListener );
-  }
-
   @Override
   protected String handleCommand( long aSessionId, String anInput ) {
-    Message theMessage = (Message)XMLTools.fromXML( anInput );
-    return handleMessage( theMessage );
+    Object theMessage = XMLTools.fromXML( anInput );
+    if(!(theMessage instanceof Message)){
+      return STATUS_MESSAGE.UNCRECOGNIZED_MESSAGE.name();
+    } 
+    return handleMessage( aSessionId, (Message)theMessage );
   }
   
-  public String handleMessage(Message aMessage){
+  public String handleMessage(long aSessionId, Message aMessage){
     Peer theDestionation = aMessage.getDestination();
     if(theDestionation.equals( myMyself )){
-      for(iMessageReceiveListener theListener : myListeners){
-        theListener.messageReceived( aMessage );
-      }
-      return STATUS_MESSAGE.DELIVERED.name();
+      //reoffer the content of the message to the handle method
+      //this will cause sub protocols to handle the message if they are present
+      return handle( aSessionId, aMessage.getMessage() );
     } else {
       try {
         Peer theGateway = myRoutingTable.getGatewayForPeer( theDestionation );

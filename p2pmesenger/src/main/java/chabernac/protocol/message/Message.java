@@ -9,7 +9,7 @@ import chabernac.protocol.routing.Peer;
 public class Message {
   private Peer mySource = null;
   private Peer myDestination = null;
-  private byte[] myMessage = null;
+  private String myMessage = null;
   
   public Peer getSource() {
     return mySource;
@@ -23,10 +23,10 @@ public class Message {
   public void setDestination( Peer anDestination ) {
     myDestination = anDestination;
   }
-  public byte[] getMessage() {
+  public String getMessage() {
     return myMessage;
   }
-  public void setMessage( byte[] anMessage ) {
+  public void setMessage( String anMessage ) {
     myMessage = anMessage;
   }
 } 
