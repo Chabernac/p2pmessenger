@@ -24,6 +24,7 @@ public class RoutingProtocolTest extends TestCase {
     
     long theExchangeDelay = 5;
 
+    long thet1 = System.currentTimeMillis();
     RoutingTable theRoutingTable = new RoutingTable(theLocalPeerId);
     MasterProtocol theProtocol = new MasterProtocol();
     RoutingProtocol theRoutingProtocol1 = new RoutingProtocol(theLocalPeerId, theRoutingTable, theExchangeDelay);
@@ -42,7 +43,8 @@ public class RoutingProtocolTest extends TestCase {
 
       theRoutingProtocol1.scanLocalSystem();
       
-      Thread.sleep( 4000 );
+      long theFirstSleepTime = 4000;
+      Thread.sleep( theFirstSleepTime );
            
       assertEquals( 2, theRoutingTable.getEntries().size());
       
@@ -64,14 +66,16 @@ public class RoutingProtocolTest extends TestCase {
       //so after x seconds it should have run Math.floor((x - 2) / 5) times.
 //      theRoutingProtocol1.exchangeRoutingTable();
       
-      long theSleepTime = 30000;
-      
-      long theTimesRun = (long)Math.floor((theSleepTime - 2000) / (1000 * theExchangeDelay)); 
+      long theSleepTime = 20000;
       
       Thread.sleep( theSleepTime );
       
-      assertEquals( theTimesRun, theRoutingProtocol1.getExchangeCounter() );
-      assertEquals( theTimesRun, theRoutingProtocol2.getExchangeCounter() );
+      long theEffectiveDeltaT = System.currentTimeMillis() - thet1;
+      long theTimesRun = (long)Math.floor((theEffectiveDeltaT - 2000) / (1000 * theExchangeDelay)); 
+      
+      
+      assertTrue( Math.abs(theTimesRun - theRoutingProtocol1.getExchangeCounter()) < 2 );
+      assertTrue( Math.abs(theTimesRun - theRoutingProtocol2.getExchangeCounter()) < 2 );
     } finally {
       theServer.stop();
     }
