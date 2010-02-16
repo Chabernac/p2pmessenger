@@ -11,8 +11,7 @@ import junit.framework.TestCase;
 
 public class XMLToolsTest extends TestCase {
   public void testToXML(){
-    Peer thePeer0 = new Peer(1, "localhost", 1001);
-    RoutingTable theTable = new RoutingTable(thePeer0);
+    RoutingTable theTable = new RoutingTable(1);
 
     Peer thePeer = new Peer(2, "x20d1148", 1002);
     RoutingTableEntry theEntry = new RoutingTableEntry(thePeer, 1, thePeer);

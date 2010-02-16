@@ -10,6 +10,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.log4j.Logger;
 
@@ -37,11 +38,23 @@ public class RoutingProtocol extends Protocol {
 
   private RoutingTable myRoutingTable = null;
   private long myLocalPeerId;
+  
+  private long myExchangeDelay;
+  
+  //this counter has just been added for unit testing reasons
+  private AtomicLong myExchangeCounter = new AtomicLong(0);
 
-  public RoutingProtocol ( long aLocalPeerId, RoutingTable aRoutingTable ) {
+  /**
+   * 
+   * @param aLocalPeerId
+   * @param aRoutingTable
+   * @param anExchangeDelay the delay in seconds between exchaning routing tables with other peers
+   */
+  public RoutingProtocol ( long aLocalPeerId, RoutingTable aRoutingTable, long anExchangeDelay ) {
     super( "ROU" );
     myRoutingTable = aRoutingTable;
     myLocalPeerId = aLocalPeerId;
+    myExchangeDelay = anExchangeDelay;
     scanLocalSystem();
     scheduleRoutingTableExchange();
   }
@@ -52,7 +65,7 @@ public class RoutingProtocol extends Protocol {
 
   private void scheduleRoutingTableExchange(){
     ScheduledExecutorService theService = Executors.newScheduledThreadPool( 1 );
-    theService.schedule( new ExchangeRoutingTable(), 2, TimeUnit.MINUTES );
+    theService.scheduleWithFixedDelay( new ExchangeRoutingTable(), 2, myExchangeDelay, TimeUnit.SECONDS);
 
   }
 
@@ -92,7 +105,9 @@ public class RoutingProtocol extends Protocol {
         Peer thePeer = new Peer(-1, myHosts, myPort);
         String theId = thePeer.send( createMessage( Command.WHO_ARE_YOU.name() ));
         thePeer.setPeerId( Long.parseLong( theId ) );
-        myRoutingTable.addRoutingTableEntry( new RoutingTableEntry(thePeer, 1, thePeer) );
+        RoutingTableEntry theEntry = new RoutingTableEntry(thePeer, 1, thePeer);
+        theEntry.setResponding( true );
+        myRoutingTable.addRoutingTableEntry( theEntry );
       }catch(Exception e){
       }
     }
@@ -112,24 +127,34 @@ public class RoutingProtocol extends Protocol {
     }
   }
 
+  public void exchangeRoutingTable(){
+    LOGGER.debug("Exchanging routing table for peer: " + myLocalPeerId);
+    for(RoutingTableEntry theEntry : myRoutingTable.getEntries()){
+      Peer thePeer = theEntry.getPeer();
+      if(thePeer.getPeerId() != myLocalPeerId){
+        try {
+          String theTable = thePeer.send( createMessage( Command.REQUEST_TABLE.name() ) );
+          RoutingTable theRemoteTable = (RoutingTable)XMLTools.fromXML( theTable );
+          myRoutingTable.merge( theRemoteTable );
+          theEntry.setResponding( true );
+        } catch ( Exception e ) {
+          //we cannot reach this peer, set it to non responding
+          theEntry.setResponding( false );
+        }
+      }
+    }
+    myExchangeCounter.incrementAndGet();
+  }
+  
+  public long getExchangeCounter(){
+    return myExchangeCounter.longValue();
+  }
+
   private class ExchangeRoutingTable implements Runnable{
 
     @Override
     public void run() {
-      for(RoutingTableEntry theEntry : myRoutingTable.getEntries()){
-        Peer thePeer = theEntry.getPeer();
-        if(thePeer.getPeerId() != myLocalPeerId){
-          try {
-            String theTable = thePeer.send( createMessage( Command.REQUEST_TABLE.name() ) );
-            RoutingTable theRemoteTable = (RoutingTable)XMLTools.fromXML( theTable );
-            myRoutingTable.merge( theRemoteTable );
-          } catch ( Exception e ) {
-            //we cannot reach this peer, set it to non responding
-            theEntry.setResponding( false );
-          }
-        }
-      }
+      exchangeRoutingTable();
     }
-
   }
 }

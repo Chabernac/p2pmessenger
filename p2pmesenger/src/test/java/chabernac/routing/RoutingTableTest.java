@@ -14,9 +14,8 @@ import chabernac.protocol.routing.RoutingTableEntry;
 
 public class RoutingTableTest extends TestCase {
 
-  public void testRoutingTable(){
-    Peer thePeer0 = new Peer(1, "localhost", 1001);
-    RoutingTable theTable = new RoutingTable(thePeer0);
+  public void testRoutingTable() throws SocketException{
+    RoutingTable theTable = new RoutingTable(1);
 
     Peer thePeer = new Peer(2, "localhost", 1002);
     RoutingTableEntry theEntry = new RoutingTableEntry(thePeer, 1, thePeer);
@@ -29,8 +28,7 @@ public class RoutingTableTest extends TestCase {
 
     assertEquals( theEntry, theTable.getEntries().get( 0 ) );
 
-    Peer thePeer00 = new Peer(3, "localhost", 1003);
-    RoutingTable theTable2 = new RoutingTable(thePeer00);
+    RoutingTable theTable2 = new RoutingTable(3);
     Peer thePeer4 = new Peer(4, "x20d1148", 1004);
     RoutingTableEntry theEntry3 = new RoutingTableEntry(thePeer4, 1, thePeer4);
     theTable2.addRoutingTableEntry( theEntry3 );
@@ -44,13 +42,12 @@ public class RoutingTableTest extends TestCase {
 
     assertEquals( thePeer, theEntries.get(0).getGateway()); 
     assertEquals( 1, theEntries.get(0).getHopDistance());
-    assertEquals( thePeer00, theEntries.get(1).getGateway());
+    assertEquals( 3, theEntries.get(1).getGateway().getPeerId());
     assertEquals( 2, theEntries.get(1).getHopDistance());
   }
   
   public void testRespondingEntry(){
-    Peer thePeer0 = new Peer(1, "localhost", 1001);
-    RoutingTable theTable = new RoutingTable(thePeer0);
+    RoutingTable theTable = new RoutingTable(1);
 
     Peer thePeer = new Peer(2, "localhost", 1002);
     RoutingTableEntry theEntry = new RoutingTableEntry(thePeer, 1, thePeer);
@@ -68,8 +65,7 @@ public class RoutingTableTest extends TestCase {
   
   
   public void testSameEntryDifferentPort() throws SocketException{
-    Peer thePeer0 = new Peer(1, 1001);
-    RoutingTable theTable = new RoutingTable(thePeer0);
+    RoutingTable theTable = new RoutingTable(1);
 
     Peer thePeer = new Peer(2, 1002);
     RoutingTableEntry theEntry = new RoutingTableEntry(thePeer, 1, thePeer);
