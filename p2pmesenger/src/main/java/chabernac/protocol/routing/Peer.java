@@ -10,24 +10,36 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.List;
+
+import chabernac.tools.NetTools;
 
 public class Peer {
   private long myPeerId;
-  private String myHost = null;
+  private List<String> myHost = null;
   private int myPort;
   
   public Peer (){}
   
   public Peer(long aPeerId, String aHost, int aPort){
     myPeerId = aPeerId;
-    myHost = aHost;
+    if(myHost == null){
+      myHost = new ArrayList<String>();
+    }
+    myHost.add(aHost);
     myPort = aPort;
   }
   
   public Peer ( long anPeerId ) {
     super();
     myPeerId = anPeerId;
+  }
+  
+  public void detecteLocalInterfaces() throws SocketException{
+    myHost = NetTools.getLocalExposedIpAddresses();
   }
   
   public String getHost() {
