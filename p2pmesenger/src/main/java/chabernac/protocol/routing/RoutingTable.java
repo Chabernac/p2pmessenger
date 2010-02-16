@@ -11,7 +11,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
+
 public class RoutingTable implements Iterable< RoutingTableEntry >{
+  private static Logger LOGGER = Logger.getLogger( RoutingTable.class );
+  
   private Peer myPeer = null;
   private Map<Peer, RoutingTableEntry> myRoutingTable = new HashMap< Peer, RoutingTableEntry >();
   
@@ -26,9 +30,17 @@ public class RoutingTable implements Iterable< RoutingTableEntry >{
       RoutingTableEntry thePeerEntry = myRoutingTable.get( anEntry.getPeer() );
       if(anEntry.closerThen( thePeerEntry ) || (!thePeerEntry.isResponding() && anEntry.isResponding())){
         myRoutingTable.put( anEntry.getPeer(), anEntry );
+        if(!thePeerEntry.isResponding()){
+          //if the entry is repsonding for the remote system but not for the local system
+          //then set it to non responding as this is the real situation.
+          //this way we now the local system can not reach the peer directly but only trough the gateway
+          anEntry.setResponding( false );
+        }
+        LOGGER.debug( "Updated routing table entry to routing table for peer: " + myPeer.getPeerId() + " : "  + anEntry);
       }
     } else {
       myRoutingTable.put(anEntry.getPeer(), anEntry);
+      LOGGER.debug( "Added a new routing table entry to routing table for peer: " + myPeer.getPeerId() + " : "  + anEntry);
     }
   }
   

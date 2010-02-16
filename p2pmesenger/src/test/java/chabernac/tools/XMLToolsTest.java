@@ -27,11 +27,11 @@ public class XMLToolsTest extends TestCase {
     
     assertEquals(2, theTable2.getEntries().size());
     
-   assertEquals("x20d1148", theTable2.getEntries().get(0).getPeer().getHost());
+   assertEquals("x20d1148", theTable2.getEntries().get(0).getPeer().getHosts().get( 0 ));
    assertEquals(1002, theTable2.getEntries().get(0).getPeer().getPort());
    assertEquals(2, theTable2.getEntries().get(0).getPeer().getPeerId());
    
-   assertEquals("x01p0880", theTable2.getEntries().get(1).getPeer().getHost());
+   assertEquals("x01p0880", theTable2.getEntries().get(1).getPeer().getHosts().get( 0 ));
    assertEquals(1003, theTable2.getEntries().get(1).getPeer().getPort());
    assertEquals(3, theTable2.getEntries().get(1).getPeer().getPeerId());
 
