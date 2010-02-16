@@ -4,6 +4,8 @@
  */
 package chabernac.routing;
 
+import org.apache.log4j.BasicConfigurator;
+
 import junit.framework.TestCase;
 import chabernac.protocol.MasterProtocol;
 import chabernac.protocol.ProtocolServer;
@@ -12,19 +14,27 @@ import chabernac.protocol.routing.RoutingTable;
 import chabernac.protocol.routing.RoutingTableEntry;
 
 public class RoutingProtocolTest extends TestCase {
+  
+  public void setUp(){
+    BasicConfigurator.configure();
+  }
+  
   public void testRoutingProtocol() throws InterruptedException{
     long theLocalPeerId = 1;
+    
+    long theExchangeDelay = 5;
 
-    RoutingTable theRoutingTable = new RoutingTable();
+    RoutingTable theRoutingTable = new RoutingTable(theLocalPeerId);
     MasterProtocol theProtocol = new MasterProtocol();
-    RoutingProtocol theRoutingProtocol1 = new RoutingProtocol(theLocalPeerId, theRoutingTable);
+    RoutingProtocol theRoutingProtocol1 = new RoutingProtocol(theLocalPeerId, theRoutingTable, theExchangeDelay);
     theProtocol.addSubProtocol( theRoutingProtocol1 );
     ProtocolServer theServer = new ProtocolServer(theProtocol, RoutingProtocol.START_PORT, 5);
     
     long theLocalPeerId2 = 2;
-    RoutingTable theRoutingTable2 = new RoutingTable();
+    RoutingTable theRoutingTable2 = new RoutingTable(theLocalPeerId2);
     MasterProtocol theProtocol2 = new MasterProtocol();
-    theProtocol2.addSubProtocol( new RoutingProtocol(theLocalPeerId2, theRoutingTable2) );
+    RoutingProtocol theRoutingProtocol2 = new RoutingProtocol(theLocalPeerId2, theRoutingTable2, theExchangeDelay) ; 
+    theProtocol2.addSubProtocol( theRoutingProtocol2 );
     ProtocolServer theServer2 = new ProtocolServer(theProtocol2, RoutingProtocol.START_PORT + 1, 5);
     try{
       theServer.start();
@@ -47,6 +57,21 @@ public class RoutingProtocolTest extends TestCase {
       assertTrue(  theEntry.getPeer().getHosts().size() > 0);
       assertEquals( theLocalPeerId2, theEntry.getPeer().getPeerId());
       assertEquals( 1, theEntry.getHopDistance());
+      
+      
+      //the routing protocol starts exchanging routing information after 2 seconds
+      //and updates its routing table after 5 seconds.
+      //so after x seconds it should have run Math.floor((x - 2) / 5) times.
+//      theRoutingProtocol1.exchangeRoutingTable();
+      
+      long theSleepTime = 30000;
+      
+      long theTimesRun = (long)Math.floor((theSleepTime - 2000) / (1000 * theExchangeDelay)); 
+      
+      Thread.sleep( theSleepTime );
+      
+      assertEquals( theTimesRun, theRoutingProtocol1.getExchangeCounter() );
+      assertEquals( theTimesRun, theRoutingProtocol2.getExchangeCounter() );
     } finally {
       theServer.stop();
     }
