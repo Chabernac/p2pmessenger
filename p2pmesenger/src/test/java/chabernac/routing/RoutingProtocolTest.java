@@ -73,7 +73,6 @@ public class RoutingProtocolTest extends TestCase {
       long theEffectiveDeltaT = System.currentTimeMillis() - thet1;
       long theTimesRun = (long)Math.floor((theEffectiveDeltaT - 2000) / (1000 * theExchangeDelay)); 
       
-      
       assertTrue( Math.abs(theTimesRun - theRoutingProtocol1.getExchangeCounter()) < 2 );
       assertTrue( Math.abs(theTimesRun - theRoutingProtocol2.getExchangeCounter()) < 2 );
     } finally {
