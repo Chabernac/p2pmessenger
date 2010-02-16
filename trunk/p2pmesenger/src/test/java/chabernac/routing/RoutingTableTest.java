@@ -4,13 +4,13 @@
  */
 package chabernac.routing;
 
+import java.net.SocketException;
 import java.util.List;
 
+import junit.framework.TestCase;
 import chabernac.protocol.routing.Peer;
 import chabernac.protocol.routing.RoutingTable;
 import chabernac.protocol.routing.RoutingTableEntry;
-import chabernac.tools.XMLTools;
-import junit.framework.TestCase;
 
 public class RoutingTableTest extends TestCase {
 
@@ -67,15 +67,15 @@ public class RoutingTableTest extends TestCase {
   }
   
   
-  public void testSameEntryDifferentPort(){
-    Peer thePeer0 = new Peer(1, "localhost", 1001);
+  public void testSameEntryDifferentPort() throws SocketException{
+    Peer thePeer0 = new Peer(1, 1001);
     RoutingTable theTable = new RoutingTable(thePeer0);
 
-    Peer thePeer = new Peer(2, "localhost", 1002);
+    Peer thePeer = new Peer(2, 1002);
     RoutingTableEntry theEntry = new RoutingTableEntry(thePeer, 1, thePeer);
     theEntry.setResponding(false);
     
-    Peer thePeer2 = new Peer(2, "localhost", 1003);
+    Peer thePeer2 = new Peer(2, 1003);
     RoutingTableEntry theEntry2 = new RoutingTableEntry(thePeer2, 2, thePeer);
     theEntry2.setResponding(true);
     

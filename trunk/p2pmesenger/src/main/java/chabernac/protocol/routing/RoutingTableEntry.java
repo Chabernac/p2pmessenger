@@ -12,7 +12,7 @@ public class RoutingTableEntry {
 	//the hop distance of the peer.  this indicates how many peers must 
 	//be travelled to reach the destination peer
 	private int myHopDistance = 1000;
-
+  
 	//indicates if this peer is responding
 	private boolean isResponding = false;
 
@@ -53,14 +53,6 @@ public class RoutingTableEntry {
 		myGateway = anGateway;
 	}
 
-	public boolean isResponding() {
-		return isResponding;
-	}
-
-	public void setResponding(boolean isResponding) {
-		this.isResponding = isResponding;
-	}
-
 	public boolean closerThen(RoutingTableEntry anEntry){
 		return myHopDistance < anEntry.getHopDistance();
 	}
@@ -68,4 +60,16 @@ public class RoutingTableEntry {
 	public void incrementHopDistance(){
 		myHopDistance++;
 	}
+
+  public boolean isResponding() {
+    return isResponding;
+  }
+
+  public void setResponding( boolean anIsResponding ) {
+    isResponding = anIsResponding;
+  }
+  
+  public String toString(){
+    return "<PeerEntry peerid='" + myPeer.getPeerId() + "' hopDistance='" + myHopDistance + "' responding='" + isResponding + "' gateway='" + myGateway.getPeerId() + "'/>";
+  }
 }

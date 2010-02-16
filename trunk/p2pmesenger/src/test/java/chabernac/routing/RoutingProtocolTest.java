@@ -38,13 +38,13 @@ public class RoutingProtocolTest extends TestCase {
       
       RoutingTableEntry theEntry = theRoutingTable.getEntries().get( 0 );
       assertEquals( RoutingProtocol.START_PORT, theEntry.getPeer().getPort());
-      assertEquals( "localhost", theEntry.getPeer().getHost());
+      assertTrue( theEntry.getPeer().getHosts().size() > 0);
       assertEquals( theLocalPeerId, theEntry.getPeer().getPeerId());
       assertEquals( 1, theEntry.getHopDistance());
       
       theEntry = theRoutingTable.getEntries().get( 1 );
       assertEquals( RoutingProtocol.START_PORT + 1, theEntry.getPeer().getPort());
-      assertEquals( "localhost", theEntry.getPeer().getHost());
+      assertTrue(  theEntry.getPeer().getHosts().size() > 0);
       assertEquals( theLocalPeerId2, theEntry.getPeer().getPeerId());
       assertEquals( 1, theEntry.getHopDistance());
     } finally {

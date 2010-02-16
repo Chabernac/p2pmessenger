@@ -58,7 +58,7 @@ public class ProtocolServerTest extends TestCase {
     assertTrue( theServer.start() );
     
     Peer thePeer = new Peer();
-    thePeer.setHost( "localhost" );
+    thePeer.detectLocalInterfaces();
     thePeer.setPort( thePort );
     
     assertEquals( "pong", thePeer.send( thePingProtocol.createMessage( "ping" ) ));
