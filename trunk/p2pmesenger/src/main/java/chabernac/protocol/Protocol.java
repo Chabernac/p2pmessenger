@@ -6,9 +6,11 @@ package chabernac.protocol;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 public abstract class Protocol {
+  protected Protocol myParentProtocol = null;
   protected Map<String, Protocol> mySubProtocols = null;
   
   protected String myId;
@@ -76,8 +78,17 @@ public abstract class Protocol {
     }
     
     mySubProtocols.put(aSubProtocol.getId(), aSubProtocol);
+    aSubProtocol.setParentProtocol(this);
   }
   
+  public Protocol getParentProtocol() {
+    return myParentProtocol;
+  }
+
+  public void setParentProtocol(Protocol aParentProtocol) {
+    myParentProtocol = aParentProtocol;
+  }
+
   /**
    * prefix the message with the id of the protocol
    * 
@@ -85,6 +96,24 @@ public abstract class Protocol {
    * @return
    */
   public String createMessage(String aMessage){
-    return myId + aMessage;
+    String theMessage = myId + aMessage;
+    if(myParentProtocol != null){
+      theMessage = myParentProtocol.createMessage(theMessage);
+    }
+    return theMessage;
+  }
+  
+  public String getProtocolsString(){
+    StringBuilder theBuilder = new StringBuilder();
+    theBuilder.append(myId);
+    if(mySubProtocols != null){
+      theBuilder.append("{");
+      for(Iterator<Protocol> i=mySubProtocols.values().iterator();i.hasNext();){
+        theBuilder.append(i.next().getProtocolsString());
+        if(i.hasNext()) theBuilder.append(";");
+      }
+      theBuilder.append("}");
+    }
+    return theBuilder.toString();
   }
 }
