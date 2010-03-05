@@ -78,6 +78,7 @@ public class RoutingProtocol extends Protocol {
   protected String handleCommand( long aSessionId, String anInput ) {
     Command theCommand = Command.valueOf( anInput );
     if(theCommand == Command.REQUEST_TABLE){
+      //another peer has send a request for the routing protocol send it
       return XMLTools.toXML( myRoutingTable );
     } else if(theCommand == Command.WHO_ARE_YOU){
       return Long.toString( myLocalPeerId );
