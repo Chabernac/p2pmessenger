@@ -81,6 +81,8 @@ public class RoutingProtocol extends Protocol {
       //another peer has send a request for the routing protocol send it
       return XMLTools.toXML( myRoutingTable );
     } else if(theCommand == Command.WHO_ARE_YOU){
+      //another peer requested my peer id, send it to him, this is also used
+      //to check if I'm still alive and kicking
       return Long.toString( myLocalPeerId );
     }
     return Status.UNKNOWN_COMMAND.name();
@@ -128,6 +130,9 @@ public class RoutingProtocol extends Protocol {
     }
   }
 
+  /**
+   * this method will send a request to all the peers in the routing table
+   */
   public void exchangeRoutingTable(){
     LOGGER.debug("Exchanging routing table for peer: " + myLocalPeerId);
     for(RoutingTableEntry theEntry : myRoutingTable.getEntries()){
