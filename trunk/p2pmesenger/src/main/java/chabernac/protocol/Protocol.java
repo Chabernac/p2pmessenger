@@ -50,6 +50,8 @@ public abstract class Protocol {
   }
   
   private Protocol findMatchingProtocol(String anInput){
+    if(anInput.length() < 3) return null;
+    
     String theIdString = anInput.substring( 0, 3 );
     
     if(myId.equals( theIdString )) return this;

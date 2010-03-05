@@ -15,7 +15,7 @@ public class ProtocolTest extends TestCase {
     //because the message created in the second ping protocol
     //the own protocol prefix, the parent protocol prefix and master protocol prefix will be added 
     //to the message.
-    assertEquals("MASPINPINtest", theMessage);
+    assertEquals("MASPPGPPGtest", theMessage);
   }
   
   public void testGetProtocolsString(){
@@ -28,6 +28,6 @@ public class ProtocolTest extends TestCase {
     theProtocol.addSubProtocol(new MasterProtocol());
     
     
-    assertEquals("MAS{PIN{PIN};MAS}", theProtocol.getProtocolsString());
+    assertEquals("MAS{MAS;PPG{PPG}}", theProtocol.getProtocolsString());
   }
 }

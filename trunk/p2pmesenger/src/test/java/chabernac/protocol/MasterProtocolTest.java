@@ -19,13 +19,13 @@ public class MasterProtocolTest extends TestCase {
     PingProtocol thePingProtocol = new PingProtocol();
     theMasterProtocol.addSubProtocol( thePingProtocol );
     
-    assertEquals( "pong", new String(theMasterProtocol.handle( 0, thePingProtocol.getId() + "ping") ));
-    assertEquals( "unknwown command", new String(theMasterProtocol.handle( 0, thePingProtocol.getId() + "somtehing") ));
+    assertEquals( PingProtocol.Response.PONG.name(), new String(theMasterProtocol.handle( 0, thePingProtocol.getId() + "ping") ));
+    assertEquals( PingProtocol.Response.UNKNOWN_COMMAND.name(), new String(theMasterProtocol.handle( 0, thePingProtocol.getId() + "somtehing") ));
     
     assertEquals( "Master protocol" , theMasterProtocol.getDescription());
    
     String theResult = new String(theMasterProtocol.handle( 0, "protocols" ));
-    assertEquals( "PIN:Ping protocol|", theResult );
+    assertEquals( "PPG:Ping protocol|", theResult );
         
   }
 }

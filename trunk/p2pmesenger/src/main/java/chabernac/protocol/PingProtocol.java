@@ -6,12 +6,12 @@ package chabernac.protocol;
 
 public class PingProtocol extends Protocol {
   
-  private static enum Command{ PING };
-  private static enum Response{ PONG, UNKNOWN_COMMAND };  
+  public static enum Command{ PING };
+  public static enum Response{ PONG, UNKNOWN_COMMAND };  
   
 
   public PingProtocol (  ) {
-    super( "PIN" );
+    super( "PPG" );
   }
 
   @Override
