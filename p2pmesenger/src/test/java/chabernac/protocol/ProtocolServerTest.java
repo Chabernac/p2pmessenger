@@ -42,7 +42,7 @@ public class ProtocolServerTest extends TestCase {
     
     BufferedReader theReader = new BufferedReader(new InputStreamReader(theClientSocket.getInputStream()));
     
-    assertEquals( "pong", theReader.readLine() );
+    assertEquals( PingProtocol.Response.PONG.name(), theReader.readLine() );
     
     theServer.stop();
   }
@@ -61,7 +61,7 @@ public class ProtocolServerTest extends TestCase {
     thePeer.detectLocalInterfaces();
     thePeer.setPort( thePort );
     
-    assertEquals( "pong", thePeer.send( thePingProtocol.createMessage( "ping" ) ));
+    assertEquals( PingProtocol.Response.PONG.name(), thePeer.send( thePingProtocol.createMessage( "ping" ) ));
     
     theServer.stop();
   }
