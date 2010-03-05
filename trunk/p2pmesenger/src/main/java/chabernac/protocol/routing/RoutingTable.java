@@ -35,11 +35,6 @@ public class RoutingTable implements Iterable< RoutingTableEntry >{
   public synchronized void addRoutingTableEntry(RoutingTableEntry anEntry){
     if(myRoutingTable.containsKey( anEntry.getPeer().getPeerId() )){
       RoutingTableEntry thePeerEntry = myRoutingTable.get( anEntry.getPeer().getPeerId() );
-      
-      //we only add the given antry to our routing table if
-      //- the given entry has a closer hop distance than the one we have
-      //- the given entry has a farther hop distance but is responding and the local entry is not responding
-      //- 
       if(anEntry.closerThen( thePeerEntry ) || (!thePeerEntry.isResponding() && anEntry.isResponding())){
         myRoutingTable.put( anEntry.getPeer().getPeerId(), anEntry );
         if(!thePeerEntry.isResponding()){
@@ -48,6 +43,9 @@ public class RoutingTable implements Iterable< RoutingTableEntry >{
           //this way we now the local system can not reach the peer directly but only trough the gateway
           anEntry.setResponding( false );
         }
+        
+        //copy the responding flag from our entry to the new entry
+        anEntry.setResponding( thePeerEntry.isResponding() );
         LOGGER.debug( "Updated routing table entry to routing table for peer: " + myLocalPeerId + " : "  + anEntry);
       }
     } else {
