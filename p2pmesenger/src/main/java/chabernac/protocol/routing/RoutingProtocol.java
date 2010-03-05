@@ -5,6 +5,7 @@
 package chabernac.protocol.routing;
 
 import java.net.SocketException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -43,6 +44,9 @@ public class RoutingProtocol extends Protocol {
   
   //this counter has just been added for unit testing reasons
   private AtomicLong myExchangeCounter = new AtomicLong(0);
+  
+  //this list is for test reasons to simulate peers which can not reach each other
+  private List<Long> myUnreachablePeerIds = new ArrayList< Long >();
 
   /**
    * 
@@ -72,6 +76,14 @@ public class RoutingProtocol extends Protocol {
   @Override
   public String getDescription() {
     return "Routing protocol";
+  }
+  
+  public List< Long > getUnreachablePeerIds() {
+    return myUnreachablePeerIds;
+  }
+
+  public void setUnreachablePeerIds( List< Long > anUnreachablePeerIds ) {
+    myUnreachablePeerIds = anUnreachablePeerIds;
   }
 
   @Override
@@ -115,7 +127,7 @@ public class RoutingProtocol extends Protocol {
       }
     }
   }
-
+  
   private class ScanLocalSystem implements Runnable{
     public void run(){
       try{
@@ -137,12 +149,17 @@ public class RoutingProtocol extends Protocol {
     LOGGER.debug("Exchanging routing table for peer: " + myLocalPeerId);
     for(RoutingTableEntry theEntry : myRoutingTable.getEntries()){
       Peer thePeer = theEntry.getPeer();
-      if(thePeer.getPeerId() != myLocalPeerId){
+      if(myUnreachablePeerIds.contains( thePeer.getPeerId())){
+        //simulate an unreachable peer, set the responding indicator to false
+        theEntry.setResponding( false );
+      } else if(thePeer.getPeerId() != myLocalPeerId){
         try {
           String theTable = thePeer.send( createMessage( Command.REQUEST_TABLE.name() ) );
           RoutingTable theRemoteTable = (RoutingTable)XMLTools.fromXML( theTable );
           myRoutingTable.merge( theRemoteTable );
           theEntry.setResponding( true );
+          //we can connect directly to this peer, so the hop distance is 1
+          theEntry.setHopDistance( 1 );
         } catch ( Exception e ) {
           //we cannot reach this peer, set it to non responding
           theEntry.setResponding( false );
