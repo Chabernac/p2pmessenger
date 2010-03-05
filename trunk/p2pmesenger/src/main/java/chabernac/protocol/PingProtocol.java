@@ -5,6 +5,10 @@
 package chabernac.protocol;
 
 public class PingProtocol extends Protocol {
+  
+  private static enum Command{ PING };
+  private static enum Response{ PONG, UNKNOWN_COMMAND };  
+  
 
   public PingProtocol (  ) {
     super( "PIN" );
@@ -18,11 +22,11 @@ public class PingProtocol extends Protocol {
   @Override
   protected String handleCommand( long aSessionId, String anInput ) {
     String theCommand = new String(anInput);
-    if("ping".equalsIgnoreCase( theCommand )){
-      return "pong";
+    if(Command.PING.name().equalsIgnoreCase( theCommand )){
+      return Response.PONG.name();
     }
     
-    return "unknwown command";
+    return Response.UNKNOWN_COMMAND.name();
   }
 
 }
