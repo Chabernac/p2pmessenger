@@ -14,7 +14,14 @@ public class RoutingTableEntry {
 	private int myHopDistance = 1000;
   
 	//indicates if this peer is responding
+	//when false this mean we cannot directly contact this peer, but
+	//it might still be possible that it is reachable trough another peer
 	private boolean isResponding = false;
+	
+	//indicates if the peer is reachable
+	//i.e. that is responds to ping requests.
+	//it can be that the peer is not directly reachable but through a gateway 
+	private boolean isReachable = false;
 
 	//the gateway for accessing this peer.  this is the same as the target peer
 	//if the target peer can be reached directly
@@ -69,6 +76,14 @@ public class RoutingTableEntry {
     isResponding = anIsResponding;
   }
   
+  public boolean isReachable() {
+    return isReachable;
+  }
+
+  public void setReachable( boolean anIsReachable ) {
+    isReachable = anIsReachable;
+  }
+
   public String toString(){
     return "<PeerEntry peerid='" + myPeer.getPeerId() + "' hopDistance='" + myHopDistance + "' responding='" + isResponding + "' gateway='" + myGateway.getPeerId() + "'/>";
   }
