@@ -6,23 +6,15 @@ package chabernac.protocol.routing;
 
 
 public class RoutingTableEntry {
+  public static int MAX_HOP_DISTANCE = 6;
+  
 	//the peer for which this is an entry
 	private Peer myPeer = null;
 
 	//the hop distance of the peer.  this indicates how many peers must 
 	//be travelled to reach the destination peer
-	private int myHopDistance = 1000;
+	private int myHopDistance = MAX_HOP_DISTANCE;
   
-	//indicates if this peer is responding
-	//when false this mean we cannot directly contact this peer, but
-	//it might still be possible that it is reachable trough another peer
-	private boolean isResponding = false;
-	
-	//indicates if the peer is reachable
-	//i.e. that is responds to ping requests.
-	//it can be that the peer is not directly reachable but through a gateway 
-	private boolean isReachable = false;
-
 	//the gateway for accessing this peer.  this is the same as the target peer
 	//if the target peer can be reached directly
 	private Peer myGateway = null;
@@ -50,6 +42,9 @@ public class RoutingTableEntry {
 
 	public void setHopDistance( int anHopDistance ) {
 		myHopDistance = anHopDistance;
+		if(myHopDistance == 1){
+		  myGateway = myPeer;
+		}
 	}
 
 	public Peer getGateway() {
@@ -69,22 +64,15 @@ public class RoutingTableEntry {
 	}
 
   public boolean isResponding() {
-    return isResponding;
+    return myHopDistance <= 1 && myGateway == myPeer;
   }
 
-  public void setResponding( boolean anIsResponding ) {
-    isResponding = anIsResponding;
-  }
-  
   public boolean isReachable() {
-    return isReachable;
+    return myHopDistance < MAX_HOP_DISTANCE;
   }
 
-  public void setReachable( boolean anIsReachable ) {
-    isReachable = anIsReachable;
-  }
 
   public String toString(){
-    return "<PeerEntry peerid='" + myPeer.getPeerId() + "' hopDistance='" + myHopDistance + "' responding='" + isResponding + "' gateway='" + myGateway.getPeerId() + "'/>";
+    return "<PeerEntry peerid='" + myPeer.getPeerId() + "' hopDistance='" + myHopDistance + "' gateway='" + myGateway.getPeerId() + "'/>";
   }
 }

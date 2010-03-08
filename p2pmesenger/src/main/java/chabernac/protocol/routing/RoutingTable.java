@@ -33,21 +33,20 @@ public class RoutingTable implements Iterable< RoutingTableEntry >{
   }
   
   public synchronized void addRoutingTableEntry(RoutingTableEntry anEntry){
+    addRoutingTableEntry( getLocalPeerId(), anEntry );
+  }
+  
+  public synchronized void addRoutingTableEntry(long aContainingPeerEntry, RoutingTableEntry anEntry){
     if(myRoutingTable.containsKey( anEntry.getPeer().getPeerId() )){
       RoutingTableEntry thePeerEntry = myRoutingTable.get( anEntry.getPeer().getPeerId() );
-      if(anEntry.closerThen( thePeerEntry ) || (!thePeerEntry.isResponding() && anEntry.isResponding())){
+
+      //if the gateway of the local entry is the same as the peer from which the entry comes, then that entry is the most accurate
+      //so upate the table
+      if(thePeerEntry.getGateway().getPeerId() == aContainingPeerEntry || anEntry.closerThen( thePeerEntry )){
         myRoutingTable.put( anEntry.getPeer().getPeerId(), anEntry );
-        if(!thePeerEntry.isResponding()){
-          //if the entry is repsonding for the remote system but not for the local system
-          //then set it to non responding as this is the real situation.
-          //this way we now the local system can not reach the peer directly but only trough the gateway
-          anEntry.setResponding( false );
-        }
-        
-        //copy the responding flag from our entry to the new entry
-        anEntry.setResponding( thePeerEntry.isResponding() );
-        LOGGER.debug( "Updated routing table entry to routing table for peer: " + myLocalPeerId + " : "  + anEntry);
       }
+      
+      LOGGER.debug( "Updated routing table entry to routing table for peer: " + myLocalPeerId + " : "  + anEntry);
     } else {
       myRoutingTable.put(anEntry.getPeer().getPeerId(), anEntry);
       LOGGER.debug( "Added a new routing table entry to routing table for peer: " + myLocalPeerId + " : "  + anEntry);
@@ -60,7 +59,7 @@ public class RoutingTable implements Iterable< RoutingTableEntry >{
     return myRoutingTable.get( aPeer ).getGateway();
   }
   
-  public Peer obtainLocalPeer() throws SocketException {
+  public synchronized Peer obtainLocalPeer() throws SocketException {
     if(!myRoutingTable.containsKey( myLocalPeerId )){
       Peer theLocalPeer = new Peer( myLocalPeerId );
       theLocalPeer.detectLocalInterfaces();
@@ -88,7 +87,7 @@ public class RoutingTable implements Iterable< RoutingTableEntry >{
       theEntry.setGateway( anotherRoutingTable.obtainLocalPeer() );
       //increment the hop distance
       theEntry.incrementHopDistance();
-      addRoutingTableEntry( theEntry );
+      addRoutingTableEntry(anotherRoutingTable.getLocalPeerId(), theEntry );
     }
   }
   
@@ -96,12 +95,22 @@ public class RoutingTable implements Iterable< RoutingTableEntry >{
     return Collections.unmodifiableList(  new ArrayList< RoutingTableEntry >(myRoutingTable.values()) );
   }
 
+  /**
+   * this method is necessar for being able to serialize the table 
+   * but you should not use it as it is not thread safe.
+   * @return
+   * @deprecated
+   */
   public Map< Long, RoutingTableEntry > getRoutingTable() {
-    return myRoutingTable;
+    return new HashMap< Long, RoutingTableEntry >(myRoutingTable);
   }
 
   public void setRoutingTable( Map< Long, RoutingTableEntry > anRoutingTable ) {
     myRoutingTable = anRoutingTable;
+  }
+
+  public synchronized RoutingTableEntry getEntryForPeer( long aPeerId ) {
+    return myRoutingTable.get( aPeerId );
   }
 }
  

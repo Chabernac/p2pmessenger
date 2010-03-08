@@ -51,16 +51,17 @@ public class RoutingTableTest extends TestCase {
 
     Peer thePeer = new Peer(2, "localhost", 1002);
     RoutingTableEntry theEntry = new RoutingTableEntry(thePeer, 1, thePeer);
-    theEntry.setResponding(false);
-    RoutingTableEntry theEntry2 = new RoutingTableEntry(thePeer, 2, thePeer);
-    theEntry2.setResponding(true);
+    
+    RoutingTableEntry theEntry2 = new RoutingTableEntry(thePeer, RoutingTableEntry.MAX_HOP_DISTANCE, thePeer);
+    
+    assertFalse( theEntry2.isResponding() );
     
     theTable.addRoutingTableEntry(theEntry);
     theTable.addRoutingTableEntry(theEntry2);
     
     assertEquals(1, theTable.getEntries().size());
     
-    assertEquals(theEntry2, theTable.getEntries().get(0));
+    assertEquals(theEntry, theTable.getEntries().get(0));
   }
   
   
@@ -68,12 +69,10 @@ public class RoutingTableTest extends TestCase {
     RoutingTable theTable = new RoutingTable(1);
 
     Peer thePeer = new Peer(2, 1002);
-    RoutingTableEntry theEntry = new RoutingTableEntry(thePeer, 1, thePeer);
-    theEntry.setResponding(false);
+    RoutingTableEntry theEntry = new RoutingTableEntry(thePeer, RoutingTableEntry.MAX_HOP_DISTANCE, thePeer);
     
     Peer thePeer2 = new Peer(2, 1003);
     RoutingTableEntry theEntry2 = new RoutingTableEntry(thePeer2, 2, thePeer);
-    theEntry2.setResponding(true);
     
     theTable.addRoutingTableEntry(theEntry);
     theTable.addRoutingTableEntry(theEntry2);

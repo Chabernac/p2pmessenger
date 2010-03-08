@@ -64,4 +64,8 @@ public class MessageProtocol extends Protocol {
     } 
   }
 
+  @Override
+  protected void stopProtocol() {
+  }
+
 }

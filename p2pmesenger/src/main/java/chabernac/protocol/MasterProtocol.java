@@ -30,4 +30,8 @@ public class MasterProtocol extends Protocol {
     return "Master protocol";
   }
 
+  @Override
+  protected void stopProtocol() {
+  }
+
 }
