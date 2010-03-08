@@ -38,8 +38,7 @@ public class RoutingProtocol extends Protocol {
   private static enum Status { UNKNOWN_COMMAND };
 
   private RoutingTable myRoutingTable = null;
-  private long myLocalPeerId;
-  
+
   private long myExchangeDelay;
   
   //this counter has just been added for unit testing reasons
@@ -47,6 +46,8 @@ public class RoutingProtocol extends Protocol {
   
   //this list is for test reasons to simulate peers which can not reach each other
   private List<Long> myUnreachablePeerIds = new ArrayList< Long >();
+  
+  private ScheduledExecutorService mySheduledService = null;
 
   /**
    * 
@@ -54,22 +55,20 @@ public class RoutingProtocol extends Protocol {
    * @param aRoutingTable
    * @param anExchangeDelay the delay in seconds between exchaning routing tables with other peers
    */
-  public RoutingProtocol ( long aLocalPeerId, RoutingTable aRoutingTable, long anExchangeDelay ) {
+  public RoutingProtocol ( RoutingTable aRoutingTable, long anExchangeDelay ) {
     super( "ROU" );
     myRoutingTable = aRoutingTable;
-    myLocalPeerId = aLocalPeerId;
     myExchangeDelay = anExchangeDelay;
-    scanLocalSystem();
-    scheduleRoutingTableExchange();
+    loadRoutingTable();
+    new Thread(new ScanLocalSystem()).start();
+    if(anExchangeDelay > 0 ) scheduleRoutingTableExchange();
   }
 
-  public void scanLocalSystem(){
-    new Thread(new ScanLocalSystem()).start();
-  }
 
   private void scheduleRoutingTableExchange(){
-    ScheduledExecutorService theService = Executors.newScheduledThreadPool( 1 );
-    theService.scheduleWithFixedDelay( new ExchangeRoutingTable(), 2, myExchangeDelay, TimeUnit.SECONDS);
+    mySheduledService = Executors.newScheduledThreadPool( 1 );
+    mySheduledService.scheduleWithFixedDelay( new ScanLocalSystem(), 1, myExchangeDelay, TimeUnit.SECONDS);
+    mySheduledService.scheduleWithFixedDelay( new ExchangeRoutingTable(), 2, myExchangeDelay, TimeUnit.SECONDS);
 
   }
 
@@ -95,7 +94,7 @@ public class RoutingProtocol extends Protocol {
     } else if(theCommand == Command.WHO_ARE_YOU){
       //another peer requested my peer id, send it to him, this is also used
       //to check if I'm still alive and kicking
-      return Long.toString( myLocalPeerId );
+      return Long.toString( myRoutingTable.getLocalPeerId() );
     }
     return Status.UNKNOWN_COMMAND.name();
   }
@@ -108,7 +107,7 @@ public class RoutingProtocol extends Protocol {
     private List<String> myHosts;
     private int myPort;
 
-    public ScanSystem ( List<String> aHosts, int anPort ) {
+    public ScanSystem ( List<String> aHosts, int anPort) {
       super();
       myHosts = aHosts;
       myPort = anPort;
@@ -119,26 +118,37 @@ public class RoutingProtocol extends Protocol {
       try{
         Peer thePeer = new Peer(-1, myHosts, myPort);
         String theId = thePeer.send( createMessage( Command.WHO_ARE_YOU.name() ));
-        thePeer.setPeerId( Long.parseLong( theId ) );
-        RoutingTableEntry theEntry = new RoutingTableEntry(thePeer, 1, thePeer);
-        theEntry.setResponding( true );
-        myRoutingTable.addRoutingTableEntry( theEntry );
+        long thePeerdId = Long.parseLong( theId );
+        if(!myUnreachablePeerIds.contains( thePeerdId )){
+          thePeer.setPeerId( thePeerdId );
+          RoutingTableEntry theEntry = new RoutingTableEntry(thePeer, 1, thePeer);
+          
+          //only if we have detected our self we set the hop distance to 0
+          if(thePeerdId == myRoutingTable.getLocalPeerId()){
+            theEntry.setHopDistance( 0 );
+          }
+          myRoutingTable.addRoutingTableEntry( myRoutingTable.getLocalPeerId(), theEntry );
+        }
       }catch(Exception e){
       }
     }
   }
   
+  public void scanLocalSystem(){
+    try{
+      List<String> theLocalHosts = NetTools.getLocalExposedIpAddresses();
+      ExecutorService theService = Executors.newFixedThreadPool( 20 );
+      for(int i=START_PORT;i<=END_PORT;i++){
+        theService.execute( new  ScanSystem(theLocalHosts, i));
+      }
+    }catch(SocketException e){
+      LOGGER.error( "Could not get local ip addressed", e );
+    }  
+  }
+  
   private class ScanLocalSystem implements Runnable{
     public void run(){
-      try{
-        List<String> theLocalHosts = NetTools.getLocalExposedIpAddresses();
-        ExecutorService theService = Executors.newFixedThreadPool( 20 );
-        for(int i=START_PORT;i<=END_PORT;i++){
-          theService.execute( new  ScanSystem(theLocalHosts, i));
-        }
-      }catch(SocketException e){
-        LOGGER.error( "Could not get local ip addressed", e );
-      }
+      scanLocalSystem();
     }
   }
 
@@ -146,27 +156,32 @@ public class RoutingProtocol extends Protocol {
    * this method will send a request to all the peers in the routing table
    */
   public void exchangeRoutingTable(){
-    LOGGER.debug("Exchanging routing table for peer: " + myLocalPeerId);
+    LOGGER.debug("Exchanging routing table for peer: " + myRoutingTable.getLocalPeerId());
+    
     for(RoutingTableEntry theEntry : myRoutingTable.getEntries()){
       Peer thePeer = theEntry.getPeer();
       if(myUnreachablePeerIds.contains( thePeer.getPeerId())){
         //simulate an unreachable peer, set the responding indicator to false
-        theEntry.setResponding( false );
-      } else if(thePeer.getPeerId() != myLocalPeerId){
+        theEntry.setHopDistance(  RoutingTableEntry.MAX_HOP_DISTANCE );
+      } else if(thePeer.getPeerId() != myRoutingTable.getLocalPeerId()){
         try {
           String theTable = thePeer.send( createMessage( Command.REQUEST_TABLE.name() ) );
           RoutingTable theRemoteTable = (RoutingTable)XMLTools.fromXML( theTable );
           myRoutingTable.merge( theRemoteTable );
-          theEntry.setResponding( true );
           //we can connect directly to this peer, so the hop distance is 1
           theEntry.setHopDistance( 1 );
         } catch ( Exception e ) {
-          //we cannot reach this peer, set it to non responding
-          theEntry.setResponding( false );
+          //update all peers which have this peer as gateway to the max hop distance
+          for(RoutingTableEntry theEntry2 : myRoutingTable.getEntries()){
+            if(theEntry2.getGateway().getPeerId() == theEntry.getPeer().getPeerId()){
+              theEntry2.setHopDistance( RoutingTableEntry.MAX_HOP_DISTANCE );
+            }
+          }
         }
       }
     }
     myExchangeCounter.incrementAndGet();
+    LOGGER.debug("End exchanging routing table for peer: " + myRoutingTable.getLocalPeerId());
   }
   
   public long getExchangeCounter(){
@@ -179,5 +194,22 @@ public class RoutingProtocol extends Protocol {
     public void run() {
       exchangeRoutingTable();
     }
+  }
+  
+  private void loadRoutingTable(){
+    
+  }
+  
+  private void saveRoutingTable(){
+    
+  }
+
+  @Override
+  protected void stopProtocol() {
+    if(mySheduledService != null){
+      mySheduledService.shutdown();
+    }
+    
+    saveRoutingTable();
   }
 }

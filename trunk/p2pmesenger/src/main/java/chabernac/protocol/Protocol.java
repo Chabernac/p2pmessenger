@@ -38,6 +38,7 @@ public abstract class Protocol {
    * @return
    */
   protected abstract String handleCommand(long aSessionId, String anInput);
+  protected abstract void stopProtocol();
   
   public String handle(long aSessionId, String  anInput){
     Protocol theProtocol = findMatchingProtocol(anInput);
@@ -117,5 +118,14 @@ public abstract class Protocol {
       theBuilder.append("}");
     }
     return theBuilder.toString();
+  }
+  
+  public final void stop(){
+    stopProtocol();
+    if(mySubProtocols != null){
+      for(Protocol theProtocol : mySubProtocols.values()){
+        theProtocol.stop();
+      }
+    }
   }
 }

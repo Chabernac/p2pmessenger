@@ -29,4 +29,8 @@ public class PingProtocol extends Protocol {
     return Response.UNKNOWN_COMMAND.name();
   }
 
+  @Override
+  protected void stopProtocol() {
+  }
+
 }

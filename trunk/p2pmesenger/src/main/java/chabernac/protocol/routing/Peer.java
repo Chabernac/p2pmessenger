@@ -100,6 +100,7 @@ public class Peer {
     for(Iterator< String > i = myHost.iterator(); i.hasNext() && !send;){
       String theHost = i.next();
       Socket theSocket = new Socket(theHost, myPort);
+      theSocket.setSoTimeout( 1000 );
       PrintWriter theWriter = null;
       BufferedReader theReader = null;
       try{
@@ -116,7 +117,7 @@ public class Peer {
           myHost.remove( theHost );
           myHost.add( 0, theHost );
         }
-        
+        theSocket.close();
         return theReturnMessage;
       }finally{
         if(theWriter != null){

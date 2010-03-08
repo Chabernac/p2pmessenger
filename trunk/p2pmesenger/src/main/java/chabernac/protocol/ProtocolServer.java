@@ -25,8 +25,8 @@ public class ProtocolServer implements Runnable{
   private int myPort;
   private int myNumberOfThreads;
   private Protocol myProtocol = null;
-  private boolean stop = false;
   private boolean isStarted = false;
+  private ServerSocket myServerSocket = null;
 
   private Object LOCK = new Object();
 
@@ -50,13 +50,19 @@ public class ProtocolServer implements Runnable{
   }
 
   public void stop(){
-    stop = true;
+    try {
+      if(myServerSocket != null){
+        myServerSocket.close();
+      }
+    } catch ( IOException e ) {
+    }
+    myProtocol.stop();
   }
 
   @Override
   public void run() {
     try{
-      ServerSocket theServerSocket = new ServerSocket(myPort);
+      myServerSocket = new ServerSocket(myPort);
 
       synchronized ( LOCK ) {
         isStarted = true;
@@ -65,8 +71,8 @@ public class ProtocolServer implements Runnable{
 
       ExecutorService theClientHandlerService = Executors.newFixedThreadPool( myNumberOfThreads );
 
-      while(!stop){ 
-        Socket theClientSocket = theServerSocket.accept();
+      while(true){ 
+        Socket theClientSocket = myServerSocket.accept();
         theClientHandlerService.execute( new ClientSocketHandler(theClientSocket) );
       }
     }catch(Exception e){
