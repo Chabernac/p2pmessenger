@@ -29,7 +29,8 @@ import chabernac.tools.StringTools;
  * 
  * The pipe protocol will make use of routing table to create the streams trough the network
  * 
- //TODO write test for Pipe protocol 
+ *  //TODO test first if the other peer has the pipe protocol 
+ *  //TODO write test for Pipe protocol
  */
 public class PipeProtocol extends Protocol {
   private Logger LOGGER = Logger.getLogger(PipeProtocol.class);
