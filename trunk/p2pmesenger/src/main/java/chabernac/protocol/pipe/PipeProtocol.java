@@ -18,6 +18,7 @@ import chabernac.protocol.Protocol;
 import chabernac.protocol.routing.Peer;
 import chabernac.protocol.routing.RoutingTable;
 import chabernac.protocol.routing.RoutingTableEntry;
+import chabernac.protocol.routing.UnkwownPeerException;
 import chabernac.tools.IOTools;
 import chabernac.tools.NetTools;
 import chabernac.tools.StringTools;
@@ -84,7 +85,9 @@ public class PipeProtocol extends Protocol {
       } else {
         try{
           ServerSocket theSocket = NetTools.openServerSocket(PIPE_PORT);
+          LOGGER.debug("Opening server socket on peer: '" + myRoutingTable.getLocalPeerId() + "' with port: '" + theSocket.getLocalPort() + "'");
           myServerSocketExecutor.submit( new ServerSocketHandler(theSocket, Long.parseLong(thePeerIds[0]), Long.parseLong(thePeerIds[1])));
+          Thread.yield();
           return Result.SOCKET_OPENED.name() + " " + Integer.toString( theSocket.getLocalPort() );
         }catch(Exception e){
           return Result.SOCKET_FAILURE.name();
@@ -107,7 +110,7 @@ public class PipeProtocol extends Protocol {
     myServerSocketExecutor.shutdownNow();
   }
 
-  public void openPipe(Pipe aPipe) throws IOException{
+  public void openPipe(Pipe aPipe) throws IOException, UnkwownPeerException{
     aPipe.setSocket( openSocketToPeer( myRoutingTable.obtainLocalPeer(), aPipe.getPeer() ) );
   }
 
@@ -120,8 +123,9 @@ public class PipeProtocol extends Protocol {
     }
   }
   
-  private Socket openSocketToPeer(Peer aFromPeer, Peer aToPeer) throws IOException{
-    String theResult = aFromPeer.send( createMessage( Command.OPEN_SOCKET + " " + aFromPeer.getPeerId()  + " " + aToPeer.getPeerId()) );
+  private Socket openSocketToPeer(Peer aFromPeer, Peer aToPeer) throws IOException, UnkwownPeerException{
+    Peer theGateway = myRoutingTable.getGatewayForPeer(aToPeer);
+    String theResult = theGateway.send( createMessage( Command.OPEN_SOCKET + " " + aFromPeer.getPeerId()  + " " + aToPeer.getPeerId()) );
     
     if(!theResult.startsWith( Result.SOCKET_OPENED.name() )){
       LOGGER.error("Socket with peer '" + aFromPeer.getPeerId() +  "' could not be openend: " + theResult);
