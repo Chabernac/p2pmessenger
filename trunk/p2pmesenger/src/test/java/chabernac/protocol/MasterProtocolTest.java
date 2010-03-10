@@ -6,6 +6,8 @@ package chabernac.protocol;
 
 import org.apache.log4j.BasicConfigurator;
 
+import chabernac.protocol.ping.PingProtocol;
+
 import junit.framework.TestCase;
 
 public class MasterProtocolTest extends TestCase {

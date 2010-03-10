@@ -5,8 +5,9 @@
 package chabernac.protocol;
 
 import junit.framework.TestCase;
-import chabernac.protocol.PingProtocol.Command;
-import chabernac.protocol.PingProtocol.Response;
+import chabernac.protocol.ping.PingProtocol;
+import chabernac.protocol.ping.PingProtocol.Command;
+import chabernac.protocol.ping.PingProtocol.Response;
 
 public class PingProtocolTest extends TestCase {
   public void testPingProtocol(){

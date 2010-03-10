@@ -34,7 +34,7 @@ public class RoutingProtocol extends Protocol {
   public static final int START_PORT = 12700;
   public static final int END_PORT = 12720;
 
-  private static enum Command { REQUEST_TABLE, WHO_ARE_YOU };
+  private static enum Command { REQUEST_TABLE, WHO_ARE_YOU, ANNOUNCEMENT };
   private static enum Status { UNKNOWN_COMMAND };
 
   private RoutingTable myRoutingTable = null;
@@ -87,7 +87,11 @@ public class RoutingProtocol extends Protocol {
 
   @Override
   protected String handleCommand( long aSessionId, String anInput ) {
-    Command theCommand = Command.valueOf( anInput );
+    int theFirstIndexOfSpace = anInput.indexOf( " " );
+    if(theFirstIndexOfSpace == -1) theFirstIndexOfSpace = anInput.length();
+    String theCommandString = anInput.substring( 0,  theFirstIndexOfSpace);
+    
+    Command theCommand = Command.valueOf( theCommandString );
     if(theCommand == Command.REQUEST_TABLE){
       //another peer has send a request for the routing protocol send it
       return XMLTools.toXML( myRoutingTable );
@@ -95,6 +99,14 @@ public class RoutingProtocol extends Protocol {
       //another peer requested my peer id, send it to him, this is also used
       //to check if I'm still alive and kicking
       return Long.toString( myRoutingTable.getLocalPeerId() );
+    } else if(theCommand == Command.ANNOUNCEMENT){
+      //the announcement is of the peer which is sending the annoucement
+      //so the peer id inside the routingtable entry is also the containing peer
+      String thePeerEntry = anInput.substring( theFirstIndexOfSpace + 1 );
+      RoutingTableEntry theEntry = (RoutingTableEntry)XMLTools.fromXML( thePeerEntry );
+      theEntry.incrementHopDistance();
+      myRoutingTable.addRoutingTableEntry( theEntry.getPeer().getPeerId(), theEntry);
+      return XMLTools.toXML( myRoutingTable );
     }
     return Status.UNKNOWN_COMMAND.name();
   }
@@ -165,7 +177,8 @@ public class RoutingProtocol extends Protocol {
         theEntry.setHopDistance(  RoutingTableEntry.MAX_HOP_DISTANCE );
       } else if(thePeer.getPeerId() != myRoutingTable.getLocalPeerId()){
         try {
-          String theTable = thePeer.send( createMessage( Command.REQUEST_TABLE.name() ) );
+          String theTable = thePeer.send( createMessage( Command.ANNOUNCEMENT.name() + " "  + XMLTools.toXML( myRoutingTable.getEntryForLocalPeer() ))) ;
+//          String theTable = thePeer.send( createMessage( Command.REQUEST_TABLE.name() ));
           RoutingTable theRemoteTable = (RoutingTable)XMLTools.fromXML( theTable );
           myRoutingTable.merge( theRemoteTable );
           //we can connect directly to this peer, so the hop distance is 1
