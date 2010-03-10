@@ -130,4 +130,14 @@ public class Peer {
     }
     throw new UnknownHostException("No hosts for this peer");
   }
+  
+  public Socket createSocket(int aPort){
+    for(Iterator< String > i = myHost.iterator(); i.hasNext();){
+      try{
+        Socket theSocket = new Socket(i.next(), aPort);
+        return theSocket;
+      }catch(Exception e){}
+    }
+    return null;
+  }
 }
