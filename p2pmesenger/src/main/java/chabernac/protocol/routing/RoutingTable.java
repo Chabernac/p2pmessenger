@@ -44,9 +44,9 @@ public class RoutingTable implements Iterable< RoutingTableEntry >{
       //so upate the table
       if(thePeerEntry.getGateway().getPeerId() == aContainingPeerEntry || anEntry.closerThen( thePeerEntry )){
         myRoutingTable.put( anEntry.getPeer().getPeerId(), anEntry );
+        LOGGER.debug( "Updated routing table entry to routing table for peer: " + myLocalPeerId + " : "  + anEntry);
       }
       
-      LOGGER.debug( "Updated routing table entry to routing table for peer: " + myLocalPeerId + " : "  + anEntry);
     } else {
       myRoutingTable.put(anEntry.getPeer().getPeerId(), anEntry);
       LOGGER.debug( "Added a new routing table entry to routing table for peer: " + myLocalPeerId + " : "  + anEntry);
@@ -54,9 +54,9 @@ public class RoutingTable implements Iterable< RoutingTableEntry >{
   }
   
   public synchronized Peer getGatewayForPeer(Peer aPeer) throws UnkwownPeerException{
-    if(!myRoutingTable.containsKey( aPeer )) throw new UnkwownPeerException(aPeer, "Peer with id: " + aPeer.getPeerId() + " is not kwown in the routintble");
+    if(!myRoutingTable.containsKey( aPeer.getPeerId() )) throw new UnkwownPeerException(aPeer, "Peer with id: " + aPeer.getPeerId() + " is not kwown in the routingtable");
     
-    return myRoutingTable.get( aPeer ).getGateway();
+    return myRoutingTable.get( aPeer.getPeerId() ).getGateway();
   }
   
   public synchronized Peer obtainLocalPeer() throws SocketException {

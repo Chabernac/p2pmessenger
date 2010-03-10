@@ -8,6 +8,7 @@ import chabernac.protocol.MasterProtocol;
 import chabernac.protocol.ProtocolServer;
 import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.RoutingTable;
+import chabernac.protocol.routing.UnkwownPeerException;
 import chabernac.tools.IOTools;
 import junit.framework.TestCase;
 
@@ -17,7 +18,7 @@ public class PipeProtocolTest extends TestCase {
     BasicConfigurator.configure();
   }
   
-  public void testPipeProtocol() throws InterruptedException, IOException{
+  public void testPipeProtocol() throws InterruptedException, IOException, UnkwownPeerException{
     //p1 <--> p2 <--> p3 peer 1 cannot reach peer 3
 
     RoutingTable theRoutingTable1 = new RoutingTable(1);
