@@ -25,6 +25,10 @@ import chabernac.tools.XMLTools;
  *  - send it's own routing table to all known peers in the routing table
  *  - update the routing table with the items received from another peer.  in this process the fasted path to a peer must be stored in the routing table
  *  - periodically contact all peers to see if they are still online and retrieve the routing table of the other peer.
+ *  
+ *  //TODO if a peer is not reachable and no other peers on the same host are reachable
+ *  a periodically port scan must happen on this host. If one peer is found the scan must stop.
+ *  all the peers no the remote system will be found because of the local port scan on the other host.
  * 
  */
 

@@ -13,6 +13,10 @@ import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.RoutingTable;
 import chabernac.protocol.routing.RoutingTableEntry;
 
+/**
+ //TODO test loading ans saving of the routing table
+ //TODO test remote port scan if all peers on the same host are not online
+ */
 public class RoutingProtocolTest extends TestCase {
 
   public void setUp(){

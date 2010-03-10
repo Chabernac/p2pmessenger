@@ -5,13 +5,25 @@
 package chabernac.tools;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 public class IOTools {
   public void writeObjectToFile(File aFile, Object anObject){
-    
+    //TODO implement writeObjectToFile
   }
   
   public Object loadObjectFromFile(File aFile){
+    //TODO implement loadObjectFromFile
     return null;
+  }
+  
+  public static void copyStream(InputStream anInputStream, OutputStream anOutputStream) throws IOException{
+    byte[] theBytes = new byte[1024];
+    int length;
+    while((length = anInputStream.read(theBytes)) != -1){
+      anOutputStream.write(theBytes, 0, length);
+    }
   }
 }
