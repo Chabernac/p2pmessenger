@@ -36,4 +36,11 @@ public class XMLToolsTest extends TestCase {
 
   }
   
+  public void testPeerEntryToXML(){
+    Peer thePeer = new Peer(2, "x20d1148", 1002);
+    RoutingTableEntry theEntry = new RoutingTableEntry(thePeer, 1, thePeer);
+    RoutingTableEntry theEntry2 = (RoutingTableEntry)XMLTools.fromXML( XMLTools.toXML( theEntry ));
+    assertEquals( theEntry.getPeer().getPeerId(), theEntry2.getPeer().getPeerId()); 
+  }
+  
 }

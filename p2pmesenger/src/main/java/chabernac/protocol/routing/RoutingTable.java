@@ -112,5 +112,9 @@ public class RoutingTable implements Iterable< RoutingTableEntry >{
   public synchronized RoutingTableEntry getEntryForPeer( long aPeerId ) {
     return myRoutingTable.get( aPeerId );
   }
+  
+  public synchronized RoutingTableEntry getEntryForLocalPeer( ) {
+    return myRoutingTable.get( getLocalPeerId() );
+  }
 }
  

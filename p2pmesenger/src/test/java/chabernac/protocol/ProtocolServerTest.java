@@ -16,6 +16,7 @@ import junit.framework.TestCase;
 
 import org.apache.log4j.BasicConfigurator;
 
+import chabernac.protocol.ping.PingProtocol;
 import chabernac.protocol.routing.Peer;
 
 public class ProtocolServerTest extends TestCase {
