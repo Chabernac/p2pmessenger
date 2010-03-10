@@ -28,6 +28,8 @@ import chabernac.tools.StringTools;
  * This could be used to transfer large content between 2 peers like files.
  * 
  * The pipe protocol will make use of routing table to create the streams trough the network
+ * 
+ //TODO write test for Pipe protocol 
  */
 public class PipeProtocol extends Protocol {
   private Logger LOGGER = Logger.getLogger(PipeProtocol.class);
@@ -154,8 +156,7 @@ public class PipeProtocol extends Protocol {
           myPipeListener.incomingPipe( thePipe );
         } else {
 
-          //TODO we are just a go between peer rerout the pipe to the destination
-        
+          //we are just a go between peer rerout the pipe to the destination
           theOutSocket = openSocketToPeer( myRoutingTable.getEntryForPeer( myToPeerId ).getGateway() );
           if(theOutSocket == null){
             throw new IOException("Out socket with peer: '" + myToPeerId + "' could not be created");
