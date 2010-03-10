@@ -1,6 +1,7 @@
 package chabernac.protocol;
 
 import junit.framework.TestCase;
+import chabernac.protocol.ping.PingProtocol;
 
 public class ProtocolTest extends TestCase {
   public void testCreateMessage(){
