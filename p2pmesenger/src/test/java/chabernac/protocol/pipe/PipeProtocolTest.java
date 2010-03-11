@@ -51,8 +51,8 @@ public class PipeProtocolTest extends TestCase {
     ProtocolServer theServer3 = new ProtocolServer(theProtocol3, RoutingProtocol.START_PORT + 2, 5);
 
 
-    theRoutingProtocol1.getUnreachablePeerIds().add( 3L );
-    theRoutingProtocol3.getUnreachablePeerIds().add( 1L );
+    theRoutingProtocol1.getLocalUnreachablePeerIds().add( 3L );
+    theRoutingProtocol3.getLocalUnreachablePeerIds().add( 1L );
 
     try{
       assertTrue( theServer1.start() );
