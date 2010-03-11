@@ -4,7 +4,11 @@
  */
 package chabernac.protocol;
 
+
 public class MasterProtocol extends Protocol {
+  public static enum Command{PROTOCOLS};
+  public static enum Result{UNKNOWN_COMMAND};
+  
 
   public MasterProtocol ( ) {
     super( "MAS" );
@@ -13,16 +17,10 @@ public class MasterProtocol extends Protocol {
   @Override
   protected String handleCommand( long aSessionId, String anInput ) {
     String theCommand = new String(anInput);
-    StringBuffer theReply = new StringBuffer();
-    if("protocols".equalsIgnoreCase( theCommand )){
-      for(Protocol theProtocol : mySubProtocols.values()){
-        theReply.append( theProtocol.getId() );
-        theReply.append( ":" );
-        theReply.append( theProtocol.getDescription() );
-        theReply.append( "|" );
-      }
+    if(Command.PROTOCOLS.name().equalsIgnoreCase( theCommand )){
+      return getProtocolsString();
     }
-    return theReply.toString();
+    return Result.UNKNOWN_COMMAND.name();
   }
 
   @Override
