@@ -268,6 +268,9 @@ public class RoutingProtocol extends Protocol {
     }
     myExchangeCounter.incrementAndGet();
     LOGGER.debug("End exchanging routing table for peer: " + myRoutingTable.getLocalPeerId());
+    
+    //save the routing table
+    if(isPersistRoutingTable) saveRoutingTable();
   }
 
   public long getExchangeCounter(){

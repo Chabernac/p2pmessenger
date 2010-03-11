@@ -366,7 +366,14 @@ public class RoutingProtocolTest extends TestCase {
     }
   }
   
-  public void testReachableSituation2() throws InterruptedException{
+  /**
+   * this test method tests if the remote system scan of the routing table works.
+   * unfurtunattelly this is not yet a perfect simulation of what will happen in the real world.
+   * but at least a part of the code is tested.
+   * 
+   * @throws InterruptedException
+   */
+  public void testScanRemoteSystem() throws InterruptedException{
 
     RoutingTable theRoutingTable1 = new RoutingTable(1);
     MasterProtocol theProtocol1 = new MasterProtocol();
