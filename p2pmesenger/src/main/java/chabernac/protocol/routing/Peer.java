@@ -19,26 +19,25 @@ import java.util.List;
 import chabernac.tools.NetTools;
 
 public class Peer {
-  private long myPeerId;
+  private String myPeerId;
   private List<String> myHost = null;
   private int myPort;
-  private String myProtocolString = null;
 
   public Peer (){}
   
-  public Peer(long aPeerId, int aPort) throws SocketException{
+  public Peer(String aPeerId, int aPort) throws SocketException{
     myPeerId = aPeerId;
     myPort = aPort;
     detectLocalInterfaces();
   }
 
-  public Peer(long aPeerId, List<String> aHosts, int aPort){
+  public Peer(String aPeerId, List<String> aHosts, int aPort){
     myPeerId = aPeerId;
     myHost = aHosts;
     myPort = aPort;
   }
   
-  public Peer(long aPeerId, String aHost, int aPort){
+  public Peer(String aPeerId, String aHost, int aPort){
     myPeerId = aPeerId;
     if(myHost == null){
       myHost = new ArrayList<String>();
@@ -47,7 +46,7 @@ public class Peer {
     myPort = aPort;
   }
 
-  public Peer ( long anPeerId ) {
+  public Peer (String anPeerId ) {
     super();
     myPeerId = anPeerId;
   }
@@ -69,11 +68,11 @@ public class Peer {
     myPort = anPort;
   }
 
-  public long getPeerId() {
+  public String getPeerId() {
     return myPeerId;
   }
 
-  public void setPeerId( long anPeerId ) {
+  public void setPeerId( String anPeerId ) {
     myPeerId = anPeerId;
   }
 
@@ -81,11 +80,11 @@ public class Peer {
     if(!(anObject instanceof Peer)) return false;
     Peer thePeer = (Peer)anObject;
 
-    return myPeerId == thePeer.getPeerId();
+    return myPeerId.equals(thePeer.getPeerId());
   }
 
   public int hashCode(){
-    return (int)myPeerId;
+    return myPeerId.hashCode();
   }
   /**
    * create socket

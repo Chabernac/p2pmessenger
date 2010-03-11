@@ -52,10 +52,10 @@ public class RoutingProtocol extends Protocol {
   private AtomicLong myExchangeCounter = new AtomicLong(0);
 
   //this list is for test reasons to simulate peers which can not reach each other locally 
-  private List<Long> myLocalUnreachablePeers = new ArrayList< Long >();
+  private List<String> myLocalUnreachablePeers = new ArrayList< String >();
 
   //this list is for test reasons to simulate peers which can not reach each other remotely
-  private List<Long> myRemoteUnreachablePeers = new ArrayList< Long >();
+  private List<String> myRemoteUnreachablePeers = new ArrayList< String >();
 
   private ScheduledExecutorService mySheduledService = null;
 
@@ -94,16 +94,12 @@ public class RoutingProtocol extends Protocol {
     return "Routing protocol";
   }
 
-  public List< Long > getLocalUnreachablePeerIds() {
+  public List< String > getLocalUnreachablePeerIds() {
     return myLocalUnreachablePeers;
   }
   
-  public List< Long > getRemoteUnreachablePeerIds() {
+  public List< String > getRemoteUnreachablePeerIds() {
     return myRemoteUnreachablePeers;
-  }
-
-  public void setUnreachablePeerIds( List< Long > anUnreachablePeerIds ) {
-    myLocalUnreachablePeers = anUnreachablePeerIds;
   }
 
   @Override
@@ -119,7 +115,7 @@ public class RoutingProtocol extends Protocol {
     } else if(theCommand == Command.WHO_ARE_YOU){
       //another peer requested my peer id, send it to him, this is also used
       //to check if I'm still alive and kicking
-      return Long.toString( myRoutingTable.getLocalPeerId() );
+      return myRoutingTable.getLocalPeerId();
     } else if(theCommand == Command.ANNOUNCEMENT){
       //the announcement is of the peer which is sending the annoucement
       //so the peer id inside the routingtable entry is also the containing peer
@@ -139,9 +135,9 @@ public class RoutingProtocol extends Protocol {
   private class ScanSystem implements Runnable{
     private List<String> myHosts;
     private int myPort;
-    private List<Long> myUnreachablePeers = null;
+    private List<String> myUnreachablePeers = null;
 
-    public ScanSystem ( List<String> aHosts, int anPort, List<Long> anUnreachablePeers) {
+    public ScanSystem ( List<String> aHosts, int anPort, List<String> anUnreachablePeers) {
       super();
       myHosts = aHosts;
       myPort = anPort;
@@ -150,21 +146,21 @@ public class RoutingProtocol extends Protocol {
 
     @Override
     public void run() {
-      Peer thePeer = new Peer(-1, myHosts, myPort);
+      Peer thePeer = new Peer(null, myHosts, myPort);
       contactPeer( thePeer, myUnreachablePeers );
     }
   }
 
-  private boolean contactPeer(Peer aPeer, List<Long> anUnreachablePeers){
+  private boolean contactPeer(Peer aPeer, List<String> anUnreachablePeers){
     try{
       String theId = aPeer.send( createMessage( Command.WHO_ARE_YOU.name() ));
-      long thePeerdId = Long.parseLong( theId );
-      if(!anUnreachablePeers.contains( thePeerdId )){
-        aPeer.setPeerId( thePeerdId );
+      
+      if(!anUnreachablePeers.contains( theId )){
+        aPeer.setPeerId( theId );
         RoutingTableEntry theEntry = new RoutingTableEntry(aPeer, 1, aPeer);
 
         //only if we have detected our self we set the hop distance to 0
-        if(thePeerdId == myRoutingTable.getLocalPeerId()){
+        if(theId.equals(myRoutingTable.getLocalPeerId())){
           theEntry.setHopDistance( 0 );
         }
         myRoutingTable.addRoutingTableEntry( myRoutingTable.getLocalPeerId(), theEntry );
@@ -177,6 +173,7 @@ public class RoutingProtocol extends Protocol {
 
   public void scanLocalSystem(){
     try{
+      LOGGER.debug( "Scanning local system" );
       List<String> theLocalHosts = NetTools.getLocalExposedIpAddresses();
       ExecutorService theService = Executors.newFixedThreadPool( 20 );
       for(int i=START_PORT;i<=END_PORT;i++){
@@ -197,7 +194,7 @@ public class RoutingProtocol extends Protocol {
     Map<String, Boolean> theHosts = new HashMap< String, Boolean >();
 
     for(RoutingTableEntry theEntry : myRoutingTable){
-      if(isExcludeLocal && theEntry.getPeer().getPeerId() != myRoutingTable.getLocalPeerId()){
+      if(isExcludeLocal && !theEntry.getPeer().getPeerId().equals(myRoutingTable.getLocalPeerId())){
         for(String theHost : theEntry.getPeer().getHosts()){
           boolean isReachable = false;
           if(theHosts.containsKey( theHost )){
@@ -217,7 +214,7 @@ public class RoutingProtocol extends Protocol {
           try{
             if(!isExcludeLocal || i!=myRoutingTable.obtainLocalPeer().getPort()){
               LOGGER.debug("Scanning the following host: '" + theHost + "' on port '" + i + "'");
-              isContacted = contactPeer( new Peer(-1, theHost, i), myRemoteUnreachablePeers );
+              isContacted = contactPeer( new Peer(null, theHost, i), myRemoteUnreachablePeers );
             }
           }catch(Exception e){}
         }

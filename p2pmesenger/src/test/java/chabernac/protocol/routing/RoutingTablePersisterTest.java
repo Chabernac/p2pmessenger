@@ -20,23 +20,23 @@ import chabernac.protocol.routing.RoutingTablePersister;
 
 public class RoutingTablePersisterTest extends TestCase {
   public void testPersistRoutingTable() throws IOException{
-    RoutingTable theTable = new RoutingTable(1);
+    RoutingTable theTable = new RoutingTable("1");
     
-    Peer thePeer1 = new Peer(1);
+    Peer thePeer1 = new Peer("1");
     List<String> theList = new ArrayList< String >();
     theList.add( "x20d1148" );
     theList.add( "localhost" );
     thePeer1.setPort( 123 );
     thePeer1.setHosts( theList );
     
-    Peer thePeer2 = new Peer(2);
+    Peer thePeer2 = new Peer("2");
     List<String> theList2 = new ArrayList< String >();
     theList2.add( "x20d1149" );
     theList2.add( "localhost" );
     thePeer2.setPort( 124 );
     thePeer2.setHosts( theList2 );
     
-    Peer thePeer3 = new Peer(3);
+    Peer thePeer3 = new Peer("3");
     List<String> theList3 = new ArrayList< String >();
     theList3.add( "x20d1150" );
     theList3.add( "localhost" );

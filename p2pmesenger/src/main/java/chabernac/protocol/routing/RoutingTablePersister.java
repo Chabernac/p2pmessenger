@@ -25,17 +25,17 @@ public class RoutingTablePersister implements iObjectPersister<RoutingTable> {
   public RoutingTable loadObject( InputStream anInputStream ) throws IOException {
     BufferedReader theReader = new BufferedReader(new InputStreamReader(anInputStream));
     String thePeerId = theReader.readLine().split( ";" )[1];
-    RoutingTable theTable = new RoutingTable(Integer.parseInt(thePeerId));
+    RoutingTable theTable = new RoutingTable(thePeerId);
     theReader.readLine();
     
     //read peers
     theReader.readLine();
-    Map<Long, Peer> thePeers = new HashMap< Long, Peer >();
+    Map<String, Peer> thePeers = new HashMap< String, Peer >();
     String theLine = null;
     while( !(theLine = theReader.readLine()).equals( "" )  ){
       String[] thePeerVars = theLine.split( ";" );
       Peer thePeer = new Peer();
-      thePeer.setPeerId( Long.parseLong( thePeerVars[0] ) );
+      thePeer.setPeerId( thePeerVars[0]  );
       thePeer.setPort( Integer.parseInt( thePeerVars[1] ) );
       List<String> theHosts = new ArrayList< String >();
       for(int i=2;i<thePeerVars.length;i++){

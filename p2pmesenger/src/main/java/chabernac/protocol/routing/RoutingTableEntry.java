@@ -79,7 +79,7 @@ public class RoutingTableEntry {
   public boolean equals(Object anObject){
     if(!(anObject instanceof RoutingTableEntry)) return false;
     RoutingTableEntry theEntry = (RoutingTableEntry)anObject;
-    if(getPeer().getPeerId() != theEntry.getPeer().getPeerId()) return false;
+    if(!getPeer().getPeerId().equals(theEntry.getPeer().getPeerId())) return false;
     if(getHopDistance() != theEntry.getHopDistance() ) return false;
     if(getGateway().getPeerId() != theEntry.getGateway().getPeerId()) return false;
     return true;
