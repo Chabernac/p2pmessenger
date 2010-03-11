@@ -88,25 +88,25 @@ public class RoutingProtocolTest extends TestCase {
 
     RoutingTable theRoutingTable1 = new RoutingTable("1");
     MasterProtocol theProtocol1 = new MasterProtocol();
-    RoutingProtocol theRoutingProtocol1 = new RoutingProtocol(theRoutingTable1, -1, true);
+    RoutingProtocol theRoutingProtocol1 = new RoutingProtocol(theRoutingTable1, -1, false);
     theProtocol1.addSubProtocol( theRoutingProtocol1 );
     ProtocolServer theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT, 5);
 
     RoutingTable theRoutingTable2 = new RoutingTable("2");
     MasterProtocol theProtocol2 = new MasterProtocol();
-    RoutingProtocol theRoutingProtocol2 = new RoutingProtocol(theRoutingTable2, -1, true);
+    RoutingProtocol theRoutingProtocol2 = new RoutingProtocol(theRoutingTable2, -1, false);
     theProtocol2.addSubProtocol( theRoutingProtocol2 );
     ProtocolServer theServer2 = new ProtocolServer(theProtocol2, RoutingProtocol.START_PORT + 1, 5);
 
     RoutingTable theRoutingTable3 = new RoutingTable("3");
     MasterProtocol theProtocol3 = new MasterProtocol();
-    RoutingProtocol theRoutingProtocol3 = new RoutingProtocol(theRoutingTable3, -1, true);
+    RoutingProtocol theRoutingProtocol3 = new RoutingProtocol(theRoutingTable3, -1, false);
     theProtocol3.addSubProtocol( theRoutingProtocol3 );
     ProtocolServer theServer3 = new ProtocolServer(theProtocol3, RoutingProtocol.START_PORT + 2, 5);
     
     RoutingTable theRoutingTable4 = new RoutingTable("4");
     MasterProtocol theProtocol4 = new MasterProtocol();
-    RoutingProtocol theRoutingProtocol4 = new RoutingProtocol(theRoutingTable4, -1, true);
+    RoutingProtocol theRoutingProtocol4 = new RoutingProtocol(theRoutingTable4, -1, false);
     theProtocol4.addSubProtocol( theRoutingProtocol4 );
     ProtocolServer theServer4 = new ProtocolServer(theProtocol4, RoutingProtocol.START_PORT + 3, 5);
 
@@ -143,9 +143,9 @@ public class RoutingProtocolTest extends TestCase {
       //p3      2       p2
 
       
-      testEntry( theRoutingTable1.getEntryForPeer("1"), 0, 1, true, true); 
-      testEntry( theRoutingTable1.getEntryForPeer("2"), 1, 2, true, true);
-      testEntry( theRoutingTable1.getEntryForPeer("3"), 2, 2, false, true);
+      testEntry( theRoutingTable1.getEntryForPeer("1"), 0, "1", true, true); 
+      testEntry( theRoutingTable1.getEntryForPeer("2"), 1, "2", true, true);
+      testEntry( theRoutingTable1.getEntryForPeer("3"), 2, "2", false, true);
 
       //p2
       //peer    hops    gateway
@@ -153,9 +153,9 @@ public class RoutingProtocolTest extends TestCase {
       //p2      0       p2
       //p3      1       p3
 
-      testEntry( theRoutingTable2.getEntryForPeer("1"), 1, 1, true, true); 
-      testEntry( theRoutingTable2.getEntryForPeer("2"), 0, 2, true, true);
-      testEntry( theRoutingTable2.getEntryForPeer("3"), 1, 3, true, true);
+      testEntry( theRoutingTable2.getEntryForPeer("1"), 1, "1", true, true); 
+      testEntry( theRoutingTable2.getEntryForPeer("2"), 0, "2", true, true);
+      testEntry( theRoutingTable2.getEntryForPeer("3"), 1, "3", true, true);
 
       //p3
       //peer    hops    gateway
@@ -163,9 +163,9 @@ public class RoutingProtocolTest extends TestCase {
       //p2      1       p2
       //p3      0       p3
 
-      testEntry( theRoutingTable3.getEntryForPeer("1"), 2, 2, false, true); 
-      testEntry( theRoutingTable3.getEntryForPeer("2"), 1, 2, true, true);
-      testEntry( theRoutingTable3.getEntryForPeer("3"), 0, 3, true, true);
+      testEntry( theRoutingTable3.getEntryForPeer("1"), 2, "2", false, true); 
+      testEntry( theRoutingTable3.getEntryForPeer("2"), 1, "2", true, true);
+      testEntry( theRoutingTable3.getEntryForPeer("3"), 0, "3", true, true);
       
       //change the network situation
       //        p2                                   
@@ -190,9 +190,9 @@ public class RoutingProtocolTest extends TestCase {
       //p2      1       p2
       //p3      1       p3
 
-      testEntry( theRoutingTable1.getEntryForPeer("1"), 0, 1, true, true); 
-      testEntry( theRoutingTable1.getEntryForPeer("2"), 1, 2, true, true);
-      testEntry( theRoutingTable1.getEntryForPeer("3"), 1, 3, true, true);
+      testEntry( theRoutingTable1.getEntryForPeer("1"), 0, "1", true, true); 
+      testEntry( theRoutingTable1.getEntryForPeer("2"), 1, "2", true, true);
+      testEntry( theRoutingTable1.getEntryForPeer("3"), 1, "3", true, true);
 
       //p2
       //peer    hops    gateway
@@ -200,9 +200,9 @@ public class RoutingProtocolTest extends TestCase {
       //p2      0       p2
       //p3      1       p3
 
-      testEntry( theRoutingTable2.getEntryForPeer("1"), 1, 1, true, true); 
-      testEntry( theRoutingTable2.getEntryForPeer("2"), 0, 2, true, true);
-      testEntry( theRoutingTable2.getEntryForPeer("3"), 1, 3, true, true);
+      testEntry( theRoutingTable2.getEntryForPeer("1"), 1, "1", true, true); 
+      testEntry( theRoutingTable2.getEntryForPeer("2"), 0, "2", true, true);
+      testEntry( theRoutingTable2.getEntryForPeer("3"), 1, "3", true, true);
 
       //p3
       //peer    hops    gateway
@@ -210,9 +210,9 @@ public class RoutingProtocolTest extends TestCase {
       //p2      1       p2
       //p3      0       p3
 
-      testEntry( theRoutingTable3.getEntryForPeer("1"), 1, 1, true, true); 
-      testEntry( theRoutingTable3.getEntryForPeer("2"), 1, 2, true, true);
-      testEntry( theRoutingTable3.getEntryForPeer("3"), 0, 3, true, true);
+      testEntry( theRoutingTable3.getEntryForPeer("1"), 1, "1", true, true); 
+      testEntry( theRoutingTable3.getEntryForPeer("2"), 1, "2", true, true);
+      testEntry( theRoutingTable3.getEntryForPeer("3"), 0, "3", true, true);
       
       //change the network situation
       //        p2                                   
@@ -230,6 +230,9 @@ public class RoutingProtocolTest extends TestCase {
       
       theRoutingProtocol4.scanLocalSystem();
       theRoutingProtocol3.scanLocalSystem();
+      theRoutingProtocol2.scanLocalSystem();
+      theRoutingProtocol1.scanLocalSystem();
+      
       theRoutingProtocol3.exchangeRoutingTable();
       theRoutingProtocol2.exchangeRoutingTable();
       theRoutingProtocol1.exchangeRoutingTable();
@@ -244,10 +247,10 @@ public class RoutingProtocolTest extends TestCase {
       //p3      1       p3
       //p4      2       p3
 
-      testEntry( theRoutingTable1.getEntryForPeer("1"), 0, 1, true, true); 
-      testEntry( theRoutingTable1.getEntryForPeer("2"), 1, 2, true, true);
-      testEntry( theRoutingTable1.getEntryForPeer("3"), 1, 3, true, true);
-      testEntry( theRoutingTable1.getEntryForPeer("4"), 2, 3, false, true);
+      testEntry( theRoutingTable1.getEntryForPeer("1"), 0, "1", true, true); 
+      testEntry( theRoutingTable1.getEntryForPeer("2"), 1, "2", true, true);
+      testEntry( theRoutingTable1.getEntryForPeer("3"), 1, "3", true, true);
+      testEntry( theRoutingTable1.getEntryForPeer("4"), 2, "3", false, true);
 
       //p2
       //peer    hops    gateway
@@ -256,10 +259,10 @@ public class RoutingProtocolTest extends TestCase {
       //p3      1       p3
       //p4      2       p3
 
-      testEntry( theRoutingTable2.getEntryForPeer("1"), 1, 1, true, true); 
-      testEntry( theRoutingTable2.getEntryForPeer("2"), 0, 2, true, true);
-      testEntry( theRoutingTable2.getEntryForPeer("3"), 1, 3, true, true);
-      testEntry( theRoutingTable2.getEntryForPeer("4"), 2, 3, false, true);
+      testEntry( theRoutingTable2.getEntryForPeer("1"), 1, "1", true, true); 
+      testEntry( theRoutingTable2.getEntryForPeer("2"), 0, "2", true, true);
+      testEntry( theRoutingTable2.getEntryForPeer("3"), 1, "3", true, true);
+      testEntry( theRoutingTable2.getEntryForPeer("4"), 2, "3", false, true);
 
       //p3
       //peer    hops    gateway
@@ -268,10 +271,10 @@ public class RoutingProtocolTest extends TestCase {
       //p3      0       p3
       //p4      1       p4
 
-      testEntry( theRoutingTable3.getEntryForPeer("1"), 1, 1, true, true); 
-      testEntry( theRoutingTable3.getEntryForPeer("2"), 1, 2, true, true);
-      testEntry( theRoutingTable3.getEntryForPeer("3"), 0, 3, true, true);
-      testEntry( theRoutingTable3.getEntryForPeer("4"), 1, 4, true, true);
+      testEntry( theRoutingTable3.getEntryForPeer("1"), 1, "1", true, true); 
+      testEntry( theRoutingTable3.getEntryForPeer("2"), 1, "2", true, true);
+      testEntry( theRoutingTable3.getEntryForPeer("3"), 0, "3", true, true);
+      testEntry( theRoutingTable3.getEntryForPeer("4"), 1, "4", true, true);
       
       //p4
       //peer    hops    gateway
@@ -280,10 +283,10 @@ public class RoutingProtocolTest extends TestCase {
       //p3      1       p3
       //p4      0       p4
 
-      testEntry( theRoutingTable4.getEntryForPeer("1"), 2, 3, false, true); 
-      testEntry( theRoutingTable4.getEntryForPeer("2"), 2, 3, false, true);
-      testEntry( theRoutingTable4.getEntryForPeer("3"), 1, 3, true, true);
-      testEntry( theRoutingTable4.getEntryForPeer("4"), 0, 4, true, true);
+      testEntry( theRoutingTable4.getEntryForPeer("1"), 2, "3", false, true); 
+      testEntry( theRoutingTable4.getEntryForPeer("2"), 2, "3", false, true);
+      testEntry( theRoutingTable4.getEntryForPeer("3"), 1, "3", true, true);
+      testEntry( theRoutingTable4.getEntryForPeer("4"), 0, "4", true, true);
       
       //now disconnect p3
       
@@ -315,10 +318,10 @@ public class RoutingProtocolTest extends TestCase {
 
       
       theRoutingProtocol1.exchangeRoutingTable();
-      testEntry( theRoutingTable1.getEntryForPeer("1"), 0, 1, true, true); 
-      testEntry( theRoutingTable1.getEntryForPeer("2"), 1, 2, true, true);
-      testEntry( theRoutingTable1.getEntryForPeer("3"), 6, 3, false, false);
-      testEntry( theRoutingTable1.getEntryForPeer("4"), 6, 3, false, false);
+      testEntry( theRoutingTable1.getEntryForPeer("1"), 0, "1", true, true); 
+      testEntry( theRoutingTable1.getEntryForPeer("2"), 1, "2", true, true);
+      testEntry( theRoutingTable1.getEntryForPeer("3"), 6, "3", false, false);
+      testEntry( theRoutingTable1.getEntryForPeer("4"), 6, "3", false, false);
 
       //p2
       //peer    hops    gateway
@@ -328,10 +331,10 @@ public class RoutingProtocolTest extends TestCase {
       //p4      6       p3
 
       theRoutingProtocol2.exchangeRoutingTable();
-      testEntry( theRoutingTable2.getEntryForPeer("1"), 1, 1, true, true); 
-      testEntry( theRoutingTable2.getEntryForPeer("2"), 0, 2, true, true);
-      testEntry( theRoutingTable2.getEntryForPeer("3"), 6, 3, false, false);
-      testEntry( theRoutingTable2.getEntryForPeer("4"), 6, 3, false, false);
+      testEntry( theRoutingTable2.getEntryForPeer("1"), 1, "1", true, true); 
+      testEntry( theRoutingTable2.getEntryForPeer("2"), 0, "2", true, true);
+      testEntry( theRoutingTable2.getEntryForPeer("3"), 6, "3", false, false);
+      testEntry( theRoutingTable2.getEntryForPeer("4"), 6, "3", false, false);
 
       //p3
       //peer    hops    gateway
@@ -341,10 +344,10 @@ public class RoutingProtocolTest extends TestCase {
       //p4      6       p4
 
       theRoutingProtocol3.exchangeRoutingTable();
-      testEntry( theRoutingTable3.getEntryForPeer("1"), 6, 1, false, false); 
-      testEntry( theRoutingTable3.getEntryForPeer("2"), 6, 2, false, false);
-      testEntry( theRoutingTable3.getEntryForPeer("3"), 0, 3, true, true);
-      testEntry( theRoutingTable3.getEntryForPeer("4"), 6, 4, false, false);
+      testEntry( theRoutingTable3.getEntryForPeer("1"), 6, "1", false, false); 
+      testEntry( theRoutingTable3.getEntryForPeer("2"), 6, "2", false, false);
+      testEntry( theRoutingTable3.getEntryForPeer("3"), 0, "3", true, true);
+      testEntry( theRoutingTable3.getEntryForPeer("4"), 6, "4", false, false);
       
       //p4
       //peer    hops    gateway
@@ -354,10 +357,10 @@ public class RoutingProtocolTest extends TestCase {
       //p4      0       p4
 
       theRoutingProtocol4.exchangeRoutingTable();
-      testEntry( theRoutingTable4.getEntryForPeer("1"), 6, 3, false, false); 
-      testEntry( theRoutingTable4.getEntryForPeer("2"), 6, 3, false, false);
-      testEntry( theRoutingTable4.getEntryForPeer("3"), 6, 3, false, false);
-      testEntry( theRoutingTable4.getEntryForPeer("4"), 0, 4, true, true);
+      testEntry( theRoutingTable4.getEntryForPeer("1"), 6, "3", false, false); 
+      testEntry( theRoutingTable4.getEntryForPeer("2"), 6, "3", false, false);
+      testEntry( theRoutingTable4.getEntryForPeer("3"), 6, "3", false, false);
+      testEntry( theRoutingTable4.getEntryForPeer("4"), 0, "4", true, true);
     }finally{
       theServer1.stop();
       theServer2.stop();
@@ -416,7 +419,7 @@ public class RoutingProtocolTest extends TestCase {
     }
   }
 
-  private void testEntry(RoutingTableEntry anEntry, int aHopDistance, long aGateway, boolean isResponding, boolean isReachable){
+  private void testEntry(RoutingTableEntry anEntry, int aHopDistance, String aGateway, boolean isResponding, boolean isReachable){
     assertNotNull( anEntry );
     assertEquals( "Hop distance", aHopDistance, anEntry.getHopDistance() );
     assertEquals( "Gateway", aGateway, anEntry.getGateway().getPeerId() );
