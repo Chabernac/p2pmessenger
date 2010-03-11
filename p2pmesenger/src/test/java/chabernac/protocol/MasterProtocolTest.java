@@ -27,7 +27,7 @@ public class MasterProtocolTest extends TestCase {
     assertEquals( "Master protocol" , theMasterProtocol.getDescription());
    
     String theResult = new String(theMasterProtocol.handle( 0, "protocols" ));
-    assertEquals( "PPG:Ping protocol|", theResult );
+    assertEquals( "MAS{PPG}", theResult );
         
   }
 }
