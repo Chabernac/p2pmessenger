@@ -44,8 +44,11 @@ public class RoutingTable implements Iterable< RoutingTableEntry >{
 
       //if the gateway of the local entry is the same as the peer from which the entry comes, then that entry is the most accurate
       //so upate the table
-      if((!thePeerEntry.getPeer().getPeerId().equals( myLocalPeerId ) && thePeerEntry.getGateway().getPeerId().equals( aContainingPeerEntry )) || 
-          anEntry.closerThen( thePeerEntry )){
+    if(thePeerEntry.getGateway().getPeerId().equals( aContainingPeerEntry ) ||
+       anEntry.closerThen( thePeerEntry )){
+
+//      if((!thePeerEntry.getPeer().getPeerId().equals( myLocalPeerId ) && thePeerEntry.getGateway().getPeerId().equals( aContainingPeerEntry )) || 
+//          anEntry.closerThen( thePeerEntry )){
         myRoutingTable.put( anEntry.getPeer().getPeerId(), anEntry );
         LOGGER.debug( "Updated routing table entry to routing table for peer: " + myLocalPeerId + " : "  + anEntry + " " + thePeerEntry.getGateway().getPeerId() + " ==? " + aContainingPeerEntry );
       }
@@ -84,7 +87,7 @@ public class RoutingTable implements Iterable< RoutingTableEntry >{
   }
   
   public synchronized void merge(RoutingTable anotherRoutingTable) throws SocketException{
-    if(!anotherRoutingTable.getLocalPeerId().equals( myLocalPeerId )){
+//    if(!anotherRoutingTable.getLocalPeerId().equals( myLocalPeerId )){
       for(Iterator< RoutingTableEntry > i = anotherRoutingTable.iterator(); i.hasNext();){
         RoutingTableEntry theEntry = i.next();
         //change the gateway to the peer from which this routing tables comes from
@@ -93,7 +96,7 @@ public class RoutingTable implements Iterable< RoutingTableEntry >{
         theEntry.incrementHopDistance();
         addRoutingTableEntry(anotherRoutingTable.getLocalPeerId(), theEntry );
       }
-    }
+//    }
   }
   
   public List<RoutingTableEntry> getEntries(){
