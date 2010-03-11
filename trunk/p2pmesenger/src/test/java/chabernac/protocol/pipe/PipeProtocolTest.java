@@ -23,7 +23,7 @@ public class PipeProtocolTest extends TestCase {
 
     RoutingTable theRoutingTable1 = new RoutingTable(1);
     MasterProtocol theProtocol1 = new MasterProtocol();
-    RoutingProtocol theRoutingProtocol1 = new RoutingProtocol(theRoutingTable1, 10);
+    RoutingProtocol theRoutingProtocol1 = new RoutingProtocol(theRoutingTable1, 10, false);
     theProtocol1.addSubProtocol( theRoutingProtocol1 );
     PipeProtocol thePipeProtocol1 = new PipeProtocol(theRoutingTable1, 5);
     theProtocol1.addSubProtocol( thePipeProtocol1 );
@@ -32,7 +32,7 @@ public class PipeProtocolTest extends TestCase {
 
     RoutingTable theRoutingTable2 = new RoutingTable(2);
     MasterProtocol theProtocol2 = new MasterProtocol();
-    RoutingProtocol theRoutingProtocol2 = new RoutingProtocol(theRoutingTable2, 10);
+    RoutingProtocol theRoutingProtocol2 = new RoutingProtocol(theRoutingTable2, 10, false);
     theProtocol2.addSubProtocol( theRoutingProtocol2 );
     PipeProtocol thePipeProtocol2 = new PipeProtocol(theRoutingTable2, 5);
     theProtocol2.addSubProtocol( thePipeProtocol2 );
@@ -41,7 +41,7 @@ public class PipeProtocolTest extends TestCase {
 
     RoutingTable theRoutingTable3 = new RoutingTable(3);
     MasterProtocol theProtocol3 = new MasterProtocol();
-    RoutingProtocol theRoutingProtocol3 = new RoutingProtocol(theRoutingTable3, 10);
+    RoutingProtocol theRoutingProtocol3 = new RoutingProtocol(theRoutingTable3, 10, false);
     theProtocol3.addSubProtocol( theRoutingProtocol3 );
     PipeProtocol thePipeProtocol3 = new PipeProtocol(theRoutingTable3, 5);
     //add an echo pipe listener to this pipe protocol

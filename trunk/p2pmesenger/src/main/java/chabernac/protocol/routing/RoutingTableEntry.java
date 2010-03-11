@@ -75,4 +75,14 @@ public class RoutingTableEntry {
   public String toString(){
     return "<PeerEntry peerid='" + myPeer.getPeerId() + "' hopDistance='" + myHopDistance + "' gateway='" + myGateway.getPeerId() + "'/>";
   }
+  
+  public boolean equals(Object anObject){
+    if(!(anObject instanceof RoutingTableEntry)) return false;
+    RoutingTableEntry theEntry = (RoutingTableEntry)anObject;
+    if(getPeer().getPeerId() != theEntry.getPeer().getPeerId()) return false;
+    if(getHopDistance() != theEntry.getHopDistance() ) return false;
+    if(getGateway().getPeerId() != theEntry.getGateway().getPeerId()) return false;
+    return true;
+    
+  }
 }
