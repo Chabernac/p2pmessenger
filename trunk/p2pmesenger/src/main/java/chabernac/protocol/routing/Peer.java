@@ -22,6 +22,7 @@ public class Peer {
   private long myPeerId;
   private List<String> myHost = null;
   private int myPort;
+  private String myProtocolString = null;
 
   public Peer (){}
   
