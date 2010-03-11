@@ -8,11 +8,14 @@ import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.mortbay.jetty.servlet.HashSessionManager;
 
 public class RoutingTable implements Iterable< RoutingTableEntry >{
   private static Logger LOGGER = Logger.getLogger( RoutingTable.class );
@@ -54,7 +57,7 @@ public class RoutingTable implements Iterable< RoutingTableEntry >{
   }
   
   public synchronized Peer getGatewayForPeer(Peer aPeer) throws UnkwownPeerException{
-    if(!myRoutingTable.containsKey( aPeer.getPeerId() )) throw new UnkwownPeerException(aPeer, "Peer with id: " + aPeer.getPeerId() + " is not kwown in the routingtable");
+    if(!myRoutingTable.containsKey( aPeer.getPeerId() )) throw new UnkwownPeerException(aPeer, "Peer with id: " + aPeer.getPeerId() + " is not kwown in the routingtable for peer: " + myLocalPeerId);
     
     return myRoutingTable.get( aPeer.getPeerId() ).getGateway();
   }
@@ -115,6 +118,22 @@ public class RoutingTable implements Iterable< RoutingTableEntry >{
   
   public synchronized RoutingTableEntry getEntryForLocalPeer( ) {
     return myRoutingTable.get( getLocalPeerId() );
+  }
+  
+  public Set<Peer> getAllPeers(){
+    Set<Peer> thePeers = new HashSet< Peer >();
+    for(RoutingTableEntry theEntry : myRoutingTable.values()){
+      thePeers.add(theEntry.getPeer());
+      thePeers.add(theEntry.getGateway());
+    }
+    return thePeers;
+  }
+
+  public void add( RoutingTable anTable ) {
+    //copy all entries from the given table to this table
+    for(RoutingTableEntry theEntry : anTable){
+      addRoutingTableEntry( theEntry );
+    }
   }
 }
  

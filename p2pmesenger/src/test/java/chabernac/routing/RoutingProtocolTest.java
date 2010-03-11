@@ -31,14 +31,14 @@ public class RoutingProtocolTest extends TestCase {
     long thet1 = System.currentTimeMillis();
     RoutingTable theRoutingTable = new RoutingTable(theLocalPeerId);
     MasterProtocol theProtocol = new MasterProtocol();
-    RoutingProtocol theRoutingProtocol1 = new RoutingProtocol(theRoutingTable, theExchangeDelay);
+    RoutingProtocol theRoutingProtocol1 = new RoutingProtocol(theRoutingTable, theExchangeDelay, false);
     theProtocol.addSubProtocol( theRoutingProtocol1 );
     ProtocolServer theServer = new ProtocolServer(theProtocol, RoutingProtocol.START_PORT, 5);
 
     long theLocalPeerId2 = 2;
     RoutingTable theRoutingTable2 = new RoutingTable(theLocalPeerId2);
     MasterProtocol theProtocol2 = new MasterProtocol();
-    RoutingProtocol theRoutingProtocol2 = new RoutingProtocol(theRoutingTable2, theExchangeDelay) ; 
+    RoutingProtocol theRoutingProtocol2 = new RoutingProtocol(theRoutingTable2, theExchangeDelay, false) ; 
     theProtocol2.addSubProtocol( theRoutingProtocol2 );
     ProtocolServer theServer2 = new ProtocolServer(theProtocol2, RoutingProtocol.START_PORT + 1, 5);
     try{
@@ -89,25 +89,25 @@ public class RoutingProtocolTest extends TestCase {
 
     RoutingTable theRoutingTable1 = new RoutingTable(1);
     MasterProtocol theProtocol1 = new MasterProtocol();
-    RoutingProtocol theRoutingProtocol1 = new RoutingProtocol(theRoutingTable1, -1);
+    RoutingProtocol theRoutingProtocol1 = new RoutingProtocol(theRoutingTable1, -1, true);
     theProtocol1.addSubProtocol( theRoutingProtocol1 );
     ProtocolServer theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT, 5);
 
     RoutingTable theRoutingTable2 = new RoutingTable(2);
     MasterProtocol theProtocol2 = new MasterProtocol();
-    RoutingProtocol theRoutingProtocol2 = new RoutingProtocol(theRoutingTable2, -1);
+    RoutingProtocol theRoutingProtocol2 = new RoutingProtocol(theRoutingTable2, -1, true);
     theProtocol2.addSubProtocol( theRoutingProtocol2 );
     ProtocolServer theServer2 = new ProtocolServer(theProtocol2, RoutingProtocol.START_PORT + 1, 5);
 
     RoutingTable theRoutingTable3 = new RoutingTable(3);
     MasterProtocol theProtocol3 = new MasterProtocol();
-    RoutingProtocol theRoutingProtocol3 = new RoutingProtocol(theRoutingTable3, -1);
+    RoutingProtocol theRoutingProtocol3 = new RoutingProtocol(theRoutingTable3, -1, true);
     theProtocol3.addSubProtocol( theRoutingProtocol3 );
     ProtocolServer theServer3 = new ProtocolServer(theProtocol3, RoutingProtocol.START_PORT + 2, 5);
     
     RoutingTable theRoutingTable4 = new RoutingTable(4);
     MasterProtocol theProtocol4 = new MasterProtocol();
-    RoutingProtocol theRoutingProtocol4 = new RoutingProtocol(theRoutingTable4, -1);
+    RoutingProtocol theRoutingProtocol4 = new RoutingProtocol(theRoutingTable4, -1, true);
     theProtocol4.addSubProtocol( theRoutingProtocol4 );
     ProtocolServer theServer4 = new ProtocolServer(theProtocol4, RoutingProtocol.START_PORT + 3, 5);
 

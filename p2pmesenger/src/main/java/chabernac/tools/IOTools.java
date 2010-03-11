@@ -10,11 +10,11 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 public class IOTools {
-  public void writeObjectToFile(File aFile, Object anObject){
+  public void writeObjectToFileAsXML(File aFile, Object anObject){
     //TODO implement writeObjectToFile
   }
   
-  public Object loadObjectFromFile(File aFile){
+  public Object loadObjectFromFileAsXML(File aFile){
     //TODO implement loadObjectFromFile
     return null;
   }
