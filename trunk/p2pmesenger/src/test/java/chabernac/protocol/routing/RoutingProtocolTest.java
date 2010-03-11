@@ -110,8 +110,8 @@ public class RoutingProtocolTest extends TestCase {
     theProtocol4.addSubProtocol( theRoutingProtocol4 );
     ProtocolServer theServer4 = new ProtocolServer(theProtocol4, RoutingProtocol.START_PORT + 3, 5);
 
-    theRoutingProtocol1.getUnreachablePeerIds().add( 3L );
-    theRoutingProtocol3.getUnreachablePeerIds().add( 1L );
+    theRoutingProtocol1.getLocalUnreachablePeerIds().add( 3L );
+    theRoutingProtocol3.getLocalUnreachablePeerIds().add( 1L );
 
     try{
       assertTrue( theServer1.start() );
@@ -172,8 +172,8 @@ public class RoutingProtocolTest extends TestCase {
       //       /  \
       //     p1 -  p3
       
-      theRoutingProtocol1.getUnreachablePeerIds().clear();
-      theRoutingProtocol3.getUnreachablePeerIds().clear();
+      theRoutingProtocol1.getLocalUnreachablePeerIds().clear();
+      theRoutingProtocol3.getLocalUnreachablePeerIds().clear();
       
       //and now wait for a couple of seconds to make sure the routing tables are update
 //      Thread.sleep( 5000 );
@@ -219,11 +219,11 @@ public class RoutingProtocolTest extends TestCase {
       //       /  \
       //     p1 -  p3 - p4
       
-      theRoutingProtocol1.getUnreachablePeerIds().add( 4L );
-      theRoutingProtocol2.getUnreachablePeerIds().add( 4L );
+      theRoutingProtocol1.getLocalUnreachablePeerIds().add( 4L );
+      theRoutingProtocol2.getLocalUnreachablePeerIds().add( 4L );
       
-      theRoutingProtocol4.getUnreachablePeerIds().add( 1L );
-      theRoutingProtocol4.getUnreachablePeerIds().add( 2L );
+      theRoutingProtocol4.getLocalUnreachablePeerIds().add( 1L );
+      theRoutingProtocol4.getLocalUnreachablePeerIds().add( 2L );
       
       assertTrue( theServer4.start() );
 //      Thread.sleep( 5000 );
@@ -292,12 +292,12 @@ public class RoutingProtocolTest extends TestCase {
       //     p1    p3   p4
 
       
-      theRoutingProtocol1.getUnreachablePeerIds().add( 3L );
-      theRoutingProtocol2.getUnreachablePeerIds().add( 3L );
-      theRoutingProtocol4.getUnreachablePeerIds().add( 3L );      
-      theRoutingProtocol3.getUnreachablePeerIds().add( 1L );
-      theRoutingProtocol3.getUnreachablePeerIds().add( 2L );
-      theRoutingProtocol3.getUnreachablePeerIds().add( 4L );
+      theRoutingProtocol1.getLocalUnreachablePeerIds().add( 3L );
+      theRoutingProtocol2.getLocalUnreachablePeerIds().add( 3L );
+      theRoutingProtocol4.getLocalUnreachablePeerIds().add( 3L );      
+      theRoutingProtocol3.getLocalUnreachablePeerIds().add( 1L );
+      theRoutingProtocol3.getLocalUnreachablePeerIds().add( 2L );
+      theRoutingProtocol3.getLocalUnreachablePeerIds().add( 4L );
       
       //give the routing tables some time to update
 //      Thread.sleep( 6000 );
@@ -363,6 +363,49 @@ public class RoutingProtocolTest extends TestCase {
       theServer2.stop();
       theServer3.stop();
       theServer4.stop();
+    }
+  }
+  
+  public void testReachableSituation2() throws InterruptedException{
+
+    RoutingTable theRoutingTable1 = new RoutingTable(1);
+    MasterProtocol theProtocol1 = new MasterProtocol();
+    RoutingProtocol theRoutingProtocol1 = new RoutingProtocol(theRoutingTable1, -1, true);
+    theProtocol1.addSubProtocol( theRoutingProtocol1 );
+    ProtocolServer theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT, 5);
+
+    RoutingTable theRoutingTable2 = new RoutingTable(2);
+    MasterProtocol theProtocol2 = new MasterProtocol();
+    RoutingProtocol theRoutingProtocol2 = new RoutingProtocol(theRoutingTable2, -1, true);
+    theProtocol2.addSubProtocol( theRoutingProtocol2 );
+    ProtocolServer theServer2 = new ProtocolServer(theProtocol2, RoutingProtocol.START_PORT + 1, 5);
+    
+    theRoutingProtocol1.getLocalUnreachablePeerIds().add( 2L );
+    theRoutingProtocol2.getLocalUnreachablePeerIds().add( 1L );
+    
+    
+    try{
+      assertTrue( theServer1.start() );
+      assertTrue( theServer2.start() );
+
+      theRoutingProtocol1.exchangeRoutingTable();
+      theRoutingProtocol2.exchangeRoutingTable();
+      
+      assertNotNull( theRoutingTable1.getEntryForPeer( 2 ) );
+      assertFalse( theRoutingTable1.getEntryForPeer( 2 ).isReachable() );
+      assertNotNull( theRoutingTable2.getEntryForPeer( 1 ) );
+      assertFalse( theRoutingTable2.getEntryForPeer( 1 ).isReachable() );
+      
+      theRoutingProtocol1.scanRemoteSystem(true);
+      theRoutingProtocol2.scanRemoteSystem(true);
+      
+      assertNotNull( theRoutingTable1.getEntryForPeer( 2 ) );
+      assertTrue(  theRoutingTable1.getEntryForPeer( 2 ).isReachable() );
+      assertNotNull( theRoutingTable2.getEntryForPeer( 1 ) );
+      assertTrue( theRoutingTable2.getEntryForPeer( 1 ).isReachable() );
+    } finally {
+      theServer1.stop();
+      theServer2.stop();
     }
   }
 
