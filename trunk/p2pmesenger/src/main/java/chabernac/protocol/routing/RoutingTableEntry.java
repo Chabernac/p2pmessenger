@@ -81,7 +81,7 @@ public class RoutingTableEntry {
     RoutingTableEntry theEntry = (RoutingTableEntry)anObject;
     if(!getPeer().getPeerId().equals(theEntry.getPeer().getPeerId())) return false;
     if(getHopDistance() != theEntry.getHopDistance() ) return false;
-    if(getGateway().getPeerId() != theEntry.getGateway().getPeerId()) return false;
+    if(!getGateway().getPeerId().equals( theEntry.getGateway().getPeerId())) return false;
     return true;
     
   }

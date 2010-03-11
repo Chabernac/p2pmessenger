@@ -214,7 +214,7 @@ public class RoutingProtocol extends Protocol {
           try{
             if(!isExcludeLocal || i!=myRoutingTable.obtainLocalPeer().getPort()){
               LOGGER.debug("Scanning the following host: '" + theHost + "' on port '" + i + "'");
-              isContacted = contactPeer( new Peer(null, theHost, i), myRemoteUnreachablePeers );
+              isContacted = contactPeer( new Peer("", theHost, i), myRemoteUnreachablePeers );
             }
           }catch(Exception e){}
         }
