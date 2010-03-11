@@ -245,7 +245,7 @@ public class RoutingProtocol extends Protocol {
       if(myLocalUnreachablePeers.contains( thePeer.getPeerId())){
         //simulate an unreachable peer, set the responding indicator to false
         theEntry.setHopDistance(  RoutingTableEntry.MAX_HOP_DISTANCE );
-      } else if(thePeer.getPeerId() != myRoutingTable.getLocalPeerId()){
+      } else if(!thePeer.getPeerId().equals(myRoutingTable.getLocalPeerId())){
         try {
           String theTable = thePeer.send( createMessage( Command.ANNOUNCEMENT.name() + " "  + XMLTools.toXML( myRoutingTable.getEntryForLocalPeer() ))) ;
 //          String theTable = thePeer.send( createMessage( Command.REQUEST_TABLE.name() ));
