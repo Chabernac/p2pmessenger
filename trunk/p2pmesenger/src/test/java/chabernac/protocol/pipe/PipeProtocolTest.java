@@ -21,7 +21,7 @@ public class PipeProtocolTest extends TestCase {
   public void testPipeProtocol() throws InterruptedException, IOException, UnkwownPeerException{
     //p1 <--> p2 <--> p3 peer 1 cannot reach peer 3
 
-    RoutingTable theRoutingTable1 = new RoutingTable(1);
+    RoutingTable theRoutingTable1 = new RoutingTable("1");
     MasterProtocol theProtocol1 = new MasterProtocol();
     RoutingProtocol theRoutingProtocol1 = new RoutingProtocol(theRoutingTable1, 10, false);
     theProtocol1.addSubProtocol( theRoutingProtocol1 );
@@ -30,7 +30,7 @@ public class PipeProtocolTest extends TestCase {
     ProtocolServer theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT, 5);
 
 
-    RoutingTable theRoutingTable2 = new RoutingTable(2);
+    RoutingTable theRoutingTable2 = new RoutingTable("2");
     MasterProtocol theProtocol2 = new MasterProtocol();
     RoutingProtocol theRoutingProtocol2 = new RoutingProtocol(theRoutingTable2, 10, false);
     theProtocol2.addSubProtocol( theRoutingProtocol2 );
@@ -39,7 +39,7 @@ public class PipeProtocolTest extends TestCase {
 
     ProtocolServer theServer2 = new ProtocolServer(theProtocol2, RoutingProtocol.START_PORT + 1, 5);
 
-    RoutingTable theRoutingTable3 = new RoutingTable(3);
+    RoutingTable theRoutingTable3 = new RoutingTable("3");
     MasterProtocol theProtocol3 = new MasterProtocol();
     RoutingProtocol theRoutingProtocol3 = new RoutingProtocol(theRoutingTable3, 10, false);
     theProtocol3.addSubProtocol( theRoutingProtocol3 );
@@ -51,8 +51,8 @@ public class PipeProtocolTest extends TestCase {
     ProtocolServer theServer3 = new ProtocolServer(theProtocol3, RoutingProtocol.START_PORT + 2, 5);
 
 
-    theRoutingProtocol1.getLocalUnreachablePeerIds().add( 3L );
-    theRoutingProtocol3.getLocalUnreachablePeerIds().add( 1L );
+    theRoutingProtocol1.getLocalUnreachablePeerIds().add( "3" );
+    theRoutingProtocol3.getLocalUnreachablePeerIds().add( "1" );
 
     try{
       assertTrue( theServer1.start() );
@@ -62,7 +62,7 @@ public class PipeProtocolTest extends TestCase {
       Thread.sleep( 5000 );
 
       //open a pipe from peer 1 to peer 3, it should traverse peer 2
-      Pipe thePipe = new Pipe(theRoutingProtocol1.getRoutingTable().getEntryForPeer(3).getPeer());
+      Pipe thePipe = new Pipe(theRoutingProtocol1.getRoutingTable().getEntryForPeer("3").getPeer());
       thePipeProtocol1.openPipe(thePipe);
 
       for(int i=0;i<100;i++){

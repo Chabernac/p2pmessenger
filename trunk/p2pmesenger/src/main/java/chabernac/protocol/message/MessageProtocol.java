@@ -46,7 +46,7 @@ public class MessageProtocol extends Protocol {
   
   public String handleMessage(long aSessionId, Message aMessage){
     Peer theDestionation = aMessage.getDestination();
-    if(theDestionation.getPeerId() == myLocalPeerId){
+    if(theDestionation.getPeerId().equals( myLocalPeerId )){
       //reoffer the content of the message to the handle method
       //this will cause sub protocols to handle the message if they are present
       return handle( aSessionId, aMessage.getMessage() );

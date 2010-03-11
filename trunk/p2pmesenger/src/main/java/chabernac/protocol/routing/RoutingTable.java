@@ -15,13 +15,12 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
-import org.mortbay.jetty.servlet.HashSessionManager;
 
 public class RoutingTable implements Iterable< RoutingTableEntry >{
   private static Logger LOGGER = Logger.getLogger( RoutingTable.class );
   
-  private long myLocalPeerId;
-  private Map<Long, RoutingTableEntry> myRoutingTable = new HashMap< Long, RoutingTableEntry >();
+  private String myLocalPeerId;
+  private Map<String, RoutingTableEntry> myRoutingTable = new HashMap< String, RoutingTableEntry >();
 
   /**
    * you should not use this constructor
@@ -31,7 +30,7 @@ public class RoutingTable implements Iterable< RoutingTableEntry >{
    */
   public RoutingTable(){}
   
-  public RoutingTable(long aLocalPeerId){
+  public RoutingTable(String aLocalPeerId){
     myLocalPeerId = aLocalPeerId;
   }
   
@@ -39,15 +38,16 @@ public class RoutingTable implements Iterable< RoutingTableEntry >{
     addRoutingTableEntry( getLocalPeerId(), anEntry );
   }
   
-  public synchronized void addRoutingTableEntry(long aContainingPeerEntry, RoutingTableEntry anEntry){
+  public synchronized void addRoutingTableEntry(String aContainingPeerEntry, RoutingTableEntry anEntry){
     if(myRoutingTable.containsKey( anEntry.getPeer().getPeerId() )){
       RoutingTableEntry thePeerEntry = myRoutingTable.get( anEntry.getPeer().getPeerId() );
 
       //if the gateway of the local entry is the same as the peer from which the entry comes, then that entry is the most accurate
       //so upate the table
-      if(thePeerEntry.getGateway().getPeerId() == aContainingPeerEntry || anEntry.closerThen( thePeerEntry )){
+      if((!thePeerEntry.getPeer().getPeerId().equals( myLocalPeerId ) && thePeerEntry.getGateway().getPeerId().equals( aContainingPeerEntry )) || 
+          anEntry.closerThen( thePeerEntry )){
         myRoutingTable.put( anEntry.getPeer().getPeerId(), anEntry );
-        LOGGER.debug( "Updated routing table entry to routing table for peer: " + myLocalPeerId + " : "  + anEntry);
+        LOGGER.debug( "Updated routing table entry to routing table for peer: " + myLocalPeerId + " : "  + anEntry + " " + thePeerEntry.getGateway().getPeerId() + " ==? " + aContainingPeerEntry );
       }
       
     } else {
@@ -71,11 +71,11 @@ public class RoutingTable implements Iterable< RoutingTableEntry >{
     return myRoutingTable.get( myLocalPeerId ).getPeer();
   }
   
-  public long getLocalPeerId() {
+  public String getLocalPeerId() {
     return myLocalPeerId;
   }
 
-  public void setLocalPeerId( long anLocalPeerId ) {
+  public void setLocalPeerId( String anLocalPeerId ) {
     myLocalPeerId = anLocalPeerId;
   }
 
@@ -84,13 +84,15 @@ public class RoutingTable implements Iterable< RoutingTableEntry >{
   }
   
   public synchronized void merge(RoutingTable anotherRoutingTable) throws SocketException{
-    for(Iterator< RoutingTableEntry > i = anotherRoutingTable.iterator(); i.hasNext();){
-      RoutingTableEntry theEntry = i.next();
-      //change the gateway to the peer from which this routing tables comes from
-      theEntry.setGateway( anotherRoutingTable.obtainLocalPeer() );
-      //increment the hop distance
-      theEntry.incrementHopDistance();
-      addRoutingTableEntry(anotherRoutingTable.getLocalPeerId(), theEntry );
+    if(!anotherRoutingTable.getLocalPeerId().equals( myLocalPeerId )){
+      for(Iterator< RoutingTableEntry > i = anotherRoutingTable.iterator(); i.hasNext();){
+        RoutingTableEntry theEntry = i.next();
+        //change the gateway to the peer from which this routing tables comes from
+        theEntry.setGateway( anotherRoutingTable.obtainLocalPeer() );
+        //increment the hop distance
+        theEntry.incrementHopDistance();
+        addRoutingTableEntry(anotherRoutingTable.getLocalPeerId(), theEntry );
+      }
     }
   }
   
@@ -104,15 +106,15 @@ public class RoutingTable implements Iterable< RoutingTableEntry >{
    * @return
    * @deprecated
    */
-  public Map< Long, RoutingTableEntry > getRoutingTable() {
-    return new HashMap< Long, RoutingTableEntry >(myRoutingTable);
+  public Map< String, RoutingTableEntry > getRoutingTable() {
+    return new HashMap< String, RoutingTableEntry >(myRoutingTable);
   }
 
-  public void setRoutingTable( Map< Long, RoutingTableEntry > anRoutingTable ) {
+  public void setRoutingTable( Map< String, RoutingTableEntry > anRoutingTable ) {
     myRoutingTable = anRoutingTable;
   }
 
-  public synchronized RoutingTableEntry getEntryForPeer( long aPeerId ) {
+  public synchronized RoutingTableEntry getEntryForPeer( String aPeerId ) {
     return myRoutingTable.get( aPeerId );
   }
   

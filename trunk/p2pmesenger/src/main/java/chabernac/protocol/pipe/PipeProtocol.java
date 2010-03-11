@@ -21,7 +21,6 @@ import chabernac.protocol.routing.RoutingTableEntry;
 import chabernac.protocol.routing.UnkwownPeerException;
 import chabernac.tools.IOTools;
 import chabernac.tools.NetTools;
-import chabernac.tools.StringTools;
 
 /**
  * The pipe protocol will be able to open a pipe between 2 peers.
@@ -68,16 +67,16 @@ public class PipeProtocol extends Protocol {
       }
       
       for(String thePeer : thePeerIds){
-        if("".equals(thePeer) || !StringTools.isNumeric( thePeer )){
+        if("".equals(thePeer)){
           LOGGER.error("Received invalid peer identifier: '" + thePeer + "' input='" + anInput + "'");
           return Result.INVALID_PEERS.name();
-        } else if(myRoutingTable.getEntryForPeer( Long.parseLong( thePeer ) ) == null){
+        } else if(myRoutingTable.getEntryForPeer(  thePeer  ) == null){
           LOGGER.error("Received unknwown peer identifier: '" + thePeer + "'");
           return Result.UNKNWOWN_PEER.name();
         }
       }
       
-      RoutingTableEntry theToPeerEntry = myRoutingTable.getEntryForPeer( Long.parseLong(thePeerIds[1]) );
+      RoutingTableEntry theToPeerEntry = myRoutingTable.getEntryForPeer( thePeerIds[1] );
       
       if(!theToPeerEntry.isReachable()){
         return Result.PEER_UNREACHABLE.name(); 
@@ -85,7 +84,7 @@ public class PipeProtocol extends Protocol {
         try{
           ServerSocket theSocket = NetTools.openServerSocket(PIPE_PORT);
           LOGGER.debug("Opening server socket on peer: '" + myRoutingTable.getLocalPeerId() + "' with port: '" + theSocket.getLocalPort() + "'");
-          myServerSocketExecutor.submit( new ServerSocketHandler(theSocket, Long.parseLong(thePeerIds[0]), Long.parseLong(thePeerIds[1])));
+          myServerSocketExecutor.submit( new ServerSocketHandler(theSocket, thePeerIds[0], thePeerIds[1]));
           Thread.yield();
           return Result.SOCKET_OPENED.name() + " " + Integer.toString( theSocket.getLocalPort() );
         }catch(Exception e){
@@ -141,11 +140,11 @@ public class PipeProtocol extends Protocol {
   }
 
   private class ServerSocketHandler implements Runnable{
-    private long myFromPeerId;
-    private long myToPeerId;
+    private String myFromPeerId;
+    private String myToPeerId;
     private ServerSocket mySocket = null;
 
-    public ServerSocketHandler(ServerSocket aSocket, long aFromPeerId, long aToPeerId){
+    public ServerSocketHandler(ServerSocket aSocket, String aFromPeerId, String aToPeerId){
       myFromPeerId = aFromPeerId;
       myToPeerId = aToPeerId;
       mySocket = aSocket;
@@ -158,7 +157,7 @@ public class PipeProtocol extends Protocol {
       try{
         theInSocket = mySocket.accept();
 
-        if(myToPeerId == myRoutingTable.getLocalPeerId() && myPipeListener != null){
+        if(myToPeerId.equals( myRoutingTable.getLocalPeerId()) && myPipeListener != null){
           Pipe thePipe = new Pipe(myRoutingTable.getEntryForPeer( myFromPeerId ).getPeer());
           thePipe.setSocket( theInSocket );
           myPipeListener.incomingPipe( thePipe );
