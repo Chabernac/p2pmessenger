@@ -242,11 +242,17 @@ public class RoutingProtocol extends Protocol {
 
     for(RoutingTableEntry theEntry : myRoutingTable.getEntries()){
       Peer thePeer = theEntry.getPeer();
-      if(myLocalUnreachablePeers.contains( thePeer.getPeerId())){
-        //simulate an unreachable peer, set the responding indicator to false
-        theEntry.setHopDistance(  RoutingTableEntry.MAX_HOP_DISTANCE );
-      } else if(!thePeer.getPeerId().equals(myRoutingTable.getLocalPeerId())){
+      
+      //simulate that we can not contact this peer directly, but we can contact it trough a gateway
+      //so check if hop distance = 1
+      
+        
+      if(!thePeer.getPeerId().equals(myRoutingTable.getLocalPeerId())){
         try {
+          if(myLocalUnreachablePeers.contains( thePeer.getPeerId())){
+            //simulate that we cannot contact the peer
+            throw new Exception("Simulate that we can not contact peer: " + thePeer.getPeerId());
+          }
           String theTable = thePeer.send( createMessage( Command.ANNOUNCEMENT.name() + " "  + XMLTools.toXML( myRoutingTable.getEntryForLocalPeer() ))) ;
 //          String theTable = thePeer.send( createMessage( Command.REQUEST_TABLE.name() ));
           RoutingTable theRemoteTable = (RoutingTable)XMLTools.fromXML( theTable );

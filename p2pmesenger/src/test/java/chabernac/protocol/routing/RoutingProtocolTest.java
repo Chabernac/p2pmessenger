@@ -238,6 +238,11 @@ public class RoutingProtocolTest extends TestCase {
       theRoutingProtocol1.exchangeRoutingTable();
       theRoutingProtocol4.exchangeRoutingTable();
       
+      theRoutingProtocol3.exchangeRoutingTable();
+      theRoutingProtocol2.exchangeRoutingTable();
+      theRoutingProtocol1.exchangeRoutingTable();
+      theRoutingProtocol4.exchangeRoutingTable();
+      
  //test the situation again
       
       //p1
@@ -317,7 +322,13 @@ public class RoutingProtocolTest extends TestCase {
       //p4      6       p3
 
       
-      theRoutingProtocol1.exchangeRoutingTable();
+      for(int i=0;i<3;i++){
+        theRoutingProtocol1.exchangeRoutingTable();  
+        theRoutingProtocol2.exchangeRoutingTable();
+        theRoutingProtocol3.exchangeRoutingTable();
+        theRoutingProtocol4.exchangeRoutingTable();
+      }
+      
       testEntry( theRoutingTable1.getEntryForPeer("1"), 0, "1", true, true); 
       testEntry( theRoutingTable1.getEntryForPeer("2"), 1, "2", true, true);
       testEntry( theRoutingTable1.getEntryForPeer("3"), 6, "3", false, false);
@@ -422,7 +433,10 @@ public class RoutingProtocolTest extends TestCase {
   private void testEntry(RoutingTableEntry anEntry, int aHopDistance, String aGateway, boolean isResponding, boolean isReachable){
     assertNotNull( anEntry );
     assertEquals( "Hop distance", aHopDistance, anEntry.getHopDistance() );
-    assertEquals( "Gateway", aGateway, anEntry.getGateway().getPeerId() );
+    //if the hop distance is the max distance the gateway does not matter
+    if(aHopDistance < RoutingTableEntry.MAX_HOP_DISTANCE){
+      assertEquals( "Gateway", aGateway, anEntry.getGateway().getPeerId() );
+    }
     assertEquals( "Responding", isResponding, anEntry.isResponding());
     assertEquals( "Reachable", isReachable, anEntry.isReachable());
   }
