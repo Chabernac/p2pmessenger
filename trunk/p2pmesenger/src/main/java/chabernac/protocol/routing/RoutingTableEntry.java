@@ -42,7 +42,7 @@ public class RoutingTableEntry {
 
 	public void setHopDistance( int anHopDistance ) {
 		myHopDistance = anHopDistance;
-		if(myHopDistance == 1){
+		if(myHopDistance == 1 && myPeer != null){
 		  myGateway = myPeer;
 		}
 	}
@@ -60,7 +60,9 @@ public class RoutingTableEntry {
 	}
 
 	public void incrementHopDistance(){
-		myHopDistance++;
+	  if(myHopDistance < MAX_HOP_DISTANCE){
+	    myHopDistance++;
+	  }
 	}
 
   public boolean isResponding() {
