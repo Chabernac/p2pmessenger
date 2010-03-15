@@ -45,11 +45,11 @@ public class PipeProtocolTest extends TestCase {
     theProtocol3.addSubProtocol( theRoutingProtocol3 );
     PipeProtocol thePipeProtocol3 = new PipeProtocol(theRoutingTable3, 5);
     //add an echo pipe listener to this pipe protocol
-    thePipeProtocol3.setPipeListener(new EchoPipeListener());
+    EchoPipeListener thePipeListener = new EchoPipeListener();
+    thePipeProtocol3.setPipeListener(thePipeListener);
     theProtocol3.addSubProtocol( thePipeProtocol3 );
 
     ProtocolServer theServer3 = new ProtocolServer(theProtocol3, RoutingProtocol.START_PORT + 2, 5);
-
 
     theRoutingProtocol1.getLocalUnreachablePeerIds().add( "3" );
     theRoutingProtocol3.getLocalUnreachablePeerIds().add( "1" );
@@ -63,6 +63,8 @@ public class PipeProtocolTest extends TestCase {
 
       //open a pipe from peer 1 to peer 3, it should traverse peer 2
       Pipe thePipe = new Pipe(theRoutingProtocol1.getRoutingTable().getEntryForPeer("3").getPeer());
+      thePipe.setPipeDescription("Test pipe description");
+      
       thePipeProtocol1.openPipe(thePipe);
 
       for(int i=0;i<100;i++){
@@ -70,6 +72,9 @@ public class PipeProtocolTest extends TestCase {
         thePipe.getSocket().getOutputStream().flush();
         assertEquals(i, thePipe.getSocket().getInputStream().read());
       }
+      
+      assertEquals("1", thePipeListener.getPipe().getPeer().getPeerId());
+      assertEquals("Test pipe description", thePipeListener.getPipe().getPipeDescription());
 
       //now lets try to send bytes over the pipe
     }finally{
@@ -81,8 +86,12 @@ public class PipeProtocolTest extends TestCase {
   }
 
   private class EchoPipeListener implements IPipeListener{
+    private Pipe myPipe = null;
+    
+    
     @Override
     public void incomingPipe(final Pipe aPipe) {
+      myPipe = aPipe;
       new Thread(new Runnable(){
         public void run(){
           try {
@@ -92,6 +101,10 @@ public class PipeProtocolTest extends TestCase {
           }
         }
       }).start();
+    }
+    
+    public Pipe getPipe(){
+      return myPipe;
     }
   }
 }
