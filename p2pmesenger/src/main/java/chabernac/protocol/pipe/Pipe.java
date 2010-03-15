@@ -11,6 +11,7 @@ import chabernac.protocol.routing.Peer;
 public class Pipe {
   private Peer myPeer = null;
   private Socket mySocket = null;
+  private String myPipeDescription = "";
   
   public Pipe ( Peer anPeer ) {
     super();
@@ -28,5 +29,12 @@ public class Pipe {
   public Peer getPeer() {
     return myPeer;
   }
-  
+
+  public String getPipeDescription() {
+    return myPipeDescription;
+  }
+
+  public void setPipeDescription(String anPipeDescription) {
+    myPipeDescription = anPipeDescription;
+  }
 }

@@ -59,14 +59,14 @@ public class PipeProtocol extends Protocol {
   @Override
   protected String handleCommand( long aSessionId, String anInput ) {
     if( anInput.startsWith( Command.OPEN_SOCKET.name() ) ){
-      String[] thePeerIds = anInput.substring( Command.OPEN_SOCKET.name().length() ).trim().split( " " );
+      String[] theAttributes = anInput.substring( Command.OPEN_SOCKET.name().length() + 1 ).trim().split( ";" );
       
-      if(thePeerIds.length != 2){
-        LOGGER.error("Invalid peers received: '" + anInput + "'");
+      if(theAttributes.length != 3){
+        LOGGER.error("Invalid peer attributes: '" + anInput + "'");
         return Result.INVALID_PEERS.name();
       }
       
-      for(String thePeer : thePeerIds){
+      for(String thePeer : theAttributes){
         if("".equals(thePeer)){
           LOGGER.error("Received invalid peer identifier: '" + thePeer + "' input='" + anInput + "'");
           return Result.INVALID_PEERS.name();
@@ -76,7 +76,7 @@ public class PipeProtocol extends Protocol {
         }
       }
       
-      RoutingTableEntry theToPeerEntry = myRoutingTable.getEntryForPeer( thePeerIds[1] );
+      RoutingTableEntry theToPeerEntry = myRoutingTable.getEntryForPeer( theAttributes[1] );
       
       if(!theToPeerEntry.isReachable()){
         return Result.PEER_UNREACHABLE.name(); 
@@ -84,7 +84,7 @@ public class PipeProtocol extends Protocol {
         try{
           ServerSocket theSocket = NetTools.openServerSocket(PIPE_PORT);
           LOGGER.debug("Opening server socket on peer: '" + myRoutingTable.getLocalPeerId() + "' with port: '" + theSocket.getLocalPort() + "'");
-          myServerSocketExecutor.submit( new ServerSocketHandler(theSocket, thePeerIds[0], thePeerIds[1]));
+          myServerSocketExecutor.submit( new ServerSocketHandler(theSocket, theAttributes[0], theAttributes[1], theAttributes[3]));
           Thread.yield();
           return Result.SOCKET_OPENED.name() + " " + Integer.toString( theSocket.getLocalPort() );
         }catch(Exception e){
@@ -109,7 +109,7 @@ public class PipeProtocol extends Protocol {
   }
 
   public void openPipe(Pipe aPipe) throws IOException, UnkwownPeerException{
-    aPipe.setSocket( openSocketToPeer( myRoutingTable.obtainLocalPeer(), aPipe.getPeer() ) );
+    aPipe.setSocket( openSocketToPeer( myRoutingTable.obtainLocalPeer(), aPipe.getPeer(), aPipe.getPipeDescription() ) );
   }
 
   public void closePipe(Pipe aPipe){
@@ -121,13 +121,13 @@ public class PipeProtocol extends Protocol {
     }
   }
   
-  private Socket openSocketToPeer(Peer aFromPeer, Peer aToPeer) throws IOException, UnkwownPeerException{
+  private Socket openSocketToPeer(Peer aFromPeer, Peer aToPeer, String aPipeDescription) throws IOException, UnkwownPeerException{
     Peer theGateway = myRoutingTable.getGatewayForPeer(aToPeer);
-    String theResult = theGateway.send( createMessage( Command.OPEN_SOCKET + " " + aFromPeer.getPeerId()  + " " + aToPeer.getPeerId()) );
+    String theResult = theGateway.send( createMessage( Command.OPEN_SOCKET + ";" + aFromPeer.getPeerId()  + ";" + aToPeer.getPeerId() + ";" +  aPipeDescription) );
     
     if(!theResult.startsWith( Result.SOCKET_OPENED.name() )){
-      LOGGER.error("Socket with peer '" + aFromPeer.getPeerId() +  "' could not be openend: " + theResult);
-      throw new IOException("Socket with peer '" + aFromPeer.getPeerId() + "' could not be openend: " + theResult);
+      LOGGER.error("Peer: " + myRoutingTable.getLocalPeerId() + " Socket with peer '" + aToPeer.getPeerId() +  "' could not be openend: " + theResult);
+      throw new IOException("Peer: " + myRoutingTable.getLocalPeerId() + " Socket with peer '" + aToPeer.getPeerId() + "' could not be openend: " + theResult);
     }
 
     int theSocketPort = Integer.parseInt( theResult.split( " " )[1]);
@@ -143,11 +143,13 @@ public class PipeProtocol extends Protocol {
     private String myFromPeerId;
     private String myToPeerId;
     private ServerSocket mySocket = null;
+    private String myPipeDescription = null;
 
-    public ServerSocketHandler(ServerSocket aSocket, String aFromPeerId, String aToPeerId){
+    public ServerSocketHandler(ServerSocket aSocket, String aFromPeerId, String aToPeerId, String aPipeDescription){
       myFromPeerId = aFromPeerId;
       myToPeerId = aToPeerId;
       mySocket = aSocket;
+      myPipeDescription = aPipeDescription;
     }
 
     public void run(){
@@ -159,12 +161,13 @@ public class PipeProtocol extends Protocol {
 
         if(myToPeerId.equals( myRoutingTable.getLocalPeerId()) && myPipeListener != null){
           Pipe thePipe = new Pipe(myRoutingTable.getEntryForPeer( myFromPeerId ).getPeer());
+          thePipe.setPipeDescription(myPipeDescription);
           thePipe.setSocket( theInSocket );
           myPipeListener.incomingPipe( thePipe );
         } else {
 
           //we are just a go between peer rerout the pipe to the destination
-          theOutSocket = openSocketToPeer( myRoutingTable.obtainLocalPeer(), myRoutingTable.getEntryForPeer( myToPeerId ).getGateway() );
+          theOutSocket = openSocketToPeer( myRoutingTable.getEntryForPeer(myFromPeerId).getPeer(), myRoutingTable.getEntryForPeer( myToPeerId ).getGateway(), myPipeDescription );
           if(theOutSocket == null){
             throw new IOException("Out socket with peer: '" + myToPeerId + "' could not be created");
           } else {
