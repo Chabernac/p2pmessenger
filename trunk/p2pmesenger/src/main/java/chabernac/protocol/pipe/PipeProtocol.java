@@ -66,12 +66,12 @@ public class PipeProtocol extends Protocol {
         return Result.INVALID_PEERS.name();
       }
       
-      for(String thePeer : theAttributes){
-        if("".equals(thePeer)){
-          LOGGER.error("Received invalid peer identifier: '" + thePeer + "' input='" + anInput + "'");
+      for(int i=0;i<=1;i++){
+        if("".equals(theAttributes[i])){
+          LOGGER.error("Received invalid peer identifier: '" + theAttributes[i] + "' input='" + anInput + "'");
           return Result.INVALID_PEERS.name();
-        } else if(myRoutingTable.getEntryForPeer(  thePeer  ) == null){
-          LOGGER.error("Received unknwown peer identifier: '" + thePeer + "'");
+        } else if(myRoutingTable.getEntryForPeer(  theAttributes[i]  ) == null){
+          LOGGER.error("Received unknwown peer identifier: '" + theAttributes[i] + "'");
           return Result.UNKNWOWN_PEER.name();
         }
       }
@@ -84,10 +84,11 @@ public class PipeProtocol extends Protocol {
         try{
           ServerSocket theSocket = NetTools.openServerSocket(PIPE_PORT);
           LOGGER.debug("Opening server socket on peer: '" + myRoutingTable.getLocalPeerId() + "' with port: '" + theSocket.getLocalPort() + "'");
-          myServerSocketExecutor.submit( new ServerSocketHandler(theSocket, theAttributes[0], theAttributes[1], theAttributes[3]));
+          myServerSocketExecutor.submit( new ServerSocketHandler(theSocket, theAttributes[0], theAttributes[1], theAttributes[2]));
           Thread.yield();
           return Result.SOCKET_OPENED.name() + " " + Integer.toString( theSocket.getLocalPort() );
         }catch(Exception e){
+          LOGGER.error("Could not open server socket at port", e);
           return Result.SOCKET_FAILURE.name();
         }
       }
