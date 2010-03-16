@@ -22,13 +22,11 @@ public class MessageProtocol extends Protocol {
   private static enum STATUS_MESSAGE {UKWNONW_PEER, UNKNOWN_HOST, UNDELIVERABLE, DELIVERED, UNCRECOGNIZED_MESSAGE};
   
   private RoutingTable myRoutingTable = null;
-  private long myLocalPeerId;
 
-  public MessageProtocol ( long aLocalPeerId, RoutingTable aRoutingTable ) {
+  public MessageProtocol ( RoutingTable aRoutingTable ) {
     super( "MSG" );
     myRoutingTable = aRoutingTable;
-    myLocalPeerId = aLocalPeerId;
-  }
+}
 
   @Override
   public String getDescription() {
@@ -46,7 +44,7 @@ public class MessageProtocol extends Protocol {
   
   public String handleMessage(long aSessionId, Message aMessage){
     Peer theDestionation = aMessage.getDestination();
-    if(theDestionation.getPeerId().equals( myLocalPeerId )){
+    if(theDestionation.getPeerId().equals( myRoutingTable.getLocalPeerId() )){
       //reoffer the content of the message to the handle method
       //this will cause sub protocols to handle the message if they are present
       return handle( aSessionId, aMessage.getMessage() );

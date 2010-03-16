@@ -9,6 +9,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -43,7 +45,7 @@ public class PipeProtocol extends Protocol {
   public static enum Result { UNKNOWN_COMMAND, PEER_UNREACHABLE, SOCKET_FAILURE, INVALID_PEERS, UNKNWOWN_PEER, SOCKET_OPENED };
   private ExecutorService myServerSocketExecutor = null;
   
-  private IPipeListener myPipeListener = null;
+  private List<IPipeListener> myPipeListener = new ArrayList< IPipeListener >();
 
   public PipeProtocol ( RoutingTable aRoutingTable, int aNumberOfServerSocketsAllowed ) {
     super( "PIP" );
@@ -96,12 +98,8 @@ public class PipeProtocol extends Protocol {
     return Result.UNKNOWN_COMMAND.name();
   }
 
-  public IPipeListener getPipeListener() {
-    return myPipeListener;
-  }
-
-  public void setPipeListener( IPipeListener anPipeListener ) {
-    myPipeListener = anPipeListener;
+  public void addPipeListener( IPipeListener anPipeListener ) {
+    myPipeListener.add( anPipeListener );
   }
 
   @Override
@@ -164,7 +162,9 @@ public class PipeProtocol extends Protocol {
           Pipe thePipe = new Pipe(myRoutingTable.getEntryForPeer( myFromPeerId ).getPeer());
           thePipe.setPipeDescription(myPipeDescription);
           thePipe.setSocket( theInSocket );
-          myPipeListener.incomingPipe( thePipe );
+          for(IPipeListener theListener : myPipeListener){
+            theListener.incomingPipe( thePipe );
+          }
         } else {
 
           //we are just a go between peer rerout the pipe to the destination
