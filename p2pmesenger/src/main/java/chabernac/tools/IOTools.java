@@ -20,10 +20,19 @@ public class IOTools {
   }
   
   public static void copyStream(InputStream anInputStream, OutputStream anOutputStream) throws IOException{
+    copyStream( anInputStream, anOutputStream, null );
+  }
+  
+  public static void copyStream(InputStream anInputStream, OutputStream anOutputStream, iTransferListener aListener) throws IOException{
     byte[] theBytes = new byte[1024];
     int length;
+    long theBytesTransferred = 0;
     while((length = anInputStream.read(theBytes)) != -1){
       anOutputStream.write(theBytes, 0, length);
+      if(aListener != null){
+        theBytesTransferred += length;
+        aListener.bytesTransfered( theBytesTransferred );
+      }
     }
   }
 }

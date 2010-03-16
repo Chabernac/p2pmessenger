@@ -46,7 +46,7 @@ public class PipeProtocolTest extends TestCase {
     PipeProtocol thePipeProtocol3 = new PipeProtocol(theRoutingTable3, 5);
     //add an echo pipe listener to this pipe protocol
     EchoPipeListener thePipeListener = new EchoPipeListener();
-    thePipeProtocol3.setPipeListener(thePipeListener);
+    thePipeProtocol3.addPipeListener(thePipeListener);
     theProtocol3.addSubProtocol( thePipeProtocol3 );
 
     ProtocolServer theServer3 = new ProtocolServer(theProtocol3, RoutingProtocol.START_PORT + 2, 5);
