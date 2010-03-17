@@ -32,7 +32,7 @@ import chabernac.tools.XMLTools;
  *  - update the routing table with the items received from another peer.  in this process the fasted path to a peer must be stored in the routing table
  *  - periodically contact all peers to see if they are still online and retrieve the routing table of the other peer.
  *  
- *  //TODO test the periodically port scan
+ *  TODO changes should be promoted through the network immediatly
  */
 
 public class RoutingProtocol extends Protocol {

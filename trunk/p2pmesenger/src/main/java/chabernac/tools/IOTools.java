@@ -34,5 +34,6 @@ public class IOTools {
         aListener.bytesTransfered( theBytesTransferred );
       }
     }
+    anOutputStream.flush();
   }
 }
