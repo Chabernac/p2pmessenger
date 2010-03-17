@@ -37,7 +37,8 @@ public abstract class Protocol {
    * @param anInput
    * @return
    */
-  protected abstract String handleCommand(long aSessionId, String anInput);
+  public abstract String handleCommand(long aSessionId, String anInput);
+  
   protected abstract void stopProtocol();
   
   public String handle(long aSessionId, String  anInput){
