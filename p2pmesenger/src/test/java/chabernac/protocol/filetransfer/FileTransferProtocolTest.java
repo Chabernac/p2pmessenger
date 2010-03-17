@@ -12,23 +12,23 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.UnknownHostException;
 
+import junit.framework.TestCase;
+
 import org.apache.log4j.BasicConfigurator;
 
-import junit.framework.TestCase;
 import chabernac.protocol.MasterProtocol;
 import chabernac.protocol.ProtocolServer;
 import chabernac.protocol.message.MessageProtocol;
 import chabernac.protocol.pipe.PipeProtocol;
 import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.RoutingTable;
-import chabernac.protocol.routing.UnkwownPeerException;
 
 public class FileTransferProtocolTest extends TestCase {
   static{
     BasicConfigurator.configure();
   }
   
-  public void testFileTransfer() throws InterruptedException, UnknownHostException, IOException, FileRefusedExcpetion, UnkwownPeerException{
+  public void testFileTransfer() throws InterruptedException, UnknownHostException, IOException, FileTransferException{
     
     //p1 <--> p2 <--> p3 peer 1 cannot reach peer 3
 
@@ -91,7 +91,7 @@ public class FileTransferProtocolTest extends TestCase {
       
       theFileTransferProtocol1.sendFile( theTempFile, theRoutingTable1.getEntryForPeer( "3" ).getPeer() );
       
-      Thread.sleep( 10000 );
+//      Thread.sleep( 10000 );
       
       assertTrue( theFileToWrite.exists() );
       assertEquals( theTempFile.length(), theFileToWrite.length());
