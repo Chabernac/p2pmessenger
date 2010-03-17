@@ -103,7 +103,7 @@ public class RoutingProtocol extends Protocol {
   }
 
   @Override
-  protected String handleCommand( long aSessionId, String anInput ) {
+  public String handleCommand( long aSessionId, String anInput ) {
     int theFirstIndexOfSpace = anInput.indexOf( " " );
     if(theFirstIndexOfSpace == -1) theFirstIndexOfSpace = anInput.length();
     String theCommandString = anInput.substring( 0,  theFirstIndexOfSpace);

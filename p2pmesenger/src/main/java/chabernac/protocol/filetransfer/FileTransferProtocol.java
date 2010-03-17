@@ -46,7 +46,7 @@ public class FileTransferProtocol extends Protocol {
   }
 
   @Override
-  protected String handleCommand(long aSessionId, String anInput) {
+  public String handleCommand(long aSessionId, String anInput) {
     if(anInput.startsWith( Command.FILE.name() )){
       String theFileName = anInput.substring( Command.FILE.name().length() + 1 );
 

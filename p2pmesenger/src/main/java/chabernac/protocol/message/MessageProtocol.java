@@ -34,7 +34,7 @@ public class MessageProtocol extends Protocol {
   }
   
   @Override
-  protected String handleCommand( long aSessionId, String anInput ) {
+  public String handleCommand( long aSessionId, String anInput ) {
     Object theMessage = XMLTools.fromXML( anInput );
     if(!(theMessage instanceof Message)){
       return STATUS_MESSAGE.UNCRECOGNIZED_MESSAGE.name();
@@ -61,7 +61,7 @@ public class MessageProtocol extends Protocol {
       }
     } 
   }
-
+ 
   @Override
   protected void stopProtocol() {
   }
