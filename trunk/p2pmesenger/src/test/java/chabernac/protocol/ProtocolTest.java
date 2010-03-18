@@ -5,30 +5,30 @@ import chabernac.protocol.ping.PingProtocol;
 
 public class ProtocolTest extends TestCase {
   public void testCreateMessage(){
-    MasterProtocol theProtocol = new MasterProtocol();
+    ProtocolContainer theProtocol = new ProtocolContainer();
     PingProtocol thePingProtocol = new PingProtocol();
-    PingProtocol thePingProtocol2 = new PingProtocol();
+//    PingProtocol thePingProtocol2 = new PingProtocol();
     
-    theProtocol.addSubProtocol(thePingProtocol);
-    thePingProtocol.addSubProtocol(thePingProtocol2);
-    String theMessage = thePingProtocol2.createMessage("test");
+    theProtocol.addProtocol(thePingProtocol);
+//    thePingProtocol.addProtocol(thePingProtocol2);
+    String theMessage = thePingProtocol.createMessage("test");
     
     //because the message created in the second ping protocol
     //the own protocol prefix, the parent protocol prefix and master protocol prefix will be added 
     //to the message.
-    assertEquals("MASPPGPPGtest", theMessage);
+    assertEquals("PPGtest", theMessage);
   }
   
   public void testGetProtocolsString(){
-    MasterProtocol theProtocol = new MasterProtocol();
+    ProtocolContainer theProtocol = new ProtocolContainer();
     PingProtocol thePingProtocol = new PingProtocol();
-    PingProtocol thePingProtocol2 = new PingProtocol();
+//    PingProtocol thePingProtocol2 = new PingProtocol();
     
-    theProtocol.addSubProtocol(thePingProtocol);
-    thePingProtocol.addSubProtocol(thePingProtocol2);
-    theProtocol.addSubProtocol(new MasterProtocol());
+    theProtocol.addProtocol(thePingProtocol);
+//    thePingProtocol.addProtocol(thePingProtocol2);
+//    theProtocol.addProtocol(new MasterProtocol());
     
     
-    assertEquals("MAS{MAS;PPG{PPG}}", theProtocol.getProtocolsString());
+    assertEquals("PPG;MAS;", theProtocol.getProtocolString());
   }
 }

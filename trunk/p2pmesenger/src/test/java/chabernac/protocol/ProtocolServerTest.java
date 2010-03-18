@@ -25,9 +25,9 @@ public class ProtocolServerTest extends TestCase {
   }
   
   public void testProtocolServer() throws UnknownHostException, IOException{
-    MasterProtocol theMasterProtocol = new MasterProtocol();
+    ProtocolContainer theMasterProtocol = new ProtocolContainer();
     PingProtocol thePingProtocol = new PingProtocol();
-    theMasterProtocol.addSubProtocol( thePingProtocol );
+    theMasterProtocol.addProtocol( thePingProtocol );
     
     int thePort = 12026;
     
@@ -49,9 +49,9 @@ public class ProtocolServerTest extends TestCase {
   }
   
   public void testProtocolServerWithPeer() throws UnknownHostException, IOException{
-    MasterProtocol theMasterProtocol = new MasterProtocol();
+    ProtocolContainer theMasterProtocol = new ProtocolContainer();
     PingProtocol thePingProtocol = new PingProtocol();
-    theMasterProtocol.addSubProtocol( thePingProtocol );
+    theMasterProtocol.addProtocol( thePingProtocol );
     
     int thePort = 12027;
     

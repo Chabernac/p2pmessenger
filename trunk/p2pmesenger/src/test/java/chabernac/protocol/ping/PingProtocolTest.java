@@ -13,8 +13,8 @@ public class PingProtocolTest extends TestCase {
   public void testPingProtocol(){
     PingProtocol theProtocol = new PingProtocol();
     
-    assertEquals( Response.PONG.name(), new String(theProtocol.handle( 0, Command.PING.name()) ));
-    assertEquals( Response.UNKNOWN_COMMAND.name(), new String(theProtocol.handle( 0, "somtehing") ));
+    assertEquals( Response.PONG.name(), new String(theProtocol.handleCommand( 0, Command.PING.name()) ));
+    assertEquals( Response.UNKNOWN_COMMAND.name(), new String(theProtocol.handleCommand( 0, "somtehing") ));
     
     assertEquals( "Ping protocol" , theProtocol.getDescription());
   }

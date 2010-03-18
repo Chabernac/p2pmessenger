@@ -321,7 +321,7 @@ public class RoutingProtocol extends Protocol {
   }
 
   @Override
-  protected void stopProtocol() {
+  public void stop() {
     if(mySheduledService != null){
       mySheduledService.shutdown();
     }

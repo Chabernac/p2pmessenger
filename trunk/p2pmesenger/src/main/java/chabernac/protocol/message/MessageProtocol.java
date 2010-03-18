@@ -47,7 +47,7 @@ public class MessageProtocol extends Protocol {
     if(theDestionation.getPeerId().equals( myRoutingTable.getLocalPeerId() )){
       //reoffer the content of the message to the handle method
       //this will cause sub protocols to handle the message if they are present
-      return handle( aSessionId, aMessage.getMessage() );
+      return getMasterProtocol().handleCommand( aSessionId, aMessage.getMessage() );
     } else {
       try {
         Peer theGateway = myRoutingTable.getGatewayForPeer( theDestionation );
@@ -63,7 +63,6 @@ public class MessageProtocol extends Protocol {
   }
  
   @Override
-  protected void stopProtocol() {
+  public void stop() {
   }
-
 }
