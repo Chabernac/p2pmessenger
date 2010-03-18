@@ -4,6 +4,9 @@
  */
 package chabernac.protocol;
 
+/**
+ * @deprecated
+ */
 
 public class MasterProtocol extends Protocol {
   public static enum Command{PROTOCOLS};
@@ -18,7 +21,7 @@ public class MasterProtocol extends Protocol {
   public String handleCommand( long aSessionId, String anInput ) {
     String theCommand = new String(anInput);
     if(Command.PROTOCOLS.name().equalsIgnoreCase( theCommand )){
-      return getProtocolsString();
+//      return getProtocolsString();
     }
     return Result.UNKNOWN_COMMAND.name();
   }
@@ -29,7 +32,11 @@ public class MasterProtocol extends Protocol {
   }
 
   @Override
-  protected void stopProtocol() {
+  public void stop() {
+    // TODO Auto-generated method stub
+    
   }
+
+
 
 }

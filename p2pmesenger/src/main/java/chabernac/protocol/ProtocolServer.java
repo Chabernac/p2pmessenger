@@ -24,13 +24,13 @@ public class ProtocolServer implements Runnable{
 
   private int myPort;
   private int myNumberOfThreads;
-  private Protocol myProtocol = null;
+  private IProtocol myProtocol = null;
   private boolean isStarted = false;
   private ServerSocket myServerSocket = null;
 
   private Object LOCK = new Object();
 
-  public ProtocolServer(Protocol aProtocol, int aPort, int aNumberOfThreads){
+  public ProtocolServer(IProtocol aProtocol, int aPort, int aNumberOfThreads){
     myProtocol = aProtocol;
     myPort = aPort;
     myNumberOfThreads = aNumberOfThreads;
@@ -104,7 +104,7 @@ public class ProtocolServer implements Runnable{
         
         String theLine = null;
         while( (theLine = theReader.readLine()) != null){
-          String  theResult = myProtocol.handle( theSessionId, theLine );
+          String  theResult = myProtocol.handleCommand( theSessionId, theLine );
           theWriter.println( new String(theResult) );
           theWriter.flush();
         }

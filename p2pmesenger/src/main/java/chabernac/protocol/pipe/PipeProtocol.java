@@ -103,7 +103,7 @@ public class PipeProtocol extends Protocol {
   }
 
   @Override
-  protected void stopProtocol() {
+  public void stop() {
     myServerSocketExecutor.shutdownNow();
   }
 

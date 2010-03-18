@@ -4,15 +4,12 @@
  */
 package chabernac.protocol.routing;
 
+import junit.framework.TestCase;
+
 import org.apache.log4j.BasicConfigurator;
 
-import junit.framework.TestCase;
-import chabernac.protocol.MasterProtocol;
+import chabernac.protocol.ProtocolContainer;
 import chabernac.protocol.ProtocolServer;
-import chabernac.protocol.routing.RoutingProtocol;
-import chabernac.protocol.routing.RoutingTable;
-import chabernac.protocol.routing.RoutingTableEntry;
-
 
 public class RoutingProtocolTest extends TestCase {
 
@@ -27,16 +24,16 @@ public class RoutingProtocolTest extends TestCase {
 
     long thet1 = System.currentTimeMillis();
     RoutingTable theRoutingTable = new RoutingTable(theLocalPeerId);
-    MasterProtocol theProtocol = new MasterProtocol();
-    RoutingProtocol theRoutingProtocol1 = new RoutingProtocol(theRoutingTable, theExchangeDelay, false);
-    theProtocol.addSubProtocol( theRoutingProtocol1 );
+    ProtocolContainer theProtocol = new ProtocolContainer();
+    RoutingProtocol theRoutingProtocol1 = new RoutingProtocol(theRoutingTable, theExchangeDelay, true);
+    theProtocol.addProtocol( theRoutingProtocol1 );
     ProtocolServer theServer = new ProtocolServer(theProtocol, RoutingProtocol.START_PORT, 5);
 
     String theLocalPeerId2 = "2";
     RoutingTable theRoutingTable2 = new RoutingTable(theLocalPeerId2);
-    MasterProtocol theProtocol2 = new MasterProtocol();
-    RoutingProtocol theRoutingProtocol2 = new RoutingProtocol(theRoutingTable2, theExchangeDelay, false) ; 
-    theProtocol2.addSubProtocol( theRoutingProtocol2 );
+    ProtocolContainer theProtocol2 = new ProtocolContainer();
+    RoutingProtocol theRoutingProtocol2 = new RoutingProtocol(theRoutingTable2, theExchangeDelay, true) ; 
+    theProtocol2.addProtocol( theRoutingProtocol2 );
     ProtocolServer theServer2 = new ProtocolServer(theProtocol2, RoutingProtocol.START_PORT + 1, 5);
     try{
       theServer.start();
@@ -85,27 +82,27 @@ public class RoutingProtocolTest extends TestCase {
     //p1 <--> p2 <--> p3 peer 1 cannot reach peer 3
 
     RoutingTable theRoutingTable1 = new RoutingTable("1");
-    MasterProtocol theProtocol1 = new MasterProtocol();
+    ProtocolContainer theProtocol1 = new ProtocolContainer();
     RoutingProtocol theRoutingProtocol1 = new RoutingProtocol(theRoutingTable1, -1, false);
-    theProtocol1.addSubProtocol( theRoutingProtocol1 );
+    theProtocol1.addProtocol( theRoutingProtocol1 );
     ProtocolServer theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT, 5);
 
     RoutingTable theRoutingTable2 = new RoutingTable("2");
-    MasterProtocol theProtocol2 = new MasterProtocol();
+    ProtocolContainer theProtocol2 = new ProtocolContainer();
     RoutingProtocol theRoutingProtocol2 = new RoutingProtocol(theRoutingTable2, -1, false);
-    theProtocol2.addSubProtocol( theRoutingProtocol2 );
+    theProtocol2.addProtocol( theRoutingProtocol2 );
     ProtocolServer theServer2 = new ProtocolServer(theProtocol2, RoutingProtocol.START_PORT + 1, 5);
 
     RoutingTable theRoutingTable3 = new RoutingTable("3");
-    MasterProtocol theProtocol3 = new MasterProtocol();
+    ProtocolContainer theProtocol3 = new ProtocolContainer();
     RoutingProtocol theRoutingProtocol3 = new RoutingProtocol(theRoutingTable3, -1, false);
-    theProtocol3.addSubProtocol( theRoutingProtocol3 );
+    theProtocol3.addProtocol( theRoutingProtocol3 );
     ProtocolServer theServer3 = new ProtocolServer(theProtocol3, RoutingProtocol.START_PORT + 2, 5);
     
     RoutingTable theRoutingTable4 = new RoutingTable("4");
-    MasterProtocol theProtocol4 = new MasterProtocol();
+    ProtocolContainer theProtocol4 = new ProtocolContainer();
     RoutingProtocol theRoutingProtocol4 = new RoutingProtocol(theRoutingTable4, -1, false);
-    theProtocol4.addSubProtocol( theRoutingProtocol4 );
+    theProtocol4.addProtocol( theRoutingProtocol4 );
     ProtocolServer theServer4 = new ProtocolServer(theProtocol4, RoutingProtocol.START_PORT + 3, 5);
 
     theRoutingProtocol1.getLocalUnreachablePeerIds().add( "3" );
@@ -388,15 +385,15 @@ public class RoutingProtocolTest extends TestCase {
   public void testScanRemoteSystem() throws InterruptedException{
 
     RoutingTable theRoutingTable1 = new RoutingTable("1");
-    MasterProtocol theProtocol1 = new MasterProtocol();
+    ProtocolContainer theProtocol1 = new ProtocolContainer();
     RoutingProtocol theRoutingProtocol1 = new RoutingProtocol(theRoutingTable1, -1, true);
-    theProtocol1.addSubProtocol( theRoutingProtocol1 );
+    theProtocol1.addProtocol( theRoutingProtocol1 );
     ProtocolServer theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT, 5);
 
     RoutingTable theRoutingTable2 = new RoutingTable("2");
-    MasterProtocol theProtocol2 = new MasterProtocol();
+    ProtocolContainer theProtocol2 = new ProtocolContainer();
     RoutingProtocol theRoutingProtocol2 = new RoutingProtocol(theRoutingTable2, -1, true);
-    theProtocol2.addSubProtocol( theRoutingProtocol2 );
+    theProtocol2.addProtocol( theRoutingProtocol2 );
     ProtocolServer theServer2 = new ProtocolServer(theProtocol2, RoutingProtocol.START_PORT + 1, 5);
     
     theRoutingProtocol1.getLocalUnreachablePeerIds().add( "2" );

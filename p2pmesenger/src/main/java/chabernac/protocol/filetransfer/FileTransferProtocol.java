@@ -141,11 +141,6 @@ public class FileTransferProtocol extends Protocol {
 
   }
 
-  @Override
-  protected void stopProtocol() {
-    myMapping.clear();
-  }
-
   public iFileHandler getFileHandler() {
     return myFileHandler;
   }
@@ -267,5 +262,10 @@ public class FileTransferProtocol extends Protocol {
     public String getSendFile() {
       return mySendFile;
     }
+  }
+
+  @Override
+  public void stop() {
+    myMapping.clear();
   }
 }

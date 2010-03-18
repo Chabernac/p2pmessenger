@@ -32,7 +32,7 @@ public class PingProtocol extends Protocol {
   }
 
   @Override
-  protected void stopProtocol() {
+  public void stop() {
   }
 
 }
