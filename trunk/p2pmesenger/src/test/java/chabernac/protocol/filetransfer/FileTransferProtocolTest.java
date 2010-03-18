@@ -16,7 +16,6 @@ import junit.framework.TestCase;
 
 import org.apache.log4j.BasicConfigurator;
 
-import chabernac.protocol.MasterProtocol;
 import chabernac.protocol.ProtocolContainer;
 import chabernac.protocol.ProtocolServer;
 import chabernac.protocol.message.MessageProtocol;

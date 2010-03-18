@@ -39,4 +39,14 @@ public abstract class Protocol implements IProtocol{
   public IProtocol getMasterProtocol(){
     return myParentProtocol;
   }
+  
+  public ProtocolContainer findProtocolContainer(){
+    if(myParentProtocol instanceof ProtocolContainer){
+      return (ProtocolContainer)myParentProtocol;
+    }
+    if(myParentProtocol instanceof Protocol){
+      return ((Protocol)myParentProtocol).findProtocolContainer();
+    }
+    return null;
+  }
 }

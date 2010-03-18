@@ -76,5 +76,13 @@ public class ProtocolContainer implements IProtocol {
       }
     }
   }
+  
+  public IProtocol getProtocol(String anId){
+    return myProtocolMap.get( anId );
+  }
+  
+  public boolean containsProtocol(String anId){
+    return myProtocolMap.containsKey( anId );
+  }
 
 }
