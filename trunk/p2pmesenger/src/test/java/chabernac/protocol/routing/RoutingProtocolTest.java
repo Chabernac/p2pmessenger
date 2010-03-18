@@ -324,7 +324,7 @@ public class RoutingProtocolTest extends TestCase {
         theRoutingProtocol4.exchangeRoutingTable();
       }
       
-      testEntry( theRoutingTable1.getEntryForPeer("1"), 0, "1", true, true); 
+      testEntry( theRoutingTable1.getEntryForPeer("1"), 0, "1", true, true);
       testEntry( theRoutingTable1.getEntryForPeer("2"), 1, "2", true, true);
       testEntry( theRoutingTable1.getEntryForPeer("3"), 6, "3", false, false);
       testEntry( theRoutingTable1.getEntryForPeer("4"), 6, "3", false, false);
