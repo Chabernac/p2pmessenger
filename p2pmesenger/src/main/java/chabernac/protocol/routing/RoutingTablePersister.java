@@ -50,10 +50,10 @@ public class RoutingTablePersister implements iObjectPersister<RoutingTable> {
     theLine = null;
     while( (theLine = theReader.readLine()) != null  ){
       String[] theRoutingTableEntryVars = theLine.split( ";" );
-      RoutingTableEntry theEntry = new RoutingTableEntry();
-      theEntry.setPeer( thePeers.get(  theRoutingTableEntryVars[0] ) ) ;
-      theEntry.setHopDistance( Integer.parseInt(theRoutingTableEntryVars[1] ));
-      theEntry.setGateway( thePeers.get(theRoutingTableEntryVars[2] )) ;
+      RoutingTableEntry theEntry = new RoutingTableEntry(thePeers.get(  theRoutingTableEntryVars[0] ), Integer.parseInt(theRoutingTableEntryVars[1]), thePeers.get(theRoutingTableEntryVars[2] ));
+//      theEntry.setPeer( thePeers.get(  theRoutingTableEntryVars[0] ) ) ;
+//      theEntry.setHopDistance( Integer.parseInt(theRoutingTableEntryVars[1] ));
+//      theEntry.setGateway( thePeers.get(theRoutingTableEntryVars[2] )) ;
       theTable.addRoutingTableEntry( theEntry );
     }
     

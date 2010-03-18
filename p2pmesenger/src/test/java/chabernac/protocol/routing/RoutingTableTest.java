@@ -61,7 +61,18 @@ public class RoutingTableTest extends TestCase {
     
     assertEquals(1, theTable.getEntries().size());
     
-    assertEquals(theEntry, theTable.getEntries().get(0));
+    //entry 2 will be kept because it contains the same gateway as the entry that is already there and so it is assumed that this is
+    //the real situation
+    assertEquals(theEntry2, theTable.getEntries().get(0));
+    
+    
+    Peer thePeer3 = new Peer("3", "localhost", 1002);
+    
+    RoutingTableEntry theEntry3 = new RoutingTableEntry(thePeer, 3, thePeer3);
+    
+    theTable.addRoutingTableEntry(theEntry3);
+    
+    assertEquals(theEntry3, theTable.getEntryForPeer( "2" ));
   }
   
   

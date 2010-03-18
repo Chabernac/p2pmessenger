@@ -21,6 +21,7 @@ public class RoutingTable implements Iterable< RoutingTableEntry >{
 
   private String myLocalPeerId;
   private Map<String, RoutingTableEntry> myRoutingTable = new HashMap< String, RoutingTableEntry >();
+  private Set<IRoutingTableListener> myRoutingTableListeners = new HashSet< IRoutingTableListener >();
 
   /**
    * you should not use this constructor
@@ -44,16 +45,38 @@ public class RoutingTable implements Iterable< RoutingTableEntry >{
 
       //if the gateway of the local entry is the same as the peer from which the entry comes, then that entry is the most accurate
       //so upate the table
-      if(thePeerEntry.getGateway().getPeerId().equals( aContainingPeerEntry ) ||
+      
+      //TODO can we not write the followwing: ?
+      if(thePeerEntry.getGateway().getPeerId().equals( anEntry.getGateway().getPeerId() ) ||
+//      if(thePeerEntry.getGateway().getPeerId().equals( aContainingPeerEntry ) ||
           anEntry.closerThen( thePeerEntry )){
 
         myRoutingTable.put( anEntry.getPeer().getPeerId(), anEntry );
-        LOGGER.debug( "Updated routing table entry to routing table for peer:   " + myLocalPeerId + " : "  + anEntry );
+        notifyListenersOfRoutingTableEntryChange( anEntry );
+//        LOGGER.debug( "Updated routing table entry to routing table for peer:   " + myLocalPeerId + " : "  + anEntry );
+        
+        if(aContainingPeerEntry.equals( myLocalPeerId ) && anEntry.getGateway().getPeerId() == anEntry.getPeer().getPeerId() && anEntry.getHopDistance() >= 2 && anEntry.getHopDistance() <= 5){
+          
+          Exception e = new Exception();
+          LOGGER.error("We have received an entry of our selfs", e);
+        }
+        
+        if(thePeerEntry.getGateway().getPeerId().equals( anEntry.getGateway().getPeerId() )){
+          LOGGER.debug( "Updated routing table entry to routing table for peer:   " + myLocalPeerId + " : "  + anEntry + " because gateway of local entry: '" + thePeerEntry.getGateway().getPeerId() + "' is the peer from which we received the entry" ); 
+        } else {
+          LOGGER.debug( "Updated routing table entry to routing table for peer:   " + myLocalPeerId + " : "  + anEntry + " because the entry is shorter than the entry we have" );
+        }
       }
 
     } else {
       myRoutingTable.put(anEntry.getPeer().getPeerId(), anEntry);
       LOGGER.debug( "Added a new routing table entry to routing table for peer: " + myLocalPeerId + " : "  + anEntry);
+    }
+  }
+  
+  private void notifyListenersOfRoutingTableEntryChange(RoutingTableEntry anEntry){
+    for(IRoutingTableListener theListener : myRoutingTableListeners){
+      theListener.routingTableEntryChanged( anEntry );
     }
   }
 
@@ -87,11 +110,7 @@ public class RoutingTable implements Iterable< RoutingTableEntry >{
   public synchronized void merge(RoutingTable anotherRoutingTable) throws SocketException{
     for(Iterator< RoutingTableEntry > i = anotherRoutingTable.iterator(); i.hasNext();){
       RoutingTableEntry theEntry = i.next();
-      //change the gateway to the peer from which this routing tables comes from
-      theEntry.setGateway( anotherRoutingTable.obtainLocalPeer() );
-      //increment the hop distance
-      theEntry.incrementHopDistance();
-      addRoutingTableEntry(anotherRoutingTable.getLocalPeerId(), theEntry );
+      addRoutingTableEntry(anotherRoutingTable.getLocalPeerId(), theEntry.entryForNextPeer( anotherRoutingTable.obtainLocalPeer() ) );
     }
   }
 
@@ -135,5 +154,9 @@ public class RoutingTable implements Iterable< RoutingTableEntry >{
     for(RoutingTableEntry theEntry : anTable){
       addRoutingTableEntry( theEntry );
     }
+  }
+  
+  public void addRoutingTableListener(IRoutingTableListener aListener){
+    myRoutingTableListeners.add( aListener );
   }
 }

@@ -41,7 +41,7 @@ public class RoutingProtocol extends Protocol {
   public static final int START_PORT = 12700;
   public static final int END_PORT = 12720;
 
-  private static enum Command { REQUEST_TABLE, WHO_ARE_YOU, ANNOUNCEMENT };
+  private static enum Command { REQUEST_TABLE, WHO_ARE_YOU, ANNOUNCEMENT_WITH_REPLY, ANNOUNCEMENT };
   private static enum Status { UNKNOWN_COMMAND };
 
   private RoutingTable myRoutingTable = null;
@@ -63,6 +63,8 @@ public class RoutingProtocol extends Protocol {
   
   private boolean isPersistRoutingTable = false;
   
+  private ExecutorService myChangeService = null;
+  
   /**
    * 
    * @param aLocalPeerId
@@ -76,8 +78,10 @@ public class RoutingProtocol extends Protocol {
     this.isPersistRoutingTable = isPersistRoutingTable;
     if(isPersistRoutingTable) loadRoutingTable();
     resetRoutingTable();
-    new Thread(new ScanLocalSystem()).start();
+//    new Thread(new ScanLocalSystem()).start();
     if(anExchangeDelay > 0 ) scheduleRoutingTableExchange();
+    myChangeService = Executors.newFixedThreadPool( 5 );
+//    myRoutingTable.addRoutingTableListener( new RoutingTableListener() );
   }
 
 
@@ -86,7 +90,6 @@ public class RoutingProtocol extends Protocol {
     mySheduledService.scheduleWithFixedDelay( new ScanLocalSystem(), 1, myExchangeDelay, TimeUnit.SECONDS);
     mySheduledService.scheduleWithFixedDelay( new ExchangeRoutingTable(), 2, myExchangeDelay, TimeUnit.SECONDS);
     mySheduledService.scheduleWithFixedDelay( new ScanRemoteSystem(), 10 , 10 * myExchangeDelay, TimeUnit.SECONDS);
-
   }
 
   @Override
@@ -116,14 +119,17 @@ public class RoutingProtocol extends Protocol {
       //another peer requested my peer id, send it to him, this is also used
       //to check if I'm still alive and kicking
       return myRoutingTable.getLocalPeerId();
-    } else if(theCommand == Command.ANNOUNCEMENT){
+    } else if(theCommand == Command.ANNOUNCEMENT_WITH_REPLY){
       //the announcement is of the peer which is sending the annoucement
       //so the peer id inside the routingtable entry is also the containing peer
       String thePeerEntry = anInput.substring( theFirstIndexOfSpace + 1 );
-      RoutingTableEntry theEntry = (RoutingTableEntry)XMLTools.fromXML( thePeerEntry );
-      theEntry.incrementHopDistance();
+      RoutingTableEntry theEntry = ((RoutingTableEntry)XMLTools.fromXML( thePeerEntry )).incHopDistance();
       myRoutingTable.addRoutingTableEntry( theEntry.getPeer().getPeerId(), theEntry);
       return XMLTools.toXML( myRoutingTable );
+    } else if(theCommand == Command.ANNOUNCEMENT){
+      String thePeerEntry = anInput.substring( theFirstIndexOfSpace + 1 );
+      RoutingTableEntry theEntry = ((RoutingTableEntry)XMLTools.fromXML( thePeerEntry )).incHopDistance();
+      myRoutingTable.addRoutingTableEntry( theEntry.getPeer().getPeerId(), theEntry);
     }
     return Status.UNKNOWN_COMMAND.name();
   }
@@ -161,7 +167,7 @@ public class RoutingProtocol extends Protocol {
 
         //only if we have detected our self we set the hop distance to 0
         if(theId.equals(myRoutingTable.getLocalPeerId())){
-          theEntry.setHopDistance( 0 );
+          theEntry = theEntry.derivedEntry( 0 );
         }
         myRoutingTable.addRoutingTableEntry( myRoutingTable.getLocalPeerId(), theEntry );
         return true;
@@ -253,17 +259,19 @@ public class RoutingProtocol extends Protocol {
             //simulate that we cannot contact the peer
             throw new Exception("Simulate that we can not contact peer: " + thePeer.getPeerId());
           }
-          String theTable = thePeer.send( createMessage( Command.ANNOUNCEMENT.name() + " "  + XMLTools.toXML( myRoutingTable.getEntryForLocalPeer() ))) ;
+          String theTable = thePeer.send( createMessage( Command.ANNOUNCEMENT_WITH_REPLY.name() + " "  + XMLTools.toXML( myRoutingTable.getEntryForLocalPeer() ))) ;
 //          String theTable = thePeer.send( createMessage( Command.REQUEST_TABLE.name() ));
           RoutingTable theRemoteTable = (RoutingTable)XMLTools.fromXML( theTable );
           myRoutingTable.merge( theRemoteTable );
           //we can connect directly to this peer, so the hop distance is 1
-          theEntry.setHopDistance( 1 );
+          //theEntry.setHopDistance( 1 );
+          myRoutingTable.addRoutingTableEntry( theEntry.derivedEntry( 1 ) );
         } catch ( Exception e ) {
           //update all peers which have this peer as gateway to the max hop distance
           for(RoutingTableEntry theEntry2 : myRoutingTable.getEntries()){
-            if(theEntry2.getGateway().getPeerId() == theEntry.getPeer().getPeerId()){
-              theEntry2.setHopDistance( RoutingTableEntry.MAX_HOP_DISTANCE );
+            if(theEntry2.getGateway().getPeerId().equals( theEntry.getPeer().getPeerId())){
+//              theEntry2.setHopDistance( RoutingTableEntry.MAX_HOP_DISTANCE );
+              myRoutingTable.addRoutingTableEntry( theEntry2.derivedEntry( RoutingTableEntry.MAX_HOP_DISTANCE ) );
             }
           }
         }
@@ -274,6 +282,27 @@ public class RoutingProtocol extends Protocol {
     
     //save the routing table
     if(isPersistRoutingTable) saveRoutingTable();
+  }
+  
+  private void sendAnnoucement( RoutingTableEntry anEntry ) {
+    for(RoutingTableEntry theEntry : myRoutingTable.getEntries()){
+      Peer thePeer = theEntry.getPeer();
+      if(thePeer.getPeerId() != myRoutingTable.getLocalPeerId() && theEntry.getHopDistance() <= 1){
+        try {
+          thePeer.send( createMessage( Command.ANNOUNCEMENT.name() + " "  + XMLTools.toXML( anEntry ))) ;
+        } catch ( Exception e ) {
+          //the peer can not be reached 
+        //update all peers which have this peer as gateway to the max hop distance
+          for(RoutingTableEntry theEntry2 : myRoutingTable.getEntries()){
+            if(theEntry2.getGateway().getPeerId().equals( theEntry.getPeer().getPeerId())){
+//              theEntry2.setHopDistance( RoutingTableEntry.MAX_HOP_DISTANCE );
+              myRoutingTable.addRoutingTableEntry( theEntry2.derivedEntry( RoutingTableEntry.MAX_HOP_DISTANCE ) );
+            }
+          }
+        }
+      }
+    }
+    
   }
 
   public long getExchangeCounter(){
@@ -304,7 +333,8 @@ public class RoutingProtocol extends Protocol {
 
   public void resetRoutingTable(){
     for(RoutingTableEntry theEntry : myRoutingTable.getEntries()){
-      theEntry.setHopDistance( RoutingTableEntry.MAX_HOP_DISTANCE );
+      myRoutingTable.addRoutingTableEntry( theEntry.derivedEntry( RoutingTableEntry.MAX_HOP_DISTANCE ) );
+//      theEntry.setHopDistance( RoutingTableEntry.MAX_HOP_DISTANCE );
     }
   }
 
@@ -327,5 +357,24 @@ public class RoutingProtocol extends Protocol {
     }
 
     if(isPersistRoutingTable) saveRoutingTable();
+  }
+  
+  private class RoutingTableListener implements IRoutingTableListener{
+    @Override
+    public void routingTableEntryChanged( RoutingTableEntry anEntry ) {
+      myChangeService.execute( new SendAnnouncement(anEntry) );
+    }
+  }
+  
+  private class SendAnnouncement implements Runnable{
+    private RoutingTableEntry myEntry = null;
+    
+    public SendAnnouncement(RoutingTableEntry anEntry){
+      myEntry = anEntry;
+    }
+    
+    public void run(){
+     sendAnnoucement(myEntry); 
+    }
   }
 }

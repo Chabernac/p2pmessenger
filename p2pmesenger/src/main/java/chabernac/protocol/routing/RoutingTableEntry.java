@@ -25,6 +25,9 @@ public class RoutingTableEntry {
 		super();
 		myPeer = anHost;
 		myHopDistance = anHopDistance;
+		if(myHopDistance > MAX_HOP_DISTANCE){
+		  myHopDistance = MAX_HOP_DISTANCE;
+		}
 		myGateway = anGateway;
 	}
 
@@ -85,6 +88,17 @@ public class RoutingTableEntry {
     if(getHopDistance() != theEntry.getHopDistance() ) return false;
     if(!getGateway().getPeerId().equals( theEntry.getGateway().getPeerId())) return false;
     return true;
-    
+  }
+  
+  public RoutingTableEntry entryForNextPeer(Peer aReceivedPeer){
+    return new RoutingTableEntry(getPeer(), getHopDistance() + 1, aReceivedPeer);
+  }
+  
+  public RoutingTableEntry derivedEntry(int aHopDistance){
+    return new RoutingTableEntry(getPeer(), aHopDistance, getGateway());
+  }
+  
+  public RoutingTableEntry incHopDistance(){
+    return new RoutingTableEntry(getPeer(), getHopDistance() + 1, getGateway());
   }
 }
