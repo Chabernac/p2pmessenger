@@ -22,6 +22,7 @@ public class Peer {
   private String myPeerId;
   private List<String> myHost = null;
   private int myPort;
+  private String myProtocolsString = null;
 
   public Peer (){}
   
@@ -74,6 +75,14 @@ public class Peer {
 
   public void setPeerId( String anPeerId ) {
     myPeerId = anPeerId;
+  }
+
+  public String getProtocolsString() {
+    return myProtocolsString;
+  }
+
+  public void setProtocolsString( String anProtocolsString ) {
+    myProtocolsString = anProtocolsString;
   }
 
   public boolean equals(Object anObject){

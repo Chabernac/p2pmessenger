@@ -12,6 +12,9 @@ import java.util.UUID;
 import org.apache.log4j.Logger;
 
 import chabernac.protocol.Protocol;
+import chabernac.protocol.ProtocolContainer;
+import chabernac.protocol.message.Message;
+import chabernac.protocol.message.MessageProtocol;
 import chabernac.protocol.pipe.IPipeListener;
 import chabernac.protocol.pipe.Pipe;
 import chabernac.protocol.pipe.PipeProtocol;
@@ -99,12 +102,22 @@ public class FileTransferProtocol extends Protocol {
 
   public void sendFile(File aFile, Peer aPeer) throws FileTransferException{
     String theResponse = null;
-    try{
-      theResponse = aPeer.send( createMessage( Command.FILE.name() + " " + aFile.getName()));
-    }catch(IOException e){
-      throw new FileTransferException("File transfer message could not be send to peer: '" + aPeer.getPeerId() + "'", e);
+
+    ProtocolContainer theProtocolContainer = findProtocolContainer();
+    if(theProtocolContainer.containsProtocol( "MSG" )){
+      MessageProtocol theMessageProtocol = (MessageProtocol)theProtocolContainer.getProtocol( "MSG" );
+      Message theMessage = new Message();
+      theMessage.setDestination( aPeer );
+      theMessage.setMessage( createMessage( Command.FILE.name() + " " + aFile.getName()) );
+      theResponse = theMessageProtocol.handleMessage( 0, theMessage );
+    } else {
+      try{
+        theResponse = aPeer.send( createMessage( Command.FILE.name() + " " + aFile.getName()));
+      }catch(IOException e){
+        throw new FileTransferException("File transfer message could not be send to peer: '" + aPeer.getPeerId() + "'", e);
+      }
     }
-    
+
     if(Response.REFUSED.name().equalsIgnoreCase( theResponse )){
       throw new FileTransferException("The file: '" + aFile.getName() + "' was refused by peer: '" + aPeer.getPeerId() + "'");
     } else {
