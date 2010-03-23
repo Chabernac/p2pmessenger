@@ -33,8 +33,6 @@ public class MasterProtocol extends Protocol {
 
   @Override
   public void stop() {
-    // TODO Auto-generated method stub
-    
   }
 
 

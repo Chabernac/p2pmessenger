@@ -46,7 +46,6 @@ public class RoutingTable implements Iterable< RoutingTableEntry >{
       //if the gateway of the local entry is the same as the peer from which the entry comes, then that entry is the most accurate
       //so upate the table
       
-      //TODO can we not write the followwing: ?
       if(thePeerEntry.getGateway().getPeerId().equals( anEntry.getGateway().getPeerId() ) ||
 //      if(thePeerEntry.getGateway().getPeerId().equals( aContainingPeerEntry ) ||
           anEntry.closerThen( thePeerEntry )){
