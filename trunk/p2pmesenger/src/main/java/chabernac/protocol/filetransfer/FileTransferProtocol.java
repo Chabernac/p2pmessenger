@@ -25,7 +25,6 @@ import chabernac.tools.iTransferListener;
 
 /**
  * 
- * TODO improve performance
  */
 public class FileTransferProtocol extends Protocol {
   private static Logger LOGGER = Logger.getLogger(FileTransferProtocol.class);

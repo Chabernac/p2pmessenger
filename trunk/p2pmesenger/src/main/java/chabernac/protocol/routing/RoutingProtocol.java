@@ -82,7 +82,7 @@ public class RoutingProtocol extends Protocol {
     if(anExchangeDelay > 0 ) scheduleRoutingTableExchange();
     myChangeService = Executors.newFixedThreadPool( 5 );
     
-    //TODO enable
+    //TODO enable to test immediate change propagation
 //    myRoutingTable.addRoutingTableListener( new RoutingTableListener() );
   }
 
