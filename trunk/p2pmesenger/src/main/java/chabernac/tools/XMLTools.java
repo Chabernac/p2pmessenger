@@ -17,12 +17,14 @@ public class XMLTools {
     theEncoder.flush();
     theEncoder.close();
     String theString = theOut.toString();
-    theString = theString.replaceAll( "\r", "" );
-    theString = theString.replaceAll( "\n", "" );
+    theString = theString.replaceAll( "\r", "</brr>" );
+    theString = theString.replaceAll( "\n", "</brn>" );
     return theString;
   }
   
   public static Object fromXML(String anXML){
+    anXML = anXML.replaceAll( "</brr>", "\r" );
+    anXML = anXML.replaceAll( "</brn>", "\n" );
     XMLDecoder theDecoder = new XMLDecoder(new ByteArrayInputStream(anXML.getBytes()));
     return theDecoder.readObject();
   }
