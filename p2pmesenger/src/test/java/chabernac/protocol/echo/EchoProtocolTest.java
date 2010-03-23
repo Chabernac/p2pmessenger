@@ -1,3 +1,4 @@
+package chabernac.protocol.echo;
 import chabernac.protocol.ProtocolContainer;
 import chabernac.protocol.echo.EchoProtocol;
 import junit.framework.TestCase;
