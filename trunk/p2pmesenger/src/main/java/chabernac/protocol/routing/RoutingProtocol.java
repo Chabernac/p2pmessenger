@@ -81,7 +81,9 @@ public class RoutingProtocol extends Protocol {
 //    new Thread(new ScanLocalSystem()).start();
     if(anExchangeDelay > 0 ) scheduleRoutingTableExchange();
     myChangeService = Executors.newFixedThreadPool( 5 );
-    myRoutingTable.addRoutingTableListener( new RoutingTableListener() );
+    
+    //TODO enable
+//    myRoutingTable.addRoutingTableListener( new RoutingTableListener() );
   }
 
 

@@ -9,8 +9,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -45,7 +45,7 @@ public class PipeProtocol extends Protocol {
   public static enum Result { UNKNOWN_COMMAND, PEER_UNREACHABLE, SOCKET_FAILURE, INVALID_PEERS, UNKNWOWN_PEER, SOCKET_OPENED };
   private ExecutorService myServerSocketExecutor = null;
   
-  private List<IPipeListener> myPipeListener = new ArrayList< IPipeListener >();
+  private Set<IPipeListener> myPipeListener = new HashSet< IPipeListener >();
 
   public PipeProtocol ( RoutingTable aRoutingTable, int aNumberOfServerSocketsAllowed ) {
     super( "PIP" );
@@ -57,7 +57,11 @@ public class PipeProtocol extends Protocol {
   public String getDescription() {
     return "Pipe protocol";
   }
-
+  
+  public RoutingTable getRoutingTable(){
+    return myRoutingTable;
+  }
+  
   @Override
   public String handleCommand( long aSessionId, String anInput ) {
     if( anInput.startsWith( Command.OPEN_SOCKET.name() ) ){
@@ -107,6 +111,14 @@ public class PipeProtocol extends Protocol {
     myServerSocketExecutor.shutdownNow();
   }
 
+  public Pipe openPipe(String aPeerId, String aPipeDescription) throws IOException, UnkwownPeerException{
+    Peer thePeer = myRoutingTable.getEntryForPeer( aPeerId ).getPeer();
+    Pipe thePipe = new Pipe(thePeer);
+    thePipe.setPipeDescription( aPipeDescription );
+    openPipe( thePipe );
+    return thePipe;
+  }
+  
   public void openPipe(Pipe aPipe) throws IOException, UnkwownPeerException{
     aPipe.setSocket( openSocketToPeer( myRoutingTable.obtainLocalPeer(), aPipe.getPeer(), aPipe.getPipeDescription() ) );
   }
