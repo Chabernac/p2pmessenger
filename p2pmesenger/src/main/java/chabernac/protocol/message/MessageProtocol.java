@@ -26,7 +26,7 @@ public class MessageProtocol extends Protocol {
   public MessageProtocol ( RoutingTable aRoutingTable ) {
     super( "MSG" );
     myRoutingTable = aRoutingTable;
-}
+ }
 
   @Override
   public String getDescription() {

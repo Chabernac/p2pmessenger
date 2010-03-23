@@ -77,7 +77,8 @@ public class ProtocolContainer implements IProtocol {
     }
   }
   
-  public IProtocol getProtocol(String anId){
+  public IProtocol getProtocol(String anId) throws UnknownProtocolException{
+    if(!myProtocolMap.containsKey( anId )) throw new UnknownProtocolException("The protocol '" + anId + "' is not known");
     return myProtocolMap.get( anId );
   }
   

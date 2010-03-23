@@ -13,6 +13,7 @@ import org.apache.log4j.Logger;
 
 import chabernac.protocol.Protocol;
 import chabernac.protocol.ProtocolContainer;
+import chabernac.protocol.UnknownProtocolException;
 import chabernac.protocol.message.Message;
 import chabernac.protocol.message.MessageProtocol;
 import chabernac.protocol.pipe.IPipeListener;
@@ -105,11 +106,15 @@ public class FileTransferProtocol extends Protocol {
 
     ProtocolContainer theProtocolContainer = findProtocolContainer();
     if(theProtocolContainer.containsProtocol( "MSG" )){
-      MessageProtocol theMessageProtocol = (MessageProtocol)theProtocolContainer.getProtocol( "MSG" );
-      Message theMessage = new Message();
-      theMessage.setDestination( aPeer );
-      theMessage.setMessage( createMessage( Command.FILE.name() + " " + aFile.getName()) );
-      theResponse = theMessageProtocol.handleMessage( 0, theMessage );
+      try{
+        MessageProtocol theMessageProtocol = (MessageProtocol)theProtocolContainer.getProtocol( "MSG" );
+        Message theMessage = new Message();
+        theMessage.setDestination( aPeer );
+        theMessage.setMessage( createMessage( Command.FILE.name() + " " + aFile.getName()) );
+        theResponse = theMessageProtocol.handleMessage( 0, theMessage );
+      }catch(UnknownProtocolException e){
+        throw new FileTransferException("Could not transfer file because message protocol is not known", e);
+      }
     } else {
       try{
         theResponse = aPeer.send( createMessage( Command.FILE.name() + " " + aFile.getName()));

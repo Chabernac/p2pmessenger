@@ -5,5 +5,5 @@
 package chabernac.protocol.pipe;
 
 public interface IPipeListener {
-  public void incomingPipe(Pipe aPipe);
+  public void incomingPipe(Pipe aPipe) throws PipeException;
 }
