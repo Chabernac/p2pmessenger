@@ -52,4 +52,12 @@ public class XMLToolsTest extends TestCase {
     }
   }
   
+  public void testCarriageReturnLineFeed(){
+    String theString = "the \r\n carriage return";
+    String theXML = XMLTools.toXML( theString );
+    assertFalse( theXML.contains( "\r\n" ) );
+    assertEquals( theString, XMLTools.fromXML( theXML ) );
+    
+  }
+  
 }
