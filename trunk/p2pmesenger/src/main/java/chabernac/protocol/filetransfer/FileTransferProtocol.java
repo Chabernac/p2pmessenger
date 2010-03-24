@@ -126,8 +126,8 @@ public class FileTransferProtocol extends Protocol {
       throw new FileTransferException("Could not transfer file because message protocol is not known", e);
     }
 
-    if(Response.REFUSED.name().equalsIgnoreCase( theResponse )){
-      throw new FileTransferException("The file: '" + aFile.getName() + "' was refused by peer: '" + aPeer.getPeerId() + "'");
+    if(!theResponse.startsWith( Response.ACCEPTED.name() )){
+      throw new FileTransferException("The file: '" + aFile.getName() + "' was refused by peer: '" + aPeer.getPeerId() + "' with response '" + theResponse + "'");
     } else {
       String theFileId = theResponse.split( " " )[1];
       Pipe thePipe = new Pipe(aPeer);

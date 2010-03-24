@@ -32,10 +32,10 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
 
     long thet1 = System.currentTimeMillis();
     
-    ProtocolContainer theProtocol = getProtocolContainer( 5, false, "1" );
+    ProtocolContainer theProtocol = getProtocolContainer( 5, true, "1" );
     ProtocolServer theServer = new ProtocolServer(theProtocol, RoutingProtocol.START_PORT, 5);
 
-    ProtocolContainer theProtocol2 = getProtocolContainer( 5, false, "2" );
+    ProtocolContainer theProtocol2 = getProtocolContainer( 5, true, "2" );
     ProtocolServer theServer2 = new ProtocolServer(theProtocol2, RoutingProtocol.START_PORT + 1, 5);
     try{
       theServer.start();

@@ -30,13 +30,13 @@ public class FileTransferProtocolTest extends AbstractProtocolTest {
   public void testFileTransfer() throws InterruptedException, UnknownHostException, IOException, FileTransferException, ProtocolException{
     
     //p1 <--> p2 <--> p3 peer 1 cannot reach peer 3
-    ProtocolContainer theProtocol1 = getProtocolContainer( 10, false, "1");
+    ProtocolContainer theProtocol1 = getProtocolContainer( 1, false, "1");
     ProtocolServer theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT, 5);
 
-    ProtocolContainer theProtocol2 = getProtocolContainer( 10, false, "2");
+    ProtocolContainer theProtocol2 = getProtocolContainer( 1, false, "2");
     ProtocolServer theServer2 = new ProtocolServer(theProtocol2, RoutingProtocol.START_PORT + 1, 5);
 
-    ProtocolContainer theProtocol3 = getProtocolContainer( 10, false, "3");
+    ProtocolContainer theProtocol3 = getProtocolContainer( 1, false, "3");
     File theFileToWrite = new File("in.temp");
     TestFileHandler theFileHandler = new TestFileHandler(theFileToWrite);
     ProtocolServer theServer3 = new ProtocolServer(theProtocol3, RoutingProtocol.START_PORT + 2, 5);
