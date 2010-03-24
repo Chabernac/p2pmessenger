@@ -4,6 +4,7 @@
  */
 package chabernac.tools;
 
+import chabernac.protocol.message.Message;
 import chabernac.protocol.routing.Peer;
 import chabernac.protocol.routing.RoutingTable;
 import chabernac.protocol.routing.RoutingTableEntry;
@@ -57,6 +58,30 @@ public class XMLToolsTest extends TestCase {
     String theXML = XMLTools.toXML( theString );
     assertFalse( theXML.contains( "\r\n" ) );
     assertEquals( theString, XMLTools.fromXML( theXML ) );
+    
+  }
+  
+  public void testBytesToXML(){
+    Message theMessage = new Message();
+    byte[] theBytes = new byte[100];
+    for(int i=0;i<theBytes.length;i++){
+      theBytes[i] = (byte)i;
+    }
+    theMessage.setBytes( theBytes );
+    
+    String theXML = XMLTools.toXML( theMessage );
+    Message theNewMessage = (Message)XMLTools.fromXML( theXML );
+    
+    assertNotNull( theNewMessage );
+    assertNotNull( theNewMessage.getBytes() );
+    
+    byte[] theNewBytes = theNewMessage.getBytes();
+    
+    assertEquals( theBytes.length, theNewBytes.length );
+    
+    for(int i=0;i<theBytes.length;i++){
+      assertEquals( theBytes[i], theNewBytes[i] );
+    }
     
   }
   

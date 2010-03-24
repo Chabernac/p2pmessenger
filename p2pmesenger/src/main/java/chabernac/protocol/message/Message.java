@@ -11,6 +11,11 @@ public class Message {
   private Peer myDestination = null;
   private String myMessage = null;
   
+  //only when the byte array is small we can use it to transport bytes trough the network.
+  //because the message is reformed to xml the xml will be many times bigger as the byte array
+  //so transporting large byte array's is not a good practice.
+  private byte[] myBytes = null;
+  
   public Peer getSource() {
     return mySource;
   }
@@ -28,5 +33,11 @@ public class Message {
   }
   public void setMessage( String anMessage ) {
     myMessage = anMessage;
+  }
+  public byte[] getBytes() {
+    return myBytes;
+  }
+  public void setBytes( byte[] anBytes ) {
+    myBytes = anBytes;
   }
 } 
