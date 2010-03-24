@@ -4,23 +4,23 @@
  */
 package chabernac.protocol;
 
-public class UnknownProtocolException extends Exception {
+public class ProtocolException extends Exception {
 
   private static final long serialVersionUID = 3838374847142220378L;
 
-  public UnknownProtocolException () {
+  public ProtocolException () {
     super();
   }
 
-  public UnknownProtocolException ( String anMessage , Throwable anCause ) {
+  public ProtocolException ( String anMessage , Throwable anCause ) {
     super( anMessage, anCause );
   }
 
-  public UnknownProtocolException ( String anMessage ) {
+  public ProtocolException ( String anMessage ) {
     super( anMessage );
   }
 
-  public UnknownProtocolException ( Throwable anCause ) {
+  public ProtocolException ( Throwable anCause ) {
     super( anCause );
   }
 }

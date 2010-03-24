@@ -16,7 +16,7 @@ import org.apache.log4j.Logger;
 
 import chabernac.encryption.iPublicPrivateKeyEncryption;
 import chabernac.protocol.Protocol;
-import chabernac.protocol.UnknownProtocolException;
+import chabernac.protocol.ProtocolException;
 import chabernac.protocol.message.Message;
 import chabernac.protocol.message.MessageProtocol;
 import chabernac.protocol.pipe.IPipeListener;
@@ -29,6 +29,8 @@ import chabernac.protocol.pipe.PipeProtocol;
  * This protocol must be able to retrieve the public key of another node in the network
  */
 public class KeyExchangeProtocol extends Protocol {
+  public static final String ID = "KEP";
+  
   private static Logger LOGGER = Logger.getLogger(KeyExchangeProtocol.class);
   
   public static enum Command{ GET_PUBLIC_KEY };
@@ -37,7 +39,7 @@ public class KeyExchangeProtocol extends Protocol {
   private iPublicPrivateKeyEncryption myEncryption = null;
   
   public KeyExchangeProtocol(iPublicPrivateKeyEncryption anEnctrypion){
-    super("KEP");
+    super(ID);
     myEncryption = anEnctrypion;
   }
 
@@ -46,10 +48,14 @@ public class KeyExchangeProtocol extends Protocol {
     return "Key Exchange Protocol";
   }
   
-  private PipeProtocol getPipeProtocol() throws UnknownProtocolException{
+  private PipeProtocol getPipeProtocol() throws ProtocolException{
     PipeProtocol thePipeProtocol = (PipeProtocol)findProtocolContainer().getProtocol( "PIP" );
     thePipeProtocol.addPipeListener( new IncomingKeyListener() );
     return thePipeProtocol;
+  }
+  
+  public iPublicPrivateKeyEncryption getEncryption(){
+    return myEncryption;
   }
   
 

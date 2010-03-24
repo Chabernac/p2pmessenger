@@ -12,70 +12,38 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.UnknownHostException;
 
-import junit.framework.TestCase;
-
 import org.apache.log4j.BasicConfigurator;
 
+import chabernac.protocol.AbstractProtocolTest;
 import chabernac.protocol.ProtocolContainer;
+import chabernac.protocol.ProtocolException;
 import chabernac.protocol.ProtocolServer;
-import chabernac.protocol.message.MessageProtocol;
-import chabernac.protocol.pipe.PipeProtocol;
+import chabernac.protocol.routing.Peer;
 import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.RoutingTable;
 
-public class FileTransferProtocolTest extends TestCase {
+public class FileTransferProtocolTest extends AbstractProtocolTest {
   static{
     BasicConfigurator.configure();
   }
   
-  public void testFileTransfer() throws InterruptedException, UnknownHostException, IOException, FileTransferException{
+  public void testFileTransfer() throws InterruptedException, UnknownHostException, IOException, FileTransferException, ProtocolException{
     
     //p1 <--> p2 <--> p3 peer 1 cannot reach peer 3
-
-    RoutingTable theRoutingTable1 = new RoutingTable("1");
-    ProtocolContainer theProtocol1 = new ProtocolContainer();
-    RoutingProtocol theRoutingProtocol1 = new RoutingProtocol(theRoutingTable1, 10, false);
-    theProtocol1.addProtocol( theRoutingProtocol1 );
-    PipeProtocol thePipeProtocol1 = new PipeProtocol(theRoutingTable1, 5);
-    theProtocol1.addProtocol( thePipeProtocol1 );
-    MessageProtocol theMessageProtocol1 = new MessageProtocol(theRoutingTable1);
-    FileTransferProtocol theFileTransferProtocol1 = new FileTransferProtocol(thePipeProtocol1);
-    theProtocol1.addProtocol( theFileTransferProtocol1 );
-    theProtocol1.addProtocol( theMessageProtocol1 );
-    
+    ProtocolContainer theProtocol1 = getProtocolContainer( 10, false, "1");
     ProtocolServer theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT, 5);
 
-
-    RoutingTable theRoutingTable2 = new RoutingTable("2");
-    ProtocolContainer theProtocol2 = new ProtocolContainer();
-    RoutingProtocol theRoutingProtocol2 = new RoutingProtocol(theRoutingTable2, 10, false);
-    theProtocol2.addProtocol( theRoutingProtocol2 );
-    PipeProtocol thePipeProtocol2 = new PipeProtocol(theRoutingTable2, 5);
-    theProtocol2.addProtocol( thePipeProtocol2 );
-    MessageProtocol theMessageProtocol2 = new MessageProtocol(theRoutingTable2);
-    theProtocol2.addProtocol( theMessageProtocol2 );
-
+    ProtocolContainer theProtocol2 = getProtocolContainer( 10, false, "2");
     ProtocolServer theServer2 = new ProtocolServer(theProtocol2, RoutingProtocol.START_PORT + 1, 5);
 
-    RoutingTable theRoutingTable3 = new RoutingTable("3");
-    ProtocolContainer theProtocol3 = new ProtocolContainer();
-    RoutingProtocol theRoutingProtocol3 = new RoutingProtocol(theRoutingTable3, 10, false);
-    theProtocol3.addProtocol( theRoutingProtocol3 );
-    PipeProtocol thePipeProtocol3 = new PipeProtocol(theRoutingTable3, 5);
-    //add an echo pipe listener to this pipe protocol
-    theProtocol3.addProtocol( thePipeProtocol3 );
-    MessageProtocol theMessageProtocol3 = new MessageProtocol(theRoutingTable3);
-    FileTransferProtocol theFileTransferProtocol3 = new FileTransferProtocol(thePipeProtocol3);
+    ProtocolContainer theProtocol3 = getProtocolContainer( 10, false, "3");
     File theFileToWrite = new File("in.temp");
     TestFileHandler theFileHandler = new TestFileHandler(theFileToWrite);
-    theFileTransferProtocol3.setFileHandler( theFileHandler );
-    theProtocol3.addProtocol( theFileTransferProtocol3 );
-    theProtocol3.addProtocol( theMessageProtocol3 );
-
     ProtocolServer theServer3 = new ProtocolServer(theProtocol3, RoutingProtocol.START_PORT + 2, 5);
+    ((FileTransferProtocol)theProtocol3.getProtocol( FileTransferProtocol.ID )).setFileHandler( theFileHandler );
 
-    theRoutingProtocol1.getLocalUnreachablePeerIds().add( "3" );
-    theRoutingProtocol3.getLocalUnreachablePeerIds().add( "1" );
+    ((RoutingProtocol)theProtocol1.getProtocol( RoutingProtocol.ID )).getLocalUnreachablePeerIds().add( "3" );
+    ((RoutingProtocol)theProtocol3.getProtocol( RoutingProtocol.ID )).getLocalUnreachablePeerIds().add( "1" );
     
     File theTempFile = createTempFile();
     
@@ -89,7 +57,13 @@ public class FileTransferProtocolTest extends TestCase {
 
       Thread.sleep( 5000 );
       
-      theFileTransferProtocol1.sendFile( theTempFile, theRoutingTable1.getEntryForPeer( "3" ).getPeer() );
+      RoutingTable theRoutingTable1 = ((RoutingProtocol)theProtocol1.getProtocol( RoutingProtocol.ID )).getRoutingTable();
+      RoutingTable theRoutingTable3 = ((RoutingProtocol)theProtocol3.getProtocol( RoutingProtocol.ID )).getRoutingTable();
+      
+      FileTransferProtocol theFileTransferProtocol = (FileTransferProtocol)theProtocol1.getProtocol( FileTransferProtocol.ID );
+      Peer thePeer3 = theRoutingTable1.getEntryForPeer( theRoutingTable3.getLocalPeerId() ).getPeer();
+      assertNotNull( thePeer3 );
+      theFileTransferProtocol.sendFile( theTempFile, thePeer3 );
       
 //      Thread.sleep( 10000 );
       

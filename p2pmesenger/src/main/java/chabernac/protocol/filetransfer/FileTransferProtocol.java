@@ -13,7 +13,7 @@ import org.apache.log4j.Logger;
 
 import chabernac.protocol.Protocol;
 import chabernac.protocol.ProtocolContainer;
-import chabernac.protocol.UnknownProtocolException;
+import chabernac.protocol.ProtocolException;
 import chabernac.protocol.message.Message;
 import chabernac.protocol.message.MessageProtocol;
 import chabernac.protocol.pipe.IPipeListener;
@@ -27,20 +27,19 @@ import chabernac.tools.iTransferListener;
  * 
  */
 public class FileTransferProtocol extends Protocol {
+  public static final String ID = "FTP";
   private static Logger LOGGER = Logger.getLogger(FileTransferProtocol.class);
 
   public static enum Command {FILE, WAIT_FOR_FILE};
   public static enum Response {ACCEPTED, REFUSED, UNKNOWN_COMMAND, FILE_OK, FILE_NOK, BAD_FILE_SIZE};
 
   private iFileHandler myFileHandler = null;
-  private PipeProtocol myPipeProtocol = null;
 
   private Map<UUID, FileStatus> myMapping = Collections.synchronizedMap( new HashMap< UUID, FileStatus >() );
+  private FilePipeListener myFilePipeListener = new FilePipeListener();
 
-  public FileTransferProtocol(PipeProtocol aPipeProtocol) {
-    super("FTP");
-    myPipeProtocol = aPipeProtocol;
-    myPipeProtocol.addPipeListener( new FilePipeListener() );
+  public FileTransferProtocol() {
+    super(ID);
   }
 
   @Override
@@ -51,24 +50,31 @@ public class FileTransferProtocol extends Protocol {
   @Override
   public String handleCommand(long aSessionId, String anInput) {
     if(anInput.startsWith( Command.FILE.name() )){
-      String theFileName = anInput.substring( Command.FILE.name().length() + 1 );
+      //just get the pipe protocol to make sure it is there and to add the listener to it
+      try{
+        getPipeProtocol();
 
-      if(myFileHandler == null){
-        return Response.REFUSED.name();
+        String theFileName = anInput.substring( Command.FILE.name().length() + 1 );
+
+        if(myFileHandler == null){
+          return Response.REFUSED.name();
+        }
+
+        File theFile = myFileHandler.acceptFile( theFileName );
+
+        if(theFile == null){
+          return Response.REFUSED.name();
+        }
+
+        FileStatus theStatus = new FileStatus(theFileName, theFile);
+
+        UUID theUID = UUID.randomUUID();
+        myMapping.put( theUID, theStatus );
+
+        return Response.ACCEPTED.name() + " " + theUID.toString();
+      }catch(ProtocolException e){
+        return ProtocolContainer.Response.UNKNOWN_PROTOCOL.name();
       }
-
-      File theFile = myFileHandler.acceptFile( theFileName );
-
-      if(theFile == null){
-        return Response.REFUSED.name();
-      }
-
-      FileStatus theStatus = new FileStatus(theFileName, theFile);
-
-      UUID theUID = UUID.randomUUID();
-      myMapping.put( theUID, theStatus );
-
-      return Response.ACCEPTED.name() + " " + theUID.toString();            
     }else  if(anInput.startsWith( Command.WAIT_FOR_FILE.name() )){
       String[] theFileAttributes = anInput.split( " " );
       String theFileId = theFileAttributes[1];
@@ -100,26 +106,24 @@ public class FileTransferProtocol extends Protocol {
     return Response.UNKNOWN_COMMAND.name();
   }
 
+  private PipeProtocol getPipeProtocol() throws ProtocolException{
+    PipeProtocol thePipeProtocol = (PipeProtocol)findProtocolContainer().getProtocol( PipeProtocol.ID );
+    thePipeProtocol.addPipeListener( myFilePipeListener );
+    return thePipeProtocol;
+  }
+
   public void sendFile(File aFile, Peer aPeer) throws FileTransferException{
     String theResponse = null;
 
     ProtocolContainer theProtocolContainer = findProtocolContainer();
-    if(theProtocolContainer.containsProtocol( "MSG" )){
-      try{
-        MessageProtocol theMessageProtocol = (MessageProtocol)theProtocolContainer.getProtocol( "MSG" );
-        Message theMessage = new Message();
-        theMessage.setDestination( aPeer );
-        theMessage.setMessage( createMessage( Command.FILE.name() + " " + aFile.getName()) );
-        theResponse = theMessageProtocol.handleMessage( 0, theMessage );
-      }catch(UnknownProtocolException e){
-        throw new FileTransferException("Could not transfer file because message protocol is not known", e);
-      }
-    } else {
-      try{
-        theResponse = aPeer.send( createMessage( Command.FILE.name() + " " + aFile.getName()));
-      }catch(IOException e){
-        throw new FileTransferException("File transfer message could not be send to peer: '" + aPeer.getPeerId() + "'", e);
-      }
+    try{
+      MessageProtocol theMessageProtocol = (MessageProtocol)theProtocolContainer.getProtocol( "MSG" );
+      Message theMessage = new Message();
+      theMessage.setDestination( aPeer );
+      theMessage.setMessage( createMessage( Command.FILE.name() + " " + aFile.getName()) );
+      theResponse = theMessageProtocol.handleMessage( 0, theMessage );
+    }catch(ProtocolException e){
+      throw new FileTransferException("Could not transfer file because message protocol is not known", e);
     }
 
     if(Response.REFUSED.name().equalsIgnoreCase( theResponse )){
@@ -130,10 +134,11 @@ public class FileTransferProtocol extends Protocol {
       thePipe.setPipeDescription( "FILE:" + theFileId + ":" + aFile.length() );
       FileInputStream theInputStream = null;
       try{
-        myPipeProtocol.openPipe( thePipe );
+        PipeProtocol thePipeProtocol = getPipeProtocol();
+        thePipeProtocol.openPipe( thePipe );
         theInputStream =  new FileInputStream(aFile);
         IOTools.copyStream( theInputStream, thePipe.getSocket().getOutputStream());
-        myPipeProtocol.closePipe( thePipe );
+        thePipeProtocol.closePipe( thePipe );
 
         theResponse = aPeer.send( createMessage( Command.WAIT_FOR_FILE.name() + " " + theFileId + " " + aFile.length()));
 

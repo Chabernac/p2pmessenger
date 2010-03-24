@@ -4,10 +4,13 @@
  */
 package chabernac.protocol;
 
+import java.util.Properties;
+
 import junit.framework.TestCase;
 
 import org.apache.log4j.BasicConfigurator;
 
+import chabernac.protocol.list.ListProtocol;
 import chabernac.protocol.ping.PingProtocol;
 
 public class MasterProtocolTest extends TestCase {
@@ -16,18 +19,15 @@ public class MasterProtocolTest extends TestCase {
   }
   
   
-  public void testMasterProtocol(){
-    ProtocolContainer theMasterProtocol = new ProtocolContainer();
-    PingProtocol thePingProtocol = new PingProtocol();
-    theMasterProtocol.addProtocol(  thePingProtocol );
+  public void testMasterProtocol() throws ProtocolException{
+    ProtocolContainer theMasterProtocol = new ProtocolContainer(new ProtocolFactory(new Properties()));
     
-    assertEquals( PingProtocol.Response.PONG.name(), new String(theMasterProtocol.handleCommand( 0, thePingProtocol.getId() + "ping") ));
-    assertEquals( PingProtocol.Response.UNKNOWN_COMMAND.name(), new String(theMasterProtocol.handleCommand( 0, thePingProtocol.getId() + "somtehing") ));
+    assertEquals( PingProtocol.Response.PONG.name(), new String(theMasterProtocol.handleCommand( 0, PingProtocol.ID + "ping") ));
+    assertEquals( PingProtocol.Response.UNKNOWN_COMMAND.name(), new String(theMasterProtocol.handleCommand( 0, PingProtocol.ID + "somtehing") ));
     
 //    assertEquals( "Master protocol" , theMasterProtocol.getDescription());
    
-    String theResult = new String(theMasterProtocol.handleCommand( 0, "protocols" ));
-    assertEquals( "PPG;MAS;", theResult );
-        
+    String theResult = new String(theMasterProtocol.handleCommand( 0, ListProtocol.ID + "protocols" ));
+    assertEquals( "LTP;PPG;MAS;", theResult );
   }
 }

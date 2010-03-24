@@ -1,15 +1,15 @@
 package chabernac.protocol;
 
+import java.util.Properties;
+
 import junit.framework.TestCase;
 import chabernac.protocol.ping.PingProtocol;
 
 public class ProtocolTest extends TestCase {
   public void testCreateMessage(){
-    ProtocolContainer theProtocol = new ProtocolContainer();
     PingProtocol thePingProtocol = new PingProtocol();
 //    PingProtocol thePingProtocol2 = new PingProtocol();
     
-    theProtocol.addProtocol(thePingProtocol);
 //    thePingProtocol.addProtocol(thePingProtocol2);
     String theMessage = thePingProtocol.createMessage("test");
     
@@ -19,16 +19,12 @@ public class ProtocolTest extends TestCase {
     assertEquals("PPGtest", theMessage);
   }
   
-  public void testGetProtocolsString(){
-    ProtocolContainer theProtocol = new ProtocolContainer();
-    PingProtocol thePingProtocol = new PingProtocol();
-//    PingProtocol thePingProtocol2 = new PingProtocol();
+  public void testGetProtocolsString() throws ProtocolException{
+    ProtocolContainer theMasterProtocol = new ProtocolContainer(new ProtocolFactory(new Properties()));
     
-    theProtocol.addProtocol(thePingProtocol);
-//    thePingProtocol.addProtocol(thePingProtocol2);
-//    theProtocol.addProtocol(new MasterProtocol());
+    theMasterProtocol.getProtocol( PingProtocol.ID );
     
     
-    assertEquals("PPG;MAS;", theProtocol.getProtocolString());
+    assertEquals("PPG;MAS;", theMasterProtocol.getProtocolString());
   }
 }

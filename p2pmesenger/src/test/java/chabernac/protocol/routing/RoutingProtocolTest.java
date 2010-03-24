@@ -4,58 +4,65 @@
  */
 package chabernac.protocol.routing;
 
-import junit.framework.TestCase;
+import java.util.Properties;
 
 import org.apache.log4j.BasicConfigurator;
 
+import chabernac.protocol.AbstractProtocolTest;
 import chabernac.protocol.ProtocolContainer;
+import chabernac.protocol.ProtocolException;
 import chabernac.protocol.ProtocolServer;
 
-public class RoutingProtocolTest extends TestCase {
+public class RoutingProtocolTest extends AbstractProtocolTest {
 
   public void setUp(){
     BasicConfigurator.configure();
   }
+  
+  public void testProperties(){
+    Properties theProperties = new Properties();
+    theProperties.setProperty( "routingprotocol.exchangedelay",  "300");
+    assertEquals( "300", theProperties.getProperty( "routingprotocol.exchangedelay", "10" ));
+  }
 
-  public void testRoutingProtocol() throws InterruptedException{
+  public void testRoutingProtocol() throws InterruptedException, ProtocolException{
     String theLocalPeerId = "1";
 
     long theExchangeDelay = 5;
 
     long thet1 = System.currentTimeMillis();
-    RoutingTable theRoutingTable = new RoutingTable(theLocalPeerId);
-    ProtocolContainer theProtocol = new ProtocolContainer();
-    RoutingProtocol theRoutingProtocol1 = new RoutingProtocol(theRoutingTable, theExchangeDelay, true);
-    theProtocol.addProtocol( theRoutingProtocol1 );
+    
+    ProtocolContainer theProtocol = getProtocolContainer( 5, false, "1" );
     ProtocolServer theServer = new ProtocolServer(theProtocol, RoutingProtocol.START_PORT, 5);
 
-    String theLocalPeerId2 = "2";
-    RoutingTable theRoutingTable2 = new RoutingTable(theLocalPeerId2);
-    ProtocolContainer theProtocol2 = new ProtocolContainer();
-    RoutingProtocol theRoutingProtocol2 = new RoutingProtocol(theRoutingTable2, theExchangeDelay, true) ; 
-    theProtocol2.addProtocol( theRoutingProtocol2 );
+    ProtocolContainer theProtocol2 = getProtocolContainer( 5, false, "2" );
     ProtocolServer theServer2 = new ProtocolServer(theProtocol2, RoutingProtocol.START_PORT + 1, 5);
     try{
       theServer.start();
       theServer2.start();
 
-      theRoutingProtocol1.scanLocalSystem();
+      RoutingProtocol theRoutingProtocol1 = (RoutingProtocol)theProtocol.getProtocol( RoutingProtocol.ID );
+      RoutingTable theRoutingTable1 = theRoutingProtocol1.getRoutingTable();
+      
+      RoutingProtocol theRoutingProtocol2 = (RoutingProtocol)theProtocol2.getProtocol( RoutingProtocol.ID );
+      RoutingTable theRoutingTable2 = theRoutingProtocol2.getRoutingTable();
+      
 
       long theFirstSleepTime = 4000;
       Thread.sleep( theFirstSleepTime );
 
-      assertEquals( 2, theRoutingTable.getEntries().size());
+      assertEquals( 2, theRoutingTable1.getEntries().size());
 
-      RoutingTableEntry theEntry = theRoutingTable.getEntryForPeer( "1" );
+      RoutingTableEntry theEntry = theRoutingTable1.getEntryForPeer( "1" );
       assertEquals( RoutingProtocol.START_PORT, theEntry.getPeer().getPort());
       assertTrue( theEntry.getPeer().getHosts().size() > 0);
       assertEquals( theLocalPeerId, theEntry.getPeer().getPeerId());
       assertEquals( 0, theEntry.getHopDistance());
 
-      theEntry = theRoutingTable.getEntryForPeer( "2" );
+      theEntry = theRoutingTable1.getEntryForPeer( "2" );
       assertEquals( RoutingProtocol.START_PORT + 1, theEntry.getPeer().getPort());
       assertTrue(  theEntry.getPeer().getHosts().size() > 0);
-      assertEquals( theLocalPeerId2, theEntry.getPeer().getPeerId());
+      assertEquals( theRoutingTable2.getLocalPeerId(), theEntry.getPeer().getPeerId());
       assertEquals( 1, theEntry.getHopDistance());
 
       //the routing protocol starts exchanging routing information after 2 seconds
@@ -78,33 +85,30 @@ public class RoutingProtocolTest extends TestCase {
     }
   }
 
-  public void testReachableSituation1() throws InterruptedException{
+  public void testReachableSituation1() throws InterruptedException, ProtocolException{
     //p1 <--> p2 <--> p3 peer 1 cannot reach peer 3
 
-    RoutingTable theRoutingTable1 = new RoutingTable("1");
-    ProtocolContainer theProtocol1 = new ProtocolContainer();
-    RoutingProtocol theRoutingProtocol1 = new RoutingProtocol(theRoutingTable1, -1, false);
-    theProtocol1.addProtocol( theRoutingProtocol1 );
+    ProtocolContainer theProtocol1 = getProtocolContainer( -1, false, "1" );
     ProtocolServer theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT, 5);
 
-    RoutingTable theRoutingTable2 = new RoutingTable("2");
-    ProtocolContainer theProtocol2 = new ProtocolContainer();
-    RoutingProtocol theRoutingProtocol2 = new RoutingProtocol(theRoutingTable2, -1, false);
-    theProtocol2.addProtocol( theRoutingProtocol2 );
+    ProtocolContainer theProtocol2 = getProtocolContainer( -1, false, "2" );
     ProtocolServer theServer2 = new ProtocolServer(theProtocol2, RoutingProtocol.START_PORT + 1, 5);
 
-    RoutingTable theRoutingTable3 = new RoutingTable("3");
-    ProtocolContainer theProtocol3 = new ProtocolContainer();
-    RoutingProtocol theRoutingProtocol3 = new RoutingProtocol(theRoutingTable3, -1, false);
-    theProtocol3.addProtocol( theRoutingProtocol3 );
+    ProtocolContainer theProtocol3 = getProtocolContainer( -1, false, "3" );
     ProtocolServer theServer3 = new ProtocolServer(theProtocol3, RoutingProtocol.START_PORT + 2, 5);
     
-    RoutingTable theRoutingTable4 = new RoutingTable("4");
-    ProtocolContainer theProtocol4 = new ProtocolContainer();
-    RoutingProtocol theRoutingProtocol4 = new RoutingProtocol(theRoutingTable4, -1, false);
-    theProtocol4.addProtocol( theRoutingProtocol4 );
+    ProtocolContainer theProtocol4 = getProtocolContainer( -1, false, "4" );
     ProtocolServer theServer4 = new ProtocolServer(theProtocol4, RoutingProtocol.START_PORT + 3, 5);
 
+    RoutingProtocol theRoutingProtocol1 = (RoutingProtocol)theProtocol1.getProtocol( RoutingProtocol.ID );
+    RoutingTable theRoutingTable1 = theRoutingProtocol1.getRoutingTable();
+    RoutingProtocol theRoutingProtocol2 = (RoutingProtocol)theProtocol2.getProtocol( RoutingProtocol.ID );
+    RoutingTable theRoutingTable2 = theRoutingProtocol2.getRoutingTable();
+    RoutingProtocol theRoutingProtocol3 = (RoutingProtocol)theProtocol3.getProtocol( RoutingProtocol.ID );
+    RoutingTable theRoutingTable3 = theRoutingProtocol3.getRoutingTable();
+    RoutingProtocol theRoutingProtocol4 = (RoutingProtocol)theProtocol4.getProtocol( RoutingProtocol.ID );
+    RoutingTable theRoutingTable4 = theRoutingProtocol4.getRoutingTable();
+    
     theRoutingProtocol1.getLocalUnreachablePeerIds().add( "3" );
     theRoutingProtocol3.getLocalUnreachablePeerIds().add( "1" );
 
@@ -381,24 +385,23 @@ public class RoutingProtocolTest extends TestCase {
    * but at least a part of the code is tested.
    * 
    * @throws InterruptedException
+   * @throws ProtocolException 
    */
-  public void testScanRemoteSystem() throws InterruptedException{
-
-    RoutingTable theRoutingTable1 = new RoutingTable("1");
-    ProtocolContainer theProtocol1 = new ProtocolContainer();
-    RoutingProtocol theRoutingProtocol1 = new RoutingProtocol(theRoutingTable1, -1, true);
-    theProtocol1.addProtocol( theRoutingProtocol1 );
+  public void testScanRemoteSystem() throws InterruptedException, ProtocolException{
+    
+    ProtocolContainer theProtocol1 = getProtocolContainer( -1, true, "1" );
     ProtocolServer theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT, 5);
 
-    RoutingTable theRoutingTable2 = new RoutingTable("2");
-    ProtocolContainer theProtocol2 = new ProtocolContainer();
-    RoutingProtocol theRoutingProtocol2 = new RoutingProtocol(theRoutingTable2, -1, true);
-    theProtocol2.addProtocol( theRoutingProtocol2 );
+    ProtocolContainer theProtocol2 = getProtocolContainer( -1, true, "2" );
     ProtocolServer theServer2 = new ProtocolServer(theProtocol2, RoutingProtocol.START_PORT + 1, 5);
+
+    RoutingProtocol theRoutingProtocol1 = (RoutingProtocol)theProtocol1.getProtocol( RoutingProtocol.ID );
+    RoutingTable theRoutingTable1 = theRoutingProtocol1.getRoutingTable();
+    RoutingProtocol theRoutingProtocol2 = (RoutingProtocol)theProtocol2.getProtocol( RoutingProtocol.ID );
+    RoutingTable theRoutingTable2 = theRoutingProtocol2.getRoutingTable();
     
     theRoutingProtocol1.getLocalUnreachablePeerIds().add( "2" );
     theRoutingProtocol2.getLocalUnreachablePeerIds().add( "1" );
-    
     
     try{
       assertTrue( theServer1.start() );
