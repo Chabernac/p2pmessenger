@@ -10,27 +10,27 @@ import java.util.Map;
 
 public class ProtocolContainer implements IProtocol {
   public static enum Command {PROTOCOLS};
-  public static enum Response {UNKNOWN_COMMAND};
+  public static enum Response {UNKNOWN_COMMAND, UNKNOWN_PROTOCOL};
   
   private Map<String, IProtocol> myProtocolMap = null;
   
-  public ProtocolContainer(){
+  private iProtocolFactory myProtocolFactory = null;
+  
+  public ProtocolContainer(iProtocolFactory aProtocolFactory){
     addProtocol( this );
+    myProtocolFactory = aProtocolFactory;
   }
 
   @Override
   public String handleCommand( long aSessionId, String anInput ) {
     String theID = anInput.substring( 0, 3 );
-    IProtocol theProtocol = myProtocolMap.get( theID );
-    if(theProtocol == null){
-      if(anInput.equalsIgnoreCase( Command.PROTOCOLS.name() )){
-        return getProtocolString();
-      }
-      return Response.UNKNOWN_COMMAND.name();
-    } else {
-      return theProtocol.handleCommand( aSessionId, anInput.substring( 3 ) );
+    IProtocol theProtocol;
+    try {
+      theProtocol = getProtocol( theID );
+      return theProtocol.handleCommand( aSessionId, anInput.substring( 3 ) ); 
+    } catch ( ProtocolException e ) {
+      return Response.UNKNOWN_PROTOCOL.name();
     }
-    
   }
   
   public String getProtocolString() {
@@ -42,7 +42,7 @@ public class ProtocolContainer implements IProtocol {
     return theBuilder.toString();
   }
 
-  public void addProtocol(IProtocol aProtocol) {
+  private void addProtocol(IProtocol aProtocol) {
     if(aProtocol.getId() == null){
       throw new IllegalArgumentException("Can only add a sub protocol which has an id");
     }
@@ -77,13 +77,10 @@ public class ProtocolContainer implements IProtocol {
     }
   }
   
-  public IProtocol getProtocol(String anId) throws UnknownProtocolException{
-    if(!myProtocolMap.containsKey( anId )) throw new UnknownProtocolException("The protocol '" + anId + "' is not known");
+  public synchronized IProtocol getProtocol(String anId) throws ProtocolException{
+    if(!myProtocolMap.containsKey( anId )){
+      addProtocol( myProtocolFactory.createProtocol( anId ) );
+    }
     return myProtocolMap.get( anId );
   }
-  
-  public boolean containsProtocol(String anId){
-    return myProtocolMap.containsKey( anId );
-  }
-
 }

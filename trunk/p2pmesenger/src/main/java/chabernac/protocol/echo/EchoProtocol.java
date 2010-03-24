@@ -7,9 +7,10 @@ import chabernac.protocol.Protocol;
  */
 
 public class EchoProtocol extends Protocol {
+  public static final String ID = "ECO";
 
   public EchoProtocol ( ) {
-    super( "ECO" );
+    super( ID );
   }
 
   @Override

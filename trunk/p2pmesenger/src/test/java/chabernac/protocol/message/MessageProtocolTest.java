@@ -4,43 +4,34 @@
  */
 package chabernac.protocol.message;
 
-import junit.framework.TestCase;
+import chabernac.protocol.AbstractProtocolTest;
 import chabernac.protocol.ProtocolContainer;
+import chabernac.protocol.ProtocolException;
 import chabernac.protocol.ProtocolServer;
-import chabernac.protocol.echo.EchoProtocol;
 import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.RoutingTable;
 import chabernac.protocol.routing.RoutingTableEntry;
 
-public class MessageProtocolTest extends TestCase {
+public class MessageProtocolTest extends AbstractProtocolTest {
 
-  public void testMessageProtocol(){
-    RoutingTable theRoutingTable1 = new RoutingTable("1");
-    ProtocolContainer theProtocol1 = new ProtocolContainer();
-    MessageProtocol theMessageProtocol1 = new MessageProtocol(theRoutingTable1); 
-    RoutingProtocol theRoutingProtocol1 = new RoutingProtocol(theRoutingTable1, -1, false);
-    theProtocol1.addProtocol( theRoutingProtocol1 );
-    theProtocol1.addProtocol( theMessageProtocol1 );
-    theProtocol1.addProtocol( new EchoProtocol() );
+  public void testMessageProtocol() throws ProtocolException{
+    ProtocolContainer theProtocol1 = getProtocolContainer( -1, false, "1" );
     ProtocolServer theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT, 5);
 
-    RoutingTable theRoutingTable2 = new RoutingTable("2");
-    ProtocolContainer theProtocol2 = new ProtocolContainer();
-    RoutingProtocol theRoutingProtocol2 = new RoutingProtocol(theRoutingTable2, -1, false);
-    theProtocol2.addProtocol( theRoutingProtocol2 );
-    theProtocol2.addProtocol( new MessageProtocol(theRoutingTable2) );
-    theProtocol2.addProtocol( new EchoProtocol() );
+    ProtocolContainer theProtocol2 = getProtocolContainer( -1, false, "2" );
     ProtocolServer theServer2 = new ProtocolServer(theProtocol2, RoutingProtocol.START_PORT + 1, 5);
 
-    RoutingTable theRoutingTable3 = new RoutingTable("3");
-    ProtocolContainer theProtocol3 = new ProtocolContainer();
-    RoutingProtocol theRoutingProtocol3 = new RoutingProtocol(theRoutingTable3, -1, false);
-    theProtocol3.addProtocol( theRoutingProtocol3 );
-    theProtocol3.addProtocol( new MessageProtocol(theRoutingTable3) );
-    theProtocol3.addProtocol( new EchoProtocol() );
+    ProtocolContainer theProtocol3 = getProtocolContainer( -1, false, "3" );
     ProtocolServer theServer3 = new ProtocolServer(theProtocol3, RoutingProtocol.START_PORT + 2, 5);
 
 
+    RoutingProtocol theRoutingProtocol1 = (RoutingProtocol)theProtocol1.getProtocol( RoutingProtocol.ID );
+    RoutingTable theRoutingTable1 = theRoutingProtocol1.getRoutingTable();
+    MessageProtocol theMessageProtocol1 = (MessageProtocol)theProtocol1.getProtocol( MessageProtocol.ID );
+    
+    RoutingProtocol theRoutingProtocol2 = (RoutingProtocol)theProtocol2.getProtocol( RoutingProtocol.ID );
+    RoutingProtocol theRoutingProtocol3 = (RoutingProtocol)theProtocol3.getProtocol( RoutingProtocol.ID );
+    
     theRoutingProtocol1.getLocalUnreachablePeerIds().add( "3" );
     theRoutingProtocol3.getLocalUnreachablePeerIds().add( "1" );
 

@@ -7,13 +7,13 @@ package chabernac.protocol.ping;
 import chabernac.protocol.Protocol;
 
 public class PingProtocol extends Protocol {
+  public static final String ID = "PPG";  
   
   public static enum Command{ PING };
-  public static enum Response{ PONG, UNKNOWN_COMMAND };  
-  
+  public static enum Response{ PONG, UNKNOWN_COMMAND }
 
   public PingProtocol (  ) {
-    super( "PPG" );
+    super( ID );
   }
 
   @Override

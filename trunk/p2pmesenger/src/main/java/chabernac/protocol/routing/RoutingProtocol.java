@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -36,6 +37,8 @@ import chabernac.tools.XMLTools;
  */
 
 public class RoutingProtocol extends Protocol {
+  public static String ID = "ROU";
+
   private static Logger LOGGER = Logger.getLogger( RoutingProtocol.class );
 
   public static final int START_PORT = 12700;
@@ -60,28 +63,34 @@ public class RoutingProtocol extends Protocol {
   private ScheduledExecutorService mySheduledService = null;
 
   private iObjectPersister< RoutingTable > myObjectPersister = new RoutingTablePersister();
-  
+
   private boolean isPersistRoutingTable = false;
-  
+
   private ExecutorService myChangeService = null;
-  
+
+  private String myLocalPeerId = null;
+
+  public RoutingProtocol ( long anExchangeDelay, boolean isPersistRoutingTable) {
+    this(null, anExchangeDelay, isPersistRoutingTable);
+  }
+
   /**
    * 
    * @param aLocalPeerId
    * @param aRoutingTable
    * @param anExchangeDelay the delay in seconds between exchaning routing tables with other peers
    */
-  public RoutingProtocol ( RoutingTable aRoutingTable, long anExchangeDelay, boolean isPersistRoutingTable) {
-    super( "ROU" );
-    myRoutingTable = aRoutingTable;
+  public RoutingProtocol ( String aLocalPeerId, long anExchangeDelay, boolean isPersistRoutingTable) {
+    super( ID );
+    myLocalPeerId = aLocalPeerId;
     myExchangeDelay = anExchangeDelay;
     this.isPersistRoutingTable = isPersistRoutingTable;
-    if(isPersistRoutingTable) loadRoutingTable();
+    loadRoutingTable();
     resetRoutingTable();
 //    new Thread(new ScanLocalSystem()).start();
     if(anExchangeDelay > 0 ) scheduleRoutingTableExchange();
     myChangeService = Executors.newFixedThreadPool( 5 );
-    
+
     //TODO enable to test immediate change propagation
 //    myRoutingTable.addRoutingTableListener( new RoutingTableListener() );
   }
@@ -102,9 +111,20 @@ public class RoutingProtocol extends Protocol {
   public List< String > getLocalUnreachablePeerIds() {
     return myLocalUnreachablePeers;
   }
-  
+
   public List< String > getRemoteUnreachablePeerIds() {
     return myRemoteUnreachablePeers;
+  }
+
+  public String getLocalPeerId(){
+    if(myLocalPeerId != null && !"".equals( myLocalPeerId )){
+      return myLocalPeerId;
+    } else if(myRoutingTable != null){
+      return myRoutingTable.getLocalPeerId();
+    } else {
+      myLocalPeerId = UUID.randomUUID().toString();
+      return myLocalPeerId;
+    }
   }
 
   @Override
@@ -162,7 +182,7 @@ public class RoutingProtocol extends Protocol {
   private boolean contactPeer(Peer aPeer, List<String> anUnreachablePeers){
     try{
       String theId = aPeer.send( createMessage( Command.WHO_ARE_YOU.name() ));
-      
+
       if(!anUnreachablePeers.contains( theId )){
         aPeer.setPeerId( theId );
         RoutingTableEntry theEntry = new RoutingTableEntry(aPeer, 1, aPeer);
@@ -235,7 +255,7 @@ public class RoutingProtocol extends Protocol {
       scanLocalSystem();
     }
   }
-  
+
   private class ScanRemoteSystem implements Runnable{
     public void run(){
       scanRemoteSystem(false);
@@ -250,11 +270,11 @@ public class RoutingProtocol extends Protocol {
 
     for(RoutingTableEntry theEntry : myRoutingTable.getEntries()){
       Peer thePeer = theEntry.getPeer();
-      
+
       //simulate that we can not contact this peer directly, but we can contact it trough a gateway
       //so check if hop distance = 1
-      
-        
+
+
       if(!thePeer.getPeerId().equals(myRoutingTable.getLocalPeerId())){
         try {
           if(myLocalUnreachablePeers.contains( thePeer.getPeerId())){
@@ -281,11 +301,11 @@ public class RoutingProtocol extends Protocol {
     }
     myExchangeCounter.incrementAndGet();
     LOGGER.debug("End exchanging routing table for peer: " + myRoutingTable.getLocalPeerId());
-    
+
     //save the routing table
     if(isPersistRoutingTable) saveRoutingTable();
   }
-  
+
   private void sendAnnoucement( RoutingTableEntry anEntry ) {
     for(RoutingTableEntry theEntry : myRoutingTable.getEntries()){
       Peer thePeer = theEntry.getPeer();
@@ -294,7 +314,7 @@ public class RoutingProtocol extends Protocol {
           thePeer.send( createMessage( Command.ANNOUNCEMENT.name() + " "  + XMLTools.toXML( anEntry ))) ;
         } catch ( Exception e ) {
           //the peer can not be reached 
-        //update all peers which have this peer as gateway to the max hop distance
+          //update all peers which have this peer as gateway to the max hop distance
           for(RoutingTableEntry theEntry2 : myRoutingTable.getEntries()){
             if(theEntry2.getGateway().getPeerId().equals( theEntry.getPeer().getPeerId())){
 //              theEntry2.setHopDistance( RoutingTableEntry.MAX_HOP_DISTANCE );
@@ -304,7 +324,7 @@ public class RoutingProtocol extends Protocol {
         }
       }
     }
-    
+
   }
 
   public long getExchangeCounter(){
@@ -319,17 +339,27 @@ public class RoutingProtocol extends Protocol {
     }
   }
 
+  private File getRoutingTableLocation(){
+    String theFile = "RoutingTable";
+    if(myLocalPeerId != null && !"".equals( myLocalPeerId )){
+      theFile += "_" + myLocalPeerId;
+    }
+    theFile += ".csv";
+    return new File(theFile);
+  }
+
   private void loadRoutingTable(){
-    File theFile = new File("Routingtable_" + myRoutingTable.getLocalPeerId() + ".csv");
-    if(theFile.exists()){
+    if(isPersistRoutingTable && getRoutingTableLocation().exists()){
+      File theFile = getRoutingTableLocation();
       try{
         FileInputStream theInputStream = new FileInputStream(theFile);
-        RoutingTable theTable = myObjectPersister.loadObject( theInputStream );
-        myRoutingTable.add( theTable ); 
+        myRoutingTable = myObjectPersister.loadObject( theInputStream );
         theInputStream.close();
       }catch(Exception e){
         LOGGER.error( "Could not load routing table", e );
       }
+    } else {
+      myRoutingTable = new RoutingTable(getLocalPeerId());
     }
   }
 
@@ -341,7 +371,7 @@ public class RoutingProtocol extends Protocol {
   }
 
   private void saveRoutingTable(){
-    File theFile = new File("Routingtable_" + myRoutingTable.getLocalPeerId() + ".csv");
+    File theFile = getRoutingTableLocation();
     try{
       FileOutputStream theStream = new FileOutputStream(theFile);
       myObjectPersister.persistObject( myRoutingTable, theStream );
@@ -360,23 +390,23 @@ public class RoutingProtocol extends Protocol {
 
     if(isPersistRoutingTable) saveRoutingTable();
   }
-  
+
   private class RoutingTableListener implements IRoutingTableListener{
     @Override
     public void routingTableEntryChanged( RoutingTableEntry anEntry ) {
       myChangeService.execute( new SendAnnouncement(anEntry) );
     }
   }
-  
+
   private class SendAnnouncement implements Runnable{
     private RoutingTableEntry myEntry = null;
-    
+
     public SendAnnouncement(RoutingTableEntry anEntry){
       myEntry = anEntry;
     }
-    
+
     public void run(){
-     sendAnnoucement(myEntry); 
+      sendAnnoucement(myEntry); 
     }
   }
 }

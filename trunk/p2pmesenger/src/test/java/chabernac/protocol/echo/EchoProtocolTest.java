@@ -1,5 +1,8 @@
 package chabernac.protocol.echo;
+import java.util.Properties;
+
 import chabernac.protocol.ProtocolContainer;
+import chabernac.protocol.ProtocolFactory;
 import chabernac.protocol.echo.EchoProtocol;
 import junit.framework.TestCase;
 
@@ -15,8 +18,7 @@ public class EchoProtocolTest extends TestCase {
     }
     
     public void testEchoProtocolInContainer(){
-      ProtocolContainer theContainer = new ProtocolContainer();
-      theContainer.addProtocol( new EchoProtocol() );
+      ProtocolContainer theContainer = new ProtocolContainer(new ProtocolFactory(new Properties()));
       
       assertEquals( "test", theContainer.handleCommand( 0, "ECOtest" ));
     }

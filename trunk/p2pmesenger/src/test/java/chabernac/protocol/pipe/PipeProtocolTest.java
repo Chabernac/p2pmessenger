@@ -2,56 +2,43 @@ package chabernac.protocol.pipe;
 
 import java.io.IOException;
 
-import junit.framework.TestCase;
-
 import org.apache.log4j.BasicConfigurator;
 
+import chabernac.protocol.AbstractProtocolTest;
 import chabernac.protocol.ProtocolContainer;
+import chabernac.protocol.ProtocolException;
 import chabernac.protocol.ProtocolServer;
 import chabernac.protocol.routing.RoutingProtocol;
-import chabernac.protocol.routing.RoutingTable;
 import chabernac.protocol.routing.UnkwownPeerException;
 import chabernac.tools.IOTools;
 
-public class PipeProtocolTest extends TestCase {
+public class PipeProtocolTest extends AbstractProtocolTest {
   
   static{
     BasicConfigurator.configure();
   }
   
-  public void testPipeProtocol() throws InterruptedException, IOException, UnkwownPeerException{
+  public void testPipeProtocol() throws InterruptedException, IOException, UnkwownPeerException, ProtocolException, PipeException{
     //p1 <--> p2 <--> p3 peer 1 cannot reach peer 3
 
-    RoutingTable theRoutingTable1 = new RoutingTable("1");
-    ProtocolContainer theProtocol1 = new ProtocolContainer();
-    RoutingProtocol theRoutingProtocol1 = new RoutingProtocol(theRoutingTable1, 10, false);
-    theProtocol1.addProtocol( theRoutingProtocol1 );
-    PipeProtocol thePipeProtocol1 = new PipeProtocol(theRoutingTable1, 5);
-    theProtocol1.addProtocol( thePipeProtocol1 );
+    ProtocolContainer theProtocol1 = getProtocolContainer( 10, false, "1" );
     ProtocolServer theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT, 5);
 
-
-    RoutingTable theRoutingTable2 = new RoutingTable("2");
-    ProtocolContainer theProtocol2 = new ProtocolContainer();
-    RoutingProtocol theRoutingProtocol2 = new RoutingProtocol(theRoutingTable2, 10, false);
-    theProtocol2.addProtocol( theRoutingProtocol2 );
-    PipeProtocol thePipeProtocol2 = new PipeProtocol(theRoutingTable2, 5);
-    theProtocol2.addProtocol( thePipeProtocol2 );
-
+    ProtocolContainer theProtocol2 = getProtocolContainer( 10, false, "2" );
     ProtocolServer theServer2 = new ProtocolServer(theProtocol2, RoutingProtocol.START_PORT + 1, 5);
 
-    RoutingTable theRoutingTable3 = new RoutingTable("3");
-    ProtocolContainer theProtocol3 = new ProtocolContainer();
-    RoutingProtocol theRoutingProtocol3 = new RoutingProtocol(theRoutingTable3, 10, false);
-    theProtocol3.addProtocol( theRoutingProtocol3 );
-    PipeProtocol thePipeProtocol3 = new PipeProtocol(theRoutingTable3, 5);
-    //add an echo pipe listener to this pipe protocol
-    EchoPipeListener thePipeListener = new EchoPipeListener();
-    thePipeProtocol3.addPipeListener(thePipeListener);
-    theProtocol3.addProtocol( thePipeProtocol3 );
-
+    ProtocolContainer theProtocol3 = getProtocolContainer( 10, false, "3" );
     ProtocolServer theServer3 = new ProtocolServer(theProtocol3, RoutingProtocol.START_PORT + 2, 5);
 
+    RoutingProtocol theRoutingProtocol1 = (RoutingProtocol)theProtocol1.getProtocol( RoutingProtocol.ID );
+    PipeProtocol thePipeProtocol1 = (PipeProtocol)theProtocol1.getProtocol( PipeProtocol.ID );
+    
+    RoutingProtocol theRoutingProtocol3 = (RoutingProtocol)theProtocol3.getProtocol( RoutingProtocol.ID );
+    PipeProtocol thePipeProtocol3 = (PipeProtocol)theProtocol3.getProtocol( PipeProtocol.ID );
+    EchoPipeListener thePipeListener = new EchoPipeListener();
+    thePipeProtocol3.addPipeListener( thePipeListener );
+    
+    
     theRoutingProtocol1.getLocalUnreachablePeerIds().add( "3" );
     theRoutingProtocol3.getLocalUnreachablePeerIds().add( "1" );
 
