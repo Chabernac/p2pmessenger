@@ -4,6 +4,6 @@
  */
 package chabernac.protocol.userinfo;
 
-public class UserInfo {
-  
+public interface iUserInfoProvider {
+  public UserInfo getUserInfo();
 }

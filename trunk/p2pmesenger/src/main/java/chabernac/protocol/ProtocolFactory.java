@@ -17,6 +17,8 @@ import chabernac.protocol.message.MessageProtocol;
 import chabernac.protocol.ping.PingProtocol;
 import chabernac.protocol.pipe.PipeProtocol;
 import chabernac.protocol.routing.RoutingProtocol;
+import chabernac.protocol.userinfo.UserInfoProtocol;
+import chabernac.protocol.userinfo.iUserInfoProvider;
 
 public class ProtocolFactory implements iProtocolFactory{
   private Properties myProtocolProperties = null;
@@ -72,7 +74,17 @@ public class ProtocolFactory implements iProtocolFactory{
     if(ListProtocol.ID.equalsIgnoreCase( aProtocolId )) {
       return new ListProtocol();
     }
-
+    
+    if(UserInfoProtocol.ID.equalsIgnoreCase( aProtocolId )) {
+      try{
+        String theUserInfoProvider = myProtocolProperties.getProperty( "chabernac.protocol.userinfo.iUserInfoProvider", "chabernac.protocol.userinfo.DefaultUserInfoProvider" );
+        Class theClass = Class.forName( theUserInfoProvider );
+        iUserInfoProvider theUserInfoProviderInstance = (iUserInfoProvider)theClass.newInstance();
+        return new UserInfoProtocol(theUserInfoProviderInstance);
+      }catch(Exception e){
+        throw new ProtocolException("UserInfoProtocol could not be instantiated", e);
+      }
+    }
     
     throw new ProtocolException("The protocol with id '" + aProtocolId + "' is not known");
   }
