@@ -69,6 +69,7 @@ public class RoutingTable implements Iterable< RoutingTableEntry >{
 
     } else {
       myRoutingTable.put(anEntry.getPeer().getPeerId(), anEntry);
+      notifyListenersOfRoutingTableEntryChange( anEntry );
       LOGGER.debug( "Added a new routing table entry to routing table for peer: " + myLocalPeerId + " : "  + anEntry);
     }
   }
