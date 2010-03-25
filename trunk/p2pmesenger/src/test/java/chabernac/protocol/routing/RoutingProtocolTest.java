@@ -4,6 +4,8 @@
  */
 package chabernac.protocol.routing;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 import org.apache.log4j.BasicConfigurator;
@@ -435,5 +437,48 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
     }
     assertEquals( "Responding", isResponding, anEntry.isResponding());
     assertEquals( "Reachable", isReachable, anEntry.isReachable());
+  }
+  
+  public void testChangePropagation() throws ProtocolException, InterruptedException{
+    ProtocolContainer theProtocol1 = getProtocolContainer( -1, false, "1" );
+    ProtocolServer theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT, 5);
+
+    ProtocolContainer theProtocol2 = getProtocolContainer( -1, false, "2" );
+    ProtocolServer theServer2 = new ProtocolServer(theProtocol2, RoutingProtocol.START_PORT + 1, 5);
+
+    RoutingProtocol theRoutingProtocol1 = (RoutingProtocol)theProtocol1.getProtocol( RoutingProtocol.ID );
+    RoutingTable theRoutingTable1 = theRoutingProtocol1.getRoutingTable();
+    RoutingProtocol theRoutingProtocol2 = (RoutingProtocol)theProtocol2.getProtocol( RoutingProtocol.ID );
+    RoutingTable theRoutingTable2 = theRoutingProtocol2.getRoutingTable();
+    
+    try{
+      assertTrue( theServer1.start() );
+      assertTrue( theServer2.start() );
+      
+      theRoutingProtocol1.scanLocalSystem();
+      theRoutingProtocol2.scanLocalSystem();
+      theRoutingProtocol1.exchangeRoutingTable();
+      theRoutingProtocol2.exchangeRoutingTable();
+      
+      Peer theDummyPeer = new Peer("dummy");
+      List<String> theHosts = new ArrayList< String >();
+      theHosts.add( "10.240.111.22" );
+      theDummyPeer.setHosts( theHosts );
+      theDummyPeer.setPort( 54645 );
+      
+      RoutingTableEntry theDummyEntry = new RoutingTableEntry(theDummyPeer, 0, theDummyPeer);
+      
+      theRoutingTable1.addRoutingTableEntry( theDummyEntry );
+      
+      //the dummy entry should now immediately be propagated to peer 2
+      Thread.sleep( 500 );
+      
+      RoutingTableEntry theEntry = theRoutingTable2.getEntryForPeer( "dummy" ); 
+      assertNotNull( theEntry );
+      assertEquals( 1, theEntry.getHopDistance() );
+    } finally {
+      theServer1.stop();
+      theServer2.stop();
+    }
   }
 }
