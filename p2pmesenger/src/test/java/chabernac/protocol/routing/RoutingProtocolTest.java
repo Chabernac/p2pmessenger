@@ -26,9 +26,7 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
   }
 
   public void testRoutingProtocol() throws InterruptedException, ProtocolException{
-    String theLocalPeerId = "1";
 
-    long theExchangeDelay = 5;
 
     long thet1 = System.currentTimeMillis();
     
@@ -38,8 +36,8 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
     ProtocolContainer theProtocol2 = getProtocolContainer( 5, true, "2" );
     ProtocolServer theServer2 = new ProtocolServer(theProtocol2, RoutingProtocol.START_PORT + 1, 5);
     try{
-      theServer.start();
-      theServer2.start();
+      assertTrue( theServer.start() );
+      assertTrue( theServer2.start() );
 
       RoutingProtocol theRoutingProtocol1 = (RoutingProtocol)theProtocol.getProtocol( RoutingProtocol.ID );
       RoutingTable theRoutingTable1 = theRoutingProtocol1.getRoutingTable();
@@ -48,7 +46,7 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
       RoutingTable theRoutingTable2 = theRoutingProtocol2.getRoutingTable();
       
 
-      long theFirstSleepTime = 4000;
+      long theFirstSleepTime = 2000;
       Thread.sleep( theFirstSleepTime );
 
       assertEquals( 2, theRoutingTable1.getEntries().size());
@@ -56,7 +54,7 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
       RoutingTableEntry theEntry = theRoutingTable1.getEntryForPeer( "1" );
       assertEquals( RoutingProtocol.START_PORT, theEntry.getPeer().getPort());
       assertTrue( theEntry.getPeer().getHosts().size() > 0);
-      assertEquals( theLocalPeerId, theEntry.getPeer().getPeerId());
+      assertEquals( "1", theEntry.getPeer().getPeerId());
       assertEquals( 0, theEntry.getHopDistance());
 
       theEntry = theRoutingTable1.getEntryForPeer( "2" );
@@ -75,7 +73,7 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
       Thread.sleep( theSleepTime );
 
       long theEffectiveDeltaT = System.currentTimeMillis() - thet1;
-      long theTimesRun = (long)Math.floor((theEffectiveDeltaT - 2000) / (1000 * theExchangeDelay)); 
+      long theTimesRun = (long)Math.floor((theEffectiveDeltaT - 2000) / (1000 * 5)); 
 
       assertTrue( Math.abs(theTimesRun - theRoutingProtocol1.getExchangeCounter()) < 2 );
       assertTrue( Math.abs(theTimesRun - theRoutingProtocol2.getExchangeCounter()) < 2 );

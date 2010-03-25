@@ -92,7 +92,7 @@ public class RoutingProtocol extends Protocol {
     myChangeService = Executors.newFixedThreadPool( 5 );
 
     //TODO enable to test immediate change propagation
-//    myRoutingTable.addRoutingTableListener( new RoutingTableListener() );
+    myRoutingTable.addRoutingTableListener( new RoutingTableListener() );
   }
 
 
@@ -149,8 +149,12 @@ public class RoutingProtocol extends Protocol {
       myRoutingTable.addRoutingTableEntry( theEntry.getPeer().getPeerId(), theEntry);
       return XMLTools.toXML( myRoutingTable );
     } else if(theCommand == Command.ANNOUNCEMENT){
-      String thePeerEntry = anInput.substring( theFirstIndexOfSpace + 1 );
-      RoutingTableEntry theEntry = ((RoutingTableEntry)XMLTools.fromXML( thePeerEntry )).incHopDistance();
+      String theAttributes = anInput.substring( theFirstIndexOfSpace + 1 );
+      String thePeerId = theAttributes.substring( 0, theAttributes.indexOf( ' ' ) );
+      String theXML = theAttributes.substring( theAttributes.indexOf( ' ' ) + 1, theAttributes.length() );
+      
+      Peer theSendingPeer = myRoutingTable.getEntryForPeer( thePeerId ).getPeer();
+      RoutingTableEntry theEntry = ((RoutingTableEntry)XMLTools.fromXML( theXML )).entryForNextPeer( theSendingPeer );
       myRoutingTable.addRoutingTableEntry( theEntry.getPeer().getPeerId(), theEntry);
     }
     return Status.UNKNOWN_COMMAND.name();
@@ -309,9 +313,16 @@ public class RoutingProtocol extends Protocol {
   private void sendAnnoucement( RoutingTableEntry anEntry ) {
     for(RoutingTableEntry theEntry : myRoutingTable.getEntries()){
       Peer thePeer = theEntry.getPeer();
-      if(thePeer.getPeerId() != myRoutingTable.getLocalPeerId() && theEntry.getHopDistance() <= 1){
+
+
+      //do not send the entry to our selfs, we already have the entry
+      if(!thePeer.getPeerId().equals( myRoutingTable.getLocalPeerId()) &&
+          //only send announcements to our neighbours, this means no peers with a hop distance > 1
+         theEntry.getHopDistance() <= 1 &&
+         //also do not send the entry to the peer from which the entry is coming.
+         !theEntry.getPeer().getPeerId().equals( anEntry.getPeer().getPeerId() )){
         try {
-          thePeer.send( createMessage( Command.ANNOUNCEMENT.name() + " "  + XMLTools.toXML( anEntry ))) ;
+          thePeer.send( createMessage( Command.ANNOUNCEMENT.name() + " "  + myRoutingTable.getLocalPeerId() + " " + XMLTools.toXML( anEntry ))) ;
         } catch ( Exception e ) {
           //the peer can not be reached 
           //update all peers which have this peer as gateway to the max hop distance
