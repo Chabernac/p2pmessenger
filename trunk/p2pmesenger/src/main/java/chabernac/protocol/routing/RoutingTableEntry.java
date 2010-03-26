@@ -4,8 +4,12 @@
  */
 package chabernac.protocol.routing;
 
+import java.io.Serializable;
 
-public class RoutingTableEntry {
+
+public class RoutingTableEntry implements Serializable{
+  private static final long serialVersionUID = -1285319346105443401L;
+
   public static int MAX_HOP_DISTANCE = 6;
   
 	//the peer for which this is an entry

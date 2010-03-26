@@ -159,4 +159,13 @@ public class RoutingTable implements Iterable< RoutingTableEntry >{
   public void addRoutingTableListener(IRoutingTableListener aListener){
     myRoutingTableListeners.add( aListener );
   }
+  
+  public void removeAllButLocalPeer(){
+    for(Iterator< RoutingTableEntry > i = myRoutingTable.values().iterator();i.hasNext();){
+      RoutingTableEntry theEntry = i.next();
+      if(!theEntry.getPeer().getPeerId().equalsIgnoreCase( myLocalPeerId )){
+        i.remove();
+      }
+    }
+  }
 }

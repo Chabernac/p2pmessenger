@@ -481,4 +481,53 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
       theServer2.stop();
     }
   }
+  
+  public void testUDPAnnouncement() throws InterruptedException, ProtocolException{
+    ProtocolContainer theProtocol1 = getProtocolContainer( -1, false, "1" );
+    ProtocolServer theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT, 5);
+
+    ProtocolContainer theProtocol2 = getProtocolContainer( -1, false, "2" );
+    ProtocolServer theServer2 = new ProtocolServer(theProtocol2, RoutingProtocol.START_PORT + 1, 5);
+    
+    RoutingProtocol theRoutingProtocol1 = (RoutingProtocol)theProtocol1.getProtocol( RoutingProtocol.ID );
+    RoutingTable theRoutingTable1 = theRoutingProtocol1.getRoutingTable();
+    RoutingProtocol theRoutingProtocol2 = (RoutingProtocol)theProtocol2.getProtocol( RoutingProtocol.ID );
+    RoutingTable theRoutingTable2 = theRoutingProtocol2.getRoutingTable();
+    
+    try{
+      assertTrue( theServer1.start() );
+      assertTrue( theServer2.start() );
+      
+      theRoutingProtocol1.scanLocalSystem();
+      theRoutingProtocol2.scanLocalSystem();
+      
+      Thread.sleep( 2000 );
+      
+      theRoutingTable1.removeAllButLocalPeer();
+      theRoutingTable2.removeAllButLocalPeer();
+      
+      //make sure the peers do not know each other
+      assertNull( theRoutingTable1.getEntryForPeer( "2" ) );
+      assertNull( theRoutingTable2.getEntryForPeer( "1" ) );
+      
+      //now send an udp announcement packet, it should be detected by peer 2
+      theRoutingProtocol1.sendUDPAnnouncement();
+      
+      Thread.sleep( 1000 );
+      //peer 2 now has peer 1 in its routing table
+      assertNotNull( theRoutingTable2.getEntryForPeer( "1" ) );
+      
+      //now send an udp announcement packet, it should be detected by peer 2
+      theRoutingProtocol2.sendUDPAnnouncement();
+      
+      Thread.sleep( 1000 );
+      
+      //peer 1 should now know peer 2
+      assertNotNull( theRoutingTable1.getEntryForPeer( "2" ) );
+      
+    } finally {
+      theServer1.stop();
+      theServer2.stop();
+    }
+  }
 }
