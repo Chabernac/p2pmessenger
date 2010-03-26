@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Properties;
 
 import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Logger;
 
 import chabernac.protocol.AbstractProtocolTest;
 import chabernac.protocol.ProtocolContainer;
@@ -17,8 +18,9 @@ import chabernac.protocol.ProtocolException;
 import chabernac.protocol.ProtocolServer;
 
 public class RoutingProtocolTest extends AbstractProtocolTest {
-
-  public void setUp(){
+  private static Logger LOGGER = Logger.getLogger(RoutingProtocolTest.class);
+  
+  static{
     BasicConfigurator.configure();
   }
   
@@ -299,6 +301,8 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
       testEntry( theRoutingTable4.getEntryForPeer("2"), 2, "3", false, true);
       testEntry( theRoutingTable4.getEntryForPeer("3"), 1, "3", true, true);
       testEntry( theRoutingTable4.getEntryForPeer("4"), 0, "4", true, true);
+      
+      LOGGER.debug("Peer 3 and 4 disconnected");
       
       //now disconnect p3
       

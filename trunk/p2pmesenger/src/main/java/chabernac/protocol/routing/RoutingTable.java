@@ -36,10 +36,6 @@ public class RoutingTable implements Iterable< RoutingTableEntry >{
   }
 
   public synchronized void addRoutingTableEntry(RoutingTableEntry anEntry){
-    addRoutingTableEntry( getLocalPeerId(), anEntry );
-  }
-
-  public synchronized void addRoutingTableEntry(String aContainingPeerEntry, RoutingTableEntry anEntry){
     if(myRoutingTable.containsKey( anEntry.getPeer().getPeerId() )){
       RoutingTableEntry thePeerEntry = myRoutingTable.get( anEntry.getPeer().getPeerId() );
 
@@ -54,11 +50,11 @@ public class RoutingTable implements Iterable< RoutingTableEntry >{
         notifyListenersOfRoutingTableEntryChange( anEntry );
 //        LOGGER.debug( "Updated routing table entry to routing table for peer:   " + myLocalPeerId + " : "  + anEntry );
         
-        if(aContainingPeerEntry.equals( myLocalPeerId ) && anEntry.getGateway().getPeerId() == anEntry.getPeer().getPeerId() && anEntry.getHopDistance() >= 2 && anEntry.getHopDistance() <= 5){
-          
-          Exception e = new Exception();
-          LOGGER.error("We have received an entry of our selfs", e);
-        }
+//        if(aContainingPeerEntry.equals( myLocalPeerId ) && anEntry.getGateway().getPeerId() == anEntry.getPeer().getPeerId() && anEntry.getHopDistance() >= 2 && anEntry.getHopDistance() <= 5){
+//          
+//          Exception e = new Exception();
+//          LOGGER.error("We have received an entry of our selfs", e);
+//        }
         
         if(thePeerEntry.getGateway().getPeerId().equals( anEntry.getGateway().getPeerId() )){
           LOGGER.debug( "Updated routing table entry to routing table for peer:   " + myLocalPeerId + " : "  + anEntry + " because gateway of local entry: '" + thePeerEntry.getGateway().getPeerId() + "' is the peer from which we received the entry" ); 
@@ -110,7 +106,7 @@ public class RoutingTable implements Iterable< RoutingTableEntry >{
   public synchronized void merge(RoutingTable anotherRoutingTable) throws SocketException{
     for(Iterator< RoutingTableEntry > i = anotherRoutingTable.iterator(); i.hasNext();){
       RoutingTableEntry theEntry = i.next();
-      addRoutingTableEntry(anotherRoutingTable.getLocalPeerId(), theEntry.entryForNextPeer( anotherRoutingTable.obtainLocalPeer() ) );
+      addRoutingTableEntry(theEntry.entryForNextPeer( anotherRoutingTable.obtainLocalPeer() ) );
     }
   }
 
