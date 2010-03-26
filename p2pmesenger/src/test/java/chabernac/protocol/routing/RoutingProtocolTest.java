@@ -4,6 +4,7 @@
  */
 package chabernac.protocol.routing;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -29,6 +30,13 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
 
   public void testRoutingProtocol() throws InterruptedException, ProtocolException{
 
+    for(int i=1;i<10;i++){
+      File theFile = new File("RoutingTable_" + i + ".csv");
+      if(theFile.exists()){
+        assertTrue( theFile.delete() );
+      }
+    }
+    
 
     long thet1 = System.currentTimeMillis();
     
