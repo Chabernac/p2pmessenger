@@ -64,10 +64,10 @@ public class RoutingProtocol extends Protocol {
   private AtomicLong myExchangeCounter = new AtomicLong(0);
 
   //this list is for test reasons to simulate peers which can not reach each other locally 
-  private List<String> myLocalUnreachablePeers = new ArrayList< String >();
+  private List<String> myUnreachablePeers = new ArrayList< String >();
 
   //this list is for test reasons to simulate peers which can not reach each other remotely
-  private List<String> myRemoteUnreachablePeers = new ArrayList< String >();
+  //  private List<String> myRemoteUnreachablePeers = new ArrayList< String >();
 
   private ScheduledExecutorService mySheduledService = null;
 
@@ -78,9 +78,9 @@ public class RoutingProtocol extends Protocol {
   private ExecutorService myChangeService = null;
 
   private String myLocalPeerId = null;
-  
+
   private ExecutorService myUDPPacketHandlerService = Executors.newFixedThreadPool( 6 );
-  
+
   private MulticastSocket myServerMulticastSocket = null;
 
   public RoutingProtocol ( long anExchangeDelay, boolean isPersistRoutingTable) {
@@ -100,7 +100,7 @@ public class RoutingProtocol extends Protocol {
     this.isPersistRoutingTable = isPersistRoutingTable;
     loadRoutingTable();
     resetRoutingTable();
-//    new Thread(new ScanLocalSystem()).start();
+    //    new Thread(new ScanLocalSystem()).start();
     if(anExchangeDelay > 0 ) scheduleRoutingTableExchange();
     myChangeService = Executors.newFixedThreadPool( 5 );
 
@@ -108,7 +108,7 @@ public class RoutingProtocol extends Protocol {
     myRoutingTable.addRoutingTableListener( new RoutingTableListener() );
     startUDPListener();
   }
-  
+
   private void startUDPListener(){
     myUDPPacketHandlerService.execute( new MulticastServerThread() );
   }
@@ -128,12 +128,12 @@ public class RoutingProtocol extends Protocol {
   }
 
   public List< String > getLocalUnreachablePeerIds() {
-    return myLocalUnreachablePeers;
+    return myUnreachablePeers;
   }
 
-  public List< String > getRemoteUnreachablePeerIds() {
-    return myRemoteUnreachablePeers;
-  }
+  //  public List< String > getRemoteUnreachablePeerIds() {
+  //    return myRemoteUnreachablePeers;
+  //  }
 
   public String getLocalPeerId(){
     if(myLocalPeerId != null && !"".equals( myLocalPeerId )){
@@ -165,16 +165,20 @@ public class RoutingProtocol extends Protocol {
       //so the peer id inside the routingtable entry is also the containing peer
       String thePeerEntry = anInput.substring( theFirstIndexOfSpace + 1 );
       RoutingTableEntry theEntry = ((RoutingTableEntry)XMLTools.fromXML( thePeerEntry )).incHopDistance();
-      myRoutingTable.addRoutingTableEntry( theEntry.getPeer().getPeerId(), theEntry);
+      myRoutingTable.addRoutingTableEntry( theEntry);
       return XMLTools.toXML( myRoutingTable );
     } else if(theCommand == Command.ANNOUNCEMENT){
-      String theAttributes = anInput.substring( theFirstIndexOfSpace + 1 );
-      String thePeerId = theAttributes.substring( 0, theAttributes.indexOf( ' ' ) );
-      String theXML = theAttributes.substring( theAttributes.indexOf( ' ' ) + 1, theAttributes.length() );
+      String[] theAttributes = anInput.substring( theFirstIndexOfSpace + 1 ).split(";");
       
-      Peer theSendingPeer = myRoutingTable.getEntryForPeer( thePeerId ).getPeer();
-      RoutingTableEntry theEntry = ((RoutingTableEntry)XMLTools.fromXML( theXML )).entryForNextPeer( theSendingPeer );
-      myRoutingTable.addRoutingTableEntry( theEntry.getPeer().getPeerId(), theEntry);
+      RoutingTableEntry theSendingPeer = ((RoutingTableEntry)XMLTools.fromXML( theAttributes[0] ));
+      //we add the sending peer to the routing table
+//      myRoutingTable.addRoutingTableEntry(theSendingPeer.incHopDistance());
+      
+      RoutingTableEntry thePeer = ((RoutingTableEntry)XMLTools.fromXML( theAttributes[1] ));
+      
+      //the sending peer has send the entry so we set it as gateway and increment the hop distance
+      thePeer = thePeer.entryForNextPeer( theSendingPeer.getPeer() );
+      myRoutingTable.addRoutingTableEntry( thePeer );
     }
     return Status.UNKNOWN_COMMAND.name();
   }
@@ -214,7 +218,7 @@ public class RoutingProtocol extends Protocol {
         if(theId.equals(myRoutingTable.getLocalPeerId())){
           theEntry = theEntry.derivedEntry( 0 );
         }
-        myRoutingTable.addRoutingTableEntry( myRoutingTable.getLocalPeerId(), theEntry );
+        myRoutingTable.addRoutingTableEntry( theEntry );
         return true;
       }
     }catch(Exception e){
@@ -228,7 +232,7 @@ public class RoutingProtocol extends Protocol {
       List<String> theLocalHosts = NetTools.getLocalExposedIpAddresses();
       ExecutorService theService = Executors.newFixedThreadPool( 20 );
       for(int i=START_PORT;i<=END_PORT;i++){
-        theService.execute( new  ScanSystem(theLocalHosts, i, myLocalUnreachablePeers));
+        theService.execute( new  ScanSystem(theLocalHosts, i, myUnreachablePeers));
       }
     }catch(SocketException e){
       LOGGER.error( "Could not get local ip addressed", e );
@@ -265,7 +269,7 @@ public class RoutingProtocol extends Protocol {
           try{
             if(!isExcludeLocal || i!=myRoutingTable.obtainLocalPeer().getPort()){
               LOGGER.debug("Scanning the following host: '" + theHost + "' on port '" + i + "'");
-              isContacted = contactPeer( new Peer("", theHost, i), myRemoteUnreachablePeers );
+              isContacted = contactPeer( new Peer("", theHost, i), myUnreachablePeers );
             }
           }catch(Exception e){}
         }
@@ -300,12 +304,12 @@ public class RoutingProtocol extends Protocol {
 
       if(!thePeer.getPeerId().equals(myRoutingTable.getLocalPeerId())){
         try {
-          if(myLocalUnreachablePeers.contains( thePeer.getPeerId())){
+          if(myUnreachablePeers.contains( thePeer.getPeerId())){
             //simulate that we cannot contact the peer
             throw new Exception("Simulate that we can not contact peer: " + thePeer.getPeerId());
           }
           String theTable = thePeer.send( createMessage( Command.ANNOUNCEMENT_WITH_REPLY.name() + " "  + XMLTools.toXML( myRoutingTable.getEntryForLocalPeer() ))) ;
-//          String theTable = thePeer.send( createMessage( Command.REQUEST_TABLE.name() ));
+          //          String theTable = thePeer.send( createMessage( Command.REQUEST_TABLE.name() ));
           RoutingTable theRemoteTable = (RoutingTable)XMLTools.fromXML( theTable );
           myRoutingTable.merge( theRemoteTable );
           //we can connect directly to this peer, so the hop distance is 1
@@ -315,7 +319,7 @@ public class RoutingProtocol extends Protocol {
           //update all peers which have this peer as gateway to the max hop distance
           for(RoutingTableEntry theEntry2 : myRoutingTable.getEntries()){
             if(theEntry2.getGateway().getPeerId().equals( theEntry.getPeer().getPeerId())){
-//              theEntry2.setHopDistance( RoutingTableEntry.MAX_HOP_DISTANCE );
+              //              theEntry2.setHopDistance( RoutingTableEntry.MAX_HOP_DISTANCE );
               myRoutingTable.addRoutingTableEntry( theEntry2.derivedEntry( RoutingTableEntry.MAX_HOP_DISTANCE ) );
             }
           }
@@ -337,17 +341,19 @@ public class RoutingProtocol extends Protocol {
       //do not send the entry to our selfs, we already have the entry
       if(!thePeer.getPeerId().equals( myRoutingTable.getLocalPeerId()) &&
           //only send announcements to our neighbours, this means no peers with a hop distance > 1
-         theEntry.getHopDistance() <= 1 &&
-         //also do not send the entry to the peer from which the entry is coming.
-         !theEntry.getPeer().getPeerId().equals( anEntry.getPeer().getPeerId() )){
+          theEntry.getHopDistance() <= 1 &&
+          //also do not send the entry to the peer from which the entry is coming.
+          !theEntry.getPeer().getPeerId().equals( anEntry.getPeer().getPeerId() ) &&
+          //do not send announcement to peers we cannot reach in test mode
+          !myUnreachablePeers.contains(thePeer.getPeerId())){
         try {
-          thePeer.send( createMessage( Command.ANNOUNCEMENT.name() + " "  + myRoutingTable.getLocalPeerId() + " " + XMLTools.toXML( anEntry ))) ;
+          thePeer.send( createMessage( Command.ANNOUNCEMENT.name() + " "  + XMLTools.toXML(myRoutingTable.getEntryForLocalPeer()) + ";" + XMLTools.toXML( anEntry ))) ;
         } catch ( Exception e ) {
           //the peer can not be reached 
           //update all peers which have this peer as gateway to the max hop distance
           for(RoutingTableEntry theEntry2 : myRoutingTable.getEntries()){
             if(theEntry2.getGateway().getPeerId().equals( theEntry.getPeer().getPeerId())){
-//              theEntry2.setHopDistance( RoutingTableEntry.MAX_HOP_DISTANCE );
+              //              theEntry2.setHopDistance( RoutingTableEntry.MAX_HOP_DISTANCE );
               myRoutingTable.addRoutingTableEntry( theEntry2.derivedEntry( RoutingTableEntry.MAX_HOP_DISTANCE ) );
             }
           }
@@ -396,7 +402,7 @@ public class RoutingProtocol extends Protocol {
   public void resetRoutingTable(){
     for(RoutingTableEntry theEntry : myRoutingTable.getEntries()){
       myRoutingTable.addRoutingTableEntry( theEntry.derivedEntry( RoutingTableEntry.MAX_HOP_DISTANCE ) );
-//      theEntry.setHopDistance( RoutingTableEntry.MAX_HOP_DISTANCE );
+      //      theEntry.setHopDistance( RoutingTableEntry.MAX_HOP_DISTANCE );
     }
   }
 
@@ -419,7 +425,7 @@ public class RoutingProtocol extends Protocol {
     }
 
     if(isPersistRoutingTable) saveRoutingTable();
-    
+
     if(myServerMulticastSocket != null){
       myServerMulticastSocket.close();
     }
@@ -451,7 +457,7 @@ public class RoutingProtocol extends Protocol {
         myServerMulticastSocket = new MulticastSocket(MULTICAST_PORT);
         InetAddress theGroup = InetAddress.getByName(MULTICAST_ADDRESS);
         myServerMulticastSocket.joinGroup(theGroup);
-        
+
         while(!myServerMulticastSocket.isClosed()){
           byte[] theBytes = new byte[1024];
           DatagramPacket thePacket = new DatagramPacket(theBytes, theBytes.length);
@@ -460,8 +466,10 @@ public class RoutingProtocol extends Protocol {
           Object theObject = theObjectInputStream.readObject();
           if(theObject instanceof RoutingTableEntry){
             RoutingTableEntry theEntry = (RoutingTableEntry)theObject;
-            theEntry = theEntry.incHopDistance();
-            myRoutingTable.addRoutingTableEntry( theEntry );
+            if(!myUnreachablePeers.contains(theEntry.getPeer().getPeerId())){
+              theEntry = theEntry.incHopDistance();
+              myRoutingTable.addRoutingTableEntry( theEntry );
+            }
           }
         }
       }catch(Exception e){
@@ -469,32 +477,32 @@ public class RoutingProtocol extends Protocol {
       }
     }
   }
-  
+
   public void sendUDPAnnouncement(){
     try{
       ByteArrayOutputStream theByteArrayOutputStream = new ByteArrayOutputStream();
       ObjectOutputStream theObjectOutputStream = new ObjectOutputStream(theByteArrayOutputStream);
       theObjectOutputStream.writeObject( myRoutingTable.getEntryForLocalPeer() );
-      
+
       MulticastSocket theMulticastSocket = new MulticastSocket(MULTICAST_PORT);
       InetAddress theGroup = InetAddress.getByName(MULTICAST_ADDRESS);
       theMulticastSocket.joinGroup(theGroup);
-      
+
       byte[] theBytes = theByteArrayOutputStream.toByteArray();
       DatagramPacket thePacket = new DatagramPacket(theBytes, theBytes.length, theGroup, MULTICAST_PORT);
       thePacket.setAddress( theGroup );
-      
+
       theMulticastSocket.send( thePacket );
     }catch(Exception e){
       LOGGER.error( "Could not send datagram packet", e);
     }
   }
-  
+
   private class SendUDPAnnouncement implements Runnable{
 
     @Override
     public void run() {
-     sendUDPAnnouncement();
+      sendUDPAnnouncement();
     }
   } 
 }
