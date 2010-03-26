@@ -11,7 +11,7 @@ import junit.framework.TestCase;
 public class StoredPrivateKeyEncryptionTest extends TestCase {
   
   public void testEncryption() throws EncryptionException{
-    StoredPrivateKeyEncryption theEncryption = new StoredPrivateKeyEncryption(new File("i:\\"), System.getProperty( "user.name" ));
+    StoredPrivateKeyEncryption theEncryption = new StoredPrivateKeyEncryption(new File("."), System.getProperty( "user.name" ));
     
     //let's store our own public key in the map, normally we will not do this, but now just for test purposes
     theEncryption.storePublicKeyForUser( System.getProperty( "user.name" ), theEncryption.getPublicKey() );  
@@ -26,9 +26,9 @@ public class StoredPrivateKeyEncryptionTest extends TestCase {
   }
   
   public void testBiEncryption() throws EncryptionException{
-    StoredPrivateKeyEncryption theEncryptorOfGuy = new StoredPrivateKeyEncryption(new File("i:\\"), "Guy");
-    StoredPrivateKeyEncryption theEncryptorOfLeslie = new StoredPrivateKeyEncryption(new File("i:\\"), "Leslie");
-    StoredPrivateKeyEncryption theEncryptorOfKoen = new StoredPrivateKeyEncryption(new File("i:\\"), "Koen");
+    StoredPrivateKeyEncryption theEncryptorOfGuy = new StoredPrivateKeyEncryption(new File("."), "Guy");
+    StoredPrivateKeyEncryption theEncryptorOfLeslie = new StoredPrivateKeyEncryption(new File("."), "Leslie");
+    StoredPrivateKeyEncryption theEncryptorOfKoen = new StoredPrivateKeyEncryption(new File("."), "Koen");
     
     theEncryptorOfGuy.storePublicKeyForUser( "Leslie", theEncryptorOfLeslie.getPublicKey() );
     theEncryptorOfLeslie.storePublicKeyForUser( "Guy", theEncryptorOfGuy.getPublicKey() );
