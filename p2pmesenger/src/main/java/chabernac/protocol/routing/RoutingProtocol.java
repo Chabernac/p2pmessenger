@@ -4,9 +4,16 @@
  */
 package chabernac.protocol.routing;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.DatagramPacket;
+import java.net.InetAddress;
+import java.net.MulticastSocket;
 import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -43,6 +50,8 @@ public class RoutingProtocol extends Protocol {
 
   public static final int START_PORT = 12700;
   public static final int END_PORT = 12720;
+  public static final int MULTICAST_PORT = 13879;
+  public static final String MULTICAST_ADDRESS = "234.5.54.9";
 
   private static enum Command { REQUEST_TABLE, WHO_ARE_YOU, ANNOUNCEMENT_WITH_REPLY, ANNOUNCEMENT };
   private static enum Status { UNKNOWN_COMMAND };
@@ -69,6 +78,10 @@ public class RoutingProtocol extends Protocol {
   private ExecutorService myChangeService = null;
 
   private String myLocalPeerId = null;
+  
+  private ExecutorService myUDPPacketHandlerService = Executors.newFixedThreadPool( 6 );
+  
+  private MulticastSocket myServerMulticastSocket = null;
 
   public RoutingProtocol ( long anExchangeDelay, boolean isPersistRoutingTable) {
     this(null, anExchangeDelay, isPersistRoutingTable);
@@ -93,6 +106,11 @@ public class RoutingProtocol extends Protocol {
 
     //TODO enable to test immediate change propagation
     myRoutingTable.addRoutingTableListener( new RoutingTableListener() );
+    startUDPListener();
+  }
+  
+  private void startUDPListener(){
+    myUDPPacketHandlerService.execute( new MulticastServerThread() );
   }
 
 
@@ -101,6 +119,7 @@ public class RoutingProtocol extends Protocol {
     mySheduledService.scheduleWithFixedDelay( new ScanLocalSystem(), 1, myExchangeDelay, TimeUnit.SECONDS);
     mySheduledService.scheduleWithFixedDelay( new ExchangeRoutingTable(), 2, myExchangeDelay, TimeUnit.SECONDS);
     mySheduledService.scheduleWithFixedDelay( new ScanRemoteSystem(), 10 , 10 * myExchangeDelay, TimeUnit.SECONDS);
+    mySheduledService.scheduleWithFixedDelay( new SendUDPAnnouncement(), 2, myExchangeDelay, TimeUnit.SECONDS);
   }
 
   @Override
@@ -400,6 +419,10 @@ public class RoutingProtocol extends Protocol {
     }
 
     if(isPersistRoutingTable) saveRoutingTable();
+    
+    if(myServerMulticastSocket != null){
+      myServerMulticastSocket.close();
+    }
   }
 
   private class RoutingTableListener implements IRoutingTableListener{
@@ -420,4 +443,58 @@ public class RoutingProtocol extends Protocol {
       sendAnnoucement(myEntry); 
     }
   }
+
+  private class MulticastServerThread implements Runnable{
+    @Override
+    public void run() {
+      try{
+        myServerMulticastSocket = new MulticastSocket(MULTICAST_PORT);
+        InetAddress theGroup = InetAddress.getByName(MULTICAST_ADDRESS);
+        myServerMulticastSocket.joinGroup(theGroup);
+        
+        while(!myServerMulticastSocket.isClosed()){
+          byte[] theBytes = new byte[1024];
+          DatagramPacket thePacket = new DatagramPacket(theBytes, theBytes.length);
+          myServerMulticastSocket.receive( thePacket );
+          ObjectInputStream theObjectInputStream = new ObjectInputStream(new ByteArrayInputStream(theBytes));
+          Object theObject = theObjectInputStream.readObject();
+          if(theObject instanceof RoutingTableEntry){
+            RoutingTableEntry theEntry = (RoutingTableEntry)theObject;
+            theEntry = theEntry.incHopDistance();
+            myRoutingTable.addRoutingTableEntry( theEntry );
+          }
+        }
+      }catch(Exception e){
+        LOGGER.error("Could not start udp server", e);
+      }
+    }
+  }
+  
+  public void sendUDPAnnouncement(){
+    try{
+      ByteArrayOutputStream theByteArrayOutputStream = new ByteArrayOutputStream();
+      ObjectOutputStream theObjectOutputStream = new ObjectOutputStream(theByteArrayOutputStream);
+      theObjectOutputStream.writeObject( myRoutingTable.getEntryForLocalPeer() );
+      
+      MulticastSocket theMulticastSocket = new MulticastSocket(MULTICAST_PORT);
+      InetAddress theGroup = InetAddress.getByName(MULTICAST_ADDRESS);
+      theMulticastSocket.joinGroup(theGroup);
+      
+      byte[] theBytes = theByteArrayOutputStream.toByteArray();
+      DatagramPacket thePacket = new DatagramPacket(theBytes, theBytes.length, theGroup, MULTICAST_PORT);
+      thePacket.setAddress( theGroup );
+      
+      theMulticastSocket.send( thePacket );
+    }catch(Exception e){
+      LOGGER.error( "Could not send datagram packet", e);
+    }
+  }
+  
+  private class SendUDPAnnouncement implements Runnable{
+
+    @Override
+    public void run() {
+     sendUDPAnnouncement();
+    }
+  } 
 }
