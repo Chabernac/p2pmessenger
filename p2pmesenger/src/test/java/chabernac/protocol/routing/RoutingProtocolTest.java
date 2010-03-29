@@ -418,6 +418,18 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
     try{
       assertTrue( theServer1.start() );
       assertTrue( theServer2.start() );
+      
+      Thread.sleep( 2000 );
+
+      //since the routing table is reset and we have an exchange delay of -1 the peers will not be able to reach each other
+      //lets test this!
+      
+      assertNotNull( theRoutingTable1.getEntryForPeer( "2" ) );
+      assertFalse( theRoutingTable1.getEntryForPeer( "2" ).isReachable() );
+      assertNotNull( theRoutingTable2.getEntryForPeer( "1" ) );
+      assertFalse( theRoutingTable2.getEntryForPeer( "1" ).isReachable() );
+      
+      //even after exchanging routing tables the peers must not be able to reach each other
 
       theRoutingProtocol1.exchangeRoutingTable();
       theRoutingProtocol2.exchangeRoutingTable();
@@ -427,8 +439,15 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
       assertNotNull( theRoutingTable2.getEntryForPeer( "1" ) );
       assertFalse( theRoutingTable2.getEntryForPeer( "1" ).isReachable() );
       
+      //now clear the unreachable peers
+      
+      theRoutingProtocol1.getLocalUnreachablePeerIds().clear();
+      theRoutingProtocol2.getLocalUnreachablePeerIds().clear();
+      
       theRoutingProtocol1.scanRemoteSystem(true);
       theRoutingProtocol2.scanRemoteSystem(true);
+      
+      Thread.sleep( 1000 );
       
       assertNotNull( theRoutingTable1.getEntryForPeer( "2" ) );
       assertTrue(  theRoutingTable1.getEntryForPeer( "2" ).isReachable() );
