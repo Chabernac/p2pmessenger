@@ -80,6 +80,7 @@ public class RoutingProtocol extends Protocol {
   private String myLocalPeerId = null;
 
   private ExecutorService myUDPPacketHandlerService = Executors.newFixedThreadPool( 6 );
+  private ExecutorService myScannerService = Executors.newFixedThreadPool( 20 );
 
   private MulticastSocket myServerMulticastSocket = null;
 
@@ -120,6 +121,7 @@ public class RoutingProtocol extends Protocol {
     mySheduledService.scheduleWithFixedDelay( new ExchangeRoutingTable(), 2, myExchangeDelay, TimeUnit.SECONDS);
     mySheduledService.scheduleWithFixedDelay( new ScanRemoteSystem(), 10 , 10 * myExchangeDelay, TimeUnit.SECONDS);
     mySheduledService.scheduleWithFixedDelay( new SendUDPAnnouncement(), 2, myExchangeDelay, TimeUnit.SECONDS);
+    mySheduledService.scheduleWithFixedDelay( new DetectRemoteSystem(), 100, 10 * myExchangeDelay, TimeUnit.SECONDS);
   }
 
   @Override
@@ -169,13 +171,13 @@ public class RoutingProtocol extends Protocol {
       return XMLTools.toXML( myRoutingTable );
     } else if(theCommand == Command.ANNOUNCEMENT){
       String[] theAttributes = anInput.substring( theFirstIndexOfSpace + 1 ).split(";");
-      
+
       RoutingTableEntry theSendingPeer = ((RoutingTableEntry)XMLTools.fromXML( theAttributes[0] ));
       //we add the sending peer to the routing table
 //      myRoutingTable.addRoutingTableEntry(theSendingPeer.incHopDistance());
-      
+
       RoutingTableEntry thePeer = ((RoutingTableEntry)XMLTools.fromXML( theAttributes[1] ));
-      
+
       //the sending peer has send the entry so we set it as gateway and increment the hop distance
       thePeer = thePeer.entryForNextPeer( theSendingPeer.getPeer() );
       myRoutingTable.addRoutingTableEntry( thePeer );
@@ -191,6 +193,19 @@ public class RoutingProtocol extends Protocol {
     private List<String> myHosts;
     private int myPort;
     private List<String> myUnreachablePeers = null;
+
+    public ScanSystem ( String aHosts, int anPort ){
+      this(aHosts, anPort, null);
+    }
+
+    public ScanSystem ( String aHosts, int anPort, List<String> anUnreachablePeers) {
+      super();
+      List<String> theList = new ArrayList< String >();
+      theList.add(aHosts);
+      myHosts = theList;
+      myPort = anPort;
+      myUnreachablePeers = anUnreachablePeers;
+    }
 
     public ScanSystem ( List<String> aHosts, int anPort, List<String> anUnreachablePeers) {
       super();
@@ -208,11 +223,14 @@ public class RoutingProtocol extends Protocol {
 
   private boolean contactPeer(Peer aPeer, List<String> anUnreachablePeers){
     try{
+      LOGGER.debug("Sending message to '" + aPeer.getHosts() + "' port '" + aPeer.getPort() + "'");
       String theId = aPeer.send( createMessage( Command.WHO_ARE_YOU.name() ));
 
       if(!anUnreachablePeers.contains( theId )){
         aPeer.setPeerId( theId );
         RoutingTableEntry theEntry = new RoutingTableEntry(aPeer, 1, aPeer);
+
+        LOGGER.debug("Detected system on '" + aPeer.getHosts() + "' port '" + aPeer.getPort() + "'");
 
         //only if we have detected our self we set the hop distance to 0
         if(theId.equals(myRoutingTable.getLocalPeerId())){
@@ -230,9 +248,8 @@ public class RoutingProtocol extends Protocol {
     try{
       LOGGER.debug( "Scanning local system" );
       List<String> theLocalHosts = NetTools.getLocalExposedIpAddresses();
-      ExecutorService theService = Executors.newFixedThreadPool( 20 );
       for(int i=START_PORT;i<=END_PORT;i++){
-        theService.execute( new  ScanSystem(theLocalHosts, i, myUnreachablePeers));
+        myScannerService.execute( new  ScanSystem(theLocalHosts, i, myUnreachablePeers));
       }
     }catch(SocketException e){
       LOGGER.error( "Could not get local ip addressed", e );
@@ -273,6 +290,28 @@ public class RoutingProtocol extends Protocol {
             }
           }catch(Exception e){}
         }
+      }
+    }
+  }
+
+  /**
+   * this function will look at the local ip adres and start port scanning in the same range for other peers
+   * we only do this if there are no ohter peers in the network but our selfs
+   */
+  public void detectRemoteSystem(){
+    if(myRoutingTable.getNrOfReachablePeers() <= 1){
+      try{
+        String theAddress = InetAddress.getLocalHost().getHostAddress();
+        String[] theParts  = theAddress.split( "\\." );
+        int theLastNr = Integer.parseInt( theParts[3] );
+        for(int i=1;i<256;i++){
+          if(i != theLastNr){
+            String theNewAddress = theParts[0] + "." + theParts[1] + "." + theParts[2] + "." + i;
+            myScannerService.execute( new ScanSystem(theNewAddress, START_PORT) );
+          }
+        }
+      }catch(Exception e ){
+        LOGGER.error( "An error occured while scanning system", e );
       }
     }
   }
@@ -424,6 +463,10 @@ public class RoutingProtocol extends Protocol {
       mySheduledService.shutdown();
     }
 
+    if(myScannerService != null){
+      myScannerService.shutdown();
+    }
+
     if(isPersistRoutingTable) saveRoutingTable();
 
     if(myServerMulticastSocket != null){
@@ -505,4 +548,13 @@ public class RoutingProtocol extends Protocol {
       sendUDPAnnouncement();
     }
   } 
+  
+  private class DetectRemoteSystem implements Runnable{
+
+    @Override
+    public void run() {
+      detectRemoteSystem();
+    }
+    
+  }
 }

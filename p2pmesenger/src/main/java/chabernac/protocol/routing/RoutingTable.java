@@ -164,4 +164,14 @@ public class RoutingTable implements Iterable< RoutingTableEntry >{
       }
     }
   }
+  
+  public int getNrOfReachablePeers(){
+    int theCounter = 0;
+    for(RoutingTableEntry theEntry : getEntries()){
+      if(theEntry.isReachable()){
+        theCounter ++;
+      }
+    }
+    return theCounter;
+  }
 }
