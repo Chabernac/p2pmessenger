@@ -83,6 +83,8 @@ public class RoutingProtocol extends Protocol {
   private ExecutorService myScannerService = Executors.newFixedThreadPool( 20 );
 
   private MulticastSocket myServerMulticastSocket = null;
+  
+  private IRoutingProtocolMonitor myRoutingProtocolMonitor = null;
 
   public RoutingProtocol ( long anExchangeDelay, boolean isPersistRoutingTable) {
     this(null, anExchangeDelay, isPersistRoutingTable);
@@ -217,13 +219,15 @@ public class RoutingProtocol extends Protocol {
     @Override
     public void run() {
       Peer thePeer = new Peer(null, myHosts, myPort);
+      if(myRoutingProtocolMonitor != null) myRoutingProtocolMonitor.scanStarted( thePeer );
       contactPeer( thePeer, myUnreachablePeers );
+      if(myRoutingProtocolMonitor != null) myRoutingProtocolMonitor.scanStopped( thePeer );
     }
   }
 
   private boolean contactPeer(Peer aPeer, List<String> anUnreachablePeers){
     try{
-      LOGGER.debug("Sending message to '" + aPeer.getHosts() + "' port '" + aPeer.getPort() + "'");
+//      LOGGER.debug("Sending message to '" + aPeer.getHosts() + "' port '" + aPeer.getPort() + "'");
       String theId = aPeer.send( createMessage( Command.WHO_ARE_YOU.name() ));
 
       if(!anUnreachablePeers.contains( theId )){
@@ -245,6 +249,7 @@ public class RoutingProtocol extends Protocol {
   }
 
   public void scanLocalSystem(){
+    if(myRoutingProtocolMonitor != null) myRoutingProtocolMonitor.localSystemScanStarted();
     try{
       LOGGER.debug( "Scanning local system" );
       List<String> theLocalHosts = NetTools.getLocalExposedIpAddresses();
@@ -262,6 +267,7 @@ public class RoutingProtocol extends Protocol {
    * on a different port, if one is found, the port scan stops
    */
   public void scanRemoteSystem(boolean isExcludeLocal){
+    if(myRoutingProtocolMonitor != null) myRoutingProtocolMonitor.remoteSystemScanStarted();
     //first search all hosts which have no single peer
     Map<String, Boolean> theHosts = new HashMap< String, Boolean >();
 
@@ -299,6 +305,7 @@ public class RoutingProtocol extends Protocol {
    * we only do this if there are no ohter peers in the network but our selfs
    */
   public void detectRemoteSystem(){
+    if(myRoutingProtocolMonitor != null) myRoutingProtocolMonitor.detectingRemoteSystemStarted();
     if(myRoutingTable.getNrOfReachablePeers() <= 1){
       try{
         String theAddress = InetAddress.getLocalHost().getHostAddress();
@@ -332,6 +339,7 @@ public class RoutingProtocol extends Protocol {
    * this method will send a request to all the peers in the routing table
    */
   public void exchangeRoutingTable(){
+    if(myRoutingProtocolMonitor != null) myRoutingProtocolMonitor.exchangingRoutingTables();
     LOGGER.debug("Exchanging routing table for peer: " + myRoutingTable.getLocalPeerId());
 
     for(RoutingTableEntry theEntry : myRoutingTable.getEntries()){
@@ -375,7 +383,6 @@ public class RoutingProtocol extends Protocol {
   private void sendAnnoucement( RoutingTableEntry anEntry ) {
     for(RoutingTableEntry theEntry : myRoutingTable.getEntries()){
       Peer thePeer = theEntry.getPeer();
-
 
       //do not send the entry to our selfs, we already have the entry
       if(!thePeer.getPeerId().equals( myRoutingTable.getLocalPeerId()) &&
@@ -522,6 +529,7 @@ public class RoutingProtocol extends Protocol {
   }
 
   public void sendUDPAnnouncement(){
+    if(myRoutingProtocolMonitor != null) myRoutingProtocolMonitor.sendingUDPAnnouncement();
     try{
       ByteArrayOutputStream theByteArrayOutputStream = new ByteArrayOutputStream();
       ObjectOutputStream theObjectOutputStream = new ObjectOutputStream(theByteArrayOutputStream);
@@ -555,6 +563,13 @@ public class RoutingProtocol extends Protocol {
     public void run() {
       detectRemoteSystem();
     }
-    
+  }
+
+  public IRoutingProtocolMonitor getRoutingProtocolMonitor() {
+    return myRoutingProtocolMonitor;
+  }
+
+  public void setRoutingProtocolMonitor( IRoutingProtocolMonitor anRoutingProtocolMonitor ) {
+    myRoutingProtocolMonitor = anRoutingProtocolMonitor;
   }
 }
