@@ -17,6 +17,8 @@ import java.util.concurrent.Executors;
 
 import org.apache.log4j.Logger;
 
+import chabernac.tools.NetTools;
+
 public class ProtocolServer implements Runnable{
   private static Logger LOGGER = Logger.getLogger(ProtocolServer.class);
   
@@ -27,10 +29,16 @@ public class ProtocolServer implements Runnable{
   private IProtocol myProtocol = null;
   private boolean isStarted = false;
   private ServerSocket myServerSocket = null;
+  private boolean isFindUnusedPort = false;
 
   private Object LOCK = new Object();
-
+  
   public ProtocolServer(IProtocol aProtocol, int aPort, int aNumberOfThreads){
+    this(aProtocol, aPort, aNumberOfThreads, false);
+  }
+
+  public ProtocolServer(IProtocol aProtocol, int aPort, int aNumberOfThreads, boolean isFindUnusedPort){
+    this.isFindUnusedPort = isFindUnusedPort;
     myProtocol = aProtocol;
     myPort = aPort;
     myNumberOfThreads = aNumberOfThreads;
@@ -62,7 +70,11 @@ public class ProtocolServer implements Runnable{
   @Override
   public void run() {
     try{
-      myServerSocket = new ServerSocket(myPort);
+      if(isFindUnusedPort){
+        myServerSocket = NetTools.openServerSocket( myPort );
+      } else {
+        myServerSocket = new ServerSocket(myPort);
+      }
 
       synchronized ( LOCK ) {
         isStarted = true;
@@ -121,6 +133,4 @@ public class ProtocolServer implements Runnable{
       }
     }
   }
-
-
 }
