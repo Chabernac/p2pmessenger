@@ -4,6 +4,9 @@
  */
 package chabernac.protocol.message;
 
+import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Logger;
+
 import chabernac.protocol.AbstractProtocolTest;
 import chabernac.protocol.ProtocolContainer;
 import chabernac.protocol.ProtocolException;
@@ -13,8 +16,15 @@ import chabernac.protocol.routing.RoutingTable;
 import chabernac.protocol.routing.RoutingTableEntry;
 
 public class MessageProtocolTest extends AbstractProtocolTest {
+  private static Logger LOGGER = Logger.getLogger(MessageProtocolTest.class);
+  
+  static{
+    BasicConfigurator.resetConfiguration();
+    BasicConfigurator.configure();
+  }
 
   public void testMessageProtocol() throws ProtocolException{
+    LOGGER.debug("Begin of testMessageProtocol");
     ProtocolContainer theProtocol1 = getProtocolContainer( -1, false, "1" );
     ProtocolServer theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT, 5);
 
@@ -30,7 +40,10 @@ public class MessageProtocolTest extends AbstractProtocolTest {
     MessageProtocol theMessageProtocol1 = (MessageProtocol)theProtocol1.getProtocol( MessageProtocol.ID );
     
     RoutingProtocol theRoutingProtocol2 = (RoutingProtocol)theProtocol2.getProtocol( RoutingProtocol.ID );
+    RoutingTable theRoutingTable2 = theRoutingProtocol2.getRoutingTable();
+    
     RoutingProtocol theRoutingProtocol3 = (RoutingProtocol)theProtocol3.getProtocol( RoutingProtocol.ID );
+    RoutingTable theRoutingTable3 = theRoutingProtocol3.getRoutingTable();
     
     theRoutingProtocol1.getLocalUnreachablePeerIds().add( "3" );
     theRoutingProtocol3.getLocalUnreachablePeerIds().add( "1" );
@@ -43,6 +56,11 @@ public class MessageProtocolTest extends AbstractProtocolTest {
       theRoutingProtocol1.scanLocalSystem();
       theRoutingProtocol2.scanLocalSystem();
       theRoutingProtocol3.scanLocalSystem();
+      
+      //after a local system scan we must at least know our selfs
+      assertNotNull( theRoutingTable1.getEntryForLocalPeer() );
+      assertNotNull( theRoutingTable2.getEntryForLocalPeer() );
+      assertNotNull( theRoutingTable3.getEntryForLocalPeer() );
 
       for(int i=0;i<5;i++){
         theRoutingProtocol1.exchangeRoutingTable();

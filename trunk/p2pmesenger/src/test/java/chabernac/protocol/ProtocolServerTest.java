@@ -13,15 +13,14 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Properties;
 
-import junit.framework.TestCase;
-
 import org.apache.log4j.BasicConfigurator;
 
 import chabernac.protocol.ping.PingProtocol;
 import chabernac.protocol.routing.Peer;
 
 public class ProtocolServerTest extends AbstractProtocolTest {
-  public void setUp(){
+  static{
+    BasicConfigurator.resetConfiguration();
     BasicConfigurator.configure();
   }
   

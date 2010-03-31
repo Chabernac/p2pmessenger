@@ -24,7 +24,8 @@ import chabernac.protocol.routing.RoutingTable;
 
 public class FileTransferProtocolTest extends AbstractProtocolTest {
   static{
-    BasicConfigurator.configure();
+    BasicConfigurator.resetConfiguration();
+    BasicConfigurator.configure();;
   }
   
   public void testFileTransfer() throws InterruptedException, UnknownHostException, IOException, FileTransferException, ProtocolException{

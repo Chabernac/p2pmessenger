@@ -15,6 +15,7 @@ import chabernac.tools.IOTools;
 public class PipeProtocolTest extends AbstractProtocolTest {
   
   static{
+    BasicConfigurator.resetConfiguration();
     BasicConfigurator.configure();
   }
   
@@ -48,6 +49,11 @@ public class PipeProtocolTest extends AbstractProtocolTest {
       assertTrue( theServer3.start() );
 
       Thread.sleep( 5000 );
+      
+      //after a local system scan we must at least know our selfs
+      assertNotNull( theRoutingProtocol1.getRoutingTable().getEntryForLocalPeer() );
+      assertNotNull( theRoutingProtocol3.getRoutingTable().getEntryForLocalPeer() );
+
 
       //open a pipe from peer 1 to peer 3, it should traverse peer 2
       Pipe thePipe = new Pipe(theRoutingProtocol1.getRoutingTable().getEntryForPeer("3").getPeer());
