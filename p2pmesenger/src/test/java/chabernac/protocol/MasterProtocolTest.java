@@ -14,7 +14,8 @@ import chabernac.protocol.list.ListProtocol;
 import chabernac.protocol.ping.PingProtocol;
 
 public class MasterProtocolTest extends TestCase {
-  public void setUp(){
+  static{
+    BasicConfigurator.resetConfiguration();
     BasicConfigurator.configure();
   }
   

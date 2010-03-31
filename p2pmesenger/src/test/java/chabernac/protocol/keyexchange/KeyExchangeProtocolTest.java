@@ -16,6 +16,7 @@ import chabernac.protocol.routing.RoutingProtocol;
 public class KeyExchangeProtocolTest extends AbstractProtocolTest {
   
   static{
+    BasicConfigurator.resetConfiguration();
     BasicConfigurator.configure();
   }
   

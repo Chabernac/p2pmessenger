@@ -15,6 +15,7 @@ import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -244,6 +245,14 @@ public class RoutingProtocol extends Protocol {
         return true;
       }
     }catch(Exception e){
+      //TODO remove extensive logging
+      try {
+        if(aPeer.getPort() == RoutingProtocol.START_PORT && aPeer.getHosts().get( 0 ).equalsIgnoreCase( InetAddress.getLocalHost().getHostAddress() )){
+          LOGGER.error( "Error occured while contacting peer " + aPeer.getHosts() + ": " + aPeer.getPort(), e );
+        }
+      } catch ( UnknownHostException e1 ) {
+        e1.printStackTrace();
+      }
     }
     return false;
   }
@@ -254,7 +263,7 @@ public class RoutingProtocol extends Protocol {
       LOGGER.debug( "Scanning local system" );
       List<String> theLocalHosts = NetTools.getLocalExposedIpAddresses();
       for(int i=START_PORT;i<=END_PORT;i++){
-        myScannerService.execute( new  ScanSystem(theLocalHosts, i, myUnreachablePeers));
+        myScannerService.execute( new ScanSystem(theLocalHosts, i, myUnreachablePeers));
       }
     }catch(SocketException e){
       LOGGER.error( "Could not get local ip addressed", e );
@@ -466,14 +475,22 @@ public class RoutingProtocol extends Protocol {
 
   @Override
   public void stop() {
-    if(mySheduledService != null){
-      mySheduledService.shutdown();
-    }
-
     if(myScannerService != null){
-      myScannerService.shutdown();
+      myScannerService.shutdownNow();
+    }
+    
+    if(mySheduledService != null){
+      mySheduledService.shutdownNow();
     }
 
+    if(myChangeService != null) {
+     myChangeService.shutdownNow();
+    }
+    
+    if(myUDPPacketHandlerService != null){
+      myUDPPacketHandlerService.shutdownNow();
+    }
+    
     if(isPersistRoutingTable) saveRoutingTable();
 
     if(myServerMulticastSocket != null){
@@ -521,6 +538,10 @@ public class RoutingProtocol extends Protocol {
               myRoutingTable.addRoutingTableEntry( theEntry );
             }
           }
+        }
+      }catch(SocketException e){
+        if(!"socket closed".equalsIgnoreCase( e.getMessage())){
+          LOGGER.error("Could not start udp server", e);
         }
       }catch(Exception e){
         LOGGER.error("Could not start udp server", e);

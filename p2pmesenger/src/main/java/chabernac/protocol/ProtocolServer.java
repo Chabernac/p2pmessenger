@@ -11,6 +11,7 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -86,6 +87,10 @@ public class ProtocolServer implements Runnable{
       while(true){ 
         Socket theClientSocket = myServerSocket.accept();
         theClientHandlerService.execute( new ClientSocketHandler(theClientSocket) );
+      }
+    }catch(SocketException e){
+      if(!"socket closed".equalsIgnoreCase( e.getMessage())){
+        LOGGER.error("Could not start server", e);
       }
     }catch(Exception e){
       LOGGER.error("Could not start server", e);

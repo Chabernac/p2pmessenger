@@ -21,6 +21,7 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
   private static Logger LOGGER = Logger.getLogger(RoutingProtocolTest.class);
   
   static{
+    BasicConfigurator.resetConfiguration();
     BasicConfigurator.configure();
   }
   
@@ -562,29 +563,29 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
     }
   }
   
-  public void testDetectRemoteSystem() throws InterruptedException, ProtocolException{
-    ProtocolContainer theProtocol1 = getProtocolContainer( -1, false, "1" );
-    ProtocolServer theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT, 5);
-
-    ProtocolContainer theProtocol2 = getProtocolContainer( -1, false, "2" );
-    ProtocolServer theServer2 = new ProtocolServer(theProtocol2, RoutingProtocol.START_PORT + 1, 5);
-    
-    RoutingProtocol theRoutingProtocol1 = (RoutingProtocol)theProtocol1.getProtocol( RoutingProtocol.ID );
-    RoutingTable theRoutingTable1 = theRoutingProtocol1.getRoutingTable();
-    RoutingProtocol theRoutingProtocol2 = (RoutingProtocol)theProtocol2.getProtocol( RoutingProtocol.ID );
-    RoutingTable theRoutingTable2 = theRoutingProtocol2.getRoutingTable();
-    
-    try{
-      assertTrue( theServer1.start() );
-      assertTrue( theServer2.start() );
-      
-      theRoutingProtocol1.detectRemoteSystem();
-      
-      Thread.sleep( 10000 );
-      
-    } finally {
-      theServer1.stop();
-      theServer2.stop();
-    }
-  }
+//  public void testDetectRemoteSystem() throws InterruptedException, ProtocolException{
+//    ProtocolContainer theProtocol1 = getProtocolContainer( -1, false, "1" );
+//    ProtocolServer theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT, 5);
+//
+//    ProtocolContainer theProtocol2 = getProtocolContainer( -1, false, "2" );
+//    ProtocolServer theServer2 = new ProtocolServer(theProtocol2, RoutingProtocol.START_PORT + 1, 5);
+//    
+//    RoutingProtocol theRoutingProtocol1 = (RoutingProtocol)theProtocol1.getProtocol( RoutingProtocol.ID );
+//    RoutingTable theRoutingTable1 = theRoutingProtocol1.getRoutingTable();
+//    RoutingProtocol theRoutingProtocol2 = (RoutingProtocol)theProtocol2.getProtocol( RoutingProtocol.ID );
+//    RoutingTable theRoutingTable2 = theRoutingProtocol2.getRoutingTable();
+//    
+//    try{
+//      assertTrue( theServer1.start() );
+//      assertTrue( theServer2.start() );
+//      
+//      theRoutingProtocol1.detectRemoteSystem();
+//      
+//      Thread.sleep( 10000 );
+//      
+//    } finally {
+//      theServer1.stop();
+//      theServer2.stop();
+//    }
+//  }
 }

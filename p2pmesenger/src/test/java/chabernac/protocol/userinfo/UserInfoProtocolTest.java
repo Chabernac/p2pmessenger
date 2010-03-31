@@ -4,8 +4,6 @@
  */
 package chabernac.protocol.userinfo;
 
-import java.net.SocketException;
-
 import org.apache.log4j.BasicConfigurator;
 
 import chabernac.protocol.AbstractProtocolTest;
@@ -13,9 +11,11 @@ import chabernac.protocol.ProtocolContainer;
 import chabernac.protocol.ProtocolException;
 import chabernac.protocol.ProtocolServer;
 import chabernac.protocol.routing.RoutingProtocol;
+import chabernac.protocol.routing.RoutingTable;
 
 public class UserInfoProtocolTest extends AbstractProtocolTest {
-  public void setUp(){
+  static{
+    BasicConfigurator.resetConfiguration();
     BasicConfigurator.configure();
   }
   
@@ -27,7 +27,9 @@ public class UserInfoProtocolTest extends AbstractProtocolTest {
     ProtocolServer theServer2 = new ProtocolServer(theProtocol2, RoutingProtocol.START_PORT + 1, 5);
     
     RoutingProtocol theRoutingProtocol1 = (RoutingProtocol)theProtocol1.getProtocol( RoutingProtocol.ID );
+    RoutingTable theRoutingTable1 = theRoutingProtocol1.getRoutingTable();
     RoutingProtocol theRoutingProtocol2 = (RoutingProtocol)theProtocol2.getProtocol( RoutingProtocol.ID );
+    RoutingTable theRoutingTable2 = theRoutingProtocol2.getRoutingTable();
     
     try{
       assertTrue( theServer1.start() );
@@ -35,6 +37,12 @@ public class UserInfoProtocolTest extends AbstractProtocolTest {
       
       theRoutingProtocol1.scanLocalSystem();
       theRoutingProtocol2.scanLocalSystem();
+      
+      //after a local system scan we must at least know our selfs
+      assertNotNull( theRoutingTable1.getEntryForLocalPeer() );
+      assertNotNull( theRoutingTable2.getEntryForLocalPeer() );
+
+      
       theRoutingProtocol1.exchangeRoutingTable();
       theRoutingProtocol2.exchangeRoutingTable();
       
