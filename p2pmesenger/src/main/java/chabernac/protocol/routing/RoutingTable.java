@@ -36,6 +36,12 @@ public class RoutingTable implements Iterable< RoutingTableEntry >{
   }
 
   public synchronized void addRoutingTableEntry(RoutingTableEntry anEntry){
+    //TODO remove
+    if(anEntry.getPeer().getPeerId().equalsIgnoreCase( getLocalPeerId() ) && anEntry.getGateway().getPeerId().equals( anEntry.getPeer().getPeerId() ) && anEntry.getHopDistance() > 0 && anEntry.getHopDistance() != RoutingTableEntry.MAX_HOP_DISTANCE){
+      //this is an invalid condition
+      throw new RuntimeException("Received peer entry of our selfs with hop distance > 0");
+    }
+    
     if(myRoutingTable.containsKey( anEntry.getPeer().getPeerId() )){
       RoutingTableEntry thePeerEntry = myRoutingTable.get( anEntry.getPeer().getPeerId() );
 
@@ -44,9 +50,9 @@ public class RoutingTable implements Iterable< RoutingTableEntry >{
       
       if((thePeerEntry.getGateway().getPeerId().equals( anEntry.getGateway().getPeerId() ) ||
 //      if(thePeerEntry.getGateway().getPeerId().equals( aContainingPeerEntry ) ||
-          anEntry.closerThen( thePeerEntry ))) {
+          anEntry.closerThen( thePeerEntry )) 
           //only update the entry if something changed
-//          &&!thePeerEntry.equals( anEntry )){
+          &&!thePeerEntry.equals( anEntry )){
 
         myRoutingTable.put( anEntry.getPeer().getPeerId(), anEntry );
         notifyListenersOfRoutingTableEntryChange( anEntry );
@@ -156,6 +162,14 @@ public class RoutingTable implements Iterable< RoutingTableEntry >{
   
   public void addRoutingTableListener(IRoutingTableListener aListener){
     myRoutingTableListeners.add( aListener );
+  }
+  
+  public void removeRoutingTableListener(IRoutingTableListener aListener){
+    myRoutingTableListeners.remove( aListener );
+  }
+  
+  public void removeAllroutingTableListeners(){
+    myRoutingTableListeners.clear();
   }
   
   public void removeAllButLocalPeer(){

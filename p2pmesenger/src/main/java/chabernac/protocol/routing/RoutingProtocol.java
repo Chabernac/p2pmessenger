@@ -41,7 +41,6 @@ import chabernac.tools.XMLTools;
  *  - update the routing table with the items received from another peer.  in this process the fasted path to a peer must be stored in the routing table
  *  - periodically contact all peers to see if they are still online and retrieve the routing table of the other peer.
  *  
- *  TODO changes should be promoted through the network immediatly
  */
 
 public class RoutingProtocol extends Protocol {
@@ -55,7 +54,7 @@ public class RoutingProtocol extends Protocol {
   public static final String MULTICAST_ADDRESS = "234.5.54.9";
 
   private static enum Command { REQUEST_TABLE, WHO_ARE_YOU, ANNOUNCEMENT_WITH_REPLY, ANNOUNCEMENT };
-  private static enum Status { UNKNOWN_COMMAND };
+  private static enum Response { OK, UNKNOWN_COMMAND };
 
   private RoutingTable myRoutingTable = null;
 
@@ -116,7 +115,6 @@ public class RoutingProtocol extends Protocol {
     if(anExchangeDelay > 0 ) scheduleRoutingTableExchange();
     myChangeService = Executors.newFixedThreadPool( 5 );
 
-    //TODO enable to test immediate change propagation
     myRoutingTable.addRoutingTableListener( new RoutingTableListener() );
     startUDPListener();
   }
@@ -192,8 +190,9 @@ public class RoutingProtocol extends Protocol {
       //the sending peer has send the entry so we set it as gateway and increment the hop distance
       thePeer = thePeer.entryForNextPeer( theSendingPeer.getPeer() );
       myRoutingTable.addRoutingTableEntry( thePeer );
+      return Response.OK.name();
     }
-    return Status.UNKNOWN_COMMAND.name();
+    return Response.UNKNOWN_COMMAND.name();
   }
 
   public RoutingTable getRoutingTable(){
@@ -398,6 +397,11 @@ public class RoutingProtocol extends Protocol {
   }
 
   private void sendAnnoucement( RoutingTableEntry anEntry ) {
+    if(myRoutingTable.getEntryForLocalPeer() == null){
+      //we're not able to send announcment yet because we have not detected our selfs
+      return;
+    }
+    
     for(RoutingTableEntry theEntry : myRoutingTable.getEntries()){
       Peer thePeer = theEntry.getPeer();
 
@@ -410,7 +414,10 @@ public class RoutingProtocol extends Protocol {
           //do not send announcement to peers we cannot reach in test mode
           !myUnreachablePeers.contains(thePeer.getPeerId())){
         try {
-          thePeer.send( createMessage( Command.ANNOUNCEMENT.name() + " "  + XMLTools.toXML(myRoutingTable.getEntryForLocalPeer()) + ";" + XMLTools.toXML( anEntry ))) ;
+          String theResult = thePeer.send( createMessage( Command.ANNOUNCEMENT.name() + " "  + XMLTools.toXML(myRoutingTable.getEntryForLocalPeer()) + ";" + XMLTools.toXML( anEntry ))) ;
+          if(!Response.OK.name().equals( theResult )){
+            throw new Exception("Unexpected result code '" + theResult + "'");
+          }
         } catch ( Exception e ) {
           //the peer can not be reached 
           //update all peers which have this peer as gateway to the max hop distance
@@ -483,6 +490,9 @@ public class RoutingProtocol extends Protocol {
 
   @Override
   public void stop() {
+    //remove all listeners from the routing table
+    myRoutingTable.removeAllroutingTableListeners();
+    
     if(myScannerService != null){
       myScannerService.shutdownNow();
     }
@@ -507,8 +517,10 @@ public class RoutingProtocol extends Protocol {
     
     //announce that we leave the P2P network
     RoutingTableEntry theSelfRoutingTableEntry = getRoutingTable().getEntryForLocalPeer();
-    theSelfRoutingTableEntry = theSelfRoutingTableEntry.derivedEntry( RoutingTableEntry.MAX_HOP_DISTANCE );
-    sendAnnoucement( theSelfRoutingTableEntry );
+    if(theSelfRoutingTableEntry != null){
+      theSelfRoutingTableEntry = theSelfRoutingTableEntry.derivedEntry( RoutingTableEntry.MAX_HOP_DISTANCE );
+      sendAnnoucement( theSelfRoutingTableEntry );
+    }
   }
 
   private class RoutingTableListener implements IRoutingTableListener{

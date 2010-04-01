@@ -73,7 +73,7 @@ public class RoutingTableEntry implements Serializable{
 	}
 
   public boolean isResponding() {
-    return myHopDistance <= 1 && myGateway == myPeer;
+    return myHopDistance <= 1 && myGateway.getPeerId().equals( myPeer.getPeerId() );
   }
 
   public boolean isReachable() {
