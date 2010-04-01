@@ -113,7 +113,7 @@ public class Peer implements Serializable {
     for(Iterator< String > i = myHost.iterator(); i.hasNext() && !send;){
       String theHost = i.next();
       Socket theSocket = new Socket();
-      theSocket.connect( new InetSocketAddress(theHost, myPort), 2000 );
+      theSocket.connect( new InetSocketAddress(theHost, myPort), 4000 );
       PrintWriter theWriter = null;
       BufferedReader theReader = null;
       try{

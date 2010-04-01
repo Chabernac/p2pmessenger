@@ -33,6 +33,14 @@ public class RoutingTableEntry implements Serializable{
 		  myHopDistance = MAX_HOP_DISTANCE;
 		}
 		myGateway = anGateway;
+		checkValidity();
+	}
+	
+	private void checkValidity(){
+	  if(!myPeer.getPeerId().equals( myGateway.getPeerId() ) && myHopDistance == 1){
+	    //this is not possible in this case hop distance must be > 1
+	    throw new RuntimeException("Hop distance can not be 1 when a gateway different from the peer is present");
+	  }
 	}
 
 	public Peer getPeer() {
