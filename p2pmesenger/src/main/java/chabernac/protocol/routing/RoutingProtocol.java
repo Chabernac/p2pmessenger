@@ -504,6 +504,11 @@ public class RoutingProtocol extends Protocol {
     if(myServerMulticastSocket != null){
       myServerMulticastSocket.close();
     }
+    
+    //announce that we leave the P2P network
+    RoutingTableEntry theSelfRoutingTableEntry = getRoutingTable().getEntryForLocalPeer();
+    theSelfRoutingTableEntry = theSelfRoutingTableEntry.derivedEntry( RoutingTableEntry.MAX_HOP_DISTANCE );
+    sendAnnoucement( theSelfRoutingTableEntry );
   }
 
   private class RoutingTableListener implements IRoutingTableListener{
