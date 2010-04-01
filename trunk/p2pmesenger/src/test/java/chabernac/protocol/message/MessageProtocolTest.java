@@ -23,7 +23,7 @@ public class MessageProtocolTest extends AbstractProtocolTest {
     BasicConfigurator.configure();
   }
 
-  public void testMessageProtocol() throws ProtocolException{
+  public void testMessageProtocol() throws ProtocolException, InterruptedException{
     LOGGER.debug("Begin of testMessageProtocol");
     ProtocolContainer theProtocol1 = getProtocolContainer( -1, false, "1" );
     ProtocolServer theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT, 5);
@@ -56,6 +56,9 @@ public class MessageProtocolTest extends AbstractProtocolTest {
       theRoutingProtocol1.scanLocalSystem();
       theRoutingProtocol2.scanLocalSystem();
       theRoutingProtocol3.scanLocalSystem();
+      
+      //scanning the local system might take a small time
+      Thread.sleep( 1000 );
       
       //after a local system scan we must at least know our selfs
       assertNotNull( theRoutingTable1.getEntryForLocalPeer() );

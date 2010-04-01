@@ -10,7 +10,9 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Serializable;
+import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.SocketAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -110,8 +112,8 @@ public class Peer implements Serializable {
     boolean send = false;
     for(Iterator< String > i = myHost.iterator(); i.hasNext() && !send;){
       String theHost = i.next();
-      Socket theSocket = new Socket(theHost, myPort);
-//      theSocket.setSoTimeout( 1000 );
+      Socket theSocket = new Socket();
+      theSocket.connect( new InetSocketAddress(theHost, myPort), 2000 );
       PrintWriter theWriter = null;
       BufferedReader theReader = null;
       try{
