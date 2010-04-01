@@ -6,6 +6,7 @@ package chabernac.protocol.routing;
 
 import java.awt.BorderLayout;
 import java.util.Properties;
+import java.util.UUID;
 
 import javax.swing.JFrame;
 
@@ -39,6 +40,7 @@ public class RoutingFrame extends JFrame {
     Properties theProperties = new Properties();
     theProperties.setProperty( "routingprotocol.exchangedelay", "10");
     theProperties.setProperty("routingprotocol.persist", "true");
+    theProperties.setProperty("peerid", UUID.randomUUID().toString());
     ProtocolFactory theFactory = new ProtocolFactory(theProperties);
     ProtocolContainer theContainer = new ProtocolContainer(theFactory);
     ProtocolServer theServer1 = new ProtocolServer(theContainer, RoutingProtocol.START_PORT, 5, true);
