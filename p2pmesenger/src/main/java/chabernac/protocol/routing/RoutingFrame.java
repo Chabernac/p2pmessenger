@@ -12,6 +12,8 @@ import java.util.UUID;
 
 import javax.swing.JFrame;
 
+import org.apache.log4j.BasicConfigurator;
+
 import chabernac.protocol.ProtocolContainer;
 import chabernac.protocol.ProtocolException;
 import chabernac.protocol.ProtocolFactory;
@@ -55,6 +57,7 @@ public class RoutingFrame extends JFrame {
   }
   
   public static void main(String args[]) throws ProtocolException{
+    BasicConfigurator.configure();
     Properties theProperties = new Properties();
     theProperties.setProperty( "routingprotocol.exchangedelay", "10");
     theProperties.setProperty("routingprotocol.persist", "true");

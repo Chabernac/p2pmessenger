@@ -83,9 +83,9 @@ public class RoutingProtocol extends Protocol {
   private ExecutorService myScannerService = Executors.newFixedThreadPool( 20 );
 
   private MulticastSocket myServerMulticastSocket = null;
-  
+
   private IRoutingProtocolMonitor myRoutingProtocolMonitor = null;
-  
+
   private boolean isPeerIdInFile = false;
 
   public RoutingProtocol ( long anExchangeDelay, boolean isPersistRoutingTable) {
@@ -103,16 +103,19 @@ public class RoutingProtocol extends Protocol {
     myLocalPeerId = aLocalPeerId;
     myExchangeDelay = anExchangeDelay;
     this.isPersistRoutingTable = isPersistRoutingTable;
-    
+
     if(myLocalPeerId != null && !"".equals( myLocalPeerId )){
       isPeerIdInFile = true;
     } else {
       isPeerIdInFile = false;
     }
-    
+    start();
+  }
+
+  public void start(){
     loadRoutingTable();
     resetRoutingTable();
-    if(anExchangeDelay > 0 ) scheduleRoutingTableExchange();
+    if(myExchangeDelay > 0 ) scheduleRoutingTableExchange();
     myChangeService = Executors.newFixedThreadPool( 5 );
 
     myRoutingTable.addRoutingTableListener( new RoutingTableListener() );
@@ -374,10 +377,31 @@ public class RoutingProtocol extends Protocol {
           String theTable = thePeer.send( createMessage( Command.ANNOUNCEMENT_WITH_REPLY.name() + " "  + XMLTools.toXML( myRoutingTable.getEntryForLocalPeer() ))) ;
           //          String theTable = thePeer.send( createMessage( Command.REQUEST_TABLE.name() ));
           RoutingTable theRemoteTable = (RoutingTable)XMLTools.fromXML( theTable );
-          myRoutingTable.merge( theRemoteTable );
-          //we can connect directly to this peer, so the hop distance is 1
-          //theEntry.setHopDistance( 1 );
-          myRoutingTable.addRoutingTableEntry( theEntry.derivedEntry( 1 ) );
+
+          if(!theRemoteTable.getLocalPeerId().equals( thePeer.getPeerId() )){
+            //if we get here it means that another peer has taken the place of the previous peer,
+            //i.e. it is running on the same host and port
+            //this means that the peer is not reachable any more
+            RoutingTableEntry theOldEntry = theEntry.derivedEntry( RoutingTableEntry.MAX_HOP_DISTANCE );
+            myRoutingTable.addRoutingTableEntry( theOldEntry );
+          }
+
+          //test that we did not take the place of another peer on the same host and port
+          if(!myLocalPeerId.equals( theRemoteTable.getLocalPeerId() )){
+
+            myRoutingTable.merge( theRemoteTable );
+            //we can connect directly to this peer, so the hop distance is 1
+            //theEntry.setHopDistance( 1 );
+            RoutingTableEntry theEntryOfRemotePeer = myRoutingTable.getEntryForPeer( theRemoteTable.getLocalPeerId() );
+
+//          //TODO remove
+//          if(myLocalPeerId.equals( theEntryOfRemotePeer.getPeer().getPeerId() )){
+//            //we should never get here
+//            throw new RuntimeException("we contacted our selfs");
+//          }
+
+            myRoutingTable.addRoutingTableEntry( theEntryOfRemotePeer.derivedEntry( 1 ) );
+          }
         } catch ( Exception e ) {
           //update all peers which have this peer as gateway to the max hop distance
           for(RoutingTableEntry theEntry2 : myRoutingTable.getEntries()){
@@ -401,7 +425,7 @@ public class RoutingProtocol extends Protocol {
       //we're not able to send announcment yet because we have not detected our selfs
       return;
     }
-    
+
     for(RoutingTableEntry theEntry : myRoutingTable.getEntries()){
       Peer thePeer = theEntry.getPeer();
 
@@ -492,29 +516,29 @@ public class RoutingProtocol extends Protocol {
   public void stop() {
     //remove all listeners from the routing table
     myRoutingTable.removeAllroutingTableListeners();
-    
+
     if(myScannerService != null){
       myScannerService.shutdownNow();
     }
-    
+
     if(mySheduledService != null){
       mySheduledService.shutdownNow();
     }
 
     if(myChangeService != null) {
-     myChangeService.shutdownNow();
+      myChangeService.shutdownNow();
     }
-    
+
     if(myUDPPacketHandlerService != null){
       myUDPPacketHandlerService.shutdownNow();
     }
-    
+
     if(isPersistRoutingTable) saveRoutingTable();
 
     if(myServerMulticastSocket != null){
       myServerMulticastSocket.close();
     }
-    
+
     //announce that we leave the P2P network
     RoutingTableEntry theSelfRoutingTableEntry = getRoutingTable().getEntryForLocalPeer();
     if(theSelfRoutingTableEntry != null){
@@ -602,7 +626,7 @@ public class RoutingProtocol extends Protocol {
       sendUDPAnnouncement();
     }
   } 
-  
+
   private class DetectRemoteSystem implements Runnable{
 
     @Override

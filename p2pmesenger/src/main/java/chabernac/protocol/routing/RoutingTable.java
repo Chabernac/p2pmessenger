@@ -39,7 +39,8 @@ public class RoutingTable implements Iterable< RoutingTableEntry >{
     //TODO remove
     if(anEntry.getPeer().getPeerId().equalsIgnoreCase( getLocalPeerId() ) && anEntry.getGateway().getPeerId().equals( anEntry.getPeer().getPeerId() ) && anEntry.getHopDistance() > 0 && anEntry.getHopDistance() != RoutingTableEntry.MAX_HOP_DISTANCE){
       //this is an invalid condition
-      throw new RuntimeException("Received peer entry of our selfs with hop distance > 0");
+      LOGGER.error( myLocalPeerId + " :Received peer entry of our selfs with hop distance > 0" + anEntry, new Exception("Received peer entry for ourselfs") );
+      return;
     }
     
     if(myRoutingTable.containsKey( anEntry.getPeer().getPeerId() )){

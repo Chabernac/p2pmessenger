@@ -62,6 +62,8 @@ public class RoutingPanel extends JPanel {
     theButtonPanel.add( new JButton(new DetectRemoteSystem()) );
     theButtonPanel.add( new JButton(new ExchangeRoutingTable()) );
     theButtonPanel.add( new JButton(new SendUDPAnnouncement()) );
+    theButtonPanel.add( new JButton(new StopAction()) );
+    theButtonPanel.add( new JButton(new StartAction()) );
     
     add(theButtonPanel, BorderLayout.NORTH);
   }
@@ -135,6 +137,34 @@ public class RoutingPanel extends JPanel {
       myExecutorService.execute( new Runnable(){
         public void run(){
           myRoutingProtocol.exchangeRoutingTable();
+        }
+      });
+    }
+  }
+  
+  public class StopAction  extends AbstractAction{
+    public StopAction(){
+      putValue( Action.NAME, "Stop" );
+    }
+    @Override
+    public void actionPerformed( ActionEvent anE ) {
+      myExecutorService.execute( new Runnable(){
+        public void run(){
+          myRoutingProtocol.stop();
+        }
+      });
+    }
+  }
+  
+  public class StartAction  extends AbstractAction{
+    public StartAction(){
+      putValue( Action.NAME, "Start" );
+    }
+    @Override
+    public void actionPerformed( ActionEvent anE ) {
+      myExecutorService.execute( new Runnable(){
+        public void run(){
+          myRoutingProtocol.start();
         }
       });
     }
