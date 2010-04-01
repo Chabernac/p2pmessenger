@@ -327,15 +327,11 @@ public class RoutingProtocol extends Protocol {
     if(myRoutingProtocolMonitor != null) myRoutingProtocolMonitor.detectingRemoteSystemStarted();
     if(myRoutingTable.getNrOfReachablePeers() <= 1){
       try{
-        String theAddress = InetAddress.getLocalHost().getHostAddress();
-        String[] theParts  = theAddress.split( "\\." );
-        int theLastNr = Integer.parseInt( theParts[3] );
-        for(int i=1;i<256;i++){
-          if(i != theLastNr){
-            String theNewAddress = theParts[0] + "." + theParts[1] + "." + theParts[2] + "." + i;
-            myScannerService.execute( new ScanSystem(theNewAddress, START_PORT) );
-          }
+        InetAddresIterator theIterator = new InetAddresIterator(InetAddress.getLocalHost(), 10 * 256);
+        while(myRoutingTable.getNrOfReachablePeers() <= 1 && theIterator.hasNext()){
+          myScannerService.execute( new ScanSystem(theIterator.next(), START_PORT) );
         }
+        Thread.sleep( 100 );
       }catch(Exception e ){
         LOGGER.error( "An error occured while scanning system", e );
       }
