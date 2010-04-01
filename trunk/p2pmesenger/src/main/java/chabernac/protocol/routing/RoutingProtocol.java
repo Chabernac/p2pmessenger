@@ -86,6 +86,8 @@ public class RoutingProtocol extends Protocol {
   private MulticastSocket myServerMulticastSocket = null;
   
   private IRoutingProtocolMonitor myRoutingProtocolMonitor = null;
+  
+  private boolean isPeerIdInFile = false;
 
   public RoutingProtocol ( long anExchangeDelay, boolean isPersistRoutingTable) {
     this(null, anExchangeDelay, isPersistRoutingTable);
@@ -102,9 +104,15 @@ public class RoutingProtocol extends Protocol {
     myLocalPeerId = aLocalPeerId;
     myExchangeDelay = anExchangeDelay;
     this.isPersistRoutingTable = isPersistRoutingTable;
+    
+    if(myLocalPeerId != null && !"".equals( myLocalPeerId )){
+      isPeerIdInFile = true;
+    } else {
+      isPeerIdInFile = false;
+    }
+    
     loadRoutingTable();
     resetRoutingTable();
-    //    new Thread(new ScanLocalSystem()).start();
     if(anExchangeDelay > 0 ) scheduleRoutingTableExchange();
     myChangeService = Executors.newFixedThreadPool( 5 );
 
@@ -432,7 +440,7 @@ public class RoutingProtocol extends Protocol {
 
   private File getRoutingTableLocation(){
     String theFile = "RoutingTable";
-    if(myLocalPeerId != null && !"".equals( myLocalPeerId )){
+    if(isPeerIdInFile){
       theFile += "_" + myLocalPeerId;
     }
     theFile += ".csv";
