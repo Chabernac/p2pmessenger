@@ -31,6 +31,7 @@ import org.apache.log4j.Logger;
 
 import chabernac.io.persist.iObjectPersister;
 import chabernac.protocol.Protocol;
+import chabernac.tools.IOTools;
 import chabernac.tools.NetTools;
 import chabernac.tools.XMLTools;
 
@@ -80,7 +81,7 @@ public class RoutingProtocol extends Protocol {
   private String myLocalPeerId = null;
 
   private ExecutorService myUDPPacketHandlerService = Executors.newFixedThreadPool( 6 );
-  private ExecutorService myScannerService = Executors.newFixedThreadPool( 20 );
+  private ExecutorService myScannerService = Executors.newFixedThreadPool( 10 );
 
   private MulticastSocket myServerMulticastSocket = null;
 
@@ -131,8 +132,9 @@ public class RoutingProtocol extends Protocol {
     mySheduledService = Executors.newScheduledThreadPool( 1 );
     mySheduledService.scheduleWithFixedDelay( new ScanLocalSystem(), 1, myExchangeDelay, TimeUnit.SECONDS);
     mySheduledService.scheduleWithFixedDelay( new ExchangeRoutingTable(), 2, myExchangeDelay, TimeUnit.SECONDS);
-    mySheduledService.scheduleWithFixedDelay( new ScanRemoteSystem(), 10 , 10 * myExchangeDelay, TimeUnit.SECONDS);
-    mySheduledService.scheduleWithFixedDelay( new SendUDPAnnouncement(), 2, myExchangeDelay, TimeUnit.SECONDS);
+    mySheduledService.scheduleWithFixedDelay( new SendUDPAnnouncement(), 4, myExchangeDelay, TimeUnit.SECONDS);
+    mySheduledService.schedule( new ScanFixedIpList(), 10, TimeUnit.SECONDS);
+    mySheduledService.scheduleWithFixedDelay( new ScanRemoteSystem(), 20 , 4 * myExchangeDelay, TimeUnit.SECONDS);
     mySheduledService.scheduleWithFixedDelay( new DetectRemoteSystem(), 100, 10 * myExchangeDelay, TimeUnit.SECONDS);
   }
 
@@ -293,7 +295,7 @@ public class RoutingProtocol extends Protocol {
     if(myRoutingProtocolMonitor != null) myRoutingProtocolMonitor.detectingRemoteSystemStarted();
     if(myRoutingTable.getNrOfReachablePeers() <= 1){
       try{
-        InetAddresIterator theIterator = new InetAddresIterator(InetAddress.getLocalHost(), 10 * 256);
+        InetAddresIterator theIterator = new InetAddresIterator(InetAddress.getLocalHost(), 24);
         while(myRoutingTable.getNrOfReachablePeers() <= 1 && theIterator.hasNext()){
           ScanSystem theScanSystem = new ScanSystem(this, theIterator.next(), START_PORT);
           theScanSystem.setCondition( new NrOfPeersSmallerThenCondition(myRoutingTable, 1) );
@@ -314,6 +316,14 @@ public class RoutingProtocol extends Protocol {
   private class ScanRemoteSystem implements Runnable{
     public void run(){
       scanRemoteSystem(false);
+    }
+  }
+  
+  public void scanSuperNodes(){
+    if(myRoutingProtocolMonitor != null) myRoutingProtocolMonitor.scanningSuperNodes();
+    List<String> theIps = IOTools.loadFileAsList( new File("supernodes.txt") );
+    for(String theIp : theIps){
+      myScannerService.execute( new ScanSystem(RoutingProtocol.this, theIp, START_PORT, myUnreachablePeers));
     }
   }
 
@@ -604,5 +614,13 @@ public class RoutingProtocol extends Protocol {
 
   public void setRoutingProtocolMonitor( IRoutingProtocolMonitor anRoutingProtocolMonitor ) {
     myRoutingProtocolMonitor = anRoutingProtocolMonitor;
+  }
+  
+  public class ScanFixedIpList implements Runnable {
+
+    @Override
+    public void run() {
+      scanSuperNodes();
+    }
   }
 }

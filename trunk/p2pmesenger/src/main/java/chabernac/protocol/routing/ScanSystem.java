@@ -7,7 +7,11 @@ package chabernac.protocol.routing;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 public class ScanSystem implements Runnable{
+  private static Logger LOGGER = Logger.getLogger(ScanSystem.class);
+  
   private List<String> myHosts;
   private int myPort;
   private List<String> myUnreachablePeers = null;
@@ -41,10 +45,16 @@ public class ScanSystem implements Runnable{
   @Override
   public void run() {
     if(myCondition == null || myCondition.isConditionFullFilled()){
+      LOGGER.debug( "Scanning system '" + myHosts + "': '" + myPort + "'" );
       Peer thePeer = new Peer(null, myHosts, myPort);
       if(myRoutingProtocol.getRoutingProtocolMonitor() != null) myRoutingProtocol.getRoutingProtocolMonitor().scanStarted( thePeer );
-      myRoutingProtocol.contactPeer( thePeer, myUnreachablePeers );
-      if(myRoutingProtocol.getRoutingProtocolMonitor() != null) myRoutingProtocol.getRoutingProtocolMonitor().scanStopped( thePeer );
+      boolean result = myRoutingProtocol.contactPeer( thePeer, myUnreachablePeers );
+      if(result && myRoutingProtocol.getRoutingProtocolMonitor() != null) myRoutingProtocol.getRoutingProtocolMonitor().peerFoundWithScan( thePeer );
+      //let's just sleep for a while to make the system free up the socket resource.
+//      try {
+//        Thread.sleep( 10000 );
+//      } catch ( InterruptedException e ) {
+//      }
     }
   }
 

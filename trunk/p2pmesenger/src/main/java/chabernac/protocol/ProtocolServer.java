@@ -135,6 +135,11 @@ public class ProtocolServer implements Runnable{
         }catch(IOException e){
           LOGGER.error( "Could not close streams", e );
         }
+        try {
+          mySocket.close();
+        } catch ( IOException e ) {
+          LOGGER.error( "Could not close socket", e );
+        }
       }
     }
   }

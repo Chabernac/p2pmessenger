@@ -12,7 +12,7 @@ import java.util.UUID;
 
 import javax.swing.JFrame;
 
-import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.PropertyConfigurator;
 
 import chabernac.protocol.ProtocolContainer;
 import chabernac.protocol.ProtocolException;
@@ -57,9 +57,10 @@ public class RoutingFrame extends JFrame {
   }
   
   public static void main(String args[]) throws ProtocolException{
-    BasicConfigurator.configure();
+    PropertyConfigurator.configure( "log4j.properties" );
+//    BasicConfigurator.configure();
     Properties theProperties = new Properties();
-    theProperties.setProperty( "routingprotocol.exchangedelay", "10");
+    theProperties.setProperty( "routingprotocol.exchangedelay", "60");
     theProperties.setProperty("routingprotocol.persist", "true");
     theProperties.setProperty("peerid", UUID.randomUUID().toString());
     ProtocolFactory theFactory = new ProtocolFactory(theProperties);
