@@ -202,41 +202,7 @@ public class RoutingProtocol extends Protocol {
     return myRoutingTable;
   }
 
-  private class ScanSystem implements Runnable{
-    private List<String> myHosts;
-    private int myPort;
-    private List<String> myUnreachablePeers = null;
-
-    public ScanSystem ( String aHosts, int anPort ){
-      this(aHosts, anPort, null);
-    }
-
-    public ScanSystem ( String aHosts, int anPort, List<String> anUnreachablePeers) {
-      super();
-      List<String> theList = new ArrayList< String >();
-      theList.add(aHosts);
-      myHosts = theList;
-      myPort = anPort;
-      myUnreachablePeers = anUnreachablePeers;
-    }
-
-    public ScanSystem ( List<String> aHosts, int anPort, List<String> anUnreachablePeers) {
-      super();
-      myHosts = aHosts;
-      myPort = anPort;
-      myUnreachablePeers = anUnreachablePeers;
-    }
-
-    @Override
-    public void run() {
-      Peer thePeer = new Peer(null, myHosts, myPort);
-      if(myRoutingProtocolMonitor != null) myRoutingProtocolMonitor.scanStarted( thePeer );
-      contactPeer( thePeer, myUnreachablePeers );
-      if(myRoutingProtocolMonitor != null) myRoutingProtocolMonitor.scanStopped( thePeer );
-    }
-  }
-
-  private boolean contactPeer(Peer aPeer, List<String> anUnreachablePeers){
+   boolean contactPeer(Peer aPeer, List<String> anUnreachablePeers){
     try{
 //      LOGGER.debug("Sending message to '" + aPeer.getHosts() + "' port '" + aPeer.getPort() + "'");
       String theId = aPeer.send( createMessage( Command.WHO_ARE_YOU.name() ));
@@ -273,7 +239,7 @@ public class RoutingProtocol extends Protocol {
       LOGGER.debug( "Scanning local system" );
       List<String> theLocalHosts = NetTools.getLocalExposedIpAddresses();
       for(int i=START_PORT;i<=END_PORT;i++){
-        myScannerService.execute( new ScanSystem(theLocalHosts, i, myUnreachablePeers));
+        myScannerService.execute( new ScanSystem(this, theLocalHosts, i, myUnreachablePeers));
       }
     }catch(SocketException e){
       LOGGER.error( "Could not get local ip addressed", e );
@@ -329,9 +295,10 @@ public class RoutingProtocol extends Protocol {
       try{
         InetAddresIterator theIterator = new InetAddresIterator(InetAddress.getLocalHost(), 10 * 256);
         while(myRoutingTable.getNrOfReachablePeers() <= 1 && theIterator.hasNext()){
-          myScannerService.execute( new ScanSystem(theIterator.next(), START_PORT) );
+          ScanSystem theScanSystem = new ScanSystem(this, theIterator.next(), START_PORT);
+          theScanSystem.setCondition( new NrOfPeersSmallerThenCondition(myRoutingTable, 1) );
+          myScannerService.execute( theScanSystem );
         }
-        Thread.sleep( 100 );
       }catch(Exception e ){
         LOGGER.error( "An error occured while scanning system", e );
       }
