@@ -498,7 +498,7 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
       theDummyPeer.setHosts( theHosts );
       theDummyPeer.setPort( 54645 );
       
-      RoutingTableEntry theDummyEntry = new RoutingTableEntry(theDummyPeer, 0, theDummyPeer);
+      RoutingTableEntry theDummyEntry = new RoutingTableEntry(theDummyPeer, 1, theDummyPeer);
       
       theRoutingTable1.addRoutingTableEntry( theDummyEntry );
       
@@ -507,7 +507,7 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
       
       RoutingTableEntry theEntry = theRoutingTable2.getEntryForPeer( "dummy" ); 
       assertNotNull( theEntry );
-      assertEquals( 1, theEntry.getHopDistance() );
+      assertEquals( 2, theEntry.getHopDistance() );
     } finally {
       theServer1.stop();
       theServer2.stop();
