@@ -20,6 +20,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.border.TitledBorder;
 
+import org.apache.log4j.PropertyConfigurator;
+
 import net.jxta.discovery.DiscoveryEvent;
 import net.jxta.discovery.DiscoveryListener;
 import net.jxta.exception.PeerGroupException;
@@ -100,6 +102,7 @@ public class P2PTestFrame extends JFrame implements DiscoveryListener, iChatList
   }
 
   public static void main(String args[]){
+    PropertyConfigurator.configure( "log4j.properties" );
     try{
       P2PTestFrame theFrame = new P2PTestFrame();
       theFrame.setSize( 200, 200 );

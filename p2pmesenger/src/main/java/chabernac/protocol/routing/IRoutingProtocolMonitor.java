@@ -6,10 +6,11 @@ package chabernac.protocol.routing;
 
 public interface IRoutingProtocolMonitor {
   public void scanStarted(Peer aPeer);
-  public void scanStopped(Peer aPeer);
+  public void peerFoundWithScan(Peer aPeer);
   public void localSystemScanStarted();
   public void remoteSystemScanStarted();
   public void exchangingRoutingTables();
   public void sendingUDPAnnouncement();
   public void detectingRemoteSystemStarted();
+  public void scanningSuperNodes();
 }

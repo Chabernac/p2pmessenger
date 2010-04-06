@@ -12,16 +12,19 @@ import java.io.PrintWriter;
 import java.io.Serializable;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.net.SocketAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import chabernac.tools.NetTools;
 
 public class Peer implements Serializable {
+  private static Logger LOGGER = Logger.getLogger(Peer.class);
+  
   private static final long serialVersionUID = 7852961137229337616L;
   private String myPeerId;
   private List<String> myHost = null;
@@ -113,7 +116,14 @@ public class Peer implements Serializable {
     for(Iterator< String > i = myHost.iterator(); i.hasNext() && !send;){
       String theHost = i.next();
       Socket theSocket = new Socket();
-      theSocket.connect( new InetSocketAddress(theHost, myPort), 4000 );
+      InetSocketAddress theAddress = new InetSocketAddress(theHost, myPort);
+      
+      if(theAddress.isUnresolved()) {
+        LOGGER.error("The host '" + theHost + "' can not be resolved");
+        throw new UnknownHostException("The host '" + theHost + "' can not be resolved");
+      }
+      
+      theSocket.connect( theAddress, 4000 );
       PrintWriter theWriter = null;
       BufferedReader theReader = null;
       try{
@@ -130,9 +140,11 @@ public class Peer implements Serializable {
           myHost.remove( theHost );
           myHost.add( 0, theHost );
         }
-        theSocket.close();
         return theReturnMessage;
       }finally{
+        if(theSocket != null){
+          theSocket.close();
+        }
         if(theWriter != null){
           theWriter.close();
         }

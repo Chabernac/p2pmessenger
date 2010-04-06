@@ -5,7 +5,6 @@
 package chabernac.protocol.routing;
 
 import java.awt.BorderLayout;
-import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.util.concurrent.ExecutorService;
@@ -64,6 +63,7 @@ public class RoutingPanel extends JPanel {
     theButtonPanel.add( new JButton(new SendUDPAnnouncement()) );
     theButtonPanel.add( new JButton(new StopAction()) );
     theButtonPanel.add( new JButton(new StartAction()) );
+    theButtonPanel.add( new JButton(new ScanSuperNodesAction()) );
     
     add(theButtonPanel, BorderLayout.NORTH);
   }
@@ -170,6 +170,20 @@ public class RoutingPanel extends JPanel {
     }
   }
   
+  public class ScanSuperNodesAction  extends AbstractAction{
+    public ScanSuperNodesAction(){
+      putValue( Action.NAME, "Scan super nodes" );
+    }
+    @Override
+    public void actionPerformed( ActionEvent anE ) {
+      myExecutorService.execute( new Runnable(){
+        public void run(){
+          myRoutingProtocol.scanSuperNodes();
+        }
+      });
+    }
+  }
+  
   private class RoutingProtocolMonitor implements IRoutingProtocolMonitor{
     private StringBuilder myStringBuilder = new StringBuilder();
 
@@ -204,9 +218,9 @@ public class RoutingPanel extends JPanel {
     }
 
     @Override
-    public void scanStopped( Peer aPeer ) {
-//      myStringBuilder.append( "Scan stopped '" + aPeer.getHosts() + ":" + aPeer.getPort() + "\r\n" );
-//      myInfoArea.setText( myStringBuilder.toString() );
+    public void peerFoundWithScan( Peer aPeer ) {
+      myStringBuilder.insert(0, "Peer found after scan '" + aPeer.getHosts() + ":" + aPeer.getPort() + "\r\n" );
+      myInfoArea.setText( myStringBuilder.toString() );
     }
 
     @Override
@@ -214,6 +228,13 @@ public class RoutingPanel extends JPanel {
       myStringBuilder.insert(0, "Sending udp announcement\r\n" );
       myInfoArea.setText( myStringBuilder.toString() );
       
+    }
+
+    @Override
+    public void scanningSuperNodes() {
+      myStringBuilder.insert(0, "Scanning super nodes\r\n" );
+      myInfoArea.setText( myStringBuilder.toString() );
+
     }
     
   }

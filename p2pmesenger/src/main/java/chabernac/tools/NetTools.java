@@ -15,7 +15,7 @@ public class NetTools {
     Enumeration<NetworkInterface> theInterfaces = NetworkInterface.getNetworkInterfaces();
     while(theInterfaces.hasMoreElements()){
       NetworkInterface theInterface = theInterfaces.nextElement();
-      if(!theInterface.isLoopback()){
+      if(!theInterface.isLoopback() && !theInterface.getDisplayName().toLowerCase().contains( "virtual" )){
         Enumeration<InetAddress> theAddresses = theInterface.getInetAddresses();
         while(theAddresses.hasMoreElements()){
           InetAddress theAddress = theAddresses.nextElement();
