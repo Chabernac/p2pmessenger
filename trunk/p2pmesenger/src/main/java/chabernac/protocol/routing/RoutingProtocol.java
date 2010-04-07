@@ -373,6 +373,7 @@ public class RoutingProtocol extends Protocol {
             //theEntry.setHopDistance( 1 );
             RoutingTableEntry theEntryOfRemotePeer = myRoutingTable.getEntryForPeer( theRemoteTable.getLocalPeerId() );
 
+            
 //          //TODO remove
 //          if(myLocalPeerId.equals( theEntryOfRemotePeer.getPeer().getPeerId() )){
 //            //we should never get here
