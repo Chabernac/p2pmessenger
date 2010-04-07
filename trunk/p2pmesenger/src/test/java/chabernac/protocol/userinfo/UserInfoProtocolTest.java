@@ -4,6 +4,8 @@
  */
 package chabernac.protocol.userinfo;
 
+import java.net.SocketException;
+
 import org.apache.log4j.BasicConfigurator;
 
 import chabernac.protocol.AbstractProtocolTest;
@@ -19,7 +21,7 @@ public class UserInfoProtocolTest extends AbstractProtocolTest {
     BasicConfigurator.configure();
   }
   
-  public void testUserInfoProtocol() throws ProtocolException, UserInfoException, InterruptedException{
+  public void testUserInfoProtocol() throws ProtocolException, UserInfoException, InterruptedException, SocketException{
     ProtocolContainer theProtocol1 = getProtocolContainer( -1, false, "1" );
     ProtocolServer theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT, 5);
 

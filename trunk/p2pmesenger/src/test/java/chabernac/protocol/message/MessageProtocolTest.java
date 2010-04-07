@@ -4,6 +4,8 @@
  */
 package chabernac.protocol.message;
 
+import java.net.SocketException;
+
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 
@@ -23,7 +25,7 @@ public class MessageProtocolTest extends AbstractProtocolTest {
     BasicConfigurator.configure();
   }
 
-  public void testMessageProtocol() throws ProtocolException, InterruptedException{
+  public void testMessageProtocol() throws ProtocolException, InterruptedException, SocketException{
     LOGGER.debug("Begin of testMessageProtocol");
     ProtocolContainer theProtocol1 = getProtocolContainer( -1, false, "1" );
     ProtocolServer theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT, 5);

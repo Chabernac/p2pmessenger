@@ -95,7 +95,7 @@ public class RoutingTable implements Iterable< RoutingTableEntry >{
     if(!myRoutingTable.containsKey( myLocalPeerId )){
       Peer theLocalPeer = new Peer( myLocalPeerId );
       theLocalPeer.detectLocalInterfaces();
-      myRoutingTable.put( myLocalPeerId, new RoutingTableEntry( theLocalPeer, 1, theLocalPeer ) );
+      myRoutingTable.put( myLocalPeerId, new RoutingTableEntry( theLocalPeer, 1, theLocalPeer, System.currentTimeMillis() ) );
     }
     return myRoutingTable.get( myLocalPeerId ).getPeer();
   }
@@ -122,6 +122,16 @@ public class RoutingTable implements Iterable< RoutingTableEntry >{
   public List<RoutingTableEntry> getEntries(){
     return Collections.unmodifiableList(  new ArrayList< RoutingTableEntry >(myRoutingTable.values()) );
   }
+  
+  public List<RoutingTableEntry> getReachableEntriesEntries(){
+    List<RoutingTableEntry> theEntries = new ArrayList< RoutingTableEntry >();
+    for(RoutingTableEntry theEntry : myRoutingTable.values()){
+      if(theEntry.isReachable()){
+        theEntries.add(theEntry);
+      }
+    }
+    return theEntries;
+  }
 
   /**
    * this method is necessar for being able to serialize the table 
@@ -141,7 +151,10 @@ public class RoutingTable implements Iterable< RoutingTableEntry >{
     return myRoutingTable.get( aPeerId );
   }
 
-  public synchronized RoutingTableEntry getEntryForLocalPeer( ) {
+  public synchronized RoutingTableEntry getEntryForLocalPeer( ) throws SocketException {
+    if(!myRoutingTable.containsKey( getLocalPeerId() )){
+      obtainLocalPeer();
+    }
     return myRoutingTable.get( getLocalPeerId() );
   }
 
@@ -191,4 +204,5 @@ public class RoutingTable implements Iterable< RoutingTableEntry >{
     }
     return theCounter;
   }
+  
 }
