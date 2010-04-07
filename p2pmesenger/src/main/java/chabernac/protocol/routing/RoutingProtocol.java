@@ -55,7 +55,7 @@ public class RoutingProtocol extends Protocol {
   public static final String MULTICAST_ADDRESS = "234.5.54.9";
 
   private static enum Command { REQUEST_TABLE, WHO_ARE_YOU, ANNOUNCEMENT_WITH_REPLY, ANNOUNCEMENT };
-  private static enum Response { OK, UNKNOWN_COMMAND };
+  private static enum Response { OK, NOK, UNKNOWN_COMMAND };
 
   private RoutingTable myRoutingTable = null;
 
@@ -175,7 +175,13 @@ public class RoutingProtocol extends Protocol {
     } else if(theCommand == Command.WHO_ARE_YOU){
       //another peer requested my peer id, send it to him, this is also used
       //to check if I'm still alive and kicking
-      return myRoutingTable.getLocalPeerId();
+      try{
+        RoutingTableEntry theEntryForLocalPeer = myRoutingTable.getEntryForLocalPeer();
+        return theEntryForLocalPeer.getPeer().getPeerId() + " " + theEntryForLocalPeer.getOnlineTime();
+      }catch(Exception e){
+        LOGGER.error( "Could not obtain entry for local peer", e );
+        return Response.NOK.name();
+      }
     } else if(theCommand == Command.ANNOUNCEMENT_WITH_REPLY){
       //the announcement is of the peer which is sending the annoucement
       //so the peer id inside the routingtable entry is also the containing peer
@@ -204,19 +210,19 @@ public class RoutingProtocol extends Protocol {
     return myRoutingTable;
   }
 
-   boolean contactPeer(Peer aPeer, List<String> anUnreachablePeers){
+  boolean contactPeer(Peer aPeer, List<String> anUnreachablePeers){
     try{
 //      LOGGER.debug("Sending message to '" + aPeer.getHosts() + "' port '" + aPeer.getPort() + "'");
-      String theId = aPeer.send( createMessage( Command.WHO_ARE_YOU.name() ));
+      String[] theIdTime = aPeer.send( createMessage( Command.WHO_ARE_YOU.name() )).split( " " );
 
-      if(!anUnreachablePeers.contains( theId )){
-        aPeer.setPeerId( theId );
-        RoutingTableEntry theEntry = new RoutingTableEntry(aPeer, 1, aPeer);
+      if(!anUnreachablePeers.contains( theIdTime[0] )){
+        aPeer.setPeerId( theIdTime[0] );
+        RoutingTableEntry theEntry = new RoutingTableEntry(aPeer, 1, aPeer, Long.parseLong( theIdTime[1] ));
 
         LOGGER.debug("Detected system on '" + aPeer.getHosts() + "' port '" + aPeer.getPort() + "'");
 
         //only if we have detected our self we set the hop distance to 0
-        if(theId.equals(myRoutingTable.getLocalPeerId())){
+        if(theIdTime[0].equals(myRoutingTable.getLocalPeerId())){
           theEntry = theEntry.derivedEntry( 0 );
         }
         myRoutingTable.addRoutingTableEntry( theEntry );
@@ -318,7 +324,7 @@ public class RoutingProtocol extends Protocol {
       scanRemoteSystem(false);
     }
   }
-  
+
   public void scanSuperNodes(){
     if(myRoutingProtocolMonitor != null) myRoutingProtocolMonitor.scanningSuperNodes();
     List<String> theIps = IOTools.loadFileAsList( new File("supernodes.txt") );
@@ -394,9 +400,13 @@ public class RoutingProtocol extends Protocol {
   }
 
   private void sendAnnoucement( RoutingTableEntry anEntry ) {
-    if(myRoutingTable.getEntryForLocalPeer() == null){
-      //we're not able to send announcment yet because we have not detected our selfs
-      return;
+    try{
+      if(myRoutingTable.getEntryForLocalPeer() == null){
+        //we're not able to send announcment yet because we have not detected our selfs
+        return;
+      }
+    }catch(SocketException e){
+      LOGGER.error("Could not get entry for local peer", e);
     }
 
     for(RoutingTableEntry theEntry : myRoutingTable.getEntries()){
@@ -513,10 +523,14 @@ public class RoutingProtocol extends Protocol {
     }
 
     //announce that we leave the P2P network
-    RoutingTableEntry theSelfRoutingTableEntry = getRoutingTable().getEntryForLocalPeer();
-    if(theSelfRoutingTableEntry != null){
-      theSelfRoutingTableEntry = theSelfRoutingTableEntry.derivedEntry( RoutingTableEntry.MAX_HOP_DISTANCE );
-      sendAnnoucement( theSelfRoutingTableEntry );
+    try{
+      RoutingTableEntry theSelfRoutingTableEntry = getRoutingTable().getEntryForLocalPeer();
+      if(theSelfRoutingTableEntry != null){
+        theSelfRoutingTableEntry = theSelfRoutingTableEntry.derivedEntry( RoutingTableEntry.MAX_HOP_DISTANCE );
+        sendAnnoucement( theSelfRoutingTableEntry );
+      }
+    }catch(SocketException e){
+      LOGGER.error( "Could not get entry for local peer", e );
     }
   }
 
@@ -615,7 +629,7 @@ public class RoutingProtocol extends Protocol {
   public void setRoutingProtocolMonitor( IRoutingProtocolMonitor anRoutingProtocolMonitor ) {
     myRoutingProtocolMonitor = anRoutingProtocolMonitor;
   }
-  
+
   public class ScanFixedIpList implements Runnable {
 
     @Override

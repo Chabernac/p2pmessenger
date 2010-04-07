@@ -22,10 +22,12 @@ public class RoutingTableEntry implements Serializable{
 	//the gateway for accessing this peer.  this is the same as the target peer
 	//if the target peer can be reached directly
 	private Peer myGateway = null;
+	
+	private long myOnlineTime;
 
 	public RoutingTableEntry (){}
 
-	public RoutingTableEntry ( Peer anHost , int anHopDistance , Peer anGateway ) {
+	public RoutingTableEntry ( Peer anHost , int anHopDistance , Peer anGateway, long anOnlineTime ) {
 		super();
 		myPeer = anHost;
 		myHopDistance = anHopDistance;
@@ -33,6 +35,7 @@ public class RoutingTableEntry implements Serializable{
 		  myHopDistance = MAX_HOP_DISTANCE;
 		}
 		myGateway = anGateway;
+		myOnlineTime = anOnlineTime;
 		checkValidity();
 	}
 	
@@ -103,14 +106,22 @@ public class RoutingTableEntry implements Serializable{
   }
   
   public RoutingTableEntry entryForNextPeer(Peer aReceivedPeer){
-    return new RoutingTableEntry(getPeer(), getHopDistance() + 1, aReceivedPeer);
+    return new RoutingTableEntry(getPeer(), getHopDistance() + 1, aReceivedPeer, getOnlineTime());
   }
   
   public RoutingTableEntry derivedEntry(int aHopDistance){
-    return new RoutingTableEntry(getPeer(), aHopDistance, getGateway());
+    return new RoutingTableEntry(getPeer(), aHopDistance, getGateway(), getOnlineTime());
   }
   
   public RoutingTableEntry incHopDistance(){
-    return new RoutingTableEntry(getPeer(), getHopDistance() + 1, getGateway());
+    return new RoutingTableEntry(getPeer(), getHopDistance() + 1, getGateway(), getOnlineTime());
+  }
+
+  public long getOnlineTime() {
+    return myOnlineTime;
+  }
+
+  public void setOnlineTime( long anOnlineTime ) {
+    myOnlineTime = anOnlineTime;
   }
 }
