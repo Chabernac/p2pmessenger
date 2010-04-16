@@ -12,6 +12,9 @@
  */
 package chabernac.image;
 
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -21,6 +24,7 @@ import org.apache.log4j.Logger;
 
 import chabernac.io.GenericResource;
 import chabernac.io.iResource;
+import chabernac.utils.Tools;
 
 public class ImageFactory {
   private static Logger LOGGER = Logger.getLogger(ImageFactory.class);
@@ -44,6 +48,41 @@ public class ImageFactory {
       LOGGER.error("Error loading image", e);
       return null; 
     }
+  }
+
+  public static BufferedImage createImage(String aText, Font aFont, int aMinimumWidth, int aMinimumHeight, Color aForeGround, Color aBackGround, boolean isTranspartent){
+    String theName = aText + aFont.toString() + aMinimumWidth + aMinimumHeight  + aForeGround.toString() + aBackGround.toString() +  isTranspartent;
+
+    if(!loadedImages.containsKey(theName)){
+      BufferedImage theImage = new BufferedImage(aMinimumWidth,aMinimumHeight, BufferedImage.TYPE_INT_ARGB);
+      Graphics g = theImage.getGraphics();
+      g.setFont(aFont);
+      
+      int theTextWith = g.getFontMetrics().stringWidth(aText);
+      int theTextHeight = g.getFontMetrics().getHeight();
+      
+      if(theTextWith > aMinimumWidth || theTextHeight > aMinimumHeight){
+        theImage = new BufferedImage(Math.max(aMinimumWidth, theTextWith),Math.max(aMinimumHeight, theTextHeight), BufferedImage.TYPE_INT_ARGB);
+        g = theImage.getGraphics();
+      }
+      
+      int theWith = theImage.getWidth();
+      int theHeight = theImage.getHeight();
+
+      g.setColor(aBackGround);
+      g.fillRect(0, 0, theWith, theHeight);
+      g.setColor(aForeGround);
+      g.setFont(aFont);
+
+      g.drawString(aText, (theWith - theTextWith) / 2, (theTextHeight  + theHeight) / 2);
+
+      if(isTranspartent){
+        theImage = Tools.makeTransparent(theImage, new Color[]{aBackGround});
+      }
+      loadedImages.put(theName, theImage);
+    }
+
+    return (BufferedImage)loadedImages.get(theName);
   }
 
   private static iResource searchResource(String aName){
