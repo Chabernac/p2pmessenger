@@ -25,11 +25,11 @@ public class MouseCommandListener implements MouseListener, MouseMotionListener,
   private MouseCommand myMouseCommand = null;
   private Component myComponent = null;
   private Robot myRobot = null;
-  private SynchronizedEventManager myManager = null;
+  private SynchronizedEventManagerOld myManager = null;
   private int myCenterX, myCenterY;
   private long lastMouseTime;
   
-  public MouseCommandListener(Component aComponent, MouseCommand aMouseCommand, SynchronizedEventManager aManager) throws AWTException{
+  public MouseCommandListener(Component aComponent, MouseCommand aMouseCommand, SynchronizedEventManagerOld aManager) throws AWTException{
     myMouseCommand = aMouseCommand;
     myComponent = aComponent;
     myCenterX = myComponent.getWidth() / 2;
