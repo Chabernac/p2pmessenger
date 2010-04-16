@@ -7,16 +7,21 @@
 package chabernac.space.texture;
 
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 
-import javax.imageio.ImageIO;
+import chabernac.image.ImageFactory;
 
 public class TextureFactory {
-
-
-	public static BufferedImage getTexture(String aTexture) throws IOException{
-		return ImageIO.read(new File("D:\\Projects\\JAVA\\3D Engine\\textures\\" + aTexture + ".jpg"));
+	private static HashMap MAP = new HashMap();
+	
+	public static TextureImage getTexture(String aTexture, boolean isTransparent) throws IOException{
+		if(!MAP.containsKey(aTexture)){
+      BufferedImage theImage = ImageFactory.loadImage(aTexture, isTransparent);
+			
+			TextureImage theTextureImage = new TextureImage(theImage);
+			MAP.put(aTexture, theTextureImage);
+		}
+		return (TextureImage)MAP.get(aTexture);
 	}
-
 }

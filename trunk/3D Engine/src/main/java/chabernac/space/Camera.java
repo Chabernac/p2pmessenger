@@ -18,7 +18,7 @@ import chabernac.space.geom.Rotation;
  * To change the template for this generated type comment go to
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
-public class Camera implements iTranslatable{
+public class Camera implements iTranslatable, iTransformator{
 	private Matrix myTranslationMatrix = null;
 	private Matrix myRotationMatrix = null;
 	private Matrix myScalingMatrix = null;
@@ -40,6 +40,8 @@ public class Camera implements iTranslatable{
 		myMatrix = (myTranslationMatrix.multiply(myRotationMatrix)).multiply(myScalingMatrix);
 		myInvMatrix = myMatrix.inverse();
 	}
+  
+  
 	
 	public Point3D world2Cam(Point3D aPoint) throws MatrixException{
 		Point3D thePoint = MatrixOperations.buildPoint3d((MatrixOperations.buildMatrix(aPoint).multiply(myMatrix)));
@@ -60,13 +62,13 @@ public class Camera implements iTranslatable{
 	}
 	
 	public Vertex world2Cam(Vertex aVertex){
-		Vertex theVertex = new Vertex(world2Cam(aVertex.myPoint), aVertex.myTextureCoordinate);
+		Vertex theVertex = new Vertex(world2Cam(aVertex.myPoint), aVertex.myTextureCoordinate, aVertex.lightIntensity);
 		theVertex.normal = world2Cam(aVertex.normal);
 		return theVertex;
 	}
 	
 	public Vertex cam2World(Vertex aVertex){
-		Vertex theVertex = new Vertex(cam2World(aVertex.myPoint), aVertex.myTextureCoordinate);
+		Vertex theVertex = new Vertex(cam2World(aVertex.myPoint), aVertex.myTextureCoordinate, aVertex.lightIntensity);
 		theVertex.normal = cam2World(aVertex.normal);
 		return theVertex;
 	}
@@ -101,4 +103,37 @@ public class Camera implements iTranslatable{
 	public Point3D getLocation(){ return new Point3D(-myTranslationMatrix.getValueAt(3,0),-myTranslationMatrix.getValueAt(3,1), -myTranslationMatrix.getValueAt(3,2));}
 
 	public Point3D getCenterPoint() { return getCenterPoint(); }
+	
+	public static Camera makeTranslationCamera(GVector aDirection){
+		return new Camera(new Point3D(-aDirection.x ,-aDirection.y, -aDirection.z), new Rotation(), 1);
+	}
+
+  public Point3D inverseTransform(Point3D aPoint) {
+    return cam2World(aPoint);
+  }
+
+  public GVector inverseTransform(GVector aVector) {
+    return cam2World(aVector);
+  }
+
+  public Point3D transform(Point3D aPoint) {
+    return world2Cam(aPoint);
+  }
+
+  public GVector transform(GVector aVector) {
+    return world2Cam(aVector);
+  }
+
+  public void translate(iTransformator anTransformator) throws TranslateException {
+    // TODO Auto-generated method stub
+    
+  }
+
+  public Vertex inverseTransform(Vertex aVertex) {
+    return cam2World(aVertex);
+  }
+
+  public Vertex transform(Vertex aVertex) {
+    return world2Cam(aVertex);
+  }
 }

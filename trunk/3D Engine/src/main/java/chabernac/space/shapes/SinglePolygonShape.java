@@ -16,6 +16,11 @@ public class SinglePolygonShape extends Shape {
 	private int myWidth;
 	private int myHeight;
 	
+	public SinglePolygonShape(Point3D anOrigin){
+		super(1);
+		myOrigin = anOrigin;
+	}
+	
 	public SinglePolygonShape(Point3D aOrigin, int aWidth, int aHeight){
 		super(1);
 		myOrigin = aOrigin;
@@ -24,15 +29,25 @@ public class SinglePolygonShape extends Shape {
 		createPolygons();
 	}
 	
-	private void createPolygons(){
+	protected void createPolygons(){
 		Polygon thePolygon = new Polygon(4);
+		
 		thePolygon.addVertex(new Vertex(myOrigin));
-		thePolygon.addVertex(new Vertex(new Point3D(myOrigin.x, myOrigin.y + myHeight, myOrigin.z)));
-		thePolygon.addVertex(new Vertex(new Point3D(myOrigin.x + myWidth, myOrigin.y + myHeight, myOrigin.z)));
 		thePolygon.addVertex(new Vertex(new Point3D(myOrigin.x + myWidth, myOrigin.y, myOrigin.z)));
+		thePolygon.addVertex(new Vertex(new Point3D(myOrigin.x + myWidth, myOrigin.y - myHeight, myOrigin.z)));
+		thePolygon.addVertex(new Vertex(new Point3D(myOrigin.x, myOrigin.y - myHeight, myOrigin.z)));
+		
 		thePolygon.doubleSided = true;
 		thePolygon.done();
 		addPolygon(thePolygon);
 		done();
+	}
+	
+	protected void setWidth(int aWidth){
+		myWidth = aWidth;
+	}
+	
+	protected void setHeight(int aHeight) {
+		myHeight = aHeight;
 	}
 }

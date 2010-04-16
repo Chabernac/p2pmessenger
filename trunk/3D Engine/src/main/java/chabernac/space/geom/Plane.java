@@ -1,5 +1,6 @@
 package chabernac.space.geom;
 
+
 public class Plane{
   public GVector myNormalVector;
   public double myD = 0F;
@@ -35,13 +36,26 @@ public class Plane{
     return myNormalVector.x * aPoint.x + myNormalVector.y * aPoint.y + myNormalVector.z * aPoint.z + myD;
   }
   
+  /**
+   * aPoint is een punt op het XY vlake
+   * the functie geeft het, evenwijdig aan de z as, op het vlak geprojecteerde punt terug
+   * 
+   * !!this method will result in a division by zero if the plane is parallel to the XY plane!
+   * @param aPoint
+   * @return
+   */
+  public Point3D pointOnPlane(Point2D aPoint){
+    double z = -(myD + (myNormalVector.x * aPoint.x + myNormalVector.y * aPoint.y))  / myNormalVector.z;
+    return new Point3D(aPoint.x, aPoint.y, z);
+  }
+  
   public Line3D intersect(Plane aPlane){
     GVector theDirection = myNormalVector.produkt(aPlane.myNormalVector);
     double div = myNormalVector.x * aPlane.myNormalVector.y - aPlane.myNormalVector.x * myNormalVector.y;
     double x = ( (myNormalVector.y * aPlane.myD  - aPlane.myNormalVector.y * myD) / div);
     double y = ( (aPlane.myNormalVector.x * myD  - myNormalVector.x * aPlane.myD) / div);
     double z = 0;
-    return new Line3D(theDirection, new Point3D(x,y,z));
+    return new Line3D(new Point3D(x,y,z), theDirection);
   }
   
   public String toString(){

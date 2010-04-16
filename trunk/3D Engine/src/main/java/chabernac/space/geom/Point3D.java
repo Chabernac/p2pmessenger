@@ -5,12 +5,24 @@ public class Point3D{
   public double y;
   public double z;
   
+  public Point3D(GVector aVector){
+    x = aVector.x;
+    y = aVector.y;
+    z = aVector.z;
+  }
+  
+  public Point3D(PolarPoint3D aPoint){
+    x = aPoint.radius * Math.cos(aPoint.beta) * Math.cos(aPoint.alpha);
+    y = aPoint.radius * Math.sin(aPoint.beta);
+    z = aPoint.radius * Math.cos(aPoint.beta) * Math.sin(aPoint.alpha);
+  }
+  
   public Point3D(double x, double y, double z){
     this.x = x;
     this.y = y;
     this.z = z;
   }
-
+  
   public void add(Point3D aPoint){
 	  x += aPoint.x;
 	  y += aPoint.y;
