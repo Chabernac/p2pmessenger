@@ -48,13 +48,17 @@ public class MatrixOperations {
 		
 		return (theXRotation.multiply(theYRotation)).multiply(theZRotation);
 	}
+  
+  public static Matrix buildTranslationMatrix(Point3D aPoint) throws MatrixException{
+    return buildTranslationMatrix(new GVector(aPoint).inv());
+  }
 	
-	public static Matrix buildTranslationMatrix(Point3D aPoint) throws MatrixException{
+	public static Matrix buildTranslationMatrix(GVector aVector) throws MatrixException{
 		/*
 		 * [ 1         ]
 		 * [    1      ]
 		 * [       1   ]
-		 * [-x -y -z  1]
+		 * [ x  y  z  1]
 		 */
 		
 		Matrix theMatrix = new Matrix(4,4);
@@ -62,9 +66,9 @@ public class MatrixOperations {
 		theMatrix.setValueAt(1,1,1);
 		theMatrix.setValueAt(2,2,1);
 		theMatrix.setValueAt(3,3,1);
-		theMatrix.setValueAt(3,0,-aPoint.x);
-		theMatrix.setValueAt(3,1,-aPoint.y);
-		theMatrix.setValueAt(3,2,-aPoint.z);
+		theMatrix.setValueAt(3,0,aVector.x);
+		theMatrix.setValueAt(3,1,aVector.y);
+		theMatrix.setValueAt(3,2,aVector.z);
 		return theMatrix;
 	}
 	
@@ -85,19 +89,22 @@ public class MatrixOperations {
 		 *              [0       0     0         1] 
 		 */
 		Matrix theTransformationMatrix = new Matrix(4,4);
-		theTransformationMatrix.setValueAt(0,0, aCoordinadateSystem.myXUnit.x);
-		theTransformationMatrix.setValueAt(1,0, aCoordinadateSystem.myXUnit.y);
-		theTransformationMatrix.setValueAt(2,0, aCoordinadateSystem.myXUnit.z);
+    GVector theXUnit = aCoordinadateSystem.getXUnit();
+		theTransformationMatrix.setValueAt(0,0, theXUnit.x);
+		theTransformationMatrix.setValueAt(1,0, theXUnit.y);
+		theTransformationMatrix.setValueAt(2,0, theXUnit.z);
 		theTransformationMatrix.setValueAt(3,0, 0);
 		
-		theTransformationMatrix.setValueAt(0,1, aCoordinadateSystem.myYUnit.x);
-		theTransformationMatrix.setValueAt(1,1, aCoordinadateSystem.myYUnit.y);
-		theTransformationMatrix.setValueAt(2,1, aCoordinadateSystem.myYUnit.z);
+    GVector theYUnit = aCoordinadateSystem.getYUnit();
+		theTransformationMatrix.setValueAt(0,1, theYUnit.x);
+		theTransformationMatrix.setValueAt(1,1, theYUnit.y);
+		theTransformationMatrix.setValueAt(2,1, theYUnit.z);
 		theTransformationMatrix.setValueAt(3,1, 0);
 		
-		theTransformationMatrix.setValueAt(0,2, aCoordinadateSystem.myZUnit.x);
-		theTransformationMatrix.setValueAt(1,2, aCoordinadateSystem.myZUnit.y);
-		theTransformationMatrix.setValueAt(2,2, aCoordinadateSystem.myZUnit.z);
+    GVector theZUnit = aCoordinadateSystem.getZUnit();
+		theTransformationMatrix.setValueAt(0,2, theZUnit.x);
+		theTransformationMatrix.setValueAt(1,2, theZUnit.y);
+		theTransformationMatrix.setValueAt(2,2, theZUnit.z);
 		theTransformationMatrix.setValueAt(2,2, 0);
 		
 		theTransformationMatrix.setValueAt(0,3, 0);
@@ -105,7 +112,7 @@ public class MatrixOperations {
 		theTransformationMatrix.setValueAt(2,3, 0);
 		theTransformationMatrix.setValueAt(3,3, 1);
 		
-		Matrix theTranslationMatrix = buildTranslationMatrix(aCoordinadateSystem.myOrigin);
+		Matrix theTranslationMatrix = buildTranslationMatrix(aCoordinadateSystem.getOrigin());
 		
 		return theTranslationMatrix.multiply(theTransformationMatrix);
 	}
@@ -122,6 +129,20 @@ public class MatrixOperations {
 	public static Matrix buildMatrix(GVector aVector){
 		return new Matrix(1,4,new double[]{aVector.x,aVector.y,aVector.z,1});		
 	}
+  
+  public static Matrix buildIdentityMatrix(){
+    Matrix theMatrix = new Matrix(4,4);
+    for(int row=0;row<theMatrix.getRows();row++){
+      for(int column=0;column<theMatrix.getColumns();column++){
+        if(row == column){
+          theMatrix.setValueAt(row, column, 1);
+        } else {
+          theMatrix.setValueAt(row, column, 0);
+        }
+      }
+    }
+    return theMatrix;
+  }
 	
 	public static GVector buildGVector(Matrix aMatrix){
 		double[] theSource = aMatrix.getSource();

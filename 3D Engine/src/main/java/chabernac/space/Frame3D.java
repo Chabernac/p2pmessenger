@@ -57,11 +57,13 @@ public class Frame3D extends JFrame implements iSynchronizedEvent{
     myWorld = aWorld;
     myCamera = aCamera;
 	//myTimer = aTimer;
-	startFullScreen();
+	//startFullScreen();
+    setSize(aResolution);
+    setVisible(true);
+    getGraphicsObject();
     setupGraphics3d();
     hideMouse();
     //startRendering();
-    getGraphicsObject();
   }
   
   private void getGraphicsObject(){
@@ -69,7 +71,7 @@ public class Frame3D extends JFrame implements iSynchronizedEvent{
 	  //myStrategy =  getBufferStrategy();
 	  //myG = myStrategy.getDrawGraphics();
 	  myG = (Graphics2D)getGraphics();
-	  myG.addRenderingHints( new RenderingHints( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON ));
+	  //myG.addRenderingHints( new RenderingHints( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON ));
 	  
   }
   

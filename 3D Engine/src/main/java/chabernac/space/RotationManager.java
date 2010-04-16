@@ -1,22 +1,32 @@
 
 package chabernac.space;
 
-import chabernac.space.geom.Point3D;
+import chabernac.space.geom.GVector;
 import chabernac.space.geom.Rotation;
 
 
 public class RotationManager extends TranslateManager {
-	private Camera myRotationCamera = null;
+  private Rotation myRotation = null;
 	
 	public RotationManager(Rotation aRotation){
-		myRotationCamera = new Camera(new Point3D(0,0,0), aRotation, 1);
+    setRotation(aRotation); 
 	}
 	
 	protected void translate(iTranslatable aTranslatable) {
-		Point3D theCenterPoint = (Point3D)aTranslatable.getCenterPoint().clone();
-		aTranslatable.translate(new Camera(theCenterPoint, new Rotation(0,0,0), 1));
-		aTranslatable.translate(myRotationCamera);
-		theCenterPoint.invert();
-		aTranslatable.translate(new Camera(theCenterPoint, new Rotation(0,0,0), 1));
+    GVector theVector = new GVector(aTranslatable.getCenterPoint());
+    
+    Transformation theTransform = new Transformation();
+    theTransform.addTransformation(MatrixOperations.buildTranslationMatrix(theVector.inv()));
+    theTransform.addTransformation(MatrixOperations.buildRotationMatrix(myRotation));
+    theTransform.addTransformation(MatrixOperations.buildTranslationMatrix(theVector));
+    aTranslatable.translate(theTransform);
 	}
+  
+  public void setRotation(Rotation aRotation){
+    myRotation = aRotation;
+  }
+  
+  public Rotation getRotation(){
+    return myRotation;
+  }
 }

@@ -4,10 +4,10 @@ import java.util.ArrayList;
 
 
 public abstract class TranslateManager {
-	private ArrayList<iTranslatable> myTranslationObjectcountainer = null;
+	private ArrayList myTranslationObjectcountainer = null;
 	
 	public TranslateManager(){
-		myTranslationObjectcountainer = new ArrayList<iTranslatable>();
+		myTranslationObjectcountainer = new ArrayList();
 	}
 	
 	public void addTranslatable(iTranslatable aTranslatable){
@@ -21,7 +21,7 @@ public abstract class TranslateManager {
 	public void doTranslation(){
 		iTranslatable theTranslatable = null;
 		for(int i=0;i<myTranslationObjectcountainer.size();i++){
-			theTranslatable = myTranslationObjectcountainer.get(i);
+			theTranslatable = (iTranslatable)myTranslationObjectcountainer.get(i);
 			translate(theTranslatable);
 		}
 	}

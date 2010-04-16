@@ -52,10 +52,10 @@ public class GouroudShading implements iLightManager {
 
 	private double calculateIlluminatingFactor(LightSource theCurrentLight, Vertex theCurrentVertex) {
 		GVector theDirectionToPolygon = new GVector(theCurrentVertex.myPoint, theCurrentLight.getCamLocation());
-		//double distance = theDirectionToPolygon.length();
+		double distance = theDirectionToPolygon.length();
 		theDirectionToPolygon.normalize();
-		//double lightningFactor = theDirectionToPolygon.dotProdukt(theCurrentVertex.normal) *  theCurrentLight.getIntensity() / distance;
-		double lightningFactor = theDirectionToPolygon.dotProdukt(theCurrentVertex.normal);
+		double lightningFactor = theDirectionToPolygon.dotProdukt(theCurrentVertex.normal) *  theCurrentLight.getIntensity() / distance;
+		//double lightningFactor = theDirectionToPolygon.dotProdukt(theCurrentVertex.normal);
 		if(lightningFactor < 0) lightningFactor = 0;
 		return lightningFactor;
 	}

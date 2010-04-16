@@ -15,6 +15,6 @@ import chabernac.space.geom.Point3D;
  * Window - Preferences - Java - Code Generation - Code and Comments
  */
 public interface iTranslatable {
-	public void translate(Camera aCamera) throws TranslateException;
+	public void translate(iTransformator aTransformator) throws TranslateException;
 	public Point3D getCenterPoint();
 }
