@@ -4,41 +4,85 @@
  */
 package chabernac.protocol.userinfo;
 
-public class UserInfo {
-  private String myId = null;
-  private String myName = null;
-  private String myEMail = null;
-  private String myTelNr = null;
-  private String myLocation = null;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Observable;
+
+public class UserInfo extends Observable{
+  public static enum Status {OFFLINE, ONLINE, BUSY, AWAY};
+  public static enum Property {ID, NAME, EMAIL, TELNR, LOCATION};
   
-  public String getId() {
-    return myId;
+  private Map<Property, String> myProperties = new HashMap<Property, String>();
+  private Status myStatus = Status.OFFLINE;
+  
+  public void setProperty(Property aProperty, String aValue){
+    if(aValue == null) throw new IllegalArgumentException("Property value can not be null");
+    Object theOldValue = myProperties.get( aProperty );
+    myProperties.put( aProperty, aValue );
+    if(!aValue.equals( theOldValue )){
+      notifyObs( aProperty );
+    }
   }
-  public void setId( String anId ) {
-    myId = anId;
+  
+  public String getProperty(Property aProperty){
+    return myProperties.get( aProperty );
   }
-  public String getName() {
-    return myName;
+  
+
+  public Status getStatus() {
+    return myStatus;
   }
-  public void setName( String anName ) {
-    myName = anName;
+  
+  public void setStatus( Status anStatus ) {
+    Status theOldStatus = myStatus;
+    myStatus = anStatus;
+    if(myStatus != theOldStatus){
+      notifyObs( null );
+    }
   }
-  public String getEMail() {
-    return myEMail;
+  
+  private void notifyObs(Property aChangeProperty){
+    setChanged();
+    notifyObservers(aChangeProperty);
   }
-  public void setEMail( String anMail ) {
-    myEMail = anMail;
+  
+  public String getId(){
+    return getProperty( Property.ID );
   }
-  public String getTelNr() {
-    return myTelNr;
+  
+  public void setId(String anId){
+    setProperty( Property.ID, anId );
   }
-  public void setTelNr( String anTelNr ) {
-    myTelNr = anTelNr;
+  
+  public String getName(){
+    return getProperty( Property.NAME );
   }
-  public String getLocation() {
-    return myLocation;
+  
+  public void setName(String aName){
+    setProperty( Property.NAME, aName );
   }
-  public void setLocation( String anLocation ) {
-    myLocation = anLocation;
+
+  public String getLocation(){
+    return getProperty( Property.LOCATION );
+  }
+  
+  public void setLocation(String aLocation){
+    setProperty( Property.LOCATION, aLocation );
+  }
+  
+  public String getEMail(){
+    return getProperty( Property.EMAIL );
+  }
+  
+  public void setEMail(String anEMail){
+    setProperty( Property.EMAIL, anEMail );
+  }
+  
+  public String getTelNr(){
+    return getProperty( Property.TELNR );
+  }
+  
+  public void setTelNr(String aTelNr){
+    setProperty( Property.TELNR, aTelNr );
   }
 }
