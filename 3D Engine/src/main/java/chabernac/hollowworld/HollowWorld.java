@@ -145,7 +145,7 @@ public class HollowWorld extends DefaultExitFrame{
     myExitKeyCommand.setFullScreenComponent(theFrame);
     theFrame.addKeyListener(new KeyCommandListener(myKeyMapContainer));
     try {
-      new MouseCommandListener(theFrame, new CameraMouseCommand(myCamera), myManager);
+      new MouseCommandListener(theFrame, new CameraMouseCommand(myCamera));
     } catch (AWTException e) {
       Debug.log(this,"could not attach mouse listener", e);
     }

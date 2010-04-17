@@ -14,55 +14,55 @@ import java.awt.image.DataBufferInt;
 
 
 public abstract class AbstractBuffer implements iBufferStrategy {
-	//private BufferedImage myImage = null;
+  //private BufferedImage myImage = null;
   protected BufferedImage myImage = null;
-	protected int myWidth, myHeight,mySize;
-	//Graphics object only serves for debugging purposes
-	protected Graphics g = null;
-	protected Graphics myGraphics = null;
-	private int debugMode = 0;
-	private Color myBackGroundColor = new Color(0,0,0,0);
+  protected int myWidth, myHeight,mySize;
+  //Graphics object only serves for debugging purposes
+  protected Graphics g = null;
+  protected Graphics myGraphics = null;
+  private int debugMode = 0;
+  private Color myBackGroundColor = new Color(0,0,0,0);
   protected int[] myDataBuffer = null;
 
 
-	public AbstractBuffer(int aWidth, int aHeight){
-		myWidth = aWidth;
-		myHeight = aHeight;
+  public AbstractBuffer(int aWidth, int aHeight){
+    myWidth = aWidth;
+    myHeight = aHeight;
     mySize = myWidth * myHeight;
-    
-		myImage = new BufferedImage(myWidth, myHeight, BufferedImage.TYPE_INT_ARGB);
+
+    myImage = new BufferedImage(myWidth, myHeight, BufferedImage.TYPE_INT_ARGB);
     myDataBuffer = ((DataBufferInt)myImage.getData().getDataBuffer()).getData();
-    
-		myGraphics = myImage.getGraphics();
-	}
 
-	public final Image getImage(){
-		prepareImage();
-    
-		return myImage;
-	}
+    myGraphics = myImage.getGraphics();
+  }
 
-	protected void prepareImage(){
+  public final Image getImage(){
+    prepareImage();
+
+    return myImage;
+  }
+
+  protected void prepareImage(){
     myImage.setRGB(0, 0, myWidth, myHeight, myDataBuffer, 0, myWidth);
   }
 
-	public final void clear(){
-		clearBuffer();
-    
+  public final void clear(){
+    clearBuffer();
+
     for(int i=0;i<myDataBuffer.length;i++){
       myDataBuffer[i] = myBackGroundColor.getRGB();
     }
-    
-		myGraphics.setColor(myBackGroundColor);
-		myGraphics.fillRect(0,0,myWidth, myHeight); 
-	}
 
-	protected void drawSegment(Segment aSegment, int y){
-		while(aSegment.hasNext()){
-			aSegment.next();
-			setValueAt(aSegment.getX(), y, aSegment.getInverseZ(), aSegment.getColor(), false);
-		}
-		/*
+    myGraphics.setColor(myBackGroundColor);
+    myGraphics.fillRect(0,0,myWidth, myHeight); 
+  }
+
+  protected void drawSegment(Segment aSegment, int y){
+    while(aSegment.hasNext()){
+      aSegment.next();
+      setValueAt(aSegment.getX(), y, aSegment.getInverseZ(), aSegment.getColor(), false);
+    }
+    /*
 		aSegment.setXStart(Math.ceil(aSegment.getXStart()));
 		int color = aSegment.getColor();
 		double redStart = aSegment.getLStart() * ( ( color & 0x00FFFFFF ) >> 16 );
@@ -107,63 +107,65 @@ public abstract class AbstractBuffer implements iBufferStrategy {
 			currentBlue += deltaBlue;
 			z+= deltaZ;
 		}
-		 */
-	}
+     */
+  }
 
-	protected abstract void clearBuffer();
+  protected abstract void clearBuffer();
 
 
-	public final int getHeight(){
-		return myHeight;
-	}
+  public final int getHeight(){
+    return myHeight;
+  }
 
-	public final int getWidth(){
-		return myWidth;
-	}
+  public final int getWidth(){
+    return myWidth;
+  }
 
   protected void setPixelAt(int i, int aColor){
     myDataBuffer[i] = aColor;
   }
-  
-	protected void setPixelAt(int x, int y, int aColor){
+
+  protected void setPixelAt(int x, int y, int aColor){
     myDataBuffer[y * myWidth + x] = aColor; 
-		//myImage.setRGB(x, y, aColor);
-	}
-  
+    //myImage.setRGB(x, y, aColor);
+  }
+
   protected int getPixelAt(int i){
     return myDataBuffer[i];
   }
-  
+
   protected int getPixelAt(int x, int y){
     return myDataBuffer[y * myWidth + x];
   }
 
-	public void setValueAt(int x, int y, double z, int aColor, boolean ignoreDepth){
-		setPixelAt(x, y, aColor);
-	}
+  public void setValueAt(int x, int y, double z, int aColor, boolean ignoreDepth){
+    setPixelAt(x, y, aColor);
+  }
 
-	public void setDebugMode(int aDebugMode){
-		debugMode = aDebugMode;
-	}
+  public void setDebugMode(int aDebugMode){
+    debugMode = aDebugMode;
+  }
 
-	public int getDebugMode(){
-		return debugMode;
-	}
+  public int getDebugMode(){
+    return debugMode;
+  }
 
-	public void setGraphics(Graphics g){
-		this.g = g;
-	}
+  public void setGraphics(Graphics g){
+    this.g = g;
+  }
 
-	public Graphics getGraphics(){
-		return g;
-	}
+  public Graphics getGraphics(){
+    return g;
+  }
 
-	public Color getBackGroundColor() {
-		return myBackGroundColor;
-	}
+  public Color getBackGroundColor() {
+    return myBackGroundColor;
+  }
 
-	public void setBackGroundColor(Color aBackGroundColor) {
-		myBackGroundColor = new Color(aBackGroundColor.getRed(), aBackGroundColor.getGreen(), aBackGroundColor.getBlue(), 255);
-	}
-	
+  public void setBackGroundColor(Color aBackGroundColor) {
+    if(aBackGroundColor != null){
+      myBackGroundColor = new Color(aBackGroundColor.getRed(), aBackGroundColor.getGreen(), aBackGroundColor.getBlue(), 255);
+    }
+  }
+
 }
