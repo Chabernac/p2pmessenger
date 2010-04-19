@@ -196,6 +196,14 @@ public class Shape implements Comparable, iTranslatable{
     }
     System.out.println("Setting texture on all polygons done");
   }
+  
+  public void setTexture(String aTexture, String aBumpMap, boolean isTransparent, boolean isSpherical){
+      System.out.println("Setting texture on all polygons");
+      for(int i = 0; i < myPolygons.length; i++){
+          myPolygons[i].setTexture(aTexture, aBumpMap, isTransparent, isSpherical);
+      }
+      System.out.println("Setting texture on all polygons done");
+  }
 
   public Point3D getCenterPoint(){
     return myCenterPoint;

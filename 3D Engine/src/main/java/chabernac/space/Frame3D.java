@@ -100,7 +100,7 @@ public class Frame3D extends JFrame implements iSynchronizedEvent{
                                 theEyePoint,
                                 myCamera,
                                 myWorld,
-                                new ZBuffer(getWidth(), getHeight()));
+                                new ZBuffer(myWorld, getWidth(), getHeight()));
     myGraphics.setLightManager(new GouroudShading(0.3));
   }
 

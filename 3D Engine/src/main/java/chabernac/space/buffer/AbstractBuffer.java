@@ -12,6 +12,8 @@ import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 
+import chabernac.space.World;
+
 
 public abstract class AbstractBuffer implements iBufferStrategy {
   //private BufferedImage myImage = null;
@@ -23,11 +25,13 @@ public abstract class AbstractBuffer implements iBufferStrategy {
   private int debugMode = 0;
   private Color myBackGroundColor = new Color(0,0,0,0);
   protected int[] myDataBuffer = null;
+  protected World myWorld = null;
 
 
-  public AbstractBuffer(int aWidth, int aHeight){
+  public AbstractBuffer(World aWorld, int aWidth, int aHeight){
     myWidth = aWidth;
     myHeight = aHeight;
+    myWorld = aWorld;
     mySize = myWidth * myHeight;
 
     myImage = new BufferedImage(myWidth, myHeight, BufferedImage.TYPE_INT_ARGB);
@@ -53,15 +57,15 @@ public abstract class AbstractBuffer implements iBufferStrategy {
       myDataBuffer[i] = myBackGroundColor.getRGB();
     }
 
-    myGraphics.setColor(myBackGroundColor);
-    myGraphics.fillRect(0,0,myWidth, myHeight); 
+//    myGraphics.setColor(myBackGroundColor);
+//    myGraphics.fillRect(0,0,myWidth, myHeight); 
   }
 
   protected void drawSegment(Segment aSegment, int y){
     while(aSegment.hasNext()){
       aSegment.next();
       setValueAt(aSegment.getX(), y, aSegment.getInverseZ(), aSegment.getColor(), false);
-    }
+    } 
     /*
 		aSegment.setXStart(Math.ceil(aSegment.getXStart()));
 		int color = aSegment.getColor();

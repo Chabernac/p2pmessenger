@@ -56,7 +56,7 @@ public class Panel3D extends JPanel implements  iSynchronizedEvent, MouseListene
         theEyePoint,
         myCamera,
         myWorld,
-        new ZBuffer(getWidth(), getHeight()));
+        new ZBuffer(myWorld, getWidth(), getHeight()));
     myGraphics.setLightManager(new GouroudShading(0.4));
   }
 
@@ -143,7 +143,7 @@ public class Panel3D extends JPanel implements  iSynchronizedEvent, MouseListene
 	  Point3D theEyePoint = new Point3D(getWidth()/2,getHeight()/2,(getWidth() + getHeight())/2);
 	  myGraphics.setEyePoint(theEyePoint);
 	  myGraphics.setFrustrum(new ScreenFrustrum(theEyePoint, new Dimension(getWidth(),getHeight())));
-	  myGraphics.setBufferStrategy(new ZBuffer(getWidth(), getHeight()));
+	  myGraphics.setBufferStrategy(new ZBuffer(myWorld, getWidth(), getHeight()));
   }
 
   public void componentShown(ComponentEvent anE) {

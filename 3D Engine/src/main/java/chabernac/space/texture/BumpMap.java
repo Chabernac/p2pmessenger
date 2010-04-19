@@ -8,6 +8,8 @@ public class BumpMap {
   private TextureImage myImage = null;
   private GVector[] myVectorMap = null;
   private double myMaxDepth;
+  private int myXOffset = 0;
+  private int myYOffset = 0;
   
   public BumpMap(TextureImage anImage, double aMaxDepth){
     myImage = anImage;
@@ -39,6 +41,12 @@ public class BumpMap {
   }
   
   public GVector getNormalAt(int x, int y){
+    x += myXOffset;
+    y += myYOffset;
+    for(; x < 0; x += myImage.width);
+    for(; x >= myImage.width; x -= myImage.width);
+    for(; y < 0; y += myImage.height);
+    for(; y >= myImage.height; y -= myImage.height);
     return getNormalAt(y * myImage.width + x);
   }
   

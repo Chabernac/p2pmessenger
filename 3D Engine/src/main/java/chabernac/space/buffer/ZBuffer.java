@@ -15,6 +15,7 @@ import java.awt.image.DataBufferInt;
 
 import chabernac.space.Polygon2D;
 import chabernac.space.Vertex2D;
+import chabernac.space.World;
 import chabernac.space.geom.Point2D;
 
 public class ZBuffer extends AbstractBuffer{
@@ -27,8 +28,8 @@ public class ZBuffer extends AbstractBuffer{
   private Font myFont = new Font("Arial", Font.PLAIN, 10);
 
 
-	public ZBuffer(int aWidth, int aHeight){
-		super(aWidth, aHeight);
+	public ZBuffer(World aWorld, int aWidth, int aHeight){
+		super(aWorld, aWidth, aHeight);
 		myZBuffer = new double[mySize];
     myAlphaBuffer = new int[mySize];
     myTransparencyBuffer = new double[mySize];
@@ -114,7 +115,7 @@ public class ZBuffer extends AbstractBuffer{
 			theScanLine = aPolygon.intersectHorizontalLine(y);
 			//TimeTracker.logTime("Intersecting with horizontal line: " + y);
 			if(theScanLine.length == 2 && theScanLine[0] != null && theScanLine[1] != null){
-        Segment theSegment = Segment.getInstance(theScanLine[0],theScanLine[1], theColor.getRGB(), aPolygon.getTexture() ); 
+        Segment theSegment = Segment.getInstance(myWorld, theScanLine[0],theScanLine[1], theColor.getRGB(), aPolygon.getTexture() ); 
         //Segment theSegment = new Segment(theScanLine[0],theScanLine[1], theColor.getRGB(), aPolygon.getTexture() );
 				drawSegment(theSegment, y);
         Segment.freeInstance(theSegment);
