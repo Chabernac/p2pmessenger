@@ -1,5 +1,7 @@
 package chabernac.space.geom;
 
+import com.sun.xml.internal.ws.api.model.wsdl.WSDLBoundOperation.ANONYMOUS;
+
 public class Point3D{
   public double x;
   public double y;
@@ -81,6 +83,14 @@ public class Point3D{
     x /= aFactor;
     y /= aFactor;
     z /= aFactor;
+  }
+  
+  public boolean equals(Object anObject){
+    if(anObject instanceof Point3D){
+      return equals( (Point3D)anObject);
+    } else {
+      return super.equals( anObject);
+    }
   }
   
   public boolean equals(Point3D aPoint){

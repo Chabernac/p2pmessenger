@@ -105,7 +105,7 @@ public class MatrixOperations {
 		theTransformationMatrix.setValueAt(0,2, theZUnit.x);
 		theTransformationMatrix.setValueAt(1,2, theZUnit.y);
 		theTransformationMatrix.setValueAt(2,2, theZUnit.z);
-		theTransformationMatrix.setValueAt(2,2, 0);
+		theTransformationMatrix.setValueAt(3,2, 0);
 		
 		theTransformationMatrix.setValueAt(0,3, 0);
 		theTransformationMatrix.setValueAt(1,3, 0);

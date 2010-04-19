@@ -45,7 +45,7 @@ public class AXACube extends JFrame implements iSynchronizedEvent{
     setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     setSize(new Dimension(400,400));
     setVisible(true);
-    myWorld = new World(2);
+    myWorld = new World(1);
     myCamera = new Camera();
   }
   
@@ -68,10 +68,10 @@ public class AXACube extends JFrame implements iSynchronizedEvent{
     myKeyMapContainer.addKeyMap(new KeyMap(KeyEvent.VK_SPACE, Command3dFactory.forward(myManager, myCamera, 20),2));
     myKeyMapContainer.addKeyMap(new KeyMap(KeyEvent.VK_ALT, Command3dFactory.backward(myManager, myCamera, 20),2));
 
-    myKeyMapContainer.addKeyMap(new KeyMap(KeyEvent.VK_NUMPAD4, Command3dFactory.left(myManager, myCamera, (float)Math.PI/144),2));
-    myKeyMapContainer.addKeyMap(new KeyMap(KeyEvent.VK_NUMPAD6, Command3dFactory.right(myManager, myCamera, (float)Math.PI/144),2));
-    myKeyMapContainer.addKeyMap(new KeyMap(KeyEvent.VK_NUMPAD8, Command3dFactory.down(myManager, myCamera, (float)Math.PI/144),2));
-    myKeyMapContainer.addKeyMap(new KeyMap(KeyEvent.VK_NUMPAD2, Command3dFactory.up(myManager, myCamera, (float)Math.PI/144),2));
+    myKeyMapContainer.addKeyMap(new KeyMap(KeyEvent.VK_LEFT, Command3dFactory.left(myManager, myCamera, (float)Math.PI/144),2));
+    myKeyMapContainer.addKeyMap(new KeyMap(KeyEvent.VK_RIGHT, Command3dFactory.right(myManager, myCamera, (float)Math.PI/144),2));
+    myKeyMapContainer.addKeyMap(new KeyMap(KeyEvent.VK_DOWN, Command3dFactory.down(myManager, myCamera, (float)Math.PI/144),2));
+    myKeyMapContainer.addKeyMap(new KeyMap(KeyEvent.VK_UP, Command3dFactory.up(myManager, myCamera, (float)Math.PI/144),2));
 
     myKeyMapContainer.addKeyMap(new KeyMap(KeyEvent.VK_NUMPAD7, Command3dFactory.rollLeft(myManager, myCamera, (float)Math.PI/144),2));
     myKeyMapContainer.addKeyMap(new KeyMap(KeyEvent.VK_NUMPAD9, Command3dFactory.rollRight(myManager, myCamera, (float)Math.PI/144),2));
@@ -90,7 +90,7 @@ public class AXACube extends JFrame implements iSynchronizedEvent{
     myPanel3D.getGraphics3D().setDrawTextureNormals(false);
     myPanel3D.getGraphics3D().setDrawVertexNormals(false);
     myPanel3D.getGraphics3D().setDrawTextureCoordinates(false);
-    myPanel3D.getGraphics3D().setDrawCamZ(true);
+    myPanel3D.getGraphics3D().setDrawCamZ(false);
     //myPanel3D.getGraphics3D().setBackGroundColor(new Color(100,100,200));
     myPanel3D.getGraphics3D().setBackGroundColor(new Color(0,0,0));
     //myPanel3D.setBorder(new TitledBorder("hallo"));
@@ -100,6 +100,8 @@ public class AXACube extends JFrame implements iSynchronizedEvent{
   }
   
   private void buildWorld(){
+    myWorld.addLightSource(new LightSource(new Point3D(0,2000,-5000), 5000));
+    
     MouseTranslationManager theMouseTranslationManager = new MouseTranslationManager(myPanel3D.getGraphics3D(), 100, 10);
     myRotationManager = new RotationManager(new Rotation(Math.PI / 180,Math.PI / 120,Math.PI / 60));
     RotationManager theRotationManager = new RotationManager(new Rotation(0,0,Math.PI / 180));
@@ -108,10 +110,10 @@ public class AXACube extends JFrame implements iSynchronizedEvent{
     myWorld.getTranslateManagerContainer().addTranslateManager(theRotationManager);
     
     
-    Shape theSphere = ShapeFactory.makeSphere(new Point3D(100,100,4800), 2000,10);
-    theSphere.setColor(Color.blue);
+//    Shape theSphere = ShapeFactory.makeSphere(new Point3D(100,100,4800), 2000,10);
+//    theSphere.setColor(Color.blue);
 //    theSphere.setTexture("gengrid", false, true);
-    theSphere.setTexture("EarthMap_2500x1250", false, true);
+//    theSphere.setTexture("EarthMap_2500x1250", false, true);
 //    theSphere.setTexture("Threadplate0069_1_S", false, true);
 //    theSphere.setTexture("S_S_Board12", false, true);
     
@@ -123,25 +125,25 @@ public class AXACube extends JFrame implements iSynchronizedEvent{
 //    theSphere.setTexture("VenusMap_2500x1250", false, true);
     
     //theSphere.setTexture(new TextureImage(ImageFactory.createImage("Guy", new Font("Arial", Font.BOLD, 20), 100, 100, Color.BLUE, Color.WHITE, true)));
-    theSphere.done();
+//    theSphere.done();
     //theSphere.myPolygons[20].setTexture("guy", false);
-    myWorld.addShape(theSphere);
+    //myWorld.addShape(theSphere);
     //theMouseTranslationManager.addTranslatable(theSphere);
-    theRotationManager.addTranslatable(theSphere);
+    //theRotationManager.addTranslatable(theSphere);
     
     
     
-    Shape theCosmos = ShapeFactory.makeSphere(new Point3D(0,0,0), 100000,40);
-    theCosmos.setColor(Color.blue);
-    theCosmos.setRoom(true);
+//    Shape theCosmos = ShapeFactory.makeSphere(new Point3D(0,0,0), 100000,40);
+//    theCosmos.setColor(Color.blue);
+//    theCosmos.setRoom(true);
     //theCosmos.setTexture("StarsMap_2500x1250", false, true);
-    theCosmos.setTexture("star_map_small", false, true);
+//    theCosmos.setTexture("star_map_small", false, true);
     
     //theCosmos.setTexture("Threadplate0069_1_S", false, true);
     
 //    theCosmos.setTexture("EarthMap_2500x1250", false, true);
-    theCosmos.done();
-    myWorld.addShape(theCosmos);
+//    theCosmos.done();
+    //myWorld.addShape(theCosmos);
     
     
     
@@ -172,23 +174,23 @@ public class AXACube extends JFrame implements iSynchronizedEvent{
     */
     
     
-    /*
-    Shape theShape = ShapeFactory.makeCube(new Point3D(0,0,400), 94,94,94);
+    
+    Shape theShape = ShapeFactory.makeCube(new Point3D(5,0,400), 94,94,94);
     theShape.setColor(new Color(0,0,255,100));
     //theShape.setTexture(new TextureImage(ImageFactory.createImage("AXA", new Font("Arial", Font.BOLD, 40), 100, 100, Color.BLUE, Color.WHITE, true)));
-    //theShape.setTexture("axa", false, false);
-    theShape.setTexture("leslie", false, false);
+    theShape.setTexture("axa","axa", false, false);
+//    theShape.setTexture("leslie", false, false);
 //    theShape.myPolygons[0].setTexture("axa", false);
-    theShape.myPolygons[0].setTexture("guy", false, false);
+//    theShape.myPolygons[0].setTexture("guy", false, false);
 //    theShape.myPolygons[1].setTexture("leslie", false, false);
     myWorld.addShape(theShape);
     theMouseTranslationManager.addTranslatable(theShape);
     myRotationManager.addTranslatable(theShape);
     
-    Shape theWindow = ShapeFactory.makeSinglePolygonShape(new Point3D(0,0,300), 100, 100);
-    theWindow.setColor(new Color(255,100,100, 200));
-    myWorld.addShape(theWindow);
-    */
+//    Shape theWindow = ShapeFactory.makeSinglePolygonShape(new Point3D(0,0,300), 100, 100);
+//    theWindow.setColor(new Color(255,100,100, 200));
+//    myWorld.addShape(theWindow);
+//    
     
     
     
@@ -208,10 +210,9 @@ public class AXACube extends JFrame implements iSynchronizedEvent{
 //    myRotationManager.addTranslatable(theSphere);
     
     
-//    theShape = new Shape(6);
-//    ShapeFactory.makeCube(theShape, new Point3D(-100,50,1000), 94,94,94);
+//    theShape = ShapeFactory.makeCube(new Point3D(-100,50,1000), 94,94,94);
 //    theShape.setColor(new Color(255,0,0));
-//    //theShape.setTexture("axa");
+//    theShape.setTexture("axa");
 //    myWorld.addShape(theShape);
 //    
 //    AxisRotationManager theManager = new AxisRotationManager(new Line3D(new Point3D(0,0,0), new GVector(0,1,0)), Math.PI/180);
@@ -222,7 +223,7 @@ public class AXACube extends JFrame implements iSynchronizedEvent{
 //    myWorld.getTranslateManagerContainer().addTranslateManager(theRManager);
     
 
-    myWorld.addLightSource(new LightSource(new Point3D(0,2000,-5000), 5000));
+    
   }
   
   private void setupRendering(){

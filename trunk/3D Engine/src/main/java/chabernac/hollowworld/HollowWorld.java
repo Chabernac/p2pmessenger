@@ -30,7 +30,6 @@ import chabernac.control.KeyMapContainer;
 import chabernac.control.MouseCommandListener;
 import chabernac.control.SynchronizedEventManager;
 import chabernac.math.MatrixException;
-import chabernac.space.AxisRotationManager;
 import chabernac.space.Camera;
 import chabernac.space.CameraMouseCommand;
 import chabernac.space.Command3dFactory;
@@ -41,12 +40,9 @@ import chabernac.space.Shape;
 import chabernac.space.ShapeFactory;
 import chabernac.space.World;
 import chabernac.space.buffer.iBufferStrategy;
-import chabernac.space.geom.GVector;
-import chabernac.space.geom.Line3D;
 import chabernac.space.geom.Point3D;
 import chabernac.space.geom.Rotation;
 import chabernac.space.shapes.Cube;
-import chabernac.space.shapes.TexturePolygonShape;
 import chabernac.utils.Debug;
 import chabernac.utils.TimeTracker;
 
@@ -135,8 +131,8 @@ public class HollowWorld extends DefaultExitFrame{
 
   private void startEngineFullScreen(){
     setVisible(false);
-    //Frame3D theFrame = new Frame3D(buildWorld(), myCamera, new Dimension(200,200));
-    Frame3D theFrame = new Frame3D(buildSinglePolygonWorld(), myCamera, new Dimension(800,600));
+    Frame3D theFrame = new Frame3D(buildWorld(), myCamera, new Dimension(200,200));
+//    Frame3D theFrame = new Frame3D(buildSinglePolygonWorld(), myCamera, new Dimension(800,600));
     theFrame.setLocation(new Point(200,200));
     theFrame.setVisible(true);
 
@@ -154,7 +150,7 @@ public class HollowWorld extends DefaultExitFrame{
 
 
   private World buildSinglePolygonWorld(){
-    World theWorld = new World(5, 0);
+    World theWorld = new World(1, 0);
 
     /*
     SinglePolygonShape thePolygonShape = new SinglePolygonShape(new Point3D(500,0,500), 300, 300);
@@ -183,11 +179,11 @@ public class HollowWorld extends DefaultExitFrame{
     theWorld.addShape(theCube);
     
     
-    TexturePolygonShape theTexturePolygonShape = new TexturePolygonShape("lhermitte2", true, new Point3D(700,700,200));
-    theWorld.addShape(theTexturePolygonShape);
-    
-    theTexturePolygonShape = new TexturePolygonShape("leslie2", true,  new Point3D(700,700,100));
-    theWorld.addShape(theTexturePolygonShape);
+//    TexturePolygonShape theTexturePolygonShape = new TexturePolygonShape("lhermitte2", true, new Point3D(700,700,200));
+//    theWorld.addShape(theTexturePolygonShape);
+//    
+//    theTexturePolygonShape = new TexturePolygonShape("leslie2", true,  new Point3D(700,700,100));
+//    theWorld.addShape(theTexturePolygonShape);
     
     /*
      theCube = new Cube(new Point3D(0,0,500), 500,500,500);
@@ -210,10 +206,10 @@ public class HollowWorld extends DefaultExitFrame{
 //    theWorld.addShape(theCube);
     
     
-    theCube = new Cube(new Point3D(500,500,500), 300,300,300);
-    theCube.setTexture("cloth2");
-    theCube.setColor(Color.blue);
-    theWorld.addShape(theCube);
+//    theCube = new Cube(new Point3D(500,500,500), 300,300,300);
+//    theCube.setTexture("cloth2");
+//    theCube.setColor(Color.blue);
+//    theWorld.addShape(theCube);
     
     /*
     PathTranslateManager theTranslateManager = new PathTranslateManager(new Point3D[]{new Point3D(400,400,400), new Point3D(200,200,200), new Point3D(200,200,400)}, 20);
@@ -224,9 +220,9 @@ public class HollowWorld extends DefaultExitFrame{
     theRotationManager.addTranslatable(theCube);
     theWorld.getTranslateManagerContainer().addTranslateManager(theRotationManager);
     */
-    AxisRotationManager theAxisRotationManager = new AxisRotationManager(new Line3D(new Point3D(500,500,500), new GVector(1,0,0)), Math.PI / 60);
-    theAxisRotationManager.addTranslatable(theCube);
-    theWorld.getTranslateManagerContainer().addTranslateManager(theAxisRotationManager);
+//    AxisRotationManager theAxisRotationManager = new AxisRotationManager(new Line3D(new Point3D(500,500,500), new GVector(1,0,0)), Math.PI / 60);
+//    theAxisRotationManager.addTranslatable(theCube);
+//    theWorld.getTranslateManagerContainer().addTranslateManager(theAxisRotationManager);
     
     
     
@@ -240,7 +236,7 @@ public class HollowWorld extends DefaultExitFrame{
   }
 
   private World buildWorld() {
-    World theWorld = new World(5, 0);
+    World theWorld = new World(1, 0);
 
     try{
 

@@ -2,9 +2,12 @@ package chabernac.space.buffer;
 
 import org.apache.log4j.Logger;
 
+import chabernac.space.LightSource;
 import chabernac.space.Vector2D;
 import chabernac.space.Vertex2D;
+import chabernac.space.World;
 import chabernac.space.geom.Point2D;
+import chabernac.space.geom.Point3D;
 import chabernac.space.texture.Texture2;
 
 public class Segment {
@@ -27,19 +30,21 @@ public class Segment {
   private static final double AFFINEBORDER = Math.tan(Math.PI / 10);
   private static boolean FORCEAFFINE = true;
   private static boolean FORCENOTAFFINE = false;
+  private World myWorld = null;
 
 
   public Segment(){
 
   }
 
-  public Segment(Vertex2D aStartVertex, Vertex2D anEndVertex, int aColor, Texture2 aTexture){
+  public Segment(World aWorld, Vertex2D aStartVertex, Vertex2D anEndVertex, int aColor, Texture2 aTexture){
     //this(aStartVertex, anEndVertex, Color.black.getRGB(), aTexture);
     start = aStartVertex;
     end = anEndVertex;
     texture = aTexture;
     isTexture = aTexture != null;
     color = aColor;
+    myWorld = aWorld;
     calculateRicos();
     repositionStartEnd();
   }
@@ -146,6 +151,7 @@ public class Segment {
     x++;
     invz += invzRico;
     l += lRico;
+    double theL = l;
     
     //t = TimeTracker.logTime("calculating x, invz, l", t);
 
@@ -163,6 +169,18 @@ public class Segment {
       //t = TimeTracker.logTime("calculating u, v", t);
 //      color = texture.getColor(new Point2D(u, v));
       color = texture.getColor((int)u,(int)v);
+      int theU = (int)u;
+      int theV = (int)v;
+      color = texture.getColor(theU, theV);
+      if(texture.getBumpMap() != null)
+      {
+          chabernac.space.geom.GVector theCamNormalVector = texture.getNormalVector(theU, theV);
+          Point3D theCamPoint = texture.getSystem().getTransformator().inverseTransform(new Point3D(theU, theV, 0.0D));
+          theL += LightSource.calculateLight(myWorld, theCamPoint, theCamNormalVector);
+          theL /= 2D;
+          z = theCamPoint.z;
+          invz = 1.0D / z;
+      }
 //      color = texture.getColor((int)Math.floor(u),(int)Math.floor(v));
       //t = TimeTracker.logTime("retrieving color from texture", t);
     } else {
@@ -453,7 +471,7 @@ public class Segment {
     //return "<Segment p0=(" + xStart + "," + zStart + ") p1=(" + xEnd + "," + zEnd + ")>";
   }
   
-  public static Segment getInstance(Vertex2D aStartVertex, Vertex2D anEndVertex, int aColor, Texture2 aTexture){
+  public static Segment getInstance(World aWorld, Vertex2D aStartVertex, Vertex2D anEndVertex, int aColor, Texture2 aTexture){
     Segment result;
     if (countFree == 0) {
       result = new Segment();
@@ -465,6 +483,7 @@ public class Segment {
     result.color = aColor;
     result.texture = aTexture;
     result.isTexture = aTexture != null;
+    result.myWorld = aWorld;
     
     result.calculateRicos();
     result.repositionStartEnd();

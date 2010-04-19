@@ -12,6 +12,7 @@ import chabernac.space.geom.Plane;
 import chabernac.space.geom.Point2D;
 import chabernac.space.geom.Point3D;
 import chabernac.space.texture.Texture2;
+import chabernac.space.texture.TextureFactory;
 import chabernac.space.texture.TextureImage;
 import chabernac.utils.Tools;
 
@@ -39,8 +40,7 @@ public class Polygon implements iTranslatable{
   public boolean doubleSided = false;
   private String myTextureName = null;
   private boolean isTransparentTexture = true;
-
-
+  private String myBumpMap = null;
 
   public Polygon(Vertex[] worldVertexes){
     mySize = worldVertexes.length;
@@ -113,6 +113,9 @@ public class Polygon implements iTranslatable{
         myTexture = new Texture2(w[0].myPoint, theXVector, theYVector, myTextureName, isTransparentTexture );
       } else if(myTextureImage != null){
         myTexture = new Texture2(w[0].myPoint, theXVector, theYVector, myTextureImage);
+      }
+      if(myBumpMap != null){
+        myTexture.setBumpMap(TextureFactory.getBumpMap(myBumpMap));
       }
       myTexture.setSpherical(isSphericalTexture);
       
@@ -343,6 +346,14 @@ public class Polygon implements iTranslatable{
     isTransparentTexture = isTransparent;
     this.isSphericalTexture = isSphericalTexture;
     calculateTexturePoints();
+  }
+  
+  public void setTexture(String aTexture, String aBumpMap, boolean isTransparent, boolean isSphericalTexture){
+      myTextureName = aTexture;
+      myBumpMap = aBumpMap;
+      isTransparentTexture = isTransparent;
+      this.isSphericalTexture = isSphericalTexture;
+      calculateTexturePoints();
   }
 
   public Texture2 getTexture(){
