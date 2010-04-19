@@ -18,10 +18,9 @@ import java.util.List;
 import java.util.Properties;
 import java.util.StringTokenizer;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
-
-import sun.misc.BASE64Encoder;
 
 public class ServiceTools {
   private static Logger logger = Logger.getLogger(ServiceTools.class);
@@ -50,8 +49,7 @@ public class ServiceTools {
 
   public static String b64_sha1(String aMessage){
     try {
-      BASE64Encoder theEncoder = new BASE64Encoder();
-      return theEncoder.encode(encrypt(aMessage.getBytes(), "SHA-1"));
+      return new String(Base64.encodeBase64( encrypt(aMessage.getBytes(), "SHA-1")));
     } catch (NoSuchAlgorithmException e) {
       return "";
     }
