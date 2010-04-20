@@ -32,7 +32,7 @@ public class ServiceToolsTest extends TestCase {
     assertFalse( theCMDFile.exists() );
   }
   
-  public void testGetRegistryKey(){
-    assertNotNull( ServiceTools.getRegistryRunKey("Sheduler") );
-  }
+//  public void testGetRegistryKey(){
+//    assertNotNull( ServiceTools.getRegistryRunKey("Sheduler") );
+//  }
 }
