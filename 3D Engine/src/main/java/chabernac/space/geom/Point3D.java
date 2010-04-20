@@ -1,6 +1,5 @@
 package chabernac.space.geom;
 
-import com.sun.xml.internal.ws.api.model.wsdl.WSDLBoundOperation.ANONYMOUS;
 
 public class Point3D{
   public double x;
