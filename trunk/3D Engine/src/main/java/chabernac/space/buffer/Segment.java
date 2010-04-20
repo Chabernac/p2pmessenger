@@ -168,7 +168,6 @@ public class Segment {
       }
       //t = TimeTracker.logTime("calculating u, v", t);
 //      color = texture.getColor(new Point2D(u, v));
-      color = texture.getColor((int)u,(int)v);
       int theU = (int)u;
       int theV = (int)v;
       color = texture.getColor(theU, theV);
@@ -189,9 +188,9 @@ public class Segment {
     
     //t = TimeTracker.start();
     int alpha = color >> 24 & 0xff;
-    int red=  (int)(l * (  color >> 16 & 0xff));
-    int green= (int) (l * (  color >> 8 & 0xff));
-    int blue= (int) (l * (  color & 0xff));
+    int red=  (int)(theL * (  color >> 16 & 0xff));
+    int green= (int) (theL * (  color >> 8 & 0xff));
+    int blue= (int) (theL * (  color & 0xff));
 
     if(red > 255) red = 255;
     if(green > 255) green = 255;

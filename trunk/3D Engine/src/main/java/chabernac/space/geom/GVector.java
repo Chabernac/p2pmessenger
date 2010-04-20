@@ -111,4 +111,15 @@ public class GVector{
   public Object clone(){
 	  return new GVector(x, y, z);
   }
+  
+  public boolean equals(Object anObject){
+    if(anObject instanceof GVector){
+      GVector theVector = (GVector)anObject;
+      if(x != theVector.x) return false;
+      if(y != theVector.y) return false;
+      if(z != theVector.z) return false;
+      return true;
+    }
+    return false;
+  }
 }
