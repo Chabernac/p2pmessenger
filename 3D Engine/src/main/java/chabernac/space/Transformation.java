@@ -56,7 +56,7 @@ public class Transformation implements iTransformator{
   
   public GVector inverseTransform(GVector aVector){
     calculateInverseOriginTtansform();
-    Point3D thePoint = MatrixOperations.buildPoint3d((MatrixOperations.buildMatrix(aVector).multiply(myTransformationMatrix)));
+    Point3D thePoint = MatrixOperations.buildPoint3d(MatrixOperations.buildMatrix(aVector).multiply(myInvTransformationMatrix));
     return new GVector(myInvOriginTransform, thePoint);
   }
   
