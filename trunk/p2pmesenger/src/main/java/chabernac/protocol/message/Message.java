@@ -4,12 +4,17 @@
  */
 package chabernac.protocol.message;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import chabernac.protocol.routing.Peer;
 
 public class Message {
   private Peer mySource = null;
   private Peer myDestination = null;
   private String myMessage = null;
+  private List<MessageIndicator> myIndicators = null;
+  private boolean isProtocolMessage = false;
   
   //only when the byte array is small we can use it to transport bytes trough the network.
   //because the message is reformed to xml the xml will be many times bigger as the byte array
@@ -39,5 +44,24 @@ public class Message {
   }
   public void setBytes( byte[] anBytes ) {
     myBytes = anBytes;
+  }
+  public void addMessageIndicator(MessageIndicator anIndicator){
+    if(myIndicators == null){
+      myIndicators = new ArrayList< MessageIndicator >();
+    }
+    myIndicators.add( anIndicator );
+  }
+  
+  public boolean containsIndicator(MessageIndicator anIndicator){
+    if(myIndicators == null){
+      return false;
+    }
+    return myIndicators.contains( anIndicator );
+  }
+  public boolean isProtocolMessage() {
+    return isProtocolMessage;
+  }
+  public void setProtocolMessage( boolean anProtocolMessage ) {
+    isProtocolMessage = anProtocolMessage;
   }
 } 
