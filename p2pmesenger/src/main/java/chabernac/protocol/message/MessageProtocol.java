@@ -6,6 +6,8 @@ package chabernac.protocol.message;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.List;
 
 import chabernac.protocol.Protocol;
 import chabernac.protocol.ProtocolContainer;
@@ -26,6 +28,7 @@ public class MessageProtocol extends Protocol {
 
   private static enum STATUS_MESSAGE {UKWNONW_PEER, UNKNOWN_HOST, UNDELIVERABLE, DELIVERED, UNCRECOGNIZED_MESSAGE}
 
+  private List<iMessageListener> myListeners = new ArrayList< iMessageListener >();
 
   public MessageProtocol ( ) {
     super( ID );
@@ -53,9 +56,16 @@ public class MessageProtocol extends Protocol {
     Peer theDestionation = aMessage.getDestination();
     try {
       if(theDestionation.getPeerId().equals( getRoutingTable().getLocalPeerId() )){
-        //reoffer the content of the message to the handle method
-        //this will cause sub protocols to handle the message if they are present
-        return getMasterProtocol().handleCommand( aSessionId, aMessage.getMessage() );
+        if(aMessage.isProtocolMessage()){
+          //reoffer the content of the message to the handle method
+          //this will cause sub protocols to handle the message if they are present
+          return getMasterProtocol().handleCommand( aSessionId, aMessage.getMessage() );
+        } else {
+          for(iMessageListener theListener : myListeners){
+            theListener.messageReceived( aMessage );
+          }
+          return STATUS_MESSAGE.DELIVERED.name();
+        }
       } else {
         Peer theGateway = getRoutingTable().getGatewayForPeer( theDestionation );
         return theGateway.send( createMessage( XMLTools.toXML( aMessage ) ));
@@ -64,12 +74,20 @@ public class MessageProtocol extends Protocol {
       return STATUS_MESSAGE.UKWNONW_PEER.name();
     } catch ( UnknownHostException e ) {
       return STATUS_MESSAGE.UNKNOWN_HOST.name();
-    } catch ( IOException e ) {
+    } catch ( IOException e ) { 
       return STATUS_MESSAGE.UNDELIVERABLE.name();
     } catch ( ProtocolException e ) {
       return ProtocolContainer.Response.UNKNOWN_PROTOCOL.name();
     }
 
+  }
+
+  public void addMessageListener(iMessageListener aListener){
+    myListeners.add( aListener );
+  }
+
+  public void removeMessageListener(iMessageListener aListener){
+    myListeners.remove( aListener );
   }
 
   @Override
