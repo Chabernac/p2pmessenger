@@ -4,13 +4,17 @@
  */
 package chabernac.protocol.userinfo;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import javax.swing.text.StyledEditorKit.AlignmentAction;
 
 import org.apache.log4j.Logger;
 
@@ -40,6 +44,8 @@ public class UserInfoProtocol extends Protocol {
   private ExecutorService myRetrievalService = Executors.newFixedThreadPool( 5 );
 
   private iUserInfoProvider myUserInfoProvider = null;
+  
+  private List< iUserInfoListener > myListeners = new ArrayList< iUserInfoListener >();
 
   public UserInfoProtocol ( iUserInfoProvider aProvider ) throws UserInfoException{
     super( ID );
@@ -108,15 +114,22 @@ public class UserInfoProtocol extends Protocol {
     if(Command.GET.name().equalsIgnoreCase( anInput )){
       return XMLTools.toXML( getPersonalInfo() );
     }
-    if(Command.PUT.name().equalsIgnoreCase( anInput )){
-      String[] theParts = anInput.split( " " );
+    if(anInput.startsWith( Command.PUT.name() ) ){
+      String[] theParts = anInput.split( ";" );
       String thePeerId = theParts[1];
       UserInfo theUserInfo = (UserInfo)XMLTools.fromXML( theParts[2]);
       myUserInfo.put( thePeerId, theUserInfo );
+      notifyUserInfoChanged( theUserInfo );
       return Response.OK.name();
     }
 
     return ProtocolContainer.Response.UNKNOWN_COMMAND.name();
+  }
+  
+  private void notifyUserInfoChanged(UserInfo aUserInfo){
+    for(iUserInfoListener theListener : myListeners){
+      theListener.userInfoChanged( aUserInfo, Collections.unmodifiableMap( myUserInfo ));
+    }
   }
 
   @Override
@@ -143,11 +156,11 @@ public class UserInfoProtocol extends Protocol {
       Message theMessage = new Message(  );
       theMessage.setDestination( getRoutingTable().getEntryForPeer( aPeerId ).getPeer() );
       theMessage.setSource( getRoutingTable().obtainLocalPeer() );
-      theMessage.setMessage( createMessage( Command.PUT.name() + " " + getRoutingTable().getLocalPeerId() + " " + myUserInfoProvider.getUserInfo()));
+      theMessage.setMessage( createMessage( Command.PUT.name() + ";" + getRoutingTable().getLocalPeerId() + ";" + XMLTools.toXML( myUserInfoProvider.getUserInfo())));
       theMessage.setProtocolMessage( true );
       String theResult = ((MessageProtocol)findProtocolContainer().getProtocol( MessageProtocol.ID )).sendMessage( theMessage );
-      if(!theResult.equals( Response.OK )){
-        throw new UserInfoException("Could not send user info to peer '" + aPeerId + "'");
+      if(!theResult.equals( Response.OK.name() )){
+        throw new UserInfoException("Could not send user info to peer '" + aPeerId + "' response: '" + theResult + "'");
       }
     }catch(Exception e){
       throw new UserInfoException("Could not send user info to peer '" + aPeerId + "'", e);
@@ -160,6 +173,14 @@ public class UserInfoProtocol extends Protocol {
 
   public UserInfo getPersonalInfo() {
     return myUserInfoProvider.getUserInfo();
+  }
+  
+  public void addUserInfoListener(iUserInfoListener aListener){
+    myListeners.add(aListener);
+  }
+  
+  public void removeUserInfoListener(iUserInfoListener aListener){
+    myListeners.remove( aListener );
   }
 
   private class UserInfoRetriever implements Runnable{
@@ -174,6 +195,7 @@ public class UserInfoProtocol extends Protocol {
       try{
         UserInfo theUserInfo = getUserInfoForPeer( myPeerId );
         myUserInfo.put(myPeerId, theUserInfo);
+        notifyUserInfoChanged( theUserInfo );
       }catch(Exception e){
         LOGGER.error("Could not retrieve user info", e);
       }
@@ -210,7 +232,7 @@ public class UserInfoProtocol extends Protocol {
 
     @Override
     public void update( Observable anO, Object anArg ) {
-
+      announceMe();
     }
   }
 }
