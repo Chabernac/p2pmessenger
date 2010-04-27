@@ -10,7 +10,7 @@ import java.util.Map;
 
 public class ProtocolContainer implements IProtocol {
   public static enum Command {PROTOCOLS};
-  public static enum Response {UNKNOWN_COMMAND, UNKNOWN_PROTOCOL};
+  public static enum Response {UNKNOWN_COMMAND, UNKNOWN_PROTOCOL, COULD_NOT_DECRYPT};
   
   private Map<String, IProtocol> myProtocolMap = null;
   

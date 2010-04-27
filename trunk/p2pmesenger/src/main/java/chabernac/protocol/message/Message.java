@@ -52,6 +52,12 @@ public class Message {
     myIndicators.add( anIndicator );
   }
   
+  public void removeMessageIndicator(MessageIndicator anIndicator){
+    if(myIndicators != null){
+      myIndicators.remove( anIndicator );
+    }
+  }
+  
   public boolean containsIndicator(MessageIndicator anIndicator){
     if(myIndicators == null){
       return false;
@@ -63,5 +69,11 @@ public class Message {
   }
   public void setProtocolMessage( boolean anProtocolMessage ) {
     isProtocolMessage = anProtocolMessage;
+  }
+  public List< MessageIndicator > getIndicators() {
+    return myIndicators;
+  }
+  public void setIndicators( List< MessageIndicator > anIndicators ) {
+    myIndicators = anIndicators;
   }
 } 

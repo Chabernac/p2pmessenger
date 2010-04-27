@@ -5,6 +5,10 @@
 package chabernac.protocol.message;
 
 import java.net.SocketException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
@@ -90,5 +94,125 @@ public class MessageProtocolTest extends AbstractProtocolTest {
       theServer3.stop();
     }
   }
+  
+  public void testSendEndUserMessage() throws ProtocolException, InterruptedException, MessageException{
+    LOGGER.debug("Begin of testMessageProtocol");
+    ProtocolContainer theProtocol1 = getProtocolContainer( -1, false, "1" );
+    ProtocolServer theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT, 5);
+
+    ProtocolContainer theProtocol2 = getProtocolContainer( -1, false, "2" );
+    ProtocolServer theServer2 = new ProtocolServer(theProtocol2, RoutingProtocol.START_PORT + 1, 5);
+
+    RoutingProtocol theRoutingProtocol1 = (RoutingProtocol)theProtocol1.getProtocol( RoutingProtocol.ID );
+    RoutingTable theRoutingTable1 = theRoutingProtocol1.getRoutingTable();
+    MessageProtocol theMessageProtocol1 = (MessageProtocol)theProtocol1.getProtocol( MessageProtocol.ID );
+    
+    RoutingProtocol theRoutingProtocol2 = (RoutingProtocol)theProtocol2.getProtocol( RoutingProtocol.ID );
+    MessageProtocol theMessageProtocol2 = (MessageProtocol)theProtocol2.getProtocol( MessageProtocol.ID );
+    
+    try{
+      assertTrue( theServer1.start() );
+      assertTrue( theServer2.start() );
+
+      theRoutingProtocol1.scanLocalSystem();
+      theRoutingProtocol2.scanLocalSystem();
+      
+      //scanning the local system might take a small time
+      Thread.sleep( 1000 );
+      
+      MessageCounterListener theListener = new MessageCounterListener();
+      theMessageProtocol2.addMessageListener( theListener );
+      
+      Message theMessage = new Message();
+      theMessage.setDestination( theRoutingTable1.getEntryForPeer( "2" ).getPeer() );
+      theMessage.setMessage( "test message" );
+      int times = 10;
+      for(int i=0;i<times;i++){
+        theMessageProtocol1.sendMessage( theMessage );
+      }
+      
+      assertEquals( times, theListener.getCounter() );
+    } finally {
+      theServer1.stop();
+      theServer2.stop();
+    }
+
+  }
+  
+  public void testSendEnctryptedMessage() throws ProtocolException, InterruptedException, MessageException{
+    LOGGER.debug("Begin of testMessageProtocol");
+    ProtocolContainer theProtocol1 = getProtocolContainer( -1, false, "1" );
+    ProtocolServer theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT, 5);
+
+    ProtocolContainer theProtocol2 = getProtocolContainer( -1, false, "2" );
+    ProtocolServer theServer2 = new ProtocolServer(theProtocol2, RoutingProtocol.START_PORT + 1, 5);
+
+    RoutingProtocol theRoutingProtocol1 = (RoutingProtocol)theProtocol1.getProtocol( RoutingProtocol.ID );
+    RoutingTable theRoutingTable1 = theRoutingProtocol1.getRoutingTable();
+    MessageProtocol theMessageProtocol1 = (MessageProtocol)theProtocol1.getProtocol( MessageProtocol.ID );
+    
+    RoutingProtocol theRoutingProtocol2 = (RoutingProtocol)theProtocol2.getProtocol( RoutingProtocol.ID );
+    MessageProtocol theMessageProtocol2 = (MessageProtocol)theProtocol2.getProtocol( MessageProtocol.ID );
+    
+    try{
+      assertTrue( theServer1.start() );
+      assertTrue( theServer2.start() );
+
+      theRoutingProtocol1.scanLocalSystem();
+      theRoutingProtocol2.scanLocalSystem();
+      
+      //scanning the local system might take a small time
+      Thread.sleep( 1000 );
+      
+      MessageCollector theListener = new MessageCollector();
+      theMessageProtocol2.addMessageListener( theListener );
+      
+      Message theMessage = new Message();
+      theMessage.setDestination( theRoutingTable1.getEntryForPeer( "2" ).getPeer() );
+      int times = 10;
+      for(int i=0;i<times;i++){
+        theMessage.setMessage( "test message " + i );
+        theMessageProtocol1.sendEncryptedMessage( theMessage );
+      }
+      
+      assertEquals( times, theListener.getMessages().size() );
+      
+      for(int i=0;i<theListener.getMessages().size();i++){
+        assertEquals( "test message " + i, theListener.getMessages().get( i ).getMessage() );
+      }
+    } finally {
+      theServer1.stop();
+      theServer2.stop();
+    }
+  }
+  
+  public class MessageCounterListener implements iMessageListener{
+    private AtomicInteger myCounter = new AtomicInteger();
+
+    @Override
+    public void messageReceived( Message aMessage ) {
+      myCounter.incrementAndGet();
+    }
+    
+    public int getCounter(){
+      return myCounter.get();
+    }
+  }
+  
+  public class MessageCollector implements iMessageListener{
+    private List<Message> myMessages = Collections.synchronizedList( new ArrayList< Message >() );
+
+    @Override
+    public void messageReceived( Message aMessage ) {
+     myMessages.add(aMessage); 
+    }
+    
+    public List<Message> getMessages(){
+      return myMessages;
+    }
+  }
+  
+  
+
 }
 
