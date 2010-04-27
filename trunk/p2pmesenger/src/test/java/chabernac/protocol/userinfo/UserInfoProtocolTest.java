@@ -4,7 +4,11 @@
  */
 package chabernac.protocol.userinfo;
 
+import java.lang.reflect.Array;
 import java.net.SocketException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.BasicConfigurator;
 
@@ -61,6 +65,8 @@ public class UserInfoProtocolTest extends AbstractProtocolTest {
       
       
       UserInfoProtocol theUserInfoProtocol2 = (UserInfoProtocol)theProtocol2.getProtocol( UserInfoProtocol.ID );
+      UserInfoListener theListener = new UserInfoListener();
+      theUserInfoProtocol2.addUserInfoListener( theListener );
       
       Thread.sleep( 5000 );
       
@@ -80,16 +86,37 @@ public class UserInfoProtocolTest extends AbstractProtocolTest {
       Thread.sleep( 500 );
       
       //now test the status of user of peer 1 on peer 2
-      assertEquals( Status.BUSY, theUserInfoProtocol2.getUserInfoForPeer( "1" ).getStatus() );
+      assertEquals( Status.BUSY, theUserInfoProtocol2.getUserInfo().get(  "1" ).getStatus() );
       
       //lets change the name of the user on peer 2
       theUserInfoProtocol2.getPersonalInfo().setName( "Chabernac" );
       Thread.sleep( 500 );
-      assertEquals( "Chabernac", theUserInfoProtocol.getUserInfoForPeer( "2" ).getName() );
+      assertEquals( "Chabernac", theUserInfoProtocol.getUserInfo().get( "2" ).getName() );
+      
+      Thread.sleep( 500 );
+      
+      assertEquals( 4, theListener.getChangedUserInfo().size() );
+      
+      //1 event when the user changed its status to busy
+      assertEquals( Status.BUSY, theListener.getChangedUserInfo().get( 2 ).getStatus());
       
     } finally {
       theServer1.stop();
       theServer2.stop();
     }
+  }
+  
+  private class UserInfoListener implements iUserInfoListener{
+    private List< UserInfo > myChangedUserInfo = new ArrayList< UserInfo >();
+
+    @Override
+    public void userInfoChanged( UserInfo aUserInfo, Map< String, UserInfo > aFullUserInfoList ) {
+      myChangedUserInfo.add(aUserInfo);
+    }
+    
+    public List<UserInfo> getChangedUserInfo(){
+      return myChangedUserInfo;
+    }
+    
   }
 }
