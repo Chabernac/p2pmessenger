@@ -121,6 +121,7 @@ public class FileTransferProtocol extends Protocol {
       Message theMessage = new Message();
       theMessage.setDestination( aPeer );
       theMessage.setMessage( createMessage( Command.FILE.name() + " " + aFile.getName()) );
+      theMessage.setProtocolMessage( true );
       theResponse = theMessageProtocol.handleMessage( 0, theMessage );
     }catch(ProtocolException e){
       throw new FileTransferException("Could not transfer file because message protocol is not known", e);

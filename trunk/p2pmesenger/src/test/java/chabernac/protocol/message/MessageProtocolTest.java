@@ -80,6 +80,7 @@ public class MessageProtocolTest extends AbstractProtocolTest {
       Message theMessage = new Message();
       theMessage.setDestination( theRoutingTable1.getEntryForPeer( "3" ).getPeer() );
       theMessage.setMessage( "ECOTest" );
+      theMessage.setProtocolMessage( true );
       assertEquals( "Test", theMessageProtocol1.handleMessage( 0, theMessage ));
       
       
