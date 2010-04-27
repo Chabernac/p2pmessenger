@@ -59,7 +59,7 @@ public class MessageProtocol extends Protocol {
         if(aMessage.isProtocolMessage()){
           //reoffer the content of the message to the handle method
           //this will cause sub protocols to handle the message if they are present
-          return getMasterProtocol().handleCommand( aSessionId, aMessage.getMessage() );
+          return STATUS_MESSAGE.DELIVERED.name() + getMasterProtocol().handleCommand( aSessionId, aMessage.getMessage() );
         } else {
           for(iMessageListener theListener : myListeners){
             theListener.messageReceived( aMessage );
@@ -79,7 +79,14 @@ public class MessageProtocol extends Protocol {
     } catch ( ProtocolException e ) {
       return ProtocolContainer.Response.UNKNOWN_PROTOCOL.name();
     }
-
+  }
+  
+  public String sendMessage(Message aMessage) throws MessageException{
+    String theResult = handleMessage( 0, aMessage );
+    if(theResult.startsWith( STATUS_MESSAGE.DELIVERED.name() )){
+      return theResult.substring( STATUS_MESSAGE.DELIVERED.name().length() );
+    }
+    throw new MessageException("Message could not be delivered return code: '" + theResult + "'");
   }
 
   public void addMessageListener(iMessageListener aListener){

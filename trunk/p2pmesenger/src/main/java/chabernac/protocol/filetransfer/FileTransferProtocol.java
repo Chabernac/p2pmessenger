@@ -15,6 +15,7 @@ import chabernac.protocol.Protocol;
 import chabernac.protocol.ProtocolContainer;
 import chabernac.protocol.ProtocolException;
 import chabernac.protocol.message.Message;
+import chabernac.protocol.message.MessageException;
 import chabernac.protocol.message.MessageProtocol;
 import chabernac.protocol.pipe.IPipeListener;
 import chabernac.protocol.pipe.Pipe;
@@ -122,9 +123,11 @@ public class FileTransferProtocol extends Protocol {
       theMessage.setDestination( aPeer );
       theMessage.setMessage( createMessage( Command.FILE.name() + " " + aFile.getName()) );
       theMessage.setProtocolMessage( true );
-      theResponse = theMessageProtocol.handleMessage( 0, theMessage );
+      theResponse = theMessageProtocol.sendMessage( theMessage );
     }catch(ProtocolException e){
       throw new FileTransferException("Could not transfer file because message protocol is not known", e);
+    } catch ( MessageException e ) {
+      throw new FileTransferException("Could not transfer file because message could not be delivered", e);
     }
 
     if(!theResponse.startsWith( Response.ACCEPTED.name() )){

@@ -25,7 +25,7 @@ public class MessageProtocolTest extends AbstractProtocolTest {
     BasicConfigurator.configure();
   }
 
-  public void testMessageProtocol() throws ProtocolException, InterruptedException, SocketException{
+  public void testMessageProtocol() throws ProtocolException, InterruptedException, SocketException, MessageException{
     LOGGER.debug("Begin of testMessageProtocol");
     ProtocolContainer theProtocol1 = getProtocolContainer( -1, false, "1" );
     ProtocolServer theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT, 5);
@@ -81,7 +81,7 @@ public class MessageProtocolTest extends AbstractProtocolTest {
       theMessage.setDestination( theRoutingTable1.getEntryForPeer( "3" ).getPeer() );
       theMessage.setMessage( "ECOTest" );
       theMessage.setProtocolMessage( true );
-      assertEquals( "Test", theMessageProtocol1.handleMessage( 0, theMessage ));
+      assertEquals( "Test", theMessageProtocol1.sendMessage( theMessage ));
       
       
     }finally{

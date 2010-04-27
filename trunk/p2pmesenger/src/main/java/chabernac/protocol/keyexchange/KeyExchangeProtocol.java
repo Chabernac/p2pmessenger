@@ -92,9 +92,9 @@ public class KeyExchangeProtocol extends Protocol {
       Message theMessage = new Message();
       theMessage.setDestination( getPipeProtocol().getRoutingTable().getEntryForPeer( aPeerId ).getPeer() );
       theMessage.setSource( getPipeProtocol().getRoutingTable().obtainLocalPeer() );
-      theMessage.setMessage( createMessage( "KEP" + Command.GET_PUBLIC_KEY.name() + " "  + getPipeProtocol().getRoutingTable().getLocalPeerId()));
+      theMessage.setMessage( createMessage( Command.GET_PUBLIC_KEY.name() + " "  + getPipeProtocol().getRoutingTable().getLocalPeerId()));
       theMessage.setProtocolMessage( true );
-      String theResponse = ((MessageProtocol)findProtocolContainer().getProtocol( "MSG" )).handleMessage( 0, theMessage );
+      String theResponse = ((MessageProtocol)findProtocolContainer().getProtocol( "MSG" )).sendMessage( theMessage );
       if(!Response.OK.name().equalsIgnoreCase( theResponse )){
         throw new Exception("Response was not ok but '" + theResponse + "'");
       }
