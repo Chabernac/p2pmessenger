@@ -66,6 +66,15 @@ public class ProtocolServer implements Runnable{
     } catch ( IOException e ) {
     }
     myProtocol.stop();
+    
+    while(isStarted){
+      synchronized ( LOCK ) {
+        try {
+          LOCK.wait();
+        } catch ( InterruptedException e ) {
+        }
+      }
+    }
   }
 
   @Override

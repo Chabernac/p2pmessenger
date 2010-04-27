@@ -131,7 +131,7 @@ public class UserInfoProtocol extends Protocol {
       theMessage.setSource( getRoutingTable().obtainLocalPeer() );
       theMessage.setMessage( createMessage( Command.GET.name() ) );
       theMessage.setProtocolMessage( true );
-      String theResult = ((MessageProtocol)findProtocolContainer().getProtocol( MessageProtocol.ID )).handleMessage( 0, theMessage );
+      String theResult = ((MessageProtocol)findProtocolContainer().getProtocol( MessageProtocol.ID )).sendMessage( theMessage );
       return (UserInfo)XMLTools.fromXML( theResult );
     }catch(Exception e){
       throw new UserInfoException("Could not retrieve user info for peer '" + aPeerId + "'", e);
@@ -145,7 +145,7 @@ public class UserInfoProtocol extends Protocol {
       theMessage.setSource( getRoutingTable().obtainLocalPeer() );
       theMessage.setMessage( createMessage( Command.PUT.name() + " " + getRoutingTable().getLocalPeerId() + " " + myUserInfoProvider.getUserInfo()));
       theMessage.setProtocolMessage( true );
-      String theResult = ((MessageProtocol)findProtocolContainer().getProtocol( MessageProtocol.ID )).handleMessage( 0, theMessage );
+      String theResult = ((MessageProtocol)findProtocolContainer().getProtocol( MessageProtocol.ID )).sendMessage( theMessage );
       if(!theResult.equals( Response.OK )){
         throw new UserInfoException("Could not send user info to peer '" + aPeerId + "'");
       }
