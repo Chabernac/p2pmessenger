@@ -504,7 +504,7 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
       theRoutingTable1.addRoutingTableEntry( theDummyEntry );
       
       //the dummy entry should now immediately be propagated to peer 2
-      Thread.sleep( 500 );
+      Thread.sleep( 1000 );
       
       RoutingTableEntry theEntry = theRoutingTable2.getEntryForPeer( "dummy" ); 
       assertNotNull( theEntry );
