@@ -25,7 +25,7 @@ public class ServiceToolsTest extends TestCase {
     
     theReader.close();
     
-    assertEquals( "c:\\data\\test.exe", theLine );
+    assertEquals( "\"c:\\data\\test.exe\"", theLine );
     
     assertTrue( ServiceTools.removeRunAtStartup( theFile ) );
     
