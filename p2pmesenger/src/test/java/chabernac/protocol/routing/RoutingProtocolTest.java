@@ -98,15 +98,16 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
 
   public void testReachableSituation1() throws InterruptedException, ProtocolException{
     //p1 <--> p2 <--> p3 peer 1 cannot reach peer 3
+    Thread.sleep( 10000 );
 
     ProtocolContainer theProtocol1 = getProtocolContainer( -1, false, "1" );
-    ProtocolServer theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT, 5);
+    ProtocolServer theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT, 10);
 
     ProtocolContainer theProtocol2 = getProtocolContainer( -1, false, "2" );
-    ProtocolServer theServer2 = new ProtocolServer(theProtocol2, RoutingProtocol.START_PORT + 1, 5);
+    ProtocolServer theServer2 = new ProtocolServer(theProtocol2, RoutingProtocol.START_PORT + 1, 10);
 
     ProtocolContainer theProtocol3 = getProtocolContainer( -1, false, "3" );
-    ProtocolServer theServer3 = new ProtocolServer(theProtocol3, RoutingProtocol.START_PORT + 2, 5);
+    ProtocolServer theServer3 = new ProtocolServer(theProtocol3, RoutingProtocol.START_PORT + 2, 10);
     
     ProtocolContainer theProtocol4 = getProtocolContainer( -1, false, "4" );
     ProtocolServer theServer4 = new ProtocolServer(theProtocol4, RoutingProtocol.START_PORT + 3, 5);

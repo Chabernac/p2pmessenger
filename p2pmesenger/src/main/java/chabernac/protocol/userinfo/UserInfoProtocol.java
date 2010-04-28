@@ -46,6 +46,8 @@ public class UserInfoProtocol extends Protocol {
   private iUserInfoProvider myUserInfoProvider = null;
   
   private List< iUserInfoListener > myListeners = new ArrayList< iUserInfoListener >();
+  
+  private MyUserInfoListener myUserInfoListener = new MyUserInfoListener();
 
   public UserInfoProtocol ( iUserInfoProvider aProvider ) throws UserInfoException{
     super( ID );
@@ -55,7 +57,16 @@ public class UserInfoProtocol extends Protocol {
   }
 
   private void addUserInfoListener(){
-    myUserInfoProvider.getUserInfo().addObserver( new MyUserInfoListener() );
+    myUserInfoProvider.getUserInfo().addObserver( myUserInfoListener );
+  }
+  
+  public void setUserInfoProvider(iUserInfoProvider aUserInfoProvider){
+    if(myUserInfoProvider != null){
+      myUserInfoProvider.getUserInfo().deleteObserver( myUserInfoListener );
+    }
+    myUserInfoProvider = aUserInfoProvider;
+    addUserInfoListener();
+    announceMe();
   }
 
   public void setMasterProtocol( IProtocol aProtocol ) {
