@@ -99,7 +99,7 @@ public class ServiceTools {
     PrintWriter theWriter = null;
     try{
      theWriter = new PrintWriter(new FileWriter( theLocation ));
-     theWriter.println(aFile.getAbsolutePath());
+     theWriter.println("\"" + aFile.getAbsolutePath() + "\"");
      theWriter.flush();
     }finally{
       if(theWriter != null){
