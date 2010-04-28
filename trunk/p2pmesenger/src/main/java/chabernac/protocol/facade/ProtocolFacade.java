@@ -5,6 +5,7 @@
 package chabernac.protocol.facade;
 
 import java.io.File;
+import java.util.Map;
 
 import chabernac.protocol.ProtocolContainer;
 import chabernac.protocol.ProtocolException;
@@ -19,6 +20,10 @@ import chabernac.protocol.pipe.Pipe;
 import chabernac.protocol.pipe.PipeException;
 import chabernac.protocol.pipe.PipeProtocol;
 import chabernac.protocol.routing.Peer;
+import chabernac.protocol.userinfo.UserInfo;
+import chabernac.protocol.userinfo.UserInfoProtocol;
+import chabernac.protocol.userinfo.iUserInfoListener;
+import chabernac.protocol.userinfo.iUserInfoProvider;
 
 public class ProtocolFacade {
   private ProtocolContainer myContainer = null;
@@ -53,6 +58,18 @@ public class ProtocolFacade {
   
   public void addPipeListener(IPipeListener aPipeListener) throws ProtocolException{
     ((PipeProtocol)myContainer.getProtocol( MessageProtocol.ID )).addPipeListener( aPipeListener );
+  }
+  
+  public void addUserInfoListener(iUserInfoListener aListener) throws ProtocolException{
+    ((UserInfoProtocol)myContainer.getProtocol( UserInfoProtocol.ID )).addUserInfoListener( aListener );
+  }
+  
+  public Map< String, UserInfo > getUserInfo() throws ProtocolException{
+   return ((UserInfoProtocol)myContainer.getProtocol( UserInfoProtocol.ID )).getUserInfo();
+  }
+  
+  public void setUserInfoProvider(iUserInfoProvider aUserInfoProvider) throws ProtocolException{
+    ((UserInfoProtocol)myContainer.getProtocol( UserInfoProtocol.ID )).setUserInfoProvider( aUserInfoProvider );
   }
   
   
