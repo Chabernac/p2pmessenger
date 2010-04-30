@@ -110,6 +110,10 @@ public class ProtocolServer implements Runnable{
       LOCK.notify();
     }
   }
+  
+  public boolean isStarted(){
+    return isStarted;
+  }
 
   private class ClientSocketHandler implements Runnable{
     private Socket mySocket = null;
