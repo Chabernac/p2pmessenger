@@ -6,9 +6,12 @@ package chabernac.protocol.facade;
 
 import java.io.File;
 import java.util.Map;
+import java.util.Properties;
 
 import chabernac.protocol.ProtocolContainer;
 import chabernac.protocol.ProtocolException;
+import chabernac.protocol.ProtocolFactory;
+import chabernac.protocol.ProtocolServer;
 import chabernac.protocol.filetransfer.FileTransferException;
 import chabernac.protocol.filetransfer.FileTransferProtocol;
 import chabernac.protocol.filetransfer.iFileHandler;
@@ -20,6 +23,7 @@ import chabernac.protocol.pipe.Pipe;
 import chabernac.protocol.pipe.PipeException;
 import chabernac.protocol.pipe.PipeProtocol;
 import chabernac.protocol.routing.Peer;
+import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.userinfo.UserInfo;
 import chabernac.protocol.userinfo.UserInfoProtocol;
 import chabernac.protocol.userinfo.iUserInfoListener;
@@ -27,6 +31,23 @@ import chabernac.protocol.userinfo.iUserInfoProvider;
 
 public class ProtocolFacade {
   private ProtocolContainer myContainer = null;
+  private ProtocolServer myProtocolServer = null;
+  
+  public ProtocolFacade(Properties aProperties){
+    ProtocolFactory theFactory = new ProtocolFactory(aProperties);
+    myContainer = new ProtocolContainer(theFactory);
+  }
+  
+  public ProtocolFacade(long anExchangeDelay, boolean isPersist, String aPeerId, String aKeyDir, String aUserName){
+    Properties theProperties = new Properties();
+    theProperties.setProperty( "routingprotocol.exchangedelay", Long.toString( anExchangeDelay));
+    theProperties.setProperty("routingprotocol.persist", Boolean.toString( isPersist));
+    theProperties.setProperty("peerid", aPeerId);
+    theProperties.setProperty("key.location", aKeyDir);
+    theProperties.setProperty("key.user", aUserName);
+    ProtocolFactory theFactory = new ProtocolFactory(theProperties);
+    myContainer = new ProtocolContainer(theFactory);
+  }
   
   public ProtocolFacade(ProtocolContainer aContainer){
     myContainer = aContainer;
@@ -72,5 +93,20 @@ public class ProtocolFacade {
     ((UserInfoProtocol)myContainer.getProtocol( UserInfoProtocol.ID )).setUserInfoProvider( aUserInfoProvider );
   }
   
+  public void start(int aNumberOfThreads){
+    if(myProtocolServer == null){
+      myProtocolServer = new ProtocolServer(myContainer, RoutingProtocol.START_PORT, aNumberOfThreads);
+    } 
+    
+    if(!myProtocolServer.isStarted()){
+      myProtocolServer.start();
+    }
+  }
+  
+  public void stop(){
+    if(myProtocolServer != null){
+      myProtocolServer.stop();
+    }
+  }
   
 }
