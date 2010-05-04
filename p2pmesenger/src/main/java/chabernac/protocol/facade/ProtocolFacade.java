@@ -18,6 +18,8 @@ import chabernac.protocol.filetransfer.iFileHandler;
 import chabernac.protocol.message.Message;
 import chabernac.protocol.message.MessageException;
 import chabernac.protocol.message.MessageProtocol;
+import chabernac.protocol.message.MultiPeerMessage;
+import chabernac.protocol.message.MultiPeerMessageProtocol;
 import chabernac.protocol.pipe.IPipeListener;
 import chabernac.protocol.pipe.Pipe;
 import chabernac.protocol.pipe.PipeException;
@@ -63,6 +65,10 @@ public class ProtocolFacade {
   
   public void sendMessage(Message aMessage) throws MessageException, ProtocolException{
     ((MessageProtocol)myContainer.getProtocol( MessageProtocol.ID )).sendMessage( aMessage );
+  }
+  
+  public void sendMessage(MultiPeerMessage aMessage) throws ProtocolException{
+    ((MultiPeerMessageProtocol)myContainer.getProtocol( MultiPeerMessageProtocol.ID )).sendMessage( aMessage );
   }
   
   public void sendEnctryptedMessage(Message aMessage) throws MessageException, ProtocolException{
