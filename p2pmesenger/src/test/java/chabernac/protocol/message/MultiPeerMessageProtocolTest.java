@@ -1,0 +1,102 @@
+/**
+ * Copyright (c) 2010 Axa Holding Belgium, SA. All rights reserved.
+ * This software is the confidential and proprietary information of the AXA Group.
+ */
+package chabernac.protocol.message;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import org.apache.log4j.BasicConfigurator;
+
+import chabernac.protocol.AbstractProtocolTest;
+import chabernac.protocol.ProtocolContainer;
+import chabernac.protocol.ProtocolException;
+import chabernac.protocol.ProtocolServer;
+import chabernac.protocol.routing.RoutingProtocol;
+import chabernac.protocol.routing.RoutingTable;
+
+public class MultiPeerMessageProtocolTest extends AbstractProtocolTest {
+  static{
+    BasicConfigurator.resetConfiguration();
+    BasicConfigurator.configure();
+  }
+  
+  public void testMultiPeerMessageProtocol() throws ProtocolException, InterruptedException{
+    ProtocolContainer theProtocol1 = getProtocolContainer( -1, false, "1" );
+    ProtocolServer theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT, 5);
+
+    ProtocolContainer theProtocol2 = getProtocolContainer( -1, false, "2" );
+    ProtocolServer theServer2 = new ProtocolServer(theProtocol2, RoutingProtocol.START_PORT + 1, 5); 
+    
+    RoutingProtocol theRoutingProtocol1 = (RoutingProtocol)theProtocol1.getProtocol( RoutingProtocol.ID );
+    RoutingTable theRoutingTable1 = theRoutingProtocol1.getRoutingTable();
+    MultiPeerMessageProtocol theMessageProtocol1 = (MultiPeerMessageProtocol)theProtocol1.getProtocol( MultiPeerMessageProtocol.ID );
+    
+    RoutingProtocol theRoutingProtocol2 = (RoutingProtocol)theProtocol2.getProtocol( RoutingProtocol.ID );
+    RoutingTable theRoutingTable2 = theRoutingProtocol2.getRoutingTable();
+    MultiPeerMessageProtocol theMessageProtocol2 = (MultiPeerMessageProtocol)theProtocol2.getProtocol( MultiPeerMessageProtocol.ID );
+    
+    try{
+      assertTrue( theServer1.start() );
+      assertTrue( theServer2.start() );
+      
+      theRoutingProtocol1.scanLocalSystem();
+      theRoutingProtocol2.scanLocalSystem();
+      
+      //scanning the local system might take a small time
+      Thread.sleep( 1000 );
+      
+      DeliverReportCollector theDeliveryReportCollector = new DeliverReportCollector();
+      theMessageProtocol1.addDeliveryReportListener( theDeliveryReportCollector );
+      
+      MessageCollector theMessageCollector = new MessageCollector();
+      theMessageProtocol2.addMultiPeerMessageListener( theMessageCollector);
+      
+      MultiPeerMessage theMessage = MultiPeerMessage.createMessage( "berichtje")
+      .addDestination( "2" );
+//      .addMessageIndicator( MessageIndicator.ENCRYPTED );
+      
+      theMessageProtocol1.sendMessage( theMessage );
+      
+      Thread.sleep( 1000 );
+      
+      assertEquals( 2, theDeliveryReportCollector.getDeliveryReports().size() );
+      assertEquals( DeliveryReport.Status.DELIVERED, theDeliveryReportCollector.getDeliveryReports().get( 1 ).getDeliveryStatus());
+      assertEquals( 1, theMessageCollector.getMessages().size());
+      
+            
+    }finally{
+      theServer1.stop();
+      theServer2.stop();
+    }
+  }
+  
+  private class MessageCollector implements iMultiPeerMessageListener{
+    private List< MultiPeerMessage > myReceivedMessages = new ArrayList< MultiPeerMessage >();
+
+    @Override
+    public void messageReceived( MultiPeerMessage aMessage ) {
+      myReceivedMessages.add( aMessage );
+    }
+    
+    public List<MultiPeerMessage> getMessages(){
+      return myReceivedMessages;
+    }
+  }
+  
+  private class DeliverReportCollector implements iDeliverReportListener{
+    private List<DeliveryReport> myDeliveryReports = new ArrayList< DeliveryReport >();
+
+    @Override
+    public void acceptDeliveryReport( DeliveryReport aDeliverReport ) {
+      myDeliveryReports.add(aDeliverReport);
+    }
+    
+    public List<DeliveryReport> getDeliveryReports(){
+      return myDeliveryReports;
+    }
+    
+  }
+}

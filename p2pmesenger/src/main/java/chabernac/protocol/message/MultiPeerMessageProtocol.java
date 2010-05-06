@@ -4,6 +4,7 @@
  */
 package chabernac.protocol.message;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -11,6 +12,8 @@ import java.util.concurrent.Executors;
 
 import org.apache.log4j.Logger;
 
+import chabernac.io.Base64ObjectStringConverter;
+import chabernac.io.iObjectStringConverter;
 import chabernac.protocol.Protocol;
 import chabernac.protocol.ProtocolException;
 import chabernac.protocol.message.DeliveryReport.Status;
@@ -21,8 +24,12 @@ public class MultiPeerMessageProtocol extends Protocol{
   private static Logger LOGGER = Logger.getLogger( MultiPeerMessageProtocol.class );
   public static String ID = "MPH";
 
+  private static enum STATUS_MESSAGE { FAILED, DELIVERED }
+
   private List< iDeliverReportListener > myDeliverReportListeners = new ArrayList< iDeliverReportListener >();
   private ExecutorService mySendService = Executors.newFixedThreadPool( 10 );
+  private iObjectStringConverter< MultiPeerMessage > myObjectStringConverter = new Base64ObjectStringConverter< MultiPeerMessage >();
+  private List<iMultiPeerMessageListener> myMessageListeners = new ArrayList< iMultiPeerMessageListener >();
 
   public MultiPeerMessageProtocol (  ) {
     super( ID );
@@ -35,8 +42,23 @@ public class MultiPeerMessageProtocol extends Protocol{
 
   @Override
   public String handleCommand( long aSessionId, String anInput ) {
-    // TODO Auto-generated method stub
-    return null;
+    try {
+      MultiPeerMessage theMessage = myObjectStringConverter.getObject( anInput );
+      for(iMultiPeerMessageListener theListener : myMessageListeners){
+        theListener.messageReceived( theMessage );
+      }
+      return STATUS_MESSAGE.DELIVERED.name();
+    } catch ( IOException e ) {
+      return STATUS_MESSAGE.FAILED.name();
+    }
+  }
+  
+  public void addMultiPeerMessageListener(iMultiPeerMessageListener aMultiPeerMessageListener){
+    myMessageListeners.add( aMultiPeerMessageListener );
+  }
+  
+  public void removeMultiPeerMessageListener(iMultiPeerMessageListener aMultiPeerMessageListener){
+    myMessageListeners.remove(aMultiPeerMessageListener);
   }
 
   public void addDeliveryReportListener(iDeliverReportListener aDeliveryReportListener){
@@ -62,13 +84,22 @@ public class MultiPeerMessageProtocol extends Protocol{
   }
 
   public void sendMessage(MultiPeerMessage aMultiPeerMessage){
-    for(String theDestination : aMultiPeerMessage.getDestinations()){
+    MultiPeerMessage theMultiPeerMessage = null;
+    try {
+      theMultiPeerMessage = aMultiPeerMessage.setSource( getRoutingTable().getLocalPeerId() );
+    } catch ( ProtocolException e1 ) {
+      LOGGER.error( "Could not set locale peer id in multi peer message", e1 );
+      return;
+    }
+    
+    for(String theDestination : theMultiPeerMessage.getDestinations()){
       Message theMessage = new Message();
       try{
         theMessage.setDestination( getRoutingTable().getEntryForPeer( theDestination ).getPeer() );
-        theMessage.setSource( getRoutingTable().getEntryForPeer(aMultiPeerMessage.getSource()).getPeer() );
-        theMessage.setProtocolMessage( false );
-        theMessage.setIndicators( aMultiPeerMessage.getIndicators() );
+        theMessage.setSource( getRoutingTable().getEntryForPeer(theMultiPeerMessage.getSource()).getPeer() );
+        theMessage.setProtocolMessage( true );
+        theMessage.setIndicators( theMultiPeerMessage.getIndicators() );
+        theMessage.setMessage( createMessage( myObjectStringConverter.toString( theMultiPeerMessage ) ) );
         mySendService.execute( new MessageSender(theMessage) );
       }catch(Exception e){
         LOGGER.error( "Sending multi peer message failed", e );
@@ -78,6 +109,7 @@ public class MultiPeerMessageProtocol extends Protocol{
 
   @Override
   public void stop() {
+    mySendService.shutdownNow();
   }
 
   private class MessageSender implements Runnable{
@@ -91,8 +123,12 @@ public class MultiPeerMessageProtocol extends Protocol{
     public void run() {
       sendDeliveryReport( new DeliveryReport(Status.IN_PROGRESS, myMessage) );
       try {
-        getMessageProtocol().sendMessage( myMessage );
-        sendDeliveryReport( new DeliveryReport(Status.DELIVERED, myMessage));
+        String theResult = getMessageProtocol().sendMessage( myMessage );
+        if(theResult.equalsIgnoreCase( STATUS_MESSAGE.DELIVERED.name() )){
+          sendDeliveryReport( new DeliveryReport(Status.DELIVERED, myMessage));
+        } else {
+          sendDeliveryReport( new DeliveryReport(Status.FAILED, myMessage) );
+        }
       } catch ( Exception e ) {
         LOGGER.error( "Could not send message", e );
         sendDeliveryReport( new DeliveryReport(Status.FAILED, myMessage) );

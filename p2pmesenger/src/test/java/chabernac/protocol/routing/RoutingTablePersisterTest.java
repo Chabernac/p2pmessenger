@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import junit.framework.TestCase;
-import chabernac.io.persist.iObjectPersister;
+import chabernac.io.iObjectPersister;
 import chabernac.protocol.routing.Peer;
 import chabernac.protocol.routing.RoutingTable;
 import chabernac.protocol.routing.RoutingTableEntry;

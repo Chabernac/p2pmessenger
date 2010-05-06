@@ -29,7 +29,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.log4j.Logger;
 
-import chabernac.io.persist.iObjectPersister;
+import chabernac.io.iObjectPersister;
 import chabernac.protocol.Protocol;
 import chabernac.tools.IOTools;
 import chabernac.tools.NetTools;
