@@ -102,7 +102,7 @@ public class MultiPeerMessageProtocol extends Protocol{
         theMessage.setMessage( createMessage( myObjectStringConverter.toString( theMultiPeerMessage ) ) );
         mySendService.execute( new MessageSender(theMessage) );
       }catch(Exception e){
-        LOGGER.error( "Sending multi peer message failed", e );
+        LOGGER.error( "Sending multi peer message to '"  +  theDestination + "' failed", e );
       }
     }
   }

@@ -6,7 +6,6 @@ package chabernac.protocol.message;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.log4j.BasicConfigurator;
 
@@ -30,20 +29,26 @@ public class MultiPeerMessageProtocolTest extends AbstractProtocolTest {
     ProtocolContainer theProtocol2 = getProtocolContainer( -1, false, "2" );
     ProtocolServer theServer2 = new ProtocolServer(theProtocol2, RoutingProtocol.START_PORT + 1, 5); 
     
+    ProtocolContainer theProtocol3 = getProtocolContainer( -1, false, "3" );
+    ProtocolServer theServer3 = new ProtocolServer(theProtocol3, RoutingProtocol.START_PORT + 2, 5);
+    
     RoutingProtocol theRoutingProtocol1 = (RoutingProtocol)theProtocol1.getProtocol( RoutingProtocol.ID );
-    RoutingTable theRoutingTable1 = theRoutingProtocol1.getRoutingTable();
     MultiPeerMessageProtocol theMessageProtocol1 = (MultiPeerMessageProtocol)theProtocol1.getProtocol( MultiPeerMessageProtocol.ID );
     
     RoutingProtocol theRoutingProtocol2 = (RoutingProtocol)theProtocol2.getProtocol( RoutingProtocol.ID );
-    RoutingTable theRoutingTable2 = theRoutingProtocol2.getRoutingTable();
     MultiPeerMessageProtocol theMessageProtocol2 = (MultiPeerMessageProtocol)theProtocol2.getProtocol( MultiPeerMessageProtocol.ID );
+    
+    RoutingProtocol theRoutingProtocol3 = (RoutingProtocol)theProtocol3.getProtocol( RoutingProtocol.ID );
+    MultiPeerMessageProtocol theMessageProtocol3 = (MultiPeerMessageProtocol)theProtocol3.getProtocol( MultiPeerMessageProtocol.ID );
     
     try{
       assertTrue( theServer1.start() );
       assertTrue( theServer2.start() );
+      assertTrue( theServer3.start() );
       
       theRoutingProtocol1.scanLocalSystem();
       theRoutingProtocol2.scanLocalSystem();
+      theRoutingProtocol3.scanLocalSystem();
       
       //scanning the local system might take a small time
       Thread.sleep( 1000 );
@@ -51,25 +56,32 @@ public class MultiPeerMessageProtocolTest extends AbstractProtocolTest {
       DeliverReportCollector theDeliveryReportCollector = new DeliverReportCollector();
       theMessageProtocol1.addDeliveryReportListener( theDeliveryReportCollector );
       
-      MessageCollector theMessageCollector = new MessageCollector();
-      theMessageProtocol2.addMultiPeerMessageListener( theMessageCollector);
+      MessageCollector theMessageCollector2 = new MessageCollector();
+      theMessageProtocol2.addMultiPeerMessageListener( theMessageCollector2);
+      
+      MessageCollector theMessageCollector3 = new MessageCollector();
+      theMessageProtocol3.addMultiPeerMessageListener( theMessageCollector3);
       
       MultiPeerMessage theMessage = MultiPeerMessage.createMessage( "berichtje")
-      .addDestination( "2" );
-//      .addMessageIndicator( MessageIndicator.ENCRYPTED );
+      .addDestination( "2" )
+      .addDestination( "3" )
+      .addMessageIndicator( MessageIndicator.ENCRYPTED );
       
       theMessageProtocol1.sendMessage( theMessage );
       
       Thread.sleep( 1000 );
       
-      assertEquals( 2, theDeliveryReportCollector.getDeliveryReports().size() );
-      assertEquals( DeliveryReport.Status.DELIVERED, theDeliveryReportCollector.getDeliveryReports().get( 1 ).getDeliveryStatus());
-      assertEquals( 1, theMessageCollector.getMessages().size());
+      assertEquals( 4, theDeliveryReportCollector.getDeliveryReports().size() );
+      assertEquals( DeliveryReport.Status.DELIVERED, theDeliveryReportCollector.getDeliveryReports().get( 2 ).getDeliveryStatus());
+      assertEquals( DeliveryReport.Status.DELIVERED, theDeliveryReportCollector.getDeliveryReports().get( 3 ).getDeliveryStatus());
+      assertEquals( 1, theMessageCollector2.getMessages().size());
+      assertEquals( 1, theMessageCollector3.getMessages().size());
       
             
     }finally{
       theServer1.stop();
       theServer2.stop();
+      theServer3.stop();
     }
   }
   
