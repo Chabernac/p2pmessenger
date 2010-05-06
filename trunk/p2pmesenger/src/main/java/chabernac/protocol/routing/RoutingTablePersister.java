@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import chabernac.io.persist.iObjectPersister;
+import chabernac.io.iObjectPersister;
 
 public class RoutingTablePersister implements iObjectPersister<RoutingTable> {
 

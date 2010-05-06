@@ -14,6 +14,7 @@ import chabernac.protocol.keyexchange.PublicPrivateKeyEnctryptionFactory;
 import chabernac.protocol.keyexchange.iPublicPrivateKeyEncryptionFactory;
 import chabernac.protocol.list.ListProtocol;
 import chabernac.protocol.message.MessageProtocol;
+import chabernac.protocol.message.MultiPeerMessageProtocol;
 import chabernac.protocol.ping.PingProtocol;
 import chabernac.protocol.pipe.PipeProtocol;
 import chabernac.protocol.routing.RoutingProtocol;
@@ -73,6 +74,10 @@ public class ProtocolFactory implements iProtocolFactory{
     
     if(ListProtocol.ID.equalsIgnoreCase( aProtocolId )) {
       return new ListProtocol();
+    }
+    
+    if(MultiPeerMessageProtocol.ID.equalsIgnoreCase( aProtocolId )) {
+      return new MultiPeerMessageProtocol();
     }
     
     if(UserInfoProtocol.ID.equalsIgnoreCase( aProtocolId )) {
