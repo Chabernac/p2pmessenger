@@ -36,5 +36,5 @@ public class Base64ObjectStringConverter <T extends Serializable >implements iOb
     byte[] theBytes = theArrayOutputStream.toByteArray();
     return new String(Base64.encodeBase64( theBytes, false ));
   }
-
+  
 }

@@ -20,7 +20,7 @@ public class KeyExchangeProtocolTest extends AbstractProtocolTest {
     BasicConfigurator.configure();
   }
   
-  public void testKeyExchangeProtocol() throws InterruptedException, EncryptionException, ProtocolException{
+  public void testKeyExchangeProtocol() throws InterruptedException, EncryptionException, ProtocolException, KeyException{
     //p1 <--> p2 <--> p3 peer 1 cannot reach peer 3
 
     ProtocolContainer theProtocol1 = getProtocolContainer( -1, false, "1", ".", "1" );
@@ -56,9 +56,10 @@ public class KeyExchangeProtocolTest extends AbstractProtocolTest {
         theRoutingProtocol3.exchangeRoutingTable();
       }
       
-      
       assertTrue( theKeyExchangeProtocol1.assurePublicKeyForPeer( "3" ) );
       assertNotNull( theKeyExchangeProtocol1.getEncryption().getPublicKeyForUser( "3" ) );
+      
+      assertNotNull(theKeyExchangeProtocol1.getPublicKeyForUser("3"));
     } finally{
       theServer1.stop();
       theServer2.stop();
