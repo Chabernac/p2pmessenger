@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.log4j.Logger;
 
 import chabernac.encryption.EncryptionException;
 import chabernac.encryption.iPublicPrivateKeyEncryption;
@@ -29,9 +30,10 @@ import chabernac.tools.XMLTools;
  *
  */
 public class MessageProtocol extends Protocol {
+  private static Logger LOGGER = Logger.getLogger( MessageProtocol.class );
   public static final String ID = "MSG";
 
-  private static enum STATUS_MESSAGE {UKWNONW_PEER, UNKNOWN_HOST, UNDELIVERABLE, DELIVERED, UNCRECOGNIZED_MESSAGE}
+  private static enum STATUS_MESSAGE {UKWNONW_PEER, UNKNOWN_HOST, UNDELIVERABLE, DELIVERED, UNCRECOGNIZED_MESSAGE, COULD_NOT_DECRYPT};
 
   private List<iMessageListener> myListeners = new ArrayList< iMessageListener >();
 
@@ -85,7 +87,8 @@ public class MessageProtocol extends Protocol {
     } catch ( ProtocolException e ) {
       return ProtocolContainer.Response.UNKNOWN_PROTOCOL.name();
     } catch ( EncryptionException e ) {
-      return ProtocolContainer.Response.COULD_NOT_DECRYPT.name();
+      LOGGER.error("Could not decrypt message", e);
+      return STATUS_MESSAGE.COULD_NOT_DECRYPT.name();
     }
   }
 
