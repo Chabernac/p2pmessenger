@@ -21,6 +21,7 @@ import chabernac.protocol.ProtocolServer;
 import chabernac.protocol.routing.Peer;
 import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.RoutingTable;
+import chabernac.protocol.routing.UnknownPeerException;
 
 public class FileTransferProtocolTest extends AbstractProtocolTest {
   static{
@@ -28,7 +29,7 @@ public class FileTransferProtocolTest extends AbstractProtocolTest {
     BasicConfigurator.configure();;
   }
   
-  public void testFileTransfer() throws InterruptedException, UnknownHostException, IOException, FileTransferException, ProtocolException{
+  public void testFileTransfer() throws InterruptedException, UnknownHostException, IOException, FileTransferException, ProtocolException, UnknownPeerException{
     
     //p1 <--> p2 <--> p3 peer 1 cannot reach peer 3
     ProtocolContainer theProtocol1 = getProtocolContainer( 1, false, "1");

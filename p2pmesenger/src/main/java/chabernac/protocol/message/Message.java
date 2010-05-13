@@ -5,7 +5,9 @@
 package chabernac.protocol.message;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import chabernac.protocol.routing.Peer;
 
@@ -13,6 +15,7 @@ public class Message {
   private Peer mySource = null;
   private Peer myDestination = null;
   private String myMessage = null;
+  private Map<String, String> myHeaders = null;
   private List<MessageIndicator> myIndicators = null;
   private boolean isProtocolMessage = false;
   
@@ -63,6 +66,28 @@ public class Message {
       return false;
     }
     return myIndicators.contains( anIndicator );
+  }
+  
+  public void addHeader(String aHeader, String aContent){
+    synchronized(this){
+      if(myHeaders == null) myHeaders = new HashMap< String, String >();
+    }
+    myHeaders.put( aHeader, aContent );
+  }
+  
+  public void removeHeader(String aHeader){
+    myHeaders.remove( aHeader );
+  }
+  
+  public String getHeader(String aHeader){
+    return myHeaders.get(aHeader);
+  }
+                          
+  public Map< String, String > getHeaders() {
+    return myHeaders;
+  }
+  public void setHeaders( Map< String, String > anHeaders ) {
+    myHeaders = anHeaders;
   }
   public boolean isProtocolMessage() {
     return isProtocolMessage;

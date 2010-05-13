@@ -12,7 +12,7 @@ import chabernac.protocol.routing.Peer;
 import chabernac.protocol.routing.RoutingTableEntry;
 
 public class RoutingTableEntryTest extends TestCase {
-  public void testRoutingTableEntry() throws FileNotFoundException, SocketException{
+  public void testRoutingTableEntry() throws FileNotFoundException, SocketException, NoAvailableNetworkAdapterException{
     Peer thePeer = new Peer("1", 1000);
     RoutingTableEntry theEntry = new RoutingTableEntry(thePeer, 1, thePeer, System.currentTimeMillis());
     RoutingTableEntry theEntry2 = new RoutingTableEntry(thePeer, 2, thePeer, System.currentTimeMillis());

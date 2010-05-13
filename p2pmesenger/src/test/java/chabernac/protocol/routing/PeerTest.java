@@ -11,7 +11,7 @@ import junit.framework.TestCase;
 import chabernac.protocol.routing.Peer;
 
 public class PeerTest extends TestCase {
-  public void testDetectLocalHost() throws SocketException{
+  public void testDetectLocalHost() throws SocketException, NoAvailableNetworkAdapterException{
     Peer thePeer = new Peer();
     thePeer.detectLocalInterfaces();
     assertTrue( 0 < thePeer.getHosts().size());

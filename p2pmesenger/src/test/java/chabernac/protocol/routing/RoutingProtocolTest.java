@@ -31,7 +31,7 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
     assertEquals( "300", theProperties.getProperty( "routingprotocol.exchangedelay", "10" ));
   }
 
-  public void testRoutingProtocol() throws InterruptedException, ProtocolException{
+  public void testRoutingProtocol() throws InterruptedException, ProtocolException, UnknownPeerException{
 
     for(int i=1;i<10;i++){
       File theFile = new File("RoutingTable_" + i + ".csv");
@@ -96,7 +96,7 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
     }
   }
 
-  public void testReachableSituation1() throws InterruptedException, ProtocolException{
+  public void testReachableSituation1() throws InterruptedException, ProtocolException, UnknownPeerException{
     //p1 <--> p2 <--> p3 peer 1 cannot reach peer 3
     Thread.sleep( 10000 );
 
@@ -400,8 +400,9 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
    * 
    * @throws InterruptedException
    * @throws ProtocolException 
+   * @throws UnknownPeerException 
    */
-  public void testScanRemoteSystem() throws InterruptedException, ProtocolException{
+  public void testScanRemoteSystem() throws InterruptedException, ProtocolException, UnknownPeerException{
     
     ProtocolContainer theProtocol1 = getProtocolContainer( -1, true, "1" );
     ProtocolServer theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT, 5);
@@ -472,7 +473,7 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
     assertEquals( "Reachable", isReachable, anEntry.isReachable());
   }
   
-  public void testChangePropagation() throws ProtocolException, InterruptedException{
+  public void testChangePropagation() throws ProtocolException, InterruptedException, UnknownPeerException{
     ProtocolContainer theProtocol1 = getProtocolContainer( -1, false, "1" );
     ProtocolServer theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT, 5);
 
@@ -515,7 +516,7 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
     }
   }
   
-  public void testUDPAnnouncement() throws InterruptedException, ProtocolException{
+  public void testUDPAnnouncement() throws InterruptedException, ProtocolException, UnknownPeerException{
     ProtocolContainer theProtocol1 = getProtocolContainer( -1, false, "1" );
     ProtocolServer theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT, 5);
 

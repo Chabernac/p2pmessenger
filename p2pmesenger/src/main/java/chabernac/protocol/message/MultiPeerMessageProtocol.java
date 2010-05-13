@@ -98,7 +98,7 @@ public class MultiPeerMessageProtocol extends Protocol{
         theMessage.setDestination( getRoutingTable().getEntryForPeer( theDestination ).getPeer() );
         theMessage.setSource( getRoutingTable().getEntryForPeer(theMultiPeerMessage.getSource()).getPeer() );
         theMessage.setProtocolMessage( true );
-        theMessage.setIndicators( theMultiPeerMessage.getIndicators() );
+        theMessage.setIndicators( new ArrayList< MessageIndicator >(theMultiPeerMessage.getIndicators()) );
         theMessage.setMessage( createMessage( myObjectStringConverter.toString( theMultiPeerMessage ) ) );
         mySendService.execute( new MessageSender(theMessage) );
       }catch(Exception e){

@@ -14,5 +14,7 @@ public class MessageTest extends TestCase {
     assertTrue( theMessage.containsIndicator( MessageIndicator.ENCRYPTED ));
     theMessage.removeMessageIndicator( MessageIndicator.ENCRYPTED );
     assertFalse( theMessage.containsIndicator( MessageIndicator.ENCRYPTED ));
+    theMessage.addMessageIndicator( MessageIndicator.TO_BE_ENCRYPTED );
+    assertTrue( theMessage.containsIndicator( MessageIndicator.TO_BE_ENCRYPTED));
   }
 }
