@@ -8,10 +8,11 @@ import chabernac.protocol.message.Message;
 import chabernac.protocol.routing.Peer;
 import chabernac.protocol.routing.RoutingTable;
 import chabernac.protocol.routing.RoutingTableEntry;
+import chabernac.protocol.routing.UnknownPeerException;
 import junit.framework.TestCase;
 
 public class XMLToolsTest extends TestCase {
-  public void testToXML(){
+  public void testToXML() throws UnknownPeerException{
     RoutingTable theTable = new RoutingTable("1");
 
     Peer thePeer = new Peer("2", "x20d1148", 1002);

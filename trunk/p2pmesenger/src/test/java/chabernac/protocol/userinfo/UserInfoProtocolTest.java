@@ -16,8 +16,10 @@ import chabernac.protocol.AbstractProtocolTest;
 import chabernac.protocol.ProtocolContainer;
 import chabernac.protocol.ProtocolException;
 import chabernac.protocol.ProtocolServer;
+import chabernac.protocol.routing.NoAvailableNetworkAdapterException;
 import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.RoutingTable;
+import chabernac.protocol.routing.UnknownPeerException;
 import chabernac.protocol.userinfo.UserInfo.Status;
 
 public class UserInfoProtocolTest extends AbstractProtocolTest {
@@ -26,7 +28,7 @@ public class UserInfoProtocolTest extends AbstractProtocolTest {
     BasicConfigurator.configure();
   }
   
-  public void testUserInfoProtocol() throws ProtocolException, UserInfoException, InterruptedException, SocketException{
+  public void testUserInfoProtocol() throws ProtocolException, UserInfoException, InterruptedException, SocketException, UnknownPeerException, NoAvailableNetworkAdapterException{
     ProtocolContainer theProtocol1 = getProtocolContainer( -1, false, "1" );
     ProtocolServer theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT, 5);
 

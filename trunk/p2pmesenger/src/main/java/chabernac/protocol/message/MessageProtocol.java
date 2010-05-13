@@ -9,19 +9,17 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
 
 import chabernac.encryption.EncryptionException;
-import chabernac.encryption.iPublicPrivateKeyEncryption;
 import chabernac.protocol.Protocol;
 import chabernac.protocol.ProtocolContainer;
 import chabernac.protocol.ProtocolException;
-import chabernac.protocol.keyexchange.KeyExchangeProtocol;
+import chabernac.protocol.encryption.EncryptionProtocol;
 import chabernac.protocol.routing.Peer;
 import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.RoutingTable;
-import chabernac.protocol.routing.UnkwownPeerException;
+import chabernac.protocol.routing.UnknownPeerException;
 import chabernac.tools.XMLTools;
 
 /**
@@ -78,7 +76,7 @@ public class MessageProtocol extends Protocol {
         Peer theGateway = getRoutingTable().getGatewayForPeer( theDestionation );
         return theGateway.send( createMessage( XMLTools.toXML( aMessage ) ));
       }
-    } catch ( UnkwownPeerException e ) {
+    } catch ( UnknownPeerException e ) {
       return STATUS_MESSAGE.UKWNONW_PEER.name();
     } catch ( UnknownHostException e ) {
       return STATUS_MESSAGE.UNKNOWN_HOST.name();
@@ -92,26 +90,46 @@ public class MessageProtocol extends Protocol {
     }
   }
 
+//  private void checkEnctryption( Message anMessage ) throws EncryptionException {
+//    if(anMessage.containsIndicator( MessageIndicator.ENCRYPTED )){
+//      byte[] theEncryptedData = Base64.decodeBase64( anMessage.getMessage().getBytes() );
+//
+//      try {
+//        KeyExchangeProtocol theKeyExchangeProtocol= ((KeyExchangeProtocol)findProtocolContainer().getProtocol( KeyExchangeProtocol.ID ));
+//
+//        iPublicPrivateKeyEncryption theEncryption = theKeyExchangeProtocol.getEncryption();
+//
+//        String theMessage = new String(theEncryption.decryptMessage( theEncryptedData ));
+//        anMessage.setMessage( theMessage );
+//        anMessage.removeMessageIndicator( MessageIndicator.ENCRYPTED );
+//      } catch ( ProtocolException e ) {
+//        throw new EncryptionException("Could not decrypt message", e);
+//      }
+//
+//    }
+//  }
+
   private void checkEnctryption( Message anMessage ) throws EncryptionException {
     if(anMessage.containsIndicator( MessageIndicator.ENCRYPTED )){
-      byte[] theEncryptedData = Base64.decodeBase64( anMessage.getMessage().getBytes() );
-
-      try {
-        KeyExchangeProtocol theKeyExchangeProtocol= ((KeyExchangeProtocol)findProtocolContainer().getProtocol( KeyExchangeProtocol.ID ));
-
-        iPublicPrivateKeyEncryption theEncryption = theKeyExchangeProtocol.getEncryption();
-
-        String theMessage = new String(theEncryption.decryptMessage( theEncryptedData ));
-        anMessage.setMessage( theMessage );
-        anMessage.removeMessageIndicator( MessageIndicator.ENCRYPTED );
-      } catch ( ProtocolException e ) {
+      try{
+        EncryptionProtocol theEncryptionProtocol = ((EncryptionProtocol)findProtocolContainer().getProtocol( EncryptionProtocol.ID ));
+        theEncryptionProtocol.decrypteMessage( anMessage );
+      }catch(Exception e){
         throw new EncryptionException("Could not decrypt message", e);
       }
-
     }
   }
 
   public String sendMessage(Message aMessage) throws MessageException{
+    if(aMessage.containsIndicator( MessageIndicator.TO_BE_ENCRYPTED)){
+      try{
+        EncryptionProtocol theEncryptionProtocol = ((EncryptionProtocol)findProtocolContainer().getProtocol( EncryptionProtocol.ID ));
+        theEncryptionProtocol.encryptMessage( aMessage );
+      }catch(Exception e){
+        throw new MessageException("Could not send encrypted message", e);
+      }
+    }
+
     String theResult = handleMessage( 0, aMessage );
     if(theResult.startsWith( STATUS_MESSAGE.DELIVERED.name() )){
       return theResult.substring( STATUS_MESSAGE.DELIVERED.name().length() );
@@ -119,30 +137,30 @@ public class MessageProtocol extends Protocol {
     throw new MessageException("Message could not be delivered return code: '" + theResult + "'");
   }
 
-  public String sendEncryptedMessage(Message aMessage) throws MessageException{
-    KeyExchangeProtocol theKeyExchangeProtocol;
-    try {
-      theKeyExchangeProtocol = ((KeyExchangeProtocol)findProtocolContainer().getProtocol( KeyExchangeProtocol.ID ));
-    } catch ( ProtocolException e1 ) {
-      throw new MessageException("Could not send encryped message because keyexchangeprotocol was not found", e1);
-    }
-
-    iPublicPrivateKeyEncryption theEncryption = theKeyExchangeProtocol.getEncryption();
-
-    if(!theKeyExchangeProtocol.assurePublicKeyForPeer( aMessage.getDestination().getPeerId() )){
-      throw new MessageException("Could not encrypt message, public key for peer could not be retrieved");
-    }
-
-    try {
-      byte[] theEncryptedMessage = theEncryption.encryptMessageForUser( aMessage.getDestination().getPeerId(), aMessage.getMessage().getBytes() );
-
-      aMessage.setMessage( new String(Base64.encodeBase64( theEncryptedMessage )) );
-      aMessage.addMessageIndicator( MessageIndicator.ENCRYPTED );
-      return sendMessage( aMessage );
-    } catch ( EncryptionException e ) {
-      throw new MessageException("Could not enctrypt message", e);
-    }
-  }
+//  public String sendEncryptedMessage(Message aMessage) throws MessageException{
+//    KeyExchangeProtocol theKeyExchangeProtocol;
+//    try {
+//      theKeyExchangeProtocol = ((KeyExchangeProtocol)findProtocolContainer().getProtocol( KeyExchangeProtocol.ID ));
+//    } catch ( ProtocolException e1 ) {
+//      throw new MessageException("Could not send encryped message because keyexchangeprotocol was not found", e1);
+//    }
+//
+//    iPublicPrivateKeyEncryption theEncryption = theKeyExchangeProtocol.getEncryption();
+//
+//    if(!theKeyExchangeProtocol.assurePublicKeyForPeer( aMessage.getDestination().getPeerId() )){
+//      throw new MessageException("Could not encrypt message, public key for peer could not be retrieved");
+//    }
+//
+//    try {
+//      byte[] theEncryptedMessage = theEncryption.encryptMessageForUser( aMessage.getDestination().getPeerId(), aMessage.getMessage().getBytes() );
+//
+//      aMessage.setMessage( new String(Base64.encodeBase64( theEncryptedMessage )) );
+//      aMessage.addMessageIndicator( MessageIndicator.ENCRYPTED );
+//      return sendMessage( aMessage );
+//    } catch ( EncryptionException e ) {
+//      throw new MessageException("Could not enctrypt message", e);
+//    }
+//  }
 
   public void addMessageListener(iMessageListener aListener){
     myListeners.add( aListener );

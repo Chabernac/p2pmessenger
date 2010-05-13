@@ -17,9 +17,11 @@ import chabernac.protocol.AbstractProtocolTest;
 import chabernac.protocol.ProtocolContainer;
 import chabernac.protocol.ProtocolException;
 import chabernac.protocol.ProtocolServer;
+import chabernac.protocol.routing.NoAvailableNetworkAdapterException;
 import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.RoutingTable;
 import chabernac.protocol.routing.RoutingTableEntry;
+import chabernac.protocol.routing.UnknownPeerException;
 
 public class MessageProtocolTest extends AbstractProtocolTest {
   private static Logger LOGGER = Logger.getLogger(MessageProtocolTest.class);
@@ -29,7 +31,7 @@ public class MessageProtocolTest extends AbstractProtocolTest {
     BasicConfigurator.configure();
   }
 
-  public void testMessageProtocol() throws ProtocolException, InterruptedException, SocketException, MessageException{
+  public void testMessageProtocol() throws ProtocolException, InterruptedException, SocketException, MessageException, UnknownPeerException, NoAvailableNetworkAdapterException{
     LOGGER.debug("Begin of testMessageProtocol");
     ProtocolContainer theProtocol1 = getProtocolContainer( -1, false, "1" );
     ProtocolServer theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT, 5);
@@ -95,7 +97,7 @@ public class MessageProtocolTest extends AbstractProtocolTest {
     }
   }
   
-  public void testSendEndUserMessage() throws ProtocolException, InterruptedException, MessageException{
+  public void testSendEndUserMessage() throws ProtocolException, InterruptedException, MessageException, UnknownPeerException{
     LOGGER.debug("Begin of testMessageProtocol");
     ProtocolContainer theProtocol1 = getProtocolContainer( -1, false, "1" );
     ProtocolServer theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT, 5);
@@ -139,7 +141,7 @@ public class MessageProtocolTest extends AbstractProtocolTest {
 
   }
   
-  public void testSendEnctryptedMessage() throws ProtocolException, InterruptedException, MessageException{
+  public void testSendEnctryptedMessage() throws ProtocolException, InterruptedException, MessageException, UnknownPeerException{
     LOGGER.debug("Begin of testMessageProtocol");
     ProtocolContainer theProtocol1 = getProtocolContainer( -1, false, "1" );
     ProtocolServer theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT, 5);
@@ -168,11 +170,12 @@ public class MessageProtocolTest extends AbstractProtocolTest {
       theMessageProtocol2.addMessageListener( theListener );
       
       Message theMessage = new Message();
+      theMessage.addMessageIndicator( MessageIndicator.TO_BE_ENCRYPTED );
       theMessage.setDestination( theRoutingTable1.getEntryForPeer( "2" ).getPeer() );
       int times = 10;
       for(int i=0;i<times;i++){
         theMessage.setMessage( "test message " + i );
-        theMessageProtocol1.sendEncryptedMessage( theMessage );
+        theMessageProtocol1.sendMessage( theMessage );
       }
       
       assertEquals( times, theListener.getMessages().size() );

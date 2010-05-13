@@ -64,7 +64,7 @@ public class MultiPeerMessageProtocolTest extends AbstractProtocolTest {
       MultiPeerMessage theMessage = MultiPeerMessage.createMessage( "berichtje")
       .addDestination( "2" )
       .addDestination( "3" )
-      .addMessageIndicator( MessageIndicator.ENCRYPTED );
+      .addMessageIndicator( MessageIndicator.TO_BE_ENCRYPTED );
       
       theMessageProtocol1.sendMessage( theMessage );
       

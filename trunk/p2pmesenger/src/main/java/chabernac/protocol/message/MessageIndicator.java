@@ -5,5 +5,5 @@
 package chabernac.protocol.message;
 
 public enum MessageIndicator {
-  ENCRYPTED;
+  ENCRYPTED, TO_BE_ENCRYPTED;
 }

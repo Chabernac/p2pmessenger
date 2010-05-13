@@ -406,7 +406,7 @@ public class RoutingProtocol extends Protocol {
         //we're not able to send announcment yet because we have not detected our selfs
         return;
       }
-    }catch(SocketException e){
+    }catch(Exception e){
       LOGGER.error("Could not get entry for local peer", e);
     }
 
@@ -532,6 +532,7 @@ public class RoutingProtocol extends Protocol {
       }
     }catch(SocketException e){
       LOGGER.error( "Could not get entry for local peer", e );
+    } catch ( NoAvailableNetworkAdapterException e ) {
     }
   }
 

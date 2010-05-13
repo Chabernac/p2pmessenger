@@ -8,6 +8,8 @@ import java.lang.reflect.Constructor;
 import java.util.Properties;
 
 import chabernac.protocol.echo.EchoProtocol;
+import chabernac.protocol.encryption.EncryptionException;
+import chabernac.protocol.encryption.EncryptionProtocol;
 import chabernac.protocol.filetransfer.FileTransferProtocol;
 import chabernac.protocol.keyexchange.KeyExchangeProtocol;
 import chabernac.protocol.keyexchange.PublicPrivateKeyEnctryptionFactory;
@@ -78,6 +80,14 @@ public class ProtocolFactory implements iProtocolFactory{
     
     if(MultiPeerMessageProtocol.ID.equalsIgnoreCase( aProtocolId )) {
       return new MultiPeerMessageProtocol();
+    }
+    
+    if(EncryptionProtocol.ID.equalsIgnoreCase( aProtocolId )) {
+      try {
+        return new EncryptionProtocol();
+      } catch ( EncryptionException e ) {
+        throw new ProtocolException("Encryption protocol could not be instantiated", e);
+      }
     }
     
     if(UserInfoProtocol.ID.equalsIgnoreCase( aProtocolId )) {

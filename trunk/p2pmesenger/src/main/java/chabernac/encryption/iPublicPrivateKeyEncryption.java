@@ -6,6 +6,8 @@ package chabernac.encryption;
 
 import java.security.PublicKey;
 
+import javax.crypto.SecretKey;
+
 public interface iPublicPrivateKeyEncryption {
   
   /**
@@ -22,6 +24,22 @@ public interface iPublicPrivateKeyEncryption {
    * @return
    */
   public PublicKey getPublicKeyForUser(String aUser);
+  
+  /**
+   * store the secret key for this user
+   * 
+   * @param aUser
+   * @param akey
+   */
+  public void storeSecretKeyForUser(String aUser, SecretKey akey);
+  
+  /**
+   * return the secret key for this user
+   * 
+   * @param aUser
+   * @return
+   */
+  public SecretKey getSecretKeyForUser(String aUser);
   
   /**
    * Encrypt the given message for this user with the public key we have for this user
@@ -43,4 +61,10 @@ public interface iPublicPrivateKeyEncryption {
   public String getUser();
   
   public PublicKey getPublicKey() throws EncryptionException;
+  
+  public SecretKey getSecretKey();
+  
+  public byte[] encryptMessageForUserUsingSecretKey(String aUser, byte[] aMessage) throws EncryptionException;
+  
+  public byte[] decryptMessageUsingSecretKey(byte[] aMessage) throws EncryptionException;
 }

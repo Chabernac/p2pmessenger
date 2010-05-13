@@ -19,13 +19,17 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
+import javax.crypto.SecretKeyFactory;
 
 public class StoredPrivateKeyEncryption implements iPublicPrivateKeyEncryption {
   private File myKeyLocationDirectory = null;
   private KeyPair myKeyPair = null;
+  private SecretKey mySecretKey = null;
   private String myUser = null;
   
   private Map<String, PublicKey > myPublicKeyStore = Collections.synchronizedMap( new HashMap<String, PublicKey >());
+  private Map<String, SecretKey > mySecretKeyStore = Collections.synchronizedMap( new HashMap<String, SecretKey >());
   
   public StoredPrivateKeyEncryption(File aKeyLocationDirectory, String aUser) throws EncryptionException{
     myKeyLocationDirectory = aKeyLocationDirectory;
@@ -140,6 +144,40 @@ public class StoredPrivateKeyEncryption implements iPublicPrivateKeyEncryption {
   @Override
   public String getUser() {
     return myUser;
+  }
+
+  @Override
+  public SecretKey getSecretKeyForUser( String aUser ) {
+    return mySecretKeyStore.get( aUser );
+  }
+
+  @Override
+  public void storeSecretKeyForUser( String aUser, SecretKey aSecretKey ) {
+    mySecretKeyStore.put(aUser, aSecretKey);
+  }
+
+  @Override
+  public byte[] decryptMessageUsingSecretKey( byte[] aMessage ) throws EncryptionException {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public byte[] encryptMessageForUserUsingSecretKey( String aUser, byte[] aMessage ) throws EncryptionException {
+    // TODO Auto-generated method stub
+    return null;
+  }
+  
+  public synchronized void generateSecretKey(){
+    //TODO implement
+  }
+
+  @Override
+  public synchronized SecretKey getSecretKey() {
+    if(mySecretKey == null){
+      
+    }
+    return mySecretKey;
   }
 
 }

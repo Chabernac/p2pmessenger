@@ -33,7 +33,7 @@ public class Peer implements Serializable {
 
   public Peer (){}
   
-  public Peer(String aPeerId, int aPort) throws SocketException{
+  public Peer(String aPeerId, int aPort) throws SocketException, NoAvailableNetworkAdapterException{
     myPeerId = aPeerId;
     myPort = aPort;
     detectLocalInterfaces();
@@ -59,8 +59,11 @@ public class Peer implements Serializable {
     myPeerId = anPeerId;
   }
 
-  public void detectLocalInterfaces() throws SocketException{
+  public void detectLocalInterfaces() throws SocketException, NoAvailableNetworkAdapterException{
     myHost = NetTools.getLocalExposedIpAddresses();
+    if(myHost.size() == 0){
+      throw new NoAvailableNetworkAdapterException("There is no available network adapter on this system");
+    }
   }
 
   public List<String> getHosts() {

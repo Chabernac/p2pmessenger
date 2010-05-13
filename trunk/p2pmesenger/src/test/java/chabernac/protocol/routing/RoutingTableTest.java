@@ -14,7 +14,7 @@ import chabernac.protocol.routing.RoutingTableEntry;
 
 public class RoutingTableTest extends TestCase {
 
-  public void testRoutingTable() throws SocketException{
+  public void testRoutingTable() throws SocketException, NoAvailableNetworkAdapterException{
     RoutingTable theTable = new RoutingTable("1");
 
     Peer thePeer = new Peer("2", "localhost", 1002);
@@ -46,7 +46,7 @@ public class RoutingTableTest extends TestCase {
     assertEquals( 2, theEntries.get(1).getHopDistance());
   }
   
-  public void testRespondingEntry(){
+  public void testRespondingEntry() throws UnknownPeerException{
     RoutingTable theTable = new RoutingTable("1");
 
     Peer thePeer = new Peer("2", "localhost", 1002);
@@ -76,7 +76,7 @@ public class RoutingTableTest extends TestCase {
   }
   
   
-  public void testSameEntryDifferentPort() throws SocketException{
+  public void testSameEntryDifferentPort() throws SocketException, NoAvailableNetworkAdapterException{
     RoutingTable theTable = new RoutingTable("1");
 
     Peer thePeer = new Peer("2", 1002);

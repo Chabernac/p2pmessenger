@@ -8,8 +8,9 @@ import chabernac.protocol.AbstractProtocolTest;
 import chabernac.protocol.ProtocolContainer;
 import chabernac.protocol.ProtocolException;
 import chabernac.protocol.ProtocolServer;
+import chabernac.protocol.routing.NoAvailableNetworkAdapterException;
 import chabernac.protocol.routing.RoutingProtocol;
-import chabernac.protocol.routing.UnkwownPeerException;
+import chabernac.protocol.routing.UnknownPeerException;
 import chabernac.tools.IOTools;
 
 public class PipeProtocolTest extends AbstractProtocolTest {
@@ -19,7 +20,7 @@ public class PipeProtocolTest extends AbstractProtocolTest {
     BasicConfigurator.configure();
   }
   
-  public void testPipeProtocol() throws InterruptedException, IOException, UnkwownPeerException, ProtocolException, PipeException{
+  public void testPipeProtocol() throws InterruptedException, IOException, UnknownPeerException, ProtocolException, PipeException, NoAvailableNetworkAdapterException{
     //p1 <--> p2 <--> p3 peer 1 cannot reach peer 3
 
     ProtocolContainer theProtocol1 = getProtocolContainer( 1, false, "1" );

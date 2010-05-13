@@ -23,7 +23,7 @@ import chabernac.protocol.routing.Peer;
 import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.RoutingTable;
 import chabernac.protocol.routing.RoutingTableEntry;
-import chabernac.protocol.routing.UnkwownPeerException;
+import chabernac.protocol.routing.UnknownPeerException;
 import chabernac.tools.IOTools;
 import chabernac.tools.NetTools;
 
@@ -86,7 +86,7 @@ public class PipeProtocol extends Protocol {
         }
 
         RoutingTableEntry theToPeerEntry = getRoutingTable().getEntryForPeer( theAttributes[1] );
-        
+
         if(!theToPeerEntry.isReachable()){
           return Result.PEER_UNREACHABLE.name(); 
         } else {
@@ -103,6 +103,10 @@ public class PipeProtocol extends Protocol {
         }
       }catch(ProtocolException e){
         return ProtocolContainer.Response.UNKNOWN_PROTOCOL.name();
+      } catch ( UnknownPeerException e ) {
+        LOGGER.error("Received unknwown peer identifier: '" + theAttributes[1] + "'");
+        return Result.UNKNWOWN_PEER.name();
+
       }
     }
     return Result.UNKNOWN_COMMAND.name();
@@ -146,7 +150,7 @@ public class PipeProtocol extends Protocol {
     }
   }
 
-  private Socket openSocketToPeer(Peer aFromPeer, Peer aToPeer, String aPipeDescription) throws IOException, UnkwownPeerException, ProtocolException{
+  private Socket openSocketToPeer(Peer aFromPeer, Peer aToPeer, String aPipeDescription) throws IOException, UnknownPeerException, ProtocolException{
     Peer theGateway = getRoutingTable().getGatewayForPeer(aToPeer);
     String theResult = theGateway.send( createMessage( Command.OPEN_SOCKET + ";" + aFromPeer.getPeerId()  + ";" + aToPeer.getPeerId() + ";" +  aPipeDescription) );
 
