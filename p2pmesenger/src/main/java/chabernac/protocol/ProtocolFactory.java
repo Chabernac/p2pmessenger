@@ -4,16 +4,12 @@
  */
 package chabernac.protocol;
 
-import java.lang.reflect.Constructor;
 import java.util.Properties;
 
 import chabernac.protocol.echo.EchoProtocol;
 import chabernac.protocol.encryption.EncryptionException;
 import chabernac.protocol.encryption.EncryptionProtocol;
 import chabernac.protocol.filetransfer.FileTransferProtocol;
-import chabernac.protocol.keyexchange.KeyExchangeProtocol;
-import chabernac.protocol.keyexchange.PublicPrivateKeyEnctryptionFactory;
-import chabernac.protocol.keyexchange.iPublicPrivateKeyEncryptionFactory;
 import chabernac.protocol.list.ListProtocol;
 import chabernac.protocol.message.MessageProtocol;
 import chabernac.protocol.message.MultiPeerMessageProtocol;
@@ -51,19 +47,6 @@ public class ProtocolFactory implements iProtocolFactory{
     
     if(FileTransferProtocol.ID.equalsIgnoreCase( aProtocolId )) {
       return new FileTransferProtocol();
-    }
-    
-    if(KeyExchangeProtocol.ID.equalsIgnoreCase( aProtocolId )) {
-      try{
-        Class<iPublicPrivateKeyEncryptionFactory> thePublicPrivateKeyEnctryptionFactory = (Class<iPublicPrivateKeyEncryptionFactory>)Class.forName( myProtocolProperties.getProperty( "publicprivatekey.factory", PublicPrivateKeyEnctryptionFactory.class.getName()));
-        
-        Constructor<iPublicPrivateKeyEncryptionFactory> theConstructor = (Constructor< iPublicPrivateKeyEncryptionFactory >)thePublicPrivateKeyEnctryptionFactory.getConstructor( Properties.class );
-        
-        iPublicPrivateKeyEncryptionFactory theFactory = theConstructor.newInstance(new Object[]{myProtocolProperties});
-        return new KeyExchangeProtocol(theFactory.createEncryption());
-      }catch(Exception e){
-        throw new ProtocolException("KeyExchangeProtocol could not be instantiated", e);
-      }
     }
     
     if(MessageProtocol.ID.equalsIgnoreCase( aProtocolId )) {
