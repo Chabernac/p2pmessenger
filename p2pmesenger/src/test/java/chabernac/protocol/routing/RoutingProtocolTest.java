@@ -59,7 +59,7 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
       RoutingTable theRoutingTable2 = theRoutingProtocol2.getRoutingTable();
       
 
-      long theFirstSleepTime = 2000;
+      long theFirstSleepTime = 5000;
       Thread.sleep( theFirstSleepTime );
 
       assertEquals( 2, theRoutingTable1.getEntries().size());

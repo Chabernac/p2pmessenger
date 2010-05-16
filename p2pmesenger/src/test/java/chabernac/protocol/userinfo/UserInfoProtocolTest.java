@@ -95,7 +95,7 @@ public class UserInfoProtocolTest extends AbstractProtocolTest {
       Thread.sleep( 500 );
       assertEquals( "Chabernac", theUserInfoProtocol.getUserInfo().get( "2" ).getName() );
       
-      Thread.sleep( 1000 );
+      Thread.sleep( 2000 );
       
       assertEquals( 4, theListener.getChangedUserInfo().size() );
       

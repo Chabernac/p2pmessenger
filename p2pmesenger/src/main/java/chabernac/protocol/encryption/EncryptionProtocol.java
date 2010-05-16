@@ -87,10 +87,6 @@ public class EncryptionProtocol extends Protocol {
     return Response.INVALID_COMMAND.name();
   }
 
-  private SecretKey getSecretKeyForSession(String aSession){
-    return myGeneratedKeysForSession.get( aSession );
-  }
-
   private SecretKey getSecretKeyForPeer(Peer aPeer, String aSession) throws EncryptionException{
     try{
       Message theMessage = new Message();
@@ -166,7 +162,8 @@ public class EncryptionProtocol extends Protocol {
   
   public void decrypteMessage(Message aMessage) throws EncryptionException{
     String theSession = aMessage.getHeader( "session" );
-    SecretKey theSecretKey = getSecretKeyForSession( theSession );
+    //the session can only be used once, so we remove it emmediately
+    SecretKey theSecretKey = myGeneratedKeysForSession.remove( theSession );
     byte[] theBytes = decryptUsingSecretKey( theSecretKey, Base64.decodeBase64( aMessage.getMessage().getBytes() ));
     aMessage.setMessage( new String(theBytes) );
     aMessage.removeHeader( "session" );
