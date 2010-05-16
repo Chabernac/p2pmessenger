@@ -10,7 +10,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Serializable;
-import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
@@ -24,15 +23,16 @@ import chabernac.tools.NetTools;
 
 public class Peer implements Serializable {
   private static Logger LOGGER = Logger.getLogger(Peer.class);
-  
+
   private static final long serialVersionUID = 7852961137229337616L;
   private String myPeerId;
   private List<String> myHost = null;
   private int myPort;
   private String myProtocolsString = null;
+  private transient Socket mySocket = null;
 
   public Peer (){}
-  
+
   public Peer(String aPeerId, int aPort) throws SocketException, NoAvailableNetworkAdapterException{
     myPeerId = aPeerId;
     myPort = aPort;
@@ -44,7 +44,7 @@ public class Peer implements Serializable {
     myHost = aHosts;
     myPort = aPort;
   }
-  
+
   public Peer(String aPeerId, String aHost, int aPort){
     myPeerId = aPeerId;
     if(myHost == null){
@@ -114,51 +114,35 @@ public class Peer implements Serializable {
    * @throws IOException 
    * @throws UnknownHostException 
    */
-  public String send(String aMessage) throws UnknownHostException, IOException{
-    boolean send = false;
-    for(Iterator< String > i = myHost.iterator(); i.hasNext() && !send;){
-      String theHost = i.next();
-      Socket theSocket = new Socket();
-      InetSocketAddress theAddress = new InetSocketAddress(theHost, myPort);
-      
-      if(theAddress.isUnresolved()) {
-        LOGGER.error("The host '" + theHost + "' can not be resolved");
-        throw new UnknownHostException("The host '" + theHost + "' can not be resolved");
-      }
-      
-      theSocket.connect( theAddress, 4000 );
-      PrintWriter theWriter = null;
-      BufferedReader theReader = null;
-      try{
-        theWriter = new PrintWriter(new OutputStreamWriter(theSocket.getOutputStream()));
-        theReader = new BufferedReader(new InputStreamReader(theSocket.getInputStream()));
-        theWriter.println(aMessage);
-        theWriter.flush();
-        String theReturnMessage = theReader.readLine();
-        
-        send = true;
-        //set this host at the top of the list if it is not already.  This is
-        //to avoid a sending delay next time send() is called
-        if(myHost.indexOf( theHost ) != 0){
-          myHost.remove( theHost );
-          myHost.add( 0, theHost );
-        }
-        return theReturnMessage;
-      }finally{
-        if(theSocket != null){
-          theSocket.close();
-        }
-        if(theWriter != null){
-          theWriter.close();
-        }
-        if(theReader != null){
-          theReader.close();
-        }
-      }
+  public synchronized String send(String aMessage) throws UnknownHostException, IOException{
+    if(mySocket == null){
+      mySocket = createSocket( myPort );
     }
-    throw new UnknownHostException("No hosts for this peer");
+
+    if(mySocket == null){
+      throw new UnknownHostException("No hosts for this peer");
+    }
+    
+    BufferedReader theReader = null;
+    PrintWriter theWriter = null;
+    try{
+      theWriter = new PrintWriter(new OutputStreamWriter(mySocket.getOutputStream()));
+      theReader = new BufferedReader(new InputStreamReader(mySocket.getInputStream()));
+      theWriter.println(aMessage);
+      theWriter.flush();
+      String theReturnMessage = theReader.readLine();
+
+      return theReturnMessage;
+    }finally{
+//      if(theWriter != null){
+//        theWriter.close();
+//      }
+//      if(theReader != null){
+//        theReader.close();
+//      }
+    }
   }
-  
+
   public Socket createSocket(int aPort){
     for(Iterator< String > i = myHost.iterator(); i.hasNext();){
       try{

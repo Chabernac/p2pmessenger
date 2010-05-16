@@ -77,12 +77,16 @@ public class MessageProtocol extends Protocol {
         return theGateway.send( createMessage( XMLTools.toXML( aMessage ) ));
       }
     } catch ( UnknownPeerException e ) {
+      LOGGER.error( "Unknown peer", e );
       return STATUS_MESSAGE.UKWNONW_PEER.name();
     } catch ( UnknownHostException e ) {
+      LOGGER.error( "Unknown host", e );
       return STATUS_MESSAGE.UNKNOWN_HOST.name();
     } catch ( IOException e ) { 
+      LOGGER.error( "Message could not be deliverd", e );
       return STATUS_MESSAGE.UNDELIVERABLE.name();
     } catch ( ProtocolException e ) {
+      LOGGER.error( "Protocol excepotin", e );
       return ProtocolContainer.Response.UNKNOWN_PROTOCOL.name();
     } catch ( EncryptionException e ) {
       LOGGER.error("Could not decrypt message", e);
