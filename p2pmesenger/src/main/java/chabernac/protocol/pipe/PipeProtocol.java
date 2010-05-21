@@ -135,7 +135,7 @@ public class PipeProtocol extends Protocol {
 
   public void openPipe(Pipe aPipe) throws PipeException{
     try {
-      aPipe.setSocket( openSocketToPeer( getRoutingTable().obtainLocalPeer(), aPipe.getPeer(), aPipe.getPipeDescription() ) );
+      aPipe.setSocket( openSocketToPeer( getRoutingTable().getEntryForLocalPeer().getPeer(), aPipe.getPeer(), aPipe.getPipeDescription() ) );
     } catch ( Exception e ) {
       throw new PipeException("Could not open pipe", e);
     }

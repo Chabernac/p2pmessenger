@@ -13,6 +13,7 @@ import java.io.PrintWriter;
 import java.net.UnknownHostException;
 
 import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Logger;
 
 import chabernac.protocol.AbstractProtocolTest;
 import chabernac.protocol.ProtocolContainer;
@@ -24,31 +25,36 @@ import chabernac.protocol.routing.RoutingTable;
 import chabernac.protocol.routing.UnknownPeerException;
 
 public class FileTransferProtocolTest extends AbstractProtocolTest {
+  private static Logger LOGGER = Logger.getLogger(FileTransferProtocolTest.class);
+  
   static{
     BasicConfigurator.resetConfiguration();
     BasicConfigurator.configure();;
   }
-  
+
   public void testFileTransfer() throws InterruptedException, UnknownHostException, IOException, FileTransferException, ProtocolException, UnknownPeerException{
-    
+
     //p1 <--> p2 <--> p3 peer 1 cannot reach peer 3
     ProtocolContainer theProtocol1 = getProtocolContainer( 1, false, "1");
     ProtocolServer theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT, 5);
+    RoutingProtocol theRoutingProtocol1 = (RoutingProtocol)theProtocol1.getProtocol( RoutingProtocol.ID );
 
     ProtocolContainer theProtocol2 = getProtocolContainer( 1, false, "2");
     ProtocolServer theServer2 = new ProtocolServer(theProtocol2, RoutingProtocol.START_PORT + 1, 5);
+    RoutingProtocol theRoutingProtocol2 = (RoutingProtocol)theProtocol2.getProtocol( RoutingProtocol.ID );
 
     ProtocolContainer theProtocol3 = getProtocolContainer( 1, false, "3");
     File theFileToWrite = new File("in.temp");
     TestFileHandler theFileHandler = new TestFileHandler(theFileToWrite);
     ProtocolServer theServer3 = new ProtocolServer(theProtocol3, RoutingProtocol.START_PORT + 2, 5);
     ((FileTransferProtocol)theProtocol3.getProtocol( FileTransferProtocol.ID )).setFileHandler( theFileHandler );
+    RoutingProtocol theRoutingProtocol3 = (RoutingProtocol)theProtocol3.getProtocol( RoutingProtocol.ID );
 
     ((RoutingProtocol)theProtocol1.getProtocol( RoutingProtocol.ID )).getLocalUnreachablePeerIds().add( "3" );
     ((RoutingProtocol)theProtocol3.getProtocol( RoutingProtocol.ID )).getLocalUnreachablePeerIds().add( "1" );
-    
+
     File theTempFile = createTempFile();
-    
+
     assertNotNull( theTempFile );
     assertTrue( theTempFile.length() > 0 );
 
@@ -56,28 +62,43 @@ public class FileTransferProtocolTest extends AbstractProtocolTest {
       assertTrue( theServer1.start() );
       assertTrue( theServer2.start() );
       assertTrue( theServer3.start() );
-
-      Thread.sleep( 5000 );
       
+//      theRoutingProtocol1.scanLocalSystem();
+//      theRoutingProtocol2.scanLocalSystem();
+//      theRoutingProtocol3.scanLocalSystem();
+//      
+//      for(int i=0;i<5;i++){
+//        theRoutingProtocol1.exchangeRoutingTable();
+//        theRoutingProtocol2.exchangeRoutingTable();
+//        theRoutingProtocol3.exchangeRoutingTable();
+//      }
+
+      
+      LOGGER.debug( "Sleeping" );
+      Thread.sleep( 10000 );
+      LOGGER.debug( "Done Sleeping" );
+
       RoutingTable theRoutingTable1 = ((RoutingProtocol)theProtocol1.getProtocol( RoutingProtocol.ID )).getRoutingTable();
       RoutingTable theRoutingTable3 = ((RoutingProtocol)theProtocol3.getProtocol( RoutingProtocol.ID )).getRoutingTable();
-      
+
       FileTransferProtocol theFileTransferProtocol = (FileTransferProtocol)theProtocol1.getProtocol( FileTransferProtocol.ID );
       Peer thePeer3 = theRoutingTable1.getEntryForPeer( theRoutingTable3.getLocalPeerId() ).getPeer();
       assertNotNull( thePeer3 );
+      LOGGER.debug( "Sending file" );
       theFileTransferProtocol.sendFile( theTempFile, thePeer3 );
-      
+      LOGGER.debug( "Done Sending file" );
+
 //      Thread.sleep( 10000 );
-      
+
       assertTrue( theFileToWrite.exists() );
       assertEquals( theTempFile.length(), theFileToWrite.length());
-      
+
       assertEquals( theTempFile.getName(), theFileHandler.getAcceptedFile());
       assertEquals( theTempFile.length(), theFileHandler.getTotalBytes());
       assertEquals( theTempFile.length(), theFileHandler.getTotalBytes());
       assertNull(  theFileHandler.getInterruptedFile() );
       assertEquals( theFileToWrite, theFileHandler.getSavedFile());
-      
+
     } finally {
       theServer1.stop();
       theServer2.stop();
@@ -91,7 +112,7 @@ public class FileTransferProtocolTest extends AbstractProtocolTest {
     }
 
   }
-  
+
   private File createTempFile() throws FileNotFoundException{
     File theFile = new File("test.temp");
     PrintWriter theWriter = null;
@@ -103,17 +124,17 @@ public class FileTransferProtocolTest extends AbstractProtocolTest {
     theWriter.close();
     return theFile;
   }
-  
+
   private class TestFileHandler implements iFileHandler{
     private File myFileToWrite = null;
     private File mySavedFile = null;
-    
+
     private String myAcceptedFile = null;
     private long myTranferredBytes = 0;
     private long myTotalBytes = 0;
-    
+
     private File myInterruptedFile = null;
-    
+
     public TestFileHandler(File aFileToWrite){
       myFileToWrite = aFileToWrite;
     }
@@ -131,8 +152,8 @@ public class FileTransferProtocolTest extends AbstractProtocolTest {
 
     @Override
     public void fileTransfer( File anAfile, long aBytesReceived, long aTotalBytes ) {
-     myTranferredBytes = aBytesReceived;
-     myTotalBytes = aTotalBytes;
+      myTranferredBytes = aBytesReceived;
+      myTotalBytes = aTotalBytes;
     }
 
     @Override
@@ -160,5 +181,5 @@ public class FileTransferProtocolTest extends AbstractProtocolTest {
       return myInterruptedFile;
     }
   }
-  
+
 }

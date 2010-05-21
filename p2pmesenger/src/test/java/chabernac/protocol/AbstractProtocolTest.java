@@ -6,9 +6,15 @@ package chabernac.protocol;
 
 import java.util.Properties;
 
+import chabernac.protocol.routing.PeerSocketFactory;
+
 import junit.framework.TestCase;
 
 public abstract class AbstractProtocolTest extends TestCase {
+  public void setUp(){
+    PeerSocketFactory.getInstance().clear();
+  }
+  
   public ProtocolContainer getProtocolContainer(long anExchangeDelay, boolean isPersist, String aPeerId){
     Properties theProperties = new Properties();
     theProperties.setProperty( "routingprotocol.exchangedelay", Long.toString( anExchangeDelay));

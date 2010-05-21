@@ -222,7 +222,7 @@ public class MessageProtocolTest extends AbstractProtocolTest {
 
       ExecutorService theservice = Executors.newFixedThreadPool( 10 );
 
-      int times = 10000;
+      int times = 3000;
       final CountDownLatch theLatch = new CountDownLatch(times);
 
       for(int i=0;i<times;i++){

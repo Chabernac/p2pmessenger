@@ -9,7 +9,9 @@ public abstract class Protocol implements IProtocol{
   protected IProtocol myParentProtocol = null;
   
   protected String myId;
+  private ServerInfo myServerInfo;
   
+
   public Protocol(String anId){
     if(anId.length() != 3) throw new IllegalArgumentException("Protocol identifier must be 3 bytes long");
     myId = anId;
@@ -49,4 +51,13 @@ public abstract class Protocol implements IProtocol{
     }
     return null;
   }
+  
+  public ServerInfo getServerInfo() {
+    return myServerInfo;
+  }
+
+  public void setServerInfo( ServerInfo anServerInfo ) {
+    myServerInfo = anServerInfo;
+  }
+
 }

@@ -31,6 +31,7 @@ import org.apache.log4j.Logger;
 
 import chabernac.io.iObjectPersister;
 import chabernac.protocol.Protocol;
+import chabernac.protocol.ServerInfo;
 import chabernac.tools.IOTools;
 import chabernac.tools.NetTools;
 import chabernac.tools.XMLTools;
@@ -88,6 +89,8 @@ public class RoutingProtocol extends Protocol {
   private IRoutingProtocolMonitor myRoutingProtocolMonitor = null;
 
   private boolean isPeerIdInFile = false;
+
+  private ServerInfo myServerInfo = null;
 
   public RoutingProtocol ( long anExchangeDelay, boolean isPersistRoutingTable) {
     this(null, anExchangeDelay, isPersistRoutingTable);
@@ -220,7 +223,6 @@ public class RoutingProtocol extends Protocol {
         RoutingTableEntry theEntry = new RoutingTableEntry(aPeer, 1, aPeer, Long.parseLong( theIdTime[1] ));
 
         LOGGER.debug("Detected system on '" + aPeer.getHosts() + "' port '" + aPeer.getPort() + "'");
-
         //only if we have detected our self we set the hop distance to 0
         if(theIdTime[0].equals(myRoutingTable.getLocalPeerId())){
           theEntry = theEntry.derivedEntry( 0 );
@@ -283,7 +285,7 @@ public class RoutingProtocol extends Protocol {
         boolean isContacted = false;
         for(int i=START_PORT;i<=END_PORT && !isContacted;i++){
           try{
-            if(!isExcludeLocal || i!=myRoutingTable.obtainLocalPeer().getPort()){
+            if(!isExcludeLocal || i!=myRoutingTable.getEntryForLocalPeer().getPeer().getPort()){
               LOGGER.debug("Scanning the following host: '" + theHost + "' on port '" + i + "'");
               isContacted = contactPeer( new Peer("", theHost, i), myUnreachablePeers );
             }
@@ -373,7 +375,7 @@ public class RoutingProtocol extends Protocol {
             //theEntry.setHopDistance( 1 );
             RoutingTableEntry theEntryOfRemotePeer = myRoutingTable.getEntryForPeer( theRemoteTable.getLocalPeerId() );
 
-            
+
 //          //TODO remove
 //          if(myLocalPeerId.equals( theEntryOfRemotePeer.getPeer().getPeerId() )){
 //            //we should never get here
@@ -395,7 +397,7 @@ public class RoutingProtocol extends Protocol {
     }
     myExchangeCounter.incrementAndGet();
     LOGGER.debug("End exchanging routing table for peer: " + myRoutingTable.getLocalPeerId());
-
+    
     //save the routing table
     if(isPersistRoutingTable) saveRoutingTable();
   }
@@ -422,6 +424,7 @@ public class RoutingProtocol extends Protocol {
           //do not send announcement to peers we cannot reach in test mode
           !myUnreachablePeers.contains(thePeer.getPeerId())){
         try {
+          LOGGER.debug("Sending announcement of peer '" + anEntry.getPeer().getPeerId() +  "' from peer '" + myLocalPeerId +  "' to peer '" + thePeer.getPeerId() + "' on '" + thePeer.getHosts()  + ": "  +  thePeer.getPort() + "'");
           String theResult = thePeer.send( createMessage( Command.ANNOUNCEMENT.name() + " "  + XMLTools.toXML(myRoutingTable.getEntryForLocalPeer()) + ";" + XMLTools.toXML( anEntry ))) ;
           if(!Response.OK.name().equals( theResult )){
             throw new Exception("Unexpected result code '" + theResult + "'");
@@ -530,9 +533,7 @@ public class RoutingProtocol extends Protocol {
         theSelfRoutingTableEntry = theSelfRoutingTableEntry.derivedEntry( RoutingTableEntry.MAX_HOP_DISTANCE );
         sendAnnoucement( theSelfRoutingTableEntry );
       }
-    }catch(SocketException e){
-      LOGGER.error( "Could not get entry for local peer", e );
-    } catch ( NoAvailableNetworkAdapterException e ) {
+    } catch ( UnknownPeerException e ) {
     }
   }
 
@@ -637,6 +638,19 @@ public class RoutingProtocol extends Protocol {
     @Override
     public void run() {
       scanSuperNodes();
+    }
+  }
+
+  @Override
+  public void setServerInfo( ServerInfo aServerInfo ) {
+    //add the local peer
+    try{
+      Peer theLocalPeer = new Peer(myLocalPeerId, aServerInfo.getServerPort());
+      RoutingTableEntry theLocalRoutingTableEntry = new RoutingTableEntry(theLocalPeer, 0, theLocalPeer, System.currentTimeMillis());
+      myRoutingTable.addRoutingTableEntry( theLocalRoutingTableEntry );
+    }catch(NoAvailableNetworkAdapterException e){
+      //TODO we should do something when the network adapter becomes available again
+      LOGGER.error( "The local network adapter could not be located", e );
     }
   }
 }
