@@ -10,6 +10,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Serializable;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
@@ -29,11 +30,10 @@ public class Peer implements Serializable {
   private List<String> myHost = null;
   private int myPort;
   private String myProtocolsString = null;
-  private transient Socket mySocket = null;
 
   public Peer (){}
 
-  public Peer(String aPeerId, int aPort) throws SocketException, NoAvailableNetworkAdapterException{
+  public Peer(String aPeerId, int aPort) throws NoAvailableNetworkAdapterException{
     myPeerId = aPeerId;
     myPort = aPort;
     detectLocalInterfaces();
@@ -59,8 +59,12 @@ public class Peer implements Serializable {
     myPeerId = anPeerId;
   }
 
-  public void detectLocalInterfaces() throws SocketException, NoAvailableNetworkAdapterException{
-    myHost = NetTools.getLocalExposedIpAddresses();
+  public void detectLocalInterfaces() throws NoAvailableNetworkAdapterException{
+    try {
+      myHost = NetTools.getLocalExposedIpAddresses();
+    } catch ( SocketException e ) {
+      throw new NoAvailableNetworkAdapterException("Could not detect local network adapter", e);
+    }
     if(myHost.size() == 0){
       throw new NoAvailableNetworkAdapterException("There is no available network adapter on this system");
     }
@@ -115,19 +119,13 @@ public class Peer implements Serializable {
    * @throws UnknownHostException 
    */
   public synchronized String send(String aMessage) throws UnknownHostException, IOException{
-    if(mySocket == null){
-      mySocket = createSocket( myPort );
-    }
+    Socket theSocket = PeerSocketFactory.getInstance().getSocketForPeer( this );
 
-    if(mySocket == null){
-      throw new UnknownHostException("No hosts for this peer");
-    }
-    
     BufferedReader theReader = null;
     PrintWriter theWriter = null;
     try{
-      theWriter = new PrintWriter(new OutputStreamWriter(mySocket.getOutputStream()));
-      theReader = new BufferedReader(new InputStreamReader(mySocket.getInputStream()));
+      theWriter = new PrintWriter(new OutputStreamWriter(theSocket.getOutputStream()));
+      theReader = new BufferedReader(new InputStreamReader(theSocket.getInputStream()));
       theWriter.println(aMessage);
       theWriter.flush();
       String theReturnMessage = theReader.readLine();
@@ -144,11 +142,21 @@ public class Peer implements Serializable {
   }
 
   public Socket createSocket(int aPort){
-    for(Iterator< String > i = myHost.iterator(); i.hasNext();){
+    for(Iterator< String > i = new ArrayList<String>(myHost).iterator(); i.hasNext();){
+      String theHost = i.next();
       try{
-        Socket theSocket = new Socket(i.next(), aPort);
+        Socket theSocket = new Socket();
+//        theSocket.setReuseAddress( true );
+        theSocket.setSoTimeout( 8000 );
+        theSocket.connect( new InetSocketAddress(theHost, aPort) );
+        //if we succeed in connecting to this host at this address then pust the host name at the top
+        //so that the next socket creation will go faster
+        myHost.remove( theHost );
+        myHost.add( 0, theHost);
         return theSocket;
-      }catch(Exception e){}
+      }catch(Exception e){
+//        LOGGER.error( "Error occured while connecting to '" + theHost + "':'" + aPort + "'",e );
+      }
     }
     return null;
   }

@@ -5,16 +5,12 @@
 package chabernac.protocol.routing;
 
 import java.net.SocketException;
-import java.util.List;
 
 import junit.framework.TestCase;
-import chabernac.protocol.routing.Peer;
-import chabernac.protocol.routing.RoutingTable;
-import chabernac.protocol.routing.RoutingTableEntry;
 
 public class RoutingTableTest extends TestCase {
 
-  public void testRoutingTable() throws SocketException, NoAvailableNetworkAdapterException{
+  public void testRoutingTable() throws SocketException, NoAvailableNetworkAdapterException, UnknownPeerException{
     RoutingTable theTable = new RoutingTable("1");
 
     Peer thePeer = new Peer("2", "localhost", 1002);
@@ -30,20 +26,21 @@ public class RoutingTableTest extends TestCase {
 
     RoutingTable theTable2 = new RoutingTable("3");
     Peer thePeer4 = new Peer("4", "x20d1148", 1004);
-    RoutingTableEntry theEntry3 = new RoutingTableEntry(thePeer4, 1, thePeer4, System.currentTimeMillis());
+    RoutingTableEntry theEntry4 = new RoutingTableEntry(thePeer4, 1, thePeer4, System.currentTimeMillis());
+    theTable2.addRoutingTableEntry( theEntry4 );
+    Peer thePeer3 = new Peer("3", "x20d1148", 1003);
+    RoutingTableEntry theEntry3 = new RoutingTableEntry(thePeer3, 0, thePeer3, System.currentTimeMillis());
     theTable2.addRoutingTableEntry( theEntry3 );
 
     theTable.merge( theTable2 );
 
 
-    assertEquals( 2,  theTable.getEntries().size());
+    assertEquals( 3,  theTable.getEntries().size());
 
-    List< RoutingTableEntry > theEntries = theTable.getEntries();
-
-    assertEquals( thePeer, theEntries.get(0).getGateway()); 
-    assertEquals( 1, theEntries.get(0).getHopDistance());
-    assertEquals( "3", theEntries.get(1).getGateway().getPeerId());
-    assertEquals( 2, theEntries.get(1).getHopDistance());
+    assertEquals( thePeer, theTable.getEntryForPeer( "2" ).getPeer()); 
+    assertEquals( 1, theTable.getEntryForPeer( "2" ).getHopDistance());
+    assertEquals( "3", theTable.getEntryForPeer( "4" ).getGateway().getPeerId());
+    assertEquals( 2, theTable.getEntryForPeer( "4" ).getHopDistance());
   }
   
   public void testRespondingEntry() throws UnknownPeerException{

@@ -39,8 +39,12 @@ public class RoutingTable implements Iterable< RoutingTableEntry >{
     //TODO remove
     if(anEntry.getPeer().getPeerId().equalsIgnoreCase( getLocalPeerId() ) && anEntry.getGateway().getPeerId().equals( anEntry.getPeer().getPeerId() ) && anEntry.getHopDistance() > 0 && anEntry.getHopDistance() != RoutingTableEntry.MAX_HOP_DISTANCE){
       //this is an invalid condition
-      LOGGER.error( myLocalPeerId + " :Received peer entry of our selfs with hop distance > 0" + anEntry, new Exception("Received peer entry for ourselfs") );
+//      LOGGER.error( myLocalPeerId + " :Received peer entry of our selfs with hop distance > 0" + anEntry, new Exception("Received peer entry for ourselfs") );
       return;
+    }
+    
+    if(anEntry.getPeer().getPort() == 0){
+      throw new IllegalArgumentException("Can not add an routing table entry with a peer that has port 0");
     }
     
     if(myRoutingTable.containsKey( anEntry.getPeer().getPeerId() )){
@@ -77,6 +81,9 @@ public class RoutingTable implements Iterable< RoutingTableEntry >{
       notifyListenersOfRoutingTableEntryChange( anEntry );
       LOGGER.debug( "Added a new routing table entry to routing table for peer: " + myLocalPeerId + " : "  + anEntry);
     }
+    synchronized(this){
+      notifyAll();
+    }
   }
   
   private void notifyListenersOfRoutingTableEntryChange(RoutingTableEntry anEntry){
@@ -91,15 +98,6 @@ public class RoutingTable implements Iterable< RoutingTableEntry >{
     return myRoutingTable.get( aPeer.getPeerId() ).getGateway();
   }
 
-  public synchronized Peer obtainLocalPeer() throws SocketException, NoAvailableNetworkAdapterException {
-    if(!myRoutingTable.containsKey( myLocalPeerId )){
-      Peer theLocalPeer = new Peer( myLocalPeerId );
-      theLocalPeer.detectLocalInterfaces();
-      myRoutingTable.put( myLocalPeerId, new RoutingTableEntry( theLocalPeer, 1, theLocalPeer, System.currentTimeMillis() ) );
-    }
-    return myRoutingTable.get( myLocalPeerId ).getPeer();
-  }
-
   public String getLocalPeerId() {
     return myLocalPeerId;
   }
@@ -112,10 +110,10 @@ public class RoutingTable implements Iterable< RoutingTableEntry >{
     return Collections.unmodifiableCollection(  myRoutingTable.values() ).iterator();
   }
 
-  public synchronized void merge(RoutingTable anotherRoutingTable) throws SocketException, NoAvailableNetworkAdapterException{
+  public synchronized void merge(RoutingTable anotherRoutingTable) throws SocketException, NoAvailableNetworkAdapterException, UnknownPeerException{
     for(Iterator< RoutingTableEntry > i = anotherRoutingTable.iterator(); i.hasNext();){
       RoutingTableEntry theEntry = i.next();
-      addRoutingTableEntry(theEntry.entryForNextPeer( anotherRoutingTable.obtainLocalPeer() ) );
+      addRoutingTableEntry(theEntry.entryForNextPeer( anotherRoutingTable.getEntryForLocalPeer().getPeer() ) );
     }
   }
 
@@ -154,9 +152,9 @@ public class RoutingTable implements Iterable< RoutingTableEntry >{
     return myRoutingTable.get( aPeerId );
   }
 
-  public synchronized RoutingTableEntry getEntryForLocalPeer( ) throws SocketException, NoAvailableNetworkAdapterException {
+  public synchronized RoutingTableEntry getEntryForLocalPeer( ) throws UnknownPeerException {
     if(!myRoutingTable.containsKey( getLocalPeerId() )){
-      obtainLocalPeer();
+      throw new UnknownPeerException("The local entry is not known");
     }
     return myRoutingTable.get( getLocalPeerId() );
   }

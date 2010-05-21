@@ -31,6 +31,7 @@ public class ProtocolServer implements Runnable{
   private boolean isStarted = false;
   private ServerSocket myServerSocket = null;
   private boolean isFindUnusedPort = false;
+  private ServerInfo myServerInfo = new ServerInfo();
 
   private Object LOCK = new Object();
   
@@ -90,9 +91,14 @@ public class ProtocolServer implements Runnable{
         isStarted = true;
         LOCK.notify();
       }
+      
+      myServerInfo.setServerPort( myServerSocket.getLocalPort() );
+      myProtocol.setServerInfo( myServerInfo );
 
       ExecutorService theClientHandlerService = Executors.newFixedThreadPool( myNumberOfThreads );
 
+      LOGGER.debug( "Starting protocol server at port '" + myPort + "'" );
+      
       while(true){ 
         Socket theClientSocket = myServerSocket.accept();
         theClientHandlerService.execute( new ClientSocketHandler(theClientSocket) );
@@ -134,8 +140,10 @@ public class ProtocolServer implements Runnable{
         
         String theLine = null;
         while( (theLine = theReader.readLine()) != null){
+//          LOGGER.debug("Line received: '" + theLine + "'");
           String  theResult = myProtocol.handleCommand( theSessionId, theLine );
-          theWriter.println( new String(theResult) );
+//          LOGGER.debug("Sending result: '" + theResult + "'");
+          theWriter.println( theResult );
           theWriter.flush();
         }
       }catch(IOException e){

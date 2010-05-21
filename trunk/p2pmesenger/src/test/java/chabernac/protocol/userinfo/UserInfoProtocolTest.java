@@ -44,6 +44,8 @@ public class UserInfoProtocolTest extends AbstractProtocolTest {
       assertTrue( theServer1.start() );
       assertTrue( theServer2.start() );
       
+      Thread.sleep( 1000 );
+      
       theRoutingProtocol1.scanLocalSystem();
       theRoutingProtocol2.scanLocalSystem();
       

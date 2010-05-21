@@ -4,9 +4,14 @@
  */
 package chabernac.protocol;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class ProtocolContainer implements IProtocol {
   public static enum Command {PROTOCOLS};
@@ -15,6 +20,7 @@ public class ProtocolContainer implements IProtocol {
   private Map<String, IProtocol> myProtocolMap = null;
   
   private iProtocolFactory myProtocolFactory = null;
+  private ServerInfo myServerInfo = null;
   
   public ProtocolContainer(iProtocolFactory aProtocolFactory){
     addProtocol( this );
@@ -69,11 +75,22 @@ public class ProtocolContainer implements IProtocol {
   }
 
   @Override
-  public void stop() {
-    for(IProtocol theProtocol : myProtocolMap.values()){
+  public synchronized void stop() {
+    ExecutorService theExecutorService = Executors.newCachedThreadPool();
+    //let's stop each protocol in a seperate thread to speed it up.
+    for(final IProtocol theProtocol : myProtocolMap.values()){
       if(theProtocol != this){
-        theProtocol.stop();
+        theExecutorService.execute( new Runnable(){
+          public void run(){
+            theProtocol.stop();
+          }
+        });
       }
+    }
+    //now stop after 5 seconds, we don't want to block the entire system.
+    try {
+      theExecutorService.awaitTermination( 5, TimeUnit.SECONDS );
+    } catch ( InterruptedException e ) {
     }
   }
   
@@ -81,6 +98,21 @@ public class ProtocolContainer implements IProtocol {
     if(!myProtocolMap.containsKey( anId )){
       addProtocol( myProtocolFactory.createProtocol( anId ) );
     }
-    return myProtocolMap.get( anId );
+    IProtocol theProtocol = myProtocolMap.get( anId );
+    if(myServerInfo != null){
+      theProtocol.setServerInfo( myServerInfo );
+    }
+    return theProtocol;
+  }
+
+  @Override
+  public void setServerInfo( ServerInfo aServerInfo ) {
+    myServerInfo = aServerInfo;
+    for(Iterator< IProtocol > i = new ArrayList<IProtocol>(myProtocolMap.values()).iterator();i.hasNext();){
+      IProtocol theProtocol = i.next();
+      if(theProtocol != this){
+        theProtocol.setServerInfo( myServerInfo );
+      }
+    }
   }
 }
