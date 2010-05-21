@@ -85,6 +85,7 @@ public class PipeProtocol extends Protocol {
           }
         }
 
+        RoutingTableEntry theFromPeerEntry = getRoutingTable().getEntryForPeer( theAttributes[0] );
         RoutingTableEntry theToPeerEntry = getRoutingTable().getEntryForPeer( theAttributes[1] );
 
         if(!theToPeerEntry.isReachable()){
@@ -93,7 +94,12 @@ public class PipeProtocol extends Protocol {
           try{
             ServerSocket theSocket = NetTools.openServerSocket(PIPE_PORT);
             LOGGER.debug("Opening server socket on peer: '" + getRoutingTable().getLocalPeerId() + "' with port: '" + theSocket.getLocalPort() + "'");
-            myServerSocketExecutor.submit( new ServerSocketHandler(theSocket, theAttributes[0], theAttributes[1], theAttributes[2]));
+            Socket theSocketToNextPeer = null;
+            if(!theToPeerEntry.getPeer().getPeerId().equals( getRoutingTable().getLocalPeerId())){
+              //this peer is just an intermediate peer, create a new connection to next peer in the chain
+              theSocketToNextPeer = openSocketToPeer( theFromPeerEntry.getPeer(), theToPeerEntry.getPeer(), theAttributes[2] );
+            }
+            myServerSocketExecutor.submit( new ServerSocketHandler(theSocket, theFromPeerEntry.getPeer(), theSocketToNextPeer, theAttributes[2]));
             Thread.yield();
             return Result.SOCKET_OPENED.name() + " " + Integer.toString( theSocket.getLocalPort() );
           }catch(Exception e){
@@ -169,27 +175,28 @@ public class PipeProtocol extends Protocol {
   }
 
   private class ServerSocketHandler implements Runnable{
-    private String myFromPeerId;
-    private String myToPeerId;
     private ServerSocket mySocket = null;
     private String myPipeDescription = null;
+    private Socket mySocketToNextPeer = null;
+    private Peer myFromPeer = null;
 
-    public ServerSocketHandler(ServerSocket aSocket, String aFromPeerId, String aToPeerId, String aPipeDescription){
-      myFromPeerId = aFromPeerId;
-      myToPeerId = aToPeerId;
+    public ServerSocketHandler(ServerSocket aSocket, Peer aFromPeer, Socket aSocketToNextPeer, String aPipeDescription){
       mySocket = aSocket;
       myPipeDescription = aPipeDescription;
+      mySocketToNextPeer = aSocketToNextPeer;
+      myFromPeer = aFromPeer;
     }
 
     public void run(){
       Socket theInSocket = null;
-      Socket theOutSocket = null;
 
       try{
         theInSocket = mySocket.accept();
 
-        if(myToPeerId.equals( getRoutingTable().getLocalPeerId()) && myPipeListener != null){
-          Pipe thePipe = new Pipe(getRoutingTable().getEntryForPeer( myFromPeerId ).getPeer());
+        //if mySocketToNextPeer is null it means that this peer is the end of the pipe
+        //so if a socket is accepted we notify the listeners that a pipe has been made
+        if(mySocketToNextPeer == null && myPipeListener != null){
+          Pipe thePipe = new Pipe(myFromPeer);
           thePipe.setPipeDescription(myPipeDescription);
           thePipe.setSocket( theInSocket );
           for(IPipeListener theListener : myPipeListener){
@@ -198,17 +205,11 @@ public class PipeProtocol extends Protocol {
         } else {
 
           //we are just a go between peer rerout the pipe to the destination
-          theOutSocket = openSocketToPeer( getRoutingTable().getEntryForPeer(myFromPeerId).getPeer(), getRoutingTable().getEntryForPeer( myToPeerId ).getGateway(), myPipeDescription );
-          if(theOutSocket == null){
-            throw new IOException("Out socket with peer: '" + myToPeerId + "' could not be created");
-          } else {
-            Socket[] theSockets = new Socket[]{theInSocket, theOutSocket};
+            Socket[] theSockets = new Socket[]{theInSocket, mySocketToNextPeer};
             //now link the in socket and the out socket together
             ExecutorService theCopyStreamService = Executors.newFixedThreadPool( 2 );
-            theCopyStreamService.execute( new CopyStream(theInSocket.getInputStream(), theOutSocket.getOutputStream(), theSockets) );
-            theCopyStreamService.execute(  new CopyStream(theOutSocket.getInputStream(), theInSocket.getOutputStream(), theSockets) );
-          }
-
+            theCopyStreamService.execute( new CopyStream(theInSocket.getInputStream(), mySocketToNextPeer.getOutputStream(), theSockets) );
+            theCopyStreamService.execute(  new CopyStream(mySocketToNextPeer.getInputStream(), theInSocket.getOutputStream(), theSockets) );
         }
       }catch(Exception e){
         if(theInSocket != null){
@@ -217,9 +218,9 @@ public class PipeProtocol extends Protocol {
           } catch ( IOException e1 ) {
           }
         }
-        if(theOutSocket != null){
+        if(mySocketToNextPeer != null){
           try {
-            theOutSocket.close();
+            mySocketToNextPeer.close();
           } catch ( IOException e1 ) {
           }
         }

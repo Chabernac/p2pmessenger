@@ -26,28 +26,34 @@ public class PeerSocketFactory {
 //      throw new IOException("Could not create socket witht peer '" +  aPeer.getPeerId() + "' on '" + aPeer.getHosts() + ": " + aPeer.getPort() + "'");
 //    }
 //    return theSocket;
-    
-    if(aPeer.getPeerId() == null || aPeer.getPeerId().equals( "" )){
-      Socket theSocket = aPeer.createSocket( aPeer.getPort() );
-      if(theSocket == null){
-        throw new IOException("Could not create socket witht peer '" +  aPeer.getPeerId() + "' on '" + aPeer.getHosts() + ": " + aPeer.getPort() + "'");
-      }
-      return theSocket;
-    }
 
-    synchronized ( aPeer.getPeerId().intern() ) {
-      if(!mySockets.containsKey( aPeer.getPeerId() ) || !mySockets.get( aPeer.getPeerId() ).isConnected()){
+    long t1 = System.currentTimeMillis();
+
+    try{
+      if(aPeer.getPeerId() == null || aPeer.getPeerId().equals( "" )){
         Socket theSocket = aPeer.createSocket( aPeer.getPort() );
         if(theSocket == null){
-          throw new IOException("Could not create socket with peer '" +  aPeer.getPeerId() + "' on '" + aPeer.getHosts() + ": " + aPeer.getPort() + "'");
+          throw new IOException("Could not create socket witht peer '" +  aPeer.getPeerId() + "' on '" + aPeer.getHosts() + ": " + aPeer.getPort() + "'");
         }
-        mySockets.put(aPeer.getPeerId(), theSocket);
+        return theSocket;
       }
-      
-      return mySockets.get( aPeer.getPeerId() );
+
+      synchronized ( aPeer.getPeerId().intern() ) {
+        if(!mySockets.containsKey( aPeer.getPeerId() ) || !mySockets.get( aPeer.getPeerId() ).isConnected()){
+          Socket theSocket = aPeer.createSocket( aPeer.getPort() );
+          if(theSocket == null){
+            throw new IOException("Could not create socket with peer '" +  aPeer.getPeerId() + "' on '" + aPeer.getHosts() + ": " + aPeer.getPort() + "'");
+          }
+          mySockets.put(aPeer.getPeerId(), theSocket);
+        }
+
+        return mySockets.get( aPeer.getPeerId() );
+      }
+    }finally{
+      System.out.println("Creating socket to peer '" + aPeer.getPeerId() + "' on port '" + aPeer.getPort() + "' took " + (System.currentTimeMillis() - t1) + " ms");
     }
   }
-  
+
   public void clear(){
     mySockets.clear();
   }
