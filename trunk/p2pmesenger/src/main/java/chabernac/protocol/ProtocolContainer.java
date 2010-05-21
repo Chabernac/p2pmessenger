@@ -89,6 +89,7 @@ public class ProtocolContainer implements IProtocol {
     }
     //now stop after 5 seconds, we don't want to block the entire system.
     try {
+      theExecutorService.shutdown();
       theExecutorService.awaitTermination( 5, TimeUnit.SECONDS );
     } catch ( InterruptedException e ) {
     }

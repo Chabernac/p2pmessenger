@@ -123,6 +123,7 @@ public class Peer implements Serializable {
 
     BufferedReader theReader = null;
     PrintWriter theWriter = null;
+    long t1 = System.currentTimeMillis();
     try{
       theWriter = new PrintWriter(new OutputStreamWriter(theSocket.getOutputStream()));
       theReader = new BufferedReader(new InputStreamReader(theSocket.getInputStream()));
@@ -132,6 +133,7 @@ public class Peer implements Serializable {
 
       return theReturnMessage;
     }finally{
+      System.out.println("Sending message took " + (System.currentTimeMillis() - t1) + " ms");
 //      if(theWriter != null){
 //        theWriter.close();
 //      }
@@ -141,22 +143,35 @@ public class Peer implements Serializable {
     }
   }
 
+//  public Socket createSocket(int aPort){
+//    for(Iterator< String > i = new ArrayList<String>(myHost).iterator(); i.hasNext();){
+//      String theHost = i.next();
+//      try{
+//        Socket theSocket = new Socket();
+////        theSocket.setReuseAddress( true );
+//        theSocket.setSoTimeout( 8000 );
+//        theSocket.connect( new InetSocketAddress(theHost, aPort) );
+//        //if we succeed in connecting to this host at this address then pust the host name at the top
+//        //so that the next socket creation will go faster
+//        myHost.remove( theHost );
+//        myHost.add( 0, theHost);
+//        return theSocket;
+//      }catch(Exception e){
+////        LOGGER.error( "Error occured while connecting to '" + theHost + "':'" + aPort + "'",e );
+//      }
+//    }
+//    return null;
+//  }
+
   public Socket createSocket(int aPort){
     for(Iterator< String > i = new ArrayList<String>(myHost).iterator(); i.hasNext();){
       String theHost = i.next();
       try{
-        Socket theSocket = new Socket();
-//        theSocket.setReuseAddress( true );
-        theSocket.setSoTimeout( 8000 );
-        theSocket.connect( new InetSocketAddress(theHost, aPort) );
-        //if we succeed in connecting to this host at this address then pust the host name at the top
-        //so that the next socket creation will go faster
+        Socket theSocket = new Socket(theHost, aPort);
         myHost.remove( theHost );
         myHost.add( 0, theHost);
         return theSocket;
-      }catch(Exception e){
-//        LOGGER.error( "Error occured while connecting to '" + theHost + "':'" + aPort + "'",e );
-      }
+      }catch(Exception e){}
     }
     return null;
   }

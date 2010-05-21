@@ -4,7 +4,6 @@
  */
 package chabernac.protocol.userinfo;
 
-import java.lang.reflect.Array;
 import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.List;
@@ -99,10 +98,14 @@ public class UserInfoProtocolTest extends AbstractProtocolTest {
       
       Thread.sleep( 2000 );
       
-      assertEquals( 4, theListener.getChangedUserInfo().size() );
+      assertEquals( 2, theListener.getChangedUserInfo().size() );
       
       //1 event when the user changed its status to busy
-      assertEquals( Status.BUSY, theListener.getChangedUserInfo().get( 2 ).getStatus());
+      assertEquals( Status.BUSY, theListener.getChangedUserInfo().get( 0 ).getStatus());
+      
+      //1 event when the user name changed to chabernac
+      assertEquals( Status.ONLINE, theListener.getChangedUserInfo().get( 1 ).getStatus());
+      
       
     } finally {
       theServer1.stop();

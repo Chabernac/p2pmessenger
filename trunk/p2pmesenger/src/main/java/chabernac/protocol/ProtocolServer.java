@@ -15,6 +15,7 @@ import java.net.SocketException;
 import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.log4j.Logger;
 
@@ -34,6 +35,7 @@ public class ProtocolServer implements Runnable{
   private ServerInfo myServerInfo = new ServerInfo();
 
   private Object LOCK = new Object();
+  private AtomicLong mySimultanousThreads = new AtomicLong();
   
   public ProtocolServer(IProtocol aProtocol, int aPort, int aNumberOfThreads){
     this(aProtocol, aPort, aNumberOfThreads, false);
@@ -81,6 +83,8 @@ public class ProtocolServer implements Runnable{
   @Override
   public void run() {
     try{
+      mySimultanousThreads.incrementAndGet();
+      
       if(isFindUnusedPort){
         myServerSocket = NetTools.openServerSocket( myPort );
       } else {
@@ -101,6 +105,7 @@ public class ProtocolServer implements Runnable{
       
       while(true){ 
         Socket theClientSocket = myServerSocket.accept();
+        LOGGER.debug("Client accepted, current number of clients: " + mySimultanousThreads.get());
         theClientHandlerService.execute( new ClientSocketHandler(theClientSocket) );
       }
     }catch(SocketException e){
@@ -115,6 +120,7 @@ public class ProtocolServer implements Runnable{
       isStarted = false;
       LOCK.notify();
     }
+    mySimultanousThreads.decrementAndGet();
   }
   
   public boolean isStarted(){
