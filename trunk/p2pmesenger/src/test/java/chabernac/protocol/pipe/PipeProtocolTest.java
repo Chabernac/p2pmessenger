@@ -3,6 +3,7 @@ package chabernac.protocol.pipe;
 import java.io.IOException;
 
 import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Logger;
 
 import chabernac.protocol.AbstractProtocolTest;
 import chabernac.protocol.ProtocolContainer;
@@ -14,6 +15,7 @@ import chabernac.protocol.routing.UnknownPeerException;
 import chabernac.tools.IOTools;
 
 public class PipeProtocolTest extends AbstractProtocolTest {
+  private static Logger LOGGER = Logger.getLogger(PipeProtocolTest.class);
   
   static{
     BasicConfigurator.resetConfiguration();
@@ -49,7 +51,7 @@ public class PipeProtocolTest extends AbstractProtocolTest {
       assertTrue( theServer2.start() );
       assertTrue( theServer3.start() );
 
-      Thread.sleep( 5000 );
+      Thread.sleep( 3000 );
       
       //after a local system scan we must at least know our selfs
       assertNotNull( theRoutingProtocol1.getRoutingTable().getEntryForLocalPeer() );
@@ -60,7 +62,11 @@ public class PipeProtocolTest extends AbstractProtocolTest {
       Pipe thePipe = new Pipe(theRoutingProtocol1.getRoutingTable().getEntryForPeer("3").getPeer());
       thePipe.setPipeDescription("Test pipe description");
       
+      LOGGER.debug( "opening pipe" );
+      
       thePipeProtocol1.openPipe(thePipe);
+      
+      LOGGER.debug( "Testing pipe" );
 
       for(int i=0;i<100;i++){
         thePipe.getSocket().getOutputStream().write(i);
@@ -68,8 +74,12 @@ public class PipeProtocolTest extends AbstractProtocolTest {
         assertEquals(i, thePipe.getSocket().getInputStream().read());
       }
       
+      LOGGER.debug( "Pipe tested" );
+      
       assertEquals("1", thePipeListener.getPipe().getPeer().getPeerId());
       assertEquals("Test pipe description", thePipeListener.getPipe().getPipeDescription());
+      
+      LOGGER.debug( "Pipe properties tested" );
 
       //now lets try to send bytes over the pipe
     }finally{
