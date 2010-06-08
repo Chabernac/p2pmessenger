@@ -14,8 +14,6 @@ import java.util.Observer;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import javax.swing.text.StyledEditorKit.AlignmentAction;
-
 import org.apache.log4j.Logger;
 
 import chabernac.protocol.IProtocol;

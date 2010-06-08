@@ -4,6 +4,7 @@ import java.util.Properties;
 
 import junit.framework.TestCase;
 import chabernac.protocol.ping.PingProtocol;
+import chabernac.tools.PropertyMap;
 
 public class ProtocolTest extends TestCase {
   public void testCreateMessage(){
@@ -20,7 +21,7 @@ public class ProtocolTest extends TestCase {
   }
   
   public void testGetProtocolsString() throws ProtocolException{
-    ProtocolContainer theMasterProtocol = new ProtocolContainer(new ProtocolFactory(new Properties()));
+    ProtocolContainer theMasterProtocol = new ProtocolContainer(new ProtocolFactory(new PropertyMap()));
     
     theMasterProtocol.getProtocol( PingProtocol.ID );
     

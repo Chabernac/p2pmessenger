@@ -4,14 +4,13 @@
  */
 package chabernac.protocol;
 
-import java.util.Properties;
-
 import junit.framework.TestCase;
 
 import org.apache.log4j.BasicConfigurator;
 
 import chabernac.protocol.list.ListProtocol;
 import chabernac.protocol.ping.PingProtocol;
+import chabernac.tools.PropertyMap;
 
 public class MasterProtocolTest extends TestCase {
   static{
@@ -21,7 +20,7 @@ public class MasterProtocolTest extends TestCase {
   
   
   public void testMasterProtocol() throws ProtocolException{
-    ProtocolContainer theMasterProtocol = new ProtocolContainer(new ProtocolFactory(new Properties()));
+    ProtocolContainer theMasterProtocol = new ProtocolContainer(new ProtocolFactory(new PropertyMap()));
     
     assertEquals( PingProtocol.Response.PONG.name(), new String(theMasterProtocol.handleCommand( 0, PingProtocol.ID + "ping") ));
     assertEquals( PingProtocol.Response.UNKNOWN_COMMAND.name(), new String(theMasterProtocol.handleCommand( 0, PingProtocol.ID + "somtehing") ));

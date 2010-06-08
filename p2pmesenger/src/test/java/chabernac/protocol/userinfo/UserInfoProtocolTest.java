@@ -40,6 +40,8 @@ public class UserInfoProtocolTest extends AbstractProtocolTest {
     RoutingTable theRoutingTable2 = theRoutingProtocol2.getRoutingTable();
     
     try{
+      UserInfoProtocol theUserInfoProtocol = (UserInfoProtocol)theProtocol1.getProtocol( UserInfoProtocol.ID );
+      
       assertTrue( theServer1.start() );
       assertTrue( theServer2.start() );
       
@@ -57,8 +59,6 @@ public class UserInfoProtocolTest extends AbstractProtocolTest {
       
       theRoutingProtocol1.exchangeRoutingTable();
       theRoutingProtocol2.exchangeRoutingTable();
-      
-      UserInfoProtocol theUserInfoProtocol = (UserInfoProtocol)theProtocol1.getProtocol( UserInfoProtocol.ID );
       
       UserInfo theUserInfo = theUserInfoProtocol.getUserInfoForPeer( theRoutingProtocol1.getRoutingTable().getEntryForPeer( "2" ).getPeer().getPeerId() );
       
