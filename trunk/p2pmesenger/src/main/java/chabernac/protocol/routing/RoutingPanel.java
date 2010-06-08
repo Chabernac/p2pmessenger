@@ -136,7 +136,7 @@ public class RoutingPanel extends JPanel {
     public void actionPerformed( ActionEvent anE ) {
       myExecutorService.execute( new Runnable(){
         public void run(){
-          myRoutingProtocol.exchangeRoutingTable();
+          myRoutingProtocol.detectRemoteSystem();
         }
       });
     }
