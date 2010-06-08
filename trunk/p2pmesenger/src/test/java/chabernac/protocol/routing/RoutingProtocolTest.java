@@ -66,6 +66,7 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
 
   public void testRoutingProtocol() throws InterruptedException, ProtocolException, UnknownPeerException{
 
+    //delete routing table files is they exist
     for(int i=1;i<10;i++){
       File theFile = new File("RoutingTable_" + i + ".csv");
       if(theFile.exists()){
@@ -75,29 +76,33 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
     
     int theExchangeDelayInSeconds = 5;
 
+    //server 1
     ProtocolContainer theProtocol = getProtocolContainer( 5, true, "1" );
     ProtocolServer theServer = new ProtocolServer(theProtocol, RoutingProtocol.START_PORT, theExchangeDelayInSeconds);
 
+    //server 2
     ProtocolContainer theProtocol2 = getProtocolContainer( 5, true, "2" );
     ProtocolServer theServer2 = new ProtocolServer(theProtocol2, RoutingProtocol.START_PORT + 1, theExchangeDelayInSeconds);
+    
+    RoutingProtocol theRoutingProtocol1 = (RoutingProtocol)theProtocol.getProtocol( RoutingProtocol.ID );
+    RoutingTable theRoutingTable1 = theRoutingProtocol1.getRoutingTable();
+    
+    RoutingProtocol theRoutingProtocol2 = (RoutingProtocol)theProtocol2.getProtocol( RoutingProtocol.ID );
+    RoutingTable theRoutingTable2 = theRoutingProtocol2.getRoutingTable();
+    
     try{
       assertTrue( theServer.start() );
       assertTrue( theServer2.start() );
       
       long thet1 = System.currentTimeMillis();
 
-      RoutingProtocol theRoutingProtocol1 = (RoutingProtocol)theProtocol.getProtocol( RoutingProtocol.ID );
-      RoutingTable theRoutingTable1 = theRoutingProtocol1.getRoutingTable();
-      
-      RoutingProtocol theRoutingProtocol2 = (RoutingProtocol)theProtocol2.getProtocol( RoutingProtocol.ID );
-      RoutingTable theRoutingTable2 = theRoutingProtocol2.getRoutingTable();
-      
-
+      //sleep for 5 seconds so that the peers can exchange their routing tables
       long theFirstSleepTime = 5000;
       Thread.sleep( theFirstSleepTime );
 
       assertEquals( 2, theRoutingTable1.getEntries().size());
 
+      //make sure routing table of peer 1 contains both peers
       RoutingTableEntry theEntry = theRoutingTable1.getEntryForPeer( "1" );
       assertEquals( RoutingProtocol.START_PORT, theEntry.getPeer().getPort());
       assertTrue( theEntry.getPeer().getHosts().size() > 0);
@@ -114,7 +119,7 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
       //and updates its routing table after 5 seconds.
       //so after x seconds it should have run Math.floor((x - 2) / 5) times.
 //      theRoutingProtocol1.exchangeRoutingTable();
-
+    
       long theSleepTime = 20000;
 
       Thread.sleep( theSleepTime );

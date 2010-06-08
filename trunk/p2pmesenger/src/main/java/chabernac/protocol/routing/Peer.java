@@ -10,7 +10,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Serializable;
-import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
@@ -18,12 +17,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.log4j.Logger;
-
 import chabernac.tools.NetTools;
 
 public class Peer implements Serializable {
-  private static Logger LOGGER = Logger.getLogger(Peer.class);
+//  private static Logger LOGGER = Logger.getLogger(Peer.class);
 
   private static final long serialVersionUID = 7852961137229337616L;
   private String myPeerId;

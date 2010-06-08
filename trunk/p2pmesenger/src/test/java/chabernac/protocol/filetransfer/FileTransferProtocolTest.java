@@ -85,7 +85,7 @@ public class FileTransferProtocolTest extends AbstractProtocolTest {
       Peer thePeer3 = theRoutingTable1.getEntryForPeer( theRoutingTable3.getLocalPeerId() ).getPeer();
       assertNotNull( thePeer3 );
       LOGGER.debug( "Sending file" );
-      theFileTransferProtocol.sendFile( theTempFile, thePeer3 );
+      theFileTransferProtocol.sendFile( theTempFile, theRoutingTable3.getLocalPeerId() );
       LOGGER.debug( "Done Sending file" );
 
 //      Thread.sleep( 10000 );
