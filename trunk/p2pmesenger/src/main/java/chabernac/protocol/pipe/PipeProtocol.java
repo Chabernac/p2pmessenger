@@ -140,6 +140,9 @@ public class PipeProtocol extends Protocol {
   }
 
   public void openPipe(Pipe aPipe) throws PipeException{
+    if(aPipe.getPeer() == null) throw new PipeException("Destionation peer must be filled");
+    if(aPipe.getPipeDescription() == null || "".equals( aPipe.getPipeDescription() )) throw new PipeException("Pipe description must be filled");
+    
     try {
       aPipe.setSocket( openSocketToPeer( getRoutingTable().getEntryForLocalPeer().getPeer(), aPipe.getPeer(), aPipe.getPipeDescription() ) );
     } catch ( Exception e ) {

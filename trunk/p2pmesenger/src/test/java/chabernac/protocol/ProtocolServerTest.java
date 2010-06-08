@@ -18,6 +18,7 @@ import org.apache.log4j.BasicConfigurator;
 import chabernac.protocol.ping.PingProtocol;
 import chabernac.protocol.routing.NoAvailableNetworkAdapterException;
 import chabernac.protocol.routing.Peer;
+import chabernac.tools.PropertyMap;
 
 public class ProtocolServerTest extends AbstractProtocolTest {
   static{
@@ -26,7 +27,7 @@ public class ProtocolServerTest extends AbstractProtocolTest {
   }
   
   public void testProtocolServer() throws UnknownHostException, IOException{
-    ProtocolContainer theMasterProtocol = new ProtocolContainer(new ProtocolFactory(new Properties()));
+    ProtocolContainer theMasterProtocol = new ProtocolContainer(new ProtocolFactory(new PropertyMap()));
     
     int thePort = 12026;
     
@@ -48,7 +49,7 @@ public class ProtocolServerTest extends AbstractProtocolTest {
   }
   
   public void testProtocolServerWithPeer() throws UnknownHostException, IOException, NoAvailableNetworkAdapterException{
-    ProtocolContainer theMasterProtocol = new ProtocolContainer(new ProtocolFactory(new Properties()));
+    ProtocolContainer theMasterProtocol = new ProtocolContainer(new ProtocolFactory(new PropertyMap()));
     
     int thePort = 12027;
     

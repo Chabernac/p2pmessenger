@@ -23,11 +23,13 @@ import chabernac.protocol.message.iMultiPeerMessageListener;
 import chabernac.protocol.pipe.IPipeListener;
 import chabernac.protocol.pipe.Pipe;
 import chabernac.protocol.pipe.PipeProtocol;
+import chabernac.protocol.routing.Peer;
 import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.userinfo.UserInfo;
 import chabernac.protocol.userinfo.UserInfoProtocol;
 import chabernac.protocol.userinfo.iUserInfoListener;
 import chabernac.protocol.userinfo.iUserInfoProvider;
+import chabernac.tools.PropertyMap;
 
 /**
  * Facade for easy user of the P2P package
@@ -50,7 +52,7 @@ import chabernac.protocol.userinfo.iUserInfoProvider;
 public class P2PFacade {
   private ProtocolContainer myContainer = null;
   private ProtocolServer myProtocolServer = null;
-  private Properties myProperties = new Properties();
+  private PropertyMap myProperties = new PropertyMap();
   
   /**
    * set the exchange delay.
@@ -90,9 +92,15 @@ public class P2PFacade {
    * @return
    * @throws P2PFacadeException
    */
-  public P2PFacade setUserInfoProviderClass(String aUserInfoProviderClass) throws P2PFacadeException{
-    if(isStarted()) throw new P2PFacadeException("Can not set this property when the server has already been started");
-    myProperties.setProperty("chabernac.protocol.userinfo.iUserInfoProvider", aUserInfoProviderClass);
+  public P2PFacade setUserInfoProvider(iUserInfoProvider aUserInfoProvider) throws P2PFacadeException{
+    myProperties.setProperty("chabernac.protocol.userinfo.iUserInfoProvider", aUserInfoProvider);
+    if(isStarted()) {
+      try {
+        ((UserInfoProtocol)myContainer.getProtocol( UserInfoProtocol.ID )).setUserInfoProvider( aUserInfoProvider );
+      } catch ( ProtocolException e ) {
+        throw new P2PFacadeException("An error occured while setting user info provider", e);
+      }
+    }
     return this;
   }
   
@@ -173,11 +181,15 @@ public class P2PFacade {
     }
   }
   
-  public void openPipe(Pipe aPipe) throws P2PFacadeException{
+  public Pipe openPipe(String aPeerId, String aPipeDescription) throws P2PFacadeException{
     if(!isStarted()) throw new P2PFacadeException("Can not execute this action when the server is not started");
     
     try {
-      ((PipeProtocol)myContainer.getProtocol( MessageProtocol.ID )).openPipe( aPipe );
+      Peer thePeer = getPeer( aPeerId );
+      Pipe thePipe = new Pipe(thePeer);
+      thePipe.setPipeDescription( aPipeDescription );
+      ((PipeProtocol)myContainer.getProtocol( PipeProtocol.ID )).openPipe( thePipe );
+      return thePipe;
     } catch ( Exception e ) {
       throw new P2PFacadeException("An error occured while opening pipe", e);
     }
@@ -187,7 +199,7 @@ public class P2PFacade {
     if(!isStarted()) throw new P2PFacadeException("Can not execute this action when the server is not started");
     
     try {
-      ((PipeProtocol)myContainer.getProtocol( MessageProtocol.ID )).closePipe( aPipe );
+      ((PipeProtocol)myContainer.getProtocol( PipeProtocol.ID )).closePipe( aPipe );
     } catch ( Exception e ) {
       throw new P2PFacadeException("An error occured while closing pipe", e);
     }
@@ -197,7 +209,7 @@ public class P2PFacade {
     if(!isStarted()) throw new P2PFacadeException("Can not execute this action when the server is not started");
     
     try {
-      ((PipeProtocol)myContainer.getProtocol( MessageProtocol.ID )).addPipeListener( aPipeListener );
+      ((PipeProtocol)myContainer.getProtocol( PipeProtocol.ID )).addPipeListener( aPipeListener );
     } catch ( Exception e ) {
       throw new P2PFacadeException("An error occured while adding pipe listener", e);
     }
@@ -223,13 +235,23 @@ public class P2PFacade {
     }
   }
   
-  public void setUserInfoProvider(iUserInfoProvider aUserInfoProvider) throws P2PFacadeException{
+  public String getPeerId() throws P2PFacadeException{
     if(!isStarted()) throw new P2PFacadeException("Can not execute this action when the server is not started");
     
     try {
-      ((UserInfoProtocol)myContainer.getProtocol( UserInfoProtocol.ID )).setUserInfoProvider( aUserInfoProvider );
-    } catch ( ProtocolException e ) {
-      throw new P2PFacadeException("An error occured while setting user info provider", e);
+      return ((RoutingProtocol)myContainer.getProtocol( RoutingProtocol.ID )).getLocalPeerId();
+    } catch ( Exception e ) {
+      throw new P2PFacadeException("An error occured while retrieving peer id", e);
+    }
+  }
+  
+  public Peer getPeer(String aPeerId) throws P2PFacadeException{
+    if(!isStarted()) throw new P2PFacadeException("Can not execute this action when the server is not started");
+    
+    try {
+      return ((RoutingProtocol)myContainer.getProtocol( RoutingProtocol.ID )).getRoutingTable().getEntryForPeer( aPeerId ).getPeer();
+    } catch ( Exception e ) {
+      throw new P2PFacadeException("An error occured while retrieving peer id", e);
     }
   }
   
@@ -250,6 +272,10 @@ public class P2PFacade {
     //we retrieve the routing protcol
     //this way it is instantiated and start exchanging routing information
     myContainer.getProtocol( RoutingProtocol.ID );
+    
+    //retrieve the user info protocol
+    //this way it is instantiated and listens for routing table changes and retrieves user info of the changed peers
+    myContainer.getProtocol( UserInfoProtocol.ID );
     return this;
     }catch(Exception e){
       throw new P2PFacadeException("Could not start P2P Facade", e);

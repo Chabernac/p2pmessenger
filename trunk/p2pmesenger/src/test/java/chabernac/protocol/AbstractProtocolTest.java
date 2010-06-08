@@ -4,11 +4,9 @@
  */
 package chabernac.protocol;
 
-import java.util.Properties;
-
-import chabernac.protocol.routing.PeerSocketFactory;
-
 import junit.framework.TestCase;
+import chabernac.protocol.routing.PeerSocketFactory;
+import chabernac.tools.PropertyMap;
 
 public abstract class AbstractProtocolTest extends TestCase {
   public void setUp(){
@@ -16,7 +14,7 @@ public abstract class AbstractProtocolTest extends TestCase {
   }
   
   public ProtocolContainer getProtocolContainer(long anExchangeDelay, boolean isPersist, String aPeerId){
-    Properties theProperties = new Properties();
+    PropertyMap theProperties = new PropertyMap();
     theProperties.setProperty( "routingprotocol.exchangedelay", Long.toString( anExchangeDelay));
     theProperties.setProperty("routingprotocol.persist", Boolean.toString( isPersist));
     theProperties.setProperty("peerid", aPeerId);

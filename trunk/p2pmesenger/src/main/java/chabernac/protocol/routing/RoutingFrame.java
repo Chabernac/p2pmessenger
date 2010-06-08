@@ -18,6 +18,7 @@ import chabernac.protocol.ProtocolContainer;
 import chabernac.protocol.ProtocolException;
 import chabernac.protocol.ProtocolFactory;
 import chabernac.protocol.ProtocolServer;
+import chabernac.tools.PropertyMap;
 
 public class RoutingFrame extends JFrame {
 
@@ -59,7 +60,7 @@ public class RoutingFrame extends JFrame {
   public static void main(String args[]) throws ProtocolException{
     PropertyConfigurator.configure( "log4j.properties" );
 //    BasicConfigurator.configure();
-    Properties theProperties = new Properties();
+    PropertyMap theProperties = new PropertyMap();
     theProperties.setProperty( "routingprotocol.exchangedelay", "60");
     theProperties.setProperty("routingprotocol.persist", "true");
     theProperties.setProperty("peerid", UUID.randomUUID().toString());
