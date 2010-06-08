@@ -21,6 +21,9 @@ import chabernac.protocol.pipe.IPipeListener;
 import chabernac.protocol.pipe.Pipe;
 import chabernac.protocol.pipe.PipeProtocol;
 import chabernac.protocol.routing.Peer;
+import chabernac.protocol.routing.RoutingProtocol;
+import chabernac.protocol.routing.RoutingTable;
+import chabernac.protocol.routing.UnknownPeerException;
 import chabernac.tools.IOTools;
 import chabernac.tools.iTransferListener;
 
@@ -112,15 +115,21 @@ public class FileTransferProtocol extends Protocol {
     thePipeProtocol.addPipeListener( myFilePipeListener );
     return thePipeProtocol;
   }
+  
+  public RoutingTable getRoutingTable() throws ProtocolException{
+    return ((RoutingProtocol)findProtocolContainer().getProtocol( RoutingProtocol.ID )).getRoutingTable();
+  }
 
-  public void sendFile(File aFile, Peer aPeer) throws FileTransferException{
+  public void sendFile(File aFile, String aPeerid) throws FileTransferException{
     String theResponse = null;
 
     ProtocolContainer theProtocolContainer = findProtocolContainer();
+    Peer thePeer = null;
     try{
+      thePeer = getRoutingTable().getEntryForPeer( aPeerid ).getPeer();
       MessageProtocol theMessageProtocol = (MessageProtocol)theProtocolContainer.getProtocol( "MSG" );
       Message theMessage = new Message();
-      theMessage.setDestination( aPeer );
+      theMessage.setDestination( thePeer );
       theMessage.setMessage( createMessage( Command.FILE.name() + " " + aFile.getName()) );
       theMessage.setProtocolMessage( true );
       theResponse = theMessageProtocol.sendMessage( theMessage );
@@ -128,13 +137,15 @@ public class FileTransferProtocol extends Protocol {
       throw new FileTransferException("Could not transfer file because message protocol is not known", e);
     } catch ( MessageException e ) {
       throw new FileTransferException("Could not transfer file because message could not be delivered", e);
+    } catch ( UnknownPeerException e ) {
+      throw new FileTransferException("Could not transfer file because given peer id is not known", e);
     }
 
     if(!theResponse.startsWith( Response.ACCEPTED.name() )){
-      throw new FileTransferException("The file: '" + aFile.getName() + "' was refused by peer: '" + aPeer.getPeerId() + "' with response '" + theResponse + "'");
+      throw new FileTransferException("The file: '" + aFile.getName() + "' was refused by peer: '" + thePeer.getPeerId() + "' with response '" + theResponse + "'");
     } else {
       String theFileId = theResponse.split( " " )[1];
-      Pipe thePipe = new Pipe(aPeer);
+      Pipe thePipe = new Pipe(thePeer);
       thePipe.setPipeDescription( "FILE:" + theFileId + ":" + aFile.length() );
       FileInputStream theInputStream = null;
       try{
@@ -144,7 +155,7 @@ public class FileTransferProtocol extends Protocol {
         IOTools.copyStream( theInputStream, thePipe.getSocket().getOutputStream());
         thePipeProtocol.closePipe( thePipe );
 
-        theResponse = aPeer.send( createMessage( Command.WAIT_FOR_FILE.name() + " " + theFileId + " " + aFile.length()));
+        theResponse = thePeer.send( createMessage( Command.WAIT_FOR_FILE.name() + " " + theFileId + " " + aFile.length()));
 
         if(theResponse.equalsIgnoreCase( Response.BAD_FILE_SIZE.name() )){
           throw new FileTransferException("Received file had bad file size");
@@ -154,7 +165,7 @@ public class FileTransferProtocol extends Protocol {
           throw new FileTransferException("Sending file failed");
         }
       } catch ( Exception e ) {
-        throw new FileTransferException("Transferring file to peer: '" + aPeer.getPeerId() + "' could not be initiated", e);
+        throw new FileTransferException("Transferring file to peer: '" + thePeer.getPeerId() + "' could not be initiated", e);
       }finally{
         if(theInputStream != null){
           try {

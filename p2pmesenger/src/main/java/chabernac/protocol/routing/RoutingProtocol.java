@@ -90,8 +90,6 @@ public class RoutingProtocol extends Protocol {
 
   private boolean isPeerIdInFile = false;
 
-  private ServerInfo myServerInfo = null;
-
   public RoutingProtocol ( long anExchangeDelay, boolean isPersistRoutingTable) {
     this(null, anExchangeDelay, isPersistRoutingTable);
   }
