@@ -26,7 +26,7 @@ public class P2PFacadeTest extends TestCase {
   public void testP2PSendMessage() throws P2PFacadeException, InterruptedException{
     P2PFacade theFacade1 = new P2PFacade()
     .setExchangeDelay( 300 )
-    .setPeerId( "1" )
+    .setPeerId( "a" )
     .setPersist( false )
     .start( 5 );
 
@@ -35,7 +35,7 @@ public class P2PFacadeTest extends TestCase {
 
     P2PFacade theFacade2 = new P2PFacade()
     .setExchangeDelay( 300 )
-    .setPeerId( "2" )
+    .setPeerId( "b" )
     .setPersist( false )
     .start( 5 );
 
@@ -46,7 +46,7 @@ public class P2PFacadeTest extends TestCase {
       theFacade2.addMessageListener( theMessageCollector );
 
       MultiPeerMessage theMessage = MultiPeerMessage.createMessage( "test message" )
-      .addDestination( "2" );
+      .addDestination( "b" );
 
       theFacade1.sendEncryptedMessage( theMessage );
 
