@@ -22,13 +22,13 @@ public class MultiPeerMessageProtocolTest extends AbstractProtocolTest {
   }
   
   public void testMultiPeerMessageProtocol() throws ProtocolException, InterruptedException{
-    ProtocolContainer theProtocol1 = getProtocolContainer( -1, false, "1" );
+    ProtocolContainer theProtocol1 = getProtocolContainer( -1, false, "x" );
     ProtocolServer theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT, 5);
 
-    ProtocolContainer theProtocol2 = getProtocolContainer( -1, false, "2" );
+    ProtocolContainer theProtocol2 = getProtocolContainer( -1, false, "y" );
     ProtocolServer theServer2 = new ProtocolServer(theProtocol2, RoutingProtocol.START_PORT + 1, 5); 
     
-    ProtocolContainer theProtocol3 = getProtocolContainer( -1, false, "3" );
+    ProtocolContainer theProtocol3 = getProtocolContainer( -1, false, "z" );
     ProtocolServer theServer3 = new ProtocolServer(theProtocol3, RoutingProtocol.START_PORT + 2, 5);
     
     RoutingProtocol theRoutingProtocol1 = (RoutingProtocol)theProtocol1.getProtocol( RoutingProtocol.ID );
@@ -62,13 +62,13 @@ public class MultiPeerMessageProtocolTest extends AbstractProtocolTest {
       theMessageProtocol3.addMultiPeerMessageListener( theMessageCollector3);
       
       MultiPeerMessage theMessage = MultiPeerMessage.createMessage( "berichtje")
-      .addDestination( "2" )
-      .addDestination( "3" )
+      .addDestination( "y" )
+      .addDestination( "z" )
       .addMessageIndicator( MessageIndicator.TO_BE_ENCRYPTED );
       
       theMessageProtocol1.sendMessage( theMessage );
       
-      Thread.sleep( 1000 );
+      Thread.sleep( 2000 );
       
       assertEquals( 4, theDeliveryReportCollector.getDeliveryReports().size() );
       assertEquals( DeliveryReport.Status.DELIVERED, theDeliveryReportCollector.getDeliveryReports().get( 2 ).getDeliveryStatus());
