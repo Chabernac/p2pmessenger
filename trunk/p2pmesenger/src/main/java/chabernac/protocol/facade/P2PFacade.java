@@ -6,7 +6,6 @@ package chabernac.protocol.facade;
 
 import java.io.File;
 import java.util.Map;
-import java.util.Properties;
 
 import chabernac.protocol.ProtocolContainer;
 import chabernac.protocol.ProtocolException;
@@ -15,7 +14,6 @@ import chabernac.protocol.ProtocolServer;
 import chabernac.protocol.filetransfer.FileTransferProtocol;
 import chabernac.protocol.filetransfer.iFileHandler;
 import chabernac.protocol.message.MessageIndicator;
-import chabernac.protocol.message.MessageProtocol;
 import chabernac.protocol.message.MultiPeerMessage;
 import chabernac.protocol.message.MultiPeerMessageProtocol;
 import chabernac.protocol.message.iDeliverReportListener;
@@ -171,7 +169,7 @@ public class P2PFacade {
     }
   }
   
-  public void remvoveDeliveryReportListener(iDeliverReportListener aDeliveryReportListener) throws P2PFacadeException{
+  public void removeDeliveryReportListener(iDeliverReportListener aDeliveryReportListener) throws P2PFacadeException{
     if(!isStarted()) throw new P2PFacadeException("Can not execute this action when the server is not started");
     
     try {
