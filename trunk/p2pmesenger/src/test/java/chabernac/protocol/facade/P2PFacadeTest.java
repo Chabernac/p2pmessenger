@@ -8,6 +8,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
 
 import junit.framework.TestCase;
 
@@ -21,7 +23,6 @@ import chabernac.testingutils.DeliveryReportCollector;
 import chabernac.testingutils.EchoPipeListener;
 import chabernac.testingutils.FileHandler;
 import chabernac.testingutils.MessageCollector;
-import chabernac.testingutils.PipeListener;
 import chabernac.testingutils.UserInfoProvider;
 
 public class P2PFacadeTest extends TestCase {
@@ -30,7 +31,7 @@ public class P2PFacadeTest extends TestCase {
     BasicConfigurator.configure();
   }
 
-  public void testP2PSendMessage() throws P2PFacadeException, InterruptedException{
+  public void testP2PSendMessage() throws P2PFacadeException, InterruptedException, ExecutionException{
     P2PFacade theFacade1 = new P2PFacade()
     .setExchangeDelay( 300 )
     .setPersist( false )
@@ -53,7 +54,7 @@ public class P2PFacadeTest extends TestCase {
       MultiPeerMessage theMessage = MultiPeerMessage.createMessage( "test message" )
       .addDestination( theFacade2.getPeerId() );
 
-      theFacade1.sendEncryptedMessage( theMessage );
+      assertTrue( theFacade1.sendEncryptedMessage( theMessage, Executors.newFixedThreadPool( 1 ) ).get() );
 
       Thread.sleep( 1000 );
 
@@ -66,8 +67,31 @@ public class P2PFacadeTest extends TestCase {
       theFacade2.stop();
     }
   }
+  
+  public void testSendMessageWhenServerNotStarted() throws P2PFacadeException{
+    P2PFacade theFacade1 = new P2PFacade()
+    .setExchangeDelay( 300 )
+    .setPersist( false );
+    
+    MultiPeerMessage theMessage = MultiPeerMessage.createMessage( "test message" )
+    .addDestination( "99" );
 
-  public void testFailMessage() throws P2PFacadeException, InterruptedException{
+    try {
+      theFacade1.sendEncryptedMessage( theMessage, Executors.newFixedThreadPool( 1 ) ).get() ;
+      
+      fail("We should not get here, an exception must be thrown because the server is not started");
+    } catch ( Exception e ) {
+    }
+    
+    try {
+      theFacade1.sendMessage( theMessage, Executors.newFixedThreadPool( 1 ) ).get() ;
+      
+      fail("We should not get here, an exception must be thrown because the server is not started");
+    } catch ( Exception e ) {
+    }
+  }
+
+  public void testFailMessage() throws P2PFacadeException, InterruptedException, ExecutionException{
     P2PFacade theFacade1 = new P2PFacade()
     .setExchangeDelay( 300 )
     .setPersist( false )
@@ -81,7 +105,7 @@ public class P2PFacadeTest extends TestCase {
       MultiPeerMessage theMessage = MultiPeerMessage.createMessage( "test message" )
       .addDestination( "99" );
 
-      theFacade1.sendEncryptedMessage( theMessage );
+      assertTrue( theFacade1.sendEncryptedMessage( theMessage, Executors.newFixedThreadPool( 1 ) ).get() );
 
       Thread.sleep( 1000 );
 
@@ -92,7 +116,7 @@ public class P2PFacadeTest extends TestCase {
     }
   }
   
-  public void testSendFile() throws InterruptedException, P2PFacadeException, IOException{
+  public void testSendFile() throws InterruptedException, P2PFacadeException, IOException, ExecutionException{
     P2PFacade theFacade1 = new P2PFacade()
     .setExchangeDelay( 300 )
     .setPersist( false )
@@ -114,7 +138,7 @@ public class P2PFacadeTest extends TestCase {
     try{
       FileHandler theFilehandler = new FileHandler();
       theFacade2.setFileHandler( theFilehandler );
-      theFacade1.sendFile( theFile, theFacade2.getPeerId());
+      assertTrue( theFacade1.sendFile( theFile, theFacade2.getPeerId(), Executors.newFixedThreadPool( 1 )).get() );
       
       assertEquals( 1, theFilehandler.getReceivedFiles().size());
       assertEquals( 0, theFilehandler.getFailedFiles().size());
@@ -179,6 +203,15 @@ public class P2PFacadeTest extends TestCase {
       UserInfo theUserInfoOfFacade2 = theFacade1.getUserInfo().get( theFacade2.getPeerId() );
       assertEquals( "Leslie", theUserInfoOfFacade2.getName() );
       assertEquals( "leslie.torreele@gmail.com", theUserInfoOfFacade2.getEMail() );
+      
+      theFacade1.setUserInfoProvider( new UserInfoProvider("Chauliac", "guy.chauliac@axa.be") );
+      
+      //give the user info protocol some time to spread the new user info through the network
+      Thread.sleep( 1000 );
+      
+      theUserInfoOfFacade1 = theFacade2.getUserInfo().get( theFacade1.getPeerId() );
+      assertEquals( "Chauliac", theUserInfoOfFacade1.getName() );
+      assertEquals( "guy.chauliac@axa.be", theUserInfoOfFacade1.getEMail() );
     }finally{
       theFacade1.stop();
       theFacade2.stop();

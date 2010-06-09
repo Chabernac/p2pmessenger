@@ -6,6 +6,9 @@ package chabernac.protocol.facade;
 
 import java.io.File;
 import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 
 import chabernac.protocol.ProtocolContainer;
 import chabernac.protocol.ProtocolException;
@@ -44,6 +47,12 @@ import chabernac.tools.PropertyMap;
  *  .setUserInfoProviderClass("custom.UserInfoProvider")
  *  .start(20);
  *
+ * All actions which will pottentialy last long require an ExecutoreService as parameter
+ * and will return a Future which will contain the result.
+ * 
+ * This way these methods can be called from the event dispatching thread 
+ * without blocking it for too long.
+ * 
  *
  */
 
@@ -102,7 +111,18 @@ public class P2PFacade {
     return this;
   }
   
-  public void sendFile(File aFile, String aPeerId) throws P2PFacadeException{
+  public Future<Boolean> sendFile(final File aFile, final String aPeerId, ExecutorService aService) {
+    return aService.submit(  new Callable< Boolean >(){
+
+      @Override
+      public Boolean call() throws Exception {
+        sendFile( aFile, aPeerId );
+        return Boolean.TRUE;
+      }
+    });
+  }
+  
+  private void sendFile(File aFile, String aPeerId) throws P2PFacadeException{
     if(!isStarted()) throw new P2PFacadeException("Can not execute this action when the server is not started");
     try {
       ((FileTransferProtocol)myContainer.getProtocol( FileTransferProtocol.ID )).sendFile( aFile, aPeerId );
@@ -120,7 +140,18 @@ public class P2PFacade {
     }
   }
   
-  public void sendMessage(MultiPeerMessage aMessage) throws P2PFacadeException{
+  public Future<Boolean> sendMessage(final MultiPeerMessage aMessage, ExecutorService aService){
+    return aService.submit(  new Callable< Boolean >(){
+
+      @Override
+      public Boolean call() throws Exception {
+        sendMessage( aMessage );
+        return Boolean.TRUE;
+      }
+    });
+  }
+  
+  private void sendMessage(MultiPeerMessage aMessage) throws P2PFacadeException{
     if(!isStarted()) throw new P2PFacadeException("Can not execute this action when the server is not started");
     try {
       ((MultiPeerMessageProtocol)myContainer.getProtocol( MultiPeerMessageProtocol.ID )).sendMessage( aMessage );
@@ -129,7 +160,18 @@ public class P2PFacade {
     }
   }
   
-  public void sendEncryptedMessage(MultiPeerMessage aMessage) throws P2PFacadeException{
+  public Future<Boolean> sendEncryptedMessage(final MultiPeerMessage aMessage, ExecutorService aService){
+    return aService.submit(  new Callable< Boolean >(){
+
+      @Override
+      public Boolean call() throws Exception {
+        sendEncryptedMessage( aMessage );
+        return Boolean.TRUE;
+      }
+    });
+  }
+  
+  private void sendEncryptedMessage(MultiPeerMessage aMessage) throws P2PFacadeException{
     if(!isStarted()) throw new P2PFacadeException("Can not execute this action when the server is not started");
     try {
       aMessage.addMessageIndicator( MessageIndicator.TO_BE_ENCRYPTED );
