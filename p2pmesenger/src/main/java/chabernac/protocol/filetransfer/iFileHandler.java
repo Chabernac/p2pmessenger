@@ -8,7 +8,7 @@ import java.io.File;
 
 public interface iFileHandler {
   public File acceptFile(String aFileName);
-  public void fileTransfer(File afile, long aBytesReceived, long aTotalBytes);
+  public void fileTransfer(File aFile, long aBytesReceived, long aTotalBytes);
   public void fileSaved(File aFile);
   public void fileTransferInterrupted(File aFile);
 }
