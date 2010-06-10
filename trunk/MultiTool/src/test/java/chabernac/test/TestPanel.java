@@ -1,0 +1,13 @@
+package chabernac.test;
+
+public class TestPanel {
+
+  /**
+   * @param args
+   */
+  public static void main(String[] args) {
+    // TODO Auto-generated method stub
+
+  }
+
+}

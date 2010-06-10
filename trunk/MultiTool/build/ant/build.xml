@@ -1,0 +1,138 @@
+<?xml version="1.0"?>
+<project name="Tasksheduler" default="all" basedir="../..">
+	<property name="delivery.dir" value="${basedir}/delivery"/>
+	<property name="src.dir" value="${basedir}/src/main/java"/>
+	<property name="build.dir" value="${basedir}/target"/>
+	<property name="lib.dir" value="${basedir}/build/externalproducts/lib/"/>
+	
+	<target name="server">
+		<antcall target="rmi"/>
+		<jar destfile="${delivery.dir}/mss.jar">
+			<fileset dir="${basedir}/bin">
+			 			<include name="chabernac/messengerservice/*.class"/>
+						<include name="chabernac/messengerservice/event/*.class"/>
+			 			<include name="chabernac/chat/*.class"/>
+			 			<include name="chabernac/timer/*.class"/>
+						<include name="chabernac/application/Event.class"/>
+			 			<include name="chabernac/command/Command.class"/>
+			</fileset>
+		</jar>
+	</target>
+	
+	<target name="rmi">
+		<rmic classname="chabernac.messengerservice.MessengerService" base="${basedir}/target"/>
+		<rmic classname="chabernac.messengerservice.MessengerClientService" base="${basedir}/target"/>
+		<rmic classname="chabernac.distributionservice.DistributionService" base="${basedir}/target"/>
+	</target>
+
+	<target name="clearclassfiles">
+		 <delete>
+		    <fileset dir="${build.dir}" includes="**/*.class"/>
+		  </delete>
+	</target>
+	
+	<path id="classpath.path">
+	   <fileset dir="${lib.dir}">
+	    <include name="*.jar"/>
+	   </fileset>
+	  </path>
+	
+	<target name="build">
+		<javac srcdir="${src.dir}"
+		         destdir="${build.dir}"
+		         fork="true"
+		         source="1.6"
+		         target="1.6">
+			<classpath>
+				<path refid="classpath.path"/>
+  	        </classpath>
+		</javac>
+	</target>
+	
+	<target name="updater">
+		<antcall target="rmi"/>
+		<jar destfile="${delivery.dir}/updater.jar">
+			<fileset dir="${basedir}/target">
+			 			<include name="chabernac/updater/*.class"/>
+			 			<include name="chabernac/distributionservice/*.class"/>
+			 			<include name="chabernac/log/*.class"/>
+			 			<include name="chabernac/messengerservice/*.class"/>
+			 			<include name="chabernac/command/Command.class"/>
+			 			<include name="chabernac/io/DataFile.class"/>
+			</fileset>
+		</jar>
+	</target>
+	
+	<target name="all">
+		<antcall target="clean"/>
+		<antcall target="build"/>
+		<antcall target="updater"/>
+		<antcall target="copyresources"/>
+		<antcall target="build_jar"/>
+	</target>
+	
+	<target name="clean">
+		<antcall target="clearclassfiles"/>
+		<delete dir="${delivery.dir}"/>
+		<mkdir dir="${delivery.dir}"/>		
+	</target>
+	
+	<target name="copyresources">
+		<copy todir="${basedir}/delivery" includeEmptyDirs="no">
+			<fileset dir="${basedir}/scripts">
+				<include name="*.*"/>
+			</fileset>
+			<fileset dir="${basedir}/build/externalproducts/lib">
+				<include name="*.*"/>
+			</fileset>
+			<fileset dir="${basedir}/sendfocus">
+				<include name="*.*"/>
+			</fileset>
+			<fileset dir="${basedir}/target">
+				<include name="**.properties"/>
+			</fileset>
+			<fileset dir="${basedir}/applications">
+				<include name="*.bin"/>
+			</fileset>
+		</copy>					  			
+	</target>
+	
+	<target name="build_jar">
+		<antcall target="rmi"/>
+		<jar destfile="${delivery.dir}/sheduler.jar">
+		  		<fileset dir="${basedir}/bin">
+			 			<include name="**/*.class"/>
+			 		</fileset>
+			 		<fileset dir="${basedir}">
+				 		<include name="images/*.gif"/>
+				 		<include name="images/*.jpg"/>
+				 		<include name="images/*.png"/>
+				 		<include name="textures/*.gif"/>
+				 		<include name="textures/*.jpg"/>
+				 		<include name="textures/*.png"/>
+				 		<include name="distributionlist/*.*"/>
+				 		<include name="**/CustomFilter.java"/>
+			 			<exclude name="**/CustomFilter.class"/>
+			 			<exclude name="bin/**/*.*"/>
+			 			<exclude name="delivery/**/*.*"/>
+			    </fileset>
+	 		    <manifest>
+				      <attribute name="Built-By" value="${user.name}"/>
+				      <attribute name="Main-Class" value="chabernac.task.launch.ApplicationLauncherLight"/>
+					</manifest>
+		 </jar>	
+	 </target>
+	 
+	 <target name="build_testudp">
+		<jar destfile="${delivery.dir}/testudp.jar">
+		  		<fileset dir="${basedir}">
+			 		<include name="**/*.class"/>
+			    	</fileset>
+	 		    	<manifest>
+				      <attribute name="Built-By" value="${user.name}"/>
+				      <attribute name="Main-Class" value="chabernac.test.TestMulticastIO"/>
+				</manifest>
+  
+		 </jar>	
+	 </target>
+</project>
