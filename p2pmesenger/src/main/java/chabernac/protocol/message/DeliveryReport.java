@@ -12,10 +12,12 @@ public class DeliveryReport {
   
   private final Status myDeliveryStatus;
   private final Message myMessage;
+  private final MultiPeerMessage myMultiPeerMessage;
   
-  public DeliveryReport ( Status anDeliveryStatus , Message anMessage ) {
+  public DeliveryReport ( MultiPeerMessage aMultiPeerMessage, Status anDeliveryStatus , Message anMessage ) {
     super();
     myDeliveryStatus = anDeliveryStatus;
+    myMultiPeerMessage = aMultiPeerMessage;
     myMessage = anMessage;
   }
 
@@ -25,5 +27,9 @@ public class DeliveryReport {
 
   public Message getMessage() {
     return myMessage;
+  }
+
+  public MultiPeerMessage getMultiPeerMessage() {
+    return myMultiPeerMessage;
   }
 }

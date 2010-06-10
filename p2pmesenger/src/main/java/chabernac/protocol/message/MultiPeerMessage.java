@@ -65,10 +65,28 @@ public class MultiPeerMessage implements Serializable{
     return new MultiPeerMessage(theDestinations, getSource(), getMessage(), getIndicators());
   }
   
+  public MultiPeerMessage removeDestination(String aDestinationPeer){
+    List<String> theDestinations = new ArrayList< String >(getDestinations());
+    theDestinations.remove( aDestinationPeer);
+    return new MultiPeerMessage(theDestinations, getSource(), getMessage(), getIndicators());
+  }
+  
+  public MultiPeerMessage setDestinations(List<String> aDestinations){
+    return new MultiPeerMessage(aDestinations, getSource(), getMessage(), getIndicators());
+  }
+  
   public MultiPeerMessage addMessageIndicator(MessageIndicator anIndicator){
     List<MessageIndicator> theMessageIndicators = new ArrayList< MessageIndicator >(getIndicators());
     theMessageIndicators.add( anIndicator );
     return new MultiPeerMessage(getDestinations(), getSource(), getMessage(), theMessageIndicators);
+  }
+  
+  public MultiPeerMessage setMessage(String aMessage){
+    return new MultiPeerMessage(getDestinations(), getSource(), aMessage, getIndicators());
+  }
+  
+  public MultiPeerMessage setMessageIndicators(List<MessageIndicator> anIndicators){
+    return new MultiPeerMessage(getDestinations(), getSource(), getMessage(), anIndicators);
   }
   
   public boolean equals(Object anObject){
@@ -81,6 +99,18 @@ public class MultiPeerMessage implements Serializable{
     if(!myMessage.equals( theMessage.getMessage() )) return false;
     if(!getIndicators().equals( theMessage.getIndicators() )) return false;
     return true;
+  }
+  
+  public MultiPeerMessage reply(){
+    return MultiPeerMessage.createMessage( "" )
+    .addDestination( getSource() )
+    .setMessageIndicators( getIndicators() );
+  }
+  
+  public MultiPeerMessage replyAll(){
+    return MultiPeerMessage.createMessage( "" )
+    .setDestinations( getDestinations() )
+    .addDestination( getSource() );
   }
   
 }
