@@ -130,7 +130,7 @@ public class Peer implements Serializable {
 
       return theReturnMessage;
     }finally{
-      System.out.println("Sending message took " + (System.currentTimeMillis() - t1) + " ms");
+//      System.out.println("Sending message took " + (System.currentTimeMillis() - t1) + " ms");
     }
   }
 

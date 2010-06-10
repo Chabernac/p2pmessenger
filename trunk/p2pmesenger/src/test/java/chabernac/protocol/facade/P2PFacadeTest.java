@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 
@@ -16,6 +17,7 @@ import junit.framework.TestCase;
 import org.apache.log4j.BasicConfigurator;
 
 import chabernac.protocol.message.DeliveryReport;
+import chabernac.protocol.message.MessageArchive;
 import chabernac.protocol.message.MultiPeerMessage;
 import chabernac.protocol.pipe.Pipe;
 import chabernac.protocol.userinfo.UserInfo;
@@ -54,7 +56,7 @@ public class P2PFacadeTest extends TestCase {
       MultiPeerMessage theMessage = MultiPeerMessage.createMessage( "test message" )
       .addDestination( theFacade2.getPeerId() );
 
-      assertTrue( theFacade1.sendEncryptedMessage( theMessage, Executors.newFixedThreadPool( 1 ) ).get() );
+      assertNotNull(  theFacade1.sendEncryptedMessage( theMessage, Executors.newFixedThreadPool( 1 ) ).get() );
 
       Thread.sleep( 1000 );
 
@@ -67,25 +69,25 @@ public class P2PFacadeTest extends TestCase {
       theFacade2.stop();
     }
   }
-  
+
   public void testSendMessageWhenServerNotStarted() throws P2PFacadeException{
     P2PFacade theFacade1 = new P2PFacade()
     .setExchangeDelay( 300 )
     .setPersist( false );
-    
+
     MultiPeerMessage theMessage = MultiPeerMessage.createMessage( "test message" )
     .addDestination( "99" );
 
     try {
       theFacade1.sendEncryptedMessage( theMessage, Executors.newFixedThreadPool( 1 ) ).get() ;
-      
+
       fail("We should not get here, an exception must be thrown because the server is not started");
     } catch ( Exception e ) {
     }
-    
+
     try {
       theFacade1.sendMessage( theMessage, Executors.newFixedThreadPool( 1 ) ).get() ;
-      
+
       fail("We should not get here, an exception must be thrown because the server is not started");
     } catch ( Exception e ) {
     }
@@ -105,7 +107,7 @@ public class P2PFacadeTest extends TestCase {
       MultiPeerMessage theMessage = MultiPeerMessage.createMessage( "test message" )
       .addDestination( "99" );
 
-      assertTrue( theFacade1.sendEncryptedMessage( theMessage, Executors.newFixedThreadPool( 1 ) ).get() );
+      assertNotNull( theFacade1.sendEncryptedMessage( theMessage, Executors.newFixedThreadPool( 1 ) ).get() );
 
       Thread.sleep( 1000 );
 
@@ -115,7 +117,7 @@ public class P2PFacadeTest extends TestCase {
       theFacade1.stop();
     }
   }
-  
+
   public void testSendFile() throws InterruptedException, P2PFacadeException, IOException, ExecutionException{
     P2PFacade theFacade1 = new P2PFacade()
     .setExchangeDelay( 300 )
@@ -134,12 +136,12 @@ public class P2PFacadeTest extends TestCase {
 
     File theFile = new File("test.txt");
     theFile.createNewFile();
-    
+
     try{
       FileHandler theFilehandler = new FileHandler();
       theFacade2.setFileHandler( theFilehandler );
       assertTrue( theFacade1.sendFile( theFile, theFacade2.getPeerId(), Executors.newFixedThreadPool( 1 )).get() );
-      
+
       assertEquals( 1, theFilehandler.getReceivedFiles().size());
       assertEquals( 0, theFilehandler.getFailedFiles().size());
     } finally{
@@ -148,27 +150,27 @@ public class P2PFacadeTest extends TestCase {
       theFile.delete();
     }
   }
-  
+
   public void testPipe() throws P2PFacadeException, InterruptedException, IOException{
     P2PFacade theFacade1 = new P2PFacade()
     .setExchangeDelay( 300 )
     .setPersist( false )
     .start( 5 );
-    
+
     P2PFacade theFacade2 = new P2PFacade()
     .setExchangeDelay( 300 )
     .setPersist( false )
     .start( 5 );
 
     Thread.sleep( 2000 );
-    
+
     try{
       theFacade2.addPipeListener( new EchoPipeListener());
       Pipe thePipe = theFacade1.openPipe( theFacade2.getPeerId(), "test pipe" );
-      
+
       OutputStream theOut = thePipe.getSocket().getOutputStream();
       InputStream thein = thePipe.getSocket().getInputStream();
-      
+
       for(int i=0;i<100;i++){
         theOut.write( i );
         assertEquals( i, thein.read() );
@@ -179,14 +181,14 @@ public class P2PFacadeTest extends TestCase {
       theFacade2.stop();
     }
   }
-  
+
   public void testUserInfo() throws P2PFacadeException, InterruptedException{
     P2PFacade theFacade1 = new P2PFacade()
     .setExchangeDelay( 300 )
     .setPersist( false )
     .setUserInfoProvider( new UserInfoProvider("Guy", "guy.chauliac@gmail.com") )
     .start( 5 );
-    
+
     P2PFacade theFacade2 = new P2PFacade()
     .setExchangeDelay( 300 )
     .setPersist( false )
@@ -194,21 +196,21 @@ public class P2PFacadeTest extends TestCase {
     .start( 5 );
 
     Thread.sleep( 2000 );
-    
+
     try{
       UserInfo theUserInfoOfFacade1 = theFacade2.getUserInfo().get( theFacade1.getPeerId() );
       assertEquals( "Guy", theUserInfoOfFacade1.getName() );
       assertEquals( "guy.chauliac@gmail.com", theUserInfoOfFacade1.getEMail() );
-      
+
       UserInfo theUserInfoOfFacade2 = theFacade1.getUserInfo().get( theFacade2.getPeerId() );
       assertEquals( "Leslie", theUserInfoOfFacade2.getName() );
       assertEquals( "leslie.torreele@gmail.com", theUserInfoOfFacade2.getEMail() );
-      
+
       theFacade1.setUserInfoProvider( new UserInfoProvider("Chauliac", "guy.chauliac@axa.be") );
-      
+
       //give the user info protocol some time to spread the new user info through the network
       Thread.sleep( 1000 );
-      
+
       theUserInfoOfFacade1 = theFacade2.getUserInfo().get( theFacade1.getPeerId() );
       assertEquals( "Chauliac", theUserInfoOfFacade1.getName() );
       assertEquals( "guy.chauliac@axa.be", theUserInfoOfFacade1.getEMail() );
@@ -216,5 +218,60 @@ public class P2PFacadeTest extends TestCase {
       theFacade1.stop();
       theFacade2.stop();
     }
+  }
+
+  public void testMessageArchive() throws P2PFacadeException, InterruptedException, ExecutionException{
+    P2PFacade theFacade1 = new P2PFacade()
+    .setExchangeDelay( 300 )
+    .setPersist( false )
+    .start( 5 );
+
+    DeliveryReportCollector theDeliveryReportCollector = new DeliveryReportCollector();
+    theFacade1.addDeliveryReportListener( theDeliveryReportCollector );
+
+    P2PFacade theFacade2 = new P2PFacade()
+    .setExchangeDelay( 300 )
+    .setPersist( false )
+    .start( 5 );
+
+    Thread.sleep( 2000 );
+
+    MessageArchive theArchive1 = theFacade1.getMessageArchive();
+    MessageArchive theArchive2 = theFacade2.getMessageArchive();
+
+    try{
+
+      int times = 10;
+      for(int i=0;i<times;i++){
+        MultiPeerMessage theMessage = MultiPeerMessage.createMessage( "test message" )
+        .addDestination( theFacade2.getPeerId() );
+
+        theMessage = theFacade1.sendEncryptedMessage( theMessage, Executors.newFixedThreadPool( 1 ) ).get();
+        assertNotNull( theMessage );
+        
+        Thread.sleep( 500 );
+        
+        Map<String, DeliveryReport> theReports = theArchive1.getDeliveryReportsForMultiPeerMessage( theMessage );
+        //we only send to 1 peer and it should only contain the latest delivery report, so the size must be 1
+        assertEquals( 1, theReports.size() );
+        //and it must be delivered
+        assertEquals( DeliveryReport.Status.DELIVERED, theReports.get( theFacade2.getPeerId() ).getDeliveryStatus() );
+      }
+
+      assertEquals( times, theArchive1.getDeliveryReports().size());
+      assertEquals( 0, theArchive1.getReceivedMessages().size());
+      
+      assertEquals( 0, theArchive2.getDeliveryReports().size());
+      assertEquals( times, theArchive2.getReceivedMessages().size());
+
+      for(Map< String, DeliveryReport > theReportsPerPeer : theArchive1.getDeliveryReports().values()){
+        for(DeliveryReport theReport : theReportsPerPeer.values()){
+          assertEquals( DeliveryReport.Status.DELIVERED, theReport.getDeliveryStatus() );
+        }
+      }
+    } finally{
+      theFacade1.stop();
+      theFacade2.stop();
+    }    
   }
 }

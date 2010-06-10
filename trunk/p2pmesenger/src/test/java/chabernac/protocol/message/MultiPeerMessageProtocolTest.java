@@ -21,7 +21,7 @@ public class MultiPeerMessageProtocolTest extends AbstractProtocolTest {
     BasicConfigurator.configure();
   }
   
-  public void testMultiPeerMessageProtocol() throws ProtocolException, InterruptedException{
+  public void testMultiPeerMessageProtocol() throws ProtocolException, InterruptedException, MessageException{
     ProtocolContainer theProtocol1 = getProtocolContainer( -1, false, "x" );
     ProtocolServer theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT, 5);
 

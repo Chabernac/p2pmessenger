@@ -16,6 +16,7 @@ import chabernac.protocol.ProtocolFactory;
 import chabernac.protocol.ProtocolServer;
 import chabernac.protocol.filetransfer.FileTransferProtocol;
 import chabernac.protocol.filetransfer.iFileHandler;
+import chabernac.protocol.message.MessageArchive;
 import chabernac.protocol.message.MessageIndicator;
 import chabernac.protocol.message.MultiPeerMessage;
 import chabernac.protocol.message.MultiPeerMessageProtocol;
@@ -60,7 +61,8 @@ public class P2PFacade {
   private ProtocolContainer myContainer = null;
   private ProtocolServer myProtocolServer = null;
   private PropertyMap myProperties = new PropertyMap();
-  
+  private MessageArchive myMessageArchive = null;
+
   /**
    * set the exchange delay.
    * 
@@ -78,19 +80,19 @@ public class P2PFacade {
     myProperties.setProperty("routingprotocol.exchangedelay", Long.toString(anExchangeDelay));
     return this;
   }
-  
+
   public P2PFacade setPersist(boolean isPersist) throws P2PFacadeException{
     if(isStarted()) throw new P2PFacadeException("Can not set this property when the server has already been started");
     myProperties.setProperty("routingprotocol.persist", Boolean.toString( isPersist ));
     return this;
   }
-  
+
   public P2PFacade setPeerId(String aPeerId) throws P2PFacadeException{
     if(isStarted()) throw new P2PFacadeException("Can not set this property when the server has already been started");
     myProperties.setProperty("peerid", aPeerId);
     return this;
   }
-  
+
   /**
    * set the user info provider class
    * the full name of the class must be an implementation of chabernac.protocol.userinfo.iUserInfoProvider
@@ -110,7 +112,7 @@ public class P2PFacade {
     }
     return this;
   }
-  
+
   public Future<Boolean> sendFile(final File aFile, final String aPeerId, ExecutorService aService) {
     return aService.submit(  new Callable< Boolean >(){
 
@@ -121,7 +123,7 @@ public class P2PFacade {
       }
     });
   }
-  
+
   private void sendFile(File aFile, String aPeerId) throws P2PFacadeException{
     if(!isStarted()) throw new P2PFacadeException("Can not execute this action when the server is not started");
     try {
@@ -130,7 +132,7 @@ public class P2PFacade {
       throw new P2PFacadeException("An error occured while sending file", e);
     }
   }
-  
+
   public void setFileHandler(iFileHandler aFileHandler) throws P2PFacadeException{
     if(!isStarted()) throw new P2PFacadeException("Can not execute this action when the server is not started");
     try {
@@ -139,7 +141,7 @@ public class P2PFacade {
       throw new P2PFacadeException("An error occured while setting file handler", e);
     }
   }
-  
+
   public Future<Boolean> sendMessage(final MultiPeerMessage aMessage, ExecutorService aService){
     return aService.submit(  new Callable< Boolean >(){
 
@@ -150,7 +152,7 @@ public class P2PFacade {
       }
     });
   }
-  
+
   private void sendMessage(MultiPeerMessage aMessage) throws P2PFacadeException{
     if(!isStarted()) throw new P2PFacadeException("Can not execute this action when the server is not started");
     try {
@@ -159,71 +161,70 @@ public class P2PFacade {
       throw new P2PFacadeException("An error occured while sending multi peer message", e);
     }
   }
-  
-  public Future<Boolean> sendEncryptedMessage(final MultiPeerMessage aMessage, ExecutorService aService){
-    return aService.submit(  new Callable< Boolean >(){
+
+  public Future<MultiPeerMessage> sendEncryptedMessage(final MultiPeerMessage aMessage, ExecutorService aService){
+    return aService.submit(  new Callable< MultiPeerMessage >(){
 
       @Override
-      public Boolean call() throws Exception {
-        sendEncryptedMessage( aMessage );
-        return Boolean.TRUE;
+      public MultiPeerMessage call() throws Exception {
+        return sendEncryptedMessage( aMessage );
       }
     });
   }
-  
-  private void sendEncryptedMessage(MultiPeerMessage aMessage) throws P2PFacadeException{
+
+  private MultiPeerMessage sendEncryptedMessage(MultiPeerMessage aMessage) throws P2PFacadeException{
     if(!isStarted()) throw new P2PFacadeException("Can not execute this action when the server is not started");
     try {
       aMessage.addMessageIndicator( MessageIndicator.TO_BE_ENCRYPTED );
-      ((MultiPeerMessageProtocol)myContainer.getProtocol( MultiPeerMessageProtocol.ID )).sendMessage( aMessage );
+      return ((MultiPeerMessageProtocol)myContainer.getProtocol( MultiPeerMessageProtocol.ID )).sendMessage( aMessage );
     } catch ( Exception e ) {
       throw new P2PFacadeException("An error occured while sending multi peer message", e);
     }
   }
-  
+
   public void addMessageListener(iMultiPeerMessageListener aMessageListener) throws P2PFacadeException{
     if(!isStarted()) throw new P2PFacadeException("Can not execute this action when the server is not started");
-    
+
     try {
       ((MultiPeerMessageProtocol)myContainer.getProtocol( MultiPeerMessageProtocol.ID )).addMultiPeerMessageListener( aMessageListener );
     } catch ( Exception e ) {
       throw new P2PFacadeException("An error occured while adding message listener", e);
     }
   }
-  
+
   public void removeMessageListener(iMultiPeerMessageListener aMessageListener) throws P2PFacadeException{
     if(!isStarted()) throw new P2PFacadeException("Can not execute this action when the server is not started");
-    
+
     try {
       ((MultiPeerMessageProtocol)myContainer.getProtocol( MultiPeerMessageProtocol.ID )).removeMultiPeerMessageListener(  aMessageListener );
     } catch ( Exception e ) {
       throw new P2PFacadeException("An error occured while removing message listener", e);
     }
   }
-  
+
   public void addDeliveryReportListener(iDeliverReportListener aDeliveryReportListener) throws P2PFacadeException{
     if(!isStarted()) throw new P2PFacadeException("Can not execute this action when the server is not started");
-    
+
     try {
       ((MultiPeerMessageProtocol)myContainer.getProtocol( MultiPeerMessageProtocol.ID )).addDeliveryReportListener( aDeliveryReportListener );
     } catch ( Exception e ) {
       throw new P2PFacadeException("An error occured while adding delivery report listener", e);
     }
   }
-  
+
   public void removeDeliveryReportListener(iDeliverReportListener aDeliveryReportListener) throws P2PFacadeException{
     if(!isStarted()) throw new P2PFacadeException("Can not execute this action when the server is not started");
-    
+
     try {
       ((MultiPeerMessageProtocol)myContainer.getProtocol( MultiPeerMessageProtocol.ID )).removeDeliveryReportListener( aDeliveryReportListener );
     } catch ( Exception e ) {
       throw new P2PFacadeException("An error occured while adding delivery report listener", e);
     }
   }
-  
+
   public Pipe openPipe(String aPeerId, String aPipeDescription) throws P2PFacadeException{
     if(!isStarted()) throw new P2PFacadeException("Can not execute this action when the server is not started");
-    
+
     try {
       Peer thePeer = getPeer( aPeerId );
       Pipe thePipe = new Pipe(thePeer);
@@ -234,99 +235,112 @@ public class P2PFacade {
       throw new P2PFacadeException("An error occured while opening pipe", e);
     }
   }
-  
+
   public void closePipe(Pipe aPipe) throws P2PFacadeException{
     if(!isStarted()) throw new P2PFacadeException("Can not execute this action when the server is not started");
-    
+
     try {
       ((PipeProtocol)myContainer.getProtocol( PipeProtocol.ID )).closePipe( aPipe );
     } catch ( Exception e ) {
       throw new P2PFacadeException("An error occured while closing pipe", e);
     }
   }
-  
+
   public void addPipeListener(IPipeListener aPipeListener) throws P2PFacadeException{
     if(!isStarted()) throw new P2PFacadeException("Can not execute this action when the server is not started");
-    
+
     try {
       ((PipeProtocol)myContainer.getProtocol( PipeProtocol.ID )).addPipeListener( aPipeListener );
     } catch ( Exception e ) {
       throw new P2PFacadeException("An error occured while adding pipe listener", e);
     }
   }
-  
+
   public void addUserInfoListener(iUserInfoListener aListener) throws P2PFacadeException{
     if(!isStarted()) throw new P2PFacadeException("Can not execute this action when the server is not started");
-    
+
     try {
       ((UserInfoProtocol)myContainer.getProtocol( UserInfoProtocol.ID )).addUserInfoListener( aListener );
     } catch ( Exception e ) {
       throw new P2PFacadeException("An error occured while adding user info listener", e);
     }
   }
-  
+
   public Map< String, UserInfo > getUserInfo() throws P2PFacadeException{
     if(!isStarted()) throw new P2PFacadeException("Can not execute this action when the server is not started");
-    
+
     try {
       return ((UserInfoProtocol)myContainer.getProtocol( UserInfoProtocol.ID )).getUserInfo();
     } catch ( Exception e ) {
       throw new P2PFacadeException("An error occured while getting user info", e);
     }
   }
-  
+
   public String getPeerId() throws P2PFacadeException{
     if(!isStarted()) throw new P2PFacadeException("Can not execute this action when the server is not started");
-    
+
     try {
       return ((RoutingProtocol)myContainer.getProtocol( RoutingProtocol.ID )).getLocalPeerId();
     } catch ( Exception e ) {
       throw new P2PFacadeException("An error occured while retrieving peer id", e);
     }
   }
-  
+
   public Peer getPeer(String aPeerId) throws P2PFacadeException{
     if(!isStarted()) throw new P2PFacadeException("Can not execute this action when the server is not started");
-    
+
     try {
       return ((RoutingProtocol)myContainer.getProtocol( RoutingProtocol.ID )).getRoutingTable().getEntryForPeer( aPeerId ).getPeer();
     } catch ( Exception e ) {
       throw new P2PFacadeException("An error occured while retrieving peer id", e);
     }
   }
-  
+
+  public MessageArchive getMessageArchive() throws P2PFacadeException {
+    if(!isStarted()) throw new P2PFacadeException("Can not execute this action when the server is not started");
+
+    try{
+      if(myMessageArchive == null){
+        myMessageArchive = new MessageArchive(((MultiPeerMessageProtocol)myContainer.getProtocol( MultiPeerMessageProtocol.ID )));
+      }
+      return myMessageArchive;
+    }catch(Exception e){
+      throw new P2PFacadeException("An error occured while creationg message archive", e);
+    }
+  }
+
   public boolean isStarted(){
     if(myProtocolServer == null) return false;
     return myProtocolServer.isStarted();
   }
-  
+
   public P2PFacade start(int aNumberOfThreads) throws P2PFacadeException{
     if(isStarted()) return this;
-    
+
     try{
-    ProtocolFactory theFactory = new ProtocolFactory(myProperties);
-    myContainer = new ProtocolContainer(theFactory);
-    myProtocolServer = new ProtocolServer(myContainer, RoutingProtocol.START_PORT, aNumberOfThreads, true);
-    myProtocolServer.start();
-    
-    //we retrieve the routing protcol
-    //this way it is instantiated and start exchanging routing information
-    myContainer.getProtocol( RoutingProtocol.ID );
-    
-    //retrieve the user info protocol
-    //this way it is instantiated and listens for routing table changes and retrieves user info of the changed peers
-    myContainer.getProtocol( UserInfoProtocol.ID );
-    return this;
+      ProtocolFactory theFactory = new ProtocolFactory(myProperties);
+      myContainer = new ProtocolContainer(theFactory);
+      myProtocolServer = new ProtocolServer(myContainer, RoutingProtocol.START_PORT, aNumberOfThreads, true);
+      myProtocolServer.start();
+
+      //we retrieve the routing protcol
+      //this way it is instantiated and start exchanging routing information
+      myContainer.getProtocol( RoutingProtocol.ID );
+
+      //retrieve the user info protocol
+      //this way it is instantiated and listens for routing table changes and retrieves user info of the changed peers
+      myContainer.getProtocol( UserInfoProtocol.ID );
+      return this;
     }catch(Exception e){
       throw new P2PFacadeException("Could not start P2P Facade", e);
     }
   }
-  
+
   public P2PFacade stop(){
     if(myProtocolServer != null){
       myProtocolServer.stop();
     }
     return this;
   }
-  
+
 }
