@@ -7,6 +7,8 @@ package chabernac.protocol;
 import java.util.Map;
 import java.util.Properties;
 
+import javax.activation.DataSource;
+
 import chabernac.protocol.echo.EchoProtocol;
 import chabernac.protocol.encryption.EncryptionException;
 import chabernac.protocol.encryption.EncryptionProtocol;
@@ -36,7 +38,8 @@ public class ProtocolFactory implements iProtocolFactory{
       long theExchangeDelay = Long.parseLong( myProtocolProperties.getProperty( "routingprotocol.exchangedelay",  "300").toString() );
       boolean isPersistRoutingTable = Boolean.parseBoolean(myProtocolProperties.getProperty( "routingprotocol.persist",  "true").toString());
       String thePeerId = myProtocolProperties.getProperty( "peerid", "" ).toString();
-      return new RoutingProtocol(thePeerId, theExchangeDelay, isPersistRoutingTable);
+      DataSource theSuperNodesDataSource = (DataSource)myProtocolProperties.getProperty( "routingprotocol.supernodes", null);
+      return new RoutingProtocol(thePeerId, theExchangeDelay, isPersistRoutingTable, theSuperNodesDataSource);
     }
 
     if(EchoProtocol.ID.equalsIgnoreCase( aProtocolId )) {

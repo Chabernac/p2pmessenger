@@ -6,10 +6,11 @@ package chabernac.tools;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,13 +47,12 @@ public class IOTools {
     anOutputStream.flush();
   }
   
-  public static List<String> loadFileAsList(File aFile){
+  public static List<String> loadStreamAsList(InputStream anInputStream){
     List<String> theList = new ArrayList< String >();
-    if(!aFile.exists()) return theList;
     
     BufferedReader theReader = null;
     try{
-      theReader = new BufferedReader(new FileReader(aFile));
+      theReader = new BufferedReader(new InputStreamReader(anInputStream));
       String theLine = null;
       while((theLine = theReader.readLine()) != null){
         theList.add(theLine);
@@ -71,5 +71,24 @@ public class IOTools {
       }
     }
     return theList;
+  }
+  
+  public static List<String> loadFileAsList(File aFile){
+    if(!aFile.exists()) return new ArrayList< String >();
+    FileInputStream theInput = null;
+    try{
+      theInput = new FileInputStream(aFile);
+      return loadStreamAsList( theInput );
+    } catch ( FileNotFoundException e ) {
+      return new ArrayList< String >();
+    } finally {
+      if(theInput != null){
+        try {
+          theInput.close();
+        } catch ( IOException e ) {
+        }
+      }
+    }
+
   }
 }

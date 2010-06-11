@@ -260,9 +260,11 @@ public class P2PFacadeTest extends TestCase {
 
       assertEquals( times, theArchive1.getDeliveryReports().size());
       assertEquals( 0, theArchive1.getReceivedMessages().size());
+      assertEquals( times, theArchive1.getAllMessages().size());
       
       assertEquals( 0, theArchive2.getDeliveryReports().size());
       assertEquals( times, theArchive2.getReceivedMessages().size());
+      assertEquals( times, theArchive2.getAllMessages().size());
 
       for(Map< String, DeliveryReport > theReportsPerPeer : theArchive1.getDeliveryReports().values()){
         for(DeliveryReport theReport : theReportsPerPeer.values()){
