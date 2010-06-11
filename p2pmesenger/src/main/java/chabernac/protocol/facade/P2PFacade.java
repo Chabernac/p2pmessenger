@@ -10,6 +10,8 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
+import javax.activation.DataSource;
+
 import chabernac.protocol.ProtocolContainer;
 import chabernac.protocol.ProtocolException;
 import chabernac.protocol.ProtocolFactory;
@@ -90,6 +92,12 @@ public class P2PFacade {
   public P2PFacade setPeerId(String aPeerId) throws P2PFacadeException{
     if(isStarted()) throw new P2PFacadeException("Can not set this property when the server has already been started");
     myProperties.setProperty("peerid", aPeerId);
+    return this;
+  }
+  
+  public P2PFacade setSuperNodesDataSource(DataSource aDataSource) throws P2PFacadeException{
+    if(isStarted()) throw new P2PFacadeException("Can not set this property when the server has already been started");
+    myProperties.setProperty("routingprotocol.supernodes", aDataSource);
     return this;
   }
 

@@ -7,9 +7,11 @@ package chabernac.protocol.message;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * This class will collect send and received messages
@@ -37,6 +39,8 @@ public class MessageArchive implements iDeliverReportListener, iMultiPeerMessage
     aMultiPeerMessageProtocol.addDeliveryReportListener( this );
     aMultiPeerMessageProtocol.addMultiPeerMessageListener( this );
   }
+  
+  private Set< MultiPeerMessage > myAllMessages = Collections.synchronizedSet( new HashSet< MultiPeerMessage >() );
 
   @Override
   public void acceptDeliveryReport( DeliveryReport aDeliverReport ) {
@@ -46,11 +50,13 @@ public class MessageArchive implements iDeliverReportListener, iMultiPeerMessage
     }
     Map<String, DeliveryReport> theDeliveryreportsForMultiPeerMessage = myDeliveryReports.get( aDeliverReport.getMultiPeerMessage() );
     theDeliveryreportsForMultiPeerMessage.put( aDeliverReport.getMessage().getDestination().getPeerId(), aDeliverReport );
+    myAllMessages.add( aDeliverReport.getMultiPeerMessage() );
   }
 
   @Override
   public void messageReceived( MultiPeerMessage aMessage ) {
     myReceivedMessages.add(aMessage);
+    myAllMessages.add( aMessage );
   }
 
   public List< MultiPeerMessage > getReceivedMessages() {
@@ -65,4 +71,10 @@ public class MessageArchive implements iDeliverReportListener, iMultiPeerMessage
   public Map<String, DeliveryReport> getDeliveryReportsForMultiPeerMessage(MultiPeerMessage aMessage){
     return Collections.unmodifiableMap( myDeliveryReports.get(aMessage) );
   }
+
+  public Set< MultiPeerMessage > getAllMessages() {
+    return Collections.unmodifiableSet( myAllMessages );
+  }
+  
+  
 }

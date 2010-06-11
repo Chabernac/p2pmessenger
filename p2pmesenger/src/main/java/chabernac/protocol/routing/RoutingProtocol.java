@@ -9,6 +9,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.DatagramPacket;
@@ -26,6 +27,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
+
+import javax.activation.DataSource;
+import javax.activation.FileDataSource;
 
 import org.apache.log4j.Logger;
 
@@ -90,9 +94,7 @@ public class RoutingProtocol extends Protocol {
 
   private boolean isPeerIdInFile = false;
 
-  public RoutingProtocol ( long anExchangeDelay, boolean isPersistRoutingTable) {
-    this(null, anExchangeDelay, isPersistRoutingTable);
-  }
+  private DataSource mySuperNodesDataSource = new FileDataSource("supernodes.txt");
 
   /**
    * 
@@ -100,7 +102,7 @@ public class RoutingProtocol extends Protocol {
    * @param aRoutingTable
    * @param anExchangeDelay the delay in seconds between exchaning routing tables with other peers
    */
-  public RoutingProtocol ( String aLocalPeerId, long anExchangeDelay, boolean isPersistRoutingTable) {
+  public RoutingProtocol ( String aLocalPeerId, long anExchangeDelay, boolean isPersistRoutingTable, DataSource aSuperNodesDataSource) {
     super( ID );
     myLocalPeerId = aLocalPeerId;
     myExchangeDelay = anExchangeDelay;
@@ -110,6 +112,10 @@ public class RoutingProtocol extends Protocol {
       isPeerIdInFile = true;
     } else {
       isPeerIdInFile = false;
+    }
+    
+    if(aSuperNodesDataSource != null){
+      mySuperNodesDataSource = aSuperNodesDataSource;
     }
     start();
   }
@@ -327,9 +333,13 @@ public class RoutingProtocol extends Protocol {
 
   public void scanSuperNodes(){
     if(myRoutingProtocolMonitor != null) myRoutingProtocolMonitor.scanningSuperNodes();
-    List<String> theIps = IOTools.loadFileAsList( new File("supernodes.txt") );
-    for(String theIp : theIps){
-      myScannerService.execute( new ScanSystem(RoutingProtocol.this, theIp, START_PORT, myUnreachablePeers));
+    try{
+      List<String> theIps = IOTools.loadStreamAsList( mySuperNodesDataSource.getInputStream() );
+      for(String theIp : theIps){
+        myScannerService.execute( new ScanSystem(RoutingProtocol.this, theIp, START_PORT, myUnreachablePeers));
+      }
+    }catch(IOException e){
+      LOGGER.error("An error occured while scanning super nodes", e);
     }
   }
 
@@ -395,7 +405,7 @@ public class RoutingProtocol extends Protocol {
     }
     myExchangeCounter.incrementAndGet();
     LOGGER.debug("End exchanging routing table for peer: " + myRoutingTable.getLocalPeerId());
-    
+
     //save the routing table
     if(isPersistRoutingTable) saveRoutingTable();
   }
