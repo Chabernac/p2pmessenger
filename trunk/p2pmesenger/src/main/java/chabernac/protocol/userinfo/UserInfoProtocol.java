@@ -35,16 +35,16 @@ public class UserInfoProtocol extends Protocol {
   public static final String ID = "UIP";
 
   public static enum Command { GET, PUT };
-  public static enum Response{ OK };
+  public static enum Response{ OK, NOK };
 
   private Map<String, UserInfo> myUserInfo = new HashMap< String, UserInfo >();
 
   private ExecutorService myRetrievalService = Executors.newFixedThreadPool( 5 );
 
   private iUserInfoProvider myUserInfoProvider = null;
-  
+
   private List< iUserInfoListener > myListeners = new ArrayList< iUserInfoListener >();
-  
+
   private MyUserInfoListener myUserInfoListener = new MyUserInfoListener();
 
   public UserInfoProtocol ( iUserInfoProvider aProvider ) throws UserInfoException{
@@ -54,17 +54,21 @@ public class UserInfoProtocol extends Protocol {
     addUserInfoListener();
   }
 
-  private void addUserInfoListener(){
+  private void addUserInfoListener() throws UserInfoException{
     myUserInfoProvider.getUserInfo().addObserver( myUserInfoListener );
   }
-  
+
   public void setUserInfoProvider(iUserInfoProvider aUserInfoProvider){
-    if(myUserInfoProvider != null){
-      myUserInfoProvider.getUserInfo().deleteObserver( myUserInfoListener );
+    try {
+      if(myUserInfoProvider != null){
+        myUserInfoProvider.getUserInfo().deleteObserver( myUserInfoListener );
+      }
+      myUserInfoProvider = aUserInfoProvider;
+      addUserInfoListener();
+      announceMe();
+    } catch ( UserInfoException e ) {
+      LOGGER.error("Unable to retrieve user info", e);
     }
-    myUserInfoProvider = aUserInfoProvider;
-    addUserInfoListener();
-    announceMe();
   }
 
   public void setMasterProtocol( IProtocol aProtocol ) {
@@ -121,7 +125,12 @@ public class UserInfoProtocol extends Protocol {
   @Override
   public String handleCommand( long aSessionId, String anInput ) {
     if(Command.GET.name().equalsIgnoreCase( anInput )){
-      return XMLTools.toXML( getPersonalInfo() );
+      try {
+        return XMLTools.toXML( getPersonalInfo() );
+      } catch ( UserInfoException e ) {
+        LOGGER.error( "Could not retrieve personal user info", e );
+        return Response.NOK.name();
+      }
     }
     if(anInput.startsWith( Command.PUT.name() ) ){
       String[] theParts = anInput.split( ";" );
@@ -134,7 +143,7 @@ public class UserInfoProtocol extends Protocol {
 
     return ProtocolContainer.Response.UNKNOWN_COMMAND.name();
   }
-  
+
   private void notifyUserInfoChanged(UserInfo aUserInfo){
     for(iUserInfoListener theListener : myListeners){
       theListener.userInfoChanged( aUserInfo, Collections.unmodifiableMap( myUserInfo ));
@@ -180,14 +189,14 @@ public class UserInfoProtocol extends Protocol {
     return Collections.unmodifiableMap( myUserInfo );
   }
 
-  public UserInfo getPersonalInfo() {
+  public UserInfo getPersonalInfo() throws UserInfoException{
     return myUserInfoProvider.getUserInfo();
   }
-  
+
   public void addUserInfoListener(iUserInfoListener aListener){
     myListeners.add(aListener);
   }
-  
+
   public void removeUserInfoListener(iUserInfoListener aListener){
     myListeners.remove( aListener );
   }

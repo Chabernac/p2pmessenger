@@ -274,6 +274,13 @@ public class P2PFacade {
     }
   }
 
+  /**
+   * this method returns a map with user info
+   * key: peer id
+   * 
+   * @return
+   * @throws P2PFacadeException
+   */
   public Map< String, UserInfo > getUserInfo() throws P2PFacadeException{
     if(!isStarted()) throw new P2PFacadeException("Can not execute this action when the server is not started");
 
