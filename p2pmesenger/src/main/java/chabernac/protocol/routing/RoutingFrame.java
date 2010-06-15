@@ -7,7 +7,6 @@ package chabernac.protocol.routing;
 import java.awt.BorderLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.Properties;
 import java.util.UUID;
 
 import javax.swing.JFrame;
