@@ -48,13 +48,19 @@ public class UserPanel extends GPanel implements iUserSelectionProvider{
   
   private Map<String, StatusCheckBox> myCheckBoxes = Collections.synchronizedMap( new LinkedHashMap< String, StatusCheckBox >());
   private List< Component > myCheckBoxesList = new ArrayList< Component >();
+  
   private iPaintable mySeperator = null;
 
   public UserPanel(P2PFacade aP2PFacade) throws P2PFacadeException{
     myP2PFacade = aP2PFacade;
+    init();
     buildGUI();
     addListener();
     buildActionMap();
+  }
+  
+  private void init() throws P2PFacadeException{
+    new UserListPanelPopup(this, myP2PFacade);
   }
 
   private void buildGUI(){
@@ -86,17 +92,18 @@ public class UserPanel extends GPanel implements iUserSelectionProvider{
             myCheckBoxesList.add( theCheckBox );
             add( theCheckBox );
           }
-          JCheckBox theCheckBox = myCheckBoxes.get( thePeerId );
+          StatusCheckBox theCheckBox = myCheckBoxes.get( thePeerId );
           modifyCheckBoxForUser(theCheckBox, aUserList.get( thePeerId ));
         }
       }
     });
   }
   
-  private void modifyCheckBoxForUser( JCheckBox anCheckBox, UserInfo anUserInfo ) {
+  private void modifyCheckBoxForUser( StatusCheckBox anCheckBox, UserInfo anUserInfo ) {
     anCheckBox.setText(  getLabelForUser(anUserInfo) );
     anCheckBox.setToolTipText( getToolTipForUser(anUserInfo) );
     anCheckBox.setForeground( getColorForStatus(anUserInfo) );
+    anCheckBox.setStatus( anUserInfo.getStatus() );
   }
 
   private Color getColorForStatus( UserInfo anUserInfo ) {
@@ -217,11 +224,25 @@ public class UserPanel extends GPanel implements iUserSelectionProvider{
 
   @Override
   public void setSelectedUsers( List< String > aUserList ) {
+    //fist clear all checkboxes
+    for(JCheckBox theCheckBox : myCheckBoxes.values()){
+      theCheckBox.setSelected( false );
+    }
+    
+    //now select the ones from the list
     for(String thePeerId : aUserList){
       JCheckBox theCheckBox = myCheckBoxes.get( thePeerId );
       if(theCheckBox != null){
         theCheckBox.setSelected( true );
       }
     }
+  }
+  
+  Map< String, StatusCheckBox > getCheckBoxes() {
+    return myCheckBoxes;
+  }
+
+  List< Component > getCheckBoxesList() {
+    return myCheckBoxesList;
   }
 }
