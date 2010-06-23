@@ -12,17 +12,15 @@ import java.awt.Rectangle;
 
 import javax.swing.JCheckBox;
 
-import org.apache.log4j.Logger;
-
 import chabernac.image.ImageFactory;
 import chabernac.paint.Selector;
 import chabernac.preference.ApplicationPreferences;
 import chabernac.protocol.userinfo.UserInfo.Status;
 
 public class StatusCheckBox extends JCheckBox {
-  private static Logger logger = Logger.getLogger(StatusCheckBox.class);
+  private static final long serialVersionUID = 7265127493485601206L;
+//  private static Logger logger = Logger.getLogger(StatusCheckBox.class);
   private Status myStatus = Status.ONLINE;
-  //private Insets myMargin = null;
   private static final Insets STATUS_MARGIN = new Insets(0,18,0,0);
   private static final Insets DEFAULT_MARGIN = new Insets(0,0,0,0);
   
@@ -58,6 +56,7 @@ public class StatusCheckBox extends JCheckBox {
     } else  {
       setMargin(DEFAULT_MARGIN);
     }
+    repaint();
   }
   
   public Status getStatus(){
@@ -75,7 +74,6 @@ public class StatusCheckBox extends JCheckBox {
     if(drawImage()){
       Image theImage = ImageFactory.loadImage("status_" + myStatus, true);
       if(theImage != null){
-        logger.debug("Image x location: " + (getWidth() - theImage.getWidth(null) - 2));
         g.drawImage(theImage, 3, (getHeight() / 2) - (theImage.getHeight(null) / 2), null);
       }
       
@@ -84,9 +82,5 @@ public class StatusCheckBox extends JCheckBox {
       theSelector.setHalf(true);
       theSelector.paint(g);
     }
-    
   }
-  
-  
-  
 }
