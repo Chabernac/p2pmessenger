@@ -20,4 +20,9 @@ public class DummyUserSelectionProvider implements iUserSelectionProvider {
     mySelectedUsers = aUserList;
   }
 
+  @Override
+  public void clear() {
+    mySelectedUsers.clear();
+  }
+
 }

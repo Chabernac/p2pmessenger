@@ -25,10 +25,10 @@ public class UserListPanelPopup extends GPanelPopupMenu {
   private static final Logger logger = Logger.getLogger(UserListPanelPopup.class);
 
   private UserPanel myPanel = null;
-  private P2PFacade myMediator = null;
+  private ChatMediator myMediator = null;
   private String lastSelectedGroup = "";
 
-  public UserListPanelPopup(UserPanel aPanel, P2PFacade aMediator) throws P2PFacadeException{
+  public UserListPanelPopup(UserPanel aPanel, ChatMediator aMediator) throws P2PFacadeException{
     super(aPanel);
     myPanel = aPanel;
     myMediator = aMediator;
@@ -159,7 +159,7 @@ public class UserListPanelPopup extends GPanelPopupMenu {
 
     public StatusCommand(Status aStatus) throws P2PFacadeException{
       myStatus = aStatus;
-      myMediator.getPersonalInfo().addObserver( this );
+      myMediator.getP2PFacade().getPersonalInfo().addObserver( this );
     }
 
     public String getName() {
@@ -175,7 +175,7 @@ public class UserListPanelPopup extends GPanelPopupMenu {
 
     public void execute() {
       try {
-        myMediator.getPersonalInfo().setStatus( myStatus );
+        myMediator.getP2PFacade().getPersonalInfo().setStatus( myStatus );
       } catch ( P2PFacadeException e ) {
         logger.error( "Unable to execute status command", e );
       }
@@ -184,7 +184,7 @@ public class UserListPanelPopup extends GPanelPopupMenu {
     @Override
     public void update( Observable anO, Object anArg ) {
       try {
-        myCurrentStatus = myMediator.getPersonalInfo().getStatus();
+        myCurrentStatus = myMediator.getP2PFacade().getPersonalInfo().getStatus();
         notifyObs();
       } catch ( P2PFacadeException e ) {
         logger.error( "Could not retrieve status", e );

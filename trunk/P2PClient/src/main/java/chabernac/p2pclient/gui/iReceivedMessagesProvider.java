@@ -4,10 +4,7 @@
  */
 package chabernac.p2pclient.gui;
 
-public interface iMessageProvider {
-  public String getMessage();
-  public void setMessage(String aMessage);
+public interface iReceivedMessagesProvider {
   public void clear();
-  public void setMessageTitle(String aMessage);
-  public String getMessageTitle();
+  public String getHTML();
 }
