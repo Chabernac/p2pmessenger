@@ -198,6 +198,12 @@ public class P2PFacadeTest extends TestCase {
     Thread.sleep( 2000 );
 
     try{
+      assertEquals( "Guy", theFacade1.getPersonalInfo().getName());
+      assertEquals( "guy.chauliac@gmail.com", theFacade1.getPersonalInfo().getEMail());
+      
+      assertEquals( "Leslie", theFacade2.getPersonalInfo().getName());
+      assertEquals( "leslie.torreele@gmail.com", theFacade2.getPersonalInfo().getEMail());
+      
       UserInfo theUserInfoOfFacade1 = theFacade2.getUserInfo().get( theFacade1.getPeerId() );
       assertEquals( "Guy", theUserInfoOfFacade1.getName() );
       assertEquals( "guy.chauliac@gmail.com", theUserInfoOfFacade1.getEMail() );
