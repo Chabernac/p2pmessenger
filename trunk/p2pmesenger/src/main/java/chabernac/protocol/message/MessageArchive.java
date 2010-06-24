@@ -69,12 +69,17 @@ public class MessageArchive implements iDeliverReportListener, iMultiPeerMessage
   }
   
   public Map<String, DeliveryReport> getDeliveryReportsForMultiPeerMessage(MultiPeerMessage aMessage){
-    return Collections.unmodifiableMap( myDeliveryReports.get(aMessage) );
+    Map<String, DeliveryReport> theDeliveryReports = myDeliveryReports.get(aMessage);
+    if(theDeliveryReports == null) return new HashMap< String, DeliveryReport >();
+    return Collections.unmodifiableMap( theDeliveryReports );
   }
 
   public Set< MultiPeerMessage > getAllMessages() {
     return Collections.unmodifiableSet( myAllMessages );
   }
-  
+
+  public void clearDeliveryReports(){
+    myDeliveryReports.clear();
+  }
   
 }

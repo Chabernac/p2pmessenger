@@ -27,6 +27,7 @@ import chabernac.protocol.routing.Peer;
 import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.RoutingTable;
 import chabernac.protocol.routing.RoutingTableEntry;
+import chabernac.protocol.userinfo.UserInfo.Status;
 import chabernac.tools.XMLTools;
 
 public class UserInfoProtocol extends Protocol {
@@ -152,7 +153,11 @@ public class UserInfoProtocol extends Protocol {
 
   @Override
   public void stop() {
-    // TODO Auto-generated method stub
+    try {
+      getPersonalInfo().setStatus( Status.OFFLINE );
+    } catch ( UserInfoException e ) {
+      LOGGER.error( "Error occured while stopping user info protocol", e );
+    }
   }
 
   public UserInfo getUserInfoForPeer(String aPeerId) throws UserInfoException{
@@ -242,7 +247,13 @@ public class UserInfoProtocol extends Protocol {
     public void routingTableEntryChanged( RoutingTableEntry anEntry ) {
       if(!myUserInfo.containsKey( anEntry.getPeer() )){
         myRetrievalService.execute( new UserInfoRetriever(anEntry.getPeer().getPeerId()) );
-      }
+      } 
+//      else if(anEntry.getHopDistance() == RoutingTableEntry.MAX_HOP_DISTANCE){
+//        //this peer has gone offline, we can not retrieve the user information but we must change the user info
+//        UserInfo theUserInfo = myUserInfo.get(anEntry.getPeer()); 
+//        theUserInfo.setStatus( Status.OFFLINE );
+//        notifyUserInfoChanged( theUserInfo );
+//      }
     }
   }
 

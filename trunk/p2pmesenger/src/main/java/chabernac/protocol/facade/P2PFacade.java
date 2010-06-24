@@ -120,7 +120,7 @@ public class P2PFacade {
     }
     return this;
   }
-
+  
   public Future<Boolean> sendFile(final File aFile, final String aPeerId, ExecutorService aService) {
     return aService.submit(  new Callable< Boolean >(){
 
@@ -286,6 +286,16 @@ public class P2PFacade {
 
     try {
       return ((UserInfoProtocol)myContainer.getProtocol( UserInfoProtocol.ID )).getUserInfo();
+    } catch ( Exception e ) {
+      throw new P2PFacadeException("An error occured while getting user info", e);
+    }
+  }
+  
+  public UserInfo getPersonalInfo() throws P2PFacadeException{
+    if(!isStarted()) throw new P2PFacadeException("Can not execute this action when the server is not started");
+
+    try {
+      return ((UserInfoProtocol)myContainer.getProtocol( UserInfoProtocol.ID )).getPersonalInfo();
     } catch ( Exception e ) {
       throw new P2PFacadeException("An error occured while getting user info", e);
     }
