@@ -6,6 +6,7 @@ package chabernac.p2pclient.gui;
 
 public class DummyMessageProvider implements iMessageProvider {
   private String myMessage = "";
+  private String myMessageTitle = "";
 
   @Override
   public void clear() {
@@ -20,6 +21,16 @@ public class DummyMessageProvider implements iMessageProvider {
   @Override
   public void setMessage( String aMessage ) {
     myMessage = aMessage;
+  }
+
+  @Override
+  public String getMessageTitle() {
+    return myMessageTitle;
+  }
+
+  @Override
+  public void setMessageTitle( String aMessageTitle ) {
+    myMessageTitle = aMessageTitle;
   }
 
 }

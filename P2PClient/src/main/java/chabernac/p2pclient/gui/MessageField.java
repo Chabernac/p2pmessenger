@@ -21,7 +21,6 @@ import java.awt.event.MouseWheelListener;
 import java.awt.im.InputContext;
 import java.io.File;
 import java.io.IOException;
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,16 +40,11 @@ import javax.swing.text.JTextComponent;
 
 import org.apache.log4j.Logger;
 
-import chabernac.chat.Message;
-import chabernac.chat.gui.event.SelectUsersEvent;
-import chabernac.event.ApplicationEventDispatcher;
 import chabernac.event.Event;
 import chabernac.event.iEventListener;
-import chabernac.messengerservice.event.MessageSelectedEvent;
-import chabernac.messengerservice.event.MessageSendEvent;
 
 
-public class MessageField extends JTextArea{
+public class MessageField extends JTextArea implements iMessageProvider{
   private static Logger logger = Logger.getLogger(MessageField.class);
 
   private ChatMediator myMediator = null;
@@ -62,7 +56,6 @@ public class MessageField extends JTextArea{
     createInputMap();
     buildGUI();
     initDropTarget();
-    addListener();
   }
 
   private void createInputMap(){
@@ -132,105 +125,62 @@ public class MessageField extends JTextArea{
         repaint();
       }
     });
-    
-//    requestFocus();
-//    System.out.println(KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner());
+
   }
 
-  private void addListener(){
-    //myMediator.getMessageArchive().addObserver(new MessageObserver());
-    ApplicationEventDispatcher.addListener(new MessageSendListener(), MessageSendEvent.class);
-    ApplicationEventDispatcher.addListener(new MessageSelectedListener(), MessageSelectedEvent.class);
-    addMouseWheelListener(new MyMouseWheelListener());
-  }
-  
   private class MessageSendListener implements iEventListener{
     public void eventFired(Event anEvt) {
       clear();
     }
-    
+
   }
 
   private class PreviousAction extends AbstractAction{
     public void actionPerformed(ActionEvent evt){
-      previous();
+      myMediator.restorePreviousMessage();
     }
   }
-  
-  private void previous(){
-    myMediator.save();
-    myMediator.getMessageArchive().previous();
-  }
+
 
   private class NextAction extends AbstractAction{
     public void actionPerformed(ActionEvent evt){
-      next();
-    }
-  }
-  
-  private void next(){
-    myMediator.save();
-    myMediator.getMessageArchive().next();
-    if(myMediator.getMessageArchive().getSelectedMessage() == null){
-      selectUsersFromLastMessage();
-    }
-  }
-  
-  private void selectUsersFromLastMessage(){
-    ArrayList theSendMessages = myMediator.getMessageArchive().getSendMessages();
-    if(theSendMessages.size() > 0){
-      Message theMessage = (Message)theSendMessages.get(theSendMessages.size() - 1);
-      ApplicationEventDispatcher.fireEvent(new SelectUsersEvent(theMessage.getTo()));
+      myMediator.restoreNextMesssage();
     }
   }
 
   private class FirstAction extends AbstractAction{
     public void actionPerformed(ActionEvent evt){
-      myMediator.save();
-      myMediator.getMessageArchive().setSelectedMessage(0);
+      myMediator.restoreFirstMessage();
     }
   }
 
   private class LastAction extends AbstractAction{
     public void actionPerformed(ActionEvent evt){
-      myMediator.save();
-      myMediator.getMessageArchive().setSelectedMessage(myMediator.getMessageArchive().getLastMessageSend());
-      if(myMediator.getMessageArchive().getSelectedMessage() == null){
-        selectUsersFromLastMessage();
-      }
+      myMediator.restoreLastMessage();
     }
   }
 
   private class DeleteAction extends AbstractAction{
     public void actionPerformed(ActionEvent evt){
-      myMediator.getMessageArchive().removeMessage(myMediator.getMessageArchive().getSelectedMessage());      
+      myMediator.deleteCurrentMessage();      
     }
   }
 
   private class ClearAction extends AbstractAction{
     public void actionPerformed(ActionEvent evt){
-      if(getText().trim().equals("")){
-        myMediator.getMessageArchive().setSelectedMessage(null);
-        //myMediator.getUserListPanel().clear();
-      } else {
-        clear();
-      }
+      myMediator.clear();
     }
   }
 
   private class ClearUsersAction extends AbstractAction{
     public void actionPerformed(ActionEvent evt){
-      myMediator.getUserListPanel().clear();
+      myMediator.clearAll();
     }
   }
 
   private class SendAction extends AbstractAction{
     public void actionPerformed(ActionEvent evt){
-      try {
-        myMediator.send();
-      } catch (RemoteException e) {
-        logger.error("An error occured while sending message", e);
-      }
+      myMediator.send();
     }
   }
 
@@ -242,82 +192,43 @@ public class MessageField extends JTextArea{
 
   private class ReplyAction extends AbstractAction{
     public void actionPerformed(ActionEvent evt){
-      try{
-        Message theLastMessage = myMediator.getMessageArchive().getLastMessageReceivedFromOther();
-        if(theLastMessage != null){
-          ArrayList replyTo = new ArrayList();
-          replyTo.add(theLastMessage.getFrom());
-          ApplicationEventDispatcher.fireEvent(new SelectUsersEvent(replyTo));
-        }
-      }catch(RemoteException e){
-        logger.error("An error occured in reply all action", e);
-      }
-
+      myMediator.selectReplyUsers();
     }
   }
 
   private class ReplyAllAction extends AbstractAction{
     public void actionPerformed(ActionEvent evt){
-      try{
-        Message theLastMessage = myMediator.getMessageArchive().getLastMessageReceivedFromOther();
-        if(theLastMessage != null){
-          Message theReplyMessage = theLastMessage.replyAll(myMediator.getMessengerClientService().getUser().getUserName());
-          ApplicationEventDispatcher.fireEvent(new SelectUsersEvent(theReplyMessage.getTo()));
-        }
-      }catch(RemoteException e){
-        logger.error("An error occured in reply all action", e);
-      }
+      myMediator.selectReplyAllUsers();
     }
   }
-  
+
   private class UnlockAction extends AbstractAction{
-	  public void actionPerformed(ActionEvent evt){
-		 EventQueue theEventQueue = Toolkit.getDefaultToolkit().getSystemEventQueue();
-	  }
+    public void actionPerformed(ActionEvent evt){
+      EventQueue theEventQueue = Toolkit.getDefaultToolkit().getSystemEventQueue();
+    }
   }
-  
+
   private class MyMouseWheelListener implements MouseWheelListener{
 
     public void mouseWheelMoved(MouseWheelEvent anEvent) {
       int theNumber = anEvent.getWheelRotation();
       while(theNumber != 0){
         if(theNumber < 0) {
-          previous();
+          myMediator.restorePreviousMessage();
           theNumber++;
         }
         if(theNumber > 0) {
-          next();
+          myMediator.restoreNextMesssage();
           theNumber --;
         }
       }
     }
-    
-  }
 
-
-  private class MessageSelectedListener implements iEventListener{
-    
-
-    public void eventFired(Event anEvt) {
-        Message theMessage = ((MessageSelectedEvent)anEvt).getMessage();
-        if(theMessage != null){
-          setText(theMessage.getMessage());
-          myAttachments = theMessage.getAttachments();
-          String theTitle = (myMediator.getMessageArchive().getSendMessages().indexOf(theMessage) + 1) + "/" + myMediator.getMessageArchive().getSendMessages().size();
-          theTitle += theMessage.isSend() ? " - verstuurd" : " - niet verstuurd";
-          myBorder.setTitle(theTitle);
-        } else {
-          clear();
-          //setText("");
-          //myBorder.setTitle("Nieuw bericht");
-        }
-        repaint();
-      }
   }
 
   private class NewFileTransferHandler extends TransferHandler implements  UIResource {
     public void exportToClipboard(JComponent comp, Clipboard clipboard,
-        int action) {
+                                  int action) {
       if (comp instanceof JTextComponent) {
         JTextComponent text = (JTextComponent)comp;
         int p0 = text.getSelectionStart();
@@ -381,7 +292,7 @@ public class MessageField extends JTextArea{
     }
 
     public boolean canImport(JComponent comp,
-        DataFlavor[] transferFlavors) {
+                             DataFlavor[] transferFlavors) {
       JTextComponent c = (JTextComponent)comp;
       if (!(c.isEditable() && c.isEnabled())) {
         return false;
@@ -414,5 +325,24 @@ public class MessageField extends JTextArea{
 
   }
 
+  @Override
+  public String getMessage() {
+    return getText();
+  }
 
+  @Override
+  public String getMessageTitle() {
+    return myBorder.getTitle();
+  }
+
+  @Override
+  public void setMessage( String aMessage ) {
+    setText( aMessage );
+  }
+
+  @Override
+  public void setMessageTitle( String aMessage ) {
+    myBorder.setTitle( aMessage );
+    repaint();
+  }
 }

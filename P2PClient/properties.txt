@@ -1,0 +1,8 @@
+#Application preferences
+#Thu Jun 24 17:44:22 CEST 2010
+chat.light.dividerlocation=80
+frame.light.size.width=496
+frame.light.size.height=217
+frame.light.location.y=347
+frame.light.location.x=285
+userlist.font.size=9

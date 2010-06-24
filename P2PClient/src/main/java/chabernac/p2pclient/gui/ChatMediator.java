@@ -10,15 +10,24 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import org.apache.log4j.Logger;
+
+import chabernac.preference.ApplicationPreferences;
 import chabernac.protocol.facade.P2PFacade;
 import chabernac.protocol.facade.P2PFacadeException;
 import chabernac.protocol.message.MessageArchive;
 import chabernac.protocol.message.MultiPeerMessage;
+import chabernac.tools.Tools;
 
 public class ChatMediator {
+  private static Logger LOGGER = Logger.getLogger(ChatMediator.class);
+  
   private P2PFacade myP2PFacade = null;
   private iUserSelectionProvider myUserSelectionProvider = null;
   private iMessageProvider myMessageProvider = null;
+  private iReceivedMessagesProvider myReceivedMessagesProvider = null;
+  private iTitleProvider myTitleProvider = null;
+
   private ExecutorService myExecutorService = Executors.newFixedThreadPool( 5 );
 
   private MultiPeerMessage myLastSendMessage = null;
@@ -26,16 +35,12 @@ public class ChatMediator {
   private MessageArchive myMessagArchive = null;
 
   private int myRestoreIndex = -1;
-  
-  
 
-  public ChatMediator ( P2PFacade anFacade , iUserSelectionProvider anUserSelectionProvider , iMessageProvider anMessageProvider ) throws P2PFacadeException {
+  public ChatMediator ( P2PFacade anFacade ) throws P2PFacadeException {
     super();
     setP2PFacade( anFacade );
-    myUserSelectionProvider = anUserSelectionProvider;
-    myMessageProvider = anMessageProvider;
   }
-  
+
   public iMessageProvider getMessageProvider() {
     return myMessageProvider;
   }
@@ -54,13 +59,13 @@ public class ChatMediator {
   }
   public void setUserSelectionProvider( iUserSelectionProvider anUserSelectionProvider ) {
     myUserSelectionProvider = anUserSelectionProvider;
+    myUserSelectionProvider.addSelectionChangedListener( new MySelectionChangedListener() );
   }
 
   public synchronized Future< MultiPeerMessage > send(){
     myLastSendMessage = createMessage();
     Future< MultiPeerMessage > theFuture = myP2PFacade.sendEncryptedMessage( myLastSendMessage, myExecutorService );
-    myMessageProvider.clear();
-    myUserSelectionProvider.setSelectedUsers( new ArrayList< String >() );
+    clear();
     myRestoreIndex = -1;
     myConcept = null;
     return theFuture;
@@ -76,27 +81,44 @@ public class ChatMediator {
   }
 
   public void saveConcept(){
-    myConcept = createMessage();
+    if(!myMessageProvider.getMessage().equals( "" )){
+      myConcept = createMessage();
+    }
   }
 
   public void restoreConcept(){
     restoreMessage( myConcept );
+    if(myConcept != null){
+      myMessageProvider.setMessageTitle( "Concept" );
+    }
   }
 
   private void restoreMessage(MultiPeerMessage aMessage){
     if(aMessage != null){
       myUserSelectionProvider.setSelectedUsers( aMessage.getDestinations() );
+      myUserSelectionProvider.setMultiPeerMessage( aMessage );
       myMessageProvider.setMessage( aMessage.getMessage() );
     } else {
-      myUserSelectionProvider.setSelectedUsers( new ArrayList< String >() );
-      myMessageProvider.clear();
+      clearAll();
     }
+    setTitle();
   }
-  
+
   private void restoreMessageAtIndex(){
     List< MultiPeerMessage > theMessageList = new ArrayList< MultiPeerMessage >(myMessagArchive.getDeliveryReports().keySet());
     MultiPeerMessage theMessage = theMessageList.get( myRestoreIndex );
+    myMessageProvider.setMessageTitle( theMessageList.indexOf( theMessage ) + 1 + "/" + theMessageList.size() );
     restoreMessage( theMessage );
+  }
+
+  public void restoreLastMessage(){
+    myRestoreIndex = myMessagArchive.getDeliveryReports().values().size() - 1;
+    restoreMessageAtIndex();
+  }
+
+  public void restoreFirstMessage(){
+    myRestoreIndex = 0;
+    restoreMessageAtIndex();
   }
 
   public void restorePreviousMessage(){
@@ -107,22 +129,101 @@ public class ChatMediator {
     } else {
       myRestoreIndex--;
     }
-    
-    if(myRestoreIndex < 0){
+
+    if(myRestoreIndex < 0 && !myMessagArchive.getDeliveryReports().isEmpty()){
       myRestoreIndex = 0;
     }
-    
-    restoreMessageAtIndex();
+
+    if(myRestoreIndex >= 0){
+      restoreMessageAtIndex();
+    }
   }
 
   public void restoreNextMesssage(){
     if(myRestoreIndex != -1){
+      myRestoreIndex++;
       if(myRestoreIndex >= myMessagArchive.getDeliveryReports().size()){
         myRestoreIndex = -1;
         restoreConcept();
       } else {
         restoreMessageAtIndex();
       }
+    }
+  }
+
+  public void deleteCurrentMessage() {
+    // TODO Auto-generated method stub
+  }
+
+  public void clearAll(){
+    myUserSelectionProvider.clear();
+    myMessageProvider.clear();
+  }
+
+  public void clear(){
+    if("".equals( myMessageProvider.getMessage() )){
+      myUserSelectionProvider.clear();
+    } else {
+      myMessageProvider.clear();
+    }
+  }
+
+  public void selectReplyUsers(){
+    if(!myMessagArchive.getReceivedMessages().isEmpty()){
+      MultiPeerMessage theMessage = myMessagArchive.getReceivedMessages().get( myMessagArchive.getReceivedMessages().size() - 1 );
+      theMessage = theMessage.reply();
+      myUserSelectionProvider.setSelectedUsers( theMessage.getDestinations() );
+    }
+  }
+
+  public void selectReplyAllUsers(){
+    if(!myMessagArchive.getReceivedMessages().isEmpty()){
+      MultiPeerMessage theMessage = myMessagArchive.getReceivedMessages().get( myMessagArchive.getReceivedMessages().size() - 1 );
+      theMessage = theMessage.replyAll();
+      myUserSelectionProvider.setSelectedUsers( theMessage.getDestinations() );
+    }
+  }
+
+  public void clearReceivedMessages() {
+    myMessagArchive.clearDeliveryReports();
+  }
+
+  public iReceivedMessagesProvider getReceivedMessagesProvider() {
+    return myReceivedMessagesProvider;
+  }
+
+  public void setReceivedMessagesProvider( iReceivedMessagesProvider anReceivedMessagesProvider ) {
+    myReceivedMessagesProvider = anReceivedMessagesProvider;
+  }
+
+  public iTitleProvider getTitleProvider() {
+    return myTitleProvider;
+  }
+
+  public void setTitleProvider( iTitleProvider anTitleProvider ) {
+    myTitleProvider = anTitleProvider;
+  }
+  
+  public void setTitle(){
+    List<String> theUsers = myUserSelectionProvider.getSelectedUsers();
+    String theTitle = ApplicationPreferences.getInstance().getProperty("frame.light.title","Chatterke");
+    try{
+    if(theUsers.size() == 1){
+      theTitle += " - sc " + Tools.getShortNameForUser( myP2PFacade.getUserInfo().get( theUsers.get( 0 ) )); 
+    } else if(theUsers.size() > 1){
+      theTitle += " - mc ";
+    }
+    }catch(P2PFacadeException e){
+      LOGGER.error( "Could not set title", e );
+    }
+    myTitleProvider.setTitle( theTitle );
+  }
+
+  private class MySelectionChangedListener implements iSelectionChangedListener {
+
+    @Override
+    public void selectionChanged() {
+      setTitle();
     }
   }
 }

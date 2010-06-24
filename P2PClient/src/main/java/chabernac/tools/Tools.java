@@ -15,6 +15,7 @@ import java.net.SocketException;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -24,6 +25,11 @@ import javax.swing.SwingUtilities;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
+
+import chabernac.protocol.facade.P2PFacade;
+import chabernac.protocol.facade.P2PFacadeException;
+import chabernac.protocol.message.MultiPeerMessage;
+import chabernac.protocol.userinfo.UserInfo;
 
 public class Tools {
   private static Logger logger = Logger.getLogger(Tools.class);
@@ -157,5 +163,42 @@ public class Tools {
     } else {
       aRunnable.run();
     }
+  }
+  
+  private static String getShortNameForUser(String aPeerId, P2PFacade aFacade) throws P2PFacadeException{
+    Map<String, UserInfo> theUserInfo = aFacade.getUserInfo();
+    if(theUserInfo.containsKey( aPeerId )){
+      return getShortNameForUser( theUserInfo.get(aPeerId) );
+    }
+    return aPeerId;
+  }
+  
+  public static String getShortNameForUser(UserInfo aUserInfo){
+    String theUserName = aUserInfo.getName();
+    if(theUserName == null || theUserName.equals( "" )) theUserName = aUserInfo.getId();
+    String[] theUserNameParts = theUserName.split( " " );
+    if(theUserNameParts.length >= 2){
+      return theUserNameParts[0] + " " + theUserNameParts[1].charAt( 0 );
+    } else {
+      return theUserName.substring( 0, 10 );
+    }
+  }
+  
+  public static String getEnvelop(P2PFacade aP2Facade, MultiPeerMessage aMessage) throws P2PFacadeException{
+    String from = getShortNameForUser(aMessage.getSource(), aP2Facade);
+
+    List<String> to = aMessage.getDestinations();
+    String envelop = "[" + from;
+    envelop += "-->";
+//    if(!aMessage.isHiddenTo()){
+      for(int i=0;i<to.size();i++){
+        envelop += getShortNameForUser( to.get(i), aP2Facade);
+        if(i < to.size() - 1) envelop += ",";
+      }
+//    } else {
+//      envelop += "verborgen";
+//    }
+    envelop += "]";
+    return envelop;
   }
 }
