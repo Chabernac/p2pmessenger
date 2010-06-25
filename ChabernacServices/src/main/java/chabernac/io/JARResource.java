@@ -3,6 +3,7 @@ package chabernac.io;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 
@@ -27,6 +28,11 @@ public class JARResource extends AbstractResource {
     } catch (UnsupportedEncodingException e) {
       return null;
     }
+  }
+
+  @Override
+  public OutputStream getOutputStream() throws IOException {
+    throw new UnsupportedOperationException("This operation is not supperted");
   }
 
 }

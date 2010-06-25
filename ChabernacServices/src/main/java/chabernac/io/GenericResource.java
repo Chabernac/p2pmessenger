@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.reflect.Constructor;
 
 import org.apache.log4j.Logger;
@@ -95,6 +96,15 @@ public class GenericResource extends AbstractResource {
       e.printStackTrace();
     }
 
+  }
+
+  @Override
+  public OutputStream getOutputStream() throws IOException {
+    iResource theResource = getExistingResource();
+    if(theResource == null){
+      throw new IOException("The resource: " + getLocation() + " could not be found");
+    }
+    return theResource.getOutputStream();
   }
 
 
