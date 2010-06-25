@@ -4,9 +4,14 @@
  */
 package chabernac.gui;
 
+import java.io.Serializable;
+
+import javax.activation.DataSource;
+
 import org.apache.log4j.BasicConfigurator;
 
-import be.axa.fi.io.ClassPathResource;
+import chabernac.io.ClassPathResource;
+import chabernac.io.iResource;
 import chabernac.ldapuserinfoprovider.AXALDAPUserInfoProvider;
 import chabernac.p2pclient.gui.ChatFrame;
 import chabernac.protocol.facade.P2PFacade;

@@ -13,7 +13,7 @@ import junit.framework.TestCase;
 
 import org.apache.log4j.BasicConfigurator;
 
-import be.axa.fi.io.ClassPathResource;
+import chabernac.io.ClassPathResource;
 import chabernac.ldapuserinfoprovider.AXALDAPUserInfoProvider;
 import chabernac.protocol.facade.P2PFacade;
 import chabernac.protocol.facade.P2PFacadeException;
@@ -50,7 +50,9 @@ public class ChatMediatorTest extends TestCase {
     DummyMessageProvider theMessageProvider = new DummyMessageProvider();
     DummyUserSelectionProvider theUserSelectionProvider = new DummyUserSelectionProvider();
 
-    ChatMediator theMediator = new ChatMediator(theFacade1, theUserSelectionProvider, theMessageProvider);
+    ChatMediator theMediator = new ChatMediator(theFacade1);
+    theMediator.setMessageProvider( theMessageProvider );
+    theMediator.setUserSelectionProvider( theUserSelectionProvider );
 
     List<MultiPeerMessage> theSendMessages = new ArrayList< MultiPeerMessage >();
     int theNumber = 5;

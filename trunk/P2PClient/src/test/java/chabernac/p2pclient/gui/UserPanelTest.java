@@ -4,13 +4,10 @@
  */
 package chabernac.p2pclient.gui;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import javax.swing.JFrame;
 
 import junit.framework.TestCase;
 import chabernac.protocol.facade.P2PFacade;
@@ -48,7 +45,9 @@ public class UserPanelTest extends TestCase {
     
     Thread.sleep( 3000 );
     
-    UserPanel theUserPanel = new UserPanel(theFacade1);
+    ChatMediator theMediator = new ChatMediator(theFacade1);
+    
+    UserPanel theUserPanel = new UserPanel(theMediator);
     Map<String, StatusCheckBox>  theCheckBoxes = theUserPanel.getCheckBoxes();
     
     assertTrue( theCheckBoxes.containsKey( theFacade1.getPeerId() ) );
