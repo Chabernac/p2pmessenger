@@ -29,6 +29,7 @@ import chabernac.protocol.pipe.Pipe;
 import chabernac.protocol.pipe.PipeProtocol;
 import chabernac.protocol.routing.Peer;
 import chabernac.protocol.routing.RoutingProtocol;
+import chabernac.protocol.routing.RoutingTableEntry;
 import chabernac.protocol.userinfo.UserInfo;
 import chabernac.protocol.userinfo.UserInfoProtocol;
 import chabernac.protocol.userinfo.iUserInfoListener;
@@ -316,6 +317,16 @@ public class P2PFacade {
 
     try {
       return ((RoutingProtocol)myContainer.getProtocol( RoutingProtocol.ID )).getRoutingTable().getEntryForPeer( aPeerId ).getPeer();
+    } catch ( Exception e ) {
+      throw new P2PFacadeException("An error occured while retrieving peer id", e);
+    }
+  }
+  
+  public RoutingTableEntry getRoutingTableEntry(String aPeerId) throws P2PFacadeException{
+    if(!isStarted()) throw new P2PFacadeException("Can not execute this action when the server is not started");
+
+    try {
+      return ((RoutingProtocol)myContainer.getProtocol( RoutingProtocol.ID )).getRoutingTable().getEntryForPeer( aPeerId );
     } catch ( Exception e ) {
       throw new P2PFacadeException("An error occured while retrieving peer id", e);
     }
