@@ -25,7 +25,7 @@ import chabernac.preference.ApplicationPreferences;
 import chabernac.protocol.facade.P2PFacade;
 import chabernac.protocol.facade.P2PFacadeException;
 
-public class ChatFrame extends SavedFrame implements iTitleProvider{
+public class ChatFrame extends SavedFrame implements iTitleProvider, isShowDialogProvider{
   private static final long serialVersionUID = 8845601746540726343L;
   private static Logger logger = Logger.getLogger(ChatFrame.class);
   private ChatMediator myMediator = null;
@@ -73,6 +73,7 @@ public class ChatFrame extends SavedFrame implements iTitleProvider{
     myMediator.setReceivedMessagesProvider( theReceivedField );
     myMediator.setUserSelectionProvider( theUserPanel );
     myMediator.setTitleProvider( this );
+    myMediator.setIsShowDialogProvider( this );
     
     mySplitPane.setTopComponent(new JScrollPane(theMessageField, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER));
     mySplitPane.setBottomComponent(theReceivedField);
@@ -102,6 +103,11 @@ public class ChatFrame extends SavedFrame implements iTitleProvider{
       ApplicationPreferences.getInstance().save();
       System.exit( 0 );
     }
+  }
+
+  @Override
+  public boolean isShowDialog() {
+    return !isActive();
   }
 
 }

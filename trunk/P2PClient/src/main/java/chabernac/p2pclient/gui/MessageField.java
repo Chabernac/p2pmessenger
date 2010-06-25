@@ -48,7 +48,7 @@ public class MessageField extends JTextArea implements iMessageProvider{
   private static Logger logger = Logger.getLogger(MessageField.class);
 
   private ChatMediator myMediator = null;
-  private ArrayList myAttachments = null;
+  private List<File> myAttachments = null;
   private TitledBorder myBorder = null;
 
   public MessageField(ChatMediator aMediator){
@@ -106,13 +106,13 @@ public class MessageField extends JTextArea implements iMessageProvider{
   }
 
   private void addAttachment(File aFile){
-    if(myAttachments == null) myAttachments = new ArrayList();
+    if(myAttachments == null) myAttachments = new ArrayList<File>();
     //DataFile theDataFile = DataFile.loadFromFile(aFile); 
     myAttachments.add(aFile);
     showAttachment(aFile.getName());
   }
 
-  public ArrayList getAttachments(){
+  public List<File> getAttachments(){
     return myAttachments;
   }
 
