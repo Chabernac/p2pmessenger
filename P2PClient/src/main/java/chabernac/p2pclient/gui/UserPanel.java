@@ -38,6 +38,7 @@ import chabernac.protocol.facade.P2PFacadeException;
 import chabernac.protocol.message.DeliveryReport;
 import chabernac.protocol.message.MultiPeerMessage;
 import chabernac.protocol.message.iDeliverReportListener;
+import chabernac.protocol.routing.RoutingTableEntry;
 import chabernac.protocol.userinfo.UserInfo;
 import chabernac.protocol.userinfo.iUserInfoListener;
 import chabernac.protocol.userinfo.UserInfo.Status;
@@ -114,9 +115,9 @@ public class UserPanel extends GPanel implements iUserSelectionProvider{
     });
   }
 
-  private void modifyCheckBoxForUser( StatusCheckBox anCheckBox, UserInfo anUserInfo, String aPeerId ) {
+  private void modifyCheckBoxForUser( StatusCheckBox anCheckBox, UserInfo anUserInfo, String aPeerId ) throws P2PFacadeException {
     anCheckBox.setText(  getLabelForUser(anUserInfo) );
-    anCheckBox.setToolTipText( getToolTipForUser(anUserInfo) );
+    anCheckBox.setToolTipText( getToolTipForUser(aPeerId, anUserInfo) );
     anCheckBox.setForeground( getColorForStatus(anUserInfo) );
     anCheckBox.setStatus( anUserInfo.getStatus() );
   }
@@ -128,8 +129,9 @@ public class UserPanel extends GPanel implements iUserSelectionProvider{
     return new Color(0,200,0);
   }
 
-  private String getToolTipForUser( UserInfo anUserInfo ) {
-    return anUserInfo.getId() + " " + anUserInfo.getEMail() + " " + anUserInfo.getTelNr();
+  private String getToolTipForUser(String aPeerId, UserInfo anUserInfo ) throws P2PFacadeException {
+    RoutingTableEntry theEntry = myMediator.getP2PFacade().getRoutingTableEntry( aPeerId );
+    return anUserInfo.getName() + " " + anUserInfo.getId() + " " + anUserInfo.getEMail() + " '" + anUserInfo.getTelNr() + "' [" + aPeerId + " " + theEntry.getHopDistance() + " " + theEntry.getPeer().getHosts() + "]";
   }
 
   private String getLabelForUser( UserInfo anUserInfo ) {

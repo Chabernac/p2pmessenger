@@ -17,6 +17,7 @@ import chabernac.protocol.facade.P2PFacade;
 import chabernac.protocol.facade.P2PFacadeException;
 import chabernac.protocol.message.MessageArchive;
 import chabernac.protocol.message.MultiPeerMessage;
+import chabernac.protocol.message.iMultiPeerMessageListener;
 import chabernac.tools.Tools;
 
 public class ChatMediator {
@@ -27,13 +28,17 @@ public class ChatMediator {
   private iMessageProvider myMessageProvider = null;
   private iReceivedMessagesProvider myReceivedMessagesProvider = null;
   private iTitleProvider myTitleProvider = null;
-
+  private isShowDialogProvider myIsShowDialogProvider = null;
+  private iMessageDialog myMessageDialog = null;
+    
   private ExecutorService myExecutorService = Executors.newFixedThreadPool( 5 );
 
   private MultiPeerMessage myLastSendMessage = null;
   private MultiPeerMessage myConcept = null;
   private MessageArchive myMessagArchive = null;
-
+  
+  private boolean isShowDialog = true;
+  
   private int myRestoreIndex = -1;
 
   public ChatMediator ( P2PFacade anFacade ) throws P2PFacadeException {
@@ -53,6 +58,8 @@ public class ChatMediator {
   public void setP2PFacade( P2PFacade anFacade ) throws P2PFacadeException {
     myP2PFacade = anFacade;
     myMessagArchive = myP2PFacade.getMessageArchive();
+    myP2PFacade.addMessageListener( new MyMessageListener() );
+    myMessageDialog  = NewMessageDialog5.getInstance( this );
   }
   public iUserSelectionProvider getUserSelectionProvider() {
     return myUserSelectionProvider;
@@ -225,5 +232,32 @@ public class ChatMediator {
     public void selectionChanged() {
       setTitle();
     }
+  }
+
+  public void setShowDialog( boolean isShowDialog ) {
+    this.isShowDialog = isShowDialog;
+  }
+  
+  public isShowDialogProvider getIsShowDialogProvider() {
+    return myIsShowDialogProvider;
+  }
+
+  public void setIsShowDialogProvider( isShowDialogProvider anIsShowDialogProvider ) {
+    myIsShowDialogProvider = anIsShowDialogProvider;
+  }
+
+  
+  private class MyMessageListener implements iMultiPeerMessageListener {
+
+    @Override
+    public void messageReceived( MultiPeerMessage aMessage ) {
+      if(myIsShowDialogProvider.isShowDialog()){
+        myMessageDialog.showMessage( aMessage );
+      }
+    }
+  }
+
+  public void setLastSendMessage( MultiPeerMessage aMessage ) {
+    myLastSendMessage = aMessage;
   }
 }
