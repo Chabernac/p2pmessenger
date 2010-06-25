@@ -7,6 +7,8 @@ package chabernac.p2pclient.gui;
 import java.util.ArrayList;
 import java.util.List;
 
+import chabernac.protocol.message.MultiPeerMessage;
+
 public class DummyUserSelectionProvider implements iUserSelectionProvider {
   private List<String> mySelectedUsers = new ArrayList< String >();
 
@@ -23,6 +25,18 @@ public class DummyUserSelectionProvider implements iUserSelectionProvider {
   @Override
   public void clear() {
     mySelectedUsers.clear();
+  }
+
+  @Override
+  public void addSelectionChangedListener( iSelectionChangedListener aListener ) {
+    // TODO Auto-generated method stub
+    
+  }
+
+  @Override
+  public void setMultiPeerMessage( MultiPeerMessage aMessage ) {
+    // TODO Auto-generated method stub
+    
   }
 
 }
