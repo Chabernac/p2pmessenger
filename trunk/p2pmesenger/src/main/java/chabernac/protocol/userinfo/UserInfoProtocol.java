@@ -221,6 +221,12 @@ public class UserInfoProtocol extends Protocol {
         notifyUserInfoChanged( theUserInfo );
       }catch(Exception e){
         LOGGER.error("Could not retrieve user info", e);
+        //if we already knew this user, than change it's status to online
+        if(myUserInfo.containsKey( myPeerId )){
+          UserInfo theUserInfo = myUserInfo.get( myPeerId ); 
+          theUserInfo.setStatus( Status.OFFLINE );
+          notifyUserInfoChanged( theUserInfo );
+        }
       }
     }
   }
