@@ -21,7 +21,6 @@ import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.lang.reflect.Array;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.security.MessageDigest;
@@ -34,10 +33,6 @@ import java.util.Vector;
 import org.apache.log4j.Logger;
 
 import sun.misc.BASE64Encoder;
-
-import chabernac.io.AbstractResource;
-import chabernac.io.JARResource;
-import chabernac.io.iResource;
 import chabernac.queue.QueueInterface;
 
 public class Tools
@@ -583,43 +578,43 @@ public class Tools
     return theNewImage;
   }
   
-  public static Class[] getPackageClassesOfType(Package aPackage, Class aType){
-    Class[] theClasses = getPackageClasses(aPackage);
-    ArrayList theList = new ArrayList();
-    for(int i=0;i<theClasses.length;i++){
-      if(aType.isAssignableFrom(theClasses[i])){
-        theList.add(theClasses[i]);
-      }
-    }
-    Class[] theSubList = new Class[theList.size()];
-    System.arraycopy(theList.toArray(), 0, theSubList, 0, theSubList.length);
-    return theSubList;
-  }
+//  public static Class[] getPackageClassesOfType(Package aPackage, Class aType){
+//    Class[] theClasses = getPackageClasses(aPackage);
+//    ArrayList theList = new ArrayList();
+//    for(int i=0;i<theClasses.length;i++){
+//      if(aType.isAssignableFrom(theClasses[i])){
+//        theList.add(theClasses[i]);
+//      }
+//    }
+//    Class[] theSubList = new Class[theList.size()];
+//    System.arraycopy(theList.toArray(), 0, theSubList, 0, theSubList.length);
+//    return theSubList;
+//  }
 
-  public static Class[] getPackageClasses(Package aPackage){
-    ArrayList theClasses = new ArrayList();
-    JARResource theResource = new JARResource(aPackage.getName().replace('.', '/'));
-    if(theResource.exists()){
-      File theDir = theResource.getFile();
-      if(theDir.exists()){
-        String[] theFiles = theDir.list();
-        for(int i=0;i<theFiles.length;i++){
-          if(theFiles[i].endsWith(".class")){
-            String theClassName = theResource.getLocation() + "/" + theFiles[i].substring(0, theFiles[i].length() - 6);
-            try{
-              Class theClass = Class.forName(theClassName.replace('/', '.'));
-              theClasses.add(theClass);
-            }catch(ClassNotFoundException e){
-              logger.error("An error occured while searching class: " + theClassName, e);
-            }
-          }
-        }
-      }
-    }
-    Class[] theClassArray = new Class[theClasses.size()];
-    System.arraycopy(theClasses.toArray(), 0, theClassArray, 0, theClassArray.length);
-    return theClassArray;
-  }
+//  public static Class[] getPackageClasses(Package aPackage){
+//    ArrayList theClasses = new ArrayList();
+//    JARResource theResource = new JARResource(aPackage.getName().replace('.', '/'));
+//    if(theResource.exists()){
+//      File theDir = theResource.getFile();
+//      if(theDir.exists()){
+//        String[] theFiles = theDir.list();
+//        for(int i=0;i<theFiles.length;i++){
+//          if(theFiles[i].endsWith(".class")){
+//            String theClassName = theResource.getLocation() + "/" + theFiles[i].substring(0, theFiles[i].length() - 6);
+//            try{
+//              Class theClass = Class.forName(theClassName.replace('/', '.'));
+//              theClasses.add(theClass);
+//            }catch(ClassNotFoundException e){
+//              logger.error("An error occured while searching class: " + theClassName, e);
+//            }
+//          }
+//        }
+//      }
+//    }
+//    Class[] theClassArray = new Class[theClasses.size()];
+//    System.arraycopy(theClasses.toArray(), 0, theClassArray, 0, theClassArray.length);
+//    return theClassArray;
+//  }
 
 
 }
