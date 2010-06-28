@@ -17,6 +17,10 @@ import chabernac.protocol.userinfo.UserInfo.Status;
 
 public class AXALDAPUserInfoProvider implements iUserInfoProvider{
   private UserInfo myUserInfo = new UserInfo();
+  
+  public AXALDAPUserInfoProvider(){
+    myUserInfo.setStatus( Status.ONLINE );
+  }
 
   public UserInfo getUserInfo() throws UserInfoException{
     try {
@@ -30,7 +34,6 @@ public class AXALDAPUserInfoProvider implements iUserInfoProvider{
         }
         System.out.println();
       }
-      myUserInfo.setStatus( Status.ONLINE );
       return myUserInfo;
     } catch ( NamingException e ) {
       throw new UserInfoException("Could not retrieve user info from ldap", e);
