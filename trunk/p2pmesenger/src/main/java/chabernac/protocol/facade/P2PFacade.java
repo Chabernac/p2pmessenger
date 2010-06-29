@@ -28,6 +28,7 @@ import chabernac.protocol.pipe.IPipeListener;
 import chabernac.protocol.pipe.Pipe;
 import chabernac.protocol.pipe.PipeProtocol;
 import chabernac.protocol.routing.Peer;
+import chabernac.protocol.routing.RoutingFrame;
 import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.RoutingTableEntry;
 import chabernac.protocol.userinfo.UserInfo;
@@ -95,7 +96,7 @@ public class P2PFacade {
     myProperties.setProperty("peerid", aPeerId);
     return this;
   }
-  
+
   public P2PFacade setSuperNodesDataSource(DataSource aDataSource) throws P2PFacadeException{
     if(isStarted()) throw new P2PFacadeException("Can not set this property when the server has already been started");
     myProperties.setProperty("routingprotocol.supernodes", aDataSource);
@@ -121,7 +122,7 @@ public class P2PFacade {
     }
     return this;
   }
-  
+
   public Future<Boolean> sendFile(final File aFile, final String aPeerId, ExecutorService aService) {
     return aService.submit(  new Callable< Boolean >(){
 
@@ -291,7 +292,7 @@ public class P2PFacade {
       throw new P2PFacadeException("An error occured while getting user info", e);
     }
   }
-  
+
   public UserInfo getPersonalInfo() throws P2PFacadeException{
     if(!isStarted()) throw new P2PFacadeException("Can not execute this action when the server is not started");
 
@@ -321,7 +322,7 @@ public class P2PFacade {
       throw new P2PFacadeException("An error occured while retrieving peer id", e);
     }
   }
-  
+
   public RoutingTableEntry getRoutingTableEntry(String aPeerId) throws P2PFacadeException{
     if(!isStarted()) throw new P2PFacadeException("Can not execute this action when the server is not started");
 
@@ -342,6 +343,17 @@ public class P2PFacade {
       return myMessageArchive;
     }catch(Exception e){
       throw new P2PFacadeException("An error occured while creationg message archive", e);
+    }
+  }
+
+  public void showRoutingTable() throws P2PFacadeException{
+    if(!isStarted()) throw new P2PFacadeException("Can not execute this action when the server is not started");
+
+    try{
+      RoutingFrame theFrame = new RoutingFrame( myProtocolServer,  myContainer);
+      theFrame.setVisible( true );
+    }catch(Exception e){
+      throw new P2PFacadeException("Could not show routing frame", e);
     }
   }
 
