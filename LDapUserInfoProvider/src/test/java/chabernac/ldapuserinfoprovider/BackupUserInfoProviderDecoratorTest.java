@@ -27,7 +27,7 @@ public class BackupUserInfoProviderDecoratorTest extends TestCase {
     assertEquals( "0486331565", theUserInfo.getTelNr() );
     assertEquals( "home", theUserInfo.getLocation() );
     assertEquals( "guy.chauliac@gmail.com", theUserInfo.getEMail() );
-    assertEquals( "DGCH804", theUserInfo.getId() );
+    assertTrue( "DGCH804".equalsIgnoreCase( theUserInfo.getId()) );
     
     theUserInfo.setEMail( "abc@gmail.com" );
     theUserInfo.setName( "Jef Patat" );
