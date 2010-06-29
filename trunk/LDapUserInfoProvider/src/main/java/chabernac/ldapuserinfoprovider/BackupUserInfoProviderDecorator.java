@@ -15,6 +15,7 @@ public class BackupUserInfoProviderDecorator implements iUserInfoProvider {
   private static Logger LOGGER = Logger.getLogger(BackupUserInfoProviderDecorator.class);
   
   private final iUserInfoProvider myDelegate;
+  private UserInfo myUserInfoBackup = new UserInfo();
 
 
   public BackupUserInfoProviderDecorator ( iUserInfoProvider anDelegate ) {
@@ -36,23 +37,22 @@ public class BackupUserInfoProviderDecorator implements iUserInfoProvider {
 
 
   private UserInfo loadBackup() {
-    UserInfo theUserInfo = new UserInfo();
     ApplicationPreferences thePrefereces = ApplicationPreferences.getInstance();
-    theUserInfo.setEMail( thePrefereces.getProperty( "user.email" ) );
-    theUserInfo.setName( thePrefereces.getProperty( "user.name", System.getProperty( "user.name" ) ));
-    theUserInfo.setId( thePrefereces.getProperty( "user.id", System.getProperty( "user.name" ) ));
-    theUserInfo.setLocation( thePrefereces.getProperty( "user.location"));
-    theUserInfo.setTelNr( thePrefereces.getProperty( "user.telnr"));
-    return theUserInfo;
+    if(thePrefereces.containsKey( "user.email" )) myUserInfoBackup.setEMail( thePrefereces.getProperty( "user.email" ) );
+    myUserInfoBackup.setName( thePrefereces.getProperty( "user.name", System.getProperty( "user.name" ) ));
+    myUserInfoBackup.setId( thePrefereces.getProperty( "user.id", System.getProperty( "user.name" ) ));
+    if(thePrefereces.containsKey( "user.location" )) myUserInfoBackup.setLocation( thePrefereces.getProperty( "user.location"));
+    if(thePrefereces.containsKey( "user.telnr" )) myUserInfoBackup.setTelNr( thePrefereces.getProperty( "user.telnr"));
+    return myUserInfoBackup;
   }
 
 
   private void saveBackup(UserInfo aUserInfo) {
-   ApplicationPreferences.getInstance().setProperty( "user.name",  aUserInfo.getName());
-   ApplicationPreferences.getInstance().setProperty( "user.email",  aUserInfo.getEMail());
-   ApplicationPreferences.getInstance().setProperty( "user.id",  aUserInfo.getId());
-   ApplicationPreferences.getInstance().setProperty( "user.location",  aUserInfo.getLocation());
-   ApplicationPreferences.getInstance().setProperty( "user.telnr",  aUserInfo.getTelNr());
+   if(aUserInfo.getName() != null) ApplicationPreferences.getInstance().setProperty( "user.name",  aUserInfo.getName());
+   if(aUserInfo.getEMail() != null) ApplicationPreferences.getInstance().setProperty( "user.email",  aUserInfo.getEMail());
+   if(aUserInfo.getId() != null) ApplicationPreferences.getInstance().setProperty( "user.id",  aUserInfo.getId());
+   if(aUserInfo.getLocation() != null) ApplicationPreferences.getInstance().setProperty( "user.location",  aUserInfo.getLocation());
+   if(aUserInfo.getTelNr() != null) ApplicationPreferences.getInstance().setProperty( "user.telnr",  aUserInfo.getTelNr());
   }
 
 }
