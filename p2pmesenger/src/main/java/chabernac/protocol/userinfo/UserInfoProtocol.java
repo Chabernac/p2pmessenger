@@ -83,7 +83,8 @@ public class UserInfoProtocol extends Protocol {
     }
   }
 
-  private void fullRetrieval() {
+  public void fullRetrieval() {
+    LOGGER.debug( "Doing full retrieval of user info based on routing table" );
     try{
       RoutingTable theTable = getRoutingTable();
       for(RoutingTableEntry theEntry : theTable){
@@ -162,12 +163,14 @@ public class UserInfoProtocol extends Protocol {
 
   public UserInfo getUserInfoForPeer(String aPeerId) throws UserInfoException{
     try{
+      LOGGER.debug("Trying to retrieve user info for peer: '" + aPeerId + "'");
       Message theMessage = new Message(  );
       theMessage.setDestination( getRoutingTable().getEntryForPeer( aPeerId ).getPeer());
       theMessage.setSource( getRoutingTable().getEntryForLocalPeer().getPeer() );
       theMessage.setMessage( createMessage( Command.GET.name() ) );
       theMessage.setProtocolMessage( true );
       String theResult = ((MessageProtocol)findProtocolContainer().getProtocol( MessageProtocol.ID )).sendMessage( theMessage );
+      LOGGER.debug("User info retrieved: '" + theResult + "'");
       return (UserInfo)XMLTools.fromXML( theResult );
     }catch(Exception e){
       throw new UserInfoException("Could not retrieve user info for peer '" + aPeerId + "'", e);

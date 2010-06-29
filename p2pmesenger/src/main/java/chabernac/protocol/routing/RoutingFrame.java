@@ -5,6 +5,7 @@
 package chabernac.protocol.routing;
 
 import java.awt.BorderLayout;
+import java.awt.GridLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.UUID;
@@ -17,15 +18,17 @@ import chabernac.protocol.ProtocolContainer;
 import chabernac.protocol.ProtocolException;
 import chabernac.protocol.ProtocolFactory;
 import chabernac.protocol.ProtocolServer;
+import chabernac.protocol.userinfo.UserInfoPanel;
+import chabernac.protocol.userinfo.UserInfoProtocol;
 import chabernac.tools.PropertyMap;
 
 public class RoutingFrame extends JFrame {
 
-  private RoutingProtocol myRoutingProtocol = null;
+  private ProtocolContainer myProtocolContainer = null;
   private ProtocolServer myProtocolServer = null;
   
-  public RoutingFrame(ProtocolServer aServer, RoutingProtocol aRoutingProtocol){
-    myRoutingProtocol = aRoutingProtocol;
+  public RoutingFrame(ProtocolServer aServer, ProtocolContainer aContainer) throws ProtocolException{
+    myProtocolContainer = aContainer;
     myProtocolServer = aServer;
     init();
     addListeners();
@@ -33,19 +36,21 @@ public class RoutingFrame extends JFrame {
   }
   
   private void init(){
-//    setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
+    setDefaultCloseOperation( JFrame.DISPOSE_ON_CLOSE);
   }
   
   private void addListeners(){
     addWindowListener( new MyWindowListener() );
   }
 
-  private void buildGUI() {
-    setTitle( myRoutingProtocol.getLocalPeerId() );
+  private void buildGUI() throws ProtocolException {
+    RoutingProtocol theRoutingProtocl = (RoutingProtocol)myProtocolContainer.getProtocol( RoutingProtocol.ID );
+    setTitle( theRoutingProtocl.getLocalPeerId() );
     
-    getContentPane().setLayout( new BorderLayout() );
-    getContentPane().add(new RoutingPanel(myRoutingProtocol));
-    setSize( 400, 400 );
+    getContentPane().setLayout( new GridLayout(1,-1));
+    getContentPane().add(new RoutingPanel(theRoutingProtocl));
+    getContentPane().add(new UserInfoPanel((UserInfoProtocol)myProtocolContainer.getProtocol( UserInfoProtocol.ID )));
+    setSize( 1200, 400 );
   }
   
   public class MyWindowListener extends WindowAdapter {
@@ -67,7 +72,7 @@ public class RoutingFrame extends JFrame {
     ProtocolContainer theContainer = new ProtocolContainer(theFactory);
     ProtocolServer theServer1 = new ProtocolServer(theContainer, RoutingProtocol.START_PORT, 5, true);
     theServer1.start();
-    RoutingFrame theFrame = new RoutingFrame(theServer1, (RoutingProtocol)theContainer.getProtocol( RoutingProtocol.ID ));
+    RoutingFrame theFrame = new RoutingFrame(theServer1, theContainer);
     theFrame.setVisible( true );
 
   }
