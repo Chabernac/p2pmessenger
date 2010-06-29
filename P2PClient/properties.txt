@@ -1,8 +1,12 @@
 #Application preferences
-#Fri Jun 25 14:26:24 CEST 2010
+#Tue Jun 29 15:06:20 CEST 2010
 chat.light.dividerlocation=80
 frame.light.size.width=496
-frame.light.size.height=217
-frame.light.location.y=222
-frame.light.location.x=518
+user.id=DGCH804
 userlist.font.size=9
+user.email=guy.chauliac@axa.be
+user.telnr=+32 (0)3 286 25 82
+frame.light.location.y=368
+frame.light.location.x=738
+user.name=Guy Chauliac
+frame.light.size.height=215

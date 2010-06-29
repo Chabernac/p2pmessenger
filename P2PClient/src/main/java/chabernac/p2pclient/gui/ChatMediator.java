@@ -6,9 +6,12 @@ package chabernac.p2pclient.gui;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.apache.log4j.Logger;
 
@@ -22,7 +25,7 @@ import chabernac.tools.Tools;
 
 public class ChatMediator {
   private static Logger LOGGER = Logger.getLogger(ChatMediator.class);
-  
+
   private P2PFacade myP2PFacade = null;
   private iUserSelectionProvider myUserSelectionProvider = null;
   private iMessageProvider myMessageProvider = null;
@@ -30,15 +33,15 @@ public class ChatMediator {
   private iTitleProvider myTitleProvider = null;
   private isShowDialogProvider myIsShowDialogProvider = null;
   private iMessageDialog myMessageDialog = null;
-    
+
   private ExecutorService myExecutorService = Executors.newFixedThreadPool( 5 );
 
   private MultiPeerMessage myLastSendMessage = null;
   private MultiPeerMessage myConcept = null;
   private MessageArchive myMessagArchive = null;
-  
+
   private boolean isShowDialog = true;
-  
+
   private int myRestoreIndex = -1;
 
   public ChatMediator ( P2PFacade anFacade ) throws P2PFacadeException {
@@ -70,12 +73,25 @@ public class ChatMediator {
   }
 
   public synchronized Future< MultiPeerMessage > send(){
+    if(checkForCommands()) return null;
     myLastSendMessage = createMessage();
     Future< MultiPeerMessage > theFuture = myP2PFacade.sendEncryptedMessage( myLastSendMessage, myExecutorService );
     clear();
     myRestoreIndex = -1;
     myConcept = null;
     return theFuture;
+  }
+
+  private boolean checkForCommands() {
+    if(myMessageProvider.getMessage().equalsIgnoreCase( "route print" )){
+      try {
+        myP2PFacade.showRoutingTable();
+      } catch ( P2PFacadeException e ) {
+        LOGGER.error( "Could not execute command" );
+      }
+      return true;
+    }
+    return false;
   }
 
   public MultiPeerMessage createMessage(){
@@ -209,17 +225,22 @@ public class ChatMediator {
 
   public void setTitleProvider( iTitleProvider anTitleProvider ) {
     myTitleProvider = anTitleProvider;
+    try {
+      anTitleProvider.setTitle( anTitleProvider.getTitle() + "[" + myP2PFacade.getPeerId() + "]");
+    } catch ( P2PFacadeException e ) {
+      LOGGER.error( "Could not put peer id in title", e );
+    }
   }
-  
+
   public void setTitle(){
     List<String> theUsers = myUserSelectionProvider.getSelectedUsers();
     String theTitle = ApplicationPreferences.getInstance().getProperty("frame.light.title","Chatterke");
     try{
-    if(theUsers.size() == 1){
-      theTitle += " - sc " + Tools.getShortNameForUser( myP2PFacade.getUserInfo().get( theUsers.get( 0 ) )); 
-    } else if(theUsers.size() > 1){
-      theTitle += " - mc ";
-    }
+      if(theUsers.size() == 1){
+        theTitle += " - sc " + Tools.getShortNameForUser( myP2PFacade.getUserInfo().get( theUsers.get( 0 ) )); 
+      } else if(theUsers.size() > 1){
+        theTitle += " - mc ";
+      }
     }catch(P2PFacadeException e){
       LOGGER.error( "Could not set title", e );
     }
@@ -237,7 +258,7 @@ public class ChatMediator {
   public void setShowDialog( boolean isShowDialog ) {
     this.isShowDialog = isShowDialog;
   }
-  
+
   public isShowDialogProvider getIsShowDialogProvider() {
     return myIsShowDialogProvider;
   }
@@ -246,7 +267,7 @@ public class ChatMediator {
     myIsShowDialogProvider = anIsShowDialogProvider;
   }
 
-  
+
   private class MyMessageListener implements iMultiPeerMessageListener {
 
     @Override
