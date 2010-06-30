@@ -89,10 +89,11 @@ public class UserInfoProtocol extends Protocol {
       RoutingTable theTable = getRoutingTable();
       for(RoutingTableEntry theEntry : theTable){
         Peer thePeer = theEntry.getPeer();
-        if(!myUserInfo.containsKey( thePeer )){
+        if(!myUserInfo.containsKey( thePeer.getPeerId() )){
           myRetrievalService.execute( new UserInfoRetriever(thePeer.getPeerId()) );
         }
       }
+      notifyUserInfoChanged( null );
     }catch(Exception e){
       LOGGER.error( "Could not retrieve user info", e );
     }

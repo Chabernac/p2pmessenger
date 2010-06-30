@@ -36,6 +36,10 @@ public class RoutingTable implements Iterable< RoutingTableEntry >{
   }
 
   public synchronized void addRoutingTableEntry(RoutingTableEntry anEntry){
+    if(anEntry.getPeer().getPeerId() == null || anEntry.getPeer().getPeerId().equals( "" )){
+      throw new IllegalArgumentException("Received routing table entry with no peer id");
+    }
+    
     //TODO remove
     if(anEntry.getPeer().getPeerId().equalsIgnoreCase( getLocalPeerId() ) && anEntry.getGateway().getPeerId().equals( anEntry.getPeer().getPeerId() ) && anEntry.getHopDistance() > 0 && anEntry.getHopDistance() != RoutingTableEntry.MAX_HOP_DISTANCE){
       //this is an invalid condition

@@ -607,6 +607,94 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
     }
   }
   
+  public void testPersistRoutingTableWithFixedPeerId() throws ProtocolException, InterruptedException{
+    File theRoutingTableFile = new File( "RoutingTable_1.csv" );
+    if(theRoutingTableFile.exists()) theRoutingTableFile.delete();
+    
+    ProtocolContainer theProtocol1 = getProtocolContainer( -1, true, "1" );
+    ProtocolServer theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT, 5);
+    
+    RoutingProtocol theRoutingProtocol1 = (RoutingProtocol)theProtocol1.getProtocol( RoutingProtocol.ID );
+    RoutingTable theRoutingTable1 = theRoutingProtocol1.getRoutingTable();
+    try{
+      assertTrue( theServer1.start() );
+      
+      theRoutingProtocol1.scanLocalSystem();
+      Thread.sleep( 1000 );
+
+      assertEquals( 1, theRoutingTable1.getEntries().size() );
+      
+      theServer1.stop();
+      
+      assertTrue( theRoutingTableFile.exists() );
+      
+      theProtocol1 = getProtocolContainer( -1, true, "1" );
+      theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT, 5);
+      
+      theRoutingProtocol1 = (RoutingProtocol)theProtocol1.getProtocol( RoutingProtocol.ID );
+      theRoutingTable1 = theRoutingProtocol1.getRoutingTable();
+      
+      assertTrue( theServer1.start() );
+      
+      theRoutingProtocol1.scanLocalSystem();
+      Thread.sleep( 1000 );
+
+      assertEquals( 1, theRoutingTable1.getEntries().size() );
+      
+      theServer1.stop();
+      
+      assertTrue( theRoutingTableFile.exists() );
+    }finally{
+      
+    }
+  }
+  
+  public void testPersistRoutingTableWithNewPeerId() throws ProtocolException, InterruptedException{
+    File theRoutingTableFile = new File( "RoutingTable.csv" );
+    if(theRoutingTableFile.exists()) theRoutingTableFile.delete();
+    
+    ProtocolContainer theProtocol1 = getProtocolContainer( -1, true, null );
+    ProtocolServer theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT, 5);
+    
+    RoutingProtocol theRoutingProtocol1 = (RoutingProtocol)theProtocol1.getProtocol( RoutingProtocol.ID );
+    RoutingTable theRoutingTable1 = theRoutingProtocol1.getRoutingTable();
+    try{
+      assertTrue( theServer1.start() );
+      
+      theRoutingProtocol1.scanLocalSystem();
+      Thread.sleep( 1000 );
+
+      assertEquals( 1, theRoutingTable1.getEntries().size() );
+      
+      String thePeerId = theRoutingTable1.getLocalPeerId();
+      
+      theServer1.stop();
+      
+      assertTrue( theRoutingTableFile.exists() );
+      
+      theProtocol1 = getProtocolContainer( -1, true, null );
+      theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT, 5);
+      
+      theRoutingProtocol1 = (RoutingProtocol)theProtocol1.getProtocol( RoutingProtocol.ID );
+      theRoutingTable1 = theRoutingProtocol1.getRoutingTable();
+      
+      assertTrue( theServer1.start() );
+      
+      theRoutingProtocol1.scanLocalSystem();
+      Thread.sleep( 1000 );
+      
+      assertEquals( thePeerId, theRoutingTable1.getLocalPeerId() );
+
+      assertEquals( 1, theRoutingTable1.getEntries().size() );
+      
+      theServer1.stop();
+      
+      assertTrue( theRoutingTableFile.exists() );
+    }finally{
+      
+    }
+  }
+  
 //  public void testDetectRemoteSystem() throws InterruptedException, ProtocolException{
 //    ProtocolContainer theProtocol1 = getProtocolContainer( -1, false, "1" );
 //    ProtocolServer theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT, 5);

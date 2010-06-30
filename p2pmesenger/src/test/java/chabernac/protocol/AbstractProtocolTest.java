@@ -17,7 +17,7 @@ public abstract class AbstractProtocolTest extends TestCase {
     PropertyMap theProperties = new PropertyMap();
     theProperties.setProperty( "routingprotocol.exchangedelay", Long.toString( anExchangeDelay));
     theProperties.setProperty("routingprotocol.persist", Boolean.toString( isPersist));
-    theProperties.setProperty("peerid", aPeerId);
+    if(aPeerId != null) theProperties.setProperty("peerid", aPeerId);
     ProtocolFactory theFactory = new ProtocolFactory(theProperties);
     return new ProtocolContainer(theFactory);
   }
