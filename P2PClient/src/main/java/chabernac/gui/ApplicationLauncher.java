@@ -30,7 +30,7 @@ public class ApplicationLauncher {
     
     P2PFacade theFacade = new P2PFacade()
     .setExchangeDelay( 300 )
-    .setPersist( true )
+    .setPersist( false )
     .setUserInfoProvider( theUserInfoProvider )
     .setSuperNodesDataSource( new ClassPathResource("supernodes.txt") )
     .start( 5 );
