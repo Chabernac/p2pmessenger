@@ -238,7 +238,7 @@ public class RoutingProtocol extends Protocol {
       //TODO remove extensive logging
       try {
         if(aPeer.getPort() == RoutingProtocol.START_PORT && aPeer.getHosts().get( 0 ).equalsIgnoreCase( InetAddress.getLocalHost().getHostAddress() )){
-          LOGGER.error( "Error occured while contacting peer " + aPeer.getHosts() + ": " + aPeer.getPort(), e );
+          LOGGER.error( "Error occured while contacting peer '" + aPeer.getPeerId() + "' " + aPeer.getHosts() + ": " + aPeer.getPort(), e );
         }
       } catch ( UnknownHostException e1 ) {
         e1.printStackTrace();
@@ -653,7 +653,7 @@ public class RoutingProtocol extends Protocol {
   public void setServerInfo( ServerInfo aServerInfo ) {
     //add the local peer
     try{
-      Peer theLocalPeer = new Peer(myLocalPeerId, aServerInfo.getServerPort());
+      Peer theLocalPeer = new Peer(getLocalPeerId(), aServerInfo.getServerPort());
       RoutingTableEntry theLocalRoutingTableEntry = new RoutingTableEntry(theLocalPeer, 0, theLocalPeer, System.currentTimeMillis());
       myRoutingTable.addRoutingTableEntry( theLocalRoutingTableEntry );
     }catch(NoAvailableNetworkAdapterException e){
