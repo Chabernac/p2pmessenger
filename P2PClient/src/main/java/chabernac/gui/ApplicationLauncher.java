@@ -4,8 +4,6 @@
  */
 package chabernac.gui;
 
-import org.apache.log4j.BasicConfigurator;
-
 import chabernac.io.ClassPathResource;
 import chabernac.ldapuserinfoprovider.AXALDAPUserInfoProvider;
 import chabernac.ldapuserinfoprovider.BackupUserInfoProviderDecorator;
@@ -24,7 +22,7 @@ public class ApplicationLauncher {
    * @throws UserInfoException 
    */
   public static void main( String[] args ) throws P2PFacadeException, UserInfoException {
-    BasicConfigurator.configure();
+//    BasicConfigurator.configure();
     
     iUserInfoProvider theUserInfoProvider = new BackupUserInfoProviderDecorator(new AXALDAPUserInfoProvider());
     
