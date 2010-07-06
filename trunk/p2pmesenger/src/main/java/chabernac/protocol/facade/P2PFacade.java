@@ -5,6 +5,7 @@
 package chabernac.protocol.facade;
 
 import java.io.File;
+import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
@@ -36,6 +37,8 @@ import chabernac.protocol.userinfo.UserInfoProtocol;
 import chabernac.protocol.userinfo.iUserInfoListener;
 import chabernac.protocol.userinfo.iUserInfoProvider;
 import chabernac.tools.PropertyMap;
+import chabernac.version.Version;
+import chabernac.version.VersionProtocol;
 
 /**
  * Facade for easy user of the P2P package
@@ -345,6 +348,35 @@ public class P2PFacade {
       throw new P2PFacadeException("An error occured while creationg message archive", e);
     }
   }
+  
+  public Map< String, Version > getVersions() throws P2PFacadeException{
+    if(!isStarted()) throw new P2PFacadeException("Can not execute this action when the server is not started");
+
+    try{
+        return Collections.unmodifiableMap( ((VersionProtocol)myContainer.getProtocol( VersionProtocol.ID )).getVersions() );
+    }catch(Exception e){
+      throw new P2PFacadeException("An error occured while creationg message archive", e);
+    }
+  }
+  
+  public Version getLocalVersion() throws P2PFacadeException{
+    if(!isStarted()) throw new P2PFacadeException("Can not execute this action when the server is not started");
+
+    try{
+        return  ((VersionProtocol)myContainer.getProtocol( VersionProtocol.ID )).getLocalVersion();
+    }catch(Exception e){
+      throw new P2PFacadeException("An error occured while creationg message archive", e);
+    }
+  }
+ 
+  
+  public P2PFacade setVersion( Version aVersion ) throws P2PFacadeException {
+    if(isStarted()) throw new P2PFacadeException("Can not execute this action when the server is started");
+    
+    myProperties.setProperty("chabernac.protocol.version", aVersion);
+    return this;
+  }
+
 
   public void showRoutingTable() throws P2PFacadeException{
     if(!isStarted()) throw new P2PFacadeException("Can not execute this action when the server is not started");
@@ -378,6 +410,12 @@ public class P2PFacade {
       //retrieve the user info protocol
       //this way it is instantiated and listens for routing table changes and retrieves user info of the changed peers
       myContainer.getProtocol( UserInfoProtocol.ID );
+      
+      //retrieve the version protocol so that is starts exchanging versions
+      //retrieve the user info protocol
+      //this way it is instantiated and listens for routing table changes and retrieves user info of the changed peers
+      myContainer.getProtocol( VersionProtocol.ID );
+
       return this;
     }catch(Exception e){
       throw new P2PFacadeException("Could not start P2P Facade", e);
@@ -390,5 +428,4 @@ public class P2PFacade {
     }
     return this;
   }
-
 }
