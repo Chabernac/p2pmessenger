@@ -26,6 +26,8 @@ import chabernac.protocol.userinfo.DefaultUserInfoProvider;
 import chabernac.protocol.userinfo.UserInfoProtocol;
 import chabernac.protocol.userinfo.iUserInfoProvider;
 import chabernac.tools.PropertyMap;
+import chabernac.version.Version;
+import chabernac.version.VersionProtocol;
 
 public class ProtocolFactory implements iProtocolFactory{
   private PropertyMap myProtocolProperties = null;
@@ -99,6 +101,13 @@ public class ProtocolFactory implements iProtocolFactory{
       }catch(Exception e){
         throw new ProtocolException("UserInfoProtocol could not be instantiated", e);
       }
+    }
+    
+    if(VersionProtocol.ID.equalsIgnoreCase( aProtocolId )) {
+      Version theLocalVersion = (Version)myProtocolProperties.get( "chabernac.protocol.version" );
+      if(theLocalVersion == null) theLocalVersion = new Version("0.0.1");
+      VersionProtocol theProtocol = new VersionProtocol(theLocalVersion);
+      return theProtocol;
     }
 
     throw new ProtocolException("The protocol with id '" + aProtocolId + "' is not known");
