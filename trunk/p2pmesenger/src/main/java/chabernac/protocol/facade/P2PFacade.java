@@ -19,6 +19,9 @@ import chabernac.protocol.ProtocolFactory;
 import chabernac.protocol.ProtocolServer;
 import chabernac.protocol.filetransfer.FileTransferProtocol;
 import chabernac.protocol.filetransfer.iFileHandler;
+import chabernac.protocol.infoexchange.InfoExchangeProtocol;
+import chabernac.protocol.infoexchange.InfoObject;
+import chabernac.protocol.infoexchange.iInfoListener;
 import chabernac.protocol.message.MessageArchive;
 import chabernac.protocol.message.MessageIndicator;
 import chabernac.protocol.message.MultiPeerMessage;
@@ -36,9 +39,9 @@ import chabernac.protocol.userinfo.UserInfo;
 import chabernac.protocol.userinfo.UserInfoProtocol;
 import chabernac.protocol.userinfo.iUserInfoListener;
 import chabernac.protocol.userinfo.iUserInfoProvider;
+import chabernac.protocol.version.Version;
+import chabernac.protocol.version.VersionProtocol;
 import chabernac.tools.PropertyMap;
-import chabernac.version.Version;
-import chabernac.version.VersionProtocol;
 
 /**
  * Facade for easy user of the P2P package
@@ -375,6 +378,26 @@ public class P2PFacade {
     
     myProperties.setProperty("chabernac.protocol.version", aVersion);
     return this;
+  }
+  
+  public InfoObject getInfoObject() throws P2PFacadeException{
+    if(!isStarted()) throw new P2PFacadeException("Can not execute this action when the server is not started");
+    
+    try{
+      return  ((InfoExchangeProtocol< InfoObject >)myContainer.getProtocol( InfoExchangeProtocol.ID )).getInfoObject();
+    }catch(Exception e){
+      throw new P2PFacadeException("An error occured while getting info object", e);
+    }
+  }
+  
+  public void addInfoListener(iInfoListener< InfoObject > aListener) throws P2PFacadeException{
+    if(!isStarted()) throw new P2PFacadeException("Can not execute this action when the server is not started");
+    
+    try{
+      ((InfoExchangeProtocol< InfoObject >)myContainer.getProtocol( InfoExchangeProtocol.ID )).addInfoListener( aListener );
+    }catch(Exception e){
+      throw new P2PFacadeException("An error occured while getting info object", e);
+    }
   }
 
 
