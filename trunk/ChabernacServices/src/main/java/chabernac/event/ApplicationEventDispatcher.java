@@ -1,6 +1,5 @@
 package chabernac.event;
 
-import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
