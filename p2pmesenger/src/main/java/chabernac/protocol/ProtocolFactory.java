@@ -16,6 +16,8 @@ import chabernac.protocol.echo.EchoProtocol;
 import chabernac.protocol.encryption.EncryptionException;
 import chabernac.protocol.encryption.EncryptionProtocol;
 import chabernac.protocol.filetransfer.FileTransferProtocol;
+import chabernac.protocol.infoexchange.InfoExchangeProtocol;
+import chabernac.protocol.infoexchange.InfoObject;
 import chabernac.protocol.list.ListProtocol;
 import chabernac.protocol.message.MessageProtocol;
 import chabernac.protocol.message.MultiPeerMessageProtocol;
@@ -25,9 +27,9 @@ import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.userinfo.DefaultUserInfoProvider;
 import chabernac.protocol.userinfo.UserInfoProtocol;
 import chabernac.protocol.userinfo.iUserInfoProvider;
+import chabernac.protocol.version.Version;
+import chabernac.protocol.version.VersionProtocol;
 import chabernac.tools.PropertyMap;
-import chabernac.version.Version;
-import chabernac.version.VersionProtocol;
 
 public class ProtocolFactory implements iProtocolFactory{
   private PropertyMap myProtocolProperties = null;
@@ -107,6 +109,12 @@ public class ProtocolFactory implements iProtocolFactory{
       Version theLocalVersion = (Version)myProtocolProperties.get( "chabernac.protocol.version" );
       if(theLocalVersion == null) theLocalVersion = new Version("0.0.1");
       VersionProtocol theProtocol = new VersionProtocol(theLocalVersion);
+      return theProtocol;
+    }
+    
+    if(InfoExchangeProtocol.ID.equalsIgnoreCase( aProtocolId )) {
+      InfoObject theInfoObject = new InfoObject();
+      InfoExchangeProtocol<InfoObject> theProtocol = new InfoExchangeProtocol< InfoObject >(theInfoObject);
       return theProtocol;
     }
 
