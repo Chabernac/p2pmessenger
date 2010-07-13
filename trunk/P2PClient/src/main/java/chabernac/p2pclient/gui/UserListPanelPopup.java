@@ -7,15 +7,17 @@
 package chabernac.p2pclient.gui;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Observable;
 import java.util.Observer;
+
+import javax.swing.JOptionPane;
 
 import org.apache.log4j.Logger;
 
 import chabernac.command.AbstractCommand;
 import chabernac.gui.CommandMenuItem;
 import chabernac.gui.GPanelPopupMenu;
-import chabernac.protocol.facade.P2PFacade;
 import chabernac.protocol.facade.P2PFacadeException;
 import chabernac.protocol.userinfo.UserInfo.Status;
 
@@ -35,48 +37,51 @@ public class UserListPanelPopup extends GPanelPopupMenu {
     buildMenu();
   }
 
-  private void buildMenu() throws P2PFacadeException{
+  private void buildMenu(){
     removeAll();
     add(new CommandMenuItem(new ClearCommand()));
-//    add(new CommandMenuItem(new NewGroupCommand()));
-//    add(new CommandMenuItem(new RemoveGroupCommand()));
+    add(new CommandMenuItem(new NewGroupCommand()));
+    add(new CommandMenuItem(new RemoveGroupCommand()));
 //    add(new CommandMenuItem(new RemoveOfflineUsers()));
-//    addSeparator();
+    addSeparator();
     buildGroups();
     addSeparator();
 //    add(new CommandMenuItem(new HideCommand()));
 //    addSeparator();
 
-    StatusCommand theAvailableCommand = new StatusCommand(Status.ONLINE); 
-    StatusCommand theAwayCommand = new StatusCommand(Status.AWAY);
-    StatusCommand theBussyCommand = new StatusCommand(Status.BUSY);
+    try{
+      StatusCommand theAvailableCommand = new StatusCommand(Status.ONLINE); 
+      StatusCommand theAwayCommand = new StatusCommand(Status.AWAY);
+      StatusCommand theBussyCommand = new StatusCommand(Status.BUSY);
 
-    CommandMenuItem theAvailableItem = new CommandMenuItem(theAvailableCommand);
-    CommandMenuItem theAwayItem = new CommandMenuItem(theAwayCommand);
-    CommandMenuItem theBussyItem = new CommandMenuItem(theBussyCommand);
+      CommandMenuItem theAvailableItem = new CommandMenuItem(theAvailableCommand);
+      CommandMenuItem theAwayItem = new CommandMenuItem(theAwayCommand);
+      CommandMenuItem theBussyItem = new CommandMenuItem(theBussyCommand);
 
-    theAvailableCommand.addObserver(theAwayItem);
-    theAvailableCommand.addObserver(theBussyItem);
+      theAvailableCommand.addObserver(theAwayItem);
+      theAvailableCommand.addObserver(theBussyItem);
 
-    theAwayCommand.addObserver(theAvailableItem);
-    theAwayCommand.addObserver(theBussyItem);
+      theAwayCommand.addObserver(theAvailableItem);
+      theAwayCommand.addObserver(theBussyItem);
 
-    theBussyCommand.addObserver(theAvailableItem);
-    theBussyCommand.addObserver(theAwayItem);
+      theBussyCommand.addObserver(theAvailableItem);
+      theBussyCommand.addObserver(theAwayItem);
 
-    add(theAvailableItem);
-    add(theAwayItem);
-    add(theBussyItem);
+      add(theAvailableItem);
+      add(theAwayItem);
+      add(theBussyItem);
+    }catch(P2PFacadeException e){
+      logger.error( "Error occured while constructing menu", e );
+    }
 
     addSeparator();
 
   }
 
   private void buildGroups(){
-    //TODO implement
-//    for(Iterator i=myMediator.getUserList().getGroups().keySet().iterator();i.hasNext();){
-//      add(new CommandMenuItem(new SelectGroupCommand((String)i.next())));
-//    }
+    for(Iterator<String> i=myPanel.getGroups().keySet().iterator();i.hasNext();){
+      add(new CommandMenuItem(new SelectGroupCommand((String)i.next())));
+    }
   }
 
   private class ClearCommand extends AbstractCommand{
@@ -89,18 +94,12 @@ public class UserListPanelPopup extends GPanelPopupMenu {
     public String getName() { return "New group"; }
     public boolean isEnabled() { return true; }
     public void execute() {
-      
+
       //TODO implement Group
-//      String groupName = JOptionPane.showInputDialog(myPanel, "Group name");
-//      if(groupName == null || groupName.equals("")) return;
-//      UserList theUserList = myMediator.getUserList();
-//      theUserList.removeGroup(groupName);
-//      ArrayList theUsers = myPanel.getSelectedUsers();
-//      for(int i=0;i<theUsers.size();i++) {
-//        theUserList.addGroupMember(groupName, theUserList.getUser((String)theUsers.get(i)));
-//      }
-//
-//      buildMenu();
+      String groupName = JOptionPane.showInputDialog(myPanel, "Group name");
+      if(groupName == null || groupName.equals("")) return;
+      myPanel.createGroupForSelectedUsers( groupName );
+      buildMenu();
     }
   }
 
@@ -108,9 +107,8 @@ public class UserListPanelPopup extends GPanelPopupMenu {
     public String getName() { return "Remove group"; }
     public boolean isEnabled() { return true; }
     public void execute() {
-      //TODO implement remove group
-//      myMediator.getUserList().removeGroup(lastSelectedGroup);
-//      buildMenu();
+      myPanel.removeGroup( lastSelectedGroup );
+      buildMenu();
     }
   }
 
@@ -126,10 +124,8 @@ public class UserListPanelPopup extends GPanelPopupMenu {
     public boolean isEnabled() { return true; }
 
     public void execute(){
-      //TODO implement select group
-//      lastSelectedGroup = myGroup;
-//      myPanel.clearCheckBoxes();
-//      ApplicationEventDispatcher.fireEvent(new SelectUsersEvent(new ArrayList(myMediator.getUserList().getGroupMembers(myGroup).keySet())));
+      lastSelectedGroup = myGroup;
+      myPanel.selectGroup(myGroup);
     }
   }
 
