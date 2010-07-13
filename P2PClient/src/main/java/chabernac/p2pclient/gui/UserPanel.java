@@ -11,8 +11,11 @@ import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -33,6 +36,7 @@ import chabernac.gui.GPanel;
 import chabernac.gui.LinePainter;
 import chabernac.gui.iComponentMoveListener;
 import chabernac.gui.iPaintable;
+import chabernac.io.Base64ObjectStringConverter;
 import chabernac.preference.ApplicationPreferences;
 import chabernac.protocol.facade.P2PFacadeException;
 import chabernac.protocol.message.DeliveryReport;
@@ -54,15 +58,18 @@ public class UserPanel extends GPanel implements iUserSelectionProvider{
   private List< Component > myCheckBoxesList = new ArrayList< Component >();
   private List<iSelectionChangedListener> mySelectionListeners = new ArrayList< iSelectionChangedListener >();
   private ActionListener myCheckBoxListener = new MyCheckBoxListener();
+  private Map<String, List<String>> myGroups = new HashMap< String, List<String> >();
 
   private iPaintable mySeperator = null;
 
   public UserPanel(ChatMediator aP2PFacade) throws P2PFacadeException{
     myMediator = aP2PFacade;
+    loadGroupsInPreferences();
     init();
     buildGUI();
     addListener();
     buildActionMap();
+    
   }
 
   private void init() throws P2PFacadeException{
@@ -121,6 +128,47 @@ public class UserPanel extends GPanel implements iUserSelectionProvider{
     anCheckBox.setForeground( getColorForStatus(anUserInfo) );
     anCheckBox.setStatus( anUserInfo.getStatus() );
   }
+  
+  public Map<String, List<String>> getGroups(){
+    return Collections.unmodifiableMap( myGroups );
+  }
+  
+  public void createGroupForSelectedUsers(String aGroupName){
+    myGroups.put( aGroupName, getSelectedUsers());
+    saveGroupsInPreferences();
+  }
+  
+  public void selectGroup(String aGroupName){
+    if(myGroups.containsKey( aGroupName )){
+      setSelectedUsers( myGroups.get( aGroupName ) );
+    }
+  }
+  
+  public void removeGroup(String aGroupName){
+    myGroups.remove( aGroupName );
+    saveGroupsInPreferences();
+  }
+  
+  private void saveGroupsInPreferences(){
+    ApplicationPreferences thePreferences = ApplicationPreferences.getInstance();
+    try {
+      thePreferences.put( "userpanel.groups", new Base64ObjectStringConverter<Serializable>().toString( (Serializable) myGroups ));
+    } catch ( IOException e ) {
+      LOGGER.error("Could not save group in prefererences", e);
+    }
+  }
+  
+  private void loadGroupsInPreferences(){
+    ApplicationPreferences thePreferences = ApplicationPreferences.getInstance();
+    String theGroups = thePreferences.getProperty( "userpanel.groups" );
+    try {
+      myGroups = new Base64ObjectStringConverter<HashMap< String, List< String > >>().getObject( theGroups );
+    } catch ( IOException e ) {
+      LOGGER.error( "Could not load groups in preferences", e );
+    }
+  }
+  
+  
 
   private Color getColorForStatus( UserInfo anUserInfo ) {
     Status theStatus = anUserInfo.getStatus();
