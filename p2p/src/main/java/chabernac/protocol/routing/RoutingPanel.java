@@ -17,6 +17,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
+import javax.swing.border.TitledBorder;
 
 public class RoutingPanel extends JPanel {
   private static final long serialVersionUID = 8719080293187156681L;
@@ -35,6 +36,7 @@ public class RoutingPanel extends JPanel {
     buildCenterPanel();
     buildSouthPanel();
     addListeners();
+    setBorder( new TitledBorder("Routing Table") );
   }
   
   private void addListeners(){

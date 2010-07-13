@@ -32,6 +32,7 @@ import chabernac.protocol.pipe.IPipeListener;
 import chabernac.protocol.pipe.Pipe;
 import chabernac.protocol.pipe.PipeProtocol;
 import chabernac.protocol.routing.Peer;
+import chabernac.protocol.routing.PeerSocketFactory;
 import chabernac.protocol.routing.RoutingFrame;
 import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.RoutingTableEntry;
@@ -449,6 +450,7 @@ public class P2PFacade {
     if(myProtocolServer != null){
       myProtocolServer.stop();
     }
+    PeerSocketFactory.getInstance().clear();
     return this;
   }
 }

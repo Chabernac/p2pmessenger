@@ -14,6 +14,7 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.border.TitledBorder;
 
 public class UserInfoPanel extends JPanel {
   private UserInfoProtocol myUserInfoProtocol = null;
@@ -33,6 +34,7 @@ public class UserInfoPanel extends JPanel {
     theSouthPanel.setLayout( new GridLayout(-1,3) );
     theSouthPanel.add(new JButton(new RefreshUserInfo()));
     add(theSouthPanel, BorderLayout.SOUTH);
+    setBorder( new TitledBorder("User information") );
   }
 
 

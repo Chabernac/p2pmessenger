@@ -118,19 +118,25 @@ public class Peer implements Serializable {
   public synchronized String send(String aMessage) throws UnknownHostException, IOException{
     Socket theSocket = PeerSocketFactory.getInstance().getSocketForPeer( this );
 
-    BufferedReader theReader = null;
-    PrintWriter theWriter = null;
-    long t1 = System.currentTimeMillis();
-    try{
-      theWriter = new PrintWriter(new OutputStreamWriter(theSocket.getOutputStream()));
-      theReader = new BufferedReader(new InputStreamReader(theSocket.getInputStream()));
-      theWriter.println(aMessage);
-      theWriter.flush();
-      String theReturnMessage = theReader.readLine();
+    synchronized(theSocket){
+      BufferedReader theReader = null;
+      PrintWriter theWriter = null;
+      long t1 = System.currentTimeMillis();
+      try{
+        theWriter = new PrintWriter(new OutputStreamWriter(theSocket.getOutputStream()));
+        theReader = new BufferedReader(new InputStreamReader(theSocket.getInputStream()));
+        theWriter.println(aMessage);
+        theWriter.flush();
+        String theReturnMessage = theReader.readLine();
 
-      return theReturnMessage;
-    }finally{
+        return theReturnMessage;
+      }finally{
+        if(myPeerId == null || "".equals(  myPeerId )){
+          //we close this socket because it can not be reused
+          theSocket.close();
+        }
 //      System.out.println("Sending message took " + (System.currentTimeMillis() - t1) + " ms");
+      }
     }
   }
 
