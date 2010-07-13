@@ -7,6 +7,7 @@ package chabernac.protocol.routing;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,7 +17,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public class PeerSocketFactory {
-  private Map<String, Socket> mySockets = new HashMap< String, Socket> ();
+  private Map<String, Socket> mySockets = Collections.synchronizedMap( new HashMap< String, Socket> ());
 //  private static Logger LOGGER = Logger.getLogger(PeerSocketFactory.class);
   private ScheduledExecutorService myMonitorService = Executors.newScheduledThreadPool( 1 );
 
