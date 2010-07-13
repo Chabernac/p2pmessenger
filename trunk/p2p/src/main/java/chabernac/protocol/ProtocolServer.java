@@ -20,6 +20,8 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.apache.log4j.Logger;
 
 import chabernac.tools.NetTools;
+import chabernac.util.concurrent.MonitorrableRunnable;
+import chabernac.util.concurrent.iRunnableListener;
 
 public class ProtocolServer implements Runnable{
   private static Logger LOGGER = Logger.getLogger(ProtocolServer.class);
@@ -36,6 +38,7 @@ public class ProtocolServer implements Runnable{
 
   private Object LOCK = new Object();
   private AtomicLong mySimultanousThreads = new AtomicLong();
+  private iRunnableListener myRunnableListener = null;
   
   public ProtocolServer(IProtocol aProtocol, int aPort, int aNumberOfThreads){
     this(aProtocol, aPort, aNumberOfThreads, false);
@@ -106,7 +109,11 @@ public class ProtocolServer implements Runnable{
       while(true){ 
         Socket theClientSocket = myServerSocket.accept();
         LOGGER.debug("Client accepted, current number of clients: " + mySimultanousThreads.get());
-        theClientHandlerService.execute( new ClientSocketHandler(theClientSocket) );
+        ClientSocketHandler theHandler = new ClientSocketHandler(theClientSocket);
+        if(myRunnableListener != null){
+          theHandler.addListener( myRunnableListener );
+        }
+        theClientHandlerService.execute( theHandler );
       }
     }catch(SocketException e){
       if(!"socket closed".equalsIgnoreCase( e.getMessage())){
@@ -126,8 +133,17 @@ public class ProtocolServer implements Runnable{
   public boolean isStarted(){
     return isStarted;
   }
+  
+  public iRunnableListener getRunnableListener() {
+    return myRunnableListener;
+  }
 
-  private class ClientSocketHandler implements Runnable{
+  public void setRunnableListener( iRunnableListener anRunnableListener ) {
+    myRunnableListener = anRunnableListener;
+  }
+
+
+  private class ClientSocketHandler extends MonitorrableRunnable{
     private Socket mySocket = null;
 
 
@@ -135,7 +151,7 @@ public class ProtocolServer implements Runnable{
       mySocket = aSocket;
     }
 
-    public void run(){
+    public void doRun(){
       long theSessionId = myRandom.nextLong();
 
       BufferedReader theReader = null;
@@ -168,6 +184,11 @@ public class ProtocolServer implements Runnable{
           LOGGER.error( "Could not close socket", e );
         }
       }
+    }
+
+    @Override
+    protected String getExtraInfo() {
+      return mySocket.getInetAddress().getHostName() + ":" + mySocket.getPort();
     }
   }
 }
