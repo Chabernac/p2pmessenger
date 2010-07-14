@@ -97,7 +97,7 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
       long thet1 = System.currentTimeMillis();
 
       //sleep for 5 seconds so that the peers can exchange their routing tables
-      long theFirstSleepTime = 5000;
+      long theFirstSleepTime = 50000;
       Thread.sleep( theFirstSleepTime );
 
       assertEquals( 2, theRoutingTable1.getEntries().size());
