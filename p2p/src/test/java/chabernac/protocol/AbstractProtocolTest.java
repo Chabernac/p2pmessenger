@@ -10,7 +10,7 @@ import chabernac.tools.PropertyMap;
 
 public abstract class AbstractProtocolTest extends TestCase {
   public void setUp(){
-    SocketPool.getInstance( 30 ).cleanUp();
+    SocketPool.getInstance( ).cleanUp();
   }
   
   public ProtocolContainer getProtocolContainer(long anExchangeDelay, boolean isPersist, String aPeerId){

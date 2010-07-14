@@ -159,7 +159,7 @@ public class Peer implements Serializable {
       String theReturnMessage = theReader.readLine();
       return theReturnMessage;
     }finally{
-      SocketPool.getInstance( 30 ).checkIn( theSocket );
+      SocketPool.getInstance( ).checkIn( theSocket );
     }
   }
 
@@ -172,7 +172,7 @@ public class Peer implements Serializable {
    * @return
    */
   public Socket createSocket(int aPort){
-    SocketPool theSocketPool = SocketPool.getInstance( 30 );
+    SocketPool theSocketPool = SocketPool.getInstance( );
 
     for(Iterator< String > i = new ArrayList<String>(myHost).iterator(); i.hasNext();){
       String theHost = i.next();

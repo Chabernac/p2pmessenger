@@ -29,12 +29,13 @@ public class SocketPoolModel implements TableModel {
 
   @Override
   public int getColumnCount() {
-    return 2;
+    return 3;
   }
 
   @Override
   public String getColumnName( int anColumnIndex ) {
     if(anColumnIndex == 0) return "Host";
+    if(anColumnIndex == 1) return "Local";
     if(anColumnIndex == 2) return "Pool";
     return "";
   }
@@ -56,7 +57,8 @@ public class SocketPoolModel implements TableModel {
       thePool = "OUT";
     }
     if(anColumnIndex == 0) return theSocket.getRemoteSocketAddress();
-    if(anColumnIndex == 1) return thePool;
+    if(anColumnIndex == 1) return theSocket.getLocalSocketAddress();
+    if(anColumnIndex == 2) return thePool;
     return null;
   }
 

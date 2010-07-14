@@ -153,7 +153,7 @@ public class PipeProtocol extends Protocol {
 
   public void closePipe(Pipe aPipe){
     if(aPipe.getSocket() != null){
-      SocketPool.getInstance( -1 ).close( aPipe.getSocket() );
+      SocketPool.getInstance( ).close( aPipe.getSocket() );
     }
   }
 

@@ -18,41 +18,43 @@ import java.util.concurrent.TimeUnit;
 public class SocketPool extends Observable{
   private List< Socket > myCheckedInPool = Collections.synchronizedList( new ArrayList< Socket >());
   private List< Socket > myCheckedOutPool = Collections.synchronizedList( new ArrayList< Socket >());
-  
+
   private static SocketPool INSTANCE = null; 
-  
-  private ScheduledExecutorService myService = Executors.newScheduledThreadPool(1);
-  
+
+  private ScheduledExecutorService myService = null;
+
+
   private SocketPool(){
-    this(-1);
   }
-  
-  private SocketPool(int aCleanUpTimeoutInSeconds){
-    if(aCleanUpTimeoutInSeconds > 0){
-      myService.scheduleAtFixedRate( 
-                                                              new Runnable(){
-                                                                public void run(){
-                                                                  cleanUp();
-                                                                }
-                                                              }, 
-                                                              aCleanUpTimeoutInSeconds, 
-                                                              aCleanUpTimeoutInSeconds, 
-                                                              TimeUnit.SECONDS);
-    }
-  }
-  
+
   private void notifyAllObs(){
     setChanged();
     notifyObservers();
   }
-  
-  public synchronized static SocketPool getInstance(int aCleanUpTimeoutInSeconds){
+
+  public synchronized static SocketPool getInstance(){
     if(INSTANCE == null){
-      INSTANCE = new SocketPool(aCleanUpTimeoutInSeconds);
+      INSTANCE = new SocketPool();
     }
     return INSTANCE;
   }
-  
+
+  public void setCleanUpTimeInSeconds(int aCleanUpTimeoutInSeconds){
+    if(myService != null) myService.shutdownNow();
+    if(aCleanUpTimeoutInSeconds > 0){
+      myService = Executors.newScheduledThreadPool(1);
+      myService.scheduleAtFixedRate( 
+          new Runnable(){
+            public void run(){
+              cleanUp();
+            }
+          }, 
+          aCleanUpTimeoutInSeconds, 
+          aCleanUpTimeoutInSeconds, 
+          TimeUnit.SECONDS);
+    }
+  }
+
   private Socket searchFirstSocketWithAddressInPool(SocketAddress anAddress, List<Socket> aPool){
     for(Socket theSocket : aPool){
       if(theSocket.getRemoteSocketAddress().equals( anAddress )){
@@ -88,7 +90,7 @@ public class SocketPool extends Observable{
       notifyAllObs();
     }
   }
-  
+
   public synchronized void close(Socket aSocket){
     try {
       aSocket.close();
@@ -109,11 +111,11 @@ public class SocketPool extends Observable{
     myCheckedInPool.clear();
     notifyAllObs();
   }
-  
+
   List< Socket > getCheckInPool(){
     return Collections.unmodifiableList(  myCheckedInPool );
   }
-  
+
   List< Socket > getCheckOutPool(){
     return Collections.unmodifiableList(  myCheckedOutPool );
   }
