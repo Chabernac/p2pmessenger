@@ -14,6 +14,7 @@ import javax.swing.JFrame;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.PropertyConfigurator;
 
+import chabernac.io.SocketPoolPanel;
 import chabernac.protocol.ProtocolContainer;
 import chabernac.protocol.ProtocolException;
 import chabernac.protocol.ProtocolFactory;
@@ -54,7 +55,7 @@ public class RoutingFrame extends JFrame {
     MonitorPanel theMonitorPanel = new MonitorPanel();
     myProtocolServer.setRunnableListener( theMonitorPanel );
     getContentPane().add(theMonitorPanel);
-    getContentPane().add( new PeerSocketPanel() );
+    getContentPane().add( new SocketPoolPanel() );
     
     setSize( 1200, 700 );
   }

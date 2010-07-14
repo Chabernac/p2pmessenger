@@ -15,7 +15,9 @@ import java.util.TreeMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-
+/**
+ * @deprecated 
+ */
 public class PeerSocketFactory {
   private Map<String, Socket> mySockets = Collections.synchronizedMap( new HashMap< String, Socket> ());
 //  private static Logger LOGGER = Logger.getLogger(PeerSocketFactory.class);

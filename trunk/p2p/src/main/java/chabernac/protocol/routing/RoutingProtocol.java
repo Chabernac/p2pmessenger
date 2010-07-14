@@ -219,7 +219,7 @@ public class RoutingProtocol extends Protocol {
 
   boolean contactPeer(Peer aPeer, List<String> anUnreachablePeers){
     try{
-//      LOGGER.debug("Sending message to '" + aPeer.getHosts() + "' port '" + aPeer.getPort() + "'");
+      LOGGER.debug("Sending message to '" + aPeer.getHosts() + "' port '" + aPeer.getPort() + "'");
       String[] theIdTime = aPeer.send( createMessage( Command.WHO_ARE_YOU.name() )).split( " " );
 
       if(!anUnreachablePeers.contains( theIdTime[0] )){
@@ -236,13 +236,13 @@ public class RoutingProtocol extends Protocol {
       }
     }catch(Exception e){
       //TODO remove extensive logging
-      try {
-        if(aPeer.getPort() == RoutingProtocol.START_PORT && aPeer.getHosts().get( 0 ).equalsIgnoreCase( InetAddress.getLocalHost().getHostAddress() )){
-          LOGGER.error( "Error occured while contacting peer '" + aPeer.getPeerId() + "' " + aPeer.getHosts() + ": " + aPeer.getPort(), e );
-        }
-      } catch ( UnknownHostException e1 ) {
-        e1.printStackTrace();
-      }
+//      try {
+//        if(aPeer.getPort() == RoutingProtocol.START_PORT && aPeer.getHosts().get( 0 ).equalsIgnoreCase( InetAddress.getLocalHost().getHostAddress() )){
+          LOGGER.error( "Error occured while contacting peer '" + aPeer.getPeerId() + "' " + aPeer.getHosts() + ": " + aPeer.getPort() );
+//        }
+//      } catch ( UnknownHostException e1 ) {
+//        e1.printStackTrace();
+//      }
     }
     return false;
   }
