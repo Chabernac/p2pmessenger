@@ -5,8 +5,6 @@
 package chabernac.io;
 
 import java.awt.BorderLayout;
-import java.net.Socket;
-import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -27,9 +25,9 @@ public class SocketPoolPanel extends JPanel implements Observer {
   private void buildGUI(){
     setLayout(  new BorderLayout() );
     
-    myTable = new JTable(new SocketPoolModel(SocketPool.getInstance( 30 )));
+    myTable = new JTable(new SocketPoolModel(SocketPool.getInstance( )));
     add(new JScrollPane(myTable));
-    SocketPool.getInstance( -1 ).addObserver( this );
+    SocketPool.getInstance( ).addObserver( this );
     setBorder( new TitledBorder("Cached sockets") );
   }
 

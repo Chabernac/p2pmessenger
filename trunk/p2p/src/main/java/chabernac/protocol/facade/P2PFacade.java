@@ -440,6 +440,8 @@ public class P2PFacade {
       //retrieve the user info protocol
       //this way it is instantiated and listens for routing table changes and retrieves user info of the changed peers
       myContainer.getProtocol( VersionProtocol.ID );
+      
+      SocketPool.getInstance().setCleanUpTimeInSeconds(30);
 
       return this;
     }catch(Exception e){
@@ -451,7 +453,7 @@ public class P2PFacade {
     if(myProtocolServer != null){
       myProtocolServer.stop();
     }
-    SocketPool.getInstance( 30 ).cleanUp();
+    SocketPool.getInstance( ).cleanUp();
     return this;
   }
 }

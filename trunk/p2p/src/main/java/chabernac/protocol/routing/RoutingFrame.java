@@ -14,6 +14,7 @@ import javax.swing.JFrame;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.PropertyConfigurator;
 
+import chabernac.io.SocketPool;
 import chabernac.io.SocketPoolPanel;
 import chabernac.protocol.ProtocolContainer;
 import chabernac.protocol.ProtocolException;
@@ -81,6 +82,7 @@ public class RoutingFrame extends JFrame {
     theServer1.start();
     RoutingFrame theFrame = new RoutingFrame(theServer1, theContainer);
     theFrame.setVisible( true );
+    SocketPool.getInstance().setCleanUpTimeInSeconds(30);
 
   }
   
