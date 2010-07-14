@@ -12,6 +12,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Observable;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public class SocketPool extends Observable{
@@ -20,13 +21,15 @@ public class SocketPool extends Observable{
   
   private static SocketPool INSTANCE = null; 
   
+  private ScheduledExecutorService myService = Executors.newScheduledThreadPool(1);
+  
   private SocketPool(){
     this(-1);
   }
   
   private SocketPool(int aCleanUpTimeoutInSeconds){
     if(aCleanUpTimeoutInSeconds > 0){
-      Executors.newScheduledThreadPool( 1 ).scheduleAtFixedRate( 
+      myService.scheduleAtFixedRate( 
                                                               new Runnable(){
                                                                 public void run(){
                                                                   cleanUp();
