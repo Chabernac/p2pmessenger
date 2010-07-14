@@ -10,6 +10,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Serializable;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
@@ -17,10 +18,13 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
+import chabernac.io.SocketPool;
 import chabernac.tools.NetTools;
 
 public class Peer implements Serializable {
-//  private static Logger LOGGER = Logger.getLogger(Peer.class);
+  private static Logger LOGGER = Logger.getLogger(Peer.class);
 
   private static final long serialVersionUID = 7852961137229337616L;
   private String myPeerId;
@@ -115,42 +119,71 @@ public class Peer implements Serializable {
    * @throws IOException 
    * @throws UnknownHostException 
    */
+//  public synchronized String send(String aMessage) throws UnknownHostException, IOException{
+//    Socket theSocket = PeerSocketFactory.getInstance().getSocketForPeer( this );
+//
+//    synchronized(theSocket){
+//      BufferedReader theReader = null;
+//      PrintWriter theWriter = null;
+//      long t1 = System.currentTimeMillis();
+//      try{
+//        theWriter = new PrintWriter(new OutputStreamWriter(theSocket.getOutputStream()));
+//        theReader = new BufferedReader(new InputStreamReader(theSocket.getInputStream()));
+//        theWriter.println(aMessage);
+//        theWriter.flush();
+//        String theReturnMessage = theReader.readLine();
+//
+//        return theReturnMessage;
+//      }finally{
+//        if(myPeerId == null || "".equals(  myPeerId )){
+//          //we close this socket because it can not be reused
+//          theSocket.close();
+//        }
+////      System.out.println("Sending message took " + (System.currentTimeMillis() - t1) + " ms");
+//      }
+//    }
+//  }
+
   public synchronized String send(String aMessage) throws UnknownHostException, IOException{
-    Socket theSocket = PeerSocketFactory.getInstance().getSocketForPeer( this );
+    Socket theSocket = createSocket( myPort );
+    
+    if(theSocket == null) throw new IOException("Could not open socket to this peer");
 
-    synchronized(theSocket){
-      BufferedReader theReader = null;
-      PrintWriter theWriter = null;
-      long t1 = System.currentTimeMillis();
-      try{
-        theWriter = new PrintWriter(new OutputStreamWriter(theSocket.getOutputStream()));
-        theReader = new BufferedReader(new InputStreamReader(theSocket.getInputStream()));
-        theWriter.println(aMessage);
-        theWriter.flush();
-        String theReturnMessage = theReader.readLine();
-
-        return theReturnMessage;
-      }finally{
-        if(myPeerId == null || "".equals(  myPeerId )){
-          //we close this socket because it can not be reused
-          theSocket.close();
-        }
-//      System.out.println("Sending message took " + (System.currentTimeMillis() - t1) + " ms");
-      }
+    BufferedReader theReader = null;
+    PrintWriter theWriter = null;
+    try{
+      theWriter = new PrintWriter(new OutputStreamWriter(theSocket.getOutputStream()));
+      theReader = new BufferedReader(new InputStreamReader(theSocket.getInputStream()));
+      theWriter.println(aMessage);
+      theWriter.flush();
+      String theReturnMessage = theReader.readLine();
+      return theReturnMessage;
+    }finally{
+      SocketPool.getInstance( 30 ).checkIn( theSocket );
     }
   }
 
 
 
+  /**
+   * this method creates a socket by using the socket pool
+   * you must call check in or close on the connection pool after you've used this socket!!
+   * @param aPort
+   * @return
+   */
   public Socket createSocket(int aPort){
+    SocketPool theSocketPool = SocketPool.getInstance( 30 );
+
     for(Iterator< String > i = new ArrayList<String>(myHost).iterator(); i.hasNext();){
       String theHost = i.next();
       try{
-        Socket theSocket = new Socket(theHost, aPort);
+        Socket theSocket = theSocketPool.checkOut(new InetSocketAddress(theHost, aPort));
         myHost.remove( theHost );
         myHost.add( 0, theHost);
         return theSocket;
-      }catch(Exception e){}
+      }catch(Exception e){
+//        LOGGER.error("Could not open connection to peer: " + myHost + ":" + myPort, e);
+      }
     }
     return null;
   }
