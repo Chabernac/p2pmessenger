@@ -5,12 +5,12 @@
 package chabernac.protocol;
 
 import junit.framework.TestCase;
-import chabernac.protocol.routing.PeerSocketFactory;
+import chabernac.io.SocketPool;
 import chabernac.tools.PropertyMap;
 
 public abstract class AbstractProtocolTest extends TestCase {
   public void setUp(){
-    PeerSocketFactory.getInstance().clear();
+    SocketPool.getInstance( 30 ).cleanUp();
   }
   
   public ProtocolContainer getProtocolContainer(long anExchangeDelay, boolean isPersist, String aPeerId){
