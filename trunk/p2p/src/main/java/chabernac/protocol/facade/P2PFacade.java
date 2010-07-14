@@ -13,6 +13,7 @@ import java.util.concurrent.Future;
 
 import javax.activation.DataSource;
 
+import chabernac.io.SocketPool;
 import chabernac.protocol.ProtocolContainer;
 import chabernac.protocol.ProtocolException;
 import chabernac.protocol.ProtocolFactory;
@@ -450,7 +451,7 @@ public class P2PFacade {
     if(myProtocolServer != null){
       myProtocolServer.stop();
     }
-    PeerSocketFactory.getInstance().clear();
+    SocketPool.getInstance( 30 ).cleanUp();
     return this;
   }
 }
