@@ -27,7 +27,7 @@ public class SocketPoolPanel extends JPanel implements Observer {
   private void buildGUI(){
     setLayout(  new BorderLayout() );
     
-    myTable = new JTable(new SocketPoolModel(SocketPool.getInstance( -1 )));
+    myTable = new JTable(new SocketPoolModel(SocketPool.getInstance( 30 )));
     add(new JScrollPane(myTable));
     SocketPool.getInstance( -1 ).addObserver( this );
     setBorder( new TitledBorder("Cached sockets") );
