@@ -4,6 +4,7 @@
  */
 package chabernac.protocol.userinfo;
 
+import java.lang.Thread.State;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -13,6 +14,10 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
+import javax.print.attribute.standard.SheetCollate;
 
 import org.apache.log4j.Logger;
 
@@ -41,12 +46,14 @@ public class UserInfoProtocol extends Protocol {
   private Map<String, UserInfo> myUserInfo = new HashMap< String, UserInfo >();
 
   private ExecutorService myRetrievalService = Executors.newFixedThreadPool( 5 );
+  private ScheduledExecutorService myService = Executors.newScheduledThreadPool( 1 );
 
   private iUserInfoProvider myUserInfoProvider = null;
 
   private List< iUserInfoListener > myListeners = new ArrayList< iUserInfoListener >();
 
   private MyUserInfoListener myUserInfoListener = new MyUserInfoListener();
+  
 
   public UserInfoProtocol ( iUserInfoProvider aProvider ) throws UserInfoException{
     super( ID );
@@ -76,7 +83,11 @@ public class UserInfoProtocol extends Protocol {
     super.setMasterProtocol( aProtocol );
 
     try{
-      fullRetrieval();
+      myService.scheduleAtFixedRate( new Runnable(){
+        public void run(){
+          fullRetrieval();
+        }
+      }, 1, 60, TimeUnit.SECONDS);
       addListeners();
     }catch(Exception e){
       LOGGER.error( "Could not fully initialize UserInfoProtocol", e );
@@ -89,7 +100,7 @@ public class UserInfoProtocol extends Protocol {
       RoutingTable theTable = getRoutingTable();
       for(RoutingTableEntry theEntry : theTable){
         Peer thePeer = theEntry.getPeer();
-        if(!myUserInfo.containsKey( thePeer.getPeerId() )){
+        if(!myUserInfo.containsKey( thePeer.getPeerId() ) || myUserInfo.get(thePeer.getPeerId()).getStatus() == Status.OFFLINE){
           myRetrievalService.execute( new UserInfoRetriever(thePeer.getPeerId()) );
         }
       }
