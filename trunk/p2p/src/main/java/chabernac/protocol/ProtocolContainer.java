@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit;
 
 public class ProtocolContainer implements IProtocol {
   public static enum Command {PROTOCOLS};
-  public static enum Response {UNKNOWN_COMMAND, UNKNOWN_PROTOCOL};
+  public static enum Response {UNKNOWN_COMMAND, UNKNOWN_PROTOCOL, INVALID_PROTOCOL};
   
   private Map<String, IProtocol> myProtocolMap = null;
   
@@ -29,6 +29,7 @@ public class ProtocolContainer implements IProtocol {
 
   @Override
   public String handleCommand( long aSessionId, String anInput ) {
+    if(anInput.length() < 3) return Response.INVALID_PROTOCOL.name();
     String theID = anInput.substring( 0, 3 );
     IProtocol theProtocol;
     try {

@@ -4,13 +4,14 @@
  */
 package chabernac.io;
 
-import java.net.Socket;
+import java.text.SimpleDateFormat;
 
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
 
 public class SocketPoolModel implements TableModel {
   private final SocketPool mySocketPool;
+  private SimpleDateFormat myFormat = new SimpleDateFormat("HH:mm:ss");
 
   public SocketPoolModel ( SocketPool anSocketPool ) {
     super();
@@ -29,7 +30,7 @@ public class SocketPoolModel implements TableModel {
 
   @Override
   public int getColumnCount() {
-    return 3;
+    return 4;
   }
 
   @Override
@@ -37,28 +38,40 @@ public class SocketPoolModel implements TableModel {
     if(anColumnIndex == 0) return "Host";
     if(anColumnIndex == 1) return "Local";
     if(anColumnIndex == 2) return "Pool";
+    if(anColumnIndex == 3) return "Connect time";
     return "";
   }
 
   @Override
   public int getRowCount() {
-    return mySocketPool.getCheckInPool().size() + mySocketPool.getCheckOutPool().size();
+    return mySocketPool.getCheckInPool().size() + mySocketPool.getCheckOutPool().size() + mySocketPool.getConnectingPool().size();
   }
 
   @Override
   public Object getValueAt( int anRowIndex, int anColumnIndex ) {
-    Socket theSocket;
+    SocketProxy theSocket;
     String thePool;
     if(anRowIndex < mySocketPool.getCheckInPool().size()){
       theSocket = mySocketPool.getCheckInPool().get( anRowIndex );
       thePool = "IN";
-    } else {
+    } else if(anRowIndex < mySocketPool.getCheckInPool().size() + mySocketPool.getCheckOutPool().size()){
       theSocket = mySocketPool.getCheckOutPool().get(anRowIndex - mySocketPool.getCheckInPool().size());
       thePool = "OUT";
+    } else {
+      theSocket = mySocketPool.getConnectingPool().get(anRowIndex - mySocketPool.getCheckInPool().size() - mySocketPool.getCheckOutPool().size());
+      thePool = "CONNECT";
     }
-    if(anColumnIndex == 0) return theSocket.getRemoteSocketAddress();
-    if(anColumnIndex == 1) return theSocket.getLocalSocketAddress();
+    if(anColumnIndex == 0) return theSocket.getSocketAddress();
+    if(anColumnIndex == 1) {
+      if(theSocket.isConnected()) return theSocket.getSocket().getLocalSocketAddress();
+    }
     if(anColumnIndex == 2) return thePool;
+
+    if(anColumnIndex == 3) {
+      if(theSocket.getConnectTime() != null){
+        return myFormat.format( theSocket.getConnectTime() );
+      }
+    }
     return null;
   }
 

@@ -23,7 +23,7 @@ public class ListProtocol extends Protocol {
 
   @Override
   public String handleCommand( long aSessionId, String anInput ) {
-    if(Command.PROTOCOLS.name().equalsIgnoreCase( anInput )){
+    if(Command.PROTOCOLS.name().equalsIgnoreCase( anInput.trim() )){
       return findProtocolContainer().getProtocolString();
     }
     
