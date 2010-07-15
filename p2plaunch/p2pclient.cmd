@@ -1,0 +1,1 @@
+start /b mvn exec:java -Dexec.mainClass="chabernac.gui.ApplicationLauncher" -Dexec.args="true"
