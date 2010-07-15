@@ -16,8 +16,9 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public class SocketPool extends Observable{
-  private List< Socket > myCheckedInPool = Collections.synchronizedList( new ArrayList< Socket >());
-  private List< Socket > myCheckedOutPool = Collections.synchronizedList( new ArrayList< Socket >());
+  private List< SocketProxy > myCheckedInPool = Collections.synchronizedList( new ArrayList< SocketProxy >());
+  private List< SocketProxy > myCheckedOutPool = Collections.synchronizedList( new ArrayList< SocketProxy >());
+  private List< SocketProxy > myConnectingPool = Collections.synchronizedList( new ArrayList< SocketProxy >());
 
   private static SocketPool INSTANCE = null; 
 
@@ -55,9 +56,9 @@ public class SocketPool extends Observable{
     }
   }
 
-  private Socket searchFirstSocketWithAddressInPool(SocketAddress anAddress, List<Socket> aPool){
-    for(Socket theSocket : aPool){
-      if(theSocket.getRemoteSocketAddress().equals( anAddress )){
+  private SocketProxy searchFirstSocketWithAddressInPool(SocketAddress anAddress, List<SocketProxy> aPool){
+    for(SocketProxy theSocket : aPool){
+      if(theSocket.getSocketAddress().equals( anAddress )){
         return theSocket;
       }
     }
@@ -65,27 +66,51 @@ public class SocketPool extends Observable{
   }
 
   public Socket checkOut(SocketAddress anAddress) throws IOException{
-    Socket theSocket = searchFirstSocketWithAddressInPool( anAddress, myCheckedInPool);
-    if(theSocket != null){
+    SocketProxy theSocketProxy = searchFirstSocketWithAddressInPool( anAddress, myCheckedInPool);
+    if(theSocketProxy != null){
       synchronized(this){
-        myCheckedInPool.remove( theSocket );
-        myCheckedOutPool.add( theSocket );
-        return theSocket;
+        myCheckedInPool.remove( theSocketProxy );
+        myCheckedOutPool.add( theSocketProxy );
+        return theSocketProxy.connect();
       }
     }
+    
+    theSocketProxy = searchFirstSocketWithAddressInPool( anAddress, myConnectingPool );
+    if(theSocketProxy != null){
+      //in this case some other thread also is trying to connect to the same address.  We will not allow to seperate threads
+      //to try to connect to the same host at the same port as it will start consuming to much resources after a while
+      //throw an exception
+      throw new IOException("Another process already tries to contact this host at this port");
+    }
 
-    theSocket = new Socket();
-    theSocket.connect( anAddress );
-    myCheckedOutPool.add( theSocket );
+    theSocketProxy = new SocketProxy(anAddress);
+    myConnectingPool.add( theSocketProxy );
     notifyAllObs();
-    return theSocket;
+    try{
+      Socket theSocket = theSocketProxy.connect( );
+      myCheckedOutPool.add( theSocketProxy );
+      return theSocket;
+    } finally{
+      myConnectingPool.remove( theSocketProxy );
+      notifyAllObs();
+    }
+  }
+  
+  private SocketProxy searchProxyForSocket(Socket aSocket){
+    for(SocketProxy theProxy : myCheckedOutPool){
+      if(theProxy.getSocket() == aSocket){
+        return theProxy;
+      }
+    }
+    return null;
   }
 
   public void checkIn(Socket aSocket){
     if(aSocket != null){
       synchronized(this){
-        myCheckedOutPool.remove( aSocket );
-        myCheckedInPool.add(aSocket);
+        SocketProxy theProxy = searchProxyForSocket( aSocket );
+        myCheckedOutPool.remove( theProxy );
+        myCheckedInPool.add(theProxy);
       }
       notifyAllObs();
     }
@@ -96,15 +121,16 @@ public class SocketPool extends Observable{
       aSocket.close();
     } catch ( IOException e ) {
     }
-    myCheckedInPool.remove( aSocket );
-    myCheckedOutPool.remove( aSocket );
+    SocketProxy theProxy = searchProxyForSocket( aSocket );
+    myCheckedInPool.remove( theProxy );
+    myCheckedOutPool.remove( theProxy );
     notifyAllObs();
   }
 
   public synchronized void cleanUp(){
-    for(Socket theSocket : myCheckedInPool){
+    for(SocketProxy theSocket : myCheckedInPool){
       try {
-        theSocket.close();
+        theSocket.getSocket().close();
       } catch ( IOException e ) {
       }
     }
@@ -112,11 +138,15 @@ public class SocketPool extends Observable{
     notifyAllObs();
   }
 
-  List< Socket > getCheckInPool(){
+  List< SocketProxy > getCheckInPool(){
     return Collections.unmodifiableList(  myCheckedInPool );
   }
 
-  List< Socket > getCheckOutPool(){
+  List< SocketProxy > getCheckOutPool(){
     return Collections.unmodifiableList(  myCheckedOutPool );
+  }
+  
+  List< SocketProxy > getConnectingPool(){
+    return Collections.unmodifiableList(  myConnectingPool);
   }
 }

@@ -16,7 +16,6 @@ import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.SocketException;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -29,10 +28,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
 import javax.activation.DataSource;
-import javax.activation.FileDataSource;
 
 import org.apache.log4j.Logger;
 
+import chabernac.io.ClassPathResource;
 import chabernac.io.iObjectPersister;
 import chabernac.protocol.Protocol;
 import chabernac.protocol.ServerInfo;
@@ -94,7 +93,7 @@ public class RoutingProtocol extends Protocol {
 
   private boolean isPeerIdInFile = false;
 
-  private DataSource mySuperNodesDataSource = new FileDataSource("supernodes.txt");
+  private DataSource mySuperNodesDataSource = new ClassPathResource("supernodes.txt");
 
   /**
    * 
