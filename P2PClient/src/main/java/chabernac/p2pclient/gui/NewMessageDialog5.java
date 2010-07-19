@@ -302,6 +302,7 @@ public class NewMessageDialog5 extends JDialog implements iMessageDialog{
       try{
         myReplyMessage = myMessage.replyAll();
         myReplyMessage = myReplyMessage.setSource( myMediator.getP2PFacade().getPeerId() );
+        myReplyMessage = myReplyMessage.removeDestination( myMediator.getP2PFacade().getPeerId() );
         myMediator.getUserSelectionProvider().setSelectedUsers( myReplyMessage.getDestinations() );
         addRemoveReply(true);
       }catch(P2PFacadeException f){
