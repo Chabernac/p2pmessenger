@@ -114,6 +114,10 @@ public class InfoExchangeProtocol<T extends Observable & Serializable> extends P
   public void addInfoListener(iInfoListener<T> anInfoListener){
     myInfoListeners.add( anInfoListener );
   }
+  
+  public void removeInfoListener( iInfoListener< InfoObject > anListener ) {
+    myInfoListeners.remove( anListener );
+  }
 
   private void pushInformationToAllPeers() {
     try{
@@ -182,5 +186,4 @@ public class InfoExchangeProtocol<T extends Observable & Serializable> extends P
       myService.execute( new SendInfoToPeer(anEntry.getPeer().getPeerId()));
     }
   }
-
 }
