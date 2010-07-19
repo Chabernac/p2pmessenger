@@ -33,7 +33,6 @@ import chabernac.protocol.pipe.IPipeListener;
 import chabernac.protocol.pipe.Pipe;
 import chabernac.protocol.pipe.PipeProtocol;
 import chabernac.protocol.routing.Peer;
-import chabernac.protocol.routing.PeerSocketFactory;
 import chabernac.protocol.routing.RoutingFrame;
 import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.RoutingTableEntry;
@@ -273,12 +272,32 @@ public class P2PFacade {
       throw new P2PFacadeException("An error occured while adding pipe listener", e);
     }
   }
+  
+  public void removePipeListener(IPipeListener aPipeListener) throws P2PFacadeException{
+    if(!isStarted()) throw new P2PFacadeException("Can not execute this action when the server is not started");
+
+    try {
+      ((PipeProtocol)myContainer.getProtocol( PipeProtocol.ID )).removePipeListener( aPipeListener );
+    } catch ( Exception e ) {
+      throw new P2PFacadeException("An error occured while adding pipe listener", e);
+    }
+  }
 
   public void addUserInfoListener(iUserInfoListener aListener) throws P2PFacadeException{
     if(!isStarted()) throw new P2PFacadeException("Can not execute this action when the server is not started");
 
     try {
       ((UserInfoProtocol)myContainer.getProtocol( UserInfoProtocol.ID )).addUserInfoListener( aListener );
+    } catch ( Exception e ) {
+      throw new P2PFacadeException("An error occured while adding user info listener", e);
+    }
+  }
+  
+  public void removeUserInfoListener( iUserInfoListener aUserInfoListener) throws P2PFacadeException {
+    if(!isStarted()) throw new P2PFacadeException("Can not execute this action when the server is not started");
+
+    try {
+      ((UserInfoProtocol)myContainer.getProtocol( UserInfoProtocol.ID )).removeUserInfoListener( aUserInfoListener );
     } catch ( Exception e ) {
       throw new P2PFacadeException("An error occured while adding user info listener", e);
     }
@@ -401,6 +420,16 @@ public class P2PFacade {
       throw new P2PFacadeException("An error occured while getting info object", e);
     }
   }
+  
+  public void removeInfoListener(iInfoListener< InfoObject > aListener) throws P2PFacadeException{
+    if(!isStarted()) throw new P2PFacadeException("Can not execute this action when the server is not started");
+    
+    try{
+      ((InfoExchangeProtocol< InfoObject >)myContainer.getProtocol( InfoExchangeProtocol.ID )).removeInfoListener( aListener );
+    }catch(Exception e){
+      throw new P2PFacadeException("An error occured while getting info object", e);
+    }
+  }
 
 
   public void showRoutingTable() throws P2PFacadeException{
@@ -456,4 +485,6 @@ public class P2PFacade {
     SocketPool.getInstance( ).cleanUp();
     return this;
   }
+
+
 }
