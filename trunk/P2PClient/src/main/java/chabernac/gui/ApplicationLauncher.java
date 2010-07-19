@@ -4,10 +4,15 @@
  */
 package chabernac.gui;
 
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
 import chabernac.io.ClassPathResource;
 import chabernac.ldapuserinfoprovider.AXALDAPUserInfoProvider;
 import chabernac.ldapuserinfoprovider.BackupUserInfoProviderDecorator;
 import chabernac.p2pclient.gui.ChatFrame;
+import chabernac.preference.ApplicationPreferences;
 import chabernac.protocol.facade.P2PFacade;
 import chabernac.protocol.facade.P2PFacadeException;
 import chabernac.protocol.userinfo.UserInfoException;
@@ -15,6 +20,7 @@ import chabernac.protocol.userinfo.iUserInfoProvider;
 import chabernac.protocol.userinfo.UserInfo.Status;
 
 public class ApplicationLauncher {
+  private static ScheduledExecutorService SERVICE = Executors.newScheduledThreadPool( 1 );
 
   /**
    * @param args
@@ -22,7 +28,10 @@ public class ApplicationLauncher {
    * @throws UserInfoException 
    */
   public static void main( String[] args ) throws P2PFacadeException, UserInfoException {
+    
 //    BasicConfigurator.configure();
+    
+    startTimers();
     
     iUserInfoProvider theUserInfoProvider = new BackupUserInfoProviderDecorator(new AXALDAPUserInfoProvider());
     
@@ -37,5 +46,15 @@ public class ApplicationLauncher {
     theUserInfoProvider.getUserInfo().setStatus( Status.ONLINE );
     theFrame.setVisible( true );
   }
-
+  
+  private static void startTimers(){
+    SERVICE.scheduleAtFixedRate( new SavePreference(), 5, 10, TimeUnit.MINUTES );
+  }
+  
+  private static class SavePreference implements Runnable {
+    @Override
+    public void run() {
+      ApplicationPreferences.save();
+    }
+  }
 }
