@@ -122,6 +122,10 @@ public class PipeProtocol extends Protocol {
   public void addPipeListener( IPipeListener anPipeListener ) {
     myPipeListener.add( anPipeListener );
   }
+  
+  public void removePipeListener( IPipeListener anPipeListener ) {
+   myPipeListener.remove( anPipeListener );
+  }
 
   @Override
   public void stop() {
@@ -253,5 +257,4 @@ public class PipeProtocol extends Protocol {
       }
     }
   }
-
 }

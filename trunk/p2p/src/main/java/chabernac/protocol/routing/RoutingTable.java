@@ -40,10 +40,8 @@ public class RoutingTable implements Iterable< RoutingTableEntry >{
       throw new IllegalArgumentException("Received routing table entry with no peer id");
     }
     
-    //TODO remove
     if(anEntry.getPeer().getPeerId().equalsIgnoreCase( getLocalPeerId() ) && anEntry.getGateway().getPeerId().equals( anEntry.getPeer().getPeerId() ) && anEntry.getHopDistance() > 0 && anEntry.getHopDistance() != RoutingTableEntry.MAX_HOP_DISTANCE){
-      //this is an invalid condition
-//      LOGGER.error( myLocalPeerId + " :Received peer entry of our selfs with hop distance > 0" + anEntry, new Exception("Received peer entry for ourselfs") );
+      //when getting here it means that another peer was detected with the same  
       return;
     }
     
