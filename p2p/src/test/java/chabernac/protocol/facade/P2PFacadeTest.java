@@ -16,6 +16,7 @@ import junit.framework.TestCase;
 
 import org.apache.log4j.BasicConfigurator;
 
+import chabernac.protocol.AlreadyRunningException;
 import chabernac.protocol.message.DeliveryReport;
 import chabernac.protocol.message.MessageArchive;
 import chabernac.protocol.message.MultiPeerMessage;
@@ -200,10 +201,10 @@ public class P2PFacadeTest extends TestCase {
     try{
       assertEquals( "Guy", theFacade1.getPersonalInfo().getName());
       assertEquals( "guy.chauliac@gmail.com", theFacade1.getPersonalInfo().getEMail());
-      
+
       assertEquals( "Leslie", theFacade2.getPersonalInfo().getName());
       assertEquals( "leslie.torreele@gmail.com", theFacade2.getPersonalInfo().getEMail());
-      
+
       UserInfo theUserInfoOfFacade1 = theFacade2.getUserInfo().get( theFacade1.getPeerId() );
       assertEquals( "Guy", theUserInfoOfFacade1.getName() );
       assertEquals( "guy.chauliac@gmail.com", theUserInfoOfFacade1.getEMail() );
@@ -254,9 +255,9 @@ public class P2PFacadeTest extends TestCase {
 
         theMessage = theFacade1.sendEncryptedMessage( theMessage, Executors.newFixedThreadPool( 1 ) ).get();
         assertNotNull( theMessage );
-        
+
         Thread.sleep( 500 );
-        
+
         Map<String, DeliveryReport> theReports = theArchive1.getDeliveryReportsForMultiPeerMessage( theMessage );
         //we only send to 1 peer and it should only contain the latest delivery report, so the size must be 1
         assertEquals( 1, theReports.size() );
@@ -267,7 +268,7 @@ public class P2PFacadeTest extends TestCase {
       assertEquals( times, theArchive1.getDeliveryReports().size());
       assertEquals( 0, theArchive1.getReceivedMessages().size());
       assertEquals( times, theArchive1.getAllMessages().size());
-      
+
       assertEquals( 0, theArchive2.getDeliveryReports().size());
       assertEquals( times, theArchive2.getReceivedMessages().size());
       assertEquals( times, theArchive2.getAllMessages().size());
@@ -282,4 +283,29 @@ public class P2PFacadeTest extends TestCase {
       theFacade2.stop();
     }    
   }
+
+  public void testStopWhenAlreadyRunning() throws P2PFacadeException, InterruptedException, ExecutionException{
+    P2PFacade theFacade1 = null;
+    P2PFacade theFacade2 = null;
+    try{
+      theFacade1 = new P2PFacade()
+      .setExchangeDelay( 300 )
+      .setPersist( true )
+      .setStopWhenAlreadyRunning(true)
+      .start( 5 );
+
+      theFacade2 = new P2PFacade()
+      .setExchangeDelay( 300 )
+      .setPersist( true )
+      .setStopWhenAlreadyRunning(true)
+      .start( 5 );
+
+    }catch(P2PFacadeException e){
+      assertTrue(e.getCause() instanceof AlreadyRunningException);
+    } finally {
+      if(theFacade1 != null) theFacade1.stop();
+      if(theFacade2 != null) theFacade2.stop();
+    }
+  }
+
 }

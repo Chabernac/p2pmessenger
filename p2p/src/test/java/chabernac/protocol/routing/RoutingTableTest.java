@@ -14,8 +14,8 @@ public class RoutingTableTest extends TestCase {
     RoutingTable theTable = new RoutingTable("1");
 
     Peer thePeer = new Peer("2", "localhost", 1002);
-    RoutingTableEntry theEntry = new RoutingTableEntry(thePeer, 1, thePeer, System.currentTimeMillis());
-    RoutingTableEntry theEntry2 = new RoutingTableEntry(thePeer, 2, thePeer, System.currentTimeMillis());
+    RoutingTableEntry theEntry = new RoutingTableEntry(thePeer, 1, thePeer);
+    RoutingTableEntry theEntry2 = new RoutingTableEntry(thePeer, 2, thePeer);
 
     theTable.addRoutingTableEntry( theEntry2 );
     theTable.addRoutingTableEntry( theEntry );
@@ -26,10 +26,10 @@ public class RoutingTableTest extends TestCase {
 
     RoutingTable theTable2 = new RoutingTable("3");
     Peer thePeer4 = new Peer("4", "x20d1148", 1004);
-    RoutingTableEntry theEntry4 = new RoutingTableEntry(thePeer4, 1, thePeer4, System.currentTimeMillis());
+    RoutingTableEntry theEntry4 = new RoutingTableEntry(thePeer4, 1, thePeer4);
     theTable2.addRoutingTableEntry( theEntry4 );
     Peer thePeer3 = new Peer("3", "x20d1148", 1003);
-    RoutingTableEntry theEntry3 = new RoutingTableEntry(thePeer3, 0, thePeer3, System.currentTimeMillis());
+    RoutingTableEntry theEntry3 = new RoutingTableEntry(thePeer3, 0, thePeer3);
     theTable2.addRoutingTableEntry( theEntry3 );
 
     theTable.merge( theTable2 );
@@ -47,9 +47,9 @@ public class RoutingTableTest extends TestCase {
     RoutingTable theTable = new RoutingTable("1");
 
     Peer thePeer = new Peer("2", "localhost", 1002);
-    RoutingTableEntry theEntry = new RoutingTableEntry(thePeer, 1, thePeer, System.currentTimeMillis());
+    RoutingTableEntry theEntry = new RoutingTableEntry(thePeer, 1, thePeer);
     
-    RoutingTableEntry theEntry2 = new RoutingTableEntry(thePeer, RoutingTableEntry.MAX_HOP_DISTANCE, thePeer, System.currentTimeMillis());
+    RoutingTableEntry theEntry2 = new RoutingTableEntry(thePeer, RoutingTableEntry.MAX_HOP_DISTANCE, thePeer);
     
     assertFalse( theEntry2.isResponding() );
     
@@ -65,7 +65,7 @@ public class RoutingTableTest extends TestCase {
     
     Peer thePeer3 = new Peer("3", "localhost", 1002);
     
-    RoutingTableEntry theEntry3 = new RoutingTableEntry(thePeer, 3, thePeer3, System.currentTimeMillis());
+    RoutingTableEntry theEntry3 = new RoutingTableEntry(thePeer, 3, thePeer3);
     
     theTable.addRoutingTableEntry(theEntry3);
     
@@ -77,10 +77,10 @@ public class RoutingTableTest extends TestCase {
     RoutingTable theTable = new RoutingTable("1");
 
     Peer thePeer = new Peer("2", 1002);
-    RoutingTableEntry theEntry = new RoutingTableEntry(thePeer, RoutingTableEntry.MAX_HOP_DISTANCE, thePeer, System.currentTimeMillis());
+    RoutingTableEntry theEntry = new RoutingTableEntry(thePeer, RoutingTableEntry.MAX_HOP_DISTANCE, thePeer);
     
     Peer thePeer2 = new Peer("2", 1003);
-    RoutingTableEntry theEntry2 = new RoutingTableEntry(thePeer2, 2, thePeer, System.currentTimeMillis());
+    RoutingTableEntry theEntry2 = new RoutingTableEntry(thePeer2, 2, thePeer);
     
     theTable.addRoutingTableEntry(theEntry);
     theTable.addRoutingTableEntry(theEntry2);

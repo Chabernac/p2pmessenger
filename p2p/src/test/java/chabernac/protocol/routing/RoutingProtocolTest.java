@@ -542,7 +542,7 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
       theDummyPeer.setHosts( theHosts );
       theDummyPeer.setPort( 54645 );
       
-      RoutingTableEntry theDummyEntry = new RoutingTableEntry(theDummyPeer, 1, theDummyPeer, System.currentTimeMillis());
+      RoutingTableEntry theDummyEntry = new RoutingTableEntry(theDummyPeer, 1, theDummyPeer);
       
       theRoutingTable1.addRoutingTableEntry( theDummyEntry );
       

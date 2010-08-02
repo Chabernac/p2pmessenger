@@ -9,5 +9,5 @@ public interface IProtocol {
   public String getId();
   public void setMasterProtocol(IProtocol aProtocol);
   public void stop();
-  public void setServerInfo(ServerInfo aServerInfo);
+  public void setServerInfo(ServerInfo aServerInfo) throws ProtocolException;
 }

@@ -56,7 +56,7 @@ public abstract class Protocol implements IProtocol{
     return myServerInfo;
   }
 
-  public void setServerInfo( ServerInfo anServerInfo ) {
+  public void setServerInfo( ServerInfo anServerInfo ) throws ProtocolException {
     myServerInfo = anServerInfo;
   }
 

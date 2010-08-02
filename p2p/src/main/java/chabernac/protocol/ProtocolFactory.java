@@ -54,9 +54,10 @@ public class ProtocolFactory implements iProtocolFactory{
     if(RoutingProtocol.ID.equalsIgnoreCase( aProtocolId )) {
       long theExchangeDelay = Long.parseLong( myProtocolProperties.getProperty( "routingprotocol.exchangedelay",  "300").toString() );
       boolean isPersistRoutingTable = Boolean.parseBoolean(myProtocolProperties.getProperty( "routingprotocol.persist",  "true").toString());
+      boolean isStopWhenAlreadyRunning = Boolean.parseBoolean(myProtocolProperties.getProperty( "routingprotocol.stopwhenalreadyrunning",  "false").toString());
       String thePeerId = myProtocolProperties.getProperty( "peerid", "" ).toString();
       DataSource theSuperNodesDataSource = (DataSource)myProtocolProperties.getProperty( "routingprotocol.supernodes", null);
-      return new RoutingProtocol(thePeerId, theExchangeDelay, isPersistRoutingTable, theSuperNodesDataSource);
+      return new RoutingProtocol(thePeerId, theExchangeDelay, isPersistRoutingTable, theSuperNodesDataSource, isStopWhenAlreadyRunning);
     }
 
     if(EchoProtocol.ID.equalsIgnoreCase( aProtocolId )) {
