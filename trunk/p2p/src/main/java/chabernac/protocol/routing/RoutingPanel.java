@@ -19,6 +19,8 @@ import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.border.TitledBorder;
 
+import chabernac.protocol.ProtocolException;
+
 public class RoutingPanel extends JPanel {
   private static final long serialVersionUID = 8719080293187156681L;
   private RoutingProtocol myRoutingProtocol = null;
@@ -166,7 +168,11 @@ public class RoutingPanel extends JPanel {
     public void actionPerformed( ActionEvent anE ) {
       myExecutorService.execute( new Runnable(){
         public void run(){
-          myRoutingProtocol.start();
+          try {
+            myRoutingProtocol.start();
+          } catch (ProtocolException e) {
+            //TODO should we log the exception somewhere
+          }
         }
       });
     }

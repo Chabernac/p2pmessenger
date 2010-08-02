@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -30,10 +29,13 @@ import java.util.concurrent.atomic.AtomicLong;
 import javax.activation.DataSource;
 
 import org.apache.log4j.Logger;
+import org.doomdark.uuid.UUIDGenerator;
 
 import chabernac.io.ClassPathResource;
 import chabernac.io.iObjectPersister;
+import chabernac.protocol.AlreadyRunningException;
 import chabernac.protocol.Protocol;
+import chabernac.protocol.ProtocolException;
 import chabernac.protocol.ServerInfo;
 import chabernac.tools.IOTools;
 import chabernac.tools.NetTools;
@@ -79,6 +81,7 @@ public class RoutingProtocol extends Protocol {
   private iObjectPersister< RoutingTable > myObjectPersister = new RoutingTablePersister();
 
   private boolean isPersistRoutingTable = false;
+  private boolean isStopWhenAlreadyRunning = false;
 
   private ExecutorService myChangeService = null;
 
@@ -101,32 +104,52 @@ public class RoutingProtocol extends Protocol {
    * @param aRoutingTable
    * @param anExchangeDelay the delay in seconds between exchaning routing tables with other peers
    */
-  public RoutingProtocol ( String aLocalPeerId, long anExchangeDelay, boolean isPersistRoutingTable, DataSource aSuperNodesDataSource) {
+  public RoutingProtocol ( String aLocalPeerId, long anExchangeDelay, boolean isPersistRoutingTable, DataSource aSuperNodesDataSource, boolean isStopWhenAlreadyRunning) throws ProtocolException{
     super( ID );
     myLocalPeerId = aLocalPeerId;
     myExchangeDelay = anExchangeDelay;
     this.isPersistRoutingTable = isPersistRoutingTable;
+    this.isStopWhenAlreadyRunning = isStopWhenAlreadyRunning;
 
     if(myLocalPeerId != null && !"".equals( myLocalPeerId )){
       isPeerIdInFile = true;
     } else {
       isPeerIdInFile = false;
     }
-    
+
     if(aSuperNodesDataSource != null){
       mySuperNodesDataSource = aSuperNodesDataSource;
     }
-    start();
   }
 
-  public void start(){
+  public void start() throws ProtocolException{
     loadRoutingTable();
+    
+    if(isStopWhenAlreadyRunning){
+      try {
+        Peer theLocalPeer = myRoutingTable.getEntryForLocalPeer().getPeer();
+        if(isAlreadyRunning(theLocalPeer)){
+          throw new AlreadyRunningException(theLocalPeer);
+        }
+      } catch (UnknownPeerException e) {
+        LOGGER.error("Could not get entry for local peer");
+      }
+    }
+    
     resetRoutingTable();
     if(myExchangeDelay > 0 ) scheduleRoutingTableExchange();
     myChangeService = Executors.newFixedThreadPool( 5 );
 
     myRoutingTable.addRoutingTableListener( new RoutingTableListener() );
     startUDPListener();
+  }
+
+  /**
+   * This method will try to contact a routing protocol that might be running at the port indicated in the routing table file
+   * if there is a routing protocol already running at this port then return true
+   */
+  private boolean isAlreadyRunning(Peer aPeer) {
+    return contactPeer(aPeer, myUnreachablePeers);
   }
 
   private void startUDPListener(){
@@ -163,7 +186,7 @@ public class RoutingProtocol extends Protocol {
     } else if(myRoutingTable != null){
       return myRoutingTable.getLocalPeerId();
     } else {
-      myLocalPeerId = UUID.randomUUID().toString();
+      myLocalPeerId = UUIDGenerator.getInstance().generateTimeBasedUUID().toString();
       return myLocalPeerId;
     }
   }
@@ -183,7 +206,7 @@ public class RoutingProtocol extends Protocol {
       //to check if I'm still alive and kicking
       try{
         RoutingTableEntry theEntryForLocalPeer = myRoutingTable.getEntryForLocalPeer();
-        return theEntryForLocalPeer.getPeer().getPeerId() + " " + theEntryForLocalPeer.getOnlineTime();
+        return theEntryForLocalPeer.getPeer().getPeerId();
       }catch(Exception e){
         LOGGER.error( "Could not obtain entry for local peer", e );
         return Response.NOK.name();
@@ -200,7 +223,7 @@ public class RoutingProtocol extends Protocol {
 
       RoutingTableEntry theSendingPeer = ((RoutingTableEntry)XMLTools.fromXML( theAttributes[0] ));
       //we add the sending peer to the routing table
-//      myRoutingTable.addRoutingTableEntry(theSendingPeer.incHopDistance());
+      //      myRoutingTable.addRoutingTableEntry(theSendingPeer.incHopDistance());
 
       RoutingTableEntry thePeer = ((RoutingTableEntry)XMLTools.fromXML( theAttributes[1] ));
 
@@ -223,7 +246,7 @@ public class RoutingProtocol extends Protocol {
 
       if(!anUnreachablePeers.contains( theIdTime[0] )){
         aPeer.setPeerId( theIdTime[0] );
-        RoutingTableEntry theEntry = new RoutingTableEntry(aPeer, 1, aPeer, Long.parseLong( theIdTime[1] ));
+        RoutingTableEntry theEntry = new RoutingTableEntry(aPeer, 1, aPeer);
 
         LOGGER.debug("Detected system on '" + aPeer.getHosts() + "' port '" + aPeer.getPort() + "'");
         //only if we have detected our self we set the hop distance to 0
@@ -235,13 +258,13 @@ public class RoutingProtocol extends Protocol {
       }
     }catch(Exception e){
       //TODO remove extensive logging
-//      try {
-//        if(aPeer.getPort() == RoutingProtocol.START_PORT && aPeer.getHosts().get( 0 ).equalsIgnoreCase( InetAddress.getLocalHost().getHostAddress() )){
-          LOGGER.error( "Error occured while contacting peer '" + aPeer.getPeerId() + "' " + aPeer.getHosts() + ": " + aPeer.getPort() );
-//        }
-//      } catch ( UnknownHostException e1 ) {
-//        e1.printStackTrace();
-//      }
+      //      try {
+      //        if(aPeer.getPort() == RoutingProtocol.START_PORT && aPeer.getHosts().get( 0 ).equalsIgnoreCase( InetAddress.getLocalHost().getHostAddress() )){
+      LOGGER.error( "Error occured while contacting peer '" + aPeer.getPeerId() + "' " + aPeer.getHosts() + ": " + aPeer.getPort() );
+      //        }
+      //      } catch ( UnknownHostException e1 ) {
+      //        e1.printStackTrace();
+      //      }
     }
     return false;
   }
@@ -383,11 +406,11 @@ public class RoutingProtocol extends Protocol {
             RoutingTableEntry theEntryOfRemotePeer = myRoutingTable.getEntryForPeer( theRemoteTable.getLocalPeerId() );
 
 
-//          //TODO remove
-//          if(myLocalPeerId.equals( theEntryOfRemotePeer.getPeer().getPeerId() )){
-//            //we should never get here
-//            throw new RuntimeException("we contacted our selfs");
-//          }
+            //          //TODO remove
+            //          if(myLocalPeerId.equals( theEntryOfRemotePeer.getPeer().getPeerId() )){
+            //            //we should never get here
+            //            throw new RuntimeException("we contacted our selfs");
+            //          }
 
             myRoutingTable.addRoutingTableEntry( theEntryOfRemotePeer.derivedEntry( 1 ) );
           }
@@ -649,12 +672,14 @@ public class RoutingProtocol extends Protocol {
   }
 
   @Override
-  public void setServerInfo( ServerInfo aServerInfo ) {
+  public void setServerInfo( ServerInfo aServerInfo ) throws ProtocolException {
     //add the local peer
     try{
       Peer theLocalPeer = new Peer(getLocalPeerId(), aServerInfo.getServerPort());
-      RoutingTableEntry theLocalRoutingTableEntry = new RoutingTableEntry(theLocalPeer, 0, theLocalPeer, System.currentTimeMillis());
+      RoutingTableEntry theLocalRoutingTableEntry = new RoutingTableEntry(theLocalPeer, 0, theLocalPeer);
       myRoutingTable.addRoutingTableEntry( theLocalRoutingTableEntry );
+      
+      start();
     }catch(NoAvailableNetworkAdapterException e){
       //TODO we should do something when the network adapter becomes available again
       LOGGER.error( "The local network adapter could not be located", e );

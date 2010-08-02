@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.doomdark.uuid.UUID;
 
 public class RoutingTable implements Iterable< RoutingTableEntry >{
   private static Logger LOGGER = Logger.getLogger( RoutingTable.class );
@@ -34,43 +35,54 @@ public class RoutingTable implements Iterable< RoutingTableEntry >{
   public RoutingTable(String aLocalPeerId){
     myLocalPeerId = aLocalPeerId;
   }
+  
+  private UUID getUUIDForPeer(Peer aPeer){
+    return new UUID(aPeer.getPeerId());
+  }
 
   public synchronized void addRoutingTableEntry(RoutingTableEntry anEntry){
     if(anEntry.getPeer().getPeerId() == null || anEntry.getPeer().getPeerId().equals( "" )){
       throw new IllegalArgumentException("Received routing table entry with no peer id");
     }
-    
+
     if(anEntry.getPeer().getPeerId().equalsIgnoreCase( getLocalPeerId() ) && anEntry.getGateway().getPeerId().equals( anEntry.getPeer().getPeerId() ) && anEntry.getHopDistance() > 0 && anEntry.getHopDistance() != RoutingTableEntry.MAX_HOP_DISTANCE){
-      //when getting here it means that another peer was detected with the same  
+      try{
+        //if the comparison of the UUID of the peer entry and local peer entry is smaller than 0 then the given peer
+        //had assigned his peer id first.  So we're at the point of hyjacking someones peer id, this may not happen, shut down the application
+        if(getUUIDForPeer(anEntry.getPeer()).compareTo(getUUIDForPeer(getEntryForLocalPeer().getPeer())) < 0){
+          throw new Error("Stopping application immediately because this peer id is already registered");
+        }
+      }catch(UnknownPeerException e){
+      }
       return;
     }
-    
+
     if(anEntry.getPeer().getPort() == 0){
       throw new IllegalArgumentException("Can not add an routing table entry with a peer that has port 0");
     }
-    
+
     if(myRoutingTable.containsKey( anEntry.getPeer().getPeerId() )){
       RoutingTableEntry thePeerEntry = myRoutingTable.get( anEntry.getPeer().getPeerId() );
 
       //if the gateway of the local entry is the same as the peer from which the entry comes, then that entry is the most accurate
       //so upate the table
-      
+
       if((thePeerEntry.getGateway().getPeerId().equals( anEntry.getGateway().getPeerId() ) ||
-//      if(thePeerEntry.getGateway().getPeerId().equals( aContainingPeerEntry ) ||
+          //      if(thePeerEntry.getGateway().getPeerId().equals( aContainingPeerEntry ) ||
           anEntry.closerThen( thePeerEntry )) 
           //only update the entry if something changed
           &&!thePeerEntry.equals( anEntry )){
 
         myRoutingTable.put( anEntry.getPeer().getPeerId(), anEntry );
         notifyListenersOfRoutingTableEntryChange( anEntry );
-//        LOGGER.debug( "Updated routing table entry to routing table for peer:   " + myLocalPeerId + " : "  + anEntry );
-        
-//        if(aContainingPeerEntry.equals( myLocalPeerId ) && anEntry.getGateway().getPeerId() == anEntry.getPeer().getPeerId() && anEntry.getHopDistance() >= 2 && anEntry.getHopDistance() <= 5){
-//          
-//          Exception e = new Exception();
-//          LOGGER.error("We have received an entry of our selfs", e);
-//        }
-        
+        //        LOGGER.debug( "Updated routing table entry to routing table for peer:   " + myLocalPeerId + " : "  + anEntry );
+
+        //        if(aContainingPeerEntry.equals( myLocalPeerId ) && anEntry.getGateway().getPeerId() == anEntry.getPeer().getPeerId() && anEntry.getHopDistance() >= 2 && anEntry.getHopDistance() <= 5){
+        //          
+        //          Exception e = new Exception();
+        //          LOGGER.error("We have received an entry of our selfs", e);
+        //        }
+
         if(thePeerEntry.getGateway().getPeerId().equals( anEntry.getGateway().getPeerId() )){
           LOGGER.debug( "Updated routing table entry to routing table for peer:   " + myLocalPeerId + " : "  + anEntry + " because gateway of local entry: '" + thePeerEntry.getGateway().getPeerId() + "' is the peer from which we received the entry" ); 
         } else {
@@ -87,7 +99,7 @@ public class RoutingTable implements Iterable< RoutingTableEntry >{
       notifyAll();
     }
   }
-  
+
   private void notifyListenersOfRoutingTableEntryChange(RoutingTableEntry anEntry){
     for(IRoutingTableListener theListener : myRoutingTableListeners){
       theListener.routingTableEntryChanged( anEntry );
@@ -122,7 +134,7 @@ public class RoutingTable implements Iterable< RoutingTableEntry >{
   public List<RoutingTableEntry> getEntries(){
     return Collections.unmodifiableList(  new ArrayList< RoutingTableEntry >(myRoutingTable.values()) );
   }
-  
+
   public List<RoutingTableEntry> getReachableEntriesEntries(){
     List<RoutingTableEntry> theEntries = new ArrayList< RoutingTableEntry >();
     for(RoutingTableEntry theEntry : myRoutingTable.values()){
@@ -176,19 +188,19 @@ public class RoutingTable implements Iterable< RoutingTableEntry >{
       addRoutingTableEntry( theEntry );
     }
   }
-  
+
   public void addRoutingTableListener(IRoutingTableListener aListener){
     myRoutingTableListeners.add( aListener );
   }
-  
+
   public void removeRoutingTableListener(IRoutingTableListener aListener){
     myRoutingTableListeners.remove( aListener );
   }
-  
+
   public void removeAllroutingTableListeners(){
     myRoutingTableListeners.clear();
   }
-  
+
   public void removeAllButLocalPeer(){
     for(Iterator< RoutingTableEntry > i = myRoutingTable.values().iterator();i.hasNext();){
       RoutingTableEntry theEntry = i.next();
@@ -197,7 +209,7 @@ public class RoutingTable implements Iterable< RoutingTableEntry >{
       }
     }
   }
-  
+
   public int getNrOfReachablePeers(){
     int theCounter = 0;
     for(RoutingTableEntry theEntry : getEntries()){
@@ -207,5 +219,5 @@ public class RoutingTable implements Iterable< RoutingTableEntry >{
     }
     return theCounter;
   }
-  
+
 }

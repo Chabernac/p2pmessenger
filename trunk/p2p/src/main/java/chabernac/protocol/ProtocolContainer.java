@@ -108,7 +108,7 @@ public class ProtocolContainer implements IProtocol {
   }
 
   @Override
-  public void setServerInfo( ServerInfo aServerInfo ) {
+  public void setServerInfo( ServerInfo aServerInfo ) throws ProtocolException {
     myServerInfo = aServerInfo;
     for(Iterator< IProtocol > i = new ArrayList<IProtocol>(myProtocolMap.values()).iterator();i.hasNext();){
       IProtocol theProtocol = i.next();

@@ -92,6 +92,12 @@ public class P2PFacade {
     return this;
   }
 
+  public P2PFacade setStopWhenAlreadyRunning(boolean isStopWhenAlreadyRunning) throws P2PFacadeException{
+    if(isStarted()) throw new P2PFacadeException("Can not set this property when the server has already been started");
+    myProperties.setProperty("routingprotocol.stopwhenalreadyrunning", Boolean.toString( isStopWhenAlreadyRunning));
+    return this;
+  }
+  
   public P2PFacade setPersist(boolean isPersist) throws P2PFacadeException{
     if(isStarted()) throw new P2PFacadeException("Can not set this property when the server has already been started");
     myProperties.setProperty("routingprotocol.persist", Boolean.toString( isPersist ));
