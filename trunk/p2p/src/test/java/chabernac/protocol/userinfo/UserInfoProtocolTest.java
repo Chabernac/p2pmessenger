@@ -40,6 +40,10 @@ public class UserInfoProtocolTest extends AbstractProtocolTest {
     RoutingProtocol theRoutingProtocol2 = (RoutingProtocol)theProtocol2.getProtocol( RoutingProtocol.ID );
     RoutingTable theRoutingTable2 = theRoutingProtocol2.getRoutingTable();
     
+    UserInfoProtocol theUserInfoProtocol2 = (UserInfoProtocol)theProtocol2.getProtocol( UserInfoProtocol.ID );
+    UserInfoListener theListener = new UserInfoListener();
+    theUserInfoProtocol2.addUserInfoListener( theListener );
+    
     try{
       UserInfoProtocol theUserInfoProtocol = (UserInfoProtocol)theProtocol1.getProtocol( UserInfoProtocol.ID );
       
@@ -66,11 +70,6 @@ public class UserInfoProtocolTest extends AbstractProtocolTest {
       assertNotNull( theUserInfo );
       assertNotNull( theUserInfo.getId() );
       assertTrue( theUserInfo.getId().length() > 0 );
-      
-      
-      UserInfoProtocol theUserInfoProtocol2 = (UserInfoProtocol)theProtocol2.getProtocol( UserInfoProtocol.ID );
-      UserInfoListener theListener = new UserInfoListener();
-      theUserInfoProtocol2.addUserInfoListener( theListener );
       
       Thread.sleep( 5000 );
       
@@ -99,13 +98,13 @@ public class UserInfoProtocolTest extends AbstractProtocolTest {
       
       Thread.sleep( 2000 );
       
-      assertEquals( 2, theListener.getChangedUserInfo().size() );
+      assertEquals( 5, theListener.getChangedUserInfo().size() );
       
       //1 event when the user changed its status to busy
-      assertEquals( Status.BUSY, theListener.getChangedUserInfo().get( 0 ).getStatus());
+      assertEquals( Status.BUSY, theListener.getChangedUserInfo().get( 3 ).getStatus());
       
       //1 event when the user name changed to chabernac
-      assertEquals( Status.ONLINE, theListener.getChangedUserInfo().get( 1 ).getStatus());
+      assertEquals( Status.ONLINE, theListener.getChangedUserInfo().get( 4 ).getStatus());
       
       
     } finally {
