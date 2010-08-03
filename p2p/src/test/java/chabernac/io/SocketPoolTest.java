@@ -18,6 +18,7 @@ public class SocketPoolTest extends TestCase {
 
     try{
       SocketPool thePool = SocketPool.getInstance( );
+      thePool.cleanUp();
       Socket theSocket1 = thePool.checkOut( new InetSocketAddress("localhost", theServerSocket.getLocalPort()) );
       Socket theSocket2 = thePool.checkOut( new InetSocketAddress("localhost", theServerSocket.getLocalPort()) );
 
