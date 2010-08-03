@@ -109,8 +109,10 @@ public class SocketPool extends Observable{
     if(aSocket != null){
       synchronized(this){
         SocketProxy theProxy = searchProxyForSocket( aSocket );
-        myCheckedOutPool.remove( theProxy );
-        myCheckedInPool.add(theProxy);
+        if(theProxy != null){
+          myCheckedOutPool.remove( theProxy );
+          myCheckedInPool.add(theProxy);
+        }
       }
       notifyAllObs();
     }
