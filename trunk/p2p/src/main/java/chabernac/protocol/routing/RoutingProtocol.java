@@ -98,6 +98,8 @@ public class RoutingProtocol extends Protocol {
 
   private DataSource mySuperNodesDataSource = new ClassPathResource("supernodes.txt");
 
+  private ServerInfo myServerInfo = null;
+
   /**
    * 
    * @param aLocalPeerId
@@ -124,19 +126,34 @@ public class RoutingProtocol extends Protocol {
 
   public void start() throws ProtocolException{
     loadRoutingTable();
-    
+
     if(isStopWhenAlreadyRunning){
       try {
         Peer theLocalPeer = myRoutingTable.getEntryForLocalPeer().getPeer();
-        if(isAlreadyRunning(theLocalPeer)){
+        //only do the check if the our port is not the same as the port from the routing table
+        //if it is than we would check if we our running ourselfs, which is at this point stupid
+        if(myServerInfo != null && myServerInfo.getServerPort() != theLocalPeer.getPort() && isAlreadyRunning(theLocalPeer)){
           throw new AlreadyRunningException(theLocalPeer);
         }
       } catch (UnknownPeerException e) {
         LOGGER.error("Could not get entry for local peer");
       }
     }
-    
+
     resetRoutingTable();
+
+    //add the entry for the local peer based on the server info
+    if(myServerInfo != null){
+      try{
+        Peer theLocalPeer = new Peer(getLocalPeerId(), myServerInfo.getServerPort());
+        RoutingTableEntry theLocalRoutingTableEntry = new RoutingTableEntry(theLocalPeer, 0, theLocalPeer);
+        myRoutingTable.addRoutingTableEntry( theLocalRoutingTableEntry );
+      }catch(NoAvailableNetworkAdapterException e){
+        //TODO we should do something when the network adapter becomes available again
+        LOGGER.error( "The local network adapter could not be located", e );
+      }
+    }
+
     if(myExchangeDelay > 0 ) scheduleRoutingTableExchange();
     myChangeService = Executors.newFixedThreadPool( 5 );
 
@@ -673,16 +690,7 @@ public class RoutingProtocol extends Protocol {
 
   @Override
   public void setServerInfo( ServerInfo aServerInfo ) throws ProtocolException {
-    //add the local peer
-    try{
-      Peer theLocalPeer = new Peer(getLocalPeerId(), aServerInfo.getServerPort());
-      RoutingTableEntry theLocalRoutingTableEntry = new RoutingTableEntry(theLocalPeer, 0, theLocalPeer);
-      myRoutingTable.addRoutingTableEntry( theLocalRoutingTableEntry );
-      
-      start();
-    }catch(NoAvailableNetworkAdapterException e){
-      //TODO we should do something when the network adapter becomes available again
-      LOGGER.error( "The local network adapter could not be located", e );
-    }
+    myServerInfo = aServerInfo;
+    start();
   }
 }
