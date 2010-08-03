@@ -190,5 +190,9 @@ public class ProtocolServer implements Runnable{
     protected String getExtraInfo() {
       return mySocket.getInetAddress().getHostName() + ":" + mySocket.getPort();
     }
+    
+    public ServerInfo getServerInfo(){
+      return myServerInfo;
+    }
   }
 }

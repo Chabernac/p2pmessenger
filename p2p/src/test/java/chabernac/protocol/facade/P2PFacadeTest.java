@@ -300,6 +300,7 @@ public class P2PFacadeTest extends TestCase {
       .setStopWhenAlreadyRunning(true)
       .start( 5 );
 
+      fail("Whe must not get here, an exception should have occured");
     }catch(P2PFacadeException e){
       assertTrue(e.getCause() instanceof AlreadyRunningException);
     } finally {
