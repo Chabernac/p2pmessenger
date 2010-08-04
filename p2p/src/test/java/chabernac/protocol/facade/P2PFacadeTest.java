@@ -293,6 +293,8 @@ public class P2PFacadeTest extends TestCase {
       .setPersist( true )
       .setStopWhenAlreadyRunning(true)
       .start( 5 );
+      
+      Thread.sleep(2000);
 
       theFacade2 = new P2PFacade()
       .setExchangeDelay( 300 )
