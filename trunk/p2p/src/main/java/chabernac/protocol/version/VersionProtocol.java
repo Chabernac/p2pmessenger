@@ -139,8 +139,6 @@ public class VersionProtocol extends Protocol {
 
   @Override
   public void stop() {
-    // TODO Auto-generated method stub
-
   }
 
   private class MyRoutingTableListener implements IRoutingTableListener {

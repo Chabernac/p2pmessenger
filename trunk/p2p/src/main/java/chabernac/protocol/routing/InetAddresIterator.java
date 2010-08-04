@@ -93,8 +93,6 @@ public class InetAddresIterator implements Iterator< String > {
   }
   @Override
   public void remove() {
-    // TODO Auto-generated method stub
-    
   }
 
 }
