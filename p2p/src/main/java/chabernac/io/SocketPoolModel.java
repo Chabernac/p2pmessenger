@@ -47,23 +47,41 @@ public class SocketPoolModel implements TableModel {
     return mySocketPool.getCheckInPool().size() + mySocketPool.getCheckOutPool().size() + mySocketPool.getConnectingPool().size();
   }
 
+  public SocketProxy getSocketProxyAtRow(int anRowIndex){
+    SocketProxy theSocket;
+    try{
+      if(anRowIndex < mySocketPool.getCheckInPool().size()){
+        theSocket = mySocketPool.getCheckInPool().get( anRowIndex );
+      } else if(anRowIndex < mySocketPool.getCheckInPool().size() + mySocketPool.getCheckOutPool().size()){
+        theSocket = mySocketPool.getCheckOutPool().get(anRowIndex - mySocketPool.getCheckInPool().size());
+      } else {
+        theSocket = mySocketPool.getConnectingPool().get(anRowIndex - mySocketPool.getCheckInPool().size() - mySocketPool.getCheckOutPool().size());
+      }
+    }catch(Exception e){
+      return null;
+    }
+    return theSocket;
+  }
+
+  public String getPool(SocketProxy aProxy){
+    if(mySocketPool.getCheckInPool().contains(aProxy)) return "IN";
+    if(mySocketPool.getCheckOutPool().contains(aProxy)) return "OUT";
+    if(mySocketPool.getConnectingPool().contains(aProxy)) return "CONNECT";
+    return "NO POOL";
+  }
+
   @Override
   public Object getValueAt( int anRowIndex, int anColumnIndex ) {
-    SocketProxy theSocket;
-    String thePool;
-    if(anRowIndex < mySocketPool.getCheckInPool().size()){
-      theSocket = mySocketPool.getCheckInPool().get( anRowIndex );
-      thePool = "IN";
-    } else if(anRowIndex < mySocketPool.getCheckInPool().size() + mySocketPool.getCheckOutPool().size()){
-      theSocket = mySocketPool.getCheckOutPool().get(anRowIndex - mySocketPool.getCheckInPool().size());
-      thePool = "OUT";
-    } else {
-      theSocket = mySocketPool.getConnectingPool().get(anRowIndex - mySocketPool.getCheckInPool().size() - mySocketPool.getCheckOutPool().size());
-      thePool = "CONNECT";
-    }
+    SocketProxy theSocket = getSocketProxyAtRow(anRowIndex);
+    if(theSocket == null) return "NO SOCKET";
+    String thePool = getPool(theSocket);
+
     if(anColumnIndex == 0) return theSocket.getSocketAddress();
     if(anColumnIndex == 1) {
-      if(theSocket.isConnected()) return theSocket.getSocket().getLocalSocketAddress();
+      if(theSocket.isConnected()) {
+        return theSocket.getSocket().getLocalSocketAddress();
+      }
+      return "NOT CONNECTED";
     }
     if(anColumnIndex == 2) return thePool;
 
@@ -71,6 +89,7 @@ public class SocketPoolModel implements TableModel {
       if(theSocket.getConnectTime() != null){
         return myFormat.format( theSocket.getConnectTime() );
       }
+      return "";
     }
     return null;
   }

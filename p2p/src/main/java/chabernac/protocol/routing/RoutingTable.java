@@ -46,9 +46,17 @@ public class RoutingTable implements Iterable< RoutingTableEntry >, Serializable
     return new UUID(aPeer.getPeerId());
   }
 
+  public synchronized void removeRoutingTableEntry(RoutingTableEntry anEntry){
+    if(isKeepHistory){
+      myRoutingTableEntryHistory.add( new RoutingTableEntryHistory(anEntry,RoutingTableEntryHistory.Action.DELETE) );
+    }
+    
+    myRoutingTable.remove(anEntry.getPeer().getPeerId());
+  }
+  
   public synchronized void addRoutingTableEntry(RoutingTableEntry anEntry){
     if(isKeepHistory){
-      myRoutingTableEntryHistory.add( new RoutingTableEntryHistory(anEntry) );
+      myRoutingTableEntryHistory.add( new RoutingTableEntryHistory(anEntry,RoutingTableEntryHistory.Action.ADD ) );
     }
     
     if(anEntry.getPeer().getPeerId() == null || anEntry.getPeer().getPeerId().equals( "" )){

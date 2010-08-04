@@ -5,23 +5,27 @@
 package chabernac.protocol.routing;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
+import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.ToolTipManager;
+import javax.swing.table.TableCellRenderer;
 
 public class RoutingTableEntryHistoryDialog extends JDialog {
-  
+
   private static final long serialVersionUID = -1976494062381300222L;
   private final RoutingTable myRoutingTable;
   private final RoutingTableHistoryModel myModel;
@@ -34,39 +38,45 @@ public class RoutingTableEntryHistoryDialog extends JDialog {
     myTable = new JTable(myModel);
     buildGUI();
     addListeners();
-    setSize( 1200, 800 );
+    setSize( 1200, 600 );
     myRoutingTable.setKeepHistory( true );
   }
-  
+
   private void addListeners(){
     addWindowListener( new MyWindowListener() );
   }
-  
+
   private void buildGUI(){
     setTitle( "Routing table entry history" );
     setLayout( new BorderLayout() );
-    
+
     myTable.setAutoResizeMode( JTable.AUTO_RESIZE_ALL_COLUMNS );
-    myTable.getColumnModel().getColumn( 0 ).setPreferredWidth( 100 );
-    myTable.getColumnModel().getColumn( 1 ).setPreferredWidth( 500 );
-    myTable.getColumnModel().getColumn( 2 ).setPreferredWidth( 100 );
-    myTable.getColumnModel().getColumn( 3 ).setPreferredWidth( 500 );
-    
+    myTable.getColumnModel().getColumn( 0 ).setPreferredWidth( 50 );
+    myTable.getColumnModel().getColumn( 1 ).setPreferredWidth( 100 );
+    myTable.getColumnModel().getColumn( 2 ).setPreferredWidth( 500 );
+    myTable.getColumnModel().getColumn( 3 ).setPreferredWidth( 100 );
+    myTable.getColumnModel().getColumn( 4 ).setPreferredWidth( 500 );
+    myTable.setDefaultRenderer(String.class, new ColorRenderer());
+
     add(new JScrollPane(myTable), BorderLayout.CENTER);
     add(buildButtonPanel(), BorderLayout.SOUTH);
+
+    ToolTipManager.sharedInstance().setDismissDelay(10000);
+    ToolTipManager.sharedInstance().setReshowDelay(0);
+    ToolTipManager.sharedInstance().setInitialDelay(0);
   }
 
   private Component buildButtonPanel() {
     JPanel theButtonPanel = new JPanel();
     theButtonPanel.setLayout( new FlowLayout(FlowLayout.RIGHT) );
-    
+
     theButtonPanel.add( new JButton(new StartTrackingHistory()) );
     theButtonPanel.add( new JButton(new StopTrackingHistory()) );
     theButtonPanel.add( new JButton(new RefreshHistory()) );
     theButtonPanel.add( new JButton(new ClearHistory()) );
     return theButtonPanel;
   }
-  
+
   public class StartTrackingHistory extends AbstractAction {
     public StartTrackingHistory(){
       putValue( Action.NAME, "Start tracking" );
@@ -94,7 +104,7 @@ public class RoutingTableEntryHistoryDialog extends JDialog {
       myModel.refresh();
     }
   }
-  
+
   public class ClearHistory extends AbstractAction {
     public ClearHistory(){
       putValue( Action.NAME, "Clear" );
@@ -105,11 +115,53 @@ public class RoutingTableEntryHistoryDialog extends JDialog {
       myModel.refresh();
     }
   }
-  
+
   public class MyWindowListener extends WindowAdapter {
     @Override
     public void windowClosing( WindowEvent anE ) {
       myRoutingTable.setKeepHistory( false );
+    }
+  }
+
+  private class ColorRenderer extends JLabel implements TableCellRenderer{
+
+    private static final long serialVersionUID = 7571899561399741995L;
+
+    @Override
+    public Component getTableCellRendererComponent(JTable anTable,
+        Object anValue, boolean isSelected, boolean anHasFocus, int anRow,
+        int anColumn) {
+      setForeground(Color.darkGray);
+      RoutingTableEntryHistory theHistoryEntry = myRoutingTable.getHistory().get(anRow);
+      RoutingTableEntry theEntry = theHistoryEntry.getRoutingTableEntry();
+      if(listContainsObject(myRoutingTable.getEntries(),theEntry)){
+        if(theEntry.getHopDistance() < RoutingTableEntry.MAX_HOP_DISTANCE){
+          setForeground(Color.blue);
+        } else {
+          setForeground(Color.orange);
+        }
+      } else if(theHistoryEntry.getAction() == RoutingTableEntryHistory.Action.DELETE){
+        setForeground(Color.RED);
+      }
+      setText(anValue.toString());
+      setToolTipText(parseToHtml(theHistoryEntry.getStackTrace()));
+      return this;
+    }
+
+    private String parseToHtml(String aString){
+      aString = aString.replaceAll("java.lang.Exception\r\n", "");
+      StringBuilder theBuilder = new StringBuilder();
+      theBuilder.append("<html>");
+      theBuilder.append(aString.replaceAll("\r\n", "<br>"));
+      theBuilder.append("</html>");
+      return theBuilder.toString();
+    }
+
+    private boolean listContainsObject(List<? extends Object> aList, Object anObject){
+      for(Object theObject : aList){
+        if(theObject == anObject) return true;
+      }
+      return false;
     }
   }
 }

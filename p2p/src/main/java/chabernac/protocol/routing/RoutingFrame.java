@@ -28,19 +28,22 @@ public class RoutingFrame extends JFrame {
 
   private ProtocolContainer myProtocolContainer = null;
   private ProtocolServer myProtocolServer = null;
-  
-  public RoutingFrame(ProtocolServer aServer, ProtocolContainer aContainer) throws ProtocolException{
+  private boolean isStopOnClose;
+
+  public RoutingFrame(ProtocolServer aServer, ProtocolContainer aContainer, boolean isStopOnClose) throws ProtocolException{
     myProtocolContainer = aContainer;
     myProtocolServer = aServer;
+    this.isStopOnClose = isStopOnClose;
     init();
     addListeners();
     buildGUI();
   }
-  
+
   private void init(){
     setDefaultCloseOperation( JFrame.DISPOSE_ON_CLOSE);
+    getRoutingTable().setKeepHistory(true);
   }
-  
+
   private void addListeners(){
     addWindowListener( new MyWindowListener() );
   }
@@ -48,7 +51,7 @@ public class RoutingFrame extends JFrame {
   private void buildGUI() throws ProtocolException {
     RoutingProtocol theRoutingProtocl = (RoutingProtocol)myProtocolContainer.getProtocol( RoutingProtocol.ID );
     setTitle( theRoutingProtocl.getLocalPeerId() );
-    
+
     getContentPane().setLayout( new GridLayout(-1,2));
     getContentPane().add(new RoutingPanel(theRoutingProtocl));
     getContentPane().add(new UserInfoPanel((UserInfoProtocol)myProtocolContainer.getProtocol( UserInfoProtocol.ID )));
@@ -56,20 +59,32 @@ public class RoutingFrame extends JFrame {
     myProtocolServer.setRunnableListener( theMonitorPanel );
     getContentPane().add(theMonitorPanel);
     getContentPane().add( new SocketPoolPanel() );
-    
+
     setSize( 1200, 700 );
   }
-  
+
+  private RoutingTable getRoutingTable(){
+    try {
+      return ((RoutingProtocol)myProtocolContainer.getProtocol( RoutingProtocol.ID )).getRoutingTable();
+    } catch (ProtocolException e) {
+      return null;
+    }
+  }
+
   public class MyWindowListener extends WindowAdapter {
     @Override
     public void windowClosing( WindowEvent anE ) {
-      myProtocolServer.stop();
-      System.exit( 0 );
+      getRoutingTable().setKeepHistory(false);
+
+      if(isStopOnClose){
+        myProtocolServer.stop();
+        System.exit( 0 );
+      }
     }
   }
-  
+
   public static void main(String args[]) throws ProtocolException{
-//    PropertyConfigurator.configure( "log4j.properties" );
+    //    PropertyConfigurator.configure( "log4j.properties" );
     BasicConfigurator.configure();
     PropertyMap theProperties = new PropertyMap();
     theProperties.setProperty( "routingprotocol.exchangedelay", "60");
@@ -77,13 +92,12 @@ public class RoutingFrame extends JFrame {
     theProperties.setProperty("peerid", UUID.randomUUID().toString());
     ProtocolFactory theFactory = new ProtocolFactory(theProperties);
     ProtocolContainer theContainer = new ProtocolContainer(theFactory);
-    ProtocolServer theServer1 = new ProtocolServer(theContainer, RoutingProtocol.START_PORT, 5, true);
+    ProtocolServer theServer1 = new ProtocolServer(theContainer, RoutingProtocol.START_PORT, 20, true);
+    RoutingFrame theFrame = new RoutingFrame(theServer1, theContainer, true);
     theServer1.start();
-    RoutingFrame theFrame = new RoutingFrame(theServer1, theContainer);
     theFrame.setVisible( true );
     SocketPool.getInstance().setCleanUpTimeInSeconds(30);
-
   }
-  
-  
+
+
 }

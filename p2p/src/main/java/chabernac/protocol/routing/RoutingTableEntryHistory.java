@@ -10,10 +10,13 @@ import java.io.StringWriter;
 public class RoutingTableEntryHistory {
   private final RoutingTableEntry myRoutingTableEntry;
   private final Exception myStackTrace;
+  public static enum Action{ADD, DELETE};
+  private final Action myAction; 
 
-  public RoutingTableEntryHistory ( RoutingTableEntry anRoutingTableEntry ) {
+  public RoutingTableEntryHistory ( RoutingTableEntry anRoutingTableEntry, Action anAction ) {
     super();
     myRoutingTableEntry = anRoutingTableEntry;
+    myAction = anAction;
     myStackTrace = new Exception();
     myStackTrace.fillInStackTrace();
   }
@@ -22,14 +25,18 @@ public class RoutingTableEntryHistory {
     return myRoutingTableEntry;
   }
 
-  public Exception getStackTrace() {
-    return myStackTrace;
-  }
-  
-  public String toString(){
+  public String getStackTrace() {
     StringWriter theStringWriter= new StringWriter();
     PrintWriter theWriter = new PrintWriter(theStringWriter);
     myStackTrace.printStackTrace( theWriter );
-    return myRoutingTableEntry.toString() + "\r\n" + theStringWriter.getBuffer();
+    return theStringWriter.getBuffer().toString();
+  }
+  
+  public Action getAction() {
+    return myAction;
+  }
+
+  public String toString(){
+    return myRoutingTableEntry.toString() + "\r\n" + getStackTrace();
   }
 }

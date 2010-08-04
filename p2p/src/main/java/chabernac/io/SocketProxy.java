@@ -5,6 +5,8 @@
 package chabernac.io;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.Socket;
 import java.net.SocketAddress;
 import java.util.Date;
@@ -13,6 +15,7 @@ public class SocketProxy {
   private final SocketAddress myAddress;
   private Socket mySocket = null;
   private Date myConnectTime = null;
+  private Exception myStackTrace = null;
   
   public SocketProxy(SocketAddress anAddress){
     myAddress = anAddress;
@@ -20,6 +23,7 @@ public class SocketProxy {
   
   public synchronized Socket connect() throws IOException{
     if(mySocket == null){
+      updateStackTrace();
       mySocket = new Socket();
       myConnectTime = new Date();
       mySocket.connect( myAddress );
@@ -45,5 +49,17 @@ public class SocketProxy {
 
   public void setConnectTime( Date anConnectTime ) {
     myConnectTime = anConnectTime;
+  }
+  
+  private void updateStackTrace(){
+    myStackTrace = new Exception();
+    myStackTrace.fillInStackTrace();
+  }
+  
+  public String getStackTrace() {
+    StringWriter theStringWriter= new StringWriter();
+    PrintWriter theWriter = new PrintWriter(theStringWriter);
+    myStackTrace.printStackTrace( theWriter );
+    return theStringWriter.getBuffer().toString();
   }
 }

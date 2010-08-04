@@ -37,15 +37,16 @@ public class RoutingTableHistoryModel implements TableModel {
 
   @Override
   public int getColumnCount() {
-    return 4;
+    return 5;
   }
 
   @Override
   public String getColumnName( int anColumnIndex ) {
-    if(anColumnIndex == 0) return "Time";
-    if(anColumnIndex == 1) return "Peer";
-    if(anColumnIndex == 2) return "Hop distance";
-    if(anColumnIndex == 3) return "Gateway";
+    if(anColumnIndex == 0) return "Action";
+    if(anColumnIndex == 1) return "Time";
+    if(anColumnIndex == 2) return "Peer";
+    if(anColumnIndex == 3) return "Hop distance";
+    if(anColumnIndex == 4) return "Gateway";
     return "";
   }
 
@@ -57,14 +58,15 @@ public class RoutingTableHistoryModel implements TableModel {
   @Override
   public Object getValueAt( int anRowIndex, int anColumnIndex ) {
     RoutingTableEntryHistory theEntry = myRoutingTable.getHistory().get(anRowIndex);
-    if(anColumnIndex == 0){
+    if(anColumnIndex == 0) return theEntry.getAction().name();
+    if(anColumnIndex == 1){
       Date theDate = new Date();
       theDate.setTime( theEntry.getRoutingTableEntry().getCreationTime() );
       return myFormat.format(  theDate );
     }
-    if(anColumnIndex == 1) return theEntry.getRoutingTableEntry().getPeer().toString();
-    if(anColumnIndex == 2) return theEntry.getRoutingTableEntry().getHopDistance();
-    if(anColumnIndex == 3) return theEntry.getRoutingTableEntry().getGateway().toString();
+    if(anColumnIndex == 2) return theEntry.getRoutingTableEntry().getPeer().toString();
+    if(anColumnIndex == 3) return theEntry.getRoutingTableEntry().getHopDistance();
+    if(anColumnIndex == 4) return theEntry.getRoutingTableEntry().getGateway().toString();
     return null;
   }
 
