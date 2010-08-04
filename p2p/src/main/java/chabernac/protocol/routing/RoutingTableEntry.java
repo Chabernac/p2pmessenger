@@ -5,6 +5,7 @@
 package chabernac.protocol.routing;
 
 import java.io.Serializable;
+import java.util.Date;
 
 
 public class RoutingTableEntry implements Serializable{
@@ -13,24 +14,25 @@ public class RoutingTableEntry implements Serializable{
   public static int MAX_HOP_DISTANCE = 6;
   
 	//the peer for which this is an entry
-	private Peer myPeer = null;
+	private final Peer myPeer;
 
 	//the hop distance of the peer.  this indicates how many peers must 
 	//be travelled to reach the destination peer
-	private int myHopDistance = MAX_HOP_DISTANCE;
+	private final int myHopDistance;
   
 	//the gateway for accessing this peer.  this is the same as the target peer
 	//if the target peer can be reached directly
-	private Peer myGateway = null;
+	private final Peer myGateway;
 	
-	public RoutingTableEntry (){}
-
+	private final long myCreationTime = System.currentTimeMillis();
+	
 	public RoutingTableEntry ( Peer anHost , int anHopDistance , Peer anGateway ) {
 		super();
 		myPeer = anHost;
-		myHopDistance = anHopDistance;
-		if(myHopDistance > MAX_HOP_DISTANCE){
+		if(anHopDistance > MAX_HOP_DISTANCE){
 		  myHopDistance = MAX_HOP_DISTANCE;
+		} else {
+		  myHopDistance = anHopDistance;
 		}
 		myGateway = anGateway;
 		checkValidity();
@@ -47,37 +49,16 @@ public class RoutingTableEntry implements Serializable{
 		return myPeer;
 	}
 
-	public void setPeer( Peer anPeer ) {
-		myPeer = anPeer;
-	}
-
 	public int getHopDistance() {
 		return myHopDistance;
-	}
-
-	public void setHopDistance( int anHopDistance ) {
-		myHopDistance = anHopDistance;
-		if(myHopDistance == 1 && myPeer != null){
-		  myGateway = myPeer;
-		}
 	}
 
 	public Peer getGateway() {
 		return myGateway;
 	}
 
-	public void setGateway( Peer anGateway ) {
-		myGateway = anGateway;
-	}
-
 	public boolean closerThen(RoutingTableEntry anEntry){
 		return myHopDistance < anEntry.getHopDistance();
-	}
-
-	public void incrementHopDistance(){
-	  if(myHopDistance < MAX_HOP_DISTANCE){
-	    myHopDistance++;
-	  }
 	}
 
   public boolean isResponding() {
@@ -88,9 +69,12 @@ public class RoutingTableEntry implements Serializable{
     return myHopDistance < MAX_HOP_DISTANCE;
   }
 
+  public long getCreationTime() {
+    return myCreationTime;
+  }
 
   public String toString(){
-    return "<PeerEntry peerid='" + myPeer.getPeerId() + "' hopDistance='" + myHopDistance + "' gateway='" + myGateway.getPeerId() + "'/>";
+    return "<PeerEntry peerid='" + myPeer.getPeerId() + "' hopDistance='" + myHopDistance + "' gateway='" + myGateway.getPeerId() + "' creationTime='" + myCreationTime + "'/>";
   }
   
   public boolean equals(Object anObject){

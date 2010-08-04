@@ -74,15 +74,15 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
       }
     }
     
-    int theExchangeDelayInSeconds = 5;
+    int theExchangeDelayInSeconds = 3;
 
     //server 1
-    ProtocolContainer theProtocol = getProtocolContainer( 5, true, "1" );
-    ProtocolServer theServer = new ProtocolServer(theProtocol, RoutingProtocol.START_PORT, theExchangeDelayInSeconds);
+    ProtocolContainer theProtocol = getProtocolContainer( theExchangeDelayInSeconds, true, "1" );
+    ProtocolServer theServer = new ProtocolServer(theProtocol, RoutingProtocol.START_PORT, 5);
 
     //server 2
-    ProtocolContainer theProtocol2 = getProtocolContainer( 5, true, "2" );
-    ProtocolServer theServer2 = new ProtocolServer(theProtocol2, RoutingProtocol.START_PORT + 1, theExchangeDelayInSeconds);
+    ProtocolContainer theProtocol2 = getProtocolContainer( theExchangeDelayInSeconds, true, "2" );
+    ProtocolServer theServer2 = new ProtocolServer(theProtocol2, RoutingProtocol.START_PORT + 1, 5);
     
     RoutingProtocol theRoutingProtocol1 = (RoutingProtocol)theProtocol.getProtocol( RoutingProtocol.ID );
     RoutingTable theRoutingTable1 = theRoutingProtocol1.getRoutingTable();
@@ -97,13 +97,13 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
       long thet1 = System.currentTimeMillis();
 
       //sleep for 5 seconds so that the peers can exchange their routing tables
-      long theFirstSleepTime = 50000;
+      long theFirstSleepTime = 5000;
       Thread.sleep( theFirstSleepTime );
 
       assertEquals( 2, theRoutingTable1.getEntries().size());
 
       //make sure routing table of peer 1 contains both peers
-      RoutingTableEntry theEntry = theRoutingTable1.getEntryForPeer( "1" );
+      RoutingTableEntry theEntry = theRoutingTable1.getEntryForLocalPeer();
       assertEquals( RoutingProtocol.START_PORT, theEntry.getPeer().getPort());
       assertTrue( theEntry.getPeer().getHosts().size() > 0);
       assertEquals( "1", theEntry.getPeer().getPeerId());
@@ -720,4 +720,28 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
 //      theServer2.stop();
 //    }
 //  }
+  
+    public void testLocalPeerEntry() throws ProtocolException, UnknownPeerException, InterruptedException{
+      ProtocolContainer theProtocol1 = getProtocolContainer( -1, true, "1");
+      ProtocolServer theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT, 5);
+      
+      RoutingProtocol theRoutingProtocol1 = (RoutingProtocol)theProtocol1.getProtocol( RoutingProtocol.ID );
+      RoutingTable theRoutingTable1 = theRoutingProtocol1.getRoutingTable();
+      try{
+        assertTrue( theServer1.start() );
+        
+        Thread.sleep( 2000 );
+        
+        RoutingTableEntry theEntry = theRoutingTable1.getEntryForLocalPeer();
+        
+        assertEquals( 0,theEntry.getHopDistance());
+        assertTrue( theRoutingTable1.getEntries().size() > 0);
+        assertEquals( RoutingProtocol.START_PORT,theEntry.getPeer().getPort());
+      } finally {
+        theServer1.stop();
+      }
+
+
+      
+    }
 }

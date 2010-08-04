@@ -31,15 +31,16 @@ import javax.activation.DataSource;
 import org.apache.log4j.Logger;
 import org.doomdark.uuid.UUIDGenerator;
 
+import chabernac.io.Base64ObjectStringConverter;
 import chabernac.io.ClassPathResource;
 import chabernac.io.iObjectPersister;
+import chabernac.io.iObjectStringConverter;
 import chabernac.protocol.AlreadyRunningException;
 import chabernac.protocol.Protocol;
 import chabernac.protocol.ProtocolException;
 import chabernac.protocol.ServerInfo;
 import chabernac.tools.IOTools;
 import chabernac.tools.NetTools;
-import chabernac.tools.XMLTools;
 
 /**
  *  the routing protocol will do the following
@@ -100,6 +101,9 @@ public class RoutingProtocol extends Protocol {
 
   private ServerInfo myServerInfo = null;
 
+  private final iObjectStringConverter< RoutingTable > myRoutingTableConverter = new Base64ObjectStringConverter< RoutingTable >();
+  private final iObjectStringConverter< RoutingTableEntry > myRoutingTableEntryConverter = new Base64ObjectStringConverter< RoutingTableEntry >();
+
   /**
    * 
    * @param aLocalPeerId
@@ -122,11 +126,11 @@ public class RoutingProtocol extends Protocol {
     if(aSuperNodesDataSource != null){
       mySuperNodesDataSource = aSuperNodesDataSource;
     }
+
+    loadRoutingTable();
   }
 
   public void start() throws ProtocolException{
-    loadRoutingTable();
-
     if(isStopWhenAlreadyRunning){
       try {
         Peer theLocalPeer = myRoutingTable.getEntryForLocalPeer().getPeer();
@@ -215,39 +219,44 @@ public class RoutingProtocol extends Protocol {
     String theCommandString = anInput.substring( 0,  theFirstIndexOfSpace);
 
     Command theCommand = Command.valueOf( theCommandString );
-    if(theCommand == Command.REQUEST_TABLE){
-      //another peer has send a request for the routing protocol send it
-      return XMLTools.toXML( myRoutingTable );
-    } else if(theCommand == Command.WHO_ARE_YOU){
-      //another peer requested my peer id, send it to him, this is also used
-      //to check if I'm still alive and kicking
-      try{
-        RoutingTableEntry theEntryForLocalPeer = myRoutingTable.getEntryForLocalPeer();
-        return theEntryForLocalPeer.getPeer().getPeerId();
-      }catch(Exception e){
-        LOGGER.error( "Could not obtain entry for local peer", e );
-        return Response.NOK.name();
+    try{
+      if(theCommand == Command.REQUEST_TABLE){
+        //another peer has send a request for the routing protocol send it
+        return myRoutingTableConverter.toString( myRoutingTable );
+      } else if(theCommand == Command.WHO_ARE_YOU){
+        //another peer requested my peer id, send it to him, this is also used
+        //to check if I'm still alive and kicking
+        try{
+          RoutingTableEntry theEntryForLocalPeer = myRoutingTable.getEntryForLocalPeer();
+          return theEntryForLocalPeer.getPeer().getPeerId();
+        }catch(Exception e){
+          LOGGER.error( "Could not obtain entry for local peer", e );
+          return Response.NOK.name();
+        }
+      } else if(theCommand == Command.ANNOUNCEMENT_WITH_REPLY){
+        //the announcement is of the peer which is sending the annoucement
+        //so the peer id inside the routingtable entry is also the containing peer
+        String thePeerEntry = anInput.substring( theFirstIndexOfSpace + 1 );
+        RoutingTableEntry theEntry = myRoutingTableEntryConverter.getObject( thePeerEntry ).incHopDistance();
+        myRoutingTable.addRoutingTableEntry( theEntry);
+        return myRoutingTableConverter.toString( myRoutingTable );
+      } else if(theCommand == Command.ANNOUNCEMENT){
+        String[] theAttributes = anInput.substring( theFirstIndexOfSpace + 1 ).split(";");
+
+        RoutingTableEntry theSendingPeer = myRoutingTableEntryConverter.getObject( theAttributes[0] );
+        //we add the sending peer to the routing table
+        //      myRoutingTable.addRoutingTableEntry(theSendingPeer.incHopDistance());
+
+        RoutingTableEntry thePeer = myRoutingTableEntryConverter.getObject( theAttributes[1] );
+
+        //the sending peer has send the entry so we set it as gateway and increment the hop distance
+        thePeer = thePeer.entryForNextPeer( theSendingPeer.getPeer() );
+        myRoutingTable.addRoutingTableEntry( thePeer );
+        return Response.OK.name();
       }
-    } else if(theCommand == Command.ANNOUNCEMENT_WITH_REPLY){
-      //the announcement is of the peer which is sending the annoucement
-      //so the peer id inside the routingtable entry is also the containing peer
-      String thePeerEntry = anInput.substring( theFirstIndexOfSpace + 1 );
-      RoutingTableEntry theEntry = ((RoutingTableEntry)XMLTools.fromXML( thePeerEntry )).incHopDistance();
-      myRoutingTable.addRoutingTableEntry( theEntry);
-      return XMLTools.toXML( myRoutingTable );
-    } else if(theCommand == Command.ANNOUNCEMENT){
-      String[] theAttributes = anInput.substring( theFirstIndexOfSpace + 1 ).split(";");
-
-      RoutingTableEntry theSendingPeer = ((RoutingTableEntry)XMLTools.fromXML( theAttributes[0] ));
-      //we add the sending peer to the routing table
-      //      myRoutingTable.addRoutingTableEntry(theSendingPeer.incHopDistance());
-
-      RoutingTableEntry thePeer = ((RoutingTableEntry)XMLTools.fromXML( theAttributes[1] ));
-
-      //the sending peer has send the entry so we set it as gateway and increment the hop distance
-      thePeer = thePeer.entryForNextPeer( theSendingPeer.getPeer() );
-      myRoutingTable.addRoutingTableEntry( thePeer );
-      return Response.OK.name();
+    }catch(IOException e){
+      LOGGER.error("An error occured while parsing Routing table or entries to string or visa verca", e);
+      return Response.NOK.name();
     }
     return Response.UNKNOWN_COMMAND.name();
   }
@@ -402,9 +411,9 @@ public class RoutingProtocol extends Protocol {
             //simulate that we cannot contact the peer
             throw new Exception("Simulate that we can not contact peer: " + thePeer.getPeerId());
           }
-          String theTable = thePeer.send( createMessage( Command.ANNOUNCEMENT_WITH_REPLY.name() + " "  + XMLTools.toXML( myRoutingTable.getEntryForLocalPeer() ))) ;
+          String theTable = thePeer.send( createMessage( Command.ANNOUNCEMENT_WITH_REPLY.name() + " "  + myRoutingTableEntryConverter.toString( myRoutingTable.getEntryForLocalPeer() ))) ;
           //          String theTable = thePeer.send( createMessage( Command.REQUEST_TABLE.name() ));
-          RoutingTable theRemoteTable = (RoutingTable)XMLTools.fromXML( theTable );
+          RoutingTable theRemoteTable = myRoutingTableConverter.getObject( theTable );
 
           if(!theRemoteTable.getLocalPeerId().equals( thePeer.getPeerId() )){
             //if we get here it means that another peer has taken the place of the previous peer,
@@ -472,7 +481,7 @@ public class RoutingProtocol extends Protocol {
           !myUnreachablePeers.contains(thePeer.getPeerId())){
         try {
           LOGGER.debug("Sending announcement of peer '" + anEntry.getPeer().getPeerId() +  "' from peer '" + myLocalPeerId +  "' to peer '" + thePeer.getPeerId() + "' on '" + thePeer.getHosts()  + ": "  +  thePeer.getPort() + "'");
-          String theResult = thePeer.send( createMessage( Command.ANNOUNCEMENT.name() + " "  + XMLTools.toXML(myRoutingTable.getEntryForLocalPeer()) + ";" + XMLTools.toXML( anEntry ))) ;
+          String theResult = thePeer.send( createMessage( Command.ANNOUNCEMENT.name() + " "  + myRoutingTableEntryConverter.toString( myRoutingTable.getEntryForLocalPeer()) + ";" + myRoutingTableEntryConverter.toString( anEntry ))) ;
           if(!Response.OK.name().equals( theResult )){
             throw new Exception("Unexpected result code '" + theResult + "'");
           }
@@ -620,7 +629,9 @@ public class RoutingProtocol extends Protocol {
           if(theObject instanceof RoutingTableEntry){
             RoutingTableEntry theEntry = (RoutingTableEntry)theObject;
             if(!myUnreachablePeers.contains(theEntry.getPeer().getPeerId())){
-              theEntry = theEntry.incHopDistance();
+              if(!theEntry.getPeer().getPeerId().equals( myLocalPeerId )){
+                theEntry = theEntry.incHopDistance();
+              }
               myRoutingTable.addRoutingTableEntry( theEntry );
             }
           }
