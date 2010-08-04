@@ -68,6 +68,7 @@ public class RoutingPanel extends JPanel {
     theButtonPanel.add( new JButton(new StopAction()) );
     theButtonPanel.add( new JButton(new StartAction()) );
     theButtonPanel.add( new JButton(new ScanSuperNodesAction()) );
+    theButtonPanel.add( new JButton(new ShowRoutingTableEntryHistory()) );
     
     add(theButtonPanel, BorderLayout.NORTH);
   }
@@ -189,6 +190,17 @@ public class RoutingPanel extends JPanel {
           myRoutingProtocol.scanSuperNodes();
         }
       });
+    }
+  }
+  
+  public class ShowRoutingTableEntryHistory  extends AbstractAction{
+    public ShowRoutingTableEntryHistory(){
+      putValue( Action.NAME, "Show history" );
+    }
+    @Override
+    public void actionPerformed( ActionEvent anE ) {
+      RoutingTableEntryHistoryDialog theDialog = new RoutingTableEntryHistoryDialog(myRoutingProtocol.getRoutingTable());
+      theDialog.setVisible( true );
     }
   }
   

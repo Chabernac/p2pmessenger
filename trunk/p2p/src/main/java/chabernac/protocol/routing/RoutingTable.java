@@ -4,6 +4,7 @@
  */
 package chabernac.protocol.routing;
 
+import java.io.Serializable;
 import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -17,12 +18,17 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 import org.doomdark.uuid.UUID;
 
-public class RoutingTable implements Iterable< RoutingTableEntry >{
+public class RoutingTable implements Iterable< RoutingTableEntry >, Serializable{
+  
+  private static final long serialVersionUID = -6991803452368949789L;
+
   private static Logger LOGGER = Logger.getLogger( RoutingTable.class );
 
   private String myLocalPeerId;
+  private transient boolean isKeepHistory = false;
   private Map<String, RoutingTableEntry> myRoutingTable = new HashMap< String, RoutingTableEntry >();
-  private Set<IRoutingTableListener> myRoutingTableListeners = new HashSet< IRoutingTableListener >();
+  private transient Set<IRoutingTableListener> myRoutingTableListeners = new HashSet< IRoutingTableListener >();
+  private transient List<RoutingTableEntryHistory> myRoutingTableEntryHistory = new ArrayList< RoutingTableEntryHistory >();
 
   /**
    * you should not use this constructor
@@ -41,6 +47,10 @@ public class RoutingTable implements Iterable< RoutingTableEntry >{
   }
 
   public synchronized void addRoutingTableEntry(RoutingTableEntry anEntry){
+    if(isKeepHistory){
+      myRoutingTableEntryHistory.add( new RoutingTableEntryHistory(anEntry) );
+    }
+    
     if(anEntry.getPeer().getPeerId() == null || anEntry.getPeer().getPeerId().equals( "" )){
       throw new IllegalArgumentException("Received routing table entry with no peer id");
     }
@@ -127,7 +137,10 @@ public class RoutingTable implements Iterable< RoutingTableEntry >{
   public synchronized void merge(RoutingTable anotherRoutingTable) throws SocketException, NoAvailableNetworkAdapterException, UnknownPeerException{
     for(Iterator< RoutingTableEntry > i = anotherRoutingTable.iterator(); i.hasNext();){
       RoutingTableEntry theEntry = i.next();
-      addRoutingTableEntry(theEntry.entryForNextPeer( anotherRoutingTable.getEntryForLocalPeer().getPeer() ) );
+      //add all entries except the entry for ourselfs
+      if(!theEntry.getPeer().getPeerId().equals( myLocalPeerId )){
+        addRoutingTableEntry(theEntry.entryForNextPeer( anotherRoutingTable.getEntryForLocalPeer().getPeer() ) );
+      }
     }
   }
 
@@ -220,4 +233,21 @@ public class RoutingTable implements Iterable< RoutingTableEntry >{
     return theCounter;
   }
 
+  public boolean isKeepHistory() {
+    return isKeepHistory;
+  }
+
+  public void setKeepHistory( boolean anKeepHistory ) {
+    isKeepHistory = anKeepHistory;
+  }
+
+  public List< RoutingTableEntryHistory > getHistory() {
+    return Collections.unmodifiableList( myRoutingTableEntryHistory );
+  }
+  
+  public void clearHistory(){
+    myRoutingTableEntryHistory.clear();
+  }
+  
+  
 }

@@ -12,7 +12,6 @@ import java.util.UUID;
 import javax.swing.JFrame;
 
 import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.PropertyConfigurator;
 
 import chabernac.io.SocketPool;
 import chabernac.io.SocketPoolPanel;

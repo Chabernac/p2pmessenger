@@ -5,7 +5,6 @@
 package chabernac.protocol.routing;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.event.TableModelEvent;
@@ -56,28 +55,12 @@ public class RoutingTableModel implements TableModel {
   @Override
   public Object getValueAt( int anRowIndex, int anColumnIndex ) {
     RoutingTableEntry theRoutingTableEntry = myRoutingTable.getReachableEntriesEntries().get(anRowIndex);
-    if(anColumnIndex == 0) return toString(theRoutingTableEntry.getPeer());
+    if(anColumnIndex == 0) return theRoutingTableEntry.getPeer().toString();
     if(anColumnIndex == 1) return theRoutingTableEntry.getHopDistance();
-    if(anColumnIndex == 2) return toString(theRoutingTableEntry.getGateway());
+    if(anColumnIndex == 2) return theRoutingTableEntry.getGateway().toString();
     return "";
   }
   
-  private String toString(Peer aPeer){
-    StringBuilder theBuilder = new StringBuilder();
-    theBuilder.append( aPeer.getPeerId() );
-    theBuilder.append( " (" );
-    if(aPeer.getHosts() != null && aPeer.getHosts().size() > 0){
-      for(Iterator< String > i = aPeer.getHosts().iterator();i.hasNext();){
-        String theHost = i.next();
-        theBuilder.append( theHost );
-        if(i.hasNext()) theBuilder.append( "," );
-      }
-    }
-    theBuilder.append( ":" );
-    theBuilder.append( aPeer.getPort());
-    theBuilder.append(")");
-    return theBuilder.toString();
-  }
 
   @Override
   public boolean isCellEditable( int anRowIndex, int anColumnIndex ) {

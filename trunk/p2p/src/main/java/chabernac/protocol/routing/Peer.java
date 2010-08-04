@@ -187,4 +187,21 @@ public class Peer implements Serializable {
     }
     return null;
   }
+  
+  public String toString(){
+    StringBuilder theBuilder = new StringBuilder();
+    theBuilder.append( getPeerId() );
+    theBuilder.append( " (" );
+    if(getHosts() != null && getHosts().size() > 0){
+      for(Iterator< String > i = getHosts().iterator();i.hasNext();){
+        String theHost = i.next();
+        theBuilder.append( theHost );
+        if(i.hasNext()) theBuilder.append( "," );
+      }
+    }
+    theBuilder.append( ":" );
+    theBuilder.append( getPort());
+    theBuilder.append(")");
+    return theBuilder.toString();
+  }
 }

@@ -98,12 +98,14 @@ public class ProtocolContainer implements IProtocol {
   
   public synchronized IProtocol getProtocol(String anId) throws ProtocolException{
     if(!myProtocolMap.containsKey( anId )){
-      addProtocol( myProtocolFactory.createProtocol( anId ) );
+      IProtocol theProtocol = myProtocolFactory.createProtocol( anId );
+      if(myServerInfo != null){
+        theProtocol.setServerInfo( myServerInfo );
+      }
+      addProtocol( theProtocol );
     }
     IProtocol theProtocol = myProtocolMap.get( anId );
-    if(myServerInfo != null){
-      theProtocol.setServerInfo( myServerInfo );
-    }
+    
     return theProtocol;
   }
 
