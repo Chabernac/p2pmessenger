@@ -420,7 +420,7 @@ public class RoutingProtocol extends Protocol {
             //i.e. it is running on the same host and port
             //this means that the peer is not reachable any more
             RoutingTableEntry theOldEntry = theEntry.derivedEntry( RoutingTableEntry.MAX_HOP_DISTANCE );
-            myRoutingTable.addRoutingTableEntry( theOldEntry );
+            myRoutingTable.removeRoutingTableEntry( theOldEntry );
           }
 
           //test that we did not take the place of another peer on the same host and port

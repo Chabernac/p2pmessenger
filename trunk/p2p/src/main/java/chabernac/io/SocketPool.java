@@ -25,7 +25,7 @@ public class SocketPool extends Observable{
   private ScheduledExecutorService myService = null;
 
 
-  private SocketPool(){
+  protected SocketPool(){
   }
 
   private void notifyAllObs(){
