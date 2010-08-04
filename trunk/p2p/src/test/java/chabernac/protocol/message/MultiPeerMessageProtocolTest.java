@@ -68,7 +68,7 @@ public class MultiPeerMessageProtocolTest extends AbstractProtocolTest {
       
       theMessageProtocol1.sendMessage( theMessage );
       
-      Thread.sleep( 2000 );
+      Thread.sleep( 3000 );
       
       assertEquals( 4, theDeliveryReportCollector.getDeliveryReports().size() );
       assertEquals( DeliveryReport.Status.DELIVERED, theDeliveryReportCollector.getDeliveryReports().get( 2 ).getDeliveryStatus());
