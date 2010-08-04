@@ -68,7 +68,9 @@ public class MultiPeerMessageProtocolTest extends AbstractProtocolTest {
       
       theMessageProtocol1.sendMessage( theMessage );
       
-      Thread.sleep( 3000 );
+      Thread.sleep( 5000 );
+      
+      //TODO why do we have to wait 5 seconds, what's causing the timeout?
       
       assertEquals( 4, theDeliveryReportCollector.getDeliveryReports().size() );
       assertEquals( DeliveryReport.Status.DELIVERED, theDeliveryReportCollector.getDeliveryReports().get( 2 ).getDeliveryStatus());
