@@ -47,7 +47,7 @@ public class RoutingPanel extends JPanel {
 
   private void buildSouthPanel() {
     JScrollPane theScrollPane = new JScrollPane(myInfoArea);
-    myInfoArea.setRows( 10 );
+    myInfoArea.setRows( 5 );
     add(theScrollPane, BorderLayout.SOUTH);
   }
 

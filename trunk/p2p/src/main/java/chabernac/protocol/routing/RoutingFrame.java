@@ -15,6 +15,7 @@ import org.apache.log4j.BasicConfigurator;
 
 import chabernac.io.SocketPool;
 import chabernac.io.SocketPoolPanel;
+import chabernac.io.SocketProxy;
 import chabernac.protocol.ProtocolContainer;
 import chabernac.protocol.ProtocolException;
 import chabernac.protocol.ProtocolFactory;
@@ -25,7 +26,8 @@ import chabernac.tools.PropertyMap;
 import chabernac.util.concurrent.MonitorPanel;
 
 public class RoutingFrame extends JFrame {
-
+  private static final long serialVersionUID = 6198311092838546976L;
+  
   private ProtocolContainer myProtocolContainer = null;
   private ProtocolServer myProtocolServer = null;
   private boolean isStopOnClose;
@@ -42,6 +44,7 @@ public class RoutingFrame extends JFrame {
   private void init(){
     setDefaultCloseOperation( JFrame.DISPOSE_ON_CLOSE);
     getRoutingTable().setKeepHistory(true);
+    SocketProxy.setTraceEnabled(true);
   }
 
   private void addListeners(){
@@ -75,6 +78,8 @@ public class RoutingFrame extends JFrame {
     @Override
     public void windowClosing( WindowEvent anE ) {
       getRoutingTable().setKeepHistory(false);
+      getRoutingTable().clearHistory();
+      SocketProxy.setTraceEnabled(false);
 
       if(isStopOnClose){
         myProtocolServer.stop();
