@@ -12,15 +12,17 @@ import java.net.SocketAddress;
 import java.util.Date;
 
 public class SocketProxy {
+  private static boolean isTraceEnabled = false;
+
   private final SocketAddress myAddress;
   private Socket mySocket = null;
   private Date myConnectTime = null;
   private Exception myStackTrace = null;
-  
+
   public SocketProxy(SocketAddress anAddress){
     myAddress = anAddress;
   }
-  
+
   public synchronized Socket connect() throws IOException{
     if(mySocket == null){
       updateStackTrace();
@@ -30,15 +32,15 @@ public class SocketProxy {
     }
     return mySocket;
   }
-  
+
   public boolean isConnected(){
     return mySocket != null && mySocket.isConnected();
   }
-  
+
   public Socket getSocket(){
     return mySocket;
   }
-  
+
   public SocketAddress getSocketAddress(){
     return myAddress;
   }
@@ -50,16 +52,29 @@ public class SocketProxy {
   public void setConnectTime( Date anConnectTime ) {
     myConnectTime = anConnectTime;
   }
-  
+
   private void updateStackTrace(){
-    myStackTrace = new Exception();
-    myStackTrace.fillInStackTrace();
+    if(isTraceEnabled){
+      myStackTrace = new Exception();
+      myStackTrace.fillInStackTrace();
+    }
   }
-  
+
   public String getStackTrace() {
-    StringWriter theStringWriter= new StringWriter();
-    PrintWriter theWriter = new PrintWriter(theStringWriter);
-    myStackTrace.printStackTrace( theWriter );
-    return theStringWriter.getBuffer().toString();
+    if(myStackTrace != null){
+      StringWriter theStringWriter= new StringWriter();
+      PrintWriter theWriter = new PrintWriter(theStringWriter);
+      myStackTrace.printStackTrace( theWriter );
+      return theStringWriter.getBuffer().toString();
+    }
+    return "no stack trace";
+  }
+
+  public static boolean isTraceEnabled() {
+    return isTraceEnabled;
+  }
+
+  public static void setTraceEnabled(boolean anIsTraceEnabled) {
+    isTraceEnabled = anIsTraceEnabled;
   }
 }
