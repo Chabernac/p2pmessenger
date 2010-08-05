@@ -124,7 +124,7 @@ public class ProtocolFactory implements iProtocolFactory{
   
   private void setupLogging(Protocol aProtocol) throws IOException{
     Logger theLogger = Logger.getLogger( aProtocol.getClass().getName() );
-    DailyRollingFileAppender theFileAppender = new DailyRollingFileAppender(new TTCCLayout("dd-MM-yyyy HH:mm:ss SSS") ,aProtocol.getClass().getName(), "'.'yyyy-MM-dd'.log'" );
+    DailyRollingFileAppender theFileAppender = new DailyRollingFileAppender(new TTCCLayout("dd-MM-yyyy HH:mm:ss SSS") ,aProtocol.getClass().getName() + ".log", "'.'yyyy-MM-dd'.log'" );
     theLogger.addAppender( theFileAppender );
   }
 
