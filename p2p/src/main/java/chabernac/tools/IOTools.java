@@ -20,15 +20,6 @@ import org.apache.log4j.Logger;
 public class IOTools {
   private static Logger LOGGER = Logger.getLogger(IOTools.class); 
   
-  public void writeObjectToFileAsXML(File aFile, Object anObject){
-    //TODO implement writeObjectToFile
-  }
-  
-  public Object loadObjectFromFileAsXML(File aFile){
-    //TODO implement loadObjectFromFile
-    return null;
-  }
-  
   public static void copyStream(InputStream anInputStream, OutputStream anOutputStream) throws IOException{
     copyStream( anInputStream, anOutputStream, null );
   }

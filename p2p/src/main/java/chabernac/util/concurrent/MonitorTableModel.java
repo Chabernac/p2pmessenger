@@ -15,6 +15,8 @@ public class MonitorTableModel implements TableModel {
   
   private final LinkedHashMap< Thread, String > myStatusMap;
   
+  private List< TableModelListener > myListeners = new ArrayList< TableModelListener >();
+  
   public MonitorTableModel ( LinkedHashMap< Thread, String > anStatusMap ) {
     super();
     myStatusMap = anStatusMap;
@@ -22,9 +24,8 @@ public class MonitorTableModel implements TableModel {
 
 
   @Override
-  public void addTableModelListener( TableModelListener anL ) {
-    // TODO Auto-generated method stub
-
+  public void addTableModelListener( TableModelListener aListener ) {
+    myListeners.add(aListener);
   }
 
   @Override
@@ -64,8 +65,8 @@ public class MonitorTableModel implements TableModel {
   }
 
   @Override
-  public void removeTableModelListener( TableModelListener anL ) {
-
+  public void removeTableModelListener( TableModelListener anListener ) {
+    myListeners.remove( anListener );
   }
 
   @Override
