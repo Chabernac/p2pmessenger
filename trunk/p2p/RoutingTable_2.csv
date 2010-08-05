@@ -1,9 +1,0 @@
-local peer id;2
-
-Peer id;Port;Host
-2;12701;10.240.221.37
-1;12700;10.240.221.37
-
-Peer id;Hops;Gateway
-2;0;2
-1;6;1
