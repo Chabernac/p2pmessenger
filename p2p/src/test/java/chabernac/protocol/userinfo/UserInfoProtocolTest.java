@@ -55,7 +55,7 @@ public class UserInfoProtocolTest extends AbstractProtocolTest {
       theRoutingProtocol1.scanLocalSystem();
       theRoutingProtocol2.scanLocalSystem();
       
-      Thread.sleep(1000);
+      Thread.sleep(SLEEP_AFTER_SCAN);
       
       //after a local system scan we must at least know our selfs
       assertNotNull( theRoutingTable1.getEntryForLocalPeer() );
@@ -142,7 +142,7 @@ public class UserInfoProtocolTest extends AbstractProtocolTest {
       theRoutingProtocol1.scanLocalSystem();
       theRoutingProtocol2.scanLocalSystem();
       
-      Thread.sleep(1000);
+      Thread.sleep(SLEEP_AFTER_SCAN);
       
       //after a local system scan we must at least know our selfs
       assertNotNull( theRoutingTable1.getEntryForLocalPeer() );

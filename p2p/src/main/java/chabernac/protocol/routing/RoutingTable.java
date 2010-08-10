@@ -30,14 +30,6 @@ public class RoutingTable implements Iterable< RoutingTableEntry >, Serializable
   private transient Set<IRoutingTableListener> myRoutingTableListeners = new HashSet< IRoutingTableListener >();
   private transient List<RoutingTableEntryHistory> myRoutingTableEntryHistory = new ArrayList< RoutingTableEntryHistory >();
 
-  /**
-   * you should not use this constructor
-   * this one is only present to be able to stream to object to XML
-   * always make sure the routing table has a local peer id
-   * @deprecated
-   */
-  public RoutingTable(){}
-
   public RoutingTable(String aLocalPeerId){
     myLocalPeerId = aLocalPeerId;
   }

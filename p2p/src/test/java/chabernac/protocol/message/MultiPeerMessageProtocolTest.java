@@ -50,7 +50,7 @@ public class MultiPeerMessageProtocolTest extends AbstractProtocolTest {
       theRoutingProtocol3.scanLocalSystem();
       
       //scanning the local system might take a small time
-      Thread.sleep( 1000 );
+      Thread.sleep( SLEEP_AFTER_SCAN );
       
       DeliverReportCollector theDeliveryReportCollector = new DeliverReportCollector();
       theMessageProtocol1.addDeliveryReportListener( theDeliveryReportCollector );

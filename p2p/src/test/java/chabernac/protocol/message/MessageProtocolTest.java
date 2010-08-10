@@ -69,7 +69,7 @@ public class MessageProtocolTest extends AbstractProtocolTest {
       theRoutingProtocol3.scanLocalSystem();
 
       //scanning the local system might take a small time
-      Thread.sleep( 1000 );
+      Thread.sleep( SLEEP_AFTER_SCAN );
 
       //after a local system scan we must at least know our selfs
       assertNotNull( theRoutingTable1.getEntryForLocalPeer() );
@@ -123,7 +123,7 @@ public class MessageProtocolTest extends AbstractProtocolTest {
       theRoutingProtocol2.scanLocalSystem();
 
       //scanning the local system might take a small time
-      Thread.sleep( 1000 );
+      Thread.sleep( SLEEP_AFTER_SCAN );
 
       MessageCounterListener theListener = new MessageCounterListener();
       theMessageProtocol2.addMessageListener( theListener );
@@ -167,7 +167,7 @@ public class MessageProtocolTest extends AbstractProtocolTest {
       theRoutingProtocol2.scanLocalSystem();
 
       //scanning the local system might take a small time
-      Thread.sleep( 1000 );
+      Thread.sleep( SLEEP_AFTER_SCAN );
 
       MessageCollector theListener = new MessageCollector();
       theMessageProtocol2.addMessageListener( theListener );
@@ -215,7 +215,7 @@ public class MessageProtocolTest extends AbstractProtocolTest {
       theRoutingProtocol2.scanLocalSystem();
 
       //scanning the local system might take a small time
-      Thread.sleep( 1000 );
+      Thread.sleep( SLEEP_AFTER_SCAN );
 
       MessageCollector theListener = new MessageCollector();
       theMessageProtocol2.addMessageListener( theListener );

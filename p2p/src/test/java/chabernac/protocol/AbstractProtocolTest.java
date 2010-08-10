@@ -9,6 +9,8 @@ import chabernac.io.SocketPool;
 import chabernac.tools.PropertyMap;
 
 public abstract class AbstractProtocolTest extends TestCase {
+  protected static final int SLEEP_AFTER_SCAN = 2000;
+  
   public void setUp(){
     SocketPool.getInstance( ).cleanUp();
   }
