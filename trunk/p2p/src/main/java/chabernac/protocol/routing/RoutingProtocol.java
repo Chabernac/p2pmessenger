@@ -170,6 +170,7 @@ public class RoutingProtocol extends Protocol {
    * if there is a routing protocol already running at this port then return true
    */
   private boolean isAlreadyRunning(Peer aPeer) {
+    LOGGER.debug("Checking if we're already running at: " + aPeer.getPort());
     return contactPeer(aPeer, myUnreachablePeers);
   }
 
