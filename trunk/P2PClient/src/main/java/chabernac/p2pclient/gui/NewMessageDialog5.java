@@ -1,14 +1,18 @@
 package chabernac.p2pclient.gui;
 
+import java.awt.AWTException;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.GridLayout;
 import java.awt.KeyboardFocusManager;
+import java.awt.Point;
+import java.awt.Robot;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.text.SimpleDateFormat;
 import java.util.concurrent.ExecutorService;
@@ -53,7 +57,7 @@ public class NewMessageDialog5 extends JDialog implements iMessageDialog{
   private InputMap myInputMap1 = null;
   private InputMap myInputMap2 = null;
   private JScrollPane myReplyScrollPane = null;
-
+  private Robot myRobot;
 
   private ExecutorService myService = Executors.newFixedThreadPool( 1 );
   private ExecutorService mySendService = Executors.newFixedThreadPool( 5 );
@@ -95,6 +99,11 @@ public class NewMessageDialog5 extends JDialog implements iMessageDialog{
     myReplyScrollPane = new JScrollPane(myReplyText, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
     myReplyScrollPane.setBorder(myReplyBorder);
     myBorder = new TitledBorder("");
+    try {
+      myRobot = new Robot();
+    } catch ( AWTException e ) {
+      logger.error("Could not initialize robot", e);
+    }
   }
 
 
@@ -194,6 +203,11 @@ public class NewMessageDialog5 extends JDialog implements iMessageDialog{
             requestFocus(false);
             myText.requestFocus();
             requestFocusInWindow(false);
+            if(myRobot != null){
+              Point thePoint = getLocationOnScreen();
+              myRobot.mouseMove( thePoint.x + 10, thePoint.y + 70 );
+              myRobot.mousePress( InputEvent.BUTTON1_MASK);
+            }
           }catch(P2PFacadeException e){
             logger.error( "Error occured while setting message", e );
           }

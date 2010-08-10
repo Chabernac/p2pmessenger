@@ -180,7 +180,11 @@ public class Tools {
     if(theUserNameParts.length >= 2){
       return theUserNameParts[0] + " " + theUserNameParts[1].charAt( 0 );
     } else {
-      return theUserName.substring( 0, 10 );
+      if(theUserName.length() > 10){
+        return theUserName.substring( 0, 10 );
+      } else {
+        return theUserName;
+      }
     }
   }
   
