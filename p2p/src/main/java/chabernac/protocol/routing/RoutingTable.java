@@ -171,6 +171,10 @@ public class RoutingTable implements Iterable< RoutingTableEntry >, Serializable
   public void setRoutingTable( Map< String, RoutingTableEntry > anRoutingTable ) {
     myRoutingTable = anRoutingTable;
   }
+  
+  public synchronized boolean containsEntryForPeer(String aPeerId){
+	  return myRoutingTable.containsKey(aPeerId);
+  }
 
   public synchronized RoutingTableEntry getEntryForPeer( String aPeerId ) throws UnknownPeerException{
     if(!myRoutingTable.containsKey( aPeerId )){
