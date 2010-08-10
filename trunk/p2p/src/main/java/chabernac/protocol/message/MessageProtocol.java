@@ -31,7 +31,7 @@ public class MessageProtocol extends Protocol {
   private static Logger LOGGER = Logger.getLogger( MessageProtocol.class );
   public static final String ID = "MSG";
 
-  private static enum STATUS_MESSAGE {UKWNONW_PEER, UNKNOWN_HOST, UNDELIVERABLE, DELIVERED, UNCRECOGNIZED_MESSAGE, COULD_NOT_DECRYPT};
+  private static enum STATUS_MESSAGE {UNKNOWN_PEER, UNKNOWN_HOST, UNDELIVERABLE, DELIVERED, UNCRECOGNIZED_MESSAGE, COULD_NOT_DECRYPT};
 
   private List<iMessageListener> myListeners = new ArrayList< iMessageListener >();
 
@@ -78,7 +78,7 @@ public class MessageProtocol extends Protocol {
       }
     } catch ( UnknownPeerException e ) {
       LOGGER.error( "Unknown peer", e );
-      return STATUS_MESSAGE.UKWNONW_PEER.name();
+      return STATUS_MESSAGE.UNKNOWN_PEER.name() + " " + e.getPeer().getPeerId();
     } catch ( UnknownHostException e ) {
       LOGGER.error( "Unknown host", e );
       return STATUS_MESSAGE.UNKNOWN_HOST.name();

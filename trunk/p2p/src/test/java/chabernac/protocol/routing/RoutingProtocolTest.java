@@ -50,7 +50,7 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
       
       theRoutingProtocol1.scanLocalSystem();
       
-      Thread.sleep( 5000 );
+      Thread.sleep( SLEEP_AFTER_SCAN );
       
       theEntry = theRoutingProtocol1.getRoutingTable().getEntryForLocalPeer();
       assertNotNull( theEntry );
@@ -164,15 +164,16 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
     theRoutingProtocol3.getLocalUnreachablePeerIds().add( "1" );
 
     try{
+      theRoutingTable1.setKeepHistory( true );
       assertTrue( theServer1.start() );
       assertTrue( theServer2.start() );
       assertTrue( theServer3.start() );
 
-      Thread.sleep( 5000 );
-      
       theRoutingProtocol1.scanLocalSystem();
       theRoutingProtocol2.scanLocalSystem();
       theRoutingProtocol3.scanLocalSystem();
+      
+      Thread.sleep( SLEEP_AFTER_SCAN );
       
       theRoutingProtocol2.exchangeRoutingTable();
       theRoutingProtocol1.exchangeRoutingTable();
@@ -276,13 +277,14 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
       theRoutingProtocol4.getLocalUnreachablePeerIds().add( "2" );
       
       assertTrue( theServer4.start() );
-//      Thread.sleep( 5000 );
       
       theRoutingProtocol4.scanLocalSystem();
       theRoutingProtocol3.scanLocalSystem();
       theRoutingProtocol2.scanLocalSystem();
       theRoutingProtocol1.scanLocalSystem();
       
+      Thread.sleep( SLEEP_AFTER_SCAN );
+      
       theRoutingProtocol3.exchangeRoutingTable();
       theRoutingProtocol2.exchangeRoutingTable();
       theRoutingProtocol1.exchangeRoutingTable();
@@ -292,33 +294,11 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
       theRoutingProtocol2.exchangeRoutingTable();
       theRoutingProtocol1.exchangeRoutingTable();
       theRoutingProtocol4.exchangeRoutingTable();
+      
+      theRoutingTable1.setKeepHistory( false );
       
  //test the situation again
       
-      //p1
-      //peer    hops    gateway
-      //p1      0       p1
-      //p2      1       p2
-      //p3      1       p3
-      //p4      2       p3
-
-      testEntry( theRoutingTable1.getEntryForPeer("1"), 0, "1", true, true); 
-      testEntry( theRoutingTable1.getEntryForPeer("2"), 1, "2", true, true);
-      testEntry( theRoutingTable1.getEntryForPeer("3"), 1, "3", true, true);
-      testEntry( theRoutingTable1.getEntryForPeer("4"), 2, "3", false, true);
-
-      //p2
-      //peer    hops    gateway
-      //p1      1       p1
-      //p2      0       p2
-      //p3      1       p3
-      //p4      2       p3
-
-      testEntry( theRoutingTable2.getEntryForPeer("1"), 1, "1", true, true); 
-      testEntry( theRoutingTable2.getEntryForPeer("2"), 0, "2", true, true);
-      testEntry( theRoutingTable2.getEntryForPeer("3"), 1, "3", true, true);
-      testEntry( theRoutingTable2.getEntryForPeer("4"), 2, "3", false, true);
-
       //p3
       //peer    hops    gateway
       //p1      1       p1
@@ -342,6 +322,34 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
       testEntry( theRoutingTable4.getEntryForPeer("2"), 2, "3", false, true);
       testEntry( theRoutingTable4.getEntryForPeer("3"), 1, "3", true, true);
       testEntry( theRoutingTable4.getEntryForPeer("4"), 0, "4", true, true);
+      
+      //p2
+      //peer    hops    gateway
+      //p1      1       p1
+      //p2      0       p2
+      //p3      1       p3
+      //p4      2       p3
+
+      testEntry( theRoutingTable2.getEntryForPeer("1"), 1, "1", true, true); 
+      testEntry( theRoutingTable2.getEntryForPeer("2"), 0, "2", true, true);
+      testEntry( theRoutingTable2.getEntryForPeer("3"), 1, "3", true, true);
+      testEntry( theRoutingTable2.getEntryForPeer("4"), 2, "3", false, true);
+      
+      //p1
+      //peer    hops    gateway
+      //p1      0       p1
+      //p2      1       p2
+      //p3      1       p3
+      //p4      2       p3
+
+      testEntry( theRoutingTable1.getEntryForPeer("1"), 0, "1", true, true); 
+      testEntry( theRoutingTable1.getEntryForPeer("2"), 1, "2", true, true);
+      testEntry( theRoutingTable1.getEntryForPeer("3"), 1, "3", true, true);
+      testEntry( theRoutingTable1.getEntryForPeer("4"), 2, "3", false, true);
+
+     
+
+     
       
       LOGGER.debug("Peer 3 and 4 disconnected");
       
@@ -533,6 +541,9 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
       
       theRoutingProtocol1.scanLocalSystem();
       theRoutingProtocol2.scanLocalSystem();
+      
+      Thread.sleep(SLEEP_AFTER_SCAN);
+      
       theRoutingProtocol1.exchangeRoutingTable();
       theRoutingProtocol2.exchangeRoutingTable();
       
@@ -577,7 +588,7 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
       theRoutingProtocol1.scanLocalSystem();
       theRoutingProtocol2.scanLocalSystem();
       
-      Thread.sleep( 2000 );
+      Thread.sleep( SLEEP_AFTER_SCAN );
       
       theRoutingTable1.removeAllButLocalPeer();
       theRoutingTable2.removeAllButLocalPeer();
@@ -620,7 +631,8 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
       assertTrue( theServer1.start() );
       
       theRoutingProtocol1.scanLocalSystem();
-      Thread.sleep( 1000 );
+      
+      Thread.sleep( SLEEP_AFTER_SCAN );
 
       assertEquals( 1, theRoutingTable1.getEntries().size() );
       
@@ -637,7 +649,8 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
       assertTrue( theServer1.start() );
       
       theRoutingProtocol1.scanLocalSystem();
-      Thread.sleep( 1000 );
+      
+      Thread.sleep( SLEEP_AFTER_SCAN );
 
       assertEquals( 1, theRoutingTable1.getEntries().size() );
       
@@ -662,7 +675,7 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
       assertTrue( theServer1.start() );
       
       theRoutingProtocol1.scanLocalSystem();
-      Thread.sleep( 1000 );
+      Thread.sleep( SLEEP_AFTER_SCAN);
 
       assertEquals( 1, theRoutingTable1.getEntries().size() );
       
@@ -681,7 +694,7 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
       assertTrue( theServer1.start() );
       
       theRoutingProtocol1.scanLocalSystem();
-      Thread.sleep( 1000 );
+      Thread.sleep( SLEEP_AFTER_SCAN );
       
       assertEquals( thePeerId, theRoutingTable1.getLocalPeerId() );
 
