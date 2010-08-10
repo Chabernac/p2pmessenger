@@ -594,15 +594,15 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
       theRoutingTable2.removeAllButLocalPeer();
       
       //make sure the peers do not know each other
-      assertNull( theRoutingTable1.getEntryForPeer( "2" ) );
-      assertNull( theRoutingTable2.getEntryForPeer( "1" ) );
+      assertFalse(theRoutingTable1.containsEntryForPeer( "2" ) );
+      assertFalse(theRoutingTable2.containsEntryForPeer( "1" ) );
       
       //now send an udp announcement packet, it should be detected by peer 2
       theRoutingProtocol1.sendUDPAnnouncement();
       
       Thread.sleep( 1000 );
       //peer 2 now has peer 1 in its routing table
-      assertNotNull( theRoutingTable2.getEntryForPeer( "1" ) );
+      assertTrue(theRoutingTable2.containsEntryForPeer( "1" ) );
       
       //now send an udp announcement packet, it should be detected by peer 2
       theRoutingProtocol2.sendUDPAnnouncement();
@@ -610,7 +610,7 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
       Thread.sleep( 1000 );
       
       //peer 1 should now know peer 2
-      assertNotNull( theRoutingTable1.getEntryForPeer( "2" ) );
+      assertTrue(theRoutingTable1.containsEntryForPeer( "2" ) );
       
     } finally {
       theServer1.stop();
