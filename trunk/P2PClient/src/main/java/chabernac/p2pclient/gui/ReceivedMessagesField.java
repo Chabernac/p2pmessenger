@@ -4,7 +4,7 @@
  * To change the template for this generated file go to
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
-package chabernac.gui;
+package chabernac.p2pclient.gui;
 
 import java.awt.BorderLayout;
 import java.io.IOException;
@@ -18,8 +18,7 @@ import javax.swing.event.HyperlinkListener;
 
 import org.apache.log4j.Logger;
 
-import chabernac.p2pclient.gui.ChatMediator;
-import chabernac.p2pclient.gui.iReceivedMessagesProvider;
+import chabernac.gui.GPanel;
 import chabernac.protocol.facade.P2PFacadeException;
 import chabernac.protocol.message.DeliveryReport;
 import chabernac.protocol.message.MultiPeerMessage;
@@ -97,10 +96,11 @@ public class ReceivedMessagesField extends GPanel implements iReceivedMessagesPr
   private void createHTML() {
     try{
       Set< MultiPeerMessage > theList = myMediator.getP2PFacade().getMessageArchive().getAllMessages();
-      myHTML = "";
+      myHTML = "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01//EN\">";
       boolean send = false;
       myHTML += "<html>";
-      myHTML += "<head><style type=\"text/css\">p {   padding-left: 5em;  } p:first-letter  {   margin-left: -5em;  }</style></head>";
+      myHTML += "<head><style type=\"text/css\">p {   padding-left: 5em;  } p:first-letter  {   margin-left: -5em;  }</style><title>messages</title></head>";
+      myHTML += "<body>";
       myHTML += "<table border='0' cellpadding='0' cellspacing='0'>";
       for(MultiPeerMessage theMessage : theList){
         send = theMessage.getSource().equals(myMediator.getP2PFacade().getPeerId());
@@ -110,7 +110,8 @@ public class ReceivedMessagesField extends GPanel implements iReceivedMessagesPr
         myHTML += "</td>";
         myHTML += "</tr>";
       }
-      myHTML += "</table></html>";
+      myHTML += "</table></body></html>";
+      System.out.println(myHTML);
       myPane.setText(myHTML);
       myPane.setCaretPosition(myPane.getDocument().getLength() > 0 ? myPane.getDocument().getLength() - 1 : 0);
     }catch(P2PFacadeException e){
