@@ -71,6 +71,7 @@ public class SocketPool extends Observable{
       synchronized(this){
         myCheckedInPool.remove( theSocketProxy );
         myCheckedOutPool.add( theSocketProxy );
+        notifyAllObs();
         return theSocketProxy.connect();
       }
     }
