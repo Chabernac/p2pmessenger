@@ -21,6 +21,7 @@ public class SocketProxy {
 
   public SocketProxy(SocketAddress anAddress){
     myAddress = anAddress;
+    updateStackTrace();
   }
 
   public synchronized Socket connect() throws IOException{
