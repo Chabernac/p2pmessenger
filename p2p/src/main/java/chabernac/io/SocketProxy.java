@@ -25,11 +25,11 @@ public class SocketProxy {
 
   public synchronized Socket connect() throws IOException{
     if(mySocket == null){
-      updateStackTrace();
       mySocket = new Socket();
       myConnectTime = new Date();
       mySocket.connect( myAddress );
     }
+    updateStackTrace();
     return mySocket;
   }
 
