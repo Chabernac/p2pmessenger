@@ -17,7 +17,6 @@ import chabernac.protocol.facade.P2PFacade;
 import chabernac.protocol.facade.P2PFacadeException;
 import chabernac.protocol.userinfo.UserInfoException;
 import chabernac.protocol.userinfo.iUserInfoProvider;
-import chabernac.protocol.userinfo.UserInfo.Status;
 
 public class ApplicationLauncher {
   private static ScheduledExecutorService SERVICE = Executors.newScheduledThreadPool( 1 );
@@ -40,10 +39,11 @@ public class ApplicationLauncher {
     .setPersist( Boolean.parseBoolean( args[0] ) )
     .setUserInfoProvider( theUserInfoProvider )
     .setSuperNodesDataSource( new ClassPathResource("supernodes.txt") )
-    .start( 5 );
+    .setStopWhenAlreadyRunning( true )
+    .start( 20 );
     
     ChatFrame theFrame = new ChatFrame(theFacade);
-    theUserInfoProvider.getUserInfo().setStatus( Status.ONLINE );
+//    theUserInfoProvider.getUserInfo().setStatus( Status.ONLINE );
     theFrame.setVisible( true );
   }
   
