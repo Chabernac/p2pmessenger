@@ -123,7 +123,9 @@ public class InfoExchangeProtocol<T extends Observable & Serializable> extends P
     try{
       RoutingTable theTable = getRoutingTable();
       for(RoutingTableEntry theEntry : theTable){
-        myService.execute( new SendInfoToPeer(theEntry.getPeer().getPeerId()));
+        if(theEntry.isReachable()){
+          myService.execute( new SendInfoToPeer(theEntry.getPeer().getPeerId()));
+        }
       }
     }catch(Exception e){
       LOGGER.error( "Unable to push information to all peers", e );
