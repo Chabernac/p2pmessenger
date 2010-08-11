@@ -15,8 +15,6 @@ public class BackupUserInfoProviderDecorator implements iUserInfoProvider {
   private static Logger LOGGER = Logger.getLogger(BackupUserInfoProviderDecorator.class);
   
   private final iUserInfoProvider myDelegate;
-  private UserInfo myUserInfoBackup = new UserInfo();
-
 
   public BackupUserInfoProviderDecorator ( iUserInfoProvider anDelegate ) {
     super();
@@ -24,26 +22,24 @@ public class BackupUserInfoProviderDecorator implements iUserInfoProvider {
   }
 
 
-  public UserInfo getUserInfo() throws UserInfoException {
+  public void fillUserInfo( UserInfo aUserInfo ) throws UserInfoException {
     try {
-      UserInfo theUserInfo = myDelegate.getUserInfo();
-      saveBackup(theUserInfo);
-      return theUserInfo;
+      myDelegate.fillUserInfo( aUserInfo );
+      saveBackup(aUserInfo);
     }catch(UserInfoException e){
       LOGGER.error( "Faild to retrieve user info with class '" + myDelegate.getClass() + "' trying to load backup", e );
-      return loadBackup();
+      loadBackup(aUserInfo);
     }
   }
 
 
-  private UserInfo loadBackup() {
+  private void loadBackup(UserInfo aUserInfo) {
     ApplicationPreferences thePrefereces = ApplicationPreferences.getInstance();
-    if(thePrefereces.containsKey( "user.email" )) myUserInfoBackup.setEMail( thePrefereces.getProperty( "user.email" ) );
-    myUserInfoBackup.setName( thePrefereces.getProperty( "user.name", System.getProperty( "user.name" ) ));
-    myUserInfoBackup.setId( thePrefereces.getProperty( "user.id", System.getProperty( "user.name" ) ));
-    if(thePrefereces.containsKey( "user.location" )) myUserInfoBackup.setLocation( thePrefereces.getProperty( "user.location"));
-    if(thePrefereces.containsKey( "user.telnr" )) myUserInfoBackup.setTelNr( thePrefereces.getProperty( "user.telnr"));
-    return myUserInfoBackup;
+    if(thePrefereces.containsKey( "user.email" )) aUserInfo.setEMail( thePrefereces.getProperty( "user.email" ) );
+    aUserInfo.setName( thePrefereces.getProperty( "user.name", System.getProperty( "user.name" ) ));
+    aUserInfo.setId( thePrefereces.getProperty( "user.id", System.getProperty( "user.name" ) ));
+    if(thePrefereces.containsKey( "user.location" )) aUserInfo.setLocation( thePrefereces.getProperty( "user.location"));
+    if(thePrefereces.containsKey( "user.telnr" )) aUserInfo.setTelNr( thePrefereces.getProperty( "user.telnr"));
   }
 
 
@@ -54,5 +50,4 @@ public class BackupUserInfoProviderDecorator implements iUserInfoProvider {
    if(aUserInfo.getLocation() != null) ApplicationPreferences.getInstance().setProperty( "user.location",  aUserInfo.getLocation());
    if(aUserInfo.getTelNr() != null) ApplicationPreferences.getInstance().setProperty( "user.telnr",  aUserInfo.getTelNr());
   }
-
 }

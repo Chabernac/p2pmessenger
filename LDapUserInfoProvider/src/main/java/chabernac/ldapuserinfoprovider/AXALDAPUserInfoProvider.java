@@ -16,13 +16,11 @@ import chabernac.protocol.userinfo.iUserInfoProvider;
 import chabernac.protocol.userinfo.UserInfo.Status;
 
 public class AXALDAPUserInfoProvider implements iUserInfoProvider{
-  private UserInfo myUserInfo = new UserInfo();
   
-  public AXALDAPUserInfoProvider(){
-    myUserInfo.setStatus( Status.ONLINE );
-  }
-
-  public UserInfo getUserInfo() throws UserInfoException{
+  public void fillUserInfo( UserInfo aUserInfo ) throws UserInfoException {
+    if(aUserInfo.getStatus() == Status.OFFLINE){
+      aUserInfo.setStatus( Status.ONLINE );
+    }
     try {
       NamingEnumeration theResult = AXALDapTools.getInstance().searchUser("axauid", System.getProperty( "user.name" ));
       while(theResult.hasMoreElements()){
@@ -30,23 +28,20 @@ public class AXALDAPUserInfoProvider implements iUserInfoProvider{
         Attributes theAttribs = theRes.getAttributes();
         for(NamingEnumeration theEnum = theAttribs.getAll(); theEnum.hasMoreElements();){
           BasicAttribute theAttribute = (BasicAttribute)theEnum.next();
-          examinAttribute(theAttribute);
+          examinAttribute(theAttribute, aUserInfo);
         }
-        System.out.println();
       }
-      return myUserInfo;
     } catch ( NamingException e ) {
       throw new UserInfoException("Could not retrieve user info from ldap", e);
     }
   }
 
-  private void examinAttribute( BasicAttribute anAttribute ) throws NamingException {
+  private void examinAttribute( BasicAttribute anAttribute, UserInfo aUserInfo ) throws NamingException {
     String theId = anAttribute.getID();
     Object theValue = anAttribute.get();
-    if(theId.equalsIgnoreCase( "mail" )) myUserInfo.setEMail( theValue.toString() );
-    if(theId.equalsIgnoreCase( "cn" )) myUserInfo.setName(  theValue.toString() );
-    if(theId.equalsIgnoreCase( "telephoneNumber" )) myUserInfo.setTelNr( theValue.toString() );
-    if(theId.equalsIgnoreCase( "axauid" )) myUserInfo.setId(  theValue.toString() );
+    if(theId.equalsIgnoreCase( "mail" )) aUserInfo.setEMail( theValue.toString() );
+    if(theId.equalsIgnoreCase( "cn" )) aUserInfo.setName(  theValue.toString() );
+    if(theId.equalsIgnoreCase( "telephoneNumber" )) aUserInfo.setTelNr( theValue.toString() );
+    if(theId.equalsIgnoreCase( "axauid" )) aUserInfo.setId(  theValue.toString() );
   }
-
 }
