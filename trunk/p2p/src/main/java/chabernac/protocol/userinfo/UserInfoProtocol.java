@@ -4,7 +4,6 @@
  */
 package chabernac.protocol.userinfo;
 
-import java.lang.Thread.State;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -16,8 +15,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-
-import javax.print.attribute.standard.SheetCollate;
 
 import org.apache.log4j.Logger;
 
@@ -53,25 +50,32 @@ public class UserInfoProtocol extends Protocol {
   private List< iUserInfoListener > myListeners = new ArrayList< iUserInfoListener >();
 
   private MyUserInfoListener myUserInfoListener = new MyUserInfoListener();
+  
+  private final UserInfo myPersonalUserInfo = new UserInfo();
 
 
   public UserInfoProtocol ( iUserInfoProvider aProvider ) throws UserInfoException{
     super( ID );
     if(aProvider == null) throw new UserInfoException("Must give a user info provider");
     myUserInfoProvider = aProvider;
+    obtainUserInfo();
     addUserInfoListener();
+  }
+  
+  private void obtainUserInfo() throws UserInfoException{
+    if(myUserInfoProvider != null){
+      myUserInfoProvider.fillUserInfo( myPersonalUserInfo );
+    }
   }
 
   private void addUserInfoListener() throws UserInfoException{
-    myUserInfoProvider.getUserInfo().addObserver( myUserInfoListener );
+    myPersonalUserInfo.addObserver( myUserInfoListener );
   }
 
   public void setUserInfoProvider(iUserInfoProvider aUserInfoProvider){
     try {
-      if(myUserInfoProvider != null){
-        myUserInfoProvider.getUserInfo().deleteObserver( myUserInfoListener );
-      }
       myUserInfoProvider = aUserInfoProvider;
+      obtainUserInfo();
       addUserInfoListener();
       announceMe();
     } catch ( UserInfoException e ) {
@@ -198,7 +202,7 @@ public class UserInfoProtocol extends Protocol {
       Message theMessage = new Message(  );
       theMessage.setDestination( getRoutingTable().getEntryForPeer( aPeerId ).getPeer() );
       theMessage.setSource( getRoutingTable().getEntryForLocalPeer().getPeer() );
-      theMessage.setMessage( createMessage( Command.PUT.name() + ";" + getRoutingTable().getLocalPeerId() + ";" + XMLTools.toXML( myUserInfoProvider.getUserInfo())));
+      theMessage.setMessage( createMessage( Command.PUT.name() + ";" + getRoutingTable().getLocalPeerId() + ";" + XMLTools.toXML( myPersonalUserInfo )));
       theMessage.setProtocolMessage( true );
       String theResult = ((MessageProtocol)findProtocolContainer().getProtocol( MessageProtocol.ID )).sendMessage( theMessage );
       if(!theResult.equals( Response.OK.name() )){
@@ -214,7 +218,7 @@ public class UserInfoProtocol extends Protocol {
   }
 
   public UserInfo getPersonalInfo() throws UserInfoException{
-    return myUserInfoProvider.getUserInfo();
+    return myPersonalUserInfo;
   }
 
   public void addUserInfoListener(iUserInfoListener aListener){

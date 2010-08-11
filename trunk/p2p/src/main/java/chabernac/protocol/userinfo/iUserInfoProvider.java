@@ -5,5 +5,5 @@
 package chabernac.protocol.userinfo;
 
 public interface iUserInfoProvider {
-  public UserInfo getUserInfo() throws UserInfoException;
+  public void fillUserInfo(UserInfo aUserInfo) throws UserInfoException;
 }
