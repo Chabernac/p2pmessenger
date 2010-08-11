@@ -18,10 +18,10 @@ import chabernac.protocol.userinfo.UserInfo.Status;
 public class UserPanelTest extends TestCase {
   public void testUserPanel() throws P2PFacadeException, InterruptedException{
     DefaultUserInfoProvider theUserInfoProvider1 = new DefaultUserInfoProvider();
-    theUserInfoProvider1.getUserInfo().setEMail( "1@a.b" );
-    theUserInfoProvider1.getUserInfo().setId( "1" );
-    theUserInfoProvider1.getUserInfo().setName( "name 1" );
-    theUserInfoProvider1.getUserInfo().setTelNr( "1111 111 11 11" );
+    theUserInfoProvider1.setEMail( "1@a.b" );
+    theUserInfoProvider1.setId( "1" );
+    theUserInfoProvider1.setName( "name 1" );
+    theUserInfoProvider1.setTelNr( "1111 111 11 11" );
     
     
     P2PFacade theFacade1 = new P2PFacade()
@@ -31,11 +31,11 @@ public class UserPanelTest extends TestCase {
     .start( 5 );
     
     DefaultUserInfoProvider theUserInfoProvider2 = new DefaultUserInfoProvider();
-    theUserInfoProvider2.getUserInfo().setEMail( "2@a.b" );
-    theUserInfoProvider2.getUserInfo().setId( "2" );
-    theUserInfoProvider2.getUserInfo().setName( "name 2" );
-    theUserInfoProvider2.getUserInfo().setTelNr( "2222 222 22 22" );
-    theUserInfoProvider2.getUserInfo().setStatus( Status.BUSY );
+    theUserInfoProvider2.setEMail( "2@a.b" );
+    theUserInfoProvider2.setId( "2" );
+    theUserInfoProvider2.setName( "name 2" );
+    theUserInfoProvider2.setTelNr( "2222 222 22 22" );
+    theUserInfoProvider2.setStatus( Status.BUSY );
 
     P2PFacade theFacade2 = new P2PFacade()
     .setExchangeDelay( 300 )
