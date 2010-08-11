@@ -9,6 +9,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import chabernac.io.ClassPathResource;
+import chabernac.io.SocketProxy;
 import chabernac.ldapuserinfoprovider.AXALDAPUserInfoProvider;
 import chabernac.ldapuserinfoprovider.BackupUserInfoProviderDecorator;
 import chabernac.p2pclient.gui.ChatFrame;
@@ -28,6 +29,7 @@ public class ApplicationLauncher {
    */
   public static void main( String[] args ) throws P2PFacadeException, UserInfoException {
     
+    SocketProxy.setTraceEnabled(true);
 //    BasicConfigurator.configure();
     
     startTimers();
