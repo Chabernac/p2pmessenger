@@ -10,8 +10,9 @@ import chabernac.protocol.userinfo.UserInfoException;
 
 public class AAXLDAPUserInfoProviderTest extends TestCase {
   public void testUserInfoProvider() throws UserInfoException{
+    UserInfo theInfo = new UserInfo();
     AXALDAPUserInfoProvider theProvider = new AXALDAPUserInfoProvider();
-    UserInfo theInfo = theProvider.getUserInfo();
+    theProvider.fillUserInfo( theInfo );
     assertEquals( "Guy Chauliac", theInfo.getName() );
     assertEquals( "guy.chauliac@axa.be", theInfo.getEMail() );
     assertEquals( "+32 (0)3 286 25 82", theInfo.getTelNr() );

@@ -10,15 +10,13 @@ import chabernac.protocol.userinfo.iUserInfoProvider;
 
 public class FailingUserInfoProvider implements iUserInfoProvider {
   
-  private UserInfo myUserInfo = null;
+  private boolean isFail = false;
 
-  public UserInfo getUserInfo() throws UserInfoException {
-    if(myUserInfo == null) throw new UserInfoException("Could not load user info");
-    return myUserInfo;
+  public void fillUserInfo( UserInfo aUserInfo ) throws UserInfoException {
+    if(isFail) throw new UserInfoException("Could not load user info");
   }
   
-  public void setUserInfo(UserInfo aUserInfo){
-    myUserInfo = aUserInfo;
+  public void setFail(boolean isFail){
+    this.isFail = isFail;
   }
-
 }

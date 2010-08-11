@@ -19,9 +19,11 @@ public class BackupUserInfoProviderDecoratorTest extends TestCase {
     thePreferences.setProperty( "user.email", "guy.chauliac@gmail.com" );
     
     FailingUserInfoProvider theUserInfoProvider = new FailingUserInfoProvider();
+    theUserInfoProvider.setFail( true );
     BackupUserInfoProviderDecorator theDecorator = new BackupUserInfoProviderDecorator(theUserInfoProvider);
     
-    UserInfo theUserInfo = theDecorator.getUserInfo();
+    UserInfo theUserInfo = new UserInfo();
+    theDecorator.fillUserInfo( theUserInfo );
     
     assertEquals( "Guy Chauliac", theUserInfo.getName() );
     assertEquals( "0486331565", theUserInfo.getTelNr() );
@@ -35,9 +37,11 @@ public class BackupUserInfoProviderDecoratorTest extends TestCase {
     theUserInfo.setTelNr( "123" );
     theUserInfo.setId( "myid" );
     
-    theUserInfoProvider.setUserInfo( theUserInfo );
+    theUserInfoProvider.setFail( false );
     
-    theUserInfo = theDecorator.getUserInfo();
+    theUserInfoProvider.fillUserInfo(  theUserInfo );
+    
+    theDecorator.fillUserInfo( theUserInfo );
     
     //the application preferences should have changed now, check it
     
