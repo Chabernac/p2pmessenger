@@ -7,17 +7,16 @@ package chabernac.protocol.userinfo;
 import chabernac.protocol.userinfo.UserInfo.Status;
 
 public class DefaultUserInfoProvider implements iUserInfoProvider {
-  private UserInfo myUserInfo = null;
+  private boolean isFirstTime = true;
   
-  public DefaultUserInfoProvider(){
-    myUserInfo = new UserInfo();
-    myUserInfo.setProperty( UserInfo.Property.ID, System.getProperty( "user.name" ) );
-    myUserInfo.setStatus( Status.ONLINE );
-  }
 
   @Override
-  public UserInfo getUserInfo() {
-    return myUserInfo;
+  public void fillUserInfo( UserInfo aUserInfo ) throws UserInfoException {
+    aUserInfo.setProperty( UserInfo.Property.ID, System.getProperty( "user.name" ) );
+    if(isFirstTime){
+      aUserInfo.setStatus( Status.ONLINE );
+      isFirstTime = false;
+    }
   }
 
 }

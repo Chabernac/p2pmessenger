@@ -5,6 +5,7 @@
 package chabernac.testingutils;
 
 import chabernac.protocol.userinfo.UserInfo;
+import chabernac.protocol.userinfo.UserInfoException;
 import chabernac.protocol.userinfo.iUserInfoProvider;
 
 public class UserInfoProvider implements iUserInfoProvider {
@@ -17,11 +18,9 @@ public class UserInfoProvider implements iUserInfoProvider {
   }
 
   @Override
-  public UserInfo getUserInfo() {
-   UserInfo theUserInfo = new UserInfo();
-   theUserInfo.setEMail( myMail );
-   theUserInfo.setName( myName );
-   return theUserInfo;
+  public void fillUserInfo( UserInfo aUserInfo ) throws UserInfoException {
+    aUserInfo.setEMail( myMail );
+    aUserInfo.setName( myName );
   }
 
 }
