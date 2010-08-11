@@ -19,7 +19,6 @@ import javax.swing.JSplitPane;
 
 import org.apache.log4j.Logger;
 
-import chabernac.gui.ReceivedMessagesField;
 import chabernac.gui.SavedFrame;
 import chabernac.preference.ApplicationPreferences;
 import chabernac.protocol.facade.P2PFacade;

@@ -4,10 +4,12 @@
  * To change the template for this generated file go to
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
-package chabernac.gui;
+package chabernac.p2pclient.gui;
 
 import chabernac.command.AbstractCommand;
-import chabernac.p2pclient.gui.ChatMediator;
+import chabernac.gui.CommandMenuItem;
+import chabernac.gui.GPanel;
+import chabernac.gui.GPanelPopupMenu;
 
 public class ReceivedMessagesPopup extends GPanelPopupMenu {
   private static final long serialVersionUID = 420311445776884476L;
