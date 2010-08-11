@@ -53,7 +53,7 @@ public class UserInfoProtocol extends Protocol {
   private List< iUserInfoListener > myListeners = new ArrayList< iUserInfoListener >();
 
   private MyUserInfoListener myUserInfoListener = new MyUserInfoListener();
-  
+
 
   public UserInfoProtocol ( iUserInfoProvider aProvider ) throws UserInfoException{
     super( ID );
@@ -99,9 +99,11 @@ public class UserInfoProtocol extends Protocol {
     try{
       RoutingTable theTable = getRoutingTable();
       for(RoutingTableEntry theEntry : theTable){
-        Peer thePeer = theEntry.getPeer();
-        if(!myUserInfo.containsKey( thePeer.getPeerId() ) || myUserInfo.get(thePeer.getPeerId()).getStatus() == Status.OFFLINE){
-          myRetrievalService.execute( new UserInfoRetriever(thePeer.getPeerId()) );
+        if(theEntry.isReachable()){
+          Peer thePeer = theEntry.getPeer();
+          if(!myUserInfo.containsKey( thePeer.getPeerId() ) || myUserInfo.get(thePeer.getPeerId()).getStatus() == Status.OFFLINE){
+            myRetrievalService.execute( new UserInfoRetriever(thePeer.getPeerId()) );
+          }
         }
       }
       notifyUserInfoChanged( null );
@@ -114,8 +116,10 @@ public class UserInfoProtocol extends Protocol {
     try{
       RoutingTable theTable = getRoutingTable();
       for(RoutingTableEntry theEntry : theTable){
-        Peer thePeer = theEntry.getPeer();
-        myRetrievalService.execute( new UserInfoSender(thePeer.getPeerId()) );
+        if(theEntry.isReachable()){
+          Peer thePeer = theEntry.getPeer();
+          myRetrievalService.execute( new UserInfoSender(thePeer.getPeerId()) );
+        }
       }
     }catch(Exception e){
       LOGGER.error("Could not announce my user info to peer", e);

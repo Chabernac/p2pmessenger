@@ -94,8 +94,10 @@ public class VersionProtocol extends Protocol {
       RoutingTable theRoutingTable = getRoutingTable();
 
       for(RoutingTableEntry theEntry : theRoutingTable.getEntries()){
-        if(!myVersions.containsKey( theEntry.getPeer().getPeerId() )){
-          getVersionForPeer( theEntry.getPeer().getPeerId() );
+        if(theEntry.isReachable()){
+          if(!myVersions.containsKey( theEntry.getPeer().getPeerId() )){
+            getVersionForPeer( theEntry.getPeer().getPeerId() );
+          }
         }
       }
     }catch(Exception e){

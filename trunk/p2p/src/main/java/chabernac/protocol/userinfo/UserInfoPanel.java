@@ -33,6 +33,7 @@ public class UserInfoPanel extends JPanel {
     JPanel theSouthPanel = new JPanel();
     theSouthPanel.setLayout( new GridLayout(-1,3) );
     theSouthPanel.add(new JButton(new RefreshUserInfo()));
+    theSouthPanel.add(new JButton(new AnnounceMe()));
     add(theSouthPanel, BorderLayout.SOUTH);
     setBorder( new TitledBorder("User information") );
   }
@@ -48,5 +49,17 @@ public class UserInfoPanel extends JPanel {
       myUserInfoProtocol.fullRetrieval();
     }
   }
+  
+  private class AnnounceMe extends AbstractAction {
+    public AnnounceMe(){
+      putValue( Action.NAME, "Announce Me" );
+    }
+    
+    @Override
+    public void actionPerformed( ActionEvent anE ) {
+      myUserInfoProtocol.announceMe();
+    }
+  }
+
 
 }
