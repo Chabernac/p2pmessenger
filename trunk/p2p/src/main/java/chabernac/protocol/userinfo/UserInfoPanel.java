@@ -7,16 +7,27 @@ package chabernac.protocol.userinfo;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.border.TitledBorder;
 
+import org.apache.log4j.Logger;
+
+import chabernac.protocol.userinfo.UserInfo.Status;
+
 public class UserInfoPanel extends JPanel {
+  private static final long serialVersionUID = 7636689235996045348L;
+
+  private static Logger LOGGER = Logger.getLogger(UserInfoPanel.class);
+  
   private UserInfoProtocol myUserInfoProtocol = null;
 
   public UserInfoPanel ( UserInfoProtocol anUserInfoProtocol ) {
@@ -34,8 +45,14 @@ public class UserInfoPanel extends JPanel {
     theSouthPanel.setLayout( new GridLayout(-1,3) );
     theSouthPanel.add(new JButton(new RefreshUserInfo()));
     theSouthPanel.add(new JButton(new AnnounceMe()));
+    
+    JComboBox theList = new JComboBox(UserInfo.Status.values());
+    theList.addItemListener(new MyComboBoxListener());
+    theSouthPanel.add(theList);
+    
     add(theSouthPanel, BorderLayout.SOUTH);
     setBorder( new TitledBorder("User information") );
+    
   }
 
 
@@ -60,6 +77,17 @@ public class UserInfoPanel extends JPanel {
       myUserInfoProtocol.announceMe();
     }
   }
+  
+  private class MyComboBoxListener implements ItemListener {
 
+    @Override
+    public void itemStateChanged(ItemEvent anItem) {
+      try {
+        myUserInfoProtocol.getPersonalInfo().setStatus(Status.valueOf(anItem.getItem().toString()));
+      } catch (UserInfoException e) {
+        LOGGER.error("Could change user status", e);
+      }
+    }
+  }
 
 }
