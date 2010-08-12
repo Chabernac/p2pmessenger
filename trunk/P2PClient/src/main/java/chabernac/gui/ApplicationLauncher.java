@@ -28,6 +28,8 @@ public class ApplicationLauncher {
    * @throws UserInfoException 
    */
   public static void main( String[] args ) throws P2PFacadeException, UserInfoException {
+    //TODO remove
+    SocketProxy.setTraceEnabled( true );
     
     SocketProxy.setTraceEnabled(true);
 //    BasicConfigurator.configure();
