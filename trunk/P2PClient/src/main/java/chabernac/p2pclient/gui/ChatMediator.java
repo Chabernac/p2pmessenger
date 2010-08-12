@@ -205,7 +205,8 @@ public class ChatMediator {
   }
 
   public void clearReceivedMessages() {
-    myMessagArchive.clearDeliveryReports();
+    myMessagArchive.clear();
+    myReceivedMessagesProvider.clear();
   }
 
   public iReceivedMessagesProvider getReceivedMessagesProvider() {
