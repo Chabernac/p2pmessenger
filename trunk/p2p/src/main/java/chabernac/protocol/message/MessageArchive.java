@@ -78,8 +78,9 @@ public class MessageArchive implements iDeliverReportListener, iMultiPeerMessage
     return Collections.unmodifiableSet( myAllMessages );
   }
 
-  public void clearDeliveryReports(){
+  public void clear(){
     myDeliveryReports.clear();
+    myAllMessages.clear();
   }
   
 }
