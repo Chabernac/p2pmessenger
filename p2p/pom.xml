@@ -43,11 +43,11 @@
 
 
 		<extensions>
-			 <extension>
-                <groupId>org.apache.maven.wagon</groupId>
-                <artifactId>wagon-webdav</artifactId>
-                <version>1.0-beta-2</version>
-            </extension>
+			<extension>
+				<groupId>org.apache.maven.wagon</groupId>
+				<artifactId>wagon-webdav</artifactId>
+				<version>1.0-beta-2</version>
+			</extension>
 
 		</extensions>
 	</build>
@@ -55,11 +55,11 @@
 	<distributionManagement>
 		<repository>
 			<id>googlecode.bzb.repo</id>
-			<url>dav:https://bzb-framework.googlecode.com/svn/maven-repository/</url>
+			<url>dav:https://p2pmessenger.googlecode.com/svn/maven-repository/</url>
 		</repository>
 		<snapshotRepository>
 			<id>googlecode.bzb.snapshotrepo</id>
-			<url>dav:https://bzb-framework.googlecode.com/svn/maven-snapshot-repository/</url>
+			<url>dav:https://p2pmessenger.googlecode.com/svn/maven-snapshot-repository/</url>
 			<uniqueVersion>false</uniqueVersion>
 		</snapshotRepository>
 	</distributionManagement>
@@ -69,6 +69,30 @@
 			<id>maven2</id>
 			<name>maven2</name>
 			<url>http://repo1.maven.org/maven2</url>
+		</repository>
+		<repository>
+			<id>bzb releases</id>
+			<name>BZB Repository</name>
+			<url>http://p2pmessenger.googlecode.com/svn/maven-repo/</url>
+			<releases>
+				<enabled>true</enabled>
+				<updatePolicy>never</updatePolicy>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>bzb snapshots</id>
+			<name>BZB Repository</name>
+			<url>http://p2pmessenger.googlecode.com/svn/maven-snapshot-repository/</url>
+			<releases>
+				<enabled>true</enabled>
+				<updatePolicy>never</updatePolicy>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
 		</repository>
 	</repositories>
 
