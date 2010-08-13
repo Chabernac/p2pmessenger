@@ -5,10 +5,72 @@
 	<artifactId>chabyframework</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.6</source>
+					<target>1.6</target>
+				</configuration>
+			</plugin>
+		</plugins>
+
+		<extensions>
+			<extension>
+				<groupId>org.apache.maven.wagon</groupId>
+				<artifactId>wagon-webdav</artifactId>
+				<version>1.0-beta-2</version>
+			</extension>
+		</extensions>
+	</build>
+	
+	<distributionManagement>
+		<repository>
+			<id>googlecode.bzb.repo</id>
+			<url>dav:https://p2pmessenger.googlecode.com/svn/maven-repository/</url>
+		</repository>
+		<snapshotRepository>
+			<id>googlecode.bzb.snapshotrepo</id>
+			<url>dav:https://p2pmessenger.googlecode.com/svn/maven-snapshot-repository/</url>
+			<uniqueVersion>false</uniqueVersion>
+		</snapshotRepository>
+	</distributionManagement>
+	
 	<repositories>
+		<repository>
+			<id>maven2</id>
+			<name>maven2</name>
+			<url>http://repo1.maven.org/maven2</url>
+		</repository>
 		<repository>
 			<id>jboss</id>
 			<url>http://repository.jboss.org/maven2/</url>
+		</repository>
+		<repository>
+			<id>bzb releases</id>
+			<name>BZB Repository</name>
+			<url>http://p2pmessenger.googlecode.com/svn/maven-repo/</url>
+			<releases>
+				<enabled>true</enabled>
+				<updatePolicy>never</updatePolicy>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>bzb snapshots</id>
+			<name>BZB Repository</name>
+			<url>http://p2pmessenger.googlecode.com/svn/maven-snapshot-repository/</url>
+			<releases>
+				<enabled>true</enabled>
+				<updatePolicy>never</updatePolicy>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
 		</repository>
 	</repositories>
 	
