@@ -52,11 +52,11 @@ public class Command3dFactory {
 	}
 	
 	public static KeyCommand up(SynchronizedEventManager aManager, Camera aCamera, double aSpeed) throws MatrixException{
-			return new CameraMoveCommand("Up", aManager, aCamera, new Camera(new Point3D(0, 0, 0), new Rotation(0,-aSpeed,0), 1F));
+			return new CameraMoveCommand("Up", aManager, aCamera, new Camera(new Point3D(0, 0, 0), new Rotation(0,aSpeed,0), 1F));
 	}
 	
 	public static KeyCommand down(SynchronizedEventManager aManager, Camera aCamera, double aSpeed) throws MatrixException{
-			return new CameraMoveCommand("Down", aManager, aCamera, new Camera(new Point3D(0, 0, 0), new Rotation(0,aSpeed,0), 1F));
+			return new CameraMoveCommand("Down", aManager, aCamera, new Camera(new Point3D(0, 0, 0), new Rotation(0,-aSpeed,0), 1F));
 	}
 	
 	public static KeyCommand rollLeft(SynchronizedEventManager aManager, Camera aCamera, double aSpeed) throws MatrixException{
