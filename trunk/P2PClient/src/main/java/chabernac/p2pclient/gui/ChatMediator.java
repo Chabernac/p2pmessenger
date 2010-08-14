@@ -223,11 +223,6 @@ public class ChatMediator {
 
   public void setTitleProvider( iTitleProvider anTitleProvider ) {
     myTitleProvider = anTitleProvider;
-    try {
-      anTitleProvider.setTitle( anTitleProvider.getTitle() + "[" + myP2PFacade.getPeerId() + "]");
-    } catch ( P2PFacadeException e ) {
-      LOGGER.error( "Could not put peer id in title", e );
-    }
   }
 
   public void setTitle(){
