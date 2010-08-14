@@ -69,7 +69,7 @@ public class UserPanel extends GPanel implements iUserSelectionProvider{
     buildGUI();
     addListener();
     buildActionMap();
-    
+
   }
 
   private void init() throws P2PFacadeException{
@@ -128,27 +128,27 @@ public class UserPanel extends GPanel implements iUserSelectionProvider{
     anCheckBox.setForeground( getColorForStatus(anUserInfo) );
     anCheckBox.setStatus( anUserInfo.getStatus() );
   }
-  
+
   public Map<String, List<String>> getGroups(){
     return Collections.unmodifiableMap( myGroups );
   }
-  
+
   public void createGroupForSelectedUsers(String aGroupName){
     myGroups.put( aGroupName, getSelectedUsers());
     saveGroupsInPreferences();
   }
-  
+
   public void selectGroup(String aGroupName){
     if(myGroups.containsKey( aGroupName )){
       setSelectedUsers( myGroups.get( aGroupName ) );
     }
   }
-  
+
   public void removeGroup(String aGroupName){
     myGroups.remove( aGroupName );
     saveGroupsInPreferences();
   }
-  
+
   private void saveGroupsInPreferences(){
     ApplicationPreferences thePreferences = ApplicationPreferences.getInstance();
     try {
@@ -157,18 +157,20 @@ public class UserPanel extends GPanel implements iUserSelectionProvider{
       LOGGER.error("Could not save group in prefererences", e);
     }
   }
-  
+
   private void loadGroupsInPreferences(){
     ApplicationPreferences thePreferences = ApplicationPreferences.getInstance();
     String theGroups = thePreferences.getProperty( "userpanel.groups" );
-    try {
-      myGroups = new Base64ObjectStringConverter<HashMap< String, List< String > >>().getObject( theGroups );
-    } catch ( IOException e ) {
-      LOGGER.error( "Could not load groups in preferences", e );
+    if(theGroups != null && theGroups.length() > 0){
+      try {
+        myGroups = new Base64ObjectStringConverter<HashMap< String, List< String > >>().getObject( theGroups );
+      } catch ( IOException e ) {
+        LOGGER.error( "Could not load groups in preferences", e );
+      }
     }
   }
-  
-  
+
+
 
   private Color getColorForStatus( UserInfo anUserInfo ) {
     Status theStatus = anUserInfo.getStatus();
@@ -299,7 +301,7 @@ public class UserPanel extends GPanel implements iUserSelectionProvider{
       }
     }
   }
-  
+
   private void clearColors() throws P2PFacadeException{
     for(String thePeerd : myCheckBoxes.keySet()){
       UserInfo theUserInfo = myMediator.getP2PFacade().getUserInfo().get( thePeerd );
@@ -311,7 +313,7 @@ public class UserPanel extends GPanel implements iUserSelectionProvider{
     //first clear all the colors to the defaults
     try{
       clearColors();
-      
+
       Map<String, DeliveryReport> theReports = myMediator.getP2PFacade().getMessageArchive().getDeliveryReportsForMultiPeerMessage( aMessage );
       for(String thePeerId : theReports.keySet()){
         if(myCheckBoxes.containsKey( thePeerId )){
@@ -359,7 +361,7 @@ public class UserPanel extends GPanel implements iUserSelectionProvider{
   public void addSelectionChangedListener( iSelectionChangedListener aListener ) {
     mySelectionListeners.add( aListener );
   }
-  
+
   private class MyCheckBoxListener implements ActionListener {
     @Override
     public void actionPerformed( ActionEvent anE ) {

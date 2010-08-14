@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.BasicConfigurator;
+
 import junit.framework.TestCase;
 import chabernac.protocol.facade.P2PFacade;
 import chabernac.protocol.facade.P2PFacadeException;
@@ -16,6 +18,11 @@ import chabernac.protocol.userinfo.DefaultUserInfoProvider;
 import chabernac.protocol.userinfo.UserInfo.Status;
 
 public class UserPanelTest extends TestCase {
+  static{
+    BasicConfigurator.resetConfiguration();
+    BasicConfigurator.configure();
+  }
+  
   public void testUserPanel() throws P2PFacadeException, InterruptedException{
     DefaultUserInfoProvider theUserInfoProvider1 = new DefaultUserInfoProvider();
     theUserInfoProvider1.setEMail( "1@a.b" );
@@ -23,12 +30,12 @@ public class UserPanelTest extends TestCase {
     theUserInfoProvider1.setName( "name 1" );
     theUserInfoProvider1.setTelNr( "1111 111 11 11" );
     
-    
     P2PFacade theFacade1 = new P2PFacade()
     .setExchangeDelay( 300 )
     .setPersist( false )
     .setUserInfoProvider( theUserInfoProvider1 )
     .start( 5 );
+    
     
     DefaultUserInfoProvider theUserInfoProvider2 = new DefaultUserInfoProvider();
     theUserInfoProvider2.setEMail( "2@a.b" );
@@ -43,18 +50,34 @@ public class UserPanelTest extends TestCase {
     .setUserInfoProvider( theUserInfoProvider2 )
     .start( 5 );
     
-    Thread.sleep( 3000 );
+    
+    DefaultUserInfoProvider theUserInfoProvider3 = new DefaultUserInfoProvider();
+    theUserInfoProvider2.setEMail( "3@a.b" );
+    theUserInfoProvider2.setId( "3" );
+    theUserInfoProvider2.setName( "name 3" );
+    theUserInfoProvider2.setTelNr( "3333 333 33 33" );
+    theUserInfoProvider2.setStatus( Status.AWAY );
+
+    P2PFacade theFacade3 = new P2PFacade()
+    .setExchangeDelay( 300 )
+    .setPersist( false )
+    .setUserInfoProvider( theUserInfoProvider3 )
+    .start( 5 );
+    
+    Thread.sleep( 5000 );
     
     ChatMediator theMediator = new ChatMediator(theFacade1);
     
     UserPanel theUserPanel = new UserPanel(theMediator);
     Map<String, StatusCheckBox>  theCheckBoxes = theUserPanel.getCheckBoxes();
     
-    assertTrue( theCheckBoxes.containsKey( theFacade1.getPeerId() ) );
+//    assertTrue( theCheckBoxes.containsKey( theFacade1.getPeerId() ) );
     assertTrue( theCheckBoxes.containsKey( theFacade2.getPeerId() ) );
+    assertTrue( theCheckBoxes.containsKey( theFacade3.getPeerId() ) );
     
-    assertEquals( "1 1@a.b 1111 111 11 11", theCheckBoxes.get( theFacade1.getPeerId() ).getToolTipText());
-    assertEquals( "2 2@a.b 2222 222 22 22", theCheckBoxes.get( theFacade2.getPeerId() ).getToolTipText());
+//    assertEquals( "1 1@a.b 1111 111 11 11", theCheckBoxes.get( theFacade1.getPeerId() ).getToolTipText());
+    assertEquals( "BUSY name 2 2 2@a.b 2222 222 22 22", theCheckBoxes.get( theFacade2.getPeerId() ).getToolTipText());
+    assertEquals( "AWAY name 3 3 3@a.b 3333 333 33 33", theCheckBoxes.get( theFacade2.getPeerId() ).getToolTipText());
     
     assertEquals( new Color(0,200,0), theCheckBoxes.get( theFacade2.getPeerId() ).getForeground());
     
