@@ -4,9 +4,14 @@
  */
 package chabernac.gui;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+
+import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Logger;
 
 import chabernac.io.ClassPathResource;
 import chabernac.io.SocketProxy;
@@ -18,8 +23,10 @@ import chabernac.protocol.facade.P2PFacade;
 import chabernac.protocol.facade.P2PFacadeException;
 import chabernac.protocol.userinfo.UserInfoException;
 import chabernac.protocol.userinfo.iUserInfoProvider;
+import chabernac.utils.ServiceTools;
 
 public class ApplicationLauncher {
+  private static Logger LOGGER = Logger.getLogger(ApplicationLauncher.class);
   private static ScheduledExecutorService SERVICE = Executors.newScheduledThreadPool( 1 );
 
   /**
@@ -28,11 +35,15 @@ public class ApplicationLauncher {
    * @throws UserInfoException 
    */
   public static void main( String[] args ) throws P2PFacadeException, UserInfoException {
-    //TODO remove
-    SocketProxy.setTraceEnabled( true );
+    BasicConfigurator.configure();
     
-    SocketProxy.setTraceEnabled(true);
-//    BasicConfigurator.configure();
+    try {
+      ServiceTools.addRun2Startup(new File("p2pclient.cmd"));
+    } catch (IOException e) {
+      LOGGER.error("Could not add p2pclient to startup", e);
+    }
+    
+    SocketProxy.setTraceEnabled( true );
     
     startTimers();
     
