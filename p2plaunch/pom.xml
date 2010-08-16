@@ -36,7 +36,6 @@
 						<argument>true</argument>
 					</arguments>
 				</configuration>
-				
 			</plugin>
 			
 			<plugin>
