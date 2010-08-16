@@ -15,24 +15,31 @@ import junit.framework.TestCase;
 public class ServiceToolsTest extends TestCase {
   public void testAddFileToStartup() throws IOException{
     File theFile = new File("c:\\data\\test.exe");
-    File theCMDFile = ServiceTools.addRun2Startup( theFile );
-    
-    assertEquals( "C:\\Documents and Settings\\dgch804\\Start Menu\\Programs\\Startup\\test.exe.cmd", theCMDFile.getAbsolutePath() );
-    
-    BufferedReader theReader =new BufferedReader(new InputStreamReader(new FileInputStream(theCMDFile)));
-    
-    String theLine = theReader.readLine();
-    
-    theReader.close();
-    
-    assertEquals( "\"c:\\data\\test.exe\"", theLine );
-    
-    assertTrue( ServiceTools.removeRunAtStartup( theFile ) );
-    
-    assertFalse( theCMDFile.exists() );
+    try{
+      assertTrue(theFile.createNewFile());
+      File theCMDFile = ServiceTools.addRun2Startup( theFile );
+
+      assertEquals( "C:\\Documents and Settings\\" + System.getProperty( "user.name" ) + "\\Start Menu\\Programs\\Startup\\test.exe.cmd", theCMDFile.getAbsolutePath() );
+
+      BufferedReader theReader =new BufferedReader(new InputStreamReader(new FileInputStream(theCMDFile)));
+
+      String theLine = theReader.readLine();
+
+      theReader.close();
+
+      assertEquals( "call \"c:\\data\\test.exe\"", theLine );
+
+      assertTrue( ServiceTools.removeRunAtStartup( theFile ) );
+
+      assertFalse( theCMDFile.exists() );
+    }finally {
+      if(theFile.exists()){
+        theFile.delete();
+      }
+    }
   }
-  
-//  public void testGetRegistryKey(){
-//    assertNotNull( ServiceTools.getRegistryRunKey("Sheduler") );
-//  }
+
+  //  public void testGetRegistryKey(){
+  //    assertNotNull( ServiceTools.getRegistryRunKey("Sheduler") );
+  //  }
 }
