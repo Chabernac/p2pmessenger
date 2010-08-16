@@ -94,12 +94,13 @@ public class ServiceTools {
   }
   
   public static File addRun2Startup(File aFile) throws IOException{
+    if(!aFile.exists()) throw new IOException("The given file '" + aFile +  "' does not exist");
     File theLocation = new File("C:\\Documents and Settings\\" + System.getProperty( "user.name" ) + "\\Start Menu\\Programs\\Startup\\" + aFile.getName()+ ".cmd");
     
     PrintWriter theWriter = null;
     try{
      theWriter = new PrintWriter(new FileWriter( theLocation ));
-     theWriter.println("\"" + aFile.getAbsolutePath() + "\"");
+     theWriter.println("call \"" + aFile.getAbsolutePath() + "\"");
      theWriter.flush();
     }finally{
       if(theWriter != null){
