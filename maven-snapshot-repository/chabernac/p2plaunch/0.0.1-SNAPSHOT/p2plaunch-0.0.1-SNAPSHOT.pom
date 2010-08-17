@@ -36,7 +36,6 @@
 						<argument>true</argument>
 					</arguments>
 				</configuration>
-				
 			</plugin>
 			
 			<plugin>
@@ -72,9 +71,14 @@
 	
 	<repositories>
 		<repository>
+			<id>codehause</id>
+			<name>codehause</name>
+			<url>http://repository.codehaus.org/</url>
+		</repository>
+		<repository>
 			<id>maven2</id>
 			<name>maven2</name>
-			<url>http://repo1.maven.org/maven2</url>
+			<url>http://repo1.maven.org/maven2/</url>
 		</repository>
 		<repository>
 			<id>jboss</id>
@@ -86,7 +90,6 @@
 			<url>http://p2pmessenger.googlecode.com/svn/maven-repo/</url>
 			<releases>
 				<enabled>true</enabled>
-				<updatePolicy>never</updatePolicy>
 			</releases>
 			<snapshots>
 				<enabled>false</enabled>
@@ -97,14 +100,21 @@
 			<name>BZB Repository</name>
 			<url>http://p2pmessenger.googlecode.com/svn/maven-snapshot-repository/</url>
 			<releases>
-				<enabled>true</enabled>
+				<enabled>false</enabled>
 				<updatePolicy>never</updatePolicy>
 			</releases>
 			<snapshots>
-				<enabled>false</enabled>
 			</snapshots>
 		</repository>
 	</repositories>
+	
+	<pluginRepositories>
+		<pluginRepository>
+			<id>codehause</id>
+			<name>codehause</name>
+			<url>http://repository.codehaus.org/</url>
+		</pluginRepository>
+	</pluginRepositories>
 
 	<dependencies>
 		<dependency>
