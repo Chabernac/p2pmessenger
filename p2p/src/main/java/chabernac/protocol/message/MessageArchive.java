@@ -40,7 +40,7 @@ public class MessageArchive implements iDeliverReportListener, iMultiPeerMessage
     aMultiPeerMessageProtocol.addMultiPeerMessageListener( this );
   }
   
-  private Set< MultiPeerMessage > myAllMessages = Collections.synchronizedSet( new HashSet< MultiPeerMessage >() );
+  private List< MultiPeerMessage > myAllMessages = Collections.synchronizedList(new ArrayList< MultiPeerMessage >() );
 
   @Override
   public void acceptDeliveryReport( DeliveryReport aDeliverReport ) {
@@ -74,8 +74,8 @@ public class MessageArchive implements iDeliverReportListener, iMultiPeerMessage
     return Collections.unmodifiableMap( theDeliveryReports );
   }
 
-  public Set< MultiPeerMessage > getAllMessages() {
-    return Collections.unmodifiableSet( myAllMessages );
+  public List< MultiPeerMessage > getAllMessages() {
+    return Collections.unmodifiableList( myAllMessages );
   }
 
   public void clear(){
