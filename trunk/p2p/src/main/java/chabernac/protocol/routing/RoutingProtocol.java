@@ -163,6 +163,7 @@ public class RoutingProtocol extends Protocol {
 
     myRoutingTable.addRoutingTableListener( new RoutingTableListener() );
     startUDPListener();
+    saveRoutingTable();
   }
 
   /**
