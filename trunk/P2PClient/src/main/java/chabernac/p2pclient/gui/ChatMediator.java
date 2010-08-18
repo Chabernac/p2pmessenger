@@ -12,6 +12,8 @@ import java.util.concurrent.Future;
 
 import org.apache.log4j.Logger;
 
+import chabernac.events.EventDispatcher;
+import chabernac.gui.event.SavePreferencesEvent;
 import chabernac.preference.ApplicationPreferences;
 import chabernac.protocol.facade.P2PFacade;
 import chabernac.protocol.facade.P2PFacadeException;
@@ -87,6 +89,12 @@ public class ChatMediator {
         LOGGER.error( "Could not execute command" );
       }
       return true;
+    }
+    if(myMessageProvider.getMessage().equalsIgnoreCase( "exit" )){
+      EventDispatcher.getInstance( SavePreferencesEvent.class ).fireEvent( new SavePreferencesEvent() );
+      ApplicationPreferences.getInstance().save();
+      myP2PFacade.stop();
+      System.exit(0);
     }
     return false;
   }
