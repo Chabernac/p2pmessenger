@@ -18,6 +18,8 @@ import chabernac.protocol.ProtocolContainer;
 import chabernac.protocol.ProtocolException;
 import chabernac.protocol.ProtocolFactory;
 import chabernac.protocol.ProtocolServer;
+import chabernac.protocol.iProtocolDelegate;
+import chabernac.protocol.application.ApplicationProtocol;
 import chabernac.protocol.filetransfer.FileTransferProtocol;
 import chabernac.protocol.filetransfer.iFileHandler;
 import chabernac.protocol.infoexchange.InfoExchangeProtocol;
@@ -434,6 +436,26 @@ public class P2PFacade {
       ((InfoExchangeProtocol< InfoObject >)myContainer.getProtocol( InfoExchangeProtocol.ID )).removeInfoListener( aListener );
     }catch(Exception e){
       throw new P2PFacadeException("An error occured while getting info object", e);
+    }
+  }
+  
+  public void setApplicationProtocolDelegate(iProtocolDelegate aProtolDelegate) throws P2PFacadeException{
+    if(!isStarted()) throw new P2PFacadeException("Can not execute this action when the server is not started");
+    
+    try{
+      ((ApplicationProtocol)myContainer.getProtocol( ApplicationProtocol.ID )).setDelegate( aProtolDelegate );
+    }catch(Exception e){
+      throw new P2PFacadeException("An error occured while setting protocol deleegate", e);
+    }
+  }
+  
+  public String sendApplicationMessage(String aPeerId, String aMessage) throws P2PFacadeException{
+    if(!isStarted()) throw new P2PFacadeException("Can not execute this action when the server is not started");
+    
+    try{
+      return ((ApplicationProtocol)myContainer.getProtocol( ApplicationProtocol.ID )).sendMessage( aPeerId, aMessage );
+    }catch(Exception e){
+      throw new P2PFacadeException("An error occured while setting protocol deleegate", e);
     }
   }
 
