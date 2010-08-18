@@ -34,6 +34,7 @@ import javax.swing.border.TitledBorder;
 
 import org.apache.log4j.Logger;
 
+import chabernac.gui.ApplicationLauncher;
 import chabernac.protocol.facade.P2PFacadeException;
 import chabernac.protocol.message.MultiPeerMessage;
 import chabernac.tools.Tools;
@@ -342,7 +343,11 @@ public class NewMessageDialog5 extends JDialog implements iMessageDialog{
       MultiPeerMessage theReplyMessage = myMessage.replyAll();
       myMediator.getUserSelectionProvider().setSelectedUsers( theReplyMessage.getDestinations() );
       setVisible(false);
-      //closeDialog();
+      try {
+        ApplicationLauncher.showChatFrame();
+      } catch ( P2PFacadeException e1 ) {
+        logger.error("Could not show gui", e1);
+      }
     }
   }
 
