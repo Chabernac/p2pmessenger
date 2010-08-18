@@ -68,7 +68,7 @@ public class ApplicationLauncher {
     myFacade.setApplicationProtocolDelegate( new ActivationProtocolDelegate() );
   }
   
-  private static synchronized void showChatFrame() throws P2PFacadeException{
+  public static synchronized void showChatFrame() throws P2PFacadeException{
     if(myChatFrame == null){
       myChatFrame = new ChatFrame(myFacade);
     }
