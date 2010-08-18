@@ -97,10 +97,11 @@ public class ChatFrame extends SavedFrame implements iTitleProvider, isShowDialo
     @Override
     public void windowClosing( WindowEvent anEvent ) {
       setVisible( false );
-      myMediator.getP2PFacade().stop();
       savePreferences();
       ApplicationPreferences.getInstance().save();
-      System.exit( 0 );
+//      myMediator.getP2PFacade().stop();
+//      ApplicationPreferences.getInstance().save();
+//      System.exit( 0 );
     }
   }
 

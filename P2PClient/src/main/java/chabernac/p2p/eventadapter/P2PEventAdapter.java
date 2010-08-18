@@ -7,6 +7,11 @@ package chabernac.p2p.eventadapter;
 import java.util.Map;
 
 import chabernac.events.EventDispatcher;
+import chabernac.gui.event.DeliveryReportEvent;
+import chabernac.gui.event.InfoChangedEvent;
+import chabernac.gui.event.MultiPeerMessageEvent;
+import chabernac.gui.event.PipeEvent;
+import chabernac.gui.event.UserInfoChangeEvent;
 import chabernac.protocol.facade.P2PFacade;
 import chabernac.protocol.facade.P2PFacadeException;
 import chabernac.protocol.infoexchange.InfoObject;
