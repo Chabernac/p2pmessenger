@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -40,7 +41,7 @@ public class MessageArchive implements iDeliverReportListener, iMultiPeerMessage
     aMultiPeerMessageProtocol.addMultiPeerMessageListener( this );
   }
   
-  private List< MultiPeerMessage > myAllMessages = Collections.synchronizedList(new ArrayList< MultiPeerMessage >() );
+  private Set< MultiPeerMessage > myAllMessages = Collections.synchronizedSet(new LinkedHashSet< MultiPeerMessage >() );
 
   @Override
   public void acceptDeliveryReport( DeliveryReport aDeliverReport ) {
@@ -74,8 +75,8 @@ public class MessageArchive implements iDeliverReportListener, iMultiPeerMessage
     return Collections.unmodifiableMap( theDeliveryReports );
   }
 
-  public List< MultiPeerMessage > getAllMessages() {
-    return Collections.unmodifiableList( myAllMessages );
+  public Set< MultiPeerMessage > getAllMessages() {
+    return Collections.unmodifiableSet( myAllMessages );
   }
 
   public void clear(){

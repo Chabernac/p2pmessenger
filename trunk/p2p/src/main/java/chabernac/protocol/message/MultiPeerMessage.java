@@ -115,6 +115,7 @@ public class MultiPeerMessage implements Serializable{
     if(!mySource.equals( theMessage.getSource() )) return false;
     if(!myMessage.equals( theMessage.getMessage() )) return false;
     if(!getIndicators().equals( theMessage.getIndicators() )) return false;
+    if(!getCreationTime().equals(theMessage.getCreationTime())) return false;
     return true;
   }
   
