@@ -30,10 +30,10 @@ import javax.swing.KeyStroke;
 
 import org.apache.log4j.Logger;
 
-import chabernac.GUI.WrappingFlowLayout;
 import chabernac.gui.ComponentMoveDecorator;
 import chabernac.gui.GPanel;
 import chabernac.gui.LinePainter;
+import chabernac.gui.WrappingFlowLayout;
 import chabernac.gui.iComponentMoveListener;
 import chabernac.gui.iPaintable;
 import chabernac.io.Base64ObjectStringConverter;
