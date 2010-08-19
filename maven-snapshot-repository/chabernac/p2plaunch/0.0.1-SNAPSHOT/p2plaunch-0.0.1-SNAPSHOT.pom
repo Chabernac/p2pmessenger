@@ -33,7 +33,8 @@
 						<argument>-classpath</argument>
 						<classpath />
 						<argument>chabernac.gui.ApplicationLauncher</argument>
-						<argument>true</argument>
+						<argument>visible=true</argument>
+						<argument>persist=true</argument>
 					</arguments>
 				</configuration>
 			</plugin>
@@ -71,18 +72,14 @@
 	
 	<repositories>
 		<repository>
-			<id>codehause</id>
-			<name>codehause</name>
-			<url>http://repository.codehaus.org/</url>
-		</repository>
-		<repository>
 			<id>maven2</id>
 			<name>maven2</name>
 			<url>http://repo1.maven.org/maven2/</url>
 		</repository>
 		<repository>
-			<id>jboss</id>
-			<url>http://repository.jboss.org/maven2/</url>
+			<id>codehause</id>
+			<name>codehause</name>
+			<url>http://repository.codehaus.org/</url>
 		</repository>
 		<repository>
 			<id>bzb releases</id>
@@ -105,6 +102,14 @@
 			</releases>
 			<snapshots>
 			</snapshots>
+		</repository>
+		<repository>
+			<id>atlassian</id>
+			<url>https://maven.atlassian.com/maven1/maven2/</url>
+		</repository>
+		<repository>
+			<id>jboss</id>
+			<url>http://repository.jboss.org/maven2/</url>
 		</repository>
 	</repositories>
 	
