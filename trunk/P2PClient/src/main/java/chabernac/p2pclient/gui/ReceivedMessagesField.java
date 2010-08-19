@@ -9,7 +9,7 @@ package chabernac.p2pclient.gui;
 import java.awt.BorderLayout;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.List;
+import java.util.Set;
 
 import javax.swing.JEditorPane;
 import javax.swing.JScrollPane;
@@ -95,7 +95,7 @@ public class ReceivedMessagesField extends GPanel implements iReceivedMessagesPr
 
   private void createHTML() {
     try{
-      List< MultiPeerMessage > theList = myMediator.getP2PFacade().getMessageArchive().getAllMessages();
+      Set< MultiPeerMessage > theList = myMediator.getP2PFacade().getMessageArchive().getAllMessages();
       myHTML = "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01//EN\">";
       boolean send = false;
       myHTML += "<html>";
