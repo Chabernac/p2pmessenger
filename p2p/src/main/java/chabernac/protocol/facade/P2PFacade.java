@@ -502,6 +502,9 @@ public class P2PFacade {
 
       return this;
     }catch(Exception e){
+      if(myProtocolServer != null){
+        myProtocolServer.stop();
+      }
       throw new P2PFacadeException("Could not start P2P Facade", e);
     }
   }
