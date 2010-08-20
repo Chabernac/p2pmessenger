@@ -7,7 +7,6 @@ package chabernac.io;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.SocketAddress;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Observable;
@@ -16,13 +15,15 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public class SocketPool extends Observable{
-  private List< SocketProxy > myCheckedInPool = Collections.synchronizedList( new ArrayList< SocketProxy >());
-  private List< SocketProxy > myCheckedOutPool = Collections.synchronizedList( new ArrayList< SocketProxy >());
-  private List< SocketProxy > myConnectingPool = Collections.synchronizedList( new ArrayList< SocketProxy >());
+  private Pool< SocketProxy > myCheckedInPool = new Pool< SocketProxy >();
+  private Pool< SocketProxy > myCheckedOutPool = new Pool< SocketProxy >();
+  private Pool< SocketProxy > myConnectingPool = new Pool< SocketProxy >();
 
   private static SocketPool INSTANCE = null; 
 
   private ScheduledExecutorService myService = null;
+  
+  private long myCleanUpTimeoutInSeconds;
 
 
   protected SocketPool(){
@@ -43,6 +44,7 @@ public class SocketPool extends Observable{
   public void setCleanUpTimeInSeconds(int aCleanUpTimeoutInSeconds){
     if(myService != null) myService.shutdownNow();
     if(aCleanUpTimeoutInSeconds > 0){
+      myCleanUpTimeoutInSeconds = aCleanUpTimeoutInSeconds;
       myService = Executors.newScheduledThreadPool(1);
       myService.scheduleAtFixedRate( 
           new Runnable(){
@@ -56,7 +58,7 @@ public class SocketPool extends Observable{
     }
   }
 
-  private SocketProxy searchFirstSocketWithAddressInPool(SocketAddress anAddress, List<SocketProxy> aPool){
+  private SocketProxy searchFirstSocketWithAddressInPool(SocketAddress anAddress, Pool<SocketProxy> aPool){
     for(SocketProxy theSocket : aPool){
       if(theSocket.getSocketAddress().equals( anAddress )){
         return theSocket;
@@ -129,27 +131,35 @@ public class SocketPool extends Observable{
     myCheckedOutPool.remove( theProxy );
     notifyAllObs();
   }
-
-  public synchronized void cleanUp(){
-    for(SocketProxy theSocket : myCheckedInPool){
+  
+  private void cleanItemsOlderThan(Pool<SocketProxy> aPool, long aTime){
+    for(SocketProxy theSocket : aPool.getItemsOlderThan( System.currentTimeMillis() - myCleanUpTimeoutInSeconds * 1000 )){
       try {
         theSocket.getSocket().close();
       } catch ( IOException e ) {
       }
+      aPool.remove( theSocket );
     }
-    myCheckedInPool.clear();
+  }
+
+  public synchronized void cleanUp(){
+    long theTime = System.currentTimeMillis() - (myCleanUpTimeoutInSeconds * 1000) ;
+    
+    cleanItemsOlderThan( myCheckedInPool,  theTime);
+    cleanItemsOlderThan( myCheckedOutPool,  theTime);
+    
     notifyAllObs();
   }
 
   List< SocketProxy > getCheckInPool(){
-    return Collections.unmodifiableList(  myCheckedInPool );
+    return Collections.unmodifiableList(  myCheckedInPool.getItemsOlderThan( System.currentTimeMillis() ) );
   }
 
   List< SocketProxy > getCheckOutPool(){
-    return Collections.unmodifiableList(  myCheckedOutPool );
+    return Collections.unmodifiableList(  myCheckedOutPool.getItemsOlderThan( System.currentTimeMillis() ) );
   }
   
   List< SocketProxy > getConnectingPool(){
-    return Collections.unmodifiableList(  myConnectingPool);
+    return Collections.unmodifiableList(  myConnectingPool.getItemsOlderThan( System.currentTimeMillis() ));
   }
 }
