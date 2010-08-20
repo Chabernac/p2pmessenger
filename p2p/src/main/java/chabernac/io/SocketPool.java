@@ -80,7 +80,7 @@ public class SocketPool extends Observable{
     
     theSocketProxy = searchFirstSocketWithAddressInPool( anAddress, myConnectingPool );
     if(theSocketProxy != null){
-      //in this case some other thread also is trying to connect to the same address.  We will not allow to seperate threads
+      //in this case some other thread also is trying to connect to the same address.  We will not allow two seperate threads
       //to try to connect to the same host at the same port as it will start consuming to much resources after a while
       //throw an exception
       throw new IOException("Another process already tries to contact this host at this port");
@@ -149,6 +149,12 @@ public class SocketPool extends Observable{
     cleanItemsOlderThan( myCheckedOutPool,  theTime);
     
     notifyAllObs();
+  }
+  
+  public synchronized void fullClean(){
+    cleanItemsOlderThan( myCheckedInPool,  System.currentTimeMillis());
+    cleanItemsOlderThan( myCheckedOutPool,  System.currentTimeMillis());
+    cleanItemsOlderThan( myConnectingPool,  System.currentTimeMillis());
   }
 
   List< SocketProxy > getCheckInPool(){

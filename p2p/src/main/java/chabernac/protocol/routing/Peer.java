@@ -147,7 +147,7 @@ public class Peer implements Serializable {
   public String send(String aMessage) throws UnknownHostException, IOException{
     Socket theSocket = createSocket( myPort );
     
-    if(theSocket == null) throw new IOException("Could not open socket to this peer");
+    if(theSocket == null) throw new IOException("Could not open socket to peer: " + getPeerId() + " " + getHosts() + ":" + getPort());
 
     BufferedReader theReader = null;
     PrintWriter theWriter = null;
@@ -182,7 +182,7 @@ public class Peer implements Serializable {
         myHost.add( 0, theHost);
         return theSocket;
       }catch(Exception e){
-//        LOGGER.error("Could not open connection to peer: " + myHost + ":" + myPort, e);
+        LOGGER.error("Could not open connection to peer: " + myHost + ":" + myPort, e);
       }
     }
     return null;
@@ -203,5 +203,16 @@ public class Peer implements Serializable {
     theBuilder.append( getPort());
     theBuilder.append(")");
     return theBuilder.toString();
+  }
+  
+  public boolean isSameHostAndPort(Peer aPeer){
+    List<String> theHosts = aPeer.getHosts();
+    boolean isSameHost = false;
+    for(String theHost : theHosts){
+      isSameHost |= getHosts().contains( theHost );
+    }
+    if(!isSameHost) return false;
+    return getPort() == aPeer.getPort(); 
+    
   }
 }

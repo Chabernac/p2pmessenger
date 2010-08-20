@@ -13,18 +13,18 @@ import java.util.List;
 public class Pool<T> implements Iterable< T >{
   private List<PoolItem< T >> myPool = Collections.synchronizedList( new ArrayList< PoolItem< T > >() );
   
-  public void add(T anObject){
+  public synchronized void add(T anObject){
     myPool.add(new PoolItem< T >(anObject));
   }
   
-  public void remove(T anObject){
+  public synchronized void remove(T anObject){
     PoolItem< T > theItem = getPoolItem( anObject );
     if(theItem != null){
       myPool.remove( theItem );
     }
   }
   
-  public boolean contains(T anObject){
+  public synchronized boolean contains(T anObject){
     return getPoolItem( anObject ) != null;
   }
   
@@ -37,13 +37,13 @@ public class Pool<T> implements Iterable< T >{
     return null;
   }
   
-  public int size(){
+  public synchronized int size(){
     return myPool.size();
   }
   
   public List<T> getItemsOlderThan(long aTimeStamp){
     List<T> theList = new ArrayList< T >();
-    for(PoolItem< T > theItem : myPool){
+    for(PoolItem< T > theItem : new ArrayList< PoolItem< T > > (myPool)){
       if(theItem.myTimestamp <= aTimeStamp){
         theList.add(theItem.myObject);
       }

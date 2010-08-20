@@ -16,6 +16,7 @@ import chabernac.protocol.ProtocolContainer;
 import chabernac.protocol.ProtocolException;
 import chabernac.protocol.encryption.EncryptionException;
 import chabernac.protocol.encryption.EncryptionProtocol;
+import chabernac.protocol.encryption.EncryptionProtocol.Response;
 import chabernac.protocol.routing.Peer;
 import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.RoutingTable;
@@ -74,7 +75,16 @@ public class MessageProtocol extends Protocol {
         }
       } else {
         Peer theGateway = getRoutingTable().getGatewayForPeer( theDestionation );
-        return theGateway.send( createMessage( XMLTools.toXML( aMessage ) ));
+        
+        Peer theLocalPeer = getRoutingTable().getEntryForLocalPeer().getPeer();
+        if(!theGateway.isSameHostAndPort( theLocalPeer )){
+          return theGateway.send( createMessage( XMLTools.toXML( aMessage ) ));
+        } else {
+          //TODO we should not come in this situation
+          LOGGER.error("Peer with id: '" + theGateway.getPeerId() + "' has same host and port as local peer: '" + theLocalPeer.getPeerId() + "'");
+          return STATUS_MESSAGE.UNDELIVERABLE.name();
+        }
+        
       }
     } catch ( UnknownPeerException e ) {
       LOGGER.error( "Unknown peer", e );

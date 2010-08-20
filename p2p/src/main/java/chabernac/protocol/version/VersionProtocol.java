@@ -34,7 +34,7 @@ public class VersionProtocol extends Protocol {
 
   private Map<String, Version> myVersions = Collections.synchronizedMap( new HashMap< String, Version >() );
 
-  private ExecutorService myService = Executors.newCachedThreadPool( );
+  private ExecutorService myService = Executors.newFixedThreadPool( 5 );
   
   private Set< VersionListener > myVersionsListeners = new HashSet< VersionListener >();
 
