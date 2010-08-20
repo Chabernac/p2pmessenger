@@ -88,8 +88,8 @@ public class RoutingProtocol extends Protocol {
 
   private String myLocalPeerId = null;
 
-  private ExecutorService myUDPPacketHandlerService = Executors.newFixedThreadPool( 6 );
-  private ExecutorService myScannerService = Executors.newFixedThreadPool( 10 );
+  private ExecutorService myUDPPacketHandlerService = Executors.newCachedThreadPool( );
+  private ExecutorService myScannerService = Executors.newCachedThreadPool( );
 
   private MulticastSocket myServerMulticastSocket = null;
 

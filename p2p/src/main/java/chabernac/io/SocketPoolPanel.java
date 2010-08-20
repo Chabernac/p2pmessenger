@@ -7,10 +7,15 @@ package chabernac.io;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -26,6 +31,7 @@ public class SocketPoolPanel extends JPanel implements Observer {
   
   public SocketPoolPanel(){
     buildGUI();
+    addListeners();
   }
   
   private void buildGUI(){
@@ -33,9 +39,19 @@ public class SocketPoolPanel extends JPanel implements Observer {
     myModel =new SocketPoolModel(SocketPool.getInstance( ));
     myTable = new JTable(myModel);
     myTable.setDefaultRenderer(String.class, new ColorRenderer());
-    add(new JScrollPane(myTable));
-    SocketPool.getInstance( ).addObserver( this );
+    add(new JScrollPane(myTable), BorderLayout.CENTER);
     setBorder( new TitledBorder("Cached sockets") );
+    add(buildButtonPanel(), BorderLayout.SOUTH);
+  }
+  
+  private JPanel buildButtonPanel(){
+    JPanel thePanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+    thePanel.add(new JButton(new CleanUp()));
+    return thePanel;
+  }
+  
+  private void addListeners(){
+    SocketPool.getInstance( ).addObserver( this );
   }
 
   @Override
@@ -83,4 +99,15 @@ public class SocketPoolPanel extends JPanel implements Observer {
       return false;
     }
   }
+  
+  public class CleanUp  extends AbstractAction{
+    public CleanUp(){
+      putValue( Action.NAME, "Cleanup" );
+    }
+    
+    @Override
+    public void actionPerformed( ActionEvent anE ) {
+      SocketPool.getInstance( ).cleanUp();
+    }
+  }  
 }

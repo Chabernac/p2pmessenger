@@ -144,7 +144,7 @@ public class Peer implements Serializable {
 //    }
 //  }
 
-  public synchronized String send(String aMessage) throws UnknownHostException, IOException{
+  public String send(String aMessage) throws UnknownHostException, IOException{
     Socket theSocket = createSocket( myPort );
     
     if(theSocket == null) throw new IOException("Could not open socket to this peer");
@@ -171,7 +171,7 @@ public class Peer implements Serializable {
    * @param aPort
    * @return
    */
-  public Socket createSocket(int aPort){
+  public synchronized Socket createSocket(int aPort){
     SocketPool theSocketPool = SocketPool.getInstance( );
 
     for(Iterator< String > i = new ArrayList<String>(myHost).iterator(); i.hasNext();){
