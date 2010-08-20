@@ -93,12 +93,6 @@
 		</dependency>
 		<dependency>
 			<groupId>chabernac</groupId>
-			<artifactId>chabyframework</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>chabernac</groupId>
 			<artifactId>services</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 			<scope>compile</scope>
