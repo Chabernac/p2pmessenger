@@ -42,7 +42,7 @@ public class UserInfoProtocol extends Protocol {
 
   private Map<String, UserInfo> myUserInfo = new HashMap< String, UserInfo >();
 
-  private ExecutorService myRetrievalService = Executors.newCachedThreadPool( );
+  private ExecutorService myRetrievalService = Executors.newFixedThreadPool( 5 );
   private ScheduledExecutorService myService = Executors.newScheduledThreadPool( 1 );
 
   private iUserInfoProvider myUserInfoProvider = null;

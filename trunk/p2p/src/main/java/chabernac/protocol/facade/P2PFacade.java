@@ -37,6 +37,7 @@ import chabernac.protocol.pipe.PipeProtocol;
 import chabernac.protocol.routing.Peer;
 import chabernac.protocol.routing.RoutingFrame;
 import chabernac.protocol.routing.RoutingProtocol;
+import chabernac.protocol.routing.RoutingTable;
 import chabernac.protocol.routing.RoutingTableEntry;
 import chabernac.protocol.userinfo.UserInfo;
 import chabernac.protocol.userinfo.UserInfoProtocol;
@@ -75,6 +76,7 @@ public class P2PFacade {
   private ProtocolServer myProtocolServer = null;
   private PropertyMap myProperties = new PropertyMap();
   private MessageArchive myMessageArchive = null;
+  private boolean myIsKeepHistory = false;
 
   /**
    * set the exchange delay.
@@ -439,7 +441,7 @@ public class P2PFacade {
     }
   }
   
-  public void setApplicationProtocolDelegate(iProtocolDelegate aProtolDelegate) throws P2PFacadeException{
+  public P2PFacade setApplicationProtocolDelegate(iProtocolDelegate aProtolDelegate) throws P2PFacadeException{
     if(!isStarted()) throw new P2PFacadeException("Can not execute this action when the server is not started");
     
     try{
@@ -447,6 +449,7 @@ public class P2PFacade {
     }catch(Exception e){
       throw new P2PFacadeException("An error occured while setting protocol deleegate", e);
     }
+    return this;
   }
   
   public String sendApplicationMessage(String aPeerId, String aMessage) throws P2PFacadeException{
@@ -470,6 +473,29 @@ public class P2PFacade {
       throw new P2PFacadeException("Could not show routing frame", e);
     }
   }
+  
+  P2PFacade setKeepRoutingTableHistory(boolean isKeepHistory) throws P2PFacadeException{
+    if(!isStarted()){
+      myIsKeepHistory = isKeepHistory;
+    } else {
+      try{
+        ((RoutingProtocol)myContainer.getProtocol( RoutingProtocol.ID )).getRoutingTable().setKeepHistory( isKeepHistory );
+      }catch(Exception e){
+        throw new P2PFacadeException("Could not change keep history", e);
+      }
+    }
+    return this;
+  }
+  
+  RoutingTable getRoutingTable() throws P2PFacadeException{
+    if(!isStarted()) throw new P2PFacadeException("Can not execute this action when the server is not started");
+
+    try{
+      return ((RoutingProtocol)myContainer.getProtocol( RoutingProtocol.ID )).getRoutingTable();
+    }catch(Exception e){
+      throw new P2PFacadeException("Could not show routing frame", e);
+    }
+  }
 
   public boolean isStarted(){
     if(myProtocolServer == null) return false;
@@ -487,7 +513,8 @@ public class P2PFacade {
 
       //we retrieve the routing protcol
       //this way it is instantiated and start exchanging routing information
-      myContainer.getProtocol( RoutingProtocol.ID );
+      RoutingProtocol theRoutingProtocol = (RoutingProtocol)myContainer.getProtocol( RoutingProtocol.ID );
+      theRoutingProtocol.getRoutingTable().setKeepHistory( myIsKeepHistory );
 
       //retrieve the user info protocol
       //this way it is instantiated and listens for routing table changes and retrieves user info of the changed peers
@@ -513,7 +540,7 @@ public class P2PFacade {
     if(myProtocolServer != null){
       myProtocolServer.stop();
     }
-    SocketPool.getInstance( ).cleanUp();
+    SocketPool.getInstance( ).fullClean();
     return this;
   }
 
