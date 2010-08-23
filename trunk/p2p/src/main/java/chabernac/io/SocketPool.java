@@ -24,6 +24,8 @@ public class SocketPool extends Observable{
   private ScheduledExecutorService myService = null;
   
   private long myCleanUpTimeoutInSeconds;
+  
+  private boolean isSimpleMode = false;
 
 
   protected SocketPool(){
@@ -68,6 +70,12 @@ public class SocketPool extends Observable{
   }
 
   public Socket checkOut(SocketAddress anAddress) throws IOException{
+    if(isSimpleMode){
+      Socket theSocket = new Socket();
+      theSocket.connect(anAddress);
+      return theSocket;
+    }
+    
     SocketProxy theSocketProxy = searchFirstSocketWithAddressInPool( anAddress, myCheckedInPool);
     if(theSocketProxy != null){
       synchronized(this){
@@ -109,6 +117,16 @@ public class SocketPool extends Observable{
   }
 
   public void checkIn(Socket aSocket){
+    if(isSimpleMode){
+      try {
+        aSocket.close();
+      } catch (IOException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
+      return;
+    }
+    
     if(aSocket != null){
       synchronized(this){
         SocketProxy theProxy = searchProxyForSocket( aSocket );
@@ -133,7 +151,7 @@ public class SocketPool extends Observable{
   }
   
   private void cleanItemsOlderThan(Pool<SocketProxy> aPool, long aTime){
-    for(SocketProxy theSocket : aPool.getItemsOlderThan( System.currentTimeMillis() - myCleanUpTimeoutInSeconds * 1000 )){
+    for(SocketProxy theSocket : aPool.getItemsOlderThan( System.currentTimeMillis() - aTime * 1000 )){
       try {
         theSocket.getSocket().close();
       } catch ( IOException e ) {
@@ -143,18 +161,16 @@ public class SocketPool extends Observable{
   }
 
   public synchronized void cleanUp(){
-    long theTime = System.currentTimeMillis() - (myCleanUpTimeoutInSeconds * 1000) ;
-    
-    cleanItemsOlderThan( myCheckedInPool,  theTime);
-    cleanItemsOlderThan( myCheckedOutPool,  theTime);
+    cleanItemsOlderThan( myCheckedInPool,  myCleanUpTimeoutInSeconds);
+    cleanItemsOlderThan( myCheckedOutPool,  myCleanUpTimeoutInSeconds);
     
     notifyAllObs();
   }
   
   public synchronized void fullClean(){
-    cleanItemsOlderThan( myCheckedInPool,  System.currentTimeMillis());
-    cleanItemsOlderThan( myCheckedOutPool,  System.currentTimeMillis());
-    cleanItemsOlderThan( myConnectingPool,  System.currentTimeMillis());
+    cleanItemsOlderThan( myCheckedInPool,  -1);
+    cleanItemsOlderThan( myCheckedOutPool,  -1);
+    cleanItemsOlderThan( myConnectingPool,  -1);
   }
 
   List< SocketProxy > getCheckInPool(){
