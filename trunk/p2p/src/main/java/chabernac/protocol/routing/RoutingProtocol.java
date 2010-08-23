@@ -61,8 +61,8 @@ public class RoutingProtocol extends Protocol {
   public static final int MULTICAST_PORT = 13879;
   public static final String MULTICAST_ADDRESS = "234.5.54.9";
 
-  private static enum Command { REQUEST_TABLE, WHO_ARE_YOU, ANNOUNCEMENT_WITH_REPLY, ANNOUNCEMENT };
-  private static enum Response { OK, NOK, UNKNOWN_COMMAND };
+  public static enum Command { REQUEST_TABLE, WHO_ARE_YOU, ANNOUNCEMENT_WITH_REPLY, ANNOUNCEMENT };
+  public static enum Response { OK, NOK, UNKNOWN_COMMAND };
 
   private RoutingTable myRoutingTable = null;
 

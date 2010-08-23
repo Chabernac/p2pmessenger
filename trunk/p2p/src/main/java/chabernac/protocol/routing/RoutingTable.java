@@ -19,7 +19,7 @@ import org.apache.log4j.Logger;
 import org.doomdark.uuid.UUID;
 
 public class RoutingTable implements Iterable< RoutingTableEntry >, Serializable{
-  
+
   private static final long serialVersionUID = -6991803452368949789L;
 
   private static Logger LOGGER = Logger.getLogger( RoutingTable.class );
@@ -33,7 +33,7 @@ public class RoutingTable implements Iterable< RoutingTableEntry >, Serializable
   public RoutingTable(String aLocalPeerId){
     myLocalPeerId = aLocalPeerId;
   }
-  
+
   private UUID getUUIDForPeer(Peer aPeer){
     return new UUID(aPeer.getPeerId());
   }
@@ -42,15 +42,15 @@ public class RoutingTable implements Iterable< RoutingTableEntry >, Serializable
     if(isKeepHistory){
       myRoutingTableEntryHistory.add( new RoutingTableEntryHistory(anEntry,RoutingTableEntryHistory.Action.DELETE) );
     }
-    
+
     myRoutingTable.remove(anEntry.getPeer().getPeerId());
   }
-  
+
   public synchronized void addRoutingTableEntry(RoutingTableEntry anEntry){
     if(isKeepHistory){
       myRoutingTableEntryHistory.add( new RoutingTableEntryHistory(anEntry,RoutingTableEntryHistory.Action.ADD ) );
     }
-    
+
     if(anEntry.getPeer().getPeerId() == null || anEntry.getPeer().getPeerId().equals( "" )){
       throw new IllegalArgumentException("Received routing table entry with no peer id");
     }
@@ -70,6 +70,8 @@ public class RoutingTable implements Iterable< RoutingTableEntry >, Serializable
     if(anEntry.getPeer().getPort() == 0){
       throw new IllegalArgumentException("Can not add an routing table entry with a peer that has port 0");
     }
+    
+//    removeEntriesOlderThanAndOnTheSameSocketAs(anEntry);
 
     if(myRoutingTable.containsKey( anEntry.getPeer().getPeerId() )){
       RoutingTableEntry thePeerEntry = myRoutingTable.get( anEntry.getPeer().getPeerId() );
@@ -107,6 +109,26 @@ public class RoutingTable implements Iterable< RoutingTableEntry >, Serializable
     }
     synchronized(this){
       notifyAll();
+    }
+  }
+
+  /*
+   * This method just solves a problem which should not occure.
+   * Sometimes different routing tables are added with peers which reside on the same host and port
+   * this is of course not possible.  So we remove the older peer entries which are on the same host and port
+   * TODO this method can be removed as soon as the cause of the problem is found and fixed
+   */
+
+  private void removeEntriesOlderThanAndOnTheSameSocketAs(RoutingTableEntry anEntry){
+    List<RoutingTableEntry> theEntriesToRemove = new ArrayList<RoutingTableEntry>();
+    for(RoutingTableEntry theEntry : myRoutingTable.values()){
+      if(theEntry.getPeer().isSameHostAndPort(anEntry.getPeer()) && theEntry.getCreationTime() < anEntry.getCreationTime()){
+        theEntriesToRemove.add(theEntry);
+      }
+    }
+    for(RoutingTableEntry theEntry : theEntriesToRemove){
+      LOGGER.error("Removing entry with peer id: '" + theEntry.getPeer().getPeerId() + "' because it is on the same host and port as the new entry: '" + anEntry.getPeer().getPeerId() + "'");
+      removeRoutingTableEntry(theEntry);
     }
   }
 
@@ -171,9 +193,9 @@ public class RoutingTable implements Iterable< RoutingTableEntry >, Serializable
   public void setRoutingTable( Map< String, RoutingTableEntry > anRoutingTable ) {
     myRoutingTable = anRoutingTable;
   }
-  
+
   public synchronized boolean containsEntryForPeer(String aPeerId){
-	  return myRoutingTable.containsKey(aPeerId);
+    return myRoutingTable.containsKey(aPeerId);
   }
 
   public synchronized RoutingTableEntry getEntryForPeer( String aPeerId ) throws UnknownPeerException{
@@ -248,10 +270,8 @@ public class RoutingTable implements Iterable< RoutingTableEntry >, Serializable
   public List< RoutingTableEntryHistory > getHistory() {
     return Collections.unmodifiableList( myRoutingTableEntryHistory );
   }
-  
+
   public void clearHistory(){
     myRoutingTableEntryHistory.clear();
   }
-  
-  
 }
