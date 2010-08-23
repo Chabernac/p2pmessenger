@@ -658,7 +658,7 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
       
       assertTrue( theRoutingTableFile.exists() );
     }finally{
-      
+      theServer1.stop();
     }
   }
   
