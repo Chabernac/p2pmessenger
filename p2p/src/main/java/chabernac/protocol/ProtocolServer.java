@@ -68,9 +68,6 @@ public class ProtocolServer implements Runnable{
     try {
       if(myServerSocket != null){
         myServerSocket.close();
-        while(!myServerSocket.isClosed()){
-          LOGGER.debug("Socket not yet closed");
-        }
       }
     } catch ( IOException e ) {
     }
