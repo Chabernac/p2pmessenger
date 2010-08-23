@@ -34,15 +34,6 @@ public class P2PFacadeTest extends TestCase {
     BasicConfigurator.resetConfiguration();
     BasicConfigurator.configure();
   }
-  
-  public void setUp(){
-    try {
-      Thread.sleep( 3000 );
-    } catch ( InterruptedException e ) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
-  }
 
   public void testP2PSendMessage() throws P2PFacadeException, InterruptedException, ExecutionException{
     P2PFacade theFacade1 = new P2PFacade()
@@ -375,5 +366,4 @@ public class P2PFacadeTest extends TestCase {
       if(theFacade2 != null) theFacade2.stop();
     }
   }
-
 }
