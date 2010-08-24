@@ -12,13 +12,14 @@ public abstract class AbstractProtocolTest extends TestCase {
   protected static final int SLEEP_AFTER_SCAN = 2000;
   
   public void setUp(){
-    SocketPool.getInstance( ).cleanUp();
+    SocketPool.getInstance( ).fullClean();
   }
   
   public ProtocolContainer getProtocolContainer(long anExchangeDelay, boolean isPersist, String aPeerId){
     PropertyMap theProperties = new PropertyMap();
     theProperties.setProperty( "routingprotocol.exchangedelay", Long.toString( anExchangeDelay));
     theProperties.setProperty("routingprotocol.persist", Boolean.toString( isPersist));
+    
     if(aPeerId != null) theProperties.setProperty("peerid", aPeerId);
     ProtocolFactory theFactory = new ProtocolFactory(theProperties);
     return new ProtocolContainer(theFactory);

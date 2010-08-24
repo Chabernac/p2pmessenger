@@ -288,7 +288,7 @@ public class RoutingProtocol extends Protocol {
       //TODO remove extensive logging
       //      try {
       //        if(aPeer.getPort() == RoutingProtocol.START_PORT && aPeer.getHosts().get( 0 ).equalsIgnoreCase( InetAddress.getLocalHost().getHostAddress() )){
-      LOGGER.error( "Error occured while contacting peer '" + aPeer.getPeerId() + "' " + aPeer.getHosts() + ": " + aPeer.getPort() );
+//      LOGGER.error( "Error occured while contacting peer '" + aPeer.getPeerId() + "' " + aPeer.getHosts() + ": " + aPeer.getPort() );
       //        }
       //      } catch ( UnknownHostException e1 ) {
       //        e1.printStackTrace();
