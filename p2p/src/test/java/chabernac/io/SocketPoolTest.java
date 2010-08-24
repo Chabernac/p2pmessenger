@@ -18,6 +18,7 @@ public class SocketPoolTest extends TestCase {
 
     try{
       SocketPool thePool = new SocketPool();
+      thePool.setCleanUpTimeInSeconds( 30 );
       thePool.cleanUp();
       Socket theSocket1 = thePool.checkOut( new InetSocketAddress("localhost", theServerSocket.getLocalPort()) );
       Socket theSocket2 = thePool.checkOut( new InetSocketAddress("localhost", theServerSocket.getLocalPort()) );
@@ -42,16 +43,59 @@ public class SocketPoolTest extends TestCase {
       assertEquals( 1, thePool.getCheckInPool().size() );
       assertTrue( theSocket3 == theSocket1 || theSocket3 == theSocket2 );
 
-      //the clean up should only clean the checked in connections
+      //the clean up should only clean connections which have not been checked our or in for 30 seconds.
+      //nothing must have changed
       thePool.cleanUp();
       assertEquals( 1, thePool.getCheckOutPool().size() );
-      assertEquals( 0, thePool.getCheckInPool().size() );
+      assertEquals( 1, thePool.getCheckInPool().size() );
       
       thePool.close( theSocket3 );
       assertTrue( theSocket3.isClosed() );
       
       assertEquals( 0, thePool.getCheckOutPool().size() );
+      assertEquals( 1, thePool.getCheckInPool().size() );
+      
+      theSocket1 = thePool.checkOut( new InetSocketAddress("localhost", theServerSocket.getLocalPort()) );
+      
+      assertEquals( 1, thePool.getCheckOutPool().size() );
       assertEquals( 0, thePool.getCheckInPool().size() );
+      
+      thePool.checkIn( theSocket1 );
+      
+      assertEquals( 0, thePool.getCheckOutPool().size() );
+      assertEquals( 1, thePool.getCheckInPool().size() );
+      
+      thePool.close( theSocket1 );
+      assertTrue( theSocket1.isClosed() );
+      
+      assertEquals( 0, thePool.getCheckOutPool().size() );
+      assertEquals( 0, thePool.getCheckInPool().size() );
+      
+      theSocket1 = thePool.checkOut( new InetSocketAddress("localhost", theServerSocket.getLocalPort()) );
+      theSocket2 = thePool.checkOut( new InetSocketAddress("localhost", theServerSocket.getLocalPort()) );
+      
+      thePool.checkIn( theSocket1 );
+      
+      assertEquals( 1, thePool.getCheckOutPool().size() );
+      assertEquals( 1, thePool.getCheckInPool().size() );
+      
+      thePool.fullClean();
+      assertTrue( theSocket1.isClosed() );
+      assertTrue( theSocket2.isClosed() );
+      
+      assertEquals( 0, thePool.getCheckOutPool().size() );
+      assertEquals( 0, thePool.getCheckInPool().size() );
+      
+      try{
+        theSocket3 = thePool.checkOut( new InetSocketAddress("localhost", 78978) );
+        fail("We must not get here");
+      }catch(Exception e){
+      }
+      
+      assertEquals( 0, thePool.getCheckOutPool().size() );
+      assertEquals( 0, thePool.getCheckInPool().size() );
+      
+      
     }finally{
       theServerSocket.close();
     }
