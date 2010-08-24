@@ -23,7 +23,8 @@ public class SocketPool extends Observable{
 
   private ScheduledExecutorService myService = null;
   
-  private long myCleanUpTimeoutInSeconds;
+  //default clean timeout is 30 seconds
+  private long myCleanUpTimeoutInSeconds = 30;
   
   private boolean isSimpleMode = false;
 
@@ -107,8 +108,8 @@ public class SocketPool extends Observable{
     }
   }
   
-  private SocketProxy searchProxyForSocket(Socket aSocket){
-    for(SocketProxy theProxy : myCheckedOutPool){
+  private SocketProxy searchProxyForSocketInPool(Pool<SocketProxy> aPool, Socket aSocket){
+    for(SocketProxy theProxy : aPool){
       if(theProxy.getSocket() == aSocket){
         return theProxy;
       }
@@ -129,7 +130,7 @@ public class SocketPool extends Observable{
     
     if(aSocket != null){
       synchronized(this){
-        SocketProxy theProxy = searchProxyForSocket( aSocket );
+        SocketProxy theProxy = searchProxyForSocketInPool(myCheckedOutPool, aSocket );
         if(theProxy != null){
           myCheckedOutPool.remove( theProxy );
           myCheckedInPool.add(theProxy);
@@ -144,29 +145,40 @@ public class SocketPool extends Observable{
       aSocket.close();
     } catch ( IOException e ) {
     }
-    SocketProxy theProxy = searchProxyForSocket( aSocket );
-    myCheckedInPool.remove( theProxy );
-    myCheckedOutPool.remove( theProxy );
+    myCheckedInPool.remove( searchProxyForSocketInPool(myCheckedInPool,  aSocket ));
+    myCheckedOutPool.remove( searchProxyForSocketInPool(myCheckedOutPool,  aSocket ));
+    myConnectingPool.remove( searchProxyForSocketInPool(myConnectingPool,  aSocket ));
     notifyAllObs();
   }
   
   private void cleanItemsOlderThan(Pool<SocketProxy> aPool, long aTime){
     for(SocketProxy theSocket : aPool.getItemsOlderThan( System.currentTimeMillis() - aTime * 1000 )){
-      try {
-        theSocket.getSocket().close();
-      } catch ( IOException e ) {
+      if(theSocket.getSocket() != null){
+        try {
+          theSocket.getSocket().close();
+        } catch ( IOException e ) {
+        }
       }
       aPool.remove( theSocket );
     }
   }
 
+  /**
+   * this method will clean up the items in the pools which are older then the clean up time in seconds.
+   * This means items that have not been checked in or out of this pool during that time.
+   */
   public synchronized void cleanUp(){
     cleanItemsOlderThan( myCheckedInPool,  myCleanUpTimeoutInSeconds);
     cleanItemsOlderThan( myCheckedOutPool,  myCleanUpTimeoutInSeconds);
+    cleanItemsOlderThan( myConnectingPool,  myCleanUpTimeoutInSeconds);
     
     notifyAllObs();
   }
   
+  /**
+   * cleans up all items.
+   * all the sockets in the pools are closed
+   */
   public synchronized void fullClean(){
     cleanItemsOlderThan( myCheckedInPool,  -1);
     cleanItemsOlderThan( myCheckedOutPool,  -1);
