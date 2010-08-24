@@ -50,11 +50,6 @@ public class ScanSystem implements Runnable{
       if(myRoutingProtocol.getRoutingProtocolMonitor() != null) myRoutingProtocol.getRoutingProtocolMonitor().scanStarted( thePeer );
       boolean result = myRoutingProtocol.contactPeer( thePeer, myUnreachablePeers );
       if(result && myRoutingProtocol.getRoutingProtocolMonitor() != null) myRoutingProtocol.getRoutingProtocolMonitor().peerFoundWithScan( thePeer );
-      //let's just sleep for a while to make the system free up the socket resource.
-//      try {
-//        Thread.sleep( 10000 );
-//      } catch ( InterruptedException e ) {
-//      }
     }
   }
 

@@ -193,6 +193,7 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
       //p2      1       p2
       //p3      2       p2
 
+      theRoutingTable1.setKeepHistory( false );
       
       testEntry( theRoutingTable1.getEntryForPeer("1"), 0, "1", true, true); 
       testEntry( theRoutingTable1.getEntryForPeer("2"), 1, "2", true, true);
@@ -466,6 +467,8 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
     theRoutingProtocol2.getLocalUnreachablePeerIds().add( "1" );
     
     try{
+      theRoutingTable1.setKeepHistory( true );
+      theRoutingTable2.setKeepHistory( true );
       assertTrue( theServer1.start() );
       assertTrue( theServer2.start() );
       
@@ -474,6 +477,8 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
       //since the routing table is reset and we have an exchange delay of -1 the peers will not be able to reach each other
       //lets test this!
       
+      theRoutingTable1.setKeepHistory( false );
+      theRoutingTable2.setKeepHistory( false );
       assertNotNull( theRoutingTable1.getEntryForPeer( "2" ) );
       assertFalse( theRoutingTable1.getEntryForPeer( "2" ).isReachable() );
       assertNotNull( theRoutingTable2.getEntryForPeer( "1" ) );
@@ -704,7 +709,7 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
       
       assertTrue( theRoutingTableFile.exists() );
     }finally{
-      
+      theServer1.stop();
     }
   }
   

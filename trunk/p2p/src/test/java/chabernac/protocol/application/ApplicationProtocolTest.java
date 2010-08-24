@@ -20,18 +20,22 @@ public class ApplicationProtocolTest extends AbstractProtocolTest {
     .setExchangeDelay( -1 )
     .setPersist( false )
     .start( 5 );
-    
-    ApplicationProtocolDelegate theDelegate = new ApplicationProtocolDelegate();
-    theFacade1.setApplicationProtocolDelegate( theDelegate  );
 
-    int theTimes = 50;
-    for(int i=0;i<theTimes;i++){
-      theFacade1.sendApplicationMessage( theFacade1.getPeerId(), "test " + i );
+    try{
+      ApplicationProtocolDelegate theDelegate = new ApplicationProtocolDelegate();
+      theFacade1.setApplicationProtocolDelegate( theDelegate  );
+
+      int theTimes = 50;
+      for(int i=0;i<theTimes;i++){
+        theFacade1.sendApplicationMessage( theFacade1.getPeerId(), "test " + i );
+      }
+
+      assertEquals( theTimes, theDelegate.getInput().size());
+    }finally{
+      theFacade1.stop();
     }
-    
-    assertEquals( theTimes, theDelegate.getInput().size());
   }
-  
+
   private class ApplicationProtocolDelegate implements iProtocolDelegate{
     private List< String > myInput = new ArrayList< String >();
 
@@ -40,10 +44,10 @@ public class ApplicationProtocolTest extends AbstractProtocolTest {
       myInput.add( anInput );
       return "OK";
     }
-    
+
     public List<String> getInput(){
       return Collections.unmodifiableList( myInput );
     }
-    
+
   }
 }
