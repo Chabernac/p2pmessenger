@@ -176,7 +176,7 @@ public class UserPanel extends GPanel implements iUserSelectionProvider{
     Status theStatus = anUserInfo.getStatus();
 
     if(theStatus == Status.OFFLINE) return Color.GRAY;
-    return new Color(0,200,0);
+    return new Color(0,0,200);
   }
 
   private String getToolTipForUser(String aPeerId, UserInfo anUserInfo ) throws P2PFacadeException {
@@ -317,19 +317,12 @@ public class UserPanel extends GPanel implements iUserSelectionProvider{
       Map<String, DeliveryReport> theReports = myMediator.getP2PFacade().getMessageArchive().getDeliveryReportsForMultiPeerMessage( aMessage );
       for(String thePeerId : theReports.keySet()){
         if(myCheckBoxes.containsKey( thePeerId )){
-          myCheckBoxes.get( thePeerId ).setForeground( getColorForDeliveryStatus(theReports.get( thePeerId ).getDeliveryStatus()) );
+          myCheckBoxes.get( thePeerId ).setDeliveryStatus( theReports.get( thePeerId ).getDeliveryStatus() );
         }
       }
     }catch(P2PFacadeException e){
       LOGGER.error("Error occured while setting multi peer message", e);
     }
-  }
-
-  private Color getColorForDeliveryStatus( chabernac.protocol.message.DeliveryReport.Status anDeliveryStatus ) {
-    if(anDeliveryStatus == chabernac.protocol.message.DeliveryReport.Status.DELIVERED) return new Color(0,0,200);
-    if(anDeliveryStatus == chabernac.protocol.message.DeliveryReport.Status.FAILED) return new Color(200,0,0);
-    if(anDeliveryStatus == chabernac.protocol.message.DeliveryReport.Status.IN_PROGRESS) return new Color(200,100,100);
-    return Color.GRAY;
   }
 
   Map< String, StatusCheckBox > getCheckBoxes() {
