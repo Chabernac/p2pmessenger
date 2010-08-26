@@ -17,7 +17,7 @@ public class SocketPoolTest extends TestCase {
     ServerSocket theServerSocket = NetTools.openServerSocket( 1500 );
 
     try{
-      SocketPool thePool = new SocketPool();
+      CachingSocketPool thePool = new CachingSocketPool();
       thePool.setCleanUpTimeInSeconds( 30 );
       thePool.cleanUp();
       Socket theSocket1 = thePool.checkOut( new InetSocketAddress("localhost", theServerSocket.getLocalPort()) );

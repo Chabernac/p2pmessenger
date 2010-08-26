@@ -41,6 +41,7 @@ import chabernac.protocol.ProtocolException;
 import chabernac.protocol.ServerInfo;
 import chabernac.tools.IOTools;
 import chabernac.tools.NetTools;
+import chabernac.tools.TestTools;
 
 /**
  *  the routing protocol will do the following
@@ -55,9 +56,19 @@ public class RoutingProtocol extends Protocol {
   public static String ID = "ROU";
 
   private static Logger LOGGER = Logger.getLogger( RoutingProtocol.class );
+  
+  static{
+    if(TestTools.isInUnitTest()){
+      START_PORT = 12800;
+      END_PORT = 12820;
+    } else {
+      START_PORT = 12700;
+      END_PORT = 12720;
+    }
+  }
 
-  public static final int START_PORT = 12700;
-  public static final int END_PORT = 12720;
+  public static int START_PORT;
+  public static int END_PORT;
   public static final int MULTICAST_PORT = 13879;
   public static final String MULTICAST_ADDRESS = "234.5.54.9";
 
@@ -79,7 +90,7 @@ public class RoutingProtocol extends Protocol {
 
   private ScheduledExecutorService mySheduledService = null;
 
-  private iObjectPersister< RoutingTable > myObjectPersister = new RoutingTablePersister();
+  private iObjectPersister< RoutingTable > myRoutingTablePersister = new RoutingTablePersister();
 
   private boolean isPersistRoutingTable = false;
   private boolean isStopWhenAlreadyRunning = false;
@@ -528,7 +539,7 @@ public class RoutingProtocol extends Protocol {
       File theFile = getRoutingTableLocation();
       try{
         FileInputStream theInputStream = new FileInputStream(theFile);
-        myRoutingTable = myObjectPersister.loadObject( theInputStream );
+        myRoutingTable = myRoutingTablePersister.loadObject( theInputStream );
         theInputStream.close();
       }catch(Exception e){
         LOGGER.error( "Could not load routing table", e );
@@ -549,7 +560,7 @@ public class RoutingProtocol extends Protocol {
     File theFile = getRoutingTableLocation();
     try{
       FileOutputStream theStream = new FileOutputStream(theFile);
-      myObjectPersister.persistObject( myRoutingTable, theStream );
+      myRoutingTablePersister.persistObject( myRoutingTable, theStream );
       theStream.flush();
       theStream.close();
     }catch(Exception e){
@@ -613,6 +624,12 @@ public class RoutingProtocol extends Protocol {
       sendAnnoucement(myEntry); 
     }
   }
+  
+  public static boolean isInPortRange(int aPort){
+    if(aPort < START_PORT) return false;
+    if(aPort > END_PORT) return false;
+    return true;
+  }
 
   private class MulticastServerThread implements Runnable{
     @Override
@@ -630,10 +647,11 @@ public class RoutingProtocol extends Protocol {
           Object theObject = theObjectInputStream.readObject();
           if(theObject instanceof RoutingTableEntry){
             RoutingTableEntry theEntry = (RoutingTableEntry)theObject;
-            if(!myUnreachablePeers.contains(theEntry.getPeer().getPeerId())){
+            if(!myUnreachablePeers.contains(theEntry.getPeer().getPeerId()) && isInPortRange( theEntry.getPeer().getPort() )){
               if(!theEntry.getPeer().getPeerId().equals( myLocalPeerId )){
                 theEntry = theEntry.incHopDistance();
               }
+              
               myRoutingTable.addRoutingTableEntry( theEntry );
             }
           }

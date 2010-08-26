@@ -4,16 +4,17 @@
  */
 package chabernac.io;
 
+import java.net.Socket;
 import java.text.SimpleDateFormat;
 
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
 
 public class SocketPoolModel implements TableModel {
-  private final SocketPool mySocketPool;
+  private final iSocketPool mySocketPool;
   private SimpleDateFormat myFormat = new SimpleDateFormat("HH:mm:ss");
 
-  public SocketPoolModel ( SocketPool anSocketPool ) {
+  public SocketPoolModel ( iSocketPool anSocketPool ) {
     super();
     mySocketPool = anSocketPool;
   }
@@ -44,18 +45,18 @@ public class SocketPoolModel implements TableModel {
 
   @Override
   public int getRowCount() {
-    return mySocketPool.getCheckInPool().size() + mySocketPool.getCheckOutPool().size() + mySocketPool.getConnectingPool().size();
+    return mySocketPool.getCheckedInPool().size() + mySocketPool.getCheckedOutPool().size() + mySocketPool.getConnectingPool().size();
   }
 
-  public SocketProxy getSocketProxyAtRow(int anRowIndex){
-    SocketProxy theSocket;
+  public Object getSocketProxyAtRow(int anRowIndex){
+    Object theSocket;
     try{
-      if(anRowIndex < mySocketPool.getCheckInPool().size()){
-        theSocket = mySocketPool.getCheckInPool().get( anRowIndex );
-      } else if(anRowIndex < mySocketPool.getCheckInPool().size() + mySocketPool.getCheckOutPool().size()){
-        theSocket = mySocketPool.getCheckOutPool().get(anRowIndex - mySocketPool.getCheckInPool().size());
+      if(anRowIndex < mySocketPool.getCheckedInPool().size()){
+        theSocket = mySocketPool.getCheckedInPool().get( anRowIndex );
+      } else if(anRowIndex < mySocketPool.getCheckedInPool().size() + mySocketPool.getCheckedOutPool().size()){
+        theSocket = mySocketPool.getCheckedOutPool().get(anRowIndex - mySocketPool.getCheckedInPool().size());
       } else {
-        theSocket = mySocketPool.getConnectingPool().get(anRowIndex - mySocketPool.getCheckInPool().size() - mySocketPool.getCheckOutPool().size());
+        theSocket = mySocketPool.getConnectingPool().get(anRowIndex - mySocketPool.getCheckedInPool().size() - mySocketPool.getCheckedOutPool().size());
       }
     }catch(Exception e){
       return null;
@@ -63,33 +64,43 @@ public class SocketPoolModel implements TableModel {
     return theSocket;
   }
 
-  public String getPool(SocketProxy aProxy){
-    if(mySocketPool.getCheckInPool().contains(aProxy)) return "IN";
-    if(mySocketPool.getCheckOutPool().contains(aProxy)) return "OUT";
+  public String getPool(Object aProxy){
+    if(mySocketPool.getCheckedInPool().contains(aProxy)) return "IN";
+    if(mySocketPool.getCheckedOutPool().contains(aProxy)) return "OUT";
     if(mySocketPool.getConnectingPool().contains(aProxy)) return "CONNECT";
     return "NO POOL";
   }
 
   @Override
   public Object getValueAt( int anRowIndex, int anColumnIndex ) {
-    SocketProxy theSocket = getSocketProxyAtRow(anRowIndex);
+    Object theSocket = getSocketProxyAtRow(anRowIndex);
     if(theSocket == null) return "NO SOCKET";
     String thePool = getPool(theSocket);
 
-    if(anColumnIndex == 0) return theSocket.getSocketAddress();
-    if(anColumnIndex == 1) {
-      if(theSocket.isConnected()) {
-        return theSocket.getSocket().getLocalSocketAddress();
+    if(theSocket instanceof SocketProxy){
+      SocketProxy theSocketProxy = (SocketProxy)theSocket;
+      if(anColumnIndex == 0) return theSocketProxy.getSocketAddress();
+      if(anColumnIndex == 1) {
+        if(theSocketProxy.isConnected()) {
+          return theSocketProxy.getSocket().getLocalSocketAddress();
+        }
+        return "NOT CONNECTED";
       }
-      return "NOT CONNECTED";
-    }
-    if(anColumnIndex == 2) return thePool;
+      if(anColumnIndex == 2) return thePool;
 
-    if(anColumnIndex == 3) {
-      if(theSocket.getConnectTime() != null){
-        return myFormat.format( theSocket.getConnectTime() );
+      if(anColumnIndex == 3) {
+        if(theSocketProxy.getConnectTime() != null){
+          return myFormat.format( theSocketProxy.getConnectTime() );
+        }
+        return "";
       }
-      return "";
+    } else if(theSocket instanceof Socket){
+      Socket theS = (Socket)theSocket;
+      if(anColumnIndex == 0) return theS.getRemoteSocketAddress();
+      if(anColumnIndex == 1) return theS.getLocalAddress();
+      if(anColumnIndex == 2) return thePool;
+
+      if(anColumnIndex == 3) return "UNKNOWN";
     }
     return null;
   }

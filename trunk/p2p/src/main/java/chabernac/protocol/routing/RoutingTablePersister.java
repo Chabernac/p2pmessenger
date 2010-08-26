@@ -54,7 +54,12 @@ public class RoutingTablePersister implements iObjectPersister<RoutingTable> {
 //      theEntry.setPeer( thePeers.get(  theRoutingTableEntryVars[0] ) ) ;
 //      theEntry.setHopDistance( Integer.parseInt(theRoutingTableEntryVars[1] ));
 //      theEntry.setGateway( thePeers.get(theRoutingTableEntryVars[2] )) ;
-      theTable.addRoutingTableEntry( theEntry );
+      
+      //TODO is this clean?
+      //only load the entries which are within the range of routing protocol
+      if(RoutingProtocol.isInPortRange( theEntry.getPeer().getPort() )){
+        theTable.addRoutingTableEntry( theEntry );
+      }
     }
     
     return theTable;
