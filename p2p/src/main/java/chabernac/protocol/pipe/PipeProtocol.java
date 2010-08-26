@@ -16,7 +16,7 @@ import java.util.concurrent.Executors;
 
 import org.apache.log4j.Logger;
 
-import chabernac.io.SocketPool;
+import chabernac.io.SocketPoolFactory;
 import chabernac.protocol.Protocol;
 import chabernac.protocol.ProtocolContainer;
 import chabernac.protocol.ProtocolException;
@@ -157,7 +157,7 @@ public class PipeProtocol extends Protocol {
 
   public void closePipe(Pipe aPipe){
     if(aPipe.getSocket() != null){
-      SocketPool.getInstance( ).close( aPipe.getSocket() );
+      SocketPoolFactory.getSocketPool().close( aPipe.getSocket() );
     }
   }
 

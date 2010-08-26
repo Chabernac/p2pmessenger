@@ -36,7 +36,7 @@ public class SocketPoolPanel extends JPanel implements Observer {
   
   private void buildGUI(){
     setLayout(  new BorderLayout() );
-    myModel =new SocketPoolModel(SocketPool.getInstance( ));
+    myModel =new SocketPoolModel(SocketPoolFactory.getSocketPool());
     myTable = new JTable(myModel);
     myTable.setDefaultRenderer(String.class, new ColorRenderer());
     add(new JScrollPane(myTable), BorderLayout.CENTER);
@@ -51,7 +51,9 @@ public class SocketPoolPanel extends JPanel implements Observer {
   }
   
   private void addListeners(){
-    SocketPool.getInstance( ).addObserver( this );
+    if(SocketPoolFactory.getSocketPool() instanceof Observable){
+      ((Observable)SocketPoolFactory.getSocketPool()).addObserver( this );
+    }
   }
 
   @Override
@@ -68,7 +70,7 @@ public class SocketPoolPanel extends JPanel implements Observer {
         Object anValue, boolean isSelected, boolean anHasFocus, int anRow,
         int anColumn) {
       setForeground(Color.darkGray);
-      SocketProxy theProxy = myModel.getSocketProxyAtRow(anRow);
+      Object theProxy = myModel.getSocketProxyAtRow(anRow);
      
       setText(anValue.toString());
       
@@ -79,7 +81,9 @@ public class SocketPoolPanel extends JPanel implements Observer {
       if("OUT".equals(thePool)) setForeground(Color.ORANGE);
       if("CONNECT".equals(thePool)) setForeground(Color.GREEN);
       
-      setToolTipText(parseToHtml(theProxy.getStackTrace()));
+      if(theProxy instanceof SocketProxy){
+        setToolTipText(parseToHtml(((SocketProxy)theProxy).getStackTrace()));
+      }
       return this;
     }
 
@@ -107,7 +111,7 @@ public class SocketPoolPanel extends JPanel implements Observer {
     
     @Override
     public void actionPerformed( ActionEvent anE ) {
-      SocketPool.getInstance( ).cleanUp();
+      SocketPoolFactory.getSocketPool().cleanUp();
     }
   }  
 }

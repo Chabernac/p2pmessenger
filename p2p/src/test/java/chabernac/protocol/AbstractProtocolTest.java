@@ -5,14 +5,14 @@
 package chabernac.protocol;
 
 import junit.framework.TestCase;
-import chabernac.io.SocketPool;
+import chabernac.io.SocketPoolFactory;
 import chabernac.tools.PropertyMap;
 
 public abstract class AbstractProtocolTest extends TestCase {
   protected static final int SLEEP_AFTER_SCAN = 2000;
   
   public void setUp(){
-    SocketPool.getInstance( ).fullClean();
+    SocketPoolFactory.getSocketPool().cleanUp();
   }
   
   public ProtocolContainer getProtocolContainer(long anExchangeDelay, boolean isPersist, String aPeerId){

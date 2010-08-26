@@ -309,7 +309,7 @@ public class P2PFacadeTest extends TestCase {
         theMessage = theFacade1.sendEncryptedMessage( theMessage, Executors.newFixedThreadPool( 1 ) ).get();
         assertNotNull( theMessage );
 
-        Thread.sleep( 500 );
+        Thread.sleep( 1000 );
 
         Map<String, DeliveryReport> theReports = theArchive1.getDeliveryReportsForMultiPeerMessage( theMessage );
         //we only send to 1 peer and it should only contain the latest delivery report, so the size must be 1

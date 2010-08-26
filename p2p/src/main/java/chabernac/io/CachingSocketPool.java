@@ -14,34 +14,23 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public class SocketPool extends Observable{
+public class CachingSocketPool extends Observable{
   private Pool< SocketProxy > myCheckedInPool = new Pool< SocketProxy >();
   private Pool< SocketProxy > myCheckedOutPool = new Pool< SocketProxy >();
   private Pool< SocketProxy > myConnectingPool = new Pool< SocketProxy >();
-
-  private static SocketPool INSTANCE = null; 
 
   private ScheduledExecutorService myService = null;
   
   //default clean timeout is 30 seconds
   private long myCleanUpTimeoutInSeconds = 30;
   
-  private boolean isSimpleMode = false;
 
-
-  protected SocketPool(){
+  protected CachingSocketPool(){
   }
 
   private void notifyAllObs(){
     setChanged();
     notifyObservers();
-  }
-
-  public synchronized static SocketPool getInstance(){
-    if(INSTANCE == null){
-      INSTANCE = new SocketPool();
-    }
-    return INSTANCE;
   }
 
   public void setCleanUpTimeInSeconds(int aCleanUpTimeoutInSeconds){
@@ -71,14 +60,8 @@ public class SocketPool extends Observable{
   }
 
   public Socket checkOut(SocketAddress anAddress) throws IOException{
-    if(isSimpleMode){
-      Socket theSocket = new Socket();
-      theSocket.connect(anAddress);
-      return theSocket;
-    }
-    
-    SocketProxy theSocketProxy = searchFirstSocketWithAddressInPool( anAddress, myCheckedInPool);
-    if(theSocketProxy != null){
+    SocketProxy theSocketProxy = null;
+    while((theSocketProxy  = searchFirstSocketWithAddressInPool( anAddress, myCheckedInPool)) != null){
       synchronized(this){
         myCheckedInPool.remove( theSocketProxy );
         myCheckedOutPool.add( theSocketProxy );
@@ -87,13 +70,13 @@ public class SocketPool extends Observable{
       }
     }
     
-    theSocketProxy = searchFirstSocketWithAddressInPool( anAddress, myConnectingPool );
-    if(theSocketProxy != null){
-      //in this case some other thread also is trying to connect to the same address.  We will not allow two seperate threads
-      //to try to connect to the same host at the same port as it will start consuming to much resources after a while
-      //throw an exception
-      throw new IOException("Another process already tries to contact this host at this port");
-    }
+//    theSocketProxy = searchFirstSocketWithAddressInPool( anAddress, myConnectingPool );
+//    if(theSocketProxy != null){
+//      //in this case some other thread also is trying to connect to the same address.  We will not allow two seperate threads
+//      //to try to connect to the same host at the same port as it will start consuming to much resources after a while
+//      //throw an exception
+//      throw new IOException("Another process already tries to contact this host at this port");
+//    }
 
     theSocketProxy = new SocketProxy(anAddress);
     myConnectingPool.add( theSocketProxy );
@@ -118,16 +101,6 @@ public class SocketPool extends Observable{
   }
 
   public void checkIn(Socket aSocket){
-    if(isSimpleMode){
-      try {
-        aSocket.close();
-      } catch (IOException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-      }
-      return;
-    }
-    
     if(aSocket != null){
       synchronized(this){
         SocketProxy theProxy = searchProxyForSocketInPool(myCheckedOutPool, aSocket );

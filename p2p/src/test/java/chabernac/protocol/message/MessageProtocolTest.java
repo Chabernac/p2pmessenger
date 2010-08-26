@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.log4j.BasicConfigurator;
@@ -195,10 +196,10 @@ public class MessageProtocolTest extends AbstractProtocolTest {
   public void testStressTest() throws ProtocolException, InterruptedException, MessageException, UnknownPeerException{
     LOGGER.debug("Begin of testMessageProtocol");
     ProtocolContainer theProtocol1 = getProtocolContainer( -1, false, "1" );
-    ProtocolServer theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT, 5);
+    ProtocolServer theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT, 6);
 
     ProtocolContainer theProtocol2 = getProtocolContainer( -1, false, "2" );
-    ProtocolServer theServer2 = new ProtocolServer(theProtocol2, RoutingProtocol.START_PORT + 1, 5);
+    ProtocolServer theServer2 = new ProtocolServer(theProtocol2, RoutingProtocol.START_PORT + 1, 6);
 
     RoutingProtocol theRoutingProtocol1 = (RoutingProtocol)theProtocol1.getProtocol( RoutingProtocol.ID );
     final RoutingTable theRoutingTable1 = theRoutingProtocol1.getRoutingTable();
@@ -226,9 +227,11 @@ public class MessageProtocolTest extends AbstractProtocolTest {
       final CountDownLatch theLatch = new CountDownLatch(times);
 
       for(int i=0;i<times;i++){
+        final int theCurrMessage = i;
         theservice.execute( new Runnable (){
           public void run(){
             try{
+              System.out.println("Sending message nr: " + theCurrMessage);
               Message theMessage = new Message();
               theMessage.addMessageIndicator( MessageIndicator.TO_BE_ENCRYPTED );
               theMessage.setDestination( theRoutingTable1.getEntryForPeer( "2" ).getPeer() );
@@ -236,7 +239,7 @@ public class MessageProtocolTest extends AbstractProtocolTest {
               theMessageProtocol1.sendMessage( theMessage );
               theLatch.countDown();
 //              if(theLatch.getCount() % 100 == 0){
-                System.out.println("message nr: " + theLatch.getCount());
+                System.out.println("message nr: " + theCurrMessage);
 //              }
             }catch(Exception e){
               e.printStackTrace();
@@ -246,7 +249,9 @@ public class MessageProtocolTest extends AbstractProtocolTest {
 
       }
       
-      theLatch.await();
+      theLatch.await(15, TimeUnit.SECONDS);
+      
+      assertEquals( 0, theLatch.getCount() );
 
       assertEquals( times, theListener.getMessages().size() );
 

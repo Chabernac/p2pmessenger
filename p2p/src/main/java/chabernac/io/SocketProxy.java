@@ -10,6 +10,9 @@ import java.io.StringWriter;
 import java.net.Socket;
 import java.net.SocketAddress;
 import java.util.Date;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class SocketProxy {
   private static boolean isTraceEnabled = false;
@@ -28,7 +31,13 @@ public class SocketProxy {
     if(mySocket == null){
       mySocket = new Socket();
       myConnectTime = new Date();
-      mySocket.connect( myAddress );
+      ScheduledExecutorService theService = Executors.newScheduledThreadPool( 1 );
+      try{
+        theService.schedule( new SocketInterrupter(mySocket), 5, TimeUnit.SECONDS );
+        mySocket.connect( myAddress );
+      }finally{
+        theService.shutdownNow();
+      }
     }
     updateStackTrace();
     return mySocket;
@@ -77,5 +86,21 @@ public class SocketProxy {
 
   public static void setTraceEnabled(boolean anIsTraceEnabled) {
     isTraceEnabled = anIsTraceEnabled;
+  }
+
+  private class SocketInterrupter implements Runnable{
+    private final Socket mySocket;
+
+    public SocketInterrupter ( Socket anSocket ) {
+      super();
+      mySocket = anSocket;
+    }
+    
+    public void run(){
+      try {
+        mySocket.close();
+      } catch ( IOException e ) {
+      }
+    }
   }
 }

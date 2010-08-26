@@ -13,9 +13,11 @@ import javax.swing.JFrame;
 
 import org.apache.log4j.BasicConfigurator;
 
-import chabernac.io.SocketPool;
+import chabernac.io.CachingSocketPool;
+import chabernac.io.SocketPoolFactory;
 import chabernac.io.SocketPoolPanel;
 import chabernac.io.SocketProxy;
+import chabernac.io.iSocketPool;
 import chabernac.protocol.ProtocolContainer;
 import chabernac.protocol.ProtocolException;
 import chabernac.protocol.ProtocolFactory;
@@ -101,7 +103,12 @@ public class RoutingFrame extends JFrame {
     RoutingFrame theFrame = new RoutingFrame(theServer1, theContainer, true);
     theServer1.start();
     theFrame.setVisible( true );
-    SocketPool.getInstance().setCleanUpTimeInSeconds(30);
+    
+    
+    iSocketPool<SocketProxy> theSocketPool = SocketPoolFactory.getSocketPool();
+    if(theSocketPool instanceof CachingSocketPool){
+      ((CachingSocketPool)theSocketPool).setCleanUpTimeInSeconds( 30 );
+    }
   }
 
 

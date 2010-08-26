@@ -17,10 +17,15 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 
-import chabernac.io.SocketPool;
+import chabernac.io.SocketPoolFactory;
+import chabernac.io.SocketProxy;
+import chabernac.io.iSocketPool;
 import chabernac.tools.NetTools;
 
 public class Peer implements Serializable {
@@ -148,18 +153,23 @@ public class Peer implements Serializable {
     Socket theSocket = createSocket( myPort );
     
     if(theSocket == null) throw new IOException("Could not open socket to peer: " + getPeerId() + " " + getHosts() + ":" + getPort());
+    
+    ScheduledExecutorService theService = Executors.newScheduledThreadPool( 1 );
 
     BufferedReader theReader = null;
     PrintWriter theWriter = null;
     try{
+      theService.schedule( new SocketCloser(theSocket), 5, TimeUnit.SECONDS );
       theWriter = new PrintWriter(new OutputStreamWriter(theSocket.getOutputStream()));
       theReader = new BufferedReader(new InputStreamReader(theSocket.getInputStream()));
       theWriter.println(aMessage);
       theWriter.flush();
       String theReturnMessage = theReader.readLine();
+      
       return theReturnMessage;
     }finally{
-      SocketPool.getInstance( ).checkIn( theSocket );
+      theService.shutdownNow();
+      SocketPoolFactory.getSocketPool().checkIn( theSocket );
     }
   }
 
@@ -172,7 +182,7 @@ public class Peer implements Serializable {
    * @return
    */
   public synchronized Socket createSocket(int aPort){
-    SocketPool theSocketPool = SocketPool.getInstance( );
+    iSocketPool<SocketProxy> theSocketPool = SocketPoolFactory.getSocketPool();
 
     for(Iterator< String > i = new ArrayList<String>(myHost).iterator(); i.hasNext();){
       String theHost = i.next();
@@ -182,7 +192,7 @@ public class Peer implements Serializable {
         myHost.add( 0, theHost);
         return theSocket;
       }catch(Exception e){
-        LOGGER.error("Could not open connection to peer: " + myHost + ":" + myPort, e);
+//        LOGGER.error("Could not open connection to peer: " + myHost + ":" + myPort, e);
       }
     }
     return null;
@@ -213,6 +223,19 @@ public class Peer implements Serializable {
     }
     if(!isSameHost) return false;
     return getPort() == aPeer.getPort(); 
+  }
+  
+  private class SocketCloser implements Runnable{
+    private final Socket mySocket;
+
+    public SocketCloser ( Socket anSocket ) {
+      super();
+      mySocket = anSocket;
+    }
+    
+    public void run(){
+      SocketPoolFactory.getSocketPool().close(  mySocket );
+    }
     
   }
 }
