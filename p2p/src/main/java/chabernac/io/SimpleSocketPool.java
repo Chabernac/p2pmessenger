@@ -47,9 +47,11 @@ public class SimpleSocketPool extends Observable implements iSocketPool<SocketPr
   }
 
   private SocketProxy searchProxyForSocketInPool(List<SocketProxy> aPool, Socket aSocket){
-    for(SocketProxy theProxy : aPool){
-      if(theProxy.getSocket() == aSocket){
-        return theProxy;
+    synchronized(LOCK){
+      for(SocketProxy theProxy : aPool){
+        if(theProxy.getSocket() == aSocket){
+          return theProxy;
+        }
       }
     }
     return null;
@@ -80,19 +82,21 @@ public class SimpleSocketPool extends Observable implements iSocketPool<SocketPr
 
   @Override
   public void cleanUp() {
-    for(SocketProxy theSocket : myCheckedOutPool){
-      if(theSocket.getSocket() != null){
-        try {
-          theSocket.getSocket().close();
-        } catch ( IOException e ) {
+    synchronized (LOCK) {
+      for(SocketProxy theSocket : myCheckedOutPool){
+        if(theSocket.getSocket() != null){
+          try {
+            theSocket.getSocket().close();
+          } catch ( IOException e ) {
+          }
         }
       }
-    }
-    for(SocketProxy theSocket : myConnectingPool){
-      if(theSocket.getSocket() != null){
-        try {
-          theSocket.getSocket().close();
-        } catch ( IOException e ) {
+      for(SocketProxy theSocket : myConnectingPool){
+        if(theSocket.getSocket() != null){
+          try {
+            theSocket.getSocket().close();
+          } catch ( IOException e ) {
+          }
         }
       }
     }
