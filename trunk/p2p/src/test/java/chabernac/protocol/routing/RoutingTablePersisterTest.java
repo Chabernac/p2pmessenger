@@ -26,21 +26,21 @@ public class RoutingTablePersisterTest extends TestCase {
     List<String> theList = new ArrayList< String >();
     theList.add( "x20d1148" );
     theList.add( "localhost" );
-    thePeer1.setPort( 123 );
+    thePeer1.setPort( RoutingProtocol.START_PORT );
     thePeer1.setHosts( theList );
     
     Peer thePeer2 = new Peer("2");
     List<String> theList2 = new ArrayList< String >();
     theList2.add( "x20d1149" );
     theList2.add( "localhost" );
-    thePeer2.setPort( 124 );
+    thePeer2.setPort( RoutingProtocol.START_PORT + 1);
     thePeer2.setHosts( theList2 );
     
     Peer thePeer3 = new Peer("3");
     List<String> theList3 = new ArrayList< String >();
     theList3.add( "x20d1150" );
     theList3.add( "localhost" );
-    thePeer3.setPort( 125 );
+    thePeer3.setPort( RoutingProtocol.START_PORT + 2 );
     thePeer3.setHosts( theList3 );
     
     theTable.addRoutingTableEntry( new RoutingTableEntry(thePeer1, 0, thePeer1) );
