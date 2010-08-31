@@ -17,4 +17,18 @@ public class MessageTest extends TestCase {
     theMessage.addMessageIndicator( MessageIndicator.TO_BE_ENCRYPTED );
     assertTrue( theMessage.containsIndicator( MessageIndicator.TO_BE_ENCRYPTED));
   }
+  
+  public void testTTL(){
+    Message theMessage = new Message();
+    assertEquals( 8, theMessage.getTTL() );
+    theMessage.decreaseTTL();
+    assertEquals( 7, theMessage.getTTL() );
+    for(int i=0;i<10;i++){
+      theMessage.decreaseTTL();
+    }
+    assertEquals( 0, theMessage.getTTL() );
+    assertTrue( theMessage.isEndOfTTL() );
+    
+   
+  }
 }

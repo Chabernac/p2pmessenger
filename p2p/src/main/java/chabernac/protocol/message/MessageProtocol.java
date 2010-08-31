@@ -7,6 +7,7 @@ package chabernac.protocol.message;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -16,7 +17,6 @@ import chabernac.protocol.ProtocolContainer;
 import chabernac.protocol.ProtocolException;
 import chabernac.protocol.encryption.EncryptionException;
 import chabernac.protocol.encryption.EncryptionProtocol;
-import chabernac.protocol.encryption.EncryptionProtocol.Response;
 import chabernac.protocol.routing.Peer;
 import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.RoutingTable;
@@ -31,10 +31,15 @@ import chabernac.tools.XMLTools;
 public class MessageProtocol extends Protocol {
   private static Logger LOGGER = Logger.getLogger( MessageProtocol.class );
   public static final String ID = "MSG";
+  
+  private static enum STATUS_MESSAGE {UNKNOWN_PEER, UNKNOWN_HOST, UNDELIVERABLE, DELIVERED, UNCRECOGNIZED_MESSAGE, COULD_NOT_DECRYPT, TTL_EXPIRED};
 
-  private static enum STATUS_MESSAGE {UNKNOWN_PEER, UNKNOWN_HOST, UNDELIVERABLE, DELIVERED, UNCRECOGNIZED_MESSAGE, COULD_NOT_DECRYPT};
+  private boolean isKeepHistory = false;
+  
+  private List< Message > myHistory = new ArrayList< Message >();
 
   private List<iMessageListener> myListeners = new ArrayList< iMessageListener >();
+  private List<iMessageListener> myHistoryListeners = new ArrayList< iMessageListener >();
 
   public MessageProtocol ( ) {
     super( ID );
@@ -59,6 +64,11 @@ public class MessageProtocol extends Protocol {
   }
 
   public String handleMessage(long aSessionId, Message aMessage){
+    if(isKeepHistory){
+      myHistory.add(aMessage);
+      for(iMessageListener theListener : myHistoryListeners) theListener.messageReceived( aMessage );
+    }
+    
     Peer theDestionation = aMessage.getDestination();
     try {
       if(theDestionation.getPeerId().equals( getRoutingTable().getLocalPeerId() )){
@@ -74,17 +84,26 @@ public class MessageProtocol extends Protocol {
           return STATUS_MESSAGE.DELIVERED.name();
         }
       } else {
-        Peer theGateway = getRoutingTable().getGatewayForPeer( theDestionation );
-        
-        Peer theLocalPeer = getRoutingTable().getEntryForLocalPeer().getPeer();
-        if(!theGateway.isSameHostAndPort( theLocalPeer )){
-          return theGateway.send( createMessage( XMLTools.toXML( aMessage ) ));
+        //the message is not intented for us, it needs to be sended further.
+        //only send the message further if the time to live (TTL) is not yet 0.
+        if(aMessage.isEndOfTTL()){
+          LOGGER.error("This message can not be send further because its TTL has expired: " + XMLTools.toXML( aMessage ) );
+          return STATUS_MESSAGE.TTL_EXPIRED.name();
         } else {
-          //TODO we should not come in this situation
-          LOGGER.error("Peer with id: '" + theGateway.getPeerId() + "' has same host and port as local peer: '" + theLocalPeer.getPeerId() + "'");
-          return STATUS_MESSAGE.UNDELIVERABLE.name();
+          //decrease the TTL
+          aMessage.decreaseTTL();
+          Peer theGateway = getRoutingTable().getGatewayForPeer( theDestionation );
+
+          Peer theLocalPeer = getRoutingTable().getEntryForLocalPeer().getPeer();
+          if(!theGateway.isSameHostAndPort( theLocalPeer )){
+            return theGateway.send( createMessage( XMLTools.toXML( aMessage ) ));
+          } else {
+            //TODO we should not come in this situation
+            LOGGER.error("Peer with id: '" + theGateway.getPeerId() + "' has same host and port as local peer: '" + theLocalPeer.getPeerId() + "'");
+            return STATUS_MESSAGE.UNDELIVERABLE.name();
+          }
         }
-        
+
       }
     } catch ( UnknownPeerException e ) {
       LOGGER.error( "Unknown peer", e );
@@ -183,8 +202,29 @@ public class MessageProtocol extends Protocol {
   public void removeMessageListener(iMessageListener aListener){
     myListeners.remove( aListener );
   }
+  
+  public void addMessageHistoryListener(iMessageListener aListener){
+    myHistoryListeners.add( aListener );
+  }
+
+  public void removeMessageHistoryListener(iMessageListener aListener){
+    myHistoryListeners.remove( aListener );
+  }
+  
+  public List<Message> getHistory(){
+    return Collections.unmodifiableList( myHistory );
+  }
+  
+  public boolean isKeepHistory() {
+    return isKeepHistory;
+  }
+
+  public void setKeepHistory( boolean anKeepHistory ) {
+    isKeepHistory = anKeepHistory;
+  }
 
   @Override
   public void stop() {
+    myHistory.clear();
   }
 }
