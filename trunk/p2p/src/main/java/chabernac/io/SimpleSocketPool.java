@@ -60,6 +60,14 @@ public class SimpleSocketPool extends Observable implements iSocketPool<SocketPr
   @Override
   public void checkIn( Socket aSocket ) {
     SocketProxy theProxy = searchProxyForSocketInPool( myCheckedOutPool, aSocket );
+    
+    if(theProxy == null) {
+      try {
+        aSocket.close();
+      } catch ( IOException e ) {
+      }
+      return;
+    }
 
     try {
       if(theProxy.getSocket() != null){

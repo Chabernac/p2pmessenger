@@ -4,12 +4,13 @@
  */
 package chabernac.protocol.routing;
 
-import java.awt.GridLayout;
+import java.awt.BorderLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.UUID;
 
 import javax.swing.JFrame;
+import javax.swing.JTabbedPane;
 
 import org.apache.log4j.BasicConfigurator;
 
@@ -22,6 +23,8 @@ import chabernac.protocol.ProtocolContainer;
 import chabernac.protocol.ProtocolException;
 import chabernac.protocol.ProtocolFactory;
 import chabernac.protocol.ProtocolServer;
+import chabernac.protocol.message.MessagePanel;
+import chabernac.protocol.message.MessageProtocol;
 import chabernac.protocol.userinfo.UserInfoPanel;
 import chabernac.protocol.userinfo.UserInfoProtocol;
 import chabernac.tools.PropertyMap;
@@ -43,10 +46,11 @@ public class RoutingFrame extends JFrame {
     buildGUI();
   }
 
-  private void init(){
+  private void init() throws ProtocolException{
     setDefaultCloseOperation( JFrame.DISPOSE_ON_CLOSE);
     getRoutingTable().setKeepHistory(true);
     SocketProxy.setTraceEnabled(true);
+    ((MessageProtocol)myProtocolContainer.getProtocol( MessageProtocol.ID )).setKeepHistory( true );
   }
 
   private void addListeners(){
@@ -56,14 +60,23 @@ public class RoutingFrame extends JFrame {
   private void buildGUI() throws ProtocolException {
     RoutingProtocol theRoutingProtocl = (RoutingProtocol)myProtocolContainer.getProtocol( RoutingProtocol.ID );
     setTitle( theRoutingProtocl.getLocalPeerId() );
+    
+    JTabbedPane thePane = new JTabbedPane();
+    thePane.add("Routing Table",  new RoutingPanel(theRoutingProtocl) );
+    thePane.add("Sockets", new SocketPoolPanel() );
 
-    getContentPane().setLayout( new GridLayout(-1,2));
-    getContentPane().add(new RoutingPanel(theRoutingProtocl));
-    getContentPane().add(new UserInfoPanel((UserInfoProtocol)myProtocolContainer.getProtocol( UserInfoProtocol.ID )));
+    thePane.add("User Info", new UserInfoPanel((UserInfoProtocol)myProtocolContainer.getProtocol( UserInfoProtocol.ID )));
     MonitorPanel theMonitorPanel = new MonitorPanel();
     myProtocolServer.setRunnableListener( theMonitorPanel );
-    getContentPane().add(theMonitorPanel);
-    getContentPane().add( new SocketPoolPanel() );
+    thePane.add("Threads", theMonitorPanel);
+    
+    MessageProtocol theMessageProtocol = (MessageProtocol)myProtocolContainer.getProtocol( MessageProtocol.ID );
+    thePane.add("Messages", new MessagePanel(theMessageProtocol));
+    
+
+    getContentPane().setLayout( new BorderLayout() );
+    getContentPane().add( thePane, BorderLayout.CENTER );
+    
 
     setSize( 1200, 700 );
   }
@@ -82,6 +95,10 @@ public class RoutingFrame extends JFrame {
       getRoutingTable().setKeepHistory(false);
       getRoutingTable().clearHistory();
       SocketProxy.setTraceEnabled(false);
+      try {
+        ((MessageProtocol)myProtocolContainer.getProtocol( MessageProtocol.ID )).setKeepHistory( false );
+      } catch ( ProtocolException e ) {
+      }
 
       if(isStopOnClose){
         myProtocolServer.stop();

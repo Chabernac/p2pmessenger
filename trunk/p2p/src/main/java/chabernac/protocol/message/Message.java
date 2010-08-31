@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import chabernac.protocol.routing.Peer;
 
@@ -18,11 +19,14 @@ public class Message {
   private Map<String, String> myHeaders = null;
   private List<MessageIndicator> myIndicators = null;
   private boolean isProtocolMessage = false;
+  private UUID myMessageId = UUID.randomUUID();
   
   //only when the byte array is small we can use it to transport bytes trough the network.
   //because the message is reformed to xml the xml will be many times bigger as the byte array
   //so transporting large byte array's is not a good practice.
   private byte[] myBytes = null;
+  
+  private int myTTL = 8;
   
   public Peer getSource() {
     return mySource;
@@ -100,5 +104,26 @@ public class Message {
   }
   public void setIndicators( List< MessageIndicator > anIndicators ) {
     myIndicators = anIndicators;
+  }
+  public int getTTL() {
+    return myTTL;
+  }
+  public void setTTL( int anTtl ) {
+    myTTL = anTtl;
+  }
+  
+  public void decreaseTTL(){
+    if(myTTL > 0){
+      myTTL--;
+    }
+  }
+  public boolean isEndOfTTL() {
+    return myTTL == 0;
+  }
+  public UUID getMessageId() {
+    return myMessageId;
+  }
+  public void setMessageId( UUID anMessageId ) {
+    myMessageId = anMessageId;
   }
 } 
