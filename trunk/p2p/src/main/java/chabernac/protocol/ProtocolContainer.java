@@ -8,16 +8,21 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+
+import chabernac.protocol.ProtocolMessageEntry.Status;
 
 public class ProtocolContainer implements IProtocol {
   public static enum Command {PROTOCOLS};
   public static enum Response {UNKNOWN_COMMAND, UNKNOWN_PROTOCOL, INVALID_PROTOCOL};
   
   private Map<String, IProtocol> myProtocolMap = null;
+  private List< ProtocolMessageEntry > myMessageHistory = Collections.synchronizedList( new ArrayList< ProtocolMessageEntry >() );
+  private List<iProtocolMessageListener> myListeners = new ArrayList< iProtocolMessageListener >();
   
   private iProtocolFactory myProtocolFactory = null;
   private ServerInfo myServerInfo = null;
@@ -29,15 +34,33 @@ public class ProtocolContainer implements IProtocol {
 
   @Override
   public String handleCommand( long aSessionId, String anInput ) {
-    if(anInput.length() < 3) return Response.INVALID_PROTOCOL.name();
+    ProtocolMessageEntry theEntry = new ProtocolMessageEntry(anInput, Status.INPROGRESS);
+    myMessageHistory.add( theEntry );
+    notifyListeners();
+    
+    if(anInput.length() < 3) {
+      theEntry.setStatus( Status.INVALID );
+      return Response.INVALID_PROTOCOL.name();
+    }
     String theID = anInput.substring( 0, 3 );
     IProtocol theProtocol;
     try {
       theProtocol = getProtocol( theID );
-      return theProtocol.handleCommand( aSessionId, anInput.substring( 3 ) ); 
+      String theResult = theProtocol.handleCommand( aSessionId, anInput.substring( 3 ) );
+      theEntry.setOutput( theResult );
+      notifyListeners();
+      return theResult;
     } catch ( ProtocolException e ) {
+      theEntry.setStatus( Status.INVALID );
+      notifyListeners();
       return Response.UNKNOWN_PROTOCOL.name();
     }
+  }
+  
+  private void notifyListeners(){
+   for(iProtocolMessageListener theListener : myListeners){
+     theListener.messageReceived();
+   }
   }
   
   public String getProtocolString() {
@@ -118,5 +141,13 @@ public class ProtocolContainer implements IProtocol {
         theProtocol.setServerInfo( myServerInfo );
       }
     }
+  }
+  
+  public void addProtocolMessageListener(iProtocolMessageListener aListener){
+    myListeners.add(aListener);
+  }
+  
+  public void removeProtocolMessageListener(iProtocolMessageListener aListener){
+    myListeners.remove( aListener );
   }
 }
