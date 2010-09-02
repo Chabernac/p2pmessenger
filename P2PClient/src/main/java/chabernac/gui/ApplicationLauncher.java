@@ -20,7 +20,6 @@ import java.util.concurrent.TimeUnit;
 
 import javax.imageio.ImageIO;
 import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
 
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
@@ -89,6 +88,7 @@ public class ApplicationLauncher {
       myChatFrame = new ChatFrame(myFacade);
     }
     myChatFrame.setVisible( true );
+    myChatFrame.requestFocus();
   }
 
   private static void startFacade(ArgsInterPreter anInterPreter) throws P2PFacadeException{
@@ -171,8 +171,11 @@ public class ApplicationLauncher {
         MenuItem theOpenItem = new MenuItem("Open");
         theOpenItem.addActionListener( new ActionListener(){
           public void actionPerformed(ActionEvent evt){
-            myChatFrame.setVisible( true );
-            myChatFrame.requestFocus();
+            try {
+              showChatFrame();
+            } catch ( P2PFacadeException e ) {
+              LOGGER.error("Unable to load chat frame", e);
+            }
           }
         });
         MenuItem theExitItem = new MenuItem("Exit");
@@ -180,7 +183,7 @@ public class ApplicationLauncher {
           public void actionPerformed(ActionEvent evt){
             if(JOptionPane.OK_OPTION == JOptionPane.showConfirmDialog( myChatFrame, "Ben je zeker dat je wilt afsluiten? Als je afsluit kan je geen berichten meer ontvangen.", "Afsluiten", JOptionPane.OK_CANCEL_OPTION)){
               theIcon.setToolTip( "P2PClient: Bezig met afsluiten" );
-              myChatFrame.setVisible( false );
+              if(myChatFrame != null) myChatFrame.setVisible( false );
               EventDispatcher.getInstance( SavePreferencesEvent.class ).fireEvent( new SavePreferencesEvent() );
               ApplicationPreferences.getInstance().save();
               myFacade.stop();
@@ -192,12 +195,14 @@ public class ApplicationLauncher {
         final MenuItem theOntopItem = new MenuItem("Always on top");
         theOntopItem.addActionListener( new ActionListener(){
           public void actionPerformed(ActionEvent evt){
-            if(myChatFrame.isAlwaysOnTop()){
-              myChatFrame.setAlwaysOnTop( false);
-              theOntopItem.setLabel( "Always on top" );
-            } else {
-              myChatFrame.setAlwaysOnTop( true );
-              theOntopItem.setLabel( "Not always on top" );
+            if(myChatFrame != null){
+              if(myChatFrame.isAlwaysOnTop()){
+                myChatFrame.setAlwaysOnTop( false);
+                theOntopItem.setLabel( "Always on top" );
+              } else {
+                myChatFrame.setAlwaysOnTop( true );
+                theOntopItem.setLabel( "Not always on top" );
+              }
             }
           }
         });
@@ -210,8 +215,15 @@ public class ApplicationLauncher {
         theTray.add( theIcon );
         theIcon.addActionListener( new ActionListener(){
           public void actionPerformed(ActionEvent evt){
-            myChatFrame.setVisible( !myChatFrame.isVisible() );
-            myChatFrame.requestFocus();
+            if(myChatFrame == null || !myChatFrame.isVisible()){
+              try {
+                showChatFrame();
+              } catch ( P2PFacadeException e ) {
+                LOGGER.error("Unable to show chat frame");
+              }
+            } else {
+              myChatFrame.setVisible( false );
+            }
           }
         });
         theIcon.addMouseListener( new MouseAdapter(){
