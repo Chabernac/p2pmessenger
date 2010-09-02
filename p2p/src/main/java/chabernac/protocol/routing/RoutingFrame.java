@@ -22,6 +22,7 @@ import chabernac.io.iSocketPool;
 import chabernac.protocol.ProtocolContainer;
 import chabernac.protocol.ProtocolException;
 import chabernac.protocol.ProtocolFactory;
+import chabernac.protocol.ProtocolMessagePanel;
 import chabernac.protocol.ProtocolServer;
 import chabernac.protocol.message.MessagePanel;
 import chabernac.protocol.message.MessageProtocol;
@@ -72,6 +73,7 @@ public class RoutingFrame extends JFrame {
     
     MessageProtocol theMessageProtocol = (MessageProtocol)myProtocolContainer.getProtocol( MessageProtocol.ID );
     thePane.add("Messages", new MessagePanel(theMessageProtocol));
+    thePane.add("Protocol", new ProtocolMessagePanel(myProtocolContainer));
     
 
     getContentPane().setLayout( new BorderLayout() );
