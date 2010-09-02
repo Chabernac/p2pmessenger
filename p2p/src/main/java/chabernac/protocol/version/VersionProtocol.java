@@ -147,7 +147,9 @@ public class VersionProtocol extends Protocol {
 
     @Override
     public void routingTableEntryChanged( final RoutingTableEntry anEntry ) {
-      getVersionForPeer( anEntry.getPeer().getPeerId() );
+      if(anEntry.isReachable()){
+        getVersionForPeer( anEntry.getPeer().getPeerId() );
+      }
     }
 
   }

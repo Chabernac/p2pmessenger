@@ -275,7 +275,9 @@ public class UserInfoProtocol extends Protocol {
     @Override
     public void routingTableEntryChanged( RoutingTableEntry anEntry ) {
       if(!myUserInfo.containsKey( anEntry.getPeer() )){
-        myRetrievalService.execute( new UserInfoRetriever(anEntry.getPeer().getPeerId()) );
+        if(anEntry.isReachable()){
+          myRetrievalService.execute( new UserInfoRetriever(anEntry.getPeer().getPeerId()) );
+        }
       } 
 //      else if(anEntry.getHopDistance() == RoutingTableEntry.MAX_HOP_DISTANCE){
 //        //this peer has gone offline, we can not retrieve the user information but we must change the user info
