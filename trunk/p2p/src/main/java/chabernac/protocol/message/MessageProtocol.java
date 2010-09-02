@@ -100,7 +100,7 @@ public class MessageProtocol extends Protocol {
           } else {
             //TODO we should not come in this situation
             LOGGER.error("Peer with id: '" + theGateway.getPeerId() + "' has same host and port as local peer: '" + theLocalPeer.getPeerId() + "'");
-            return STATUS_MESSAGE.UNDELIVERABLE.name();
+            return STATUS_MESSAGE.UNDELIVERABLE.name() + " gateway has same host and port of local peer";
           }
         }
 
@@ -113,7 +113,7 @@ public class MessageProtocol extends Protocol {
       return STATUS_MESSAGE.UNKNOWN_HOST.name();
     } catch ( IOException e ) { 
       LOGGER.error( "Message could not be deliverd", e );
-      return STATUS_MESSAGE.UNDELIVERABLE.name();
+      return STATUS_MESSAGE.UNDELIVERABLE.name() + " " + e.getMessage();
     } catch ( ProtocolException e ) {
       LOGGER.error( "Protocol excepotin", e );
       return ProtocolContainer.Response.UNKNOWN_PROTOCOL.name();
