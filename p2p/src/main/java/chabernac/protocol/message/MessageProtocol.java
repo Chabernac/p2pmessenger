@@ -20,6 +20,7 @@ import chabernac.protocol.encryption.EncryptionProtocol;
 import chabernac.protocol.routing.Peer;
 import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.RoutingTable;
+import chabernac.protocol.routing.RoutingTableEntry;
 import chabernac.protocol.routing.UnknownPeerException;
 import chabernac.tools.XMLTools;
 
@@ -31,11 +32,11 @@ import chabernac.tools.XMLTools;
 public class MessageProtocol extends Protocol {
   private static Logger LOGGER = Logger.getLogger( MessageProtocol.class );
   public static final String ID = "MSG";
-  
+
   private static enum STATUS_MESSAGE {UNKNOWN_PEER, UNKNOWN_HOST, UNDELIVERABLE, DELIVERED, UNCRECOGNIZED_MESSAGE, COULD_NOT_DECRYPT, TTL_EXPIRED};
 
   private boolean isKeepHistory = false;
-  
+
   private List< Message > myHistory = new ArrayList< Message >();
 
   private List<iMessageListener> myListeners = new ArrayList< iMessageListener >();
@@ -68,42 +69,15 @@ public class MessageProtocol extends Protocol {
       myHistory.add(aMessage);
       for(iMessageListener theListener : myHistoryListeners) theListener.messageReceived( aMessage );
     }
-    
-    Peer theDestionation = aMessage.getDestination();
+
+    Peer theDestination = aMessage.getDestination();
     try {
-      if(theDestionation.getPeerId().equals( getRoutingTable().getLocalPeerId() )){
-        checkEnctryption(aMessage);
-        if(aMessage.isProtocolMessage()){
-          //reoffer the content of the message to the handle method
-          //this will cause sub protocols to handle the message if they are present
-          return STATUS_MESSAGE.DELIVERED.name() + getMasterProtocol().handleCommand( aSessionId, aMessage.getMessage() );
-        } else {
-          for(iMessageListener theListener : myListeners){
-            theListener.messageReceived( aMessage );
-          }
-          return STATUS_MESSAGE.DELIVERED.name();
-        }
+      if(theDestination.getPeerId().equals( getRoutingTable().getLocalPeerId() )){
+        return handleMessageForUs(aSessionId, aMessage);
       } else {
         //the message is not intented for us, it needs to be sended further.
         //only send the message further if the time to live (TTL) is not yet 0.
-        if(aMessage.isEndOfTTL()){
-          LOGGER.error("This message can not be send further because its TTL has expired: " + XMLTools.toXML( aMessage ) );
-          return STATUS_MESSAGE.TTL_EXPIRED.name();
-        } else {
-          //decrease the TTL
-          aMessage.decreaseTTL();
-          Peer theGateway = getRoutingTable().getGatewayForPeer( theDestionation );
-
-          Peer theLocalPeer = getRoutingTable().getEntryForLocalPeer().getPeer();
-          if(!theGateway.isSameHostAndPort( theLocalPeer )){
-            return theGateway.send( createMessage( XMLTools.toXML( aMessage ) ));
-          } else {
-            //TODO we should not come in this situation
-            LOGGER.error("Peer with id: '" + theGateway.getPeerId() + "' has same host and port as local peer: '" + theLocalPeer.getPeerId() + "'");
-            return STATUS_MESSAGE.UNDELIVERABLE.name() + " gateway has same host and port of local peer";
-          }
-        }
-
+        return forwardMessage(aMessage);
       }
     } catch ( UnknownPeerException e ) {
       LOGGER.error( "Unknown peer", e );
@@ -122,25 +96,45 @@ public class MessageProtocol extends Protocol {
       return STATUS_MESSAGE.COULD_NOT_DECRYPT.name();
     }
   }
+  
+  private String handleMessageForUs(long aSessionId, Message aMessage) throws EncryptionException{
+    checkEnctryption(aMessage);
+    if(aMessage.isProtocolMessage()){
+      //reoffer the content of the message to the handle method
+      //this will cause sub protocols to handle the message if they are present
+      return STATUS_MESSAGE.DELIVERED.name() + getMasterProtocol().handleCommand( aSessionId, aMessage.getMessage() );
+    } else {
+      for(iMessageListener theListener : myListeners){
+        theListener.messageReceived( aMessage );
+      }
+      return STATUS_MESSAGE.DELIVERED.name();
+    }
+  }
 
-//  private void checkEnctryption( Message anMessage ) throws EncryptionException {
-//    if(anMessage.containsIndicator( MessageIndicator.ENCRYPTED )){
-//      byte[] theEncryptedData = Base64.decodeBase64( anMessage.getMessage().getBytes() );
-//
-//      try {
-//        KeyExchangeProtocol theKeyExchangeProtocol= ((KeyExchangeProtocol)findProtocolContainer().getProtocol( KeyExchangeProtocol.ID ));
-//
-//        iPublicPrivateKeyEncryption theEncryption = theKeyExchangeProtocol.getEncryption();
-//
-//        String theMessage = new String(theEncryption.decryptMessage( theEncryptedData ));
-//        anMessage.setMessage( theMessage );
-//        anMessage.removeMessageIndicator( MessageIndicator.ENCRYPTED );
-//      } catch ( ProtocolException e ) {
-//        throw new EncryptionException("Could not decrypt message", e);
-//      }
-//
-//    }
-//  }
+  private String forwardMessage(Message aMessage) throws UnknownPeerException, ProtocolException, UnknownHostException, IOException{
+    if(aMessage.isEndOfTTL()){
+      LOGGER.error("This message can not be send further because its TTL has expired: " + XMLTools.toXML( aMessage ) );
+      return STATUS_MESSAGE.TTL_EXPIRED.name();
+    } else {
+      aMessage.decreaseTTL();
+
+      RoutingTableEntry theEntry = getRoutingTable().getEntryForPeer( aMessage.getDestination().getPeerId() );
+
+      //only forward the message if this peer is reachable
+      if(!theEntry.isReachable()) return STATUS_MESSAGE.UNDELIVERABLE.name() + " the peer with peer id: '" + theEntry.getPeer().getPeerId() + "' is not reachable";
+
+      Peer theGateway = getRoutingTable().getGatewayForPeer( aMessage.getDestination() );
+
+      Peer theLocalPeer = getRoutingTable().getEntryForLocalPeer().getPeer();
+      if(!theGateway.isSameHostAndPort( theLocalPeer )){
+        return theGateway.send( createMessage( XMLTools.toXML( aMessage ) ));
+      } else {
+        //TODO we should not come in this situation
+        LOGGER.error("Peer with id: '" + theGateway.getPeerId() + "' has same host and port as local peer: '" + theLocalPeer.getPeerId() + "'");
+        return STATUS_MESSAGE.UNDELIVERABLE.name() + " gateway has same host and port of local peer";
+      }
+    }
+  }
 
   private void checkEnctryption( Message anMessage ) throws EncryptionException {
     if(anMessage.containsIndicator( MessageIndicator.ENCRYPTED )){
@@ -170,31 +164,6 @@ public class MessageProtocol extends Protocol {
     throw new MessageException("Message could not be delivered return code: '" + theResult + "'");
   }
 
-//  public String sendEncryptedMessage(Message aMessage) throws MessageException{
-//    KeyExchangeProtocol theKeyExchangeProtocol;
-//    try {
-//      theKeyExchangeProtocol = ((KeyExchangeProtocol)findProtocolContainer().getProtocol( KeyExchangeProtocol.ID ));
-//    } catch ( ProtocolException e1 ) {
-//      throw new MessageException("Could not send encryped message because keyexchangeprotocol was not found", e1);
-//    }
-//
-//    iPublicPrivateKeyEncryption theEncryption = theKeyExchangeProtocol.getEncryption();
-//
-//    if(!theKeyExchangeProtocol.assurePublicKeyForPeer( aMessage.getDestination().getPeerId() )){
-//      throw new MessageException("Could not encrypt message, public key for peer could not be retrieved");
-//    }
-//
-//    try {
-//      byte[] theEncryptedMessage = theEncryption.encryptMessageForUser( aMessage.getDestination().getPeerId(), aMessage.getMessage().getBytes() );
-//
-//      aMessage.setMessage( new String(Base64.encodeBase64( theEncryptedMessage )) );
-//      aMessage.addMessageIndicator( MessageIndicator.ENCRYPTED );
-//      return sendMessage( aMessage );
-//    } catch ( EncryptionException e ) {
-//      throw new MessageException("Could not enctrypt message", e);
-//    }
-//  }
-
   public void addMessageListener(iMessageListener aListener){
     myListeners.add( aListener );
   }
@@ -202,7 +171,7 @@ public class MessageProtocol extends Protocol {
   public void removeMessageListener(iMessageListener aListener){
     myListeners.remove( aListener );
   }
-  
+
   public void addMessageHistoryListener(iMessageListener aListener){
     myHistoryListeners.add( aListener );
   }
@@ -210,11 +179,11 @@ public class MessageProtocol extends Protocol {
   public void removeMessageHistoryListener(iMessageListener aListener){
     myHistoryListeners.remove( aListener );
   }
-  
+
   public List<Message> getHistory(){
     return Collections.unmodifiableList( myHistory );
   }
-  
+
   public boolean isKeepHistory() {
     return isKeepHistory;
   }

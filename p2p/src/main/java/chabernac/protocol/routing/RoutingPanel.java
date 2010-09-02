@@ -5,6 +5,8 @@
 package chabernac.protocol.routing;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.util.concurrent.ExecutorService;
@@ -13,11 +15,13 @@ import java.util.concurrent.Executors;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.border.TitledBorder;
+import javax.swing.table.TableCellRenderer;
 
 import chabernac.protocol.ProtocolException;
 
@@ -26,6 +30,7 @@ public class RoutingPanel extends JPanel {
   private RoutingProtocol myRoutingProtocol = null;
   private ExecutorService myExecutorService = Executors.newFixedThreadPool( 10 );
   private JTextArea myInfoArea = new JTextArea();
+  private RoutingTableModel myModel = null;
   
   public RoutingPanel(RoutingProtocol aRoutingProtocol){
     myRoutingProtocol = aRoutingProtocol;
@@ -52,7 +57,12 @@ public class RoutingPanel extends JPanel {
   }
 
   private void buildCenterPanel() {
-    JScrollPane theScrollPane = new JScrollPane(new JTable(new RoutingTableModel(myRoutingProtocol.getRoutingTable())));
+    myModel = new RoutingTableModel(myRoutingProtocol.getRoutingTable());
+    JTable theTable =new JTable(myModel); 
+    ColorRenderer theRenderer = new ColorRenderer();
+    theTable.setDefaultRenderer(String.class, theRenderer);
+    theTable.setDefaultRenderer(Integer.class, theRenderer);
+    JScrollPane theScrollPane = new JScrollPane(theTable);
     add(theScrollPane, BorderLayout.CENTER);
   }
 
@@ -257,6 +267,29 @@ public class RoutingPanel extends JPanel {
 
     }
     
+  }
+  
+  private class ColorRenderer extends JLabel implements TableCellRenderer{
+    private static final long serialVersionUID = 7571899561399741995L;
+
+    @Override
+    public Component getTableCellRendererComponent(JTable anTable,
+        Object anValue, boolean isSelected, boolean anHasFocus, int anRow,
+        int anColumn) {
+      setOpaque( true );
+      setBackground( Color.white );
+      
+      RoutingTableEntry theEntry = myModel.getRoutingTableEntryAtRow( anRow);
+     
+      if(!theEntry.isReachable()) setBackground( new Color(255,200,200) );
+      if(theEntry.getHopDistance() == 0) setBackground( new Color(100,100,255) );
+      if(theEntry.getHopDistance() > 1 && theEntry.getHopDistance() < RoutingTableEntry.MAX_HOP_DISTANCE ) setBackground( Color.yellow );
+
+      
+      setText(anValue.toString());
+      
+      return this;
+    }
   }
 
 }

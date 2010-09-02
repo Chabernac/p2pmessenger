@@ -25,7 +25,7 @@ import chabernac.util.concurrent.iRunnableListener;
 
 public class ProtocolServer implements Runnable{
   private static Logger LOGGER = Logger.getLogger(ProtocolServer.class);
-  
+
   private Random myRandom = new Random();
 
   private int myPort;
@@ -39,7 +39,7 @@ public class ProtocolServer implements Runnable{
   private Object LOCK = new Object();
   private AtomicLong mySimultanousThreads = new AtomicLong();
   private iRunnableListener myRunnableListener = null;
-  
+
   public ProtocolServer(IProtocol aProtocol, int aPort, int aNumberOfThreads){
     this(aProtocol, aPort, aNumberOfThreads, false);
   }
@@ -72,11 +72,12 @@ public class ProtocolServer implements Runnable{
     } catch ( IOException e ) {
     }
     myProtocol.stop();
-    
-    while(isStarted){
+
+    int theCount = 5;
+    while(isStarted && theCount-- > 0){
       synchronized ( LOCK ) {
         try {
-          LOCK.wait();
+          LOCK.wait(1000);
         } catch ( InterruptedException e ) {
         }
       }
@@ -87,7 +88,7 @@ public class ProtocolServer implements Runnable{
   public void run() {
     try{
       mySimultanousThreads.incrementAndGet();
-      
+
       if(isFindUnusedPort){
         myServerSocket = NetTools.openServerSocket( myPort );
       } else {
@@ -98,14 +99,14 @@ public class ProtocolServer implements Runnable{
         isStarted = true;
         LOCK.notify();
       }
-      
+
       myServerInfo.setServerPort( myServerSocket.getLocalPort() );
       myProtocol.setServerInfo( myServerInfo );
 
       ExecutorService theClientHandlerService = Executors.newFixedThreadPool( myNumberOfThreads );
 
       LOGGER.debug( "Starting protocol server at port '" + myPort + "'" );
-      
+
       while(true){ 
         Socket theClientSocket = myServerSocket.accept();
         LOGGER.debug("Client accepted, current number of clients: " + mySimultanousThreads.get());
@@ -121,19 +122,19 @@ public class ProtocolServer implements Runnable{
       }
     }catch(Exception e){
       LOGGER.error("Could not start server", e);
+    } finally {
+      synchronized ( LOCK ) {
+        isStarted = false;
+        LOCK.notify();
+      }
+      mySimultanousThreads.decrementAndGet();
     }
-    
-    synchronized ( LOCK ) {
-      isStarted = false;
-      LOCK.notify();
-    }
-    mySimultanousThreads.decrementAndGet();
   }
-  
+
   public boolean isStarted(){
     return isStarted;
   }
-  
+
   public iRunnableListener getRunnableListener() {
     return myRunnableListener;
   }
@@ -159,7 +160,7 @@ public class ProtocolServer implements Runnable{
       try{
         theReader = new BufferedReader(new InputStreamReader(mySocket.getInputStream()));
         theWriter = new PrintWriter(new OutputStreamWriter(mySocket.getOutputStream()));
-        
+
         String theLine = null;
         while( (theLine = theReader.readLine()) != null){
 //          LOGGER.debug("Line received: '" + theLine + "'");
@@ -190,7 +191,7 @@ public class ProtocolServer implements Runnable{
     protected String getExtraInfo() {
       return mySocket.getInetAddress().getHostName() + ":" + mySocket.getPort();
     }
-    
+
     public ServerInfo getServerInfo(){
       return myServerInfo;
     }

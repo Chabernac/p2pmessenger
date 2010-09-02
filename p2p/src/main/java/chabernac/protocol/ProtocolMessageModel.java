@@ -38,8 +38,8 @@ public class ProtocolMessageModel implements TableModel {
 
   @Override
   public String getColumnName(int aColumn) {
-    if(aColumn == 0) return "State";
-    if(aColumn == 1) return "Timestamp";
+    if(aColumn == 0) return "Timestamp";
+    if(aColumn == 1) return "State";
     if(aColumn == 2) return "Input";
     if(aColumn == 3) return "Output";
     return "";
@@ -49,12 +49,16 @@ public class ProtocolMessageModel implements TableModel {
   public int getRowCount() {
     return myContainer.getMessageHistory().size();
   }
+  
+  public ProtocolMessageEntry getEntryAtRow(int aRow){
+    return myContainer.getMessageHistory().get(aRow);
+  }
 
   @Override
   public Object getValueAt(int aRow, int aColumn) {
-    ProtocolMessageEntry theEntry = myContainer.getMessageHistory().get(aRow);
-    if(aColumn == 0) return theEntry.getState().name();
-    if(aColumn == 1) return FORMAT.format(theEntry.getTimestamp());
+    ProtocolMessageEntry theEntry = getEntryAtRow( aRow );
+    if(aColumn == 0) return FORMAT.format(theEntry.getTimestamp());
+    if(aColumn == 1) return theEntry.getState().name();
     if(aColumn == 2) return theEntry.getInput();
     if(aColumn == 3) return theEntry.getOutput();
     return null;

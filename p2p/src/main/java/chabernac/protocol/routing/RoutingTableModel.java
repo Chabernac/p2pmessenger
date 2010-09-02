@@ -49,12 +49,16 @@ public class RoutingTableModel implements TableModel {
 
   @Override
   public int getRowCount() {
-    return myRoutingTable.getReachableEntriesEntries().size();
+    return myRoutingTable.getEntries().size();
+  }
+  
+  public RoutingTableEntry getRoutingTableEntryAtRow(int aRow){
+    return  myRoutingTable.getEntries().get(aRow);
   }
 
   @Override
   public Object getValueAt( int anRowIndex, int anColumnIndex ) {
-    RoutingTableEntry theRoutingTableEntry = myRoutingTable.getReachableEntriesEntries().get(anRowIndex);
+    RoutingTableEntry theRoutingTableEntry = getRoutingTableEntryAtRow( anRowIndex );
     if(anColumnIndex == 0) return theRoutingTableEntry.getPeer().toString();
     if(anColumnIndex == 1) return theRoutingTableEntry.getHopDistance();
     if(anColumnIndex == 2) return theRoutingTableEntry.getGateway().toString();
