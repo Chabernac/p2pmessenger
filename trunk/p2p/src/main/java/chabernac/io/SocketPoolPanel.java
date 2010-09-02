@@ -79,7 +79,7 @@ public class SocketPoolPanel extends JPanel implements Observer {
       String thePool = myModel.getPool(theProxy);
       if("IN".equals(thePool)) setForeground(Color.BLUE);
       if("OUT".equals(thePool)) setForeground(Color.ORANGE);
-      if("CONNECT".equals(thePool)) setForeground(Color.GREEN);
+      if("CONNECT".equals(thePool)) setForeground(new Color(0,200,0));
       
       if(theProxy instanceof SocketProxy){
         setToolTipText(parseToHtml(((SocketProxy)theProxy).getStackTrace()));
@@ -94,13 +94,6 @@ public class SocketPoolPanel extends JPanel implements Observer {
       theBuilder.append(aString.replaceAll("\r\n", "<br>"));
       theBuilder.append("</html>");
       return theBuilder.toString();
-    }
-
-    private boolean listContainsObject(List<? extends Object> aList, Object anObject){
-      for(Object theObject : aList){
-        if(theObject == anObject) return true;
-      }
-      return false;
     }
   }
   
