@@ -15,6 +15,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import chabernac.protocol.ProtocolMessageEntry.Status;
+import chabernac.protocol.routing.WhoIsRunningTableModel.Entry.State;
 
 public class ProtocolContainer implements IProtocol {
   public static enum Command {PROTOCOLS};
@@ -48,6 +49,7 @@ public class ProtocolContainer implements IProtocol {
       theProtocol = getProtocol( theID );
       String theResult = theProtocol.handleCommand( aSessionId, anInput.substring( 3 ) );
       theEntry.setOutput( theResult );
+      theEntry.setStatus(Status.FINISHED);
       notifyListeners();
       return theResult;
     } catch ( ProtocolException e ) {
@@ -149,5 +151,9 @@ public class ProtocolContainer implements IProtocol {
   
   public void removeProtocolMessageListener(iProtocolMessageListener aListener){
     myListeners.remove( aListener );
+  }
+  
+  public List<ProtocolMessageEntry> getMessageHistory() {
+    return Collections.unmodifiableList(myMessageHistory);
   }
 }
