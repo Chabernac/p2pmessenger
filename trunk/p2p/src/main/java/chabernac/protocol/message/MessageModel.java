@@ -4,17 +4,24 @@
  */
 package chabernac.protocol.message;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
 
+import chabernac.tools.StringTools;
+
 public class MessageModel implements TableModel {
 
   private final MessageProtocol myProtocol;
   private final List< TableModelListener > myListeners = new ArrayList< TableModelListener >();
+  
+  private static final SimpleDateFormat FORMAT = new SimpleDateFormat("HH:mm:ss");
 
   public MessageModel ( MessageProtocol anProtocol ) {
     super();
@@ -34,15 +41,17 @@ public class MessageModel implements TableModel {
 
   @Override
   public int getColumnCount() {
-    return 4;
+    return 6;
   }
 
   @Override
   public String getColumnName( int anColumnIndex ) {
-    if(anColumnIndex == 0) return "From";
-    if(anColumnIndex == 1) return "To";
-    if(anColumnIndex == 2) return "TTL";
-    if(anColumnIndex == 3) return "Message";
+    if(anColumnIndex == 0) return "Time";
+    if(anColumnIndex == 1) return "UID";
+    if(anColumnIndex == 2) return "From";
+    if(anColumnIndex == 3) return "To";
+    if(anColumnIndex == 4) return "TTL";
+    if(anColumnIndex == 5) return "Message";
     return "";
   }
 
@@ -50,14 +59,24 @@ public class MessageModel implements TableModel {
   public int getRowCount() {
     return myProtocol.getHistory().size();
   }
+  
+  public Message getMessageAtRow(int aRow){
+    return myProtocol.getHistory().get( aRow );
+  }
 
   @Override
   public Object getValueAt( int anRowIndex, int anColumnIndex ) {
-    Message theMessage = myProtocol.getHistory().get( anRowIndex );
-    if(anColumnIndex == 0) return theMessage.getSource().getPeerId();
-    if(anColumnIndex == 1) return theMessage.getDestination().getPeerId();
-    if(anColumnIndex == 2) return theMessage.getTTL();
-    if(anColumnIndex == 3) return theMessage.getMessage();
+    Message theMessage = getMessageAtRow( anRowIndex );
+    if(anColumnIndex == 0) {
+      Date theDate = new Date();
+      theDate.setTime( theMessage.getCreationTime() );
+      return FORMAT.format( theDate );
+    }
+    if(anColumnIndex == 1) return StringTools.convertToLocalUniqueId(theMessage.getMessageId().toString());
+    if(anColumnIndex == 2) return theMessage.getSource().getPeerId();
+    if(anColumnIndex == 3) return theMessage.getDestination().getPeerId();
+    if(anColumnIndex == 4) return theMessage.getTTL();
+    if(anColumnIndex == 5) return theMessage.getMessage();
     return null;
   }
 

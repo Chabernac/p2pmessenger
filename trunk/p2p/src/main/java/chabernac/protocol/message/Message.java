@@ -20,6 +20,7 @@ public class Message {
   private List<MessageIndicator> myIndicators = null;
   private boolean isProtocolMessage = false;
   private UUID myMessageId = UUID.randomUUID();
+  private long myCreationTime = System.currentTimeMillis();
   
   //only when the byte array is small we can use it to transport bytes trough the network.
   //because the message is reformed to xml the xml will be many times bigger as the byte array
@@ -125,5 +126,11 @@ public class Message {
   }
   public void setMessageId( UUID anMessageId ) {
     myMessageId = anMessageId;
+  }
+  public long getCreationTime() {
+    return myCreationTime;
+  }
+  public void setCreationTime( long anCreationTime ) {
+    myCreationTime = anCreationTime;
   }
 } 
