@@ -33,7 +33,7 @@ public class ProtocolMessageEntry {
   public void setOutput( String anOutput ) {
     myOutput = anOutput;
   }
-  public Status getMode() {
+  public Status getState() {
     return myMode;
   }
   public void setStatus( Status anMode ) {
