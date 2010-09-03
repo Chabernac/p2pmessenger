@@ -54,6 +54,11 @@ public class RoutingTable implements Iterable< RoutingTableEntry >, Serializable
     if(anEntry.getPeer().getPeerId() == null || anEntry.getPeer().getPeerId().equals( "" )){
       throw new IllegalArgumentException("Received routing table entry with no peer id");
     }
+    
+    //ignore entries which have as gateway our selfs, this might create loops in the routing table hierarchy
+    if(!anEntry.getPeer().getPeerId().equals( myLocalPeerId ) && anEntry.getGateway().getPeerId().equals( myLocalPeerId )){
+      return;
+    }
 
     if(anEntry.getPeer().getPeerId().equalsIgnoreCase( getLocalPeerId() ) && anEntry.getGateway().getPeerId().equals( anEntry.getPeer().getPeerId() ) && anEntry.getHopDistance() > 0 && anEntry.getHopDistance() != RoutingTableEntry.MAX_HOP_DISTANCE){
       try{
@@ -160,6 +165,7 @@ public class RoutingTable implements Iterable< RoutingTableEntry >, Serializable
     for(Iterator< RoutingTableEntry > i = anotherRoutingTable.iterator(); i.hasNext();){
       RoutingTableEntry theEntry = i.next();
       //add all entries except the entry for ourselfs
+      //and except the entries which have our peer id as gateway, otherwise loops may be created in the routint table hierarchy
       if(!theEntry.getPeer().getPeerId().equals( myLocalPeerId )){
         addRoutingTableEntry(theEntry.entryForNextPeer( anotherRoutingTable.getEntryForLocalPeer().getPeer() ) );
       }
@@ -251,7 +257,7 @@ public class RoutingTable implements Iterable< RoutingTableEntry >, Serializable
     myRoutingTableListeners.remove( aListener );
   }
 
-  public void removeAllroutingTableListeners(){
+  public void removeAllRoutingTableListeners(){
     myRoutingTableListeners.clear();
   }
 
