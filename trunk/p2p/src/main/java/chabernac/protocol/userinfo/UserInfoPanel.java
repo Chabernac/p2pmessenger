@@ -7,6 +7,8 @@ package chabernac.protocol.userinfo;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
@@ -29,17 +31,20 @@ public class UserInfoPanel extends JPanel {
   private static Logger LOGGER = Logger.getLogger(UserInfoPanel.class);
   
   private UserInfoProtocol myUserInfoProtocol = null;
+  private UserInfoTableModel myModel = null;
 
   public UserInfoPanel ( UserInfoProtocol anUserInfoProtocol ) {
     super();
     myUserInfoProtocol = anUserInfoProtocol;
     buildGUI();
+//    addListeners();
   }
-
+  
   private void buildGUI(){
     setLayout( new BorderLayout() );
 
-    add(new JScrollPane(new JTable(new UserInfoTableModel(myUserInfoProtocol))), BorderLayout.CENTER);
+    myModel = new UserInfoTableModel(myUserInfoProtocol);
+    add(new JScrollPane(new JTable(myModel)), BorderLayout.CENTER);
 
     JPanel theSouthPanel = new JPanel();
     theSouthPanel.setLayout( new GridLayout(-1,3) );
@@ -52,7 +57,14 @@ public class UserInfoPanel extends JPanel {
     
     add(theSouthPanel, BorderLayout.SOUTH);
     setBorder( new TitledBorder("User information") );
-    
+  }
+  
+  private void addListeners(){
+    addComponentListener( new ComponentAdapter(){
+      public void componentHidden(ComponentEvent e){
+        myModel.detachListeners();
+      }
+    });
   }
 
 
