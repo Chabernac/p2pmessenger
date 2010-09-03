@@ -15,11 +15,12 @@ import javax.swing.table.TableModel;
 public class UserInfoTableModel implements TableModel {
   private UserInfoProtocol myUserInfoProtocol = null;
   private List< TableModelListener > myListeners = new ArrayList< TableModelListener >();
+  private MyTableModelListener myTableModelListener = new MyTableModelListener();
 
   public UserInfoTableModel ( UserInfoProtocol aUserInfoProtocol ) {
     super();
     myUserInfoProtocol = aUserInfoProtocol;
-    myUserInfoProtocol.addUserInfoListener( new MyTableModelListener() );
+    myUserInfoProtocol.addUserInfoListener( myTableModelListener );
   }
 
   @Override
@@ -93,5 +94,9 @@ public class UserInfoTableModel implements TableModel {
         theListener.tableChanged( new TableModelEvent(UserInfoTableModel.this) );
       }
     }
+  }
+  
+  public void detachListeners(){
+    myUserInfoProtocol.removeUserInfoListener( myTableModelListener );
   }
 }

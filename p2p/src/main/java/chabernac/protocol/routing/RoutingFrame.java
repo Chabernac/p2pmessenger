@@ -42,11 +42,20 @@ public class RoutingFrame extends JFrame {
     myProtocolContainer = aContainer;
     myProtocolServer = aServer;
     this.isStopOnClose = isStopOnClose;
-    init();
     addListeners();
     buildGUI();
   }
 
+  public void setVisible(boolean isVisible){
+    super.setVisible( isVisible );
+    if(isVisible){
+      try {
+        init();
+      } catch ( ProtocolException e ) {
+      }
+    }
+  }
+  
   private void init() throws ProtocolException{
     setDefaultCloseOperation( JFrame.DISPOSE_ON_CLOSE);
     getRoutingTable().setKeepHistory(true);
