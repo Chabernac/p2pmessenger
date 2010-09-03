@@ -166,7 +166,7 @@ public class ApplicationLauncher {
 
 
         PopupMenu theMenu = new PopupMenu();
-        final TrayIcon theIcon = new TrayIcon(ImageIO.read( new ClassPathResource("images/tray.png").getInputStream()), "P2PClient", theMenu);
+        final TrayIcon theIcon = new TrayIcon(ImageIO.read( new ClassPathResource("images/message.png").getInputStream()), "P2PClient", theMenu);
 
         MenuItem theOpenItem = new MenuItem("Open");
         theOpenItem.addActionListener( new ActionListener(){
