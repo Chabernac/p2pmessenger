@@ -800,6 +800,20 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
         Thread.sleep(SLEEP_AFTER_SCAN);
         
         assertFalse(theRoutingTable1.containsEntryForPeer("3"));
+        
+        //do it again but now without routing table listeners
+        theRoutingTable1.removeAllRoutingTableListeners();
+        theRoutingTable1.addRoutingTableEntry(theEntry);
+        //check that the entry is really added
+        assertTrue(theRoutingTable1.containsEntryForPeer("3"));
+        //check that the entry is not added to routing table of peer 2 by propagation, should not happen because of the removed routing table listeners
+        Thread.sleep( SLEEP_AFTER_SCAN );
+        assertFalse(theRoutingTable2.containsEntryForPeer("3"));
+        theRoutingProtocol1.exchangeRoutingTable();
+        Thread.sleep( SLEEP_AFTER_SCAN );
+        assertFalse(theRoutingTable1.containsEntryForPeer("3"));
+        
+        
       }finally{
         if(theServer1 != null) theServer1.stop();
         if(theServer2 != null) theServer2.stop();
