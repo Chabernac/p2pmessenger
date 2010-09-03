@@ -157,6 +157,8 @@ public class MessageProtocol extends Protocol {
       }
     }
 
+    //we reset the TTL, it might be that the same message is reused.
+    aMessage.resetTTL();
     String theResult = handleMessage( 0, aMessage );
     if(theResult.startsWith( STATUS_MESSAGE.DELIVERED.name() )){
       return theResult.substring( STATUS_MESSAGE.DELIVERED.name().length() );

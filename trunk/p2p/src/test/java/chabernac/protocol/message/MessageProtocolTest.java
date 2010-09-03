@@ -131,9 +131,10 @@ public class MessageProtocolTest extends AbstractProtocolTest {
 
       Message theMessage = new Message();
       theMessage.setDestination( theRoutingTable1.getEntryForPeer( "2" ).getPeer() );
-      theMessage.setMessage( "test message" );
       int times = 10;
       for(int i=0;i<times;i++){
+        theMessage.setMessage( "test message " + i );
+        System.out.println(i);
         theMessageProtocol1.sendMessage( theMessage );
       }
 

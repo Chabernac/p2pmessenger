@@ -22,12 +22,14 @@ public class Message {
   private UUID myMessageId = UUID.randomUUID();
   private long myCreationTime = System.currentTimeMillis();
   
+  private static int TTL = 8;
+  
   //only when the byte array is small we can use it to transport bytes trough the network.
   //because the message is reformed to xml the xml will be many times bigger as the byte array
   //so transporting large byte array's is not a good practice.
   private byte[] myBytes = null;
   
-  private int myTTL = 8;
+  private int myTTL = TTL;
   
   public Peer getSource() {
     return mySource;
@@ -132,5 +134,9 @@ public class Message {
   }
   public void setCreationTime( long anCreationTime ) {
     myCreationTime = anCreationTime;
+  }
+  
+  public void resetTTL(){
+    myTTL = TTL;
   }
 } 
