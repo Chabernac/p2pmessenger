@@ -760,7 +760,7 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
       }
     }
     
-    public void testRemoveEntry() throws ProtocolException{
+    public void testRemoveEntry() throws ProtocolException, InterruptedException, UnknownPeerException{
       ProtocolContainer theProtocol1 = getProtocolContainer( -1, false, "1" );
       ProtocolServer theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT, 5);
 
@@ -772,11 +772,34 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
       RoutingProtocol theRoutingProtocol2 = (RoutingProtocol)theProtocol2.getProtocol( RoutingProtocol.ID );
       RoutingTable theRoutingTable2 = theRoutingProtocol2.getRoutingTable();
       
-//      theRoutingTable1.addRoutingTableEntry()
-      
+
       try{
         assertTrue( theServer1.start() );
         assertTrue( theServer2.start() );
+        
+        theRoutingProtocol1.scanLocalSystem();
+        theRoutingProtocol2.scanLocalSystem();
+        Thread.sleep(SLEEP_AFTER_SCAN);
+        
+        //the peers should now each other now
+        
+        assertTrue(theRoutingTable1.containsEntryForPeer("2"));
+        assertTrue(theRoutingTable2.containsEntryForPeer("1"));
+        
+        //now add the peer which does not exist for real but which is reachable trough peer 2
+        Peer thePeer3 = new Peer("3", "localhost", RoutingProtocol.START_PORT + 2);
+        RoutingTableEntry theEntry = new RoutingTableEntry(thePeer3, 2, theRoutingTable2.getEntryForLocalPeer().getPeer());
+        theRoutingTable1.addRoutingTableEntry(theEntry);
+        
+        //check that the entry is really added
+        assertTrue(theRoutingTable1.containsEntryForPeer("3"));
+        
+        //after exchanging routing tables the peer 3 should be removed
+        theRoutingProtocol1.exchangeRoutingTable();
+        
+        Thread.sleep(SLEEP_AFTER_SCAN);
+        
+        assertFalse(theRoutingTable1.containsEntryForPeer("3"));
       }finally{
         if(theServer1 != null) theServer1.stop();
         if(theServer2 != null) theServer2.stop();
