@@ -206,7 +206,7 @@ public class NewMessageDialog5 extends JDialog implements iMessageDialog{
             requestFocusInWindow(false);
             if(myRobot != null){
               Point thePoint = getLocationOnScreen();
-              myRobot.mouseMove( thePoint.x + 10, thePoint.y + 30 );
+              myRobot.mouseMove( thePoint.x + getWidth() - 50, thePoint.y + 30 );
               myRobot.mousePress( InputEvent.BUTTON1_MASK);
             }
           }catch(P2PFacadeException e){
