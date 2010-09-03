@@ -555,7 +555,6 @@ public class RoutingProtocol extends Protocol {
   public void resetRoutingTable(){
     for(RoutingTableEntry theEntry : myRoutingTable.getEntries()){
       myRoutingTable.addRoutingTableEntry( theEntry.derivedEntry( RoutingTableEntry.MAX_HOP_DISTANCE ) );
-      //      theEntry.setHopDistance( RoutingTableEntry.MAX_HOP_DISTANCE );
     }
   }
 
