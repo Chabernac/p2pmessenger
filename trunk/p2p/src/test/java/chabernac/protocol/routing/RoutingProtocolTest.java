@@ -452,10 +452,10 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
    */
   public void testScanRemoteSystem() throws InterruptedException, ProtocolException, UnknownPeerException{
     
-    ProtocolContainer theProtocol1 = getProtocolContainer( -1, true, "1" );
+    ProtocolContainer theProtocol1 = getProtocolContainer( -1, false, "1" );
     ProtocolServer theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT, 5);
 
-    ProtocolContainer theProtocol2 = getProtocolContainer( -1, true, "2" );
+    ProtocolContainer theProtocol2 = getProtocolContainer( -1, false, "2" );
     ProtocolServer theServer2 = new ProtocolServer(theProtocol2, RoutingProtocol.START_PORT + 1, 5);
 
     RoutingProtocol theRoutingProtocol1 = (RoutingProtocol)theProtocol1.getProtocol( RoutingProtocol.ID );
@@ -463,22 +463,35 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
     RoutingProtocol theRoutingProtocol2 = (RoutingProtocol)theProtocol2.getProtocol( RoutingProtocol.ID );
     RoutingTable theRoutingTable2 = theRoutingProtocol2.getRoutingTable();
     
-    theRoutingProtocol1.getLocalUnreachablePeerIds().add( "2" );
-    theRoutingProtocol2.getLocalUnreachablePeerIds().add( "1" );
+//    theRoutingProtocol1.getLocalUnreachablePeerIds().add( "2" );
+//    theRoutingProtocol2.getLocalUnreachablePeerIds().add( "1" );
     
     try{
       theRoutingTable1.setKeepHistory( true );
       theRoutingTable2.setKeepHistory( true );
       assertTrue( theServer1.start() );
       assertTrue( theServer2.start() );
-      
-      Thread.sleep( 2000 );
+      theRoutingProtocol1.scanLocalSystem();
+      theRoutingProtocol2.scanLocalSystem();
+      Thread.sleep( SLEEP_AFTER_SCAN );
 
       //since the routing table is reset and we have an exchange delay of -1 the peers will not be able to reach each other
       //lets test this!
       
       theRoutingTable1.setKeepHistory( false );
       theRoutingTable2.setKeepHistory( false );
+      assertNotNull( theRoutingTable1.getEntryForPeer( "2" ) );
+      assertTrue( theRoutingTable1.getEntryForPeer( "2" ).isReachable() );
+      assertNotNull( theRoutingTable2.getEntryForPeer( "1" ) );
+      assertTrue( theRoutingTable2.getEntryForPeer( "1" ).isReachable() );
+      
+      theRoutingProtocol1.getLocalUnreachablePeerIds().add( "2" );
+      theRoutingProtocol2.getLocalUnreachablePeerIds().add( "1" );
+      
+      theRoutingProtocol1.exchangeRoutingTable();
+      theRoutingProtocol2.exchangeRoutingTable();
+      Thread.sleep( SLEEP_AFTER_SCAN );
+      
       assertNotNull( theRoutingTable1.getEntryForPeer( "2" ) );
       assertFalse( theRoutingTable1.getEntryForPeer( "2" ).isReachable() );
       assertNotNull( theRoutingTable2.getEntryForPeer( "1" ) );
@@ -502,7 +515,7 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
       theRoutingProtocol1.scanRemoteSystem(true);
       theRoutingProtocol2.scanRemoteSystem(true);
       
-      Thread.sleep( 2000 );
+      Thread.sleep( SLEEP_AFTER_SCAN );
       
       assertNotNull( theRoutingTable1.getEntryForPeer( "2" ) );
       assertTrue(  theRoutingTable1.getEntryForPeer( "2" ).isReachable() );
