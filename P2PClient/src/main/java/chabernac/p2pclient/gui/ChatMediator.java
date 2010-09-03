@@ -73,6 +73,7 @@ public class ChatMediator {
 
   public synchronized Future< MultiPeerMessage > send(){
     if(checkForCommands()) return null;
+    if(myUserSelectionProvider.getSelectedUsers().size() == 0) return null;
     myLastSendMessage = createMessage();
     Future< MultiPeerMessage > theFuture = myP2PFacade.sendEncryptedMessage( myLastSendMessage, myExecutorService );
     clear();
