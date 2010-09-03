@@ -58,7 +58,9 @@ public class ApplicationLauncher {
   public static void main( String[] args ) throws P2PFacadeException, UserInfoException {
     ArgsInterPreter theInterPretser = new ArgsInterPreter(args);
 
-    if(!checkLockAndActivate()) return;
+    if("true".equals(theInterPretser.getKeyValue("checklock", "true"))){
+      if(!checkLockAndActivate()) return;
+    }
 
     BasicConfigurator.configure();
 
