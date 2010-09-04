@@ -106,7 +106,9 @@ public class UserInfoProtocol extends Protocol {
       for(RoutingTableEntry theEntry : theTable){
         if(theEntry.isReachable()){
           Peer thePeer = theEntry.getPeer();
-          if(thePeer.isOnSameChannel(theLocalPeer) && !myUserInfo.containsKey( thePeer.getPeerId() ) || myUserInfo.get(thePeer.getPeerId()).getStatus() == Status.OFFLINE){
+          if(thePeer.isOnSameChannel(theLocalPeer) 
+              && (!myUserInfo.containsKey( thePeer.getPeerId() ) 
+                  || myUserInfo.get(thePeer.getPeerId()).getStatus() == Status.OFFLINE)){
             myRetrievalService.execute( new UserInfoRetriever(thePeer.getPeerId()) );
           }
         }
@@ -276,17 +278,15 @@ public class UserInfoProtocol extends Protocol {
   private class RoutingTableListener implements IRoutingTableListener{
     @Override
     public void routingTableEntryChanged( RoutingTableEntry anEntry ) {
-      if(!myUserInfo.containsKey( anEntry.getPeer() )){
-        if(anEntry.isReachable()){
-          myRetrievalService.execute( new UserInfoRetriever(anEntry.getPeer().getPeerId()) );
-        }
-      } 
-      //      else if(anEntry.getHopDistance() == RoutingTableEntry.MAX_HOP_DISTANCE){
-      //        //this peer has gone offline, we can not retrieve the user information but we must change the user info
-      //        UserInfo theUserInfo = myUserInfo.get(anEntry.getPeer()); 
-      //        theUserInfo.setStatus( Status.OFFLINE );
-      //        notifyUserInfoChanged( theUserInfo );
-      //      }
+      try{
+        if(!myUserInfo.containsKey( anEntry.getPeer() )){
+          if(anEntry.isReachable() && anEntry.getPeer().isOnSameChannel(getRoutingTable().getEntryForLocalPeer().getPeer())){
+            myRetrievalService.execute( new UserInfoRetriever(anEntry.getPeer().getPeerId()) );
+          }
+        } 
+      }catch(Exception e){
+        LOGGER.error("Could not retrieve user info", e);
+      }
     }
   }
 
