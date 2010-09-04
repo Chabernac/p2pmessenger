@@ -81,7 +81,7 @@ public class MessageProtocol extends Protocol {
       }
     } catch ( UnknownPeerException e ) {
       LOGGER.error( "Unknown peer", e );
-      return STATUS_MESSAGE.UNKNOWN_PEER.name() + " " + e.getPeer().getPeerId();
+      return STATUS_MESSAGE.UNKNOWN_PEER.name();
     } catch ( UnknownHostException e ) {
       LOGGER.error( "Unknown host", e );
       return STATUS_MESSAGE.UNKNOWN_HOST.name();
@@ -148,6 +148,16 @@ public class MessageProtocol extends Protocol {
   }
 
   public String sendMessage(Message aMessage) throws MessageException{
+    try {
+      aMessage.setSource(getRoutingTable().getEntryForLocalPeer().getPeer());
+    } catch (Exception e1) {
+      throw new MessageException("Unable to set source peer in message", e1);
+    }
+    //check if both peers are on the same channel
+    if(!aMessage.getSource().isOnSameChannel(aMessage.getDestination())){
+      throw new MessageException("Can not send message to peer on another channel");
+    }
+    
     if(aMessage.containsIndicator( MessageIndicator.TO_BE_ENCRYPTED)){
       try{
         EncryptionProtocol theEncryptionProtocol = ((EncryptionProtocol)findProtocolContainer().getProtocol( EncryptionProtocol.ID ));

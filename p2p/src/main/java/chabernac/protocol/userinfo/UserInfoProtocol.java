@@ -50,7 +50,7 @@ public class UserInfoProtocol extends Protocol {
   private List< iUserInfoListener > myListeners = new ArrayList< iUserInfoListener >();
 
   private MyUserInfoListener myUserInfoListener = new MyUserInfoListener();
-  
+
   private final UserInfo myPersonalUserInfo = new UserInfo();
 
 
@@ -61,7 +61,7 @@ public class UserInfoProtocol extends Protocol {
     obtainUserInfo();
     addUserInfoListener();
   }
-  
+
   private void obtainUserInfo() throws UserInfoException{
     if(myUserInfoProvider != null){
       myUserInfoProvider.fillUserInfo( myPersonalUserInfo );
@@ -102,10 +102,11 @@ public class UserInfoProtocol extends Protocol {
     LOGGER.debug( "Doing full retrieval of user info based on routing table" );
     try{
       RoutingTable theTable = getRoutingTable();
+      Peer theLocalPeer = theTable.getEntryForLocalPeer().getPeer();
       for(RoutingTableEntry theEntry : theTable){
         if(theEntry.isReachable()){
           Peer thePeer = theEntry.getPeer();
-          if(!myUserInfo.containsKey( thePeer.getPeerId() ) || myUserInfo.get(thePeer.getPeerId()).getStatus() == Status.OFFLINE){
+          if(thePeer.isOnSameChannel(theLocalPeer) && !myUserInfo.containsKey( thePeer.getPeerId() ) || myUserInfo.get(thePeer.getPeerId()).getStatus() == Status.OFFLINE){
             myRetrievalService.execute( new UserInfoRetriever(thePeer.getPeerId()) );
           }
         }
@@ -119,10 +120,11 @@ public class UserInfoProtocol extends Protocol {
   public void announceMe(){
     try{
       RoutingTable theTable = getRoutingTable();
+      Peer theLocalPeer = theTable.getEntryForLocalPeer().getPeer();
+
       for(RoutingTableEntry theEntry : theTable){
-        if(theEntry.isReachable()){
-          Peer thePeer = theEntry.getPeer();
-          myRetrievalService.execute( new UserInfoSender(thePeer.getPeerId()) );
+        if(theEntry.isReachable() && theEntry.getPeer().isOnSameChannel(theLocalPeer)){
+          myRetrievalService.execute( new UserInfoSender(theEntry.getPeer().getPeerId()) );
         }
       }
     }catch(Exception e){
@@ -279,12 +281,12 @@ public class UserInfoProtocol extends Protocol {
           myRetrievalService.execute( new UserInfoRetriever(anEntry.getPeer().getPeerId()) );
         }
       } 
-//      else if(anEntry.getHopDistance() == RoutingTableEntry.MAX_HOP_DISTANCE){
-//        //this peer has gone offline, we can not retrieve the user information but we must change the user info
-//        UserInfo theUserInfo = myUserInfo.get(anEntry.getPeer()); 
-//        theUserInfo.setStatus( Status.OFFLINE );
-//        notifyUserInfoChanged( theUserInfo );
-//      }
+      //      else if(anEntry.getHopDistance() == RoutingTableEntry.MAX_HOP_DISTANCE){
+      //        //this peer has gone offline, we can not retrieve the user information but we must change the user info
+      //        UserInfo theUserInfo = myUserInfo.get(anEntry.getPeer()); 
+      //        theUserInfo.setStatus( Status.OFFLINE );
+      //        notifyUserInfoChanged( theUserInfo );
+      //      }
     }
   }
 
