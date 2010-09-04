@@ -102,6 +102,7 @@ public class ApplicationLauncher {
     .setUserInfoProvider( theUserInfoProvider )
     .setSuperNodesDataSource( new ClassPathResource("supernodes.txt") )
     .setStopWhenAlreadyRunning( true )
+    .setChannel(anInterPreter.getKeyValue("channel", "default"))
     .start( 20 );
   }
 
@@ -126,7 +127,7 @@ public class ApplicationLauncher {
 
   private static boolean activate(){
     try {
-      RoutingProtocol theRoutingProtocol = new RoutingProtocol(null, -1, true, null, false);
+      RoutingProtocol theRoutingProtocol = new RoutingProtocol(null, -1, true, null, false, "AXA");
       RoutingTableEntry theLocalEntry = theRoutingProtocol.getRoutingTable().getEntryForLocalPeer();
       return "ok".equals( theLocalEntry.getPeer().send( "APPactivate" ));
     } catch ( Exception e ) {
