@@ -35,7 +35,7 @@ public class VersionProtocol extends Protocol {
   private Map<String, Version> myVersions = Collections.synchronizedMap( new HashMap< String, Version >() );
 
   private ExecutorService myService = Executors.newFixedThreadPool( 5 );
-  
+
   private Set< VersionListener > myVersionsListeners = new HashSet< VersionListener >();
 
   public VersionProtocol ( Version aLocalVersion ) {
@@ -62,17 +62,17 @@ public class VersionProtocol extends Protocol {
   public void addListeners() throws ProtocolException{
     getRoutingTable().addRoutingTableListener( new MyRoutingTableListener() );
   }
-  
+
   public void addVersionListener(VersionListener aVersionListener){
     myVersionsListeners.add( aVersionListener );
   }
-  
+
   private void notifyListeners(String aPeer, Version aVersion) {
     for(VersionListener theListener : myVersionsListeners){
       theListener.versionChanged( aPeer, aVersion, Collections.unmodifiableMap( myVersions ) );
     }
   }
-  
+
   public void removeVersionListener(VersionListener aVersionListener){
     myVersionsListeners.remove( aVersionListener );
   }
@@ -94,7 +94,7 @@ public class VersionProtocol extends Protocol {
       RoutingTable theRoutingTable = getRoutingTable();
 
       for(RoutingTableEntry theEntry : theRoutingTable.getEntries()){
-        if(theEntry.isReachable()){
+        if(theEntry.isReachable() && theEntry.getPeer().isOnSameChannel(theRoutingTable.getEntryForLocalPeer().getPeer())){
           if(!myVersions.containsKey( theEntry.getPeer().getPeerId() )){
             getVersionForPeer( theEntry.getPeer().getPeerId() );
           }
@@ -147,8 +147,12 @@ public class VersionProtocol extends Protocol {
 
     @Override
     public void routingTableEntryChanged( final RoutingTableEntry anEntry ) {
-      if(anEntry.isReachable()){
-        getVersionForPeer( anEntry.getPeer().getPeerId() );
+      try{
+        if(anEntry.isReachable() && anEntry.getPeer().isOnSameChannel(getRoutingTable().getEntryForLocalPeer().getPeer())){
+          getVersionForPeer( anEntry.getPeer().getPeerId() );
+        }
+      }catch(Exception e){
+        LOGGER.error("Error occured while get version from peer", e);
       }
     }
 

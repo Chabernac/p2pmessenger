@@ -36,6 +36,7 @@ public class Peer implements Serializable {
   private List<String> myHost = null;
   private int myPort;
   private String myProtocolsString = null;
+  private String myChannel = "default";
 
   public Peer (){}
 
@@ -105,6 +106,18 @@ public class Peer implements Serializable {
     myProtocolsString = anProtocolsString;
   }
 
+  public String getChannel() {
+    return myChannel;
+  }
+
+  public void setChannel(String anChannel) {
+    myChannel = anChannel;
+  }
+  
+  public boolean isOnSameChannel(Peer anOtherPeer){
+    return getChannel().equalsIgnoreCase(anOtherPeer.getChannel());
+  }
+
   public boolean equals(Object anObject){
     if(!(anObject instanceof Peer)) return false;
     Peer thePeer = (Peer)anObject;
@@ -115,39 +128,6 @@ public class Peer implements Serializable {
   public int hashCode(){
     return myPeerId.hashCode();
   }
-  /**
-   * create socket
-   * send the message
-   * close the sockket
-   * 
-   * @param aMessage
-   * @throws IOException 
-   * @throws UnknownHostException 
-   */
-//  public synchronized String send(String aMessage) throws UnknownHostException, IOException{
-//    Socket theSocket = PeerSocketFactory.getInstance().getSocketForPeer( this );
-//
-//    synchronized(theSocket){
-//      BufferedReader theReader = null;
-//      PrintWriter theWriter = null;
-//      long t1 = System.currentTimeMillis();
-//      try{
-//        theWriter = new PrintWriter(new OutputStreamWriter(theSocket.getOutputStream()));
-//        theReader = new BufferedReader(new InputStreamReader(theSocket.getInputStream()));
-//        theWriter.println(aMessage);
-//        theWriter.flush();
-//        String theReturnMessage = theReader.readLine();
-//
-//        return theReturnMessage;
-//      }finally{
-//        if(myPeerId == null || "".equals(  myPeerId )){
-//          //we close this socket because it can not be reused
-//          theSocket.close();
-//        }
-////      System.out.println("Sending message took " + (System.currentTimeMillis() - t1) + " ms");
-//      }
-//    }
-//  }
 
   public String send(String aMessage) throws UnknownHostException, IOException{
     Socket theSocket = createSocket( myPort );
@@ -236,6 +216,5 @@ public class Peer implements Serializable {
     public void run(){
       SocketPoolFactory.getSocketPool().close(  mySocket );
     }
-    
   }
 }
