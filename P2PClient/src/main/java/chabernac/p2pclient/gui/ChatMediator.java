@@ -274,7 +274,7 @@ public class ChatMediator {
 
     @Override
     public void messageReceived( MultiPeerMessage aMessage ) {
-      if(myIsShowDialogProvider.isShowDialog()){
+      if(isShowDialog && myIsShowDialogProvider.isShowDialog()){
         myMessageDialog.showMessage( aMessage );
       }
     }
