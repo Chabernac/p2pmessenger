@@ -22,6 +22,7 @@ import chabernac.protocol.ProtocolServer;
 import chabernac.protocol.routing.Peer;
 import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.RoutingTable;
+import chabernac.protocol.routing.RoutingTableEntry;
 import chabernac.protocol.routing.UnknownPeerException;
 
 public class FileTransferProtocolTest extends AbstractProtocolTest {
@@ -35,15 +36,15 @@ public class FileTransferProtocolTest extends AbstractProtocolTest {
   public void testFileTransfer() throws InterruptedException, UnknownHostException, IOException, FileTransferException, ProtocolException, UnknownPeerException{
 
     //p1 <--> p2 <--> p3 peer 1 cannot reach peer 3
-    ProtocolContainer theProtocol1 = getProtocolContainer( 1, false, "1");
+    ProtocolContainer theProtocol1 = getProtocolContainer( -1, false, "1");
     ProtocolServer theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT, 5);
     RoutingProtocol theRoutingProtocol1 = (RoutingProtocol)theProtocol1.getProtocol( RoutingProtocol.ID );
 
-    ProtocolContainer theProtocol2 = getProtocolContainer( 1, false, "2");
+    ProtocolContainer theProtocol2 = getProtocolContainer( -1, false, "2");
     ProtocolServer theServer2 = new ProtocolServer(theProtocol2, RoutingProtocol.START_PORT + 1, 5);
     RoutingProtocol theRoutingProtocol2 = (RoutingProtocol)theProtocol2.getProtocol( RoutingProtocol.ID );
 
-    ProtocolContainer theProtocol3 = getProtocolContainer( 1, false, "3");
+    ProtocolContainer theProtocol3 = getProtocolContainer( -1, false, "3");
     File theFileToWrite = new File("in.temp");
     TestFileHandler theFileHandler = new TestFileHandler(theFileToWrite);
     ProtocolServer theServer3 = new ProtocolServer(theProtocol3, RoutingProtocol.START_PORT + 2, 5);
@@ -63,27 +64,30 @@ public class FileTransferProtocolTest extends AbstractProtocolTest {
       assertTrue( theServer2.start() );
       assertTrue( theServer3.start() );
       
-//      theRoutingProtocol1.scanLocalSystem();
-//      theRoutingProtocol2.scanLocalSystem();
-//      theRoutingProtocol3.scanLocalSystem();
-//      
-//      for(int i=0;i<5;i++){
-//        theRoutingProtocol1.exchangeRoutingTable();
-//        theRoutingProtocol2.exchangeRoutingTable();
-//        theRoutingProtocol3.exchangeRoutingTable();
-//      }
+      theRoutingProtocol1.scanLocalSystem();
+      theRoutingProtocol2.scanLocalSystem();
+      theRoutingProtocol3.scanLocalSystem();
+      
+      Thread.sleep( SLEEP_AFTER_SCAN );
+      
+      for(int i=0;i<5;i++){
+        theRoutingProtocol1.exchangeRoutingTable();
+        theRoutingProtocol2.exchangeRoutingTable();
+        theRoutingProtocol3.exchangeRoutingTable();
+      }
 
       
       LOGGER.debug( "Sleeping" );
-      Thread.sleep( 10000 );
+      Thread.sleep( SLEEP_AFTER_SCAN );
       LOGGER.debug( "Done Sleeping" );
 
       RoutingTable theRoutingTable1 = ((RoutingProtocol)theProtocol1.getProtocol( RoutingProtocol.ID )).getRoutingTable();
       RoutingTable theRoutingTable3 = ((RoutingProtocol)theProtocol3.getProtocol( RoutingProtocol.ID )).getRoutingTable();
 
       FileTransferProtocol theFileTransferProtocol = (FileTransferProtocol)theProtocol1.getProtocol( FileTransferProtocol.ID );
-      Peer thePeer3 = theRoutingTable1.getEntryForPeer( theRoutingTable3.getLocalPeerId() ).getPeer();
-      assertNotNull( thePeer3 );
+      RoutingTableEntry thePeer3 = theRoutingTable1.getEntryForPeer( theRoutingTable3.getLocalPeerId() );
+      assertNotNull( thePeer3.getPeer() );
+      assertTrue(thePeer3.isReachable());
       LOGGER.debug( "Sending file" );
       theFileTransferProtocol.sendFile( theTempFile, theRoutingTable3.getLocalPeerId() );
       LOGGER.debug( "Done Sending file" );
