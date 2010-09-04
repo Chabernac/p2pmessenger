@@ -124,6 +124,12 @@ public class P2PFacade {
     myProperties.setProperty("routingprotocol.supernodes", aDataSource);
     return this;
   }
+  
+  public P2PFacade setChannel(String aChannel) throws P2PFacadeException{
+    if(isStarted()) throw new P2PFacadeException("Can not set this property when the server has already been started");
+    myProperties.setProperty("routingprotocol.channel", aChannel);
+    return this;
+  }
 
   /**
    * set the user info provider class
