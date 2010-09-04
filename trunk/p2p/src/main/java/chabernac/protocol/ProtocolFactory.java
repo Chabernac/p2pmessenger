@@ -58,7 +58,7 @@ public class ProtocolFactory implements iProtocolFactory{
       boolean isStopWhenAlreadyRunning = Boolean.parseBoolean(myProtocolProperties.getProperty( "routingprotocol.stopwhenalreadyrunning",  "false").toString());
       String thePeerId = myProtocolProperties.getProperty( "peerid", "" ).toString();
       DataSource theSuperNodesDataSource = (DataSource)myProtocolProperties.getProperty( "routingprotocol.supernodes", null);
-      return new RoutingProtocol(thePeerId, theExchangeDelay, isPersistRoutingTable, theSuperNodesDataSource, isStopWhenAlreadyRunning);
+      return new RoutingProtocol(thePeerId, theExchangeDelay, isPersistRoutingTable, theSuperNodesDataSource, isStopWhenAlreadyRunning, myProtocolProperties.getProperty( "routingprotocol.channel",  "default").toString());
     }
     
     if(ApplicationProtocol.ID.equalsIgnoreCase( aProtocolId )) {

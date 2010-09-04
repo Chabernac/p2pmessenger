@@ -111,6 +111,7 @@ public class RoutingProtocol extends Protocol {
   private DataSource mySuperNodesDataSource = new ClassPathResource("supernodes.txt");
 
   private ServerInfo myServerInfo = null;
+  private final String myChannel;
 
   private final iObjectStringConverter< RoutingTable > myRoutingTableConverter = new Base64ObjectStringConverter< RoutingTable >();
   private final iObjectStringConverter< RoutingTableEntry > myRoutingTableEntryConverter = new Base64ObjectStringConverter< RoutingTableEntry >();
@@ -121,10 +122,11 @@ public class RoutingProtocol extends Protocol {
    * @param aRoutingTable
    * @param anExchangeDelay the delay in seconds between exchaning routing tables with other peers
    */
-  public RoutingProtocol ( String aLocalPeerId, long anExchangeDelay, boolean isPersistRoutingTable, DataSource aSuperNodesDataSource, boolean isStopWhenAlreadyRunning) throws ProtocolException{
+  public RoutingProtocol ( String aLocalPeerId, long anExchangeDelay, boolean isPersistRoutingTable, DataSource aSuperNodesDataSource, boolean isStopWhenAlreadyRunning, String aChannel) throws ProtocolException{
     super( ID );
     myLocalPeerId = aLocalPeerId;
     myExchangeDelay = anExchangeDelay;
+    myChannel = aChannel;
     this.isPersistRoutingTable = isPersistRoutingTable;
     this.isStopWhenAlreadyRunning = isStopWhenAlreadyRunning;
 
@@ -161,6 +163,7 @@ public class RoutingProtocol extends Protocol {
     if(myServerInfo != null){
       try{
         Peer theLocalPeer = new Peer(getLocalPeerId(), myServerInfo.getServerPort());
+        theLocalPeer.setChannel(myChannel);
         RoutingTableEntry theLocalRoutingTableEntry = new RoutingTableEntry(theLocalPeer, 0, theLocalPeer);
         myRoutingTable.addRoutingTableEntry( theLocalRoutingTableEntry );
       }catch(NoAvailableNetworkAdapterException e){
