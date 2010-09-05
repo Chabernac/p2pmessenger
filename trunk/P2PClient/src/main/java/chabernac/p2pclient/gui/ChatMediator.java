@@ -20,6 +20,7 @@ import chabernac.protocol.facade.P2PFacadeException;
 import chabernac.protocol.message.MessageArchive;
 import chabernac.protocol.message.MultiPeerMessage;
 import chabernac.protocol.message.iMultiPeerMessageListener;
+import chabernac.protocol.userinfo.UserInfo.Status;
 import chabernac.tools.Tools;
 
 public class ChatMediator {
@@ -238,6 +239,11 @@ public class ChatMediator {
     List<String> theUsers = myUserSelectionProvider.getSelectedUsers();
     String theTitle = ApplicationPreferences.getInstance().getProperty("frame.light.title","Chatterke");
     try{
+      theTitle += " [" + myP2PFacade.getPersonalInfo().getStatus().name();
+      if(!isShowDialog){
+        theTitle += " - popup blocked";
+      }
+      theTitle += "]";
       if(theUsers.size() == 1){
         theTitle += " - sc " + Tools.getShortNameForUser( myP2PFacade.getUserInfo().get( theUsers.get( 0 ) )); 
       } else if(theUsers.size() > 1){
@@ -259,6 +265,20 @@ public class ChatMediator {
 
   public void setShowDialog( boolean isShowDialog ) {
     this.isShowDialog = isShowDialog;
+    try{
+      if(isShowDialog){
+        myP2PFacade.getPersonalInfo().setStatus(Status.ONLINE);
+      } else {
+        myP2PFacade.getPersonalInfo().setStatus(Status.BUSY);
+      }
+    }catch(P2PFacadeException e){
+      LOGGER.error("Could not change status", e);
+    }
+    setTitle();
+  }
+  
+  public boolean isShowDialog(){
+    return isShowDialog;
   }
 
   public isShowDialogProvider getIsShowDialogProvider() {

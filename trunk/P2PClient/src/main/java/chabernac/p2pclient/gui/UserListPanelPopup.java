@@ -172,6 +172,7 @@ public class UserListPanelPopup extends GPanelPopupMenu {
     public void execute() {
       try {
         myMediator.getP2PFacade().getPersonalInfo().setStatus( myStatus );
+        myMediator.setTitle();
       } catch ( P2PFacadeException e ) {
         logger.error( "Unable to execute status command", e );
       }
