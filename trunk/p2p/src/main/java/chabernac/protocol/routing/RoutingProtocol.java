@@ -244,7 +244,7 @@ public class RoutingProtocol extends Protocol {
         //to check if I'm still alive and kicking
         try{
           RoutingTableEntry theEntryForLocalPeer = myRoutingTable.getEntryForLocalPeer();
-          return theEntryForLocalPeer.getPeer().getPeerId();
+          return theEntryForLocalPeer.getPeer().getPeerId() + "@" + theEntryForLocalPeer.getPeer().getChannel();
         }catch(Exception e){
           LOGGER.error( "Could not obtain entry for local peer", e );
           return Response.NOK.name();
@@ -287,15 +287,16 @@ public class RoutingProtocol extends Protocol {
   boolean contactPeer(Peer aPeer, List<String> anUnreachablePeers){
     try{
       LOGGER.debug("Sending message to '" + aPeer.getHosts() + "' port '" + aPeer.getPort() + "'");
-      String[] theIdTime = aPeer.send( createMessage( Command.WHO_ARE_YOU.name() )).split( " " );
+      String[] theIdTimeChannel = aPeer.send( createMessage( Command.WHO_ARE_YOU.name() )).split( "@" );
 
-      if(!anUnreachablePeers.contains( theIdTime[0] )){
-        aPeer.setPeerId( theIdTime[0] );
+      if(!anUnreachablePeers.contains( theIdTimeChannel[0] )){
+        aPeer.setPeerId( theIdTimeChannel[0] );
+        if(theIdTimeChannel.length >= 2) aPeer.setChannel(theIdTimeChannel[1]);
         RoutingTableEntry theEntry = new RoutingTableEntry(aPeer, 1, aPeer);
 
         LOGGER.debug("Detected system on '" + aPeer.getHosts() + "' port '" + aPeer.getPort() + "'");
         //only if we have detected our self we set the hop distance to 0
-        if(theIdTime[0].equals(myRoutingTable.getLocalPeerId())){
+        if(theIdTimeChannel[0].equals(myRoutingTable.getLocalPeerId())){
           theEntry = theEntry.derivedEntry( 0 );
         }
         myRoutingTable.addRoutingTableEntry( theEntry );
