@@ -181,6 +181,8 @@ public class Peer implements Serializable {
   public String toString(){
     StringBuilder theBuilder = new StringBuilder();
     theBuilder.append( getPeerId() );
+    theBuilder.append("@");
+    theBuilder.append(getChannel());
     theBuilder.append( " (" );
     if(getHosts() != null && getHosts().size() > 0){
       for(Iterator< String > i = getHosts().iterator();i.hasNext();){
