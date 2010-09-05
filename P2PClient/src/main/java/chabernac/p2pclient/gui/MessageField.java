@@ -42,6 +42,7 @@ import org.apache.log4j.Logger;
 
 import chabernac.event.Event;
 import chabernac.event.iEventListener;
+import chabernac.gui.SavedFrame.MyComponentListener;
 
 
 public class MessageField extends JTextArea implements iMessageProvider{
@@ -73,6 +74,7 @@ public class MessageField extends JTextArea implements iMessageProvider{
     theInputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_A, KeyEvent.ALT_DOWN_MASK), "replyall");
     theInputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_R, KeyEvent.ALT_DOWN_MASK), "reply");
     theInputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, KeyEvent.SHIFT_DOWN_MASK), "clearusers");
+    theInputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_PAUSE, 0), "pause");
     ActionMap theActionMap = getActionMap();
     theActionMap.put("previous", new PreviousAction());
     theActionMap.put("next", new NextAction());
@@ -86,6 +88,7 @@ public class MessageField extends JTextArea implements iMessageProvider{
     theActionMap.put("reply", new ReplyAction());
     theActionMap.put("replyall", new ReplyAllAction());
     theActionMap.put("unlock", new UnlockAction());
+    theActionMap.put("pause", new PauseAction());
 
   }
 
@@ -205,6 +208,12 @@ public class MessageField extends JTextArea implements iMessageProvider{
   private class UnlockAction extends AbstractAction{
     public void actionPerformed(ActionEvent evt){
       EventQueue theEventQueue = Toolkit.getDefaultToolkit().getSystemEventQueue();
+    }
+  }
+  
+  private class PauseAction extends AbstractAction{
+    public void actionPerformed(ActionEvent evt){
+      myMediator.setShowDialog(!myMediator.isShowDialog());
     }
   }
 
