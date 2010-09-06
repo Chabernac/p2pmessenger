@@ -12,6 +12,8 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 
+import javax.swing.plaf.SliderUI;
+
 import junit.framework.TestCase;
 
 import org.apache.log4j.BasicConfigurator;
@@ -48,7 +50,7 @@ public class P2PFacadeTest extends TestCase {
     .setExchangeDelay( 300 )
     .setPersist( false )
     .start( 20 );
-    
+
     System.out.println("testP2PSendMessage Peer id: " + theFacade1.getPeerId());
     System.out.println("testP2PSendMessage Peer id: " + theFacade2.getPeerId());
 
@@ -79,7 +81,7 @@ public class P2PFacadeTest extends TestCase {
     P2PFacade theFacade1 = new P2PFacade()
     .setExchangeDelay( 300 )
     .setPersist( false );
-    
+
     MultiPeerMessage theMessage = MultiPeerMessage.createMessage( "test message" )
     .addDestination( "99" );
 
@@ -103,7 +105,7 @@ public class P2PFacadeTest extends TestCase {
     .setExchangeDelay( 300 )
     .setPersist( false )
     .start( 20 );
-    
+
     System.out.println("testFailMessage Peer id: " + theFacade1.getPeerId());
 
     Thread.sleep( 2000 );
@@ -132,7 +134,7 @@ public class P2PFacadeTest extends TestCase {
     .setPersist( false )
     .setKeepRoutingTableHistory( true )
     .start( 20 );
-    
+
     DeliveryReportCollector theDeliveryReportCollector = new DeliveryReportCollector();
     theFacade1.addDeliveryReportListener( theDeliveryReportCollector );
 
@@ -141,22 +143,22 @@ public class P2PFacadeTest extends TestCase {
     .setPersist( false )
     .setKeepRoutingTableHistory( true )
     .start( 20 );
-    
+
     System.out.println("testSendFile Peer id: " + theFacade1.getPeerId());
     System.out.println("testSendFile Peer id: " + theFacade2.getPeerId());
 
     Thread.sleep( 4000 );
-    
-    
+
+
     if(!theFacade1.getRoutingTable().containsEntryForPeer( theFacade2.getPeerId() ) || 
-       !theFacade1.getRoutingTable().containsEntryForPeer( theFacade1.getPeerId() )){
+        !theFacade1.getRoutingTable().containsEntryForPeer( theFacade1.getPeerId() )){
       theFacade1.showRoutingTable();
     }
-    
+
     if(!theFacade2.getRoutingTable().containsEntryForPeer( theFacade2.getPeerId() ) || 
         !theFacade2.getRoutingTable().containsEntryForPeer( theFacade1.getPeerId() )){
-       theFacade2.showRoutingTable();
-     }
+      theFacade2.showRoutingTable();
+    }
 
     File theFile = null;
     try{
@@ -165,7 +167,7 @@ public class P2PFacadeTest extends TestCase {
 
       theFile = new File("test.txt");
       theFile.createNewFile();
-      
+
       FileHandler theFilehandler = new FileHandler();
       theFacade2.setFileHandler( theFilehandler );
       assertTrue( theFacade1.sendFile( theFile, theFacade2.getPeerId(), Executors.newFixedThreadPool( 1 )).get() );
@@ -181,7 +183,7 @@ public class P2PFacadeTest extends TestCase {
 
   public void testPipe() throws P2PFacadeException, InterruptedException, IOException{
     SocketProxy.setTraceEnabled( true );
-    
+
     P2PFacade theFacade1 = new P2PFacade()
     .setExchangeDelay( 300 )
     .setPersist( false )
@@ -193,7 +195,7 @@ public class P2PFacadeTest extends TestCase {
     .setPersist( false )
     .setKeepRoutingTableHistory( true )
     .start( 20 );
-    
+
     System.out.println("testPipe Peer id: " + theFacade1.getPeerId());
     System.out.println("testPipe Peer id: " + theFacade2.getPeerId());
 
@@ -202,18 +204,18 @@ public class P2PFacadeTest extends TestCase {
     try{
       if(!theFacade1.getRoutingTable().containsEntryForPeer( theFacade2.getPeerId() ) || 
           !theFacade1.getRoutingTable().containsEntryForPeer( theFacade1.getPeerId() )){
-         theFacade1.showRoutingTable();
-       }
-       
-       if(!theFacade2.getRoutingTable().containsEntryForPeer( theFacade2.getPeerId() ) || 
-           !theFacade2.getRoutingTable().containsEntryForPeer( theFacade1.getPeerId() )){
-          theFacade2.showRoutingTable();
-        }
-      
+        theFacade1.showRoutingTable();
+      }
+
+      if(!theFacade2.getRoutingTable().containsEntryForPeer( theFacade2.getPeerId() ) || 
+          !theFacade2.getRoutingTable().containsEntryForPeer( theFacade1.getPeerId() )){
+        theFacade2.showRoutingTable();
+      }
+
       assertTrue( theFacade1.getRoutingTable().containsEntryForPeer( theFacade2.getPeerId() ) );
-      
+
       theFacade2.addPipeListener( new EchoPipeListener());
-      
+
       Pipe thePipe = theFacade1.openPipe( theFacade2.getPeerId(), "test pipe" );
 
       OutputStream theOut = thePipe.getSocket().getOutputStream();
@@ -242,7 +244,7 @@ public class P2PFacadeTest extends TestCase {
     .setPersist( false )
     .setUserInfoProvider( new UserInfoProvider("Leslie", "leslie.torreele@gmail.com") )
     .start( 20 );
-    
+
     System.out.println("testUserInfo Peer id: " + theFacade1.getPeerId());
     System.out.println("testUserInfo Peer id: " + theFacade2.getPeerId());
 
@@ -290,7 +292,7 @@ public class P2PFacadeTest extends TestCase {
     .setExchangeDelay( 300 )
     .setPersist( false )
     .start( 20 );
-    
+
     System.out.println("testMessageArchive Peer id: " + theFacade1.getPeerId());
     System.out.println("testMessageArchive Peer id: " + theFacade2.getPeerId());
 
@@ -346,7 +348,7 @@ public class P2PFacadeTest extends TestCase {
       .setPersist( true )
       .setStopWhenAlreadyRunning(true)
       .start( 20 );
-      
+
       Thread.sleep(5000);
 
       theFacade2 = new P2PFacade()
@@ -354,7 +356,7 @@ public class P2PFacadeTest extends TestCase {
       .setPersist( true )
       .setStopWhenAlreadyRunning(true)
       .start( 20 );
-      
+
       System.out.println("testStopWhenAlreadyRunning Peer id: " + theFacade1.getPeerId());
       System.out.println("testStopWhenAlreadyRunning Peer id: " + theFacade2.getPeerId());
 
@@ -364,6 +366,70 @@ public class P2PFacadeTest extends TestCase {
     } finally {
       if(theFacade1 != null) theFacade1.stop();
       if(theFacade2 != null) theFacade2.stop();
+    }
+  }
+
+  public void testChannel(){
+    P2PFacade theFacade1 = null;
+    P2PFacade theFacade2 = null;
+    P2PFacade theFacade3 = null;
+    P2PFacade theFacade4 = null;
+
+    try{
+      theFacade1 = new P2PFacade()
+      .setExchangeDelay( 300 )
+      .setPersist( false )
+      .setKeepRoutingTableHistory( true )
+      .setChannel("A")
+      .start( 20 );
+
+      theFacade2 = new P2PFacade()
+      .setExchangeDelay( 300 )
+      .setPersist( false )
+      .setKeepRoutingTableHistory( true )
+      .setChannel("A")
+      .start( 20 );
+
+      theFacade3 = new P2PFacade()
+      .setExchangeDelay( 300 )
+      .setPersist( false )
+      .setKeepRoutingTableHistory( true )
+      .setChannel("B")
+      .start( 20 );
+
+      theFacade4 = new P2PFacade()
+      .setExchangeDelay( 300 )
+      .setPersist( false )
+      .setKeepRoutingTableHistory( true )
+      .setChannel("B")
+      .start( 20 );
+
+      Thread.sleep(2000);
+
+      assertTrue(theFacade1.getUserInfo().containsKey(theFacade1.getPeerId()));
+      assertTrue(theFacade1.getUserInfo().containsKey(theFacade2.getPeerId()));
+      assertFalse(theFacade1.getUserInfo().containsKey(theFacade3.getPeerId()));
+      assertFalse(theFacade1.getUserInfo().containsKey(theFacade4.getPeerId()));
+
+      assertTrue(theFacade2.getUserInfo().containsKey(theFacade1.getPeerId()));
+      assertTrue(theFacade2.getUserInfo().containsKey(theFacade2.getPeerId()));
+      assertFalse(theFacade2.getUserInfo().containsKey(theFacade3.getPeerId()));
+      assertFalse(theFacade2.getUserInfo().containsKey(theFacade4.getPeerId()));
+
+      assertFalse(theFacade3.getUserInfo().containsKey(theFacade1.getPeerId()));
+      assertFalse(theFacade3.getUserInfo().containsKey(theFacade2.getPeerId()));
+      assertTrue(theFacade3.getUserInfo().containsKey(theFacade3.getPeerId()));
+      assertTrue(theFacade3.getUserInfo().containsKey(theFacade4.getPeerId()));
+
+      assertFalse(theFacade4.getUserInfo().containsKey(theFacade1.getPeerId()));
+      assertFalse(theFacade4.getUserInfo().containsKey(theFacade2.getPeerId()));
+      assertTrue(theFacade4.getUserInfo().containsKey(theFacade3.getPeerId()));
+      assertTrue(theFacade4.getUserInfo().containsKey(theFacade4.getPeerId()));
+    }catch(Exception e){
+      if(theFacade1 != null) theFacade1.stop();
+      if(theFacade2 != null) theFacade2.stop();
+      if(theFacade3 != null) theFacade3.stop();
+      if(theFacade4 != null) theFacade4.stop();
     }
   }
 }
