@@ -109,7 +109,7 @@ public class ProtocolServer implements Runnable{
 
       while(true){ 
         Socket theClientSocket = myServerSocket.accept();
-        LOGGER.debug("Client accepted, current number of clients: " + mySimultanousThreads.get());
+//        LOGGER.debug("Client accepted, current number of clients: " + mySimultanousThreads.get());
         ClientSocketHandler theHandler = new ClientSocketHandler(theClientSocket);
         if(myRunnableListener != null){
           theHandler.addListener( myRunnableListener );

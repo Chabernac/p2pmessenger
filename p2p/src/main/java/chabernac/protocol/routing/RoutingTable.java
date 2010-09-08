@@ -46,6 +46,17 @@ public class RoutingTable implements Iterable< RoutingTableEntry >, Serializable
     myRoutingTable.remove(anEntry.getPeer().getPeerId());
   }
 
+  /**
+   * this method is for test purposes only
+   * with this method you can insert all kind of entries
+   * no check is done
+   * 
+   * @param anEntry
+   */
+  synchronized void addEntry(RoutingTableEntry anEntry){
+    myRoutingTable.put(anEntry.getPeer().getPeerId(), anEntry);
+  }
+  
   public synchronized void addRoutingTableEntry(RoutingTableEntry anEntry){
     if(isKeepHistory){
       myRoutingTableEntryHistory.add( new RoutingTableEntryHistory(anEntry,RoutingTableEntryHistory.Action.ADD ) );
@@ -57,6 +68,13 @@ public class RoutingTable implements Iterable< RoutingTableEntry >, Serializable
     
     //ignore entries which have as gateway our selfs, this might create loops in the routing table hierarchy
     if(!anEntry.getPeer().getPeerId().equals( myLocalPeerId ) && anEntry.getGateway().getPeerId().equals( myLocalPeerId )){
+      return;
+    }
+    
+    if(anEntry.getHopDistance() == RoutingTableEntry.MAX_HOP_DISTANCE && 
+       !containsEntryForPeer( anEntry.getPeer().getPeerId() ) &&
+       !anEntry.getGateway().getPeerId().equals( myLocalPeerId )){
+      //there is no need for adding peer entries of peers received from another peer which can not be reached
       return;
     }
 
@@ -166,7 +184,8 @@ public class RoutingTable implements Iterable< RoutingTableEntry >, Serializable
       RoutingTableEntry theEntry = i.next();
       //add all entries except the entry for ourselfs
       //and except the entries which have our peer id as gateway, otherwise loops may be created in the routint table hierarchy
-      if(!theEntry.getPeer().getPeerId().equals( myLocalPeerId )){
+      //also skip entries which have the max hop distance, we do not need to know them
+      if(!theEntry.getPeer().getPeerId().equals( myLocalPeerId ) && theEntry.getHopDistance() < RoutingTableEntry.MAX_HOP_DISTANCE){
         addRoutingTableEntry(theEntry.entryForNextPeer( anotherRoutingTable.getEntryForLocalPeer().getPeer() ) );
       }
     }
@@ -199,16 +218,6 @@ public class RoutingTable implements Iterable< RoutingTableEntry >, Serializable
       }
     }
     return theEntries;
-  }
-
-  /**
-   * this method is necessar for being able to serialize the table 
-   * but you should not use it as it is not thread safe.
-   * @return
-   * @deprecated
-   */
-  public Map< String, RoutingTableEntry > getRoutingTable() {
-    return new HashMap< String, RoutingTableEntry >(myRoutingTable);
   }
 
   public void setRoutingTable( Map< String, RoutingTableEntry > anRoutingTable ) {
@@ -294,5 +303,15 @@ public class RoutingTable implements Iterable< RoutingTableEntry >, Serializable
 
   public void clearHistory(){
     myRoutingTableEntryHistory.clear();
+  }
+  
+  public synchronized RoutingTable copyWithoutUnreachablePeers(){
+    RoutingTable theRoutingTable = new RoutingTable(myLocalPeerId);
+    for(RoutingTableEntry theEntry : myRoutingTable.values()){
+      if(theEntry.isReachable()){
+        theRoutingTable.addRoutingTableEntry( theEntry );
+      }
+    }
+    return theRoutingTable;
   }
 }
