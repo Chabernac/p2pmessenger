@@ -18,6 +18,8 @@ public class ArgsInterPreterTest extends TestCase {
     assertEquals( "true", theInterpreter.getKeyValue( "visible" ) );
     assertEquals( "false", theInterpreter.getKeyValue( "hidden" ) );
     
+    assertEquals( "abc", theInterpreter.getKeyValue( "dummy", "abc" ) );
+    assertEquals( "true", theInterpreter.getKeyValue( "visible", "abc" ) );
   }
   
   
