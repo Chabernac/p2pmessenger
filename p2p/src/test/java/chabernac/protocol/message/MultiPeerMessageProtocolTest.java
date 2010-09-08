@@ -68,7 +68,7 @@ public class MultiPeerMessageProtocolTest extends AbstractProtocolTest {
       
       theMessageProtocol1.sendMessage( theMessage );
       
-      Thread.sleep( 5000 );
+      Thread.sleep( 8000 );
       
       //TODO why do we have to wait 5 seconds, what's causing the timeout?
       
