@@ -250,7 +250,7 @@ public class MessageProtocolTest extends AbstractProtocolTest {
 
       }
       
-      theLatch.await(30, TimeUnit.SECONDS);
+      theLatch.await(100, TimeUnit.SECONDS);
       
       assertEquals( 0, theLatch.getCount() );
 
