@@ -12,8 +12,6 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 
-import javax.swing.plaf.SliderUI;
-
 import junit.framework.TestCase;
 
 import org.apache.log4j.BasicConfigurator;
@@ -268,7 +266,7 @@ public class P2PFacadeTest extends TestCase {
       theFacade1.setUserInfoProvider( new UserInfoProvider("Chauliac", "guy.chauliac@axa.be") );
 
       //give the user info protocol some time to spread the new user info through the network
-      Thread.sleep( 1000 );
+      Thread.sleep( 2000 );
 
       theUserInfoOfFacade1 = theFacade2.getUserInfo().get( theFacade1.getPeerId() );
       assertEquals( "Chauliac", theUserInfoOfFacade1.getName() );
@@ -369,7 +367,7 @@ public class P2PFacadeTest extends TestCase {
     }
   }
 
-  public void testChannel(){
+  public void testChannel() throws P2PFacadeException, InterruptedException{
     P2PFacade theFacade1 = null;
     P2PFacade theFacade2 = null;
     P2PFacade theFacade3 = null;
@@ -381,28 +379,28 @@ public class P2PFacadeTest extends TestCase {
       .setPersist( false )
       .setKeepRoutingTableHistory( true )
       .setChannel("A")
-      .start( 20 );
+      .start( 10 );
 
       theFacade2 = new P2PFacade()
       .setExchangeDelay( 300 )
       .setPersist( false )
       .setKeepRoutingTableHistory( true )
       .setChannel("A")
-      .start( 20 );
+      .start( 10 );
 
       theFacade3 = new P2PFacade()
       .setExchangeDelay( 300 )
       .setPersist( false )
       .setKeepRoutingTableHistory( true )
       .setChannel("B")
-      .start( 20 );
+      .start( 10 );
 
       theFacade4 = new P2PFacade()
       .setExchangeDelay( 300 )
       .setPersist( false )
       .setKeepRoutingTableHistory( true )
       .setChannel("B")
-      .start( 20 );
+      .start( 10 );
 
       Thread.sleep(2000);
 
@@ -425,7 +423,7 @@ public class P2PFacadeTest extends TestCase {
       assertFalse(theFacade4.getUserInfo().containsKey(theFacade2.getPeerId()));
       assertTrue(theFacade4.getUserInfo().containsKey(theFacade3.getPeerId()));
       assertTrue(theFacade4.getUserInfo().containsKey(theFacade4.getPeerId()));
-    }catch(Exception e){
+    } finally{
       if(theFacade1 != null) theFacade1.stop();
       if(theFacade2 != null) theFacade2.stop();
       if(theFacade3 != null) theFacade3.stop();

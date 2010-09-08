@@ -393,7 +393,10 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
       testEntry( theRoutingTable1.getEntryForPeer("1"), 0, "1", true, true);
       testEntry( theRoutingTable1.getEntryForPeer("2"), 1, "2", true, true);
       testEntry( theRoutingTable1.getEntryForPeer("3"), 6, "3", false, false);
-      testEntry( theRoutingTable1.getEntryForPeer("4"), 6, "3", false, false);
+      
+      //because peer 4 is not reachable any more and because it wash reachable trough another peer, it should have been removed from the routing table
+      assertFalse( theRoutingTable1.containsEntryForPeer( "4" ) );
+//      testEntry( theRoutingTable1.getEntryForPeer("4"), 6, "3", false, false);
 
       //p2
       //peer    hops    gateway
@@ -406,7 +409,11 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
       testEntry( theRoutingTable2.getEntryForPeer("1"), 1, "1", true, true); 
       testEntry( theRoutingTable2.getEntryForPeer("2"), 0, "2", true, true);
       testEntry( theRoutingTable2.getEntryForPeer("3"), 6, "3", false, false);
-      testEntry( theRoutingTable2.getEntryForPeer("4"), 6, "3", false, false);
+      
+      //because peer 4 is not reachable any more and because it wash reachable trough another peer, it should have been removed from the routing table
+//      testEntry( theRoutingTable2.getEntryForPeer("4"), 6, "3", false, false);
+      assertFalse( theRoutingTable2.containsEntryForPeer( "4" ) );
+      
 
       //p3
       //peer    hops    gateway
@@ -831,5 +838,42 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
         if(theServer1 != null) theServer1.stop();
         if(theServer2 != null) theServer2.stop();
       }
+    }
+    
+    public void testDoNotExchangeRoutingTableEntriesWithMaxHopDistance() throws ProtocolException, NoAvailableNetworkAdapterException, InterruptedException{
+      ProtocolContainer theProtocol1 = getProtocolContainer( 1, false, "1" );
+      ProtocolServer theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT, 5);
+
+      ProtocolContainer theProtocol2 = getProtocolContainer( 1, false, "2" );
+      ProtocolServer theServer2 = new ProtocolServer(theProtocol2, RoutingProtocol.START_PORT + 1, 5);
+      
+      RoutingProtocol theRoutingProtocol1 = (RoutingProtocol)theProtocol1.getProtocol( RoutingProtocol.ID );
+      RoutingTable theRoutingTable1 = theRoutingProtocol1.getRoutingTable();
+      RoutingProtocol theRoutingProtocol2 = (RoutingProtocol)theProtocol2.getProtocol( RoutingProtocol.ID );
+      RoutingTable theRoutingTable2 = theRoutingProtocol2.getRoutingTable();
+      
+      Peer thePeer3 = new Peer("3", RoutingProtocol.START_PORT + 2);
+      theRoutingTable1.addEntry( new RoutingTableEntry(thePeer3, RoutingTableEntry.MAX_HOP_DISTANCE,  thePeer3));
+      
+      try{
+        assertTrue( theServer1.start() );
+        assertTrue( theServer2.start() );
+        
+        Thread.sleep( 5000 );
+        
+        assertTrue( theRoutingTable1.containsEntryForPeer( "1" ) );
+        assertTrue( theRoutingTable1.containsEntryForPeer( "2" ) );
+        assertTrue( theRoutingTable1.containsEntryForPeer( "3" ) );
+        
+        assertTrue( theRoutingTable2.containsEntryForPeer( "1" ) );
+        assertTrue( theRoutingTable2.containsEntryForPeer( "2" ) );
+        //the entry with hop distance 6 should not be distributed to peer 2
+        assertFalse( theRoutingTable2.containsEntryForPeer( "3" ) );
+      } finally{
+        LOGGER.debug( "Stopping servers" );
+        if(theServer1 != null) theServer1.stop();
+        if(theServer2 != null) theServer2.stop();
+      }
+      
     }
 }

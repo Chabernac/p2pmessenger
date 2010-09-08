@@ -90,4 +90,31 @@ public class RoutingTableTest extends TestCase {
     assertEquals(theEntry2, theTable.getEntries().get(0));
     assertEquals(1003, theTable.getEntries().get(0).getPeer().getPort());
   }
+  
+  public void testCopyWithoutUnreachablePeers() throws NoAvailableNetworkAdapterException{
+    RoutingTable theRoutingTable = new RoutingTable("1");
+    theRoutingTable.addEntry( new RoutingTableEntry(new Peer("1",12800), 0, new Peer("1",12800) ));
+    theRoutingTable.addEntry( new RoutingTableEntry(new Peer("2",12801), 1, new Peer("2",12801) ));
+    theRoutingTable.addEntry( new RoutingTableEntry(new Peer("3",12802), 2, new Peer("3",12802) ));
+    theRoutingTable.addEntry( new RoutingTableEntry(new Peer("4",12803), 3, new Peer("4",12803) ));
+    theRoutingTable.addEntry( new RoutingTableEntry(new Peer("5",12804), 4, new Peer("5",12804) ));
+    theRoutingTable.addEntry( new RoutingTableEntry(new Peer("6",12805), 5, new Peer("6",12805) ));
+    theRoutingTable.addEntry( new RoutingTableEntry(new Peer("7",12806), 6, new Peer("7",12806) ));
+    theRoutingTable.addEntry( new RoutingTableEntry(new Peer("8",12807), 7, new Peer("8",12807) ));
+    theRoutingTable.addEntry( new RoutingTableEntry(new Peer("9",12808), 8, new Peer("9",12808) ));
+    theRoutingTable.addEntry( new RoutingTableEntry(new Peer("10",12809), 9, new Peer("10",12809) ));
+    assertEquals( 10, theRoutingTable.getEntries().size());
+    RoutingTable theCopyWithoutUnreachablePeers = theRoutingTable.copyWithoutUnreachablePeers(); 
+    assertEquals( 6, theCopyWithoutUnreachablePeers.getEntries().size());
+    
+    for(int i=1;i<=6;i++){
+      assertTrue( theCopyWithoutUnreachablePeers.containsEntryForPeer( Integer.toString( i ) ) );
+    }
+    for(int i=7;i<=10;i++){
+      assertFalse( theCopyWithoutUnreachablePeers.containsEntryForPeer( Integer.toString( i ) ) );
+    }
+  }
+  
+  
+  
 }

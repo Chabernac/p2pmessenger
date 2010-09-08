@@ -255,7 +255,12 @@ public class RoutingProtocol extends Protocol {
         String thePeerEntry = anInput.substring( theFirstIndexOfSpace + 1 );
         RoutingTableEntry theEntry = myRoutingTableEntryConverter.getObject( thePeerEntry ).incHopDistance();
         myRoutingTable.addRoutingTableEntry( theEntry);
-        return myRoutingTableConverter.toString( myRoutingTable );
+        
+        //before sending our routing table, let's verify if we can still reach our neighbours
+        //this is just to avoid exchanging wrong information
+        verifyNeighbours();
+        
+        return myRoutingTableConverter.toString( myRoutingTable.copyWithoutUnreachablePeers() );
       } else if(theCommand == Command.ANNOUNCEMENT){
         String[] theAttributes = anInput.substring( theFirstIndexOfSpace + 1 ).split(";");
 
@@ -278,6 +283,18 @@ public class RoutingProtocol extends Protocol {
       return Response.NOK.name();
     }
     return Response.UNKNOWN_COMMAND.name();
+  }
+  
+  private void verifyNeighbours(){
+    for(RoutingTableEntry theEntry : myRoutingTable.getEntries()){
+      if(theEntry.getHopDistance() == 1){
+        //verify if we can reach this peer
+        if(!contactPeer( theEntry.getPeer(), myUnreachablePeers)){
+          RoutingTableEntry theNewEntry = theEntry.derivedEntry( RoutingTableEntry.MAX_HOP_DISTANCE );
+          myRoutingTable.addRoutingTableEntry( theNewEntry );
+        }
+      }
+    }
   }
 
   public RoutingTable getRoutingTable(){
