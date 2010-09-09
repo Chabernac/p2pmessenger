@@ -185,12 +185,17 @@ public class ApplicationLauncher {
         theExitItem.addActionListener( new ActionListener(){
           public void actionPerformed(ActionEvent evt){
             if(JOptionPane.OK_OPTION == JOptionPane.showConfirmDialog( myChatFrame, "Ben je zeker dat je wilt afsluiten? Als je afsluit kan je geen berichten meer ontvangen.", "Afsluiten", JOptionPane.OK_CANCEL_OPTION)){
-              theIcon.setToolTip( "P2PClient: Bezig met afsluiten" );
-              if(myChatFrame != null) myChatFrame.setVisible( false );
-              EventDispatcher.getInstance( SavePreferencesEvent.class ).fireEvent( new SavePreferencesEvent() );
-              ApplicationPreferences.getInstance().save();
-              myFacade.stop();
-              System.exit(0);
+              try{
+                theIcon.setToolTip( "P2PClient: Bezig met afsluiten" );
+                if(myChatFrame != null) myChatFrame.setVisible( false );
+                EventDispatcher.getInstance( SavePreferencesEvent.class ).fireEvent( new SavePreferencesEvent() );
+                ApplicationPreferences.getInstance().save();
+                myFacade.stop();
+              }catch(Throwable e){
+                LOGGER.error("Could not properly exit", e);
+              } finally {
+                System.exit(0);
+              }
             }
           }
         });
