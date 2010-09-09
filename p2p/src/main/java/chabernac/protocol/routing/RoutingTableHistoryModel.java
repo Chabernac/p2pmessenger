@@ -96,6 +96,11 @@ public class RoutingTableHistoryModel implements TableModel {
     public void routingTableEntryChanged( RoutingTableEntry anEntry ) {
       refresh();
     }
+
+    @Override
+    public void routingTableEntryRemoved( RoutingTableEntry anEntry ) {
+      refresh();
+    }
   }
 
 }

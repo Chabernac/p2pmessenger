@@ -156,6 +156,11 @@ public class VersionProtocol extends Protocol {
       }
     }
 
+    @Override
+    public void routingTableEntryRemoved( RoutingTableEntry anEntry ) {
+      // TODO should we do something here?
+    }
+
   }
 
 }

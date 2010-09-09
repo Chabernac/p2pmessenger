@@ -187,5 +187,11 @@ public class InfoExchangeProtocol<T extends Observable & Serializable> extends P
       //should not have send the information, nevertheless we can not know that at the moment
       myService.execute( new SendInfoToPeer(anEntry.getPeer().getPeerId()));
     }
+
+    @Override
+    public void routingTableEntryRemoved( RoutingTableEntry anEntry ) {
+      // TODO implement this function
+      
+    }
   }
 }

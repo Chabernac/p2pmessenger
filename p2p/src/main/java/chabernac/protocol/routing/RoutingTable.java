@@ -44,6 +44,8 @@ public class RoutingTable implements Iterable< RoutingTableEntry >, Serializable
     }
 
     myRoutingTable.remove(anEntry.getPeer().getPeerId());
+    
+    notifyListenersOfRoutingTableEntryRemoval( anEntry );
   }
 
   /**
@@ -158,6 +160,12 @@ public class RoutingTable implements Iterable< RoutingTableEntry >, Serializable
   private void notifyListenersOfRoutingTableEntryChange(RoutingTableEntry anEntry){
     for(IRoutingTableListener theListener : myRoutingTableListeners){
       theListener.routingTableEntryChanged( anEntry );
+    }
+  }
+  
+  private void notifyListenersOfRoutingTableEntryRemoval(RoutingTableEntry anEntry){
+    for(IRoutingTableListener theListener : myRoutingTableListeners){
+      theListener.routingTableEntryRemoved( anEntry );
     }
   }
 

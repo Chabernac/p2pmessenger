@@ -40,7 +40,7 @@ public class UserInfoProtocol extends Protocol {
   public static enum Command { GET, PUT };
   public static enum Response{ OK, NOK };
 
-  private Map<String, UserInfo> myUserInfo = new HashMap< String, UserInfo >();
+  private Map<String, UserInfo> myUserInfo = Collections.synchronizedMap( new HashMap< String, UserInfo >());
 
   private ExecutorService myRetrievalService = Executors.newFixedThreadPool( 5 );
   private ScheduledExecutorService myService = Executors.newScheduledThreadPool( 1 );
@@ -286,6 +286,16 @@ public class UserInfoProtocol extends Protocol {
         } 
       }catch(Exception e){
         LOGGER.error("Could not retrieve user info", e);
+      }
+    }
+
+    @Override
+    public void routingTableEntryRemoved( RoutingTableEntry anEntry ) {
+      if(myUserInfo.containsKey( anEntry.getPeer().getPeerId() )){
+        UserInfo theInfo = myUserInfo.get( anEntry.getPeer().getPeerId() );
+        theInfo.setStatus( Status.OFFLINE );
+        myUserInfo.remove( anEntry.getPeer().getPeerId() );
+        notifyUserInfoChanged(theInfo);
       }
     }
   }

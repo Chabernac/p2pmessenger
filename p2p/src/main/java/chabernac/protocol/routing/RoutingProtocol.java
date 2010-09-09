@@ -634,6 +634,11 @@ public class RoutingProtocol extends Protocol {
     public void routingTableEntryChanged( RoutingTableEntry anEntry ) {
       myChangeService.execute( new SendAnnouncement(anEntry) );
     }
+
+    @Override
+    public void routingTableEntryRemoved( RoutingTableEntry anEntry ) {
+      //TODO should we do something here?
+    }
   }
 
   private class SendAnnouncement implements Runnable{

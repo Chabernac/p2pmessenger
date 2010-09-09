@@ -6,4 +6,5 @@ package chabernac.protocol.routing;
 
 public interface IRoutingTableListener {
   public void routingTableEntryChanged(RoutingTableEntry anEntry);
+  public void routingTableEntryRemoved(RoutingTableEntry anEntry);
 }
