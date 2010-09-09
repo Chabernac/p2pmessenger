@@ -81,12 +81,21 @@ public class RoutingTableModel implements TableModel {
     
   }
   
+  private void refresh(){
+    for(TableModelListener theListener : myTableModelListeners){
+      theListener.tableChanged( new TableModelEvent(RoutingTableModel.this) );
+    }  
+  }
+  
   private class MyRoutingTableListner implements IRoutingTableListener{
     @Override
     public void routingTableEntryChanged( RoutingTableEntry anEntry ) {
-      for(TableModelListener theListener : myTableModelListeners){
-        theListener.tableChanged( new TableModelEvent(RoutingTableModel.this) );
-      }
+      refresh();
+    }
+
+    @Override
+    public void routingTableEntryRemoved( RoutingTableEntry anEntry ) {
+      refresh();
     }
   }
 
