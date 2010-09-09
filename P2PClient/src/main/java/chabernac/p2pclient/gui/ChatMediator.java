@@ -93,10 +93,15 @@ public class ChatMediator {
       return true;
     }
     if(myMessageProvider.getMessage().equalsIgnoreCase( "exit" )){
-      EventDispatcher.getInstance( SavePreferencesEvent.class ).fireEvent( new SavePreferencesEvent() );
-      ApplicationPreferences.getInstance().save();
-      myP2PFacade.stop();
-      System.exit(0);
+      try{
+        EventDispatcher.getInstance( SavePreferencesEvent.class ).fireEvent( new SavePreferencesEvent() );
+        ApplicationPreferences.getInstance().save();
+        myP2PFacade.stop();
+      }catch(Throwable e){
+        LOGGER.error("Could not properly exit", e);
+      } finally {
+        System.exit(0);
+      }
     }
     return false;
   }
