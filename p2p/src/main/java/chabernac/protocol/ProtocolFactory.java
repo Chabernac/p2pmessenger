@@ -8,8 +8,8 @@ import java.io.IOException;
 
 import javax.activation.DataSource;
 
-import org.apache.log4j.DailyRollingFileAppender;
 import org.apache.log4j.Logger;
+import org.apache.log4j.RollingFileAppender;
 import org.apache.log4j.TTCCLayout;
 
 import chabernac.protocol.application.ApplicationProtocol;
@@ -129,7 +129,11 @@ public class ProtocolFactory implements iProtocolFactory{
   
   private void setupLogging(Protocol aProtocol) throws IOException{
     Logger theLogger = Logger.getLogger( aProtocol.getClass().getName() );
-    DailyRollingFileAppender theFileAppender = new DailyRollingFileAppender(new TTCCLayout("dd-MM-yyyy HH:mm:ss SSS") ,aProtocol.getClass().getName() + ".log", "'.'yyyy-MM-dd'.log'" );
+    theLogger.setLevel( Logger.getRootLogger().getLevel() );
+//    DailyRollingFileAppender theFileAppender = new DailyRollingFileAppender(new TTCCLayout("dd-MM-yyyy HH:mm:ss SSS") ,aProtocol.getClass().getName() + ".log", "'.'yyyy-MM-dd'.log'" );
+    RollingFileAppender theFileAppender = new RollingFileAppender(new TTCCLayout("dd-MM-yyyy HH:mm:ss SSS") ,aProtocol.getClass().getName() + ".log" );
+    theFileAppender.setMaxBackupIndex( 5 );
+    theFileAppender.setMaxFileSize( "200KB" );
     theLogger.addAppender( theFileAppender );
   }
 
