@@ -402,7 +402,7 @@ public class P2PFacadeTest extends TestCase {
       .setChannel("B")
       .start( 10 );
 
-      Thread.sleep(2000);
+      Thread.sleep(4000);
 
       assertTrue(theFacade1.getUserInfo().containsKey(theFacade1.getPeerId()));
       assertTrue(theFacade1.getUserInfo().containsKey(theFacade2.getPeerId()));
