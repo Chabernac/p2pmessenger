@@ -8,18 +8,27 @@ package chabernac.p2pclient.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Rectangle;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
+import javax.swing.ActionMap;
+import javax.swing.InputMap;
+import javax.swing.JComponent;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
+import javax.swing.KeyStroke;
 
 import org.apache.log4j.Logger;
 
 import chabernac.gui.SavedFrame;
+import chabernac.p2pclient.gui.action.ActionDecorator;
+import chabernac.p2pclient.gui.action.ActionFactory;
+import chabernac.p2pclient.gui.action.CommandAction;
 import chabernac.preference.ApplicationPreferences;
 import chabernac.protocol.facade.P2PFacade;
 import chabernac.protocol.facade.P2PFacadeException;
@@ -38,8 +47,13 @@ public class ChatFrame extends SavedFrame implements iTitleProvider, isShowDialo
     loadIcon();
     buildGUI();
     addWindowListener();
+    createInputMap();
   }
   
+  private void createInputMap(){
+    new ActionDecorator(mySplitPane, myMediator).decorate(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+  }
+
   private void addWindowListener() {
     addWindowListener(new MyWindowListener());
   }

@@ -37,6 +37,7 @@ import chabernac.gui.WrappingFlowLayout;
 import chabernac.gui.iComponentMoveListener;
 import chabernac.gui.iPaintable;
 import chabernac.io.Base64ObjectStringConverter;
+import chabernac.p2pclient.gui.action.ActionDecorator;
 import chabernac.preference.ApplicationPreferences;
 import chabernac.protocol.facade.P2PFacadeException;
 import chabernac.protocol.message.DeliveryReport;
@@ -193,6 +194,8 @@ public class UserPanel extends GPanel implements iUserSelectionProvider{
   }
 
   private void buildActionMap(){
+    new ActionDecorator(this, myMediator).decorate(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+    
     InputMap theMap = getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
     theMap.put(KeyStroke.getKeyStroke('+'), "largerfont");
     theMap.put(KeyStroke.getKeyStroke('-'), "smallerfont");

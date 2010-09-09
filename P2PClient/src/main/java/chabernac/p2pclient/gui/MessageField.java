@@ -14,7 +14,6 @@ import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
-import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
@@ -42,10 +41,12 @@ import org.apache.log4j.Logger;
 
 import chabernac.event.Event;
 import chabernac.event.iEventListener;
-import chabernac.gui.SavedFrame.MyComponentListener;
+import chabernac.p2pclient.gui.action.ActionDecorator;
 
 
 public class MessageField extends JTextArea implements iMessageProvider{
+  private static final long serialVersionUID = 8085069557786155534L;
+
   private static Logger logger = Logger.getLogger(MessageField.class);
 
   private ChatMediator myMediator = null;
@@ -60,36 +61,13 @@ public class MessageField extends JTextArea implements iMessageProvider{
   }
 
   private void createInputMap(){
+    new ActionDecorator(this, myMediator).decorate(JComponent.WHEN_FOCUSED);
+    
     InputMap theInputMap = getInputMap();
 
-    theInputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_UP, 0), "previous");
-    theInputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_DOWN, 0), "next");
-    theInputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), "clear");
-    theInputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, InputEvent.CTRL_DOWN_MASK), "unlock");
-    theInputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "send");
-    theInputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_END, KeyEvent.ALT_DOWN_MASK), "last");
-    theInputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_HOME, KeyEvent.ALT_DOWN_MASK), "first");
-    theInputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, KeyEvent.ALT_DOWN_MASK), "delete");
     theInputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, KeyEvent.ALT_DOWN_MASK), "nextrow");
-    theInputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_A, KeyEvent.ALT_DOWN_MASK), "replyall");
-    theInputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_R, KeyEvent.ALT_DOWN_MASK), "reply");
-    theInputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, KeyEvent.SHIFT_DOWN_MASK), "clearusers");
-    theInputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_PAUSE, 0), "pause");
     ActionMap theActionMap = getActionMap();
-    theActionMap.put("previous", new PreviousAction());
-    theActionMap.put("next", new NextAction());
-    theActionMap.put("clear", new ClearAction());
-    theActionMap.put("clearusers", new ClearUsersAction());
-    theActionMap.put("send", new SendAction());
     theActionMap.put("nextrow", new NextRowAction());
-    theActionMap.put("first", new FirstAction());
-    theActionMap.put("last", new LastAction());
-    theActionMap.put("delete", new DeleteAction());
-    theActionMap.put("reply", new ReplyAction());
-    theActionMap.put("replyall", new ReplyAllAction());
-    theActionMap.put("unlock", new UnlockAction());
-    theActionMap.put("pause", new PauseAction());
-
   }
 
   private void buildGUI(){
