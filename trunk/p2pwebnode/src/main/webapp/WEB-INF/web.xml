@@ -5,13 +5,13 @@
 <web-app>
   <display-name>Archetype Created Web Application</display-name>
   <servlet>
-  	<servlet-name>P2PServlet</servlet-name>
-  	<display-name>P2PServlet</display-name>
+  	<servlet-name>CometServlet</servlet-name>
+  	<display-name>CometServlet</display-name>
   	<description></description>
-  	<servlet-class>chabernac.p2p.webnode.servlet.P2PServlet</servlet-class>
+  	<servlet-class>chabernac.comet.CometServlet</servlet-class>
   </servlet>
   <servlet-mapping>
-  	<servlet-name>P2PServlet</servlet-name>
-  	<url-pattern>/P2PServlet</url-pattern>
+  	<servlet-name>CometServlet</servlet-name>
+  	<url-pattern>/CometServlet</url-pattern>
   </servlet-mapping>
 </web-app>
