@@ -300,6 +300,16 @@ public class RoutingProtocol extends Protocol {
   public RoutingTable getRoutingTable(){
     return myRoutingTable;
   }
+  
+  public void checkPeer(final Peer aPeer){
+    if(!myRoutingTable.containsEntryForPeer( aPeer.getPeerId() )){
+      myScannerService.execute( new Runnable(){
+        public void run(){
+          contactPeer( aPeer, myUnreachablePeers );
+        }
+      });
+    }
+  }
 
   boolean contactPeer(Peer aPeer, List<String> anUnreachablePeers){
     try{

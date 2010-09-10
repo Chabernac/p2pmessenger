@@ -70,6 +70,8 @@ public class MessageProtocol extends Protocol {
       for(iMessageListener theListener : myHistoryListeners) theListener.messageReceived( aMessage );
     }
 
+    checkMessage(aMessage);
+    
     Peer theDestination = aMessage.getDestination();
     try {
       if(theDestination.getPeerId().equals( getRoutingTable().getLocalPeerId() )){
@@ -97,6 +99,22 @@ public class MessageProtocol extends Protocol {
     }
   }
   
+  
+  /**
+   * in this method we ask the routing protocol to check the sending peer.
+   * When the peer is not yet in the routing table, the routing protocol will try to contact the peer
+   * and update the routing table
+   * @param anMessage
+   */
+  private void checkMessage( Message anMessage ) {
+    try{
+      RoutingProtocol theProtocol = ((RoutingProtocol)findProtocolContainer().getProtocol( RoutingProtocol.ID ));
+      theProtocol.checkPeer( anMessage.getSource() );
+    }catch(Exception e){
+      LOGGER.error("An error occured while checking for peer ", e);
+    }
+  }
+
   private String handleMessageForUs(long aSessionId, Message aMessage) throws EncryptionException{
     checkEnctryption(aMessage);
     if(aMessage.isProtocolMessage()){
