@@ -264,6 +264,60 @@ public class MessageProtocolTest extends AbstractProtocolTest {
       theServer2.stop();
     }
   }
+  
+  public void testMessageFromUnknownPeer() throws ProtocolException, InterruptedException, UnknownPeerException, MessageException{
+    LOGGER.debug("Begin of testMessageProtocol");
+    ProtocolContainer theProtocol1 = getProtocolContainer( -1, false, "1" );
+    ProtocolServer theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT, 6);
+
+    ProtocolContainer theProtocol2 = getProtocolContainer( -1, false, "2" );
+    ProtocolServer theServer2 = new ProtocolServer(theProtocol2, RoutingProtocol.START_PORT + 1, 6);
+
+    RoutingProtocol theRoutingProtocol1 = (RoutingProtocol)theProtocol1.getProtocol( RoutingProtocol.ID );
+    RoutingTable theRoutingTable1 = theRoutingProtocol1.getRoutingTable();
+    MessageProtocol theMessageProtocol1 = (MessageProtocol)theProtocol1.getProtocol( MessageProtocol.ID );
+
+    RoutingProtocol theRoutingProtocol2 = (RoutingProtocol)theProtocol2.getProtocol( RoutingProtocol.ID );
+    RoutingTable theRoutingTable2 = theRoutingProtocol2.getRoutingTable();
+    MessageProtocol theMessageProtocol2 = (MessageProtocol)theProtocol2.getProtocol( MessageProtocol.ID );
+
+    try{
+      assertTrue( theServer1.start() );
+      assertTrue( theServer2.start() );
+
+      theRoutingProtocol1.scanLocalSystem();
+      
+      Thread.sleep( SLEEP_AFTER_SCAN );
+      
+      //peer 1 should now peer 2
+      assertTrue( theRoutingTable1.containsEntryForPeer( theRoutingProtocol2.getLocalPeerId() ) );
+      //but peer 2 should not know peer 1
+      if(theRoutingTable2.containsEntryForPeer( theRoutingProtocol1.getLocalPeerId() )){
+        //and if it does remove the entry
+       theRoutingTable2.removeRoutingTableEntry( theRoutingTable2.getEntryForPeer( theRoutingProtocol1.getLocalPeerId() ) );
+       Thread.sleep( SLEEP_AFTER_SCAN );
+      }
+      assertFalse( theRoutingTable2.containsEntryForPeer( theRoutingProtocol1.getLocalPeerId() ) );
+      
+      //now send a message from peer 1 to peer 2
+      Message theMessage = new Message();
+      theMessage.setDestination( theRoutingTable2.getEntryForLocalPeer().getPeer() );
+      theMessage.setMessage( "test" );
+      
+      theMessageProtocol1.sendMessage( theMessage );
+      
+      Thread.sleep( SLEEP_AFTER_SCAN );
+      
+      //if the message has been received by peer 2, the routing table of peer 2 must now contain peer 1
+      assertTrue( theRoutingTable2.containsEntryForPeer( theRoutingProtocol1.getLocalPeerId() ) );
+      
+
+      //scanning the local system might take a small time
+    } finally {
+      theServer1.stop();
+      theServer2.stop();
+    }
+  }
 
   public class MessageCounterListener implements iMessageListener{
     private AtomicInteger myCounter = new AtomicInteger();
