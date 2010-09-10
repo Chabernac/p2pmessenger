@@ -7,5 +7,5 @@ package chabernac.comet;
 import java.util.Map;
 
 public interface iDataHandler {
-  public void handleData(String aData, Map< String, EndPoint > anEndPoints);
+  public void handleData(String aData, Map< String, EndPoint > anEndPoints) throws DataHandlingException;
 }
