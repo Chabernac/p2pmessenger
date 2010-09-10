@@ -39,6 +39,7 @@ public class ChatFrame extends SavedFrame implements iTitleProvider, isShowDialo
   private ChatMediator myMediator = null;
   private P2PFacade myP2PFacade = null;
   private JSplitPane mySplitPane = null;
+  private MessageField myMessageField = null;
   
   public ChatFrame(P2PFacade aFacade) throws P2PFacadeException{
     super(ApplicationPreferences.getInstance().getProperty("frame.light.title","Chatterke"), new Rectangle(300,300,500,250));
@@ -78,17 +79,17 @@ public class ChatFrame extends SavedFrame implements iTitleProvider, isShowDialo
 
     mySplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 
-    MessageField theMessageField = new MessageField(myMediator);
+    myMessageField = new MessageField(myMediator);
     UserPanel theUserPanel = new UserPanel(myMediator);
     ReceivedMessagesField theReceivedField = new ReceivedMessagesField(myMediator);
     
-    myMediator.setMessageProvider( theMessageField );
+    myMediator.setMessageProvider( myMessageField );
     myMediator.setReceivedMessagesProvider( theReceivedField );
     myMediator.setUserSelectionProvider( theUserPanel );
     myMediator.setTitleProvider( this );
     myMediator.setIsShowDialogProvider( this );
     
-    mySplitPane.setTopComponent(new JScrollPane(theMessageField, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER));
+    mySplitPane.setTopComponent(new JScrollPane(myMessageField, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER));
     mySplitPane.setBottomComponent(theReceivedField);
     mySplitPane.setDividerSize(1);
     ApplicationPreferences thePreferences = ApplicationPreferences.getInstance();
@@ -122,6 +123,10 @@ public class ChatFrame extends SavedFrame implements iTitleProvider, isShowDialo
   @Override
   public boolean isShowDialog() {
     return !isActive();
+  }
+  
+  public void requestFocus(){
+    myMessageField.requestFocus();
   }
 
 }

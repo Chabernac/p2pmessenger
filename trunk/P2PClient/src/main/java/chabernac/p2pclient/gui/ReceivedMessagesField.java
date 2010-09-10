@@ -61,7 +61,7 @@ public class ReceivedMessagesField extends GPanel implements iReceivedMessagesPr
 
   private void buildGUI(){
     setLayout(new BorderLayout());
-    JScrollPane theScrollPane = new JScrollPane(myPane, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+    JScrollPane theScrollPane = new JScrollPane(myPane, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
     theScrollPane.getVerticalScrollBar().setUnitIncrement(50);
     add(theScrollPane, BorderLayout.CENTER);
     new ReceivedMessagesPopup(this, myMediator);
