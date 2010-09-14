@@ -63,14 +63,18 @@ public class ProtocolServer implements Runnable{
     }
     return isStarted;
   }
-
-  public void stop(){
+  
+  public void kill(){
     try {
       if(myServerSocket != null){
         myServerSocket.close();
       }
     } catch ( IOException e ) {
     }
+  }
+
+  public void stop(){
+    kill();
     myProtocol.stop();
 
     int theCount = 5;

@@ -279,7 +279,7 @@ public class UserInfoProtocol extends Protocol {
     @Override
     public void routingTableEntryChanged( RoutingTableEntry anEntry ) {
       try{
-        if(!myUserInfo.containsKey( anEntry.getPeer() )){
+        if(!myUserInfo.containsKey( anEntry.getPeer().getPeerId() )){
           if(anEntry.isReachable() && anEntry.getPeer().isOnSameChannel(getRoutingTable().getEntryForLocalPeer().getPeer())){
             myRetrievalService.execute( new UserInfoRetriever(anEntry.getPeer().getPeerId()) );
           }
@@ -287,7 +287,9 @@ public class UserInfoProtocol extends Protocol {
           //we have user information for this peer
           //if the entry is not reachable any more than set the status of the user to offline
           if(!anEntry.isReachable()){
-            myUserInfo.get(anEntry.getPeer()).setStatus( Status.OFFLINE );
+            UserInfo theUserInfo = myUserInfo.get(anEntry.getPeer().getPeerId());
+            theUserInfo.setStatus( Status.OFFLINE );
+            notifyUserInfoChanged(theUserInfo);
           }
         }
       }catch(Exception e){
