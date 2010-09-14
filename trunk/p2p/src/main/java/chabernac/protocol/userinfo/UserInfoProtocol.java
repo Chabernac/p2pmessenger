@@ -283,7 +283,13 @@ public class UserInfoProtocol extends Protocol {
           if(anEntry.isReachable() && anEntry.getPeer().isOnSameChannel(getRoutingTable().getEntryForLocalPeer().getPeer())){
             myRetrievalService.execute( new UserInfoRetriever(anEntry.getPeer().getPeerId()) );
           }
-        } 
+        } else {
+          //we have user information for this peer
+          //if the entry is not reachable any more than set the status of the user to offline
+          if(!anEntry.isReachable()){
+            myUserInfo.get(anEntry.getPeer()).setStatus( Status.OFFLINE );
+          }
+        }
       }catch(Exception e){
         LOGGER.error("Could not retrieve user info", e);
       }

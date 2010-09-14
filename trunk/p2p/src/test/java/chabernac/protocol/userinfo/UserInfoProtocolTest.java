@@ -264,15 +264,60 @@ public class UserInfoProtocolTest extends AbstractProtocolTest {
       
       theUserInfo = theUserInfoProtocol.getUserInfo().get(theRoutingTable2.getLocalPeerId());
       assertNull( theUserInfo );
-      
-      
-      
-      
     } finally {
       theServer1.stop();
       theServer2.stop();
     }
   }
+  
+  public void testPeerGoesOffline() throws ProtocolException, InterruptedException{
+    ProtocolContainer theProtocol1 = getProtocolContainer( -1, false, "1" );
+    ProtocolServer theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT, 5);
+
+    ProtocolContainer theProtocol2 = getProtocolContainer( -1, false, "2" );
+    ProtocolServer theServer2 = new ProtocolServer(theProtocol2, RoutingProtocol.START_PORT + 1, 5);
+    
+    RoutingProtocol theRoutingProtocol1 = (RoutingProtocol)theProtocol1.getProtocol( RoutingProtocol.ID );
+    RoutingTable theRoutingTable1 = theRoutingProtocol1.getRoutingTable();
+    RoutingProtocol theRoutingProtocol2 = (RoutingProtocol)theProtocol2.getProtocol( RoutingProtocol.ID );
+    RoutingTable theRoutingTable2 = theRoutingProtocol2.getRoutingTable();
+    
+    UserInfoProtocol theUserInfoProtocol2 = (UserInfoProtocol)theProtocol2.getProtocol( UserInfoProtocol.ID );
+    UserInfoListener theListener = new UserInfoListener();
+    theUserInfoProtocol2.addUserInfoListener( theListener );
+    
+    try{
+      UserInfoProtocol theUserInfoProtocol = (UserInfoProtocol)theProtocol1.getProtocol( UserInfoProtocol.ID );
+      
+      assertTrue( theServer1.start() );
+      assertTrue( theServer2.start() );
+      
+      Thread.sleep( SLEEP_AFTER_SCAN );
+      
+      theRoutingProtocol1.scanLocalSystem();
+      theRoutingProtocol2.scanLocalSystem();
+      
+      Thread.sleep(SLEEP_AFTER_SCAN);
+      
+      UserInfo theUserInfo = theUserInfoProtocol.getUserInfo().get( theRoutingTable2.getLocalPeerId() ); 
+      assertNotNull( theUserInfo );
+      assertEquals( UserInfo.Status.ONLINE, theUserInfo.getStatus() );
+      
+      theServer1.stop();
+      
+      theRoutingProtocol2.exchangeRoutingTable();
+      
+      Thread.sleep( SLEEP_AFTER_SCAN );
+      
+      theUserInfo = theUserInfoProtocol.getUserInfo().get( theRoutingTable2.getLocalPeerId() ); 
+      assertNotNull( theUserInfo );
+      assertEquals( UserInfo.Status.OFFLINE, theUserInfo.getStatus() );
+    } finally {
+      theServer1.stop();
+      theServer2.stop();
+    }
+  }
+  
   
   private class UserInfoListener implements iUserInfoListener{
     private List< UserInfo > myChangedUserInfo = new ArrayList< UserInfo >();
