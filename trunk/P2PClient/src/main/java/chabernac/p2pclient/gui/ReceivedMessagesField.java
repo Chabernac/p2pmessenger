@@ -13,6 +13,7 @@ import java.util.Set;
 
 import javax.swing.JEditorPane;
 import javax.swing.JScrollPane;
+import javax.swing.SwingUtilities;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 
@@ -94,29 +95,34 @@ public class ReceivedMessagesField extends GPanel implements iReceivedMessagesPr
   }
 
   private void createHTML() {
-    try{
-      Set< MultiPeerMessage > theList = myMediator.getP2PFacade().getMessageArchive().getAllMessages();
-      myHTML = "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01//EN\">";
-      boolean send = false;
-      myHTML += "<html>";
-      myHTML += "<head><style type=\"text/css\">p {   padding-left: 5em;  } p:first-letter  {   margin-left: -5em;  }</style><title>messages</title></head>";
-      myHTML += "<body>";
-      myHTML += "<table border='0' cellpadding='0' cellspacing='0'>";
-      for(MultiPeerMessage theMessage : theList){
-        send = theMessage.getSource().equals(myMediator.getP2PFacade().getPeerId());
-        myHTML += "<tr "+ (send ? SEND_FONT : RECEIVE_FONT) + " >";
-        myHTML += "<td><i>" +  TIME_FORMAT.format(theMessage.getCreationTime()) + " " + Tools.getEnvelop(myMediator.getP2PFacade(), theMessage) + ":</i> ";
-        myHTML += theMessage.getMessage();
-        myHTML += "</td>";
-        myHTML += "</tr>";
+    SwingUtilities.invokeLater(new Runnable(){
+      public void run(){
+        try{
+          Set< MultiPeerMessage > theList = myMediator.getP2PFacade().getMessageArchive().getAllMessages();
+          myHTML = "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01//EN\">";
+          boolean send = false;
+          myHTML += "<html>";
+          myHTML += "<head><style type=\"text/css\">p {   padding-left: 5em;  } p:first-letter  {   margin-left: -5em;  }</style><title>messages</title></head>";
+          myHTML += "<body>";
+          myHTML += "<table border='0' cellpadding='0' cellspacing='0'>";
+          for(MultiPeerMessage theMessage : theList){
+            send = theMessage.getSource().equals(myMediator.getP2PFacade().getPeerId());
+            myHTML += "<tr "+ (send ? SEND_FONT : RECEIVE_FONT) + " >";
+            myHTML += "<td><i>" +  TIME_FORMAT.format(theMessage.getCreationTime()) + " " + Tools.getEnvelop(myMediator.getP2PFacade(), theMessage) + ":</i> ";
+            myHTML += theMessage.getMessage();
+            myHTML += "</td>";
+            myHTML += "</tr>";
+          }
+          myHTML += "</table></body></html>";
+          System.out.println(myHTML);
+          myPane.setText(myHTML);
+          myPane.setCaretPosition(myPane.getDocument().getLength() > 0 ? myPane.getDocument().getLength() - 1 : 0);
+        }catch(P2PFacadeException e){
+          logger.error( "Could not create received text", e );
+        } 
       }
-      myHTML += "</table></body></html>";
-      System.out.println(myHTML);
-      myPane.setText(myHTML);
-      myPane.setCaretPosition(myPane.getDocument().getLength() > 0 ? myPane.getDocument().getLength() - 1 : 0);
-    }catch(P2PFacadeException e){
-      logger.error( "Could not create received text", e );
-    }
+    });
+
   }
 
 
