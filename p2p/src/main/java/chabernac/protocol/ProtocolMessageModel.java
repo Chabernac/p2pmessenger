@@ -33,7 +33,7 @@ public class ProtocolMessageModel implements TableModel {
 
   @Override
   public int getColumnCount() {
-    return 4;
+    return 5;
   }
 
   @Override
@@ -42,6 +42,7 @@ public class ProtocolMessageModel implements TableModel {
     if(aColumn == 1) return "State";
     if(aColumn == 2) return "Input";
     if(aColumn == 3) return "Output";
+    if(aColumn == 4) return "Response time";
     return "";
   }
 
@@ -61,6 +62,7 @@ public class ProtocolMessageModel implements TableModel {
     if(aColumn == 1) return theEntry.getState().name();
     if(aColumn == 2) return theEntry.getInput();
     if(aColumn == 3) return theEntry.getOutput();
+    if(aColumn == 4) return ((double)theEntry.getResponseTime()) / 1000D;
     return null;
   }
 

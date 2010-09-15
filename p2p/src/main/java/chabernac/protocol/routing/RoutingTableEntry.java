@@ -5,7 +5,6 @@
 package chabernac.protocol.routing;
 
 import java.io.Serializable;
-import java.util.Date;
 
 
 public class RoutingTableEntry implements Serializable{
@@ -26,13 +25,21 @@ public class RoutingTableEntry implements Serializable{
 	
 	private final long myCreationTime = System.currentTimeMillis();
 	
-	public RoutingTableEntry ( Peer anHost , int anHopDistance , Peer anGateway ) {
+	private final long myLastOnlineTime;
+	
+	public RoutingTableEntry ( Peer anHost , int anHopDistance , Peer anGateway, long aLastOnlineTime ) {
 		super();
 		myPeer = anHost;
-		if(anHopDistance > MAX_HOP_DISTANCE){
+		if(anHopDistance >= MAX_HOP_DISTANCE){
 		  myHopDistance = MAX_HOP_DISTANCE;
+		  if(aLastOnlineTime > 0){
+		    myLastOnlineTime = aLastOnlineTime;
+		  } else {
+		    myLastOnlineTime = System.currentTimeMillis();
+		  }
 		} else {
 		  myHopDistance = anHopDistance;
+		  myLastOnlineTime = System.currentTimeMillis();
 		}
 		myGateway = anGateway;
 		checkValidity();
@@ -72,6 +79,10 @@ public class RoutingTableEntry implements Serializable{
   public long getCreationTime() {
     return myCreationTime;
   }
+  
+  public long getLastOnlineTime() {
+    return myLastOnlineTime;
+  }
 
   public String toString(){
     return "<PeerEntry peerid='" + myPeer.getPeerId() + "' hopDistance='" + myHopDistance + "' gateway='" + myGateway.getPeerId() + "' creationTime='" + myCreationTime + "'/>";
@@ -87,15 +98,15 @@ public class RoutingTableEntry implements Serializable{
   }
   
   public RoutingTableEntry entryForNextPeer(Peer aReceivedPeer){
-    return new RoutingTableEntry(getPeer(), getHopDistance() + 1, aReceivedPeer);
+    return new RoutingTableEntry(getPeer(), getHopDistance() + 1, aReceivedPeer, System.currentTimeMillis());
   }
   
   public RoutingTableEntry derivedEntry(int aHopDistance){
-    return new RoutingTableEntry(getPeer(), aHopDistance, getGateway());
+    return new RoutingTableEntry(getPeer(), aHopDistance, getGateway(), myLastOnlineTime);
   }
   
   public RoutingTableEntry incHopDistance(){
-    return new RoutingTableEntry(getPeer(), getHopDistance() + 1, getGateway());
+    return new RoutingTableEntry(getPeer(), getHopDistance() + 1, getGateway(), myLastOnlineTime);
   }
 
 }
