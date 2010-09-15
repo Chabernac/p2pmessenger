@@ -4,6 +4,7 @@
  */
 package chabernac.gui;
 
+import java.awt.Frame;
 import java.awt.MenuItem;
 import java.awt.PopupMenu;
 import java.awt.SystemTray;
@@ -90,6 +91,7 @@ public class ApplicationLauncher {
       myChatFrame = new ChatFrame(myFacade);
     }
     myChatFrame.setVisible( true );
+    myChatFrame.setState( Frame.NORMAL );
     myChatFrame.requestFocus();
   }
 
@@ -223,7 +225,7 @@ public class ApplicationLauncher {
         theTray.add( theIcon );
         theIcon.addActionListener( new ActionListener(){
           public void actionPerformed(ActionEvent evt){
-            if(myChatFrame == null || !myChatFrame.isVisible()){
+            if(myChatFrame == null || !myChatFrame.isVisible() || myChatFrame.getState() == Frame.ICONIFIED){
               try {
                 showChatFrame();
               } catch ( P2PFacadeException e ) {
