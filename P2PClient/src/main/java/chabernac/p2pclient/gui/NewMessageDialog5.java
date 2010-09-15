@@ -15,9 +15,16 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
@@ -62,9 +69,13 @@ public class NewMessageDialog5 extends JDialog implements iMessageDialog{
 
   private ExecutorService myService = Executors.newFixedThreadPool( 1 );
   private ExecutorService mySendService = Executors.newFixedThreadPool( 5 );
-  private AtomicLong myMessageCounter = new AtomicLong(0);
+//  private AtomicLong myMessageCounter = new AtomicLong(0);
 
   private Object VISIBLE_LOCK = new Object();
+
+  private boolean isFirstTime = true;
+
+  private List< Future > myPendingMessages = Collections.synchronizedList( new ArrayList< Future >());
 
   private NewMessageDialog5(ChatMediator aMediator){
     myMediator = aMediator;
@@ -167,8 +178,8 @@ public class NewMessageDialog5 extends JDialog implements iMessageDialog{
     if(myMessage != null){
       SimpleDateFormat theFormat = new SimpleDateFormat("HH:mm");
       String theTitle = "Nieuw bericht " + theFormat.format(myMessage.getCreationTime());
-      if(myMessageCounter.get() > 1){
-        theTitle += " (+" + (myMessageCounter.get() - 1) + ")";
+      if(myPendingMessages.size() > 1){
+        theTitle += " (+" + (myPendingMessages.size() - 1) + ")";
       }
       logger.debug("Setting title to: " + theTitle);
       System.out.println("Setting title to: " + theTitle);
@@ -204,11 +215,12 @@ public class NewMessageDialog5 extends JDialog implements iMessageDialog{
             requestFocus(false);
             myText.requestFocus();
             requestFocusInWindow(false);
-            if(myRobot != null){
+            if(myRobot != null && isFirstTime){
               Point thePoint = getLocationOnScreen();
               myRobot.mouseMove( thePoint.x + getWidth() - 50, thePoint.y + 30 );
               myRobot.mousePress( InputEvent.BUTTON1_MASK);
               myRobot.mouseRelease( InputEvent.BUTTON1_MASK);
+              isFirstTime = false;
             }
           }catch(P2PFacadeException e){
             logger.error( "Error occured while setting message", e );
@@ -240,18 +252,49 @@ public class NewMessageDialog5 extends JDialog implements iMessageDialog{
   }
 
   public void showMessage(final MultiPeerMessage aMessage){
-    myMessageCounter.incrementAndGet();
-    myService.execute( new Runnable(){
-      public void run(){
-        setMessage( aMessage );
-        myMessageCounter.decrementAndGet();
-      }
-    });
+//    myMessageCounter.incrementAndGet();
+    try{
+      final BlockingQueue<Future> theBlockingQueue = new ArrayBlockingQueue< Future >(1);
+      Runnable theRunnable = new Runnable(){
+        public void run(){
+          setMessage( aMessage );
+//        myMessageCounter.decrementAndGet();
+          try{
+            myPendingMessages.remove( theBlockingQueue.poll(5, TimeUnit.SECONDS) );
+          }catch(InterruptedException e){
+            logger.error("Interrupted", e);
+          }
+        }
+      };
+      Future theFuture = myService.submit(theRunnable);
+      myPendingMessages.add(theFuture);
+      theBlockingQueue.put(theFuture);
+    }catch(InterruptedException e){
+      logger.error("Interrupted", e);
+    }
+
     Tools.invokeLaterIfNotEventDispatchingThread(new Runnable(){
       public void run(){
         setTitle();
       }
     });
+  }
+
+  private void removeFinishedTasks(){
+    for(Iterator< Future > i = myPendingMessages.iterator();i.hasNext();){
+      Future theFuture = i.next();
+      if(theFuture.isDone()){
+        i.remove();
+      }
+    }
+  }
+
+  public void cancelPendingTasks(){
+    for(Iterator< Future > i = myPendingMessages.iterator();i.hasNext();){
+      Future theFuture = i.next();
+      theFuture.cancel( true );
+      i.remove();
+    }
   }
 
   private void clear(){
@@ -343,7 +386,6 @@ public class NewMessageDialog5 extends JDialog implements iMessageDialog{
     public void actionPerformed(ActionEvent e) {
       MultiPeerMessage theReplyMessage = myMessage.replyAll();
       myMediator.getUserSelectionProvider().setSelectedUsers( theReplyMessage.getDestinations() );
-      setVisible(false);
       try {
         ApplicationLauncher.showChatFrame();
       } catch ( P2PFacadeException e1 ) {
