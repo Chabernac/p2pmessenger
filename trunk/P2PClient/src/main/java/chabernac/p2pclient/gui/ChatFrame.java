@@ -74,6 +74,10 @@ public class ChatFrame extends SavedFrame implements iTitleProvider, isShowDialo
     myMediator = new ChatMediator(myP2PFacade);
   }
   
+  public ChatMediator getMediator(){
+    return myMediator;
+  }
+  
   private void buildGUI() throws P2PFacadeException{
     setLayout(new BorderLayout());
 

@@ -34,6 +34,7 @@ import chabernac.ldapuserinfoprovider.BackupUserInfoProviderDecorator;
 import chabernac.lock.FileLock;
 import chabernac.lock.iLock;
 import chabernac.p2pclient.gui.ChatFrame;
+import chabernac.p2pclient.gui.NewMessageDialog5;
 import chabernac.preference.ApplicationPreferences;
 import chabernac.protocol.iProtocolDelegate;
 import chabernac.protocol.facade.P2PFacade;
@@ -93,6 +94,8 @@ public class ApplicationLauncher {
     myChatFrame.setVisible( true );
     myChatFrame.setState( Frame.NORMAL );
     myChatFrame.requestFocus();
+    NewMessageDialog5.getInstance( myChatFrame.getMediator() ).cancelPendingTasks();
+    NewMessageDialog5.getInstance( myChatFrame.getMediator() ).setVisible( false );
   }
 
   private static void startFacade(ArgsInterPreter anInterPreter) throws P2PFacadeException{
