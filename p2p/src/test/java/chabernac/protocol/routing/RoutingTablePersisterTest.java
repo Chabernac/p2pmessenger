@@ -43,9 +43,9 @@ public class RoutingTablePersisterTest extends TestCase {
     thePeer3.setPort( RoutingProtocol.START_PORT + 2 );
     thePeer3.setHosts( theList3 );
     
-    theTable.addRoutingTableEntry( new RoutingTableEntry(thePeer1, 0, thePeer1) );
-    theTable.addRoutingTableEntry( new RoutingTableEntry(thePeer2, 1, thePeer2) );
-    theTable.addRoutingTableEntry( new RoutingTableEntry(thePeer3, 2, thePeer2) );
+    theTable.addRoutingTableEntry( new RoutingTableEntry(thePeer1, 0, thePeer1, System.currentTimeMillis()) );
+    theTable.addRoutingTableEntry( new RoutingTableEntry(thePeer2, 1, thePeer2, System.currentTimeMillis()) );
+    theTable.addRoutingTableEntry( new RoutingTableEntry(thePeer3, 2, thePeer2, System.currentTimeMillis()) );
     
     File theFile = new File("routingtable.csv");
     

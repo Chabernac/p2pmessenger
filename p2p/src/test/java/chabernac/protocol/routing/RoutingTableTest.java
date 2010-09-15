@@ -14,8 +14,8 @@ public class RoutingTableTest extends TestCase {
     RoutingTable theTable = new RoutingTable("1");
 
     Peer thePeer = new Peer("2", "localhost", 1002);
-    RoutingTableEntry theEntry = new RoutingTableEntry(thePeer, 1, thePeer);
-    RoutingTableEntry theEntry2 = new RoutingTableEntry(thePeer, 2, thePeer);
+    RoutingTableEntry theEntry = new RoutingTableEntry(thePeer, 1, thePeer, System.currentTimeMillis());
+    RoutingTableEntry theEntry2 = new RoutingTableEntry(thePeer, 2, thePeer, System.currentTimeMillis());
 
     theTable.addRoutingTableEntry( theEntry2 );
     theTable.addRoutingTableEntry( theEntry );
@@ -26,10 +26,10 @@ public class RoutingTableTest extends TestCase {
 
     RoutingTable theTable2 = new RoutingTable("3");
     Peer thePeer4 = new Peer("4", "x20d1148", 1004);
-    RoutingTableEntry theEntry4 = new RoutingTableEntry(thePeer4, 1, thePeer4);
+    RoutingTableEntry theEntry4 = new RoutingTableEntry(thePeer4, 1, thePeer4, System.currentTimeMillis());
     theTable2.addRoutingTableEntry( theEntry4 );
     Peer thePeer3 = new Peer("3", "x20d1148", 1003);
-    RoutingTableEntry theEntry3 = new RoutingTableEntry(thePeer3, 0, thePeer3);
+    RoutingTableEntry theEntry3 = new RoutingTableEntry(thePeer3, 0, thePeer3, System.currentTimeMillis());
     theTable2.addRoutingTableEntry( theEntry3 );
 
     theTable.merge( theTable2 );
@@ -47,9 +47,9 @@ public class RoutingTableTest extends TestCase {
     RoutingTable theTable = new RoutingTable("1");
 
     Peer thePeer = new Peer("2", "localhost", 1002);
-    RoutingTableEntry theEntry = new RoutingTableEntry(thePeer, 1, thePeer);
+    RoutingTableEntry theEntry = new RoutingTableEntry(thePeer, 1, thePeer, System.currentTimeMillis());
     
-    RoutingTableEntry theEntry2 = new RoutingTableEntry(thePeer, RoutingTableEntry.MAX_HOP_DISTANCE, thePeer);
+    RoutingTableEntry theEntry2 = new RoutingTableEntry(thePeer, RoutingTableEntry.MAX_HOP_DISTANCE, thePeer, System.currentTimeMillis());
     
     assertFalse( theEntry2.isResponding() );
     
@@ -65,7 +65,7 @@ public class RoutingTableTest extends TestCase {
     
     Peer thePeer3 = new Peer("3", "localhost", 1002);
     
-    RoutingTableEntry theEntry3 = new RoutingTableEntry(thePeer, 3, thePeer3);
+    RoutingTableEntry theEntry3 = new RoutingTableEntry(thePeer, 3, thePeer3, System.currentTimeMillis());
     
     theTable.addRoutingTableEntry(theEntry3);
     
@@ -77,10 +77,10 @@ public class RoutingTableTest extends TestCase {
     RoutingTable theTable = new RoutingTable("1");
 
     Peer thePeer = new Peer("2", 1002);
-    RoutingTableEntry theEntry = new RoutingTableEntry(thePeer, RoutingTableEntry.MAX_HOP_DISTANCE, thePeer);
+    RoutingTableEntry theEntry = new RoutingTableEntry(thePeer, RoutingTableEntry.MAX_HOP_DISTANCE, thePeer, System.currentTimeMillis());
     
     Peer thePeer2 = new Peer("2", 1003);
-    RoutingTableEntry theEntry2 = new RoutingTableEntry(thePeer2, 2, thePeer);
+    RoutingTableEntry theEntry2 = new RoutingTableEntry(thePeer2, 2, thePeer, System.currentTimeMillis());
     
     theTable.addRoutingTableEntry(theEntry);
     theTable.addRoutingTableEntry(theEntry2);
@@ -93,16 +93,16 @@ public class RoutingTableTest extends TestCase {
   
   public void testCopyWithoutUnreachablePeers() throws NoAvailableNetworkAdapterException{
     RoutingTable theRoutingTable = new RoutingTable("1");
-    theRoutingTable.addEntry( new RoutingTableEntry(new Peer("1",12800), 0, new Peer("1",12800) ));
-    theRoutingTable.addEntry( new RoutingTableEntry(new Peer("2",12801), 1, new Peer("2",12801) ));
-    theRoutingTable.addEntry( new RoutingTableEntry(new Peer("3",12802), 2, new Peer("3",12802) ));
-    theRoutingTable.addEntry( new RoutingTableEntry(new Peer("4",12803), 3, new Peer("4",12803) ));
-    theRoutingTable.addEntry( new RoutingTableEntry(new Peer("5",12804), 4, new Peer("5",12804) ));
-    theRoutingTable.addEntry( new RoutingTableEntry(new Peer("6",12805), 5, new Peer("6",12805) ));
-    theRoutingTable.addEntry( new RoutingTableEntry(new Peer("7",12806), 6, new Peer("7",12806) ));
-    theRoutingTable.addEntry( new RoutingTableEntry(new Peer("8",12807), 7, new Peer("8",12807) ));
-    theRoutingTable.addEntry( new RoutingTableEntry(new Peer("9",12808), 8, new Peer("9",12808) ));
-    theRoutingTable.addEntry( new RoutingTableEntry(new Peer("10",12809), 9, new Peer("10",12809) ));
+    theRoutingTable.addEntry( new RoutingTableEntry(new Peer("1",12800), 0, new Peer("1",12800), System.currentTimeMillis() ));
+    theRoutingTable.addEntry( new RoutingTableEntry(new Peer("2",12801), 1, new Peer("2",12801), System.currentTimeMillis() ));
+    theRoutingTable.addEntry( new RoutingTableEntry(new Peer("3",12802), 2, new Peer("3",12802), System.currentTimeMillis() ));
+    theRoutingTable.addEntry( new RoutingTableEntry(new Peer("4",12803), 3, new Peer("4",12803), System.currentTimeMillis() ));
+    theRoutingTable.addEntry( new RoutingTableEntry(new Peer("5",12804), 4, new Peer("5",12804), System.currentTimeMillis() ));
+    theRoutingTable.addEntry( new RoutingTableEntry(new Peer("6",12805), 5, new Peer("6",12805), System.currentTimeMillis() ));
+    theRoutingTable.addEntry( new RoutingTableEntry(new Peer("7",12806), 6, new Peer("7",12806), System.currentTimeMillis() ));
+    theRoutingTable.addEntry( new RoutingTableEntry(new Peer("8",12807), 7, new Peer("8",12807), System.currentTimeMillis() ));
+    theRoutingTable.addEntry( new RoutingTableEntry(new Peer("9",12808), 8, new Peer("9",12808), System.currentTimeMillis() ));
+    theRoutingTable.addEntry( new RoutingTableEntry(new Peer("10",12809), 9, new Peer("10",12809), System.currentTimeMillis() ));
     assertEquals( 10, theRoutingTable.getEntries().size());
     RoutingTable theCopyWithoutUnreachablePeers = theRoutingTable.copyWithoutUnreachablePeers(); 
     assertEquals( 6, theCopyWithoutUnreachablePeers.getEntries().size());

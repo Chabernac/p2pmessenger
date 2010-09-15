@@ -578,7 +578,7 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
       theDummyPeer.setHosts( theHosts );
       theDummyPeer.setPort( 54645 );
       
-      RoutingTableEntry theDummyEntry = new RoutingTableEntry(theDummyPeer, 1, theDummyPeer);
+      RoutingTableEntry theDummyEntry = new RoutingTableEntry(theDummyPeer, 1, theDummyPeer, System.currentTimeMillis());
       
       theRoutingTable1.addRoutingTableEntry( theDummyEntry );
       
@@ -808,7 +808,7 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
         
         //now add the peer which does not exist for real but which is reachable trough peer 2
         Peer thePeer3 = new Peer("3", "localhost", RoutingProtocol.START_PORT + 2);
-        RoutingTableEntry theEntry = new RoutingTableEntry(thePeer3, 2, theRoutingTable2.getEntryForLocalPeer().getPeer());
+        RoutingTableEntry theEntry = new RoutingTableEntry(thePeer3, 2, theRoutingTable2.getEntryForLocalPeer().getPeer(), System.currentTimeMillis());
         theRoutingTable1.addRoutingTableEntry(theEntry);
         
         //check that the entry is really added
@@ -853,7 +853,7 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
       RoutingTable theRoutingTable2 = theRoutingProtocol2.getRoutingTable();
       
       Peer thePeer3 = new Peer("3", RoutingProtocol.START_PORT + 2);
-      theRoutingTable1.addEntry( new RoutingTableEntry(thePeer3, RoutingTableEntry.MAX_HOP_DISTANCE,  thePeer3));
+      theRoutingTable1.addEntry( new RoutingTableEntry(thePeer3, RoutingTableEntry.MAX_HOP_DISTANCE,  thePeer3, System.currentTimeMillis()));
       
       try{
         assertTrue( theServer1.start() );
