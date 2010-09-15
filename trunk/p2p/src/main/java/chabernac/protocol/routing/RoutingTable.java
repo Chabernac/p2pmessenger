@@ -192,8 +192,7 @@ public class RoutingTable implements Iterable< RoutingTableEntry >, Serializable
       RoutingTableEntry theEntry = i.next();
       //add all entries except the entry for ourselfs
       //and except the entries which have our peer id as gateway, otherwise loops may be created in the routint table hierarchy
-      //also skip entries which have the max hop distance, we do not need to know them
-      if(!theEntry.getPeer().getPeerId().equals( myLocalPeerId ) && theEntry.getHopDistance() < RoutingTableEntry.MAX_HOP_DISTANCE){
+      if(!theEntry.getPeer().getPeerId().equals( myLocalPeerId )){
         addRoutingTableEntry(theEntry.entryForNextPeer( anotherRoutingTable.getEntryForLocalPeer().getPeer() ) );
       }
     }

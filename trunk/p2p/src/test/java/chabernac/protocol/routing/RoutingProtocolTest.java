@@ -164,7 +164,6 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
     theRoutingProtocol3.getLocalUnreachablePeerIds().add( "1" );
 
     try{
-      theRoutingTable1.setKeepHistory( true );
       assertTrue( theServer1.start() );
       assertTrue( theServer2.start() );
       assertTrue( theServer3.start() );
@@ -193,8 +192,6 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
       //p2      1       p2
       //p3      2       p2
 
-      theRoutingTable1.setKeepHistory( false );
-      
       testEntry( theRoutingTable1.getEntryForPeer("1"), 0, "1", true, true); 
       testEntry( theRoutingTable1.getEntryForPeer("2"), 1, "2", true, true);
       testEntry( theRoutingTable1.getEntryForPeer("3"), 2, "2", false, true);
@@ -296,8 +293,6 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
       theRoutingProtocol1.exchangeRoutingTable();
       theRoutingProtocol4.exchangeRoutingTable();
       
-      theRoutingTable1.setKeepHistory( false );
-      
  //test the situation again
       
       //p3
@@ -383,20 +378,21 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
       //p4      6       p3
 
       
-      for(int i=0;i<3;i++){
+      theRoutingTable1.setKeepHistory( true );
+      
+      for(int i=0;i<5;i++){
         theRoutingProtocol1.exchangeRoutingTable();  
         theRoutingProtocol2.exchangeRoutingTable();
         theRoutingProtocol3.exchangeRoutingTable();
         theRoutingProtocol4.exchangeRoutingTable();
       }
       
+      theRoutingTable1.setKeepHistory( false );
+      
       testEntry( theRoutingTable1.getEntryForPeer("1"), 0, "1", true, true);
       testEntry( theRoutingTable1.getEntryForPeer("2"), 1, "2", true, true);
       testEntry( theRoutingTable1.getEntryForPeer("3"), 6, "3", false, false);
-      
-      //because peer 4 is not reachable any more and because it wash reachable trough another peer, it should have been removed from the routing table
-      assertFalse( theRoutingTable1.containsEntryForPeer( "4" ) );
-//      testEntry( theRoutingTable1.getEntryForPeer("4"), 6, "3", false, false);
+      testEntry( theRoutingTable1.getEntryForPeer("4"), 6, "3", false, false);
 
       //p2
       //peer    hops    gateway
@@ -409,10 +405,7 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
       testEntry( theRoutingTable2.getEntryForPeer("1"), 1, "1", true, true); 
       testEntry( theRoutingTable2.getEntryForPeer("2"), 0, "2", true, true);
       testEntry( theRoutingTable2.getEntryForPeer("3"), 6, "3", false, false);
-      
-      //because peer 4 is not reachable any more and because it wash reachable trough another peer, it should have been removed from the routing table
-//      testEntry( theRoutingTable2.getEntryForPeer("4"), 6, "3", false, false);
-      assertFalse( theRoutingTable2.containsEntryForPeer( "4" ) );
+      testEntry( theRoutingTable2.getEntryForPeer("4"), 6, "3", false, false);
       
 
       //p3
@@ -474,8 +467,6 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
 //    theRoutingProtocol2.getLocalUnreachablePeerIds().add( "1" );
     
     try{
-      theRoutingTable1.setKeepHistory( true );
-      theRoutingTable2.setKeepHistory( true );
       assertTrue( theServer1.start() );
       assertTrue( theServer2.start() );
       theRoutingProtocol1.scanLocalSystem();
@@ -485,8 +476,6 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
       //since the routing table is reset and we have an exchange delay of -1 the peers will not be able to reach each other
       //lets test this!
       
-      theRoutingTable1.setKeepHistory( false );
-      theRoutingTable2.setKeepHistory( false );
       assertNotNull( theRoutingTable1.getEntryForPeer( "2" ) );
       assertTrue( theRoutingTable1.getEntryForPeer( "2" ).isReachable() );
       assertNotNull( theRoutingTable2.getEntryForPeer( "1" ) );
@@ -780,65 +769,65 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
       }
     }
     
-    public void testRemoveEntry() throws ProtocolException, InterruptedException, UnknownPeerException{
-      ProtocolContainer theProtocol1 = getProtocolContainer( -1, false, "1" );
-      ProtocolServer theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT, 5);
-
-      ProtocolContainer theProtocol2 = getProtocolContainer( -1, false, "2" );
-      ProtocolServer theServer2 = new ProtocolServer(theProtocol2, RoutingProtocol.START_PORT + 1, 5);
-      
-      RoutingProtocol theRoutingProtocol1 = (RoutingProtocol)theProtocol1.getProtocol( RoutingProtocol.ID );
-      RoutingTable theRoutingTable1 = theRoutingProtocol1.getRoutingTable();
-      RoutingProtocol theRoutingProtocol2 = (RoutingProtocol)theProtocol2.getProtocol( RoutingProtocol.ID );
-      RoutingTable theRoutingTable2 = theRoutingProtocol2.getRoutingTable();
-      
-
-      try{
-        assertTrue( theServer1.start() );
-        assertTrue( theServer2.start() );
-        
-        theRoutingProtocol1.scanLocalSystem();
-        theRoutingProtocol2.scanLocalSystem();
-        Thread.sleep(SLEEP_AFTER_SCAN);
-        
-        //the peers should now each other now
-        
-        assertTrue(theRoutingTable1.containsEntryForPeer("2"));
-        assertTrue(theRoutingTable2.containsEntryForPeer("1"));
-        
-        //now add the peer which does not exist for real but which is reachable trough peer 2
-        Peer thePeer3 = new Peer("3", "localhost", RoutingProtocol.START_PORT + 2);
-        RoutingTableEntry theEntry = new RoutingTableEntry(thePeer3, 2, theRoutingTable2.getEntryForLocalPeer().getPeer(), System.currentTimeMillis());
-        theRoutingTable1.addRoutingTableEntry(theEntry);
-        
-        //check that the entry is really added
-        assertTrue(theRoutingTable1.containsEntryForPeer("3"));
-        
-        //after exchanging routing tables the peer 3 should be removed
-        theRoutingProtocol1.exchangeRoutingTable();
-        
-        Thread.sleep(SLEEP_AFTER_SCAN);
-        
-        assertFalse(theRoutingTable1.containsEntryForPeer("3"));
-        
-        //do it again but now without routing table listeners
-        theRoutingTable1.removeAllRoutingTableListeners();
-        theRoutingTable1.addRoutingTableEntry(theEntry);
-        //check that the entry is really added
-        assertTrue(theRoutingTable1.containsEntryForPeer("3"));
-        //check that the entry is not added to routing table of peer 2 by propagation, should not happen because of the removed routing table listeners
-        Thread.sleep( SLEEP_AFTER_SCAN );
-        assertFalse(theRoutingTable2.containsEntryForPeer("3"));
-        theRoutingProtocol1.exchangeRoutingTable();
-        Thread.sleep( SLEEP_AFTER_SCAN );
-        assertFalse(theRoutingTable1.containsEntryForPeer("3"));
-        
-        
-      }finally{
-        if(theServer1 != null) theServer1.stop();
-        if(theServer2 != null) theServer2.stop();
-      }
-    }
+//    public void testRemoveEntry() throws ProtocolException, InterruptedException, UnknownPeerException{
+//      ProtocolContainer theProtocol1 = getProtocolContainer( -1, false, "1" );
+//      ProtocolServer theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT, 5);
+//
+//      ProtocolContainer theProtocol2 = getProtocolContainer( -1, false, "2" );
+//      ProtocolServer theServer2 = new ProtocolServer(theProtocol2, RoutingProtocol.START_PORT + 1, 5);
+//      
+//      RoutingProtocol theRoutingProtocol1 = (RoutingProtocol)theProtocol1.getProtocol( RoutingProtocol.ID );
+//      RoutingTable theRoutingTable1 = theRoutingProtocol1.getRoutingTable();
+//      RoutingProtocol theRoutingProtocol2 = (RoutingProtocol)theProtocol2.getProtocol( RoutingProtocol.ID );
+//      RoutingTable theRoutingTable2 = theRoutingProtocol2.getRoutingTable();
+//      
+//
+//      try{
+//        assertTrue( theServer1.start() );
+//        assertTrue( theServer2.start() );
+//        
+//        theRoutingProtocol1.scanLocalSystem();
+//        theRoutingProtocol2.scanLocalSystem();
+//        Thread.sleep(SLEEP_AFTER_SCAN);
+//        
+//        //the peers should now each other now
+//        
+//        assertTrue(theRoutingTable1.containsEntryForPeer("2"));
+//        assertTrue(theRoutingTable2.containsEntryForPeer("1"));
+//        
+//        //now add the peer which does not exist for real but which is reachable trough peer 2
+//        Peer thePeer3 = new Peer("3", "localhost", RoutingProtocol.START_PORT + 2);
+//        RoutingTableEntry theEntry = new RoutingTableEntry(thePeer3, 2, theRoutingTable2.getEntryForLocalPeer().getPeer(), System.currentTimeMillis());
+//        theRoutingTable1.addRoutingTableEntry(theEntry);
+//        
+//        //check that the entry is really added
+//        assertTrue(theRoutingTable1.containsEntryForPeer("3"));
+//        
+//        //after exchanging routing tables the peer 3 should be removed
+//        theRoutingProtocol1.exchangeRoutingTable();
+//        
+//        Thread.sleep(SLEEP_AFTER_SCAN);
+//        
+//        assertFalse(theRoutingTable1.containsEntryForPeer("3"));
+//        
+//        //do it again but now without routing table listeners
+//        theRoutingTable1.removeAllRoutingTableListeners();
+//        theRoutingTable1.addRoutingTableEntry(theEntry);
+//        //check that the entry is really added
+//        assertTrue(theRoutingTable1.containsEntryForPeer("3"));
+//        //check that the entry is not added to routing table of peer 2 by propagation, should not happen because of the removed routing table listeners
+//        Thread.sleep( SLEEP_AFTER_SCAN );
+//        assertFalse(theRoutingTable2.containsEntryForPeer("3"));
+//        theRoutingProtocol1.exchangeRoutingTable();
+//        Thread.sleep( SLEEP_AFTER_SCAN );
+//        assertFalse(theRoutingTable1.containsEntryForPeer("3"));
+//        
+//        
+//      }finally{
+//        if(theServer1 != null) theServer1.stop();
+//        if(theServer2 != null) theServer2.stop();
+//      }
+//    }
     
     public void testDoNotExchangeRoutingTableEntriesWithMaxHopDistance() throws ProtocolException, NoAvailableNetworkAdapterException, InterruptedException{
       ProtocolContainer theProtocol1 = getProtocolContainer( 1, false, "1" );
