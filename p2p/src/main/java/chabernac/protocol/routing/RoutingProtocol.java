@@ -260,7 +260,8 @@ public class RoutingProtocol extends Protocol {
         //this is just to avoid exchanging wrong information
 //        verifyNeighbours();
         
-        return myRoutingTableConverter.toString( myRoutingTable.copyWithoutUnreachablePeers() );
+//        return myRoutingTableConverter.toString( myRoutingTable.copyWithoutUnreachablePeers() );
+        return myRoutingTableConverter.toString(myRoutingTable);
       } else if(theCommand == Command.ANNOUNCEMENT){
         String[] theAttributes = anInput.substring( theFirstIndexOfSpace + 1 ).split(";");
 
@@ -314,7 +315,7 @@ public class RoutingProtocol extends Protocol {
   boolean contactPeer(Peer aPeer, List<String> anUnreachablePeers){
     try{
       LOGGER.debug("Sending message to '" + aPeer.getHosts() + "' port '" + aPeer.getPort() + "'");
-      String[] theIdTimeChannel = aPeer.send( createMessage( Command.WHO_ARE_YOU.name() ), 1).split( "@" );
+      String[] theIdTimeChannel = aPeer.send( createMessage( Command.WHO_ARE_YOU.name() )).split( "@" );
 
       if(!anUnreachablePeers.contains( theIdTimeChannel[0] )){
         aPeer.setPeerId( theIdTimeChannel[0] );
@@ -458,7 +459,7 @@ public class RoutingProtocol extends Protocol {
             //simulate that we cannot contact the peer
             throw new Exception("Simulate that we can not contact peer: " + thePeer.getPeerId());
           }
-          String theTable = thePeer.send( createMessage( Command.ANNOUNCEMENT_WITH_REPLY.name() + " "  + myRoutingTableEntryConverter.toString( myRoutingTable.getEntryForLocalPeer() )), 10) ;
+          String theTable = thePeer.send( createMessage( Command.ANNOUNCEMENT_WITH_REPLY.name() + " "  + myRoutingTableEntryConverter.toString( myRoutingTable.getEntryForLocalPeer() ))) ;
           //          String theTable = thePeer.send( createMessage( Command.REQUEST_TABLE.name() ));
           RoutingTable theRemoteTable = myRoutingTableConverter.getObject( theTable );
 
