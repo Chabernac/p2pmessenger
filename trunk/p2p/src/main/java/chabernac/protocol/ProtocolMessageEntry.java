@@ -11,6 +11,7 @@ public class ProtocolMessageEntry {
   private String myOutput;
   private Status myMode;
   private long myTimestamp = System.currentTimeMillis();
+  private long myReplyTimestamp=-1;
   
   public ProtocolMessageEntry ( String anInput , Status anMode ) {
     super();
@@ -32,11 +33,17 @@ public class ProtocolMessageEntry {
   }
   public void setOutput( String anOutput ) {
     myOutput = anOutput;
+    myReplyTimestamp = System.currentTimeMillis();
   }
   public Status getState() {
     return myMode;
   }
   public void setStatus( Status anMode ) {
     myMode = anMode;
+  }
+  
+  public long getResponseTime(){
+    if(myReplyTimestamp == -1) return -1;
+    return myReplyTimestamp - myTimestamp;
   }
 }
