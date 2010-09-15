@@ -20,6 +20,7 @@ import java.util.Set;
 import chabernac.io.iObjectPersister;
 
 public class RoutingTablePersister implements iObjectPersister<RoutingTable> {
+  private static long LAST_ONLINE_TIME = 10 * 24 * 60 * 60 * 1000;
 
   @Override
   public RoutingTable loadObject( InputStream anInputStream ) throws IOException {
@@ -50,7 +51,11 @@ public class RoutingTablePersister implements iObjectPersister<RoutingTable> {
     theLine = null;
     while( (theLine = theReader.readLine()) != null  ){
       String[] theRoutingTableEntryVars = theLine.split( ";" );
-      RoutingTableEntry theEntry = new RoutingTableEntry(thePeers.get(  theRoutingTableEntryVars[0] ), Integer.parseInt(theRoutingTableEntryVars[1]), thePeers.get(theRoutingTableEntryVars[2]));
+      long theLastOnlineTime = System.currentTimeMillis();
+      if(theRoutingTableEntryVars.length >= 4){
+        theLastOnlineTime = Long.parseLong( theRoutingTableEntryVars[3] );
+      }
+      RoutingTableEntry theEntry = new RoutingTableEntry(thePeers.get(  theRoutingTableEntryVars[0] ), Integer.parseInt(theRoutingTableEntryVars[1]), thePeers.get(theRoutingTableEntryVars[2]), theLastOnlineTime);
 //      theEntry.setPeer( thePeers.get(  theRoutingTableEntryVars[0] ) ) ;
 //      theEntry.setHopDistance( Integer.parseInt(theRoutingTableEntryVars[1] ));
 //      theEntry.setGateway( thePeers.get(theRoutingTableEntryVars[2] )) ;
@@ -93,6 +98,8 @@ public class RoutingTablePersister implements iObjectPersister<RoutingTable> {
       theWriter.print(theEntry.getHopDistance());
       theWriter.print(";");
       theWriter.print(theEntry.getGateway().getPeerId());
+      theWriter.print(";");
+      theWriter.print(theEntry.getLastOnlineTime());
       theWriter.println();
     }
     theWriter.flush();

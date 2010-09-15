@@ -198,19 +198,19 @@ public class RoutingTable implements Iterable< RoutingTableEntry >, Serializable
       }
     }
     
-    List<RoutingTableEntry> theEntriesToRemove = new ArrayList<RoutingTableEntry>();
-    //now delete the entries of the local routing table which have the other peer as a gateway and which are not present in the other routing table
-    for(Iterator< RoutingTableEntry > i = iterator(); i.hasNext();){
-      RoutingTableEntry theEntry = i.next();
-      if(theEntry.getGateway().getPeerId().equals(anotherRoutingTable.getLocalPeerId()) && 
-         !anotherRoutingTable.containsEntryForPeer(theEntry.getPeer().getPeerId())){
-        theEntriesToRemove.add(theEntry);
-      }
-    }
-    
-    for(RoutingTableEntry theEntry : theEntriesToRemove){
-      removeRoutingTableEntry(theEntry);
-    }
+//    List<RoutingTableEntry> theEntriesToRemove = new ArrayList<RoutingTableEntry>();
+//    //now delete the entries of the local routing table which have the other peer as a gateway and which are not present in the other routing table
+//    for(Iterator< RoutingTableEntry > i = iterator(); i.hasNext();){
+//      RoutingTableEntry theEntry = i.next();
+//      if(theEntry.getGateway().getPeerId().equals(anotherRoutingTable.getLocalPeerId()) && 
+//         !anotherRoutingTable.containsEntryForPeer(theEntry.getPeer().getPeerId())){
+//        theEntriesToRemove.add(theEntry);
+//      }
+//    }
+//    
+//    for(RoutingTableEntry theEntry : theEntriesToRemove){
+//      removeRoutingTableEntry(theEntry);
+//    }
     
   }
 

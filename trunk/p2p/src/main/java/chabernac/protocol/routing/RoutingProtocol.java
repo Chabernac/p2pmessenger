@@ -164,7 +164,7 @@ public class RoutingProtocol extends Protocol {
       try{
         Peer theLocalPeer = new Peer(getLocalPeerId(), myServerInfo.getServerPort());
         theLocalPeer.setChannel(myChannel);
-        RoutingTableEntry theLocalRoutingTableEntry = new RoutingTableEntry(theLocalPeer, 0, theLocalPeer);
+        RoutingTableEntry theLocalRoutingTableEntry = new RoutingTableEntry(theLocalPeer, 0, theLocalPeer, System.currentTimeMillis());
         myRoutingTable.addRoutingTableEntry( theLocalRoutingTableEntry );
       }catch(NoAvailableNetworkAdapterException e){
         //TODO we should do something when the network adapter becomes available again
@@ -258,7 +258,7 @@ public class RoutingProtocol extends Protocol {
         
         //before sending our routing table, let's verify if we can still reach our neighbours
         //this is just to avoid exchanging wrong information
-        verifyNeighbours();
+//        verifyNeighbours();
         
         return myRoutingTableConverter.toString( myRoutingTable.copyWithoutUnreachablePeers() );
       } else if(theCommand == Command.ANNOUNCEMENT){
@@ -314,12 +314,12 @@ public class RoutingProtocol extends Protocol {
   boolean contactPeer(Peer aPeer, List<String> anUnreachablePeers){
     try{
       LOGGER.debug("Sending message to '" + aPeer.getHosts() + "' port '" + aPeer.getPort() + "'");
-      String[] theIdTimeChannel = aPeer.send( createMessage( Command.WHO_ARE_YOU.name() )).split( "@" );
+      String[] theIdTimeChannel = aPeer.send( createMessage( Command.WHO_ARE_YOU.name() ), 1).split( "@" );
 
       if(!anUnreachablePeers.contains( theIdTimeChannel[0] )){
         aPeer.setPeerId( theIdTimeChannel[0] );
         if(theIdTimeChannel.length >= 2) aPeer.setChannel(theIdTimeChannel[1]);
-        RoutingTableEntry theEntry = new RoutingTableEntry(aPeer, 1, aPeer);
+        RoutingTableEntry theEntry = new RoutingTableEntry(aPeer, 1, aPeer, System.currentTimeMillis());
 
         LOGGER.debug("Detected system on '" + aPeer.getHosts() + "' port '" + aPeer.getPort() + "'");
         //only if we have detected our self we set the hop distance to 0
@@ -458,7 +458,7 @@ public class RoutingProtocol extends Protocol {
             //simulate that we cannot contact the peer
             throw new Exception("Simulate that we can not contact peer: " + thePeer.getPeerId());
           }
-          String theTable = thePeer.send( createMessage( Command.ANNOUNCEMENT_WITH_REPLY.name() + " "  + myRoutingTableEntryConverter.toString( myRoutingTable.getEntryForLocalPeer() ))) ;
+          String theTable = thePeer.send( createMessage( Command.ANNOUNCEMENT_WITH_REPLY.name() + " "  + myRoutingTableEntryConverter.toString( myRoutingTable.getEntryForLocalPeer() )), 10) ;
           //          String theTable = thePeer.send( createMessage( Command.REQUEST_TABLE.name() ));
           RoutingTable theRemoteTable = myRoutingTableConverter.getObject( theTable );
 
@@ -488,6 +488,7 @@ public class RoutingProtocol extends Protocol {
             myRoutingTable.addRoutingTableEntry( theEntryOfRemotePeer.derivedEntry( 1 ) );
           }
         } catch ( Exception e ) {
+          LOGGER.error( "Could not contact peer '" + thePeer.getPeerId() + "'", e );
           //update all peers which have this peer as gateway to the max hop distance
           for(RoutingTableEntry theEntry2 : myRoutingTable.getEntries()){
             if(theEntry2.getGateway().getPeerId().equals( theEntry.getPeer().getPeerId())){

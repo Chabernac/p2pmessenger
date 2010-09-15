@@ -128,8 +128,12 @@ public class Peer implements Serializable {
   public int hashCode(){
     return myPeerId.hashCode();
   }
-
+  
   public String send(String aMessage) throws UnknownHostException, IOException{
+    return send(aMessage, 5);
+  }
+
+  public String send(String aMessage, int aTimeoutInSeconds) throws UnknownHostException, IOException{
     Socket theSocket = createSocket( myPort );
     
     if(theSocket == null) throw new IOException("Could not open socket to peer: " + getPeerId() + " " + getHosts() + ":" + getPort());
@@ -139,7 +143,7 @@ public class Peer implements Serializable {
     BufferedReader theReader = null;
     PrintWriter theWriter = null;
     try{
-      theService.schedule( new SocketCloser(theSocket), 5, TimeUnit.SECONDS );
+      theService.schedule( new SocketCloser(theSocket), aTimeoutInSeconds, TimeUnit.SECONDS );
       theWriter = new PrintWriter(new OutputStreamWriter(theSocket.getOutputStream()));
       theReader = new BufferedReader(new InputStreamReader(theSocket.getInputStream()));
       theWriter.println(aMessage);
