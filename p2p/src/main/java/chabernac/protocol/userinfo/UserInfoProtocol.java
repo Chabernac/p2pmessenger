@@ -279,7 +279,7 @@ public class UserInfoProtocol extends Protocol {
     @Override
     public void routingTableEntryChanged( RoutingTableEntry anEntry ) {
       try{
-        if(!myUserInfo.containsKey( anEntry.getPeer().getPeerId() )){
+        if(!myUserInfo.containsKey( anEntry.getPeer().getPeerId() ) || myUserInfo.get(anEntry.getPeer().getPeerId()).getStatus() == Status.OFFLINE){
           if(anEntry.isReachable() && anEntry.getPeer().isOnSameChannel(getRoutingTable().getEntryForLocalPeer().getPeer())){
             myRetrievalService.execute( new UserInfoRetriever(anEntry.getPeer().getPeerId()) );
           }
