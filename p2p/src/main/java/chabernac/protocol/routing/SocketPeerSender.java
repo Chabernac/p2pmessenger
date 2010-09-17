@@ -22,7 +22,7 @@ public class SocketPeerSender implements iPeerSender {
   private List<iSocketPeerSenderListener> myPeerSenderListeners = new ArrayList<iSocketPeerSenderListener>();
 
   @Override
-  public String send(String aMessage, Peer aPeer, int aTimeoutInSeconds) throws IOException {
+  public String send(String aMessage, SocketPeer aPeer, int aTimeoutInSeconds) throws IOException {
     PeerMessage theMessage = new PeerMessage(aMessage, aPeer);
     if(isKeepHistory) {
       myHistory.add(theMessage);
@@ -105,5 +105,11 @@ public class SocketPeerSender implements iPeerSender {
   
   public void removePeerSenderListener(iSocketPeerSenderListener aListener){
     myPeerSenderListeners.remove(aListener);
+  }
+
+  @Override
+  public String send(String aMessage, WebPeer aPeer, int aTimeout)throws IOException {
+    // TODO Auto-generated method stub
+    return null;
   }
 }

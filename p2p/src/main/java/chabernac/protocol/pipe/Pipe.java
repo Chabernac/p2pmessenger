@@ -6,14 +6,14 @@ package chabernac.protocol.pipe;
 
 import java.net.Socket;
 
-import chabernac.protocol.routing.Peer;
+import chabernac.protocol.routing.SocketPeer;
 
 public class Pipe {
-  private Peer myPeer = null;
+  private SocketPeer myPeer = null;
   private Socket mySocket = null;
   private String myPipeDescription = "";
   
-  public Pipe ( Peer anPeer ) {
+  public Pipe ( SocketPeer anPeer ) {
     super();
     myPeer = anPeer;
   }
@@ -26,7 +26,7 @@ public class Pipe {
     mySocket = anSocket;
   }
 
-  public Peer getPeer() {
+  public SocketPeer getPeer() {
     return myPeer;
   }
 

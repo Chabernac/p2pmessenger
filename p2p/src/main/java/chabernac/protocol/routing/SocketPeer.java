@@ -9,43 +9,37 @@ import java.io.Serializable;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketException;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
-import org.apache.log4j.Logger;
 
 import chabernac.io.SocketPoolFactory;
 import chabernac.io.SocketProxy;
 import chabernac.io.iSocketPool;
 import chabernac.tools.NetTools;
 
-public class Peer implements Serializable {
-  private static Logger LOGGER = Logger.getLogger(Peer.class);
-
+public class SocketPeer extends AbstractPeer implements Serializable {
   private static final long serialVersionUID = 7852961137229337616L;
   private String myPeerId;
   private List<String> myHost = null;
   private int myPort;
-  private String myProtocolsString = null;
   private String myChannel = "default";
 
-  public Peer (){}
+  public SocketPeer (){}
 
-  public Peer(String aPeerId, int aPort) throws NoAvailableNetworkAdapterException{
+  public SocketPeer(String aPeerId, int aPort) throws NoAvailableNetworkAdapterException{
     myPeerId = aPeerId;
     myPort = aPort;
     detectLocalInterfaces();
   }
 
-  public Peer(String aPeerId, List<String> aHosts, int aPort){
+  public SocketPeer(String aPeerId, List<String> aHosts, int aPort){
     myPeerId = aPeerId;
     myHost = aHosts;
     myPort = aPort;
   }
 
-  public Peer(String aPeerId, String aHost, int aPort){
+  public SocketPeer(String aPeerId, String aHost, int aPort){
     myPeerId = aPeerId;
     if(myHost == null){
       myHost = new ArrayList<String>();
@@ -54,7 +48,7 @@ public class Peer implements Serializable {
     myPort = aPort;
   }
 
-  public Peer (String anPeerId ) {
+  public SocketPeer (String anPeerId ) {
     super();
     myPeerId = anPeerId;
   }
@@ -91,14 +85,6 @@ public class Peer implements Serializable {
     myPeerId = anPeerId;
   }
 
-  public String getProtocolsString() {
-    return myProtocolsString;
-  }
-
-  public void setProtocolsString( String anProtocolsString ) {
-    myProtocolsString = anProtocolsString;
-  }
-
   public String getChannel() {
     return myChannel;
   }
@@ -107,13 +93,9 @@ public class Peer implements Serializable {
     myChannel = anChannel;
   }
   
-  public boolean isOnSameChannel(Peer anOtherPeer){
-    return getChannel().equalsIgnoreCase(anOtherPeer.getChannel());
-  }
-
   public boolean equals(Object anObject){
-    if(!(anObject instanceof Peer)) return false;
-    Peer thePeer = (Peer)anObject;
+    if(!(anObject instanceof SocketPeer)) return false;
+    SocketPeer thePeer = (SocketPeer)anObject;
 
     return myPeerId.equals(thePeer.getPeerId());
   }
@@ -122,17 +104,15 @@ public class Peer implements Serializable {
     return myPeerId.hashCode();
   }
   
-  public String send(String aMessage) throws UnknownHostException, IOException{
+  public String send(String aMessage) throws IOException{
     return send(aMessage, 5);
   }
 
-  public String send(String aMessage, int aTimeoutInSeconds) throws UnknownHostException, IOException{
+  public String send(String aMessage, int aTimeoutInSeconds) throws IOException{
     if(PeerSenderHolder.getPeerSender() == null) throw new IOException("Could not send message to peer '" + getPeerId() + " because no message sender was defined");
     
     return PeerSenderHolder.getPeerSender().send(aMessage, this, aTimeoutInSeconds);
   }
-
-
 
   /**
    * this method creates a socket by using the socket pool
@@ -176,13 +156,29 @@ public class Peer implements Serializable {
     return theBuilder.toString();
   }
   
-  public boolean isSameHostAndPort(Peer aPeer){
-    List<String> theHosts = aPeer.getHosts();
+  public boolean isSameEndPointAs(AbstractPeer aPeer){
+    if(!(aPeer instanceof SocketPeer)) return false;
+    
+    SocketPeer thePeer = (SocketPeer)aPeer;
+    List<String> theHosts = thePeer.getHosts();
     boolean isSameHost = false;
     for(String theHost : theHosts){
       isSameHost |= getHosts().contains( theHost );
     }
     if(!isSameHost) return false;
-    return getPort() == aPeer.getPort(); 
+    return getPort() == thePeer.getPort(); 
+  }
+
+  @Override
+  public boolean isValidEndPoint() {
+    if(myHost == null) return false;
+    if(myHost.size() == 0) return false;
+    if(myPort <= 0) return false;
+    return true;
+  }
+
+  @Override
+  public String getEndPointRepresentation() {
+   return myHost + ":" + myPort;
   }
 }

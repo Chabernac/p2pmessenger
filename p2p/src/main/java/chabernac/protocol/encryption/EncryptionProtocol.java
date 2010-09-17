@@ -29,7 +29,7 @@ import chabernac.protocol.Protocol;
 import chabernac.protocol.message.Message;
 import chabernac.protocol.message.MessageIndicator;
 import chabernac.protocol.message.MessageProtocol;
-import chabernac.protocol.routing.Peer;
+import chabernac.protocol.routing.AbstractPeer;
 
 public class EncryptionProtocol extends Protocol {
   private static Logger LOGGER = Logger.getLogger(EncryptionProtocol.class);
@@ -87,7 +87,7 @@ public class EncryptionProtocol extends Protocol {
     return Response.INVALID_COMMAND.name();
   }
 
-  private SecretKey getSecretKeyForPeer(Peer aPeer, String aSession) throws EncryptionException{
+  private SecretKey getSecretKeyForPeer(AbstractPeer aPeer, String aSession) throws EncryptionException{
     try{
       Message theMessage = new Message();
       theMessage.setDestination( aPeer );

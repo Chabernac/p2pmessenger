@@ -17,7 +17,8 @@ import chabernac.protocol.ProtocolContainer;
 import chabernac.protocol.ProtocolException;
 import chabernac.protocol.encryption.EncryptionException;
 import chabernac.protocol.encryption.EncryptionProtocol;
-import chabernac.protocol.routing.Peer;
+import chabernac.protocol.routing.AbstractPeer;
+import chabernac.protocol.routing.SocketPeer;
 import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.RoutingTable;
 import chabernac.protocol.routing.RoutingTableEntry;
@@ -72,7 +73,7 @@ public class MessageProtocol extends Protocol {
 
     checkMessage(aMessage);
     
-    Peer theDestination = aMessage.getDestination();
+    AbstractPeer theDestination = aMessage.getDestination();
     try {
       if(theDestination.getPeerId().equals( getRoutingTable().getLocalPeerId() )){
         return handleMessageForUs(aSessionId, aMessage);
@@ -141,10 +142,10 @@ public class MessageProtocol extends Protocol {
       //only forward the message if this peer is reachable
       if(!theEntry.isReachable()) return STATUS_MESSAGE.UNDELIVERABLE.name() + " the peer with peer id: '" + theEntry.getPeer().getPeerId() + "' is not reachable";
 
-      Peer theGateway = getRoutingTable().getGatewayForPeer( aMessage.getDestination() );
+      AbstractPeer theGateway = getRoutingTable().getGatewayForPeer( aMessage.getDestination() );
 
-      Peer theLocalPeer = getRoutingTable().getEntryForLocalPeer().getPeer();
-      if(!theGateway.isSameHostAndPort( theLocalPeer )){
+      AbstractPeer theLocalPeer = getRoutingTable().getEntryForLocalPeer().getPeer();
+      if(!theGateway.isSameEndPointAs( theLocalPeer )){
         return theGateway.send( createMessage( XMLTools.toXML( aMessage ) ));
       } else {
         //TODO we should not come in this situation

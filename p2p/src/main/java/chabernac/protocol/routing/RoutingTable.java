@@ -34,7 +34,7 @@ public class RoutingTable implements Iterable< RoutingTableEntry >, Serializable
     myLocalPeerId = aLocalPeerId;
   }
 
-  private UUID getUUIDForPeer(Peer aPeer){
+  private UUID getUUIDForPeer(AbstractPeer aPeer){
     return new UUID(aPeer.getPeerId());
   }
 
@@ -92,8 +92,8 @@ public class RoutingTable implements Iterable< RoutingTableEntry >, Serializable
       return;
     }
 
-    if(anEntry.getPeer().getPort() == 0){
-      throw new IllegalArgumentException("Can not add an routing table entry with a peer that has port 0");
+    if(!anEntry.getPeer().isValidEndPoint()){
+      throw new IllegalArgumentException("Can not add a peer with an invalid end point");
     }
     
 //    removeEntriesOlderThanAndOnTheSameSocketAs(anEntry);
@@ -147,7 +147,7 @@ public class RoutingTable implements Iterable< RoutingTableEntry >, Serializable
   private void removeEntriesOlderThanAndOnTheSameSocketAs(RoutingTableEntry anEntry){
     List<RoutingTableEntry> theEntriesToRemove = new ArrayList<RoutingTableEntry>();
     for(RoutingTableEntry theEntry : myRoutingTable.values()){
-      if(theEntry.getPeer().isSameHostAndPort(anEntry.getPeer()) && theEntry.getCreationTime() < anEntry.getCreationTime()){
+      if(theEntry.getPeer().isSameEndPointAs(anEntry.getPeer()) && theEntry.getCreationTime() < anEntry.getCreationTime()){
         theEntriesToRemove.add(theEntry);
       }
     }
@@ -169,7 +169,7 @@ public class RoutingTable implements Iterable< RoutingTableEntry >, Serializable
     }
   }
 
-  public synchronized Peer getGatewayForPeer(Peer aPeer) throws UnknownPeerException{
+  public synchronized AbstractPeer getGatewayForPeer(AbstractPeer aPeer) throws UnknownPeerException{
     if(!myRoutingTable.containsKey( aPeer.getPeerId() )) throw new UnknownPeerException(aPeer, "Peer with id: " + aPeer.getPeerId() + " is not kwown in the routingtable for peer: " + myLocalPeerId);
 
     return myRoutingTable.get( aPeer.getPeerId() ).getGateway();
@@ -249,8 +249,8 @@ public class RoutingTable implements Iterable< RoutingTableEntry >, Serializable
     return myRoutingTable.get( getLocalPeerId() );
   }
 
-  public Set<Peer> getAllPeers(){
-    Set<Peer> thePeers = new HashSet< Peer >();
+  public Set<AbstractPeer> getAllPeers(){
+    Set<AbstractPeer> thePeers = new HashSet< AbstractPeer >();
     for(RoutingTableEntry theEntry : myRoutingTable.values()){
       thePeers.add(theEntry.getPeer());
       thePeers.add(theEntry.getGateway());

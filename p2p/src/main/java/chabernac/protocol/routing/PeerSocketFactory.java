@@ -51,7 +51,7 @@ public class PeerSocketFactory {
     }
   }
 
-  public Socket getSocketForPeer(Peer aPeer) throws IOException{
+  public Socket getSocketForPeer(SocketPeer aPeer) throws IOException{
 //    long t1 = System.currentTimeMillis();
 
     try{

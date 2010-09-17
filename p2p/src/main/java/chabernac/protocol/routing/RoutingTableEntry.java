@@ -13,7 +13,7 @@ public class RoutingTableEntry implements Serializable{
   public static int MAX_HOP_DISTANCE = 6;
   
 	//the peer for which this is an entry
-	private final Peer myPeer;
+	private final AbstractPeer myPeer;
 
 	//the hop distance of the peer.  this indicates how many peers must 
 	//be travelled to reach the destination peer
@@ -21,13 +21,13 @@ public class RoutingTableEntry implements Serializable{
   
 	//the gateway for accessing this peer.  this is the same as the target peer
 	//if the target peer can be reached directly
-	private final Peer myGateway;
+	private final AbstractPeer myGateway;
 	
 	private final long myCreationTime = System.currentTimeMillis();
 	
 	private final long myLastOnlineTime;
 	
-	public RoutingTableEntry ( Peer anHost , int anHopDistance , Peer anGateway, long aLastOnlineTime ) {
+	public RoutingTableEntry ( AbstractPeer anHost , int anHopDistance , AbstractPeer anGateway, long aLastOnlineTime ) {
 		super();
 		myPeer = anHost;
 		if(anHopDistance >= MAX_HOP_DISTANCE){
@@ -52,7 +52,7 @@ public class RoutingTableEntry implements Serializable{
 	  }
 	}
 
-	public Peer getPeer() {
+	public AbstractPeer getPeer() {
 		return myPeer;
 	}
 
@@ -60,7 +60,7 @@ public class RoutingTableEntry implements Serializable{
 		return myHopDistance;
 	}
 
-	public Peer getGateway() {
+	public AbstractPeer getGateway() {
 		return myGateway;
 	}
 
@@ -97,7 +97,7 @@ public class RoutingTableEntry implements Serializable{
     return true;
   }
   
-  public RoutingTableEntry entryForNextPeer(Peer aReceivedPeer){
+  public RoutingTableEntry entryForNextPeer(AbstractPeer aReceivedPeer){
     return new RoutingTableEntry(getPeer(), getHopDistance() + 1, aReceivedPeer, System.currentTimeMillis());
   }
   

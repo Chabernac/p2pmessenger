@@ -5,7 +5,6 @@
 package chabernac.protocol.facade;
 
 import java.io.File;
-import java.net.Socket;
 import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -38,11 +37,12 @@ import chabernac.protocol.message.iMultiPeerMessageListener;
 import chabernac.protocol.pipe.IPipeListener;
 import chabernac.protocol.pipe.Pipe;
 import chabernac.protocol.pipe.PipeProtocol;
-import chabernac.protocol.routing.Peer;
+import chabernac.protocol.routing.AbstractPeer;
 import chabernac.protocol.routing.RoutingFrame;
 import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.RoutingTable;
 import chabernac.protocol.routing.RoutingTableEntry;
+import chabernac.protocol.routing.SocketPeer;
 import chabernac.protocol.userinfo.UserInfo;
 import chabernac.protocol.userinfo.UserInfoProtocol;
 import chabernac.protocol.userinfo.iUserInfoListener;
@@ -264,8 +264,9 @@ public class P2PFacade {
     if(!isStarted()) throw new P2PFacadeException("Can not execute this action when the server is not started");
 
     try {
-      Peer thePeer = getPeer( aPeerId );
-      Pipe thePipe = new Pipe(thePeer);
+      AbstractPeer thePeer = getPeer( aPeerId );
+      if(!(thePeer instanceof SocketPeer)) throw new P2PFacadeException("Can only open pipe to socket peer");
+      Pipe thePipe = new Pipe((SocketPeer)thePeer);
       thePipe.setPipeDescription( aPipeDescription );
       ((PipeProtocol)myContainer.getProtocol( PipeProtocol.ID )).openPipe( thePipe );
       return thePipe;
@@ -361,7 +362,7 @@ public class P2PFacade {
     }
   }
 
-  public Peer getPeer(String aPeerId) throws P2PFacadeException{
+  public AbstractPeer getPeer(String aPeerId) throws P2PFacadeException{
     if(!isStarted()) throw new P2PFacadeException("Can not execute this action when the server is not started");
 
     try {

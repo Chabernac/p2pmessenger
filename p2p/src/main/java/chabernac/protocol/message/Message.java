@@ -10,11 +10,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import chabernac.protocol.routing.Peer;
+import chabernac.protocol.routing.AbstractPeer;
 
 public class Message {
-  private Peer mySource = null;
-  private Peer myDestination = null;
+  private AbstractPeer mySource = null;
+  private AbstractPeer myDestination = null;
   private String myMessage = null;
   private Map<String, String> myHeaders = null;
   private List<MessageIndicator> myIndicators = null;
@@ -31,16 +31,16 @@ public class Message {
   
   private int myTTL = TTL;
   
-  public Peer getSource() {
+  public AbstractPeer getSource() {
     return mySource;
   }
-  public void setSource( Peer anSource ) {
+  public void setSource( AbstractPeer anSource ) {
     mySource = anSource;
   }
-  public Peer getDestination() {
+  public AbstractPeer getDestination() {
     return myDestination;
   }
-  public void setDestination( Peer anDestination ) {
+  public void setDestination( AbstractPeer anDestination ) {
     myDestination = anDestination;
   }
   public String getMessage() {

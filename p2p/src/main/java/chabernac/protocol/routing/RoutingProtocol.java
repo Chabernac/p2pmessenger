@@ -146,12 +146,16 @@ public class RoutingProtocol extends Protocol {
   public void start() throws ProtocolException{
     if(isStopWhenAlreadyRunning){
       try {
-        Peer theLocalPeer = myRoutingTable.getEntryForLocalPeer().getPeer();
+        AbstractPeer theLocalPeer = myRoutingTable.getEntryForLocalPeer().getPeer();
         //only do the check if the our port is not the same as the port from the routing table
         //if it is than we would check if we our running ourselfs, which is at this point stupid
-        if(myServerInfo != null && myServerInfo.getServerPort() != theLocalPeer.getPort() && isAlreadyRunning(theLocalPeer)){
+        if(theLocalPeer instanceof SocketPeer && 
+            myServerInfo != null && 
+            myServerInfo.getServerPort() != ((SocketPeer)theLocalPeer).getPort() && 
+            isAlreadyRunning(theLocalPeer)){
           throw new AlreadyRunningException(theLocalPeer);
         }
+        
       } catch (UnknownPeerException e) {
         LOGGER.error("Could not get entry for local peer");
       }
@@ -162,7 +166,7 @@ public class RoutingProtocol extends Protocol {
     //add the entry for the local peer based on the server info
     if(myServerInfo != null){
       try{
-        Peer theLocalPeer = new Peer(getLocalPeerId(), myServerInfo.getServerPort());
+        SocketPeer theLocalPeer = new SocketPeer(getLocalPeerId(), myServerInfo.getServerPort());
         theLocalPeer.setChannel(myChannel);
         RoutingTableEntry theLocalRoutingTableEntry = new RoutingTableEntry(theLocalPeer, 0, theLocalPeer, System.currentTimeMillis());
         myRoutingTable.addRoutingTableEntry( theLocalRoutingTableEntry );
@@ -184,8 +188,8 @@ public class RoutingProtocol extends Protocol {
    * This method will try to contact a routing protocol that might be running at the port indicated in the routing table file
    * if there is a routing protocol already running at this port then return true
    */
-  private boolean isAlreadyRunning(Peer aPeer) {
-    LOGGER.debug("Checking if we're already running at: " + aPeer.getPort());
+  private boolean isAlreadyRunning(AbstractPeer aPeer) {
+    LOGGER.debug("Checking if we're already running");
     return contactPeer(aPeer, myUnreachablePeers);
   }
 
@@ -286,23 +290,23 @@ public class RoutingProtocol extends Protocol {
     return Response.UNKNOWN_COMMAND.name();
   }
   
-  private void verifyNeighbours(){
-    for(RoutingTableEntry theEntry : myRoutingTable.getEntries()){
-      if(theEntry.getHopDistance() == 1){
-        //verify if we can reach this peer
-        if(!contactPeer( theEntry.getPeer(), myUnreachablePeers)){
-          RoutingTableEntry theNewEntry = theEntry.derivedEntry( RoutingTableEntry.MAX_HOP_DISTANCE );
-          myRoutingTable.addRoutingTableEntry( theNewEntry );
-        }
-      }
-    }
-  }
+//  private void verifyNeighbours(){
+//    for(RoutingTableEntry theEntry : myRoutingTable.getEntries()){
+//      if(theEntry.getHopDistance() == 1){
+//        //verify if we can reach this peer
+//        if(!contactPeer( theEntry.getPeer(), myUnreachablePeers)){
+//          RoutingTableEntry theNewEntry = theEntry.derivedEntry( RoutingTableEntry.MAX_HOP_DISTANCE );
+//          myRoutingTable.addRoutingTableEntry( theNewEntry );
+//        }
+//      }
+//    }
+//  }
 
   public RoutingTable getRoutingTable(){
     return myRoutingTable;
   }
   
-  public void checkPeer(final Peer aPeer){
+  public void checkPeer(final AbstractPeer aPeer){
     if(!myRoutingTable.containsEntryForPeer( aPeer.getPeerId() )){
       myScannerService.execute( new Runnable(){
         public void run(){
@@ -312,9 +316,9 @@ public class RoutingProtocol extends Protocol {
     }
   }
 
-  boolean contactPeer(Peer aPeer, List<String> anUnreachablePeers){
+  boolean contactPeer(AbstractPeer aPeer, List<String> anUnreachablePeers){
     try{
-      LOGGER.debug("Sending message to '" + aPeer.getHosts() + "' port '" + aPeer.getPort() + "'");
+      LOGGER.debug("Sending message to '" + aPeer.getEndPointRepresentation() );
       String[] theIdTimeChannel = aPeer.send( createMessage( Command.WHO_ARE_YOU.name() )).split( "@" );
 
       if(!anUnreachablePeers.contains( theIdTimeChannel[0] )){
@@ -322,7 +326,7 @@ public class RoutingProtocol extends Protocol {
         if(theIdTimeChannel.length >= 2) aPeer.setChannel(theIdTimeChannel[1]);
         RoutingTableEntry theEntry = new RoutingTableEntry(aPeer, 1, aPeer, System.currentTimeMillis());
 
-        LOGGER.debug("Detected system on '" + aPeer.getHosts() + "' port '" + aPeer.getPort() + "'");
+        LOGGER.debug("Detected system on '" + aPeer.getEndPointRepresentation());
         //only if we have detected our self we set the hop distance to 0
         if(theIdTimeChannel[0].equals(myRoutingTable.getLocalPeerId())){
           theEntry = theEntry.derivedEntry( 0 );
@@ -367,8 +371,8 @@ public class RoutingProtocol extends Protocol {
     Map<String, Boolean> theHosts = new HashMap< String, Boolean >();
 
     for(RoutingTableEntry theEntry : myRoutingTable){
-      if(isExcludeLocal && !theEntry.getPeer().getPeerId().equals(myRoutingTable.getLocalPeerId())){
-        for(String theHost : theEntry.getPeer().getHosts()){
+      if(isExcludeLocal && !theEntry.getPeer().getPeerId().equals(myRoutingTable.getLocalPeerId()) && theEntry.getPeer() instanceof SocketPeer){
+        for(String theHost : ((SocketPeer)theEntry.getPeer()).getHosts()){
           boolean isReachable = false;
           if(theHosts.containsKey( theHost )){
             isReachable = theHosts.get(theHost);
@@ -385,9 +389,9 @@ public class RoutingProtocol extends Protocol {
         boolean isContacted = false;
         for(int i=START_PORT;i<=END_PORT && !isContacted;i++){
           try{
-            if(!isExcludeLocal || i!=myRoutingTable.getEntryForLocalPeer().getPeer().getPort()){
+            if(!isExcludeLocal || i!=((SocketPeer)myRoutingTable.getEntryForLocalPeer().getPeer()).getPort()){
               LOGGER.debug("Scanning the following host: '" + theHost + "' on port '" + i + "'");
-              isContacted = contactPeer( new Peer("", theHost, i), myUnreachablePeers );
+              isContacted = contactPeer( new SocketPeer("", theHost, i), myUnreachablePeers );
             }
           }catch(Exception e){}
         }
@@ -447,7 +451,7 @@ public class RoutingProtocol extends Protocol {
     LOGGER.debug("Exchanging routing table for peer: " + myRoutingTable.getLocalPeerId());
 
     for(RoutingTableEntry theEntry : myRoutingTable.getEntries()){
-      Peer thePeer = theEntry.getPeer();
+      AbstractPeer thePeer = theEntry.getPeer();
 
       //simulate that we can not contact this peer directly, but we can contact it trough a gateway
       //so check if hop distance = 1
@@ -518,7 +522,7 @@ public class RoutingProtocol extends Protocol {
     }
 
     for(RoutingTableEntry theEntry : myRoutingTable.getEntries()){
-      Peer thePeer = theEntry.getPeer();
+      AbstractPeer thePeer = theEntry.getPeer();
 
       //do not send the entry to our selfs, we already have the entry
       if(!thePeer.getPeerId().equals( myRoutingTable.getLocalPeerId()) &&
@@ -529,7 +533,7 @@ public class RoutingProtocol extends Protocol {
           //do not send announcement to peers we cannot reach in test mode
           !myUnreachablePeers.contains(thePeer.getPeerId())){
         try {
-          LOGGER.debug("Sending announcement of peer '" + anEntry.getPeer().getPeerId() +  "' from peer '" + myLocalPeerId +  "' to peer '" + thePeer.getPeerId() + "' on '" + thePeer.getHosts()  + ": "  +  thePeer.getPort() + "'");
+          LOGGER.debug("Sending announcement of peer '" + anEntry.getPeer().getPeerId() +  "' from peer '" + myLocalPeerId +  "' to peer '" + thePeer.getPeerId() + "' on '" + thePeer.getEndPointRepresentation() + "'");
           String theResult = thePeer.send( createMessage( Command.ANNOUNCEMENT.name() + " "  + myRoutingTableEntryConverter.toString( myRoutingTable.getEntryForLocalPeer()) + ";" + myRoutingTableEntryConverter.toString( anEntry ))) ;
           if(!Response.OK.name().equals( theResult )){
             throw new Exception("Unexpected result code '" + theResult + "'");
@@ -687,7 +691,7 @@ public class RoutingProtocol extends Protocol {
           Object theObject = theObjectInputStream.readObject();
           if(theObject instanceof RoutingTableEntry){
             RoutingTableEntry theEntry = (RoutingTableEntry)theObject;
-            if(!myUnreachablePeers.contains(theEntry.getPeer().getPeerId()) && isInPortRange( theEntry.getPeer().getPort() )){
+            if(!myUnreachablePeers.contains(theEntry.getPeer().getPeerId()) && isInPortRange( ((SocketPeer)theEntry.getPeer()).getPort() )){
               if(!theEntry.getPeer().getPeerId().equals( myLocalPeerId )){
                 theEntry = theEntry.incHopDistance();
               }

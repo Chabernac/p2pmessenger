@@ -20,9 +20,10 @@ import chabernac.protocol.message.MessageProtocol;
 import chabernac.protocol.pipe.IPipeListener;
 import chabernac.protocol.pipe.Pipe;
 import chabernac.protocol.pipe.PipeProtocol;
-import chabernac.protocol.routing.Peer;
+import chabernac.protocol.routing.AbstractPeer;
 import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.RoutingTable;
+import chabernac.protocol.routing.SocketPeer;
 import chabernac.protocol.routing.UnknownPeerException;
 import chabernac.tools.IOTools;
 import chabernac.tools.iTransferListener;
@@ -124,7 +125,7 @@ public class FileTransferProtocol extends Protocol {
     String theResponse = null;
 
     ProtocolContainer theProtocolContainer = findProtocolContainer();
-    Peer thePeer = null;
+    AbstractPeer thePeer = null;
     try{
       thePeer = getRoutingTable().getEntryForPeer( aPeerid ).getPeer();
       MessageProtocol theMessageProtocol = (MessageProtocol)theProtocolContainer.getProtocol( "MSG" );
@@ -145,7 +146,8 @@ public class FileTransferProtocol extends Protocol {
       throw new FileTransferException("The file: '" + aFile.getName() + "' was refused by peer: '" + thePeer.getPeerId() + "' with response '" + theResponse + "'");
     } else {
       String theFileId = theResponse.split( " " )[1];
-      Pipe thePipe = new Pipe(thePeer);
+      //TODO we probably should not just cast to SocketPeer
+      Pipe thePipe = new Pipe((SocketPeer)thePeer);
       thePipe.setPipeDescription( "FILE:" + theFileId + ":" + aFile.length() );
       FileInputStream theInputStream = null;
       try{
