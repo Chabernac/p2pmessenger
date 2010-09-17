@@ -182,7 +182,7 @@ public class UserPanel extends GPanel implements iUserSelectionProvider{
 
   private String getToolTipForUser(String aPeerId, UserInfo anUserInfo ) throws P2PFacadeException {
     RoutingTableEntry theEntry = myMediator.getP2PFacade().getRoutingTableEntry( aPeerId );
-    return anUserInfo.getStatus().name() + " " + anUserInfo.getName() + " " + anUserInfo.getId() + " " + anUserInfo.getEMail() + " '" + anUserInfo.getTelNr() + "' [" + aPeerId + " " + theEntry.getHopDistance() + " " + theEntry.getPeer().getHosts() + "]";
+    return anUserInfo.getStatus().name() + " " + anUserInfo.getName() + " " + anUserInfo.getId() + " " + anUserInfo.getEMail() + " '" + anUserInfo.getTelNr() + "' [" + aPeerId + " " + theEntry.getHopDistance() + " " + theEntry.getPeer().getEndPointRepresentation() + "]";
   }
 
   private String getLabelForUser( UserInfo anUserInfo ) {
