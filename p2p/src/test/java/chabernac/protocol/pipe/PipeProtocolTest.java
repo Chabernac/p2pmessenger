@@ -11,6 +11,7 @@ import chabernac.protocol.ProtocolException;
 import chabernac.protocol.ProtocolServer;
 import chabernac.protocol.routing.NoAvailableNetworkAdapterException;
 import chabernac.protocol.routing.RoutingProtocol;
+import chabernac.protocol.routing.SocketPeer;
 import chabernac.protocol.routing.UnknownPeerException;
 import chabernac.tools.IOTools;
 
@@ -59,7 +60,7 @@ public class PipeProtocolTest extends AbstractProtocolTest {
 
 
       //open a pipe from peer 1 to peer 3, it should traverse peer 2
-      Pipe thePipe = new Pipe(theRoutingProtocol1.getRoutingTable().getEntryForPeer("3").getPeer());
+      Pipe thePipe = new Pipe((SocketPeer)theRoutingProtocol1.getRoutingTable().getEntryForPeer("3").getPeer());
       thePipe.setPipeDescription("Test pipe description");
       
       LOGGER.debug( "opening pipe" );
