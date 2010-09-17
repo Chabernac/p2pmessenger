@@ -20,7 +20,8 @@ import chabernac.io.SocketPoolFactory;
 import chabernac.protocol.Protocol;
 import chabernac.protocol.ProtocolContainer;
 import chabernac.protocol.ProtocolException;
-import chabernac.protocol.routing.Peer;
+import chabernac.protocol.routing.AbstractPeer;
+import chabernac.protocol.routing.SocketPeer;
 import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.RoutingTable;
 import chabernac.protocol.routing.RoutingTableEntry;
@@ -98,9 +99,10 @@ public class PipeProtocol extends Protocol {
             Socket theSocketToNextPeer = null;
             if(!theToPeerEntry.getPeer().getPeerId().equals( getRoutingTable().getLocalPeerId())){
               //this peer is just an intermediate peer, create a new connection to next peer in the chain
-              theSocketToNextPeer = openSocketToPeer( theFromPeerEntry.getPeer(), theToPeerEntry.getPeer(), theAttributes[2] );
+              //TODO we should not just cast the peer to SocketPeer
+              theSocketToNextPeer = openSocketToPeer( (SocketPeer)theFromPeerEntry.getPeer(), (SocketPeer)theToPeerEntry.getPeer(), theAttributes[2] );
             }
-            myServerSocketExecutor.submit( new ServerSocketHandler(theSocket, theFromPeerEntry.getPeer(), theSocketToNextPeer, theAttributes[2]));
+            myServerSocketExecutor.submit( new ServerSocketHandler(theSocket, (SocketPeer)theFromPeerEntry.getPeer(), theSocketToNextPeer, theAttributes[2]));
             Thread.yield();
             return Result.SOCKET_OPENED.name() + " " + Integer.toString( theSocket.getLocalPort() );
           }catch(Exception e){
@@ -134,8 +136,10 @@ public class PipeProtocol extends Protocol {
 
   public Pipe openPipe(String aPeerId, String aPipeDescription) throws PipeException{
     try{
-      Peer thePeer = getRoutingTable().getEntryForPeer( aPeerId ).getPeer();
-      Pipe thePipe = new Pipe(thePeer);
+      AbstractPeer thePeer = getRoutingTable().getEntryForPeer( aPeerId ).getPeer();
+      if(!(thePeer instanceof SocketPeer)) throw new PipeException("Can only open a pipe to a socket peer");
+      
+      Pipe thePipe = new Pipe((SocketPeer)thePeer);
       thePipe.setPipeDescription( aPipeDescription );
       openPipe( thePipe );
       return thePipe;
@@ -149,7 +153,8 @@ public class PipeProtocol extends Protocol {
     if(aPipe.getPipeDescription() == null || "".equals( aPipe.getPipeDescription() )) throw new PipeException("Pipe description must be filled");
     
     try {
-      aPipe.setSocket( openSocketToPeer( getRoutingTable().getEntryForLocalPeer().getPeer(), aPipe.getPeer(), aPipe.getPipeDescription() ) );
+      //TODO we probably should not just cast the peer to SocketPeer
+      aPipe.setSocket( openSocketToPeer( (SocketPeer)getRoutingTable().getEntryForLocalPeer().getPeer(), aPipe.getPeer(), aPipe.getPipeDescription() ) );
     } catch ( Exception e ) {
       throw new PipeException("Could not open pipe", e);
     }
@@ -161,8 +166,8 @@ public class PipeProtocol extends Protocol {
     }
   }
 
-  private Socket openSocketToPeer(Peer aFromPeer, Peer aToPeer, String aPipeDescription) throws IOException, UnknownPeerException, ProtocolException{
-    Peer theGateway = getRoutingTable().getGatewayForPeer(aToPeer);
+  private Socket openSocketToPeer(SocketPeer aFromPeer, SocketPeer aToPeer, String aPipeDescription) throws IOException, UnknownPeerException, ProtocolException{
+    AbstractPeer theGateway = getRoutingTable().getGatewayForPeer(aToPeer);
     String theResult = theGateway.send( createMessage( Command.OPEN_SOCKET + ";" + aFromPeer.getPeerId()  + ";" + aToPeer.getPeerId() + ";" +  aPipeDescription) );
 
     if(!theResult.startsWith( Result.SOCKET_OPENED.name() )){
@@ -183,9 +188,9 @@ public class PipeProtocol extends Protocol {
     private ServerSocket mySocket = null;
     private String myPipeDescription = null;
     private Socket mySocketToNextPeer = null;
-    private Peer myFromPeer = null;
+    private SocketPeer myFromPeer = null;
 
-    public ServerSocketHandler(ServerSocket aSocket, Peer aFromPeer, Socket aSocketToNextPeer, String aPipeDescription){
+    public ServerSocketHandler(ServerSocket aSocket, SocketPeer aFromPeer, Socket aSocketToNextPeer, String aPipeDescription){
       mySocket = aSocket;
       myPipeDescription = aPipeDescription;
       mySocketToNextPeer = aSocketToNextPeer;

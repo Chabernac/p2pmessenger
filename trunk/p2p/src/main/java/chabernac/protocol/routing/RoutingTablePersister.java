@@ -20,7 +20,6 @@ import java.util.Set;
 import chabernac.io.iObjectPersister;
 
 public class RoutingTablePersister implements iObjectPersister<RoutingTable> {
-  private static long LAST_ONLINE_TIME = 10 * 24 * 60 * 60 * 1000;
 
   @Override
   public RoutingTable loadObject( InputStream anInputStream ) throws IOException {
@@ -28,14 +27,14 @@ public class RoutingTablePersister implements iObjectPersister<RoutingTable> {
     String thePeerId = theReader.readLine().split( ";" )[1];
     RoutingTable theTable = new RoutingTable(thePeerId);
     theReader.readLine();
-    
+
     //read peers
     theReader.readLine();
-    Map<String, Peer> thePeers = new HashMap< String, Peer >();
+    Map<String, SocketPeer> thePeers = new HashMap< String, SocketPeer >();
     String theLine = null;
     while( !(theLine = theReader.readLine()).equals( "" )  ){
       String[] thePeerVars = theLine.split( ";" );
-      Peer thePeer = new Peer();
+      SocketPeer thePeer = new SocketPeer();
       thePeer.setPeerId( thePeerVars[0]  );
       thePeer.setPort( Integer.parseInt( thePeerVars[1] ) );
       List<String> theHosts = new ArrayList< String >();
@@ -45,9 +44,9 @@ public class RoutingTablePersister implements iObjectPersister<RoutingTable> {
       thePeer.setHosts( theHosts );
       thePeers.put( thePeer.getPeerId(), thePeer );
     }
-    
+
     theReader.readLine();
-    
+
     theLine = null;
     while( (theLine = theReader.readLine()) != null  ){
       String[] theRoutingTableEntryVars = theLine.split( ";" );
@@ -56,17 +55,17 @@ public class RoutingTablePersister implements iObjectPersister<RoutingTable> {
         theLastOnlineTime = Long.parseLong( theRoutingTableEntryVars[3] );
       }
       RoutingTableEntry theEntry = new RoutingTableEntry(thePeers.get(  theRoutingTableEntryVars[0] ), Integer.parseInt(theRoutingTableEntryVars[1]), thePeers.get(theRoutingTableEntryVars[2]), theLastOnlineTime);
-//      theEntry.setPeer( thePeers.get(  theRoutingTableEntryVars[0] ) ) ;
-//      theEntry.setHopDistance( Integer.parseInt(theRoutingTableEntryVars[1] ));
-//      theEntry.setGateway( thePeers.get(theRoutingTableEntryVars[2] )) ;
-      
+      //      theEntry.setPeer( thePeers.get(  theRoutingTableEntryVars[0] ) ) ;
+      //      theEntry.setHopDistance( Integer.parseInt(theRoutingTableEntryVars[1] ));
+      //      theEntry.setGateway( thePeers.get(theRoutingTableEntryVars[2] )) ;
+
       //TODO is this clean?
       //only load the entries which are within the range of routing protocol
-      if(RoutingProtocol.isInPortRange( theEntry.getPeer().getPort() )){
+      if(theEntry.getPeer() instanceof SocketPeer && RoutingProtocol.isInPortRange( ((SocketPeer)theEntry.getPeer()).getPort() )){
         theTable.addRoutingTableEntry( theEntry );
       }
     }
-    
+
     return theTable;
   }
 
@@ -75,17 +74,21 @@ public class RoutingTablePersister implements iObjectPersister<RoutingTable> {
     PrintWriter theWriter = new PrintWriter(new OutputStreamWriter(anOutputStream));
     theWriter.println("local peer id;" + aRoutingTable.getLocalPeerId());
     theWriter.println();
-    
+
     //peers
     theWriter.println("Peer id;Port;Host");
-    Set<Peer> thePeers = aRoutingTable.getAllPeers();
-    for(Peer thePeer : thePeers){
-      theWriter.print(thePeer.getPeerId() );
-      theWriter.print(";");
-      theWriter.print(thePeer.getPort() );
-      for(String theHost : thePeer.getHosts()){
+    Set<AbstractPeer> thePeers = aRoutingTable.getAllPeers();
+    for(AbstractPeer thePeer : thePeers){
+      //TODO this can be done in a better way
+      if(thePeer instanceof SocketPeer){
+        SocketPeer theSPeer = (SocketPeer)thePeer;
+        theWriter.print(thePeer.getPeerId() );
         theWriter.print(";");
-        theWriter.print(theHost);
+        theWriter.print(theSPeer.getPort() );
+        for(String theHost : theSPeer.getHosts()){
+          theWriter.print(";");
+          theWriter.print(theHost);
+        }
       }
       theWriter.println();
     }
@@ -103,7 +106,7 @@ public class RoutingTablePersister implements iObjectPersister<RoutingTable> {
       theWriter.println();
     }
     theWriter.flush();
-    
+
   }
 
 }

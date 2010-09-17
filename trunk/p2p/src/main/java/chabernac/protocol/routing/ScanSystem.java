@@ -46,7 +46,7 @@ public class ScanSystem implements Runnable{
   public void run() {
     if(myCondition == null || myCondition.isConditionFullFilled()){
 //      LOGGER.debug( "Scanning system '" + new ArrayList< String >(myHosts) + "': '" + myPort + "'" );
-      Peer thePeer = new Peer(null, myHosts, myPort);
+      SocketPeer thePeer = new SocketPeer(null, myHosts, myPort);
       if(myRoutingProtocol.getRoutingProtocolMonitor() != null) myRoutingProtocol.getRoutingProtocolMonitor().scanStarted( thePeer );
       boolean result = myRoutingProtocol.contactPeer( thePeer, myUnreachablePeers );
       if(result && myRoutingProtocol.getRoutingProtocolMonitor() != null) myRoutingProtocol.getRoutingProtocolMonitor().peerFoundWithScan( thePeer );

@@ -7,29 +7,29 @@ package chabernac.protocol.routing;
 public class UnknownPeerException extends Exception {
   
   private static final long serialVersionUID = 686844496245613583L;
-  private Peer myPeer = null;
+  private AbstractPeer myPeer = null;
 
-  public UnknownPeerException (Peer aPeer) {
+  public UnknownPeerException (AbstractPeer aPeer) {
     super();
     myPeer = aPeer;
   }
 
-  public UnknownPeerException ( Peer aPeer, String anMessage , Throwable anCause ) {
+  public UnknownPeerException ( AbstractPeer aPeer, String anMessage , Throwable anCause ) {
     super( anMessage, anCause );
     myPeer = aPeer;
   }
 
-  public UnknownPeerException ( Peer aPeer, String anMessage ) {
+  public UnknownPeerException ( AbstractPeer aPeer, String anMessage ) {
     super( anMessage );
     myPeer = aPeer;
   }
 
-  public UnknownPeerException ( Peer aPeer, Throwable anCause ) {
+  public UnknownPeerException ( AbstractPeer aPeer, Throwable anCause ) {
     super( anCause );
     myPeer = aPeer;
   }
   
-  public Peer getPeer(){
+  public AbstractPeer getPeer(){
     return myPeer;
   }
 

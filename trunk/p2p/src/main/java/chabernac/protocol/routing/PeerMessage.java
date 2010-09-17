@@ -4,13 +4,13 @@ public class PeerMessage {
   public static enum State{INIT, SEND, OK, NOK};
   
   private final String myMessage;
-  private final Peer myPeer;
+  private final SocketPeer myPeer;
   private String myResult;
   private final long myCreationTimestamp;
   private long myResponseTime;
   private State myState = State.INIT;
   
-  public PeerMessage(String anMessage, Peer anPeer) {
+  public PeerMessage(String anMessage, SocketPeer anPeer) {
     super();
     myMessage = anMessage;
     myPeer = anPeer;
@@ -20,7 +20,7 @@ public class PeerMessage {
   public String getMessage() {
     return myMessage;
   }
-  public Peer getPeer() {
+  public SocketPeer getPeer() {
     return myPeer;
   }
   public String getResult() {

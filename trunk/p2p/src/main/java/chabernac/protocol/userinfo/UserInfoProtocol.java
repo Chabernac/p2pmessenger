@@ -24,8 +24,8 @@ import chabernac.protocol.ProtocolContainer;
 import chabernac.protocol.ProtocolException;
 import chabernac.protocol.message.Message;
 import chabernac.protocol.message.MessageProtocol;
+import chabernac.protocol.routing.AbstractPeer;
 import chabernac.protocol.routing.IRoutingTableListener;
-import chabernac.protocol.routing.Peer;
 import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.RoutingTable;
 import chabernac.protocol.routing.RoutingTableEntry;
@@ -102,10 +102,10 @@ public class UserInfoProtocol extends Protocol {
     LOGGER.debug( "Doing full retrieval of user info based on routing table" );
     try{
       RoutingTable theTable = getRoutingTable();
-      Peer theLocalPeer = theTable.getEntryForLocalPeer().getPeer();
+      AbstractPeer theLocalPeer = theTable.getEntryForLocalPeer().getPeer();
       for(RoutingTableEntry theEntry : theTable){
         if(theEntry.isReachable()){
-          Peer thePeer = theEntry.getPeer();
+          AbstractPeer thePeer = theEntry.getPeer();
           if(thePeer.isOnSameChannel(theLocalPeer) 
               && (!myUserInfo.containsKey( thePeer.getPeerId() ) 
                   || myUserInfo.get(thePeer.getPeerId()).getStatus() == Status.OFFLINE)){
@@ -122,7 +122,7 @@ public class UserInfoProtocol extends Protocol {
   public void announceMe(){
     try{
       RoutingTable theTable = getRoutingTable();
-      Peer theLocalPeer = theTable.getEntryForLocalPeer().getPeer();
+      AbstractPeer theLocalPeer = theTable.getEntryForLocalPeer().getPeer();
 
       for(RoutingTableEntry theEntry : theTable){
         if(theEntry.isReachable() && theEntry.getPeer().isOnSameChannel(theLocalPeer)){
