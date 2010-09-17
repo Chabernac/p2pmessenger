@@ -312,6 +312,15 @@ public class UserInfoProtocolTest extends AbstractProtocolTest {
       theUserInfo = theUserInfoProtocol2.getUserInfo().get( theRoutingTable1.getLocalPeerId() ); 
       assertNotNull( theUserInfo );
       assertEquals( UserInfo.Status.OFFLINE, theUserInfo.getStatus() );
+      
+      theServer1.start();
+      theRoutingProtocol2.exchangeRoutingTable();
+      
+      Thread.sleep(SLEEP_AFTER_SCAN);
+      theUserInfo = theUserInfoProtocol2.getUserInfo().get( theRoutingTable1.getLocalPeerId() ); 
+      assertNotNull( theUserInfo );
+      assertEquals( UserInfo.Status.ONLINE, theUserInfo.getStatus() );
+      
     } finally {
       theServer1.stop();
       theServer2.stop();
