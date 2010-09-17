@@ -4,11 +4,7 @@
  */
 package chabernac.protocol.routing;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
 import java.io.Serializable;
 import java.net.InetSocketAddress;
 import java.net.Socket;
@@ -17,9 +13,6 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 
@@ -134,27 +127,9 @@ public class Peer implements Serializable {
   }
 
   public String send(String aMessage, int aTimeoutInSeconds) throws UnknownHostException, IOException{
-    Socket theSocket = createSocket( myPort );
+    if(PeerSenderHolder.getPeerSender() == null) throw new IOException("Could not send message to peer '" + getPeerId() + " because no message sender was defined");
     
-    if(theSocket == null) throw new IOException("Could not open socket to peer: " + getPeerId() + " " + getHosts() + ":" + getPort());
-    
-    ScheduledExecutorService theService = Executors.newScheduledThreadPool( 1 );
-
-    BufferedReader theReader = null;
-    PrintWriter theWriter = null;
-    try{
-      theService.schedule( new SocketCloser(theSocket), aTimeoutInSeconds, TimeUnit.SECONDS );
-      theWriter = new PrintWriter(new OutputStreamWriter(theSocket.getOutputStream()));
-      theReader = new BufferedReader(new InputStreamReader(theSocket.getInputStream()));
-      theWriter.println(aMessage);
-      theWriter.flush();
-      String theReturnMessage = theReader.readLine();
-      
-      return theReturnMessage;
-    }finally{
-      theService.shutdownNow();
-      SocketPoolFactory.getSocketPool().checkIn( theSocket );
-    }
+    return PeerSenderHolder.getPeerSender().send(aMessage, this, aTimeoutInSeconds);
   }
 
 
@@ -209,18 +184,5 @@ public class Peer implements Serializable {
     }
     if(!isSameHost) return false;
     return getPort() == aPeer.getPort(); 
-  }
-  
-  private class SocketCloser implements Runnable{
-    private final Socket mySocket;
-
-    public SocketCloser ( Socket anSocket ) {
-      super();
-      mySocket = anSocket;
-    }
-    
-    public void run(){
-      SocketPoolFactory.getSocketPool().close(  mySocket );
-    }
   }
 }

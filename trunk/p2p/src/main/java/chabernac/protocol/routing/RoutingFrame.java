@@ -61,6 +61,7 @@ public class RoutingFrame extends JFrame {
     getRoutingTable().setKeepHistory(true);
     SocketProxy.setTraceEnabled(true);
     ((MessageProtocol)myProtocolContainer.getProtocol( MessageProtocol.ID )).setKeepHistory( true );
+    ((SocketPeerSender)PeerSenderHolder.getPeerSender()).setKeepHistory(true);
   }
 
   private void addListeners(){
@@ -83,6 +84,7 @@ public class RoutingFrame extends JFrame {
     MessageProtocol theMessageProtocol = (MessageProtocol)myProtocolContainer.getProtocol( MessageProtocol.ID );
     thePane.add("Messages", new MessagePanel(theMessageProtocol));
     thePane.add("Protocol", new ProtocolMessagePanel(myProtocolContainer));
+    thePane.add("PeerMessages", new PeerMessagePanel());
     
 
     getContentPane().setLayout( new BorderLayout() );
@@ -106,6 +108,7 @@ public class RoutingFrame extends JFrame {
       getRoutingTable().setKeepHistory(false);
       getRoutingTable().clearHistory();
       SocketProxy.setTraceEnabled(false);
+      ((SocketPeerSender)PeerSenderHolder.getPeerSender()).setKeepHistory(true);
       try {
         ((MessageProtocol)myProtocolContainer.getProtocol( MessageProtocol.ID )).setKeepHistory( false );
       } catch ( ProtocolException e ) {
