@@ -17,7 +17,7 @@ import org.apache.log4j.BasicConfigurator;
 
 import chabernac.protocol.ping.PingProtocol;
 import chabernac.protocol.routing.NoAvailableNetworkAdapterException;
-import chabernac.protocol.routing.Peer;
+import chabernac.protocol.routing.SocketPeer;
 import chabernac.tools.PropertyMap;
 
 public class ProtocolServerTest extends AbstractProtocolTest {
@@ -56,7 +56,7 @@ public class ProtocolServerTest extends AbstractProtocolTest {
     ProtocolServer theServer = new ProtocolServer(theMasterProtocol, thePort, 5);
     assertTrue( theServer.start() );
     
-    Peer thePeer = new Peer();
+    SocketPeer thePeer = new SocketPeer();
     thePeer.detectLocalInterfaces();
     thePeer.setPort( thePort );
     

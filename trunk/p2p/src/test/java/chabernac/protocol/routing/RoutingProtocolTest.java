@@ -45,7 +45,7 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
       
       RoutingTableEntry theEntry = theRoutingProtocol1.getRoutingTable().getEntryForLocalPeer();
       assertNotNull( theEntry );
-      assertTrue( theEntry.getPeer().getPort() > 0 );
+      assertTrue(((SocketPeer)theEntry.getPeer()).getPort() > 0 );
       assertEquals( 0, theEntry.getHopDistance());
       
       theRoutingProtocol1.scanLocalSystem();
@@ -54,7 +54,7 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
       
       theEntry = theRoutingProtocol1.getRoutingTable().getEntryForLocalPeer();
       assertNotNull( theEntry );
-      assertTrue( theEntry.getPeer().getPort() > 0 );
+      assertTrue( ((SocketPeer)theEntry.getPeer()).getPort() > 0 );
       assertEquals( 0, theEntry.getHopDistance());
       
       
@@ -104,14 +104,14 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
 
       //make sure routing table of peer 1 contains both peers
       RoutingTableEntry theEntry = theRoutingTable1.getEntryForLocalPeer();
-      assertEquals( RoutingProtocol.START_PORT, theEntry.getPeer().getPort());
-      assertTrue( theEntry.getPeer().getHosts().size() > 0);
+      assertEquals( RoutingProtocol.START_PORT, ((SocketPeer)theEntry.getPeer()).getPort());
+      assertTrue( ((SocketPeer)theEntry.getPeer()).getHosts().size() > 0);
       assertEquals( "1", theEntry.getPeer().getPeerId());
       assertEquals( 0, theEntry.getHopDistance());
 
       theEntry = theRoutingTable1.getEntryForPeer( "2" );
-      assertEquals( RoutingProtocol.START_PORT + 1, theEntry.getPeer().getPort());
-      assertTrue(  theEntry.getPeer().getHosts().size() > 0);
+      assertEquals( RoutingProtocol.START_PORT + 1, ((SocketPeer)theEntry.getPeer()).getPort());
+      assertTrue(  ((SocketPeer)theEntry.getPeer()).getHosts().size() > 0);
       assertEquals( theRoutingTable2.getLocalPeerId(), theEntry.getPeer().getPeerId());
       assertEquals( 1, theEntry.getHopDistance());
 
@@ -561,7 +561,7 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
       theRoutingProtocol1.exchangeRoutingTable();
       theRoutingProtocol2.exchangeRoutingTable();
       
-      Peer theDummyPeer = new Peer("dummy");
+      SocketPeer theDummyPeer = new SocketPeer("dummy");
       List<String> theHosts = new ArrayList< String >();
       theHosts.add( "10.240.111.22" );
       theDummyPeer.setHosts( theHosts );
@@ -763,7 +763,7 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
         
         assertEquals( 0,theEntry.getHopDistance());
         assertTrue( theRoutingTable1.getEntries().size() > 0);
-        assertEquals( RoutingProtocol.START_PORT,theEntry.getPeer().getPort());
+        assertEquals( RoutingProtocol.START_PORT,((SocketPeer)theEntry.getPeer()).getPort());
       } finally {
         theServer1.stop();
       }
@@ -841,7 +841,7 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
       RoutingProtocol theRoutingProtocol2 = (RoutingProtocol)theProtocol2.getProtocol( RoutingProtocol.ID );
       RoutingTable theRoutingTable2 = theRoutingProtocol2.getRoutingTable();
       
-      Peer thePeer3 = new Peer("3", RoutingProtocol.START_PORT + 2);
+      SocketPeer thePeer3 = new SocketPeer("3", RoutingProtocol.START_PORT + 2);
       theRoutingTable1.addEntry( new RoutingTableEntry(thePeer3, RoutingTableEntry.MAX_HOP_DISTANCE,  thePeer3, System.currentTimeMillis()));
       
       try{
