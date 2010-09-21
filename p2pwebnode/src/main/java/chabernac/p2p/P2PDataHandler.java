@@ -4,74 +4,27 @@
  */
 package chabernac.p2p;
 
-import java.io.IOException;
-import java.util.Map;
-
 import chabernac.comet.DataHandlingException;
-import chabernac.comet.EndPoint;
-import chabernac.comet.iDataHandler;
-import chabernac.io.Base64ObjectStringConverter;
-import chabernac.io.iObjectStringConverter;
-import chabernac.protocol.message.Message;
-import chabernac.protocol.routing.IRoutingTableListener;
-import chabernac.protocol.routing.Peer;
-import chabernac.protocol.routing.RoutingTable;
-import chabernac.protocol.routing.RoutingTableEntry;
+import chabernac.comet.AbstractDataHandler;
+import chabernac.protocol.ProtocolContainer;
+import chabernac.protocol.ProtocolFactory;
+import chabernac.protocol.routing.PeerSenderHolder;
+import chabernac.tools.PropertyMap;
 
-public class P2PDataHandler implements iDataHandler, iP2PEventHandler, IRoutingTableListener{
-  private iObjectStringConverter<P2PEvent> myConverter = new Base64ObjectStringConverter<P2PEvent>();
+public class P2PDataHandler extends AbstractDataHandler{
+  private final ProtocolContainer myProtocolContainer;
   
-  private final RoutingTable myRoutingTable;
-  private Map< String, EndPoint > myEndPoints; 
-  
-  public P2PDataHandler(RoutingTable aRoutingTable){
-    myRoutingTable= aRoutingTable;
-    myRoutingTable.addRoutingTableListener( this );
+  public P2PDataHandler(){
+    PropertyMap thePropertyMap = new PropertyMap();
+    thePropertyMap.setProperty("routingprotocol.exchangedelay", "-1");
+    thePropertyMap.setProperty("routingprotocol.persist", "false");
+    myProtocolContainer = new ProtocolContainer(new ProtocolFactory(thePropertyMap));
+    
+    PeerSenderHolder.setPeerSender(new WebPeerSender());
   }
   
 
-  @Override
-  public void handleData( String aData, Map< String, EndPoint > anEndPoints ) throws DataHandlingException{
-    //TODO this is not the correct way to get the endpoints
-    myEndPoints = anEndPoints;
-    
-    try{
-      P2PEvent theMessage = myConverter.getObject( aData );
-      theMessage.handle( this );
-    }catch(IOException e){
-      throw new DataHandlingException("Could not handle data", e);
-    }
-
+  public String handleData( String aData ) throws DataHandlingException{
+      return myProtocolContainer.handleCommand(-1, aData);
   }
-
-
-  @Override
-  public void handleEvent( RoutingTableEvent anRoutingTableMessage ) {
-    myRoutingTable.merge( anRoutingTableMessage.getRoutingTable() );
-  }
-
-
-  @Override
-  public void handleEvent( MessageEvent anMessageEvent ) {
-    Message theMessage = anMessageEvent.getMessage();
-    Peer theGateWay = myRoutingTable.getGatewayForPeer( theMessage.getDestination() );
-    EndPoint theEndPoint = myEndPoints.get( theGateWay.getPeerId() );
-    theEndPoint.setData( myConverter.toString( anMessageEvent ) );
-    
-  }
-
-
-  @Override
-  public void routingTableEntryChanged( RoutingTableEntry anEntry ) {
-    // TODO Auto-generated method stub
-    
-  }
-
-
-  @Override
-  public void routingTableEntryRemoved( RoutingTableEntry anEntry ) {
-    // TODO Auto-generated method stub
-    
-  }
-
 }

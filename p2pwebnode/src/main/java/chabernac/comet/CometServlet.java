@@ -15,18 +15,18 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class CometServlet extends HttpServlet {
   private static final long serialVersionUID = 1L;
-  
+
   public static enum Responses{NO_DATA};
-  
+
   private Map<String, EndPoint> myEndPoints = Collections.synchronizedMap( new HashMap<String, EndPoint>() );
-  
-  private iDataHandler myDataHandler = null;
+
+  private AbstractDataHandler myDataHandler = null;
 
   /**
    * Default constructor. 
    */
   public CometServlet() {
-    myDataHandler = (iDataHandler)getServletContext().getAttribute( "datahandler" );
+    myDataHandler = (AbstractDataHandler)getServletContext().getAttribute( "datahandler" );
   }
 
   /**
@@ -34,7 +34,7 @@ public class CometServlet extends HttpServlet {
    */
   protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     String theId = request.getParameter( "id" );
-    
+
     EndPoint theEndPoint = new EndPoint(theId);
     synchronized(theId){
       if(myEndPoints.containsKey( theEndPoint.getId() )){
@@ -43,18 +43,19 @@ public class CometServlet extends HttpServlet {
       }
       myEndPoints.put( theEndPoint.getId(), theEndPoint);
     }
-    
-    if(request.getParameter( "data" )  != null){
-      myDataHandler.handleData( request.getParameter( "data"), myEndPoints );
-    }
-    
+
     try {
-      response.getWriter().println( theEndPoint.getData() );
-    } catch ( InterruptedException e ) {
+      if(request.getParameter( "data" )  != null){
+        String theResponse = myDataHandler.handleData( request.getParameter( "data") );
+        response.getWriter().println( theResponse );
+      } else {
+        response.getWriter().println( theEndPoint.getData() );
+      }
+    } catch ( Exception e ) {
       response.getWriter().println(Responses.NO_DATA.name());
     }
   }
-  
+
 
   /**
    * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
