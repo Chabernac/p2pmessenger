@@ -4,10 +4,12 @@
  */
 package chabernac.comet;
 
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 
 public class EndPoint {
   private final String myId;
-  private String myData = null;
+  private BlockingQueue<CometEvent> myEventQueue = new ArrayBlockingQueue<CometEvent>(1);
   
   public EndPoint ( String anId ) {
     super();
@@ -17,18 +19,12 @@ public class EndPoint {
   public String getId() {
     return myId;
   }
-
-  public synchronized String getData() throws InterruptedException{
-    while(myData == null){
-      wait();
-    }
-    return myData;
+  
+  public void setEvent(CometEvent anEvent){
+    myEventQueue.add(anEvent);
   }
   
-  public synchronized void setData(String aData){
-    myData = aData;
-    notifyAll();
+  public CometEvent getEvent(){
+    return myEventQueue.poll();
   }
-  
-  
 }

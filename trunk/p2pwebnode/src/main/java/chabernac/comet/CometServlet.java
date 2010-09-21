@@ -10,6 +10,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import chabernac.io.Base64ObjectStringConverter;
+import chabernac.io.iObjectStringConverter;
+
 /**
  * Servlet implementation class P2PServlet
  */
@@ -19,40 +22,45 @@ public class CometServlet extends HttpServlet {
   public static enum Responses{NO_DATA};
 
   private Map<String, EndPoint> myEndPoints = Collections.synchronizedMap( new HashMap<String, EndPoint>() );
+  private Map<String, CometEvent> myCometEvents = Collections.synchronizedMap( new HashMap<String, CometEvent>() );
+  
+  private iObjectStringConverter<CometEvent> myCometEventConverter =  new Base64ObjectStringConverter<CometEvent>();
 
-  private AbstractDataHandler myDataHandler = null;
 
-  /**
-   * Default constructor. 
-   */
-  public CometServlet() {
-    myDataHandler = (AbstractDataHandler)getServletContext().getAttribute( "datahandler" );
+  public void init(){
+    getServletContext().setAttribute("EndPoints", myEndPoints);
   }
 
   /**
    * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
    */
-  protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    String theId = request.getParameter( "id" );
+  protected void doGet(HttpServletRequest aRequest, HttpServletResponse aResponse) throws ServletException, IOException {
+    String theId = aRequest.getParameter( "id" );
 
-    EndPoint theEndPoint = new EndPoint(theId);
     synchronized(theId){
-      if(myEndPoints.containsKey( theEndPoint.getId() )){
+      if(myEndPoints.containsKey( theId)){
         //there is already a request associated with this peer, unlock the other request and replace it with this one
-        myEndPoints.get(theEndPoint.getId()).setData( Responses.NO_DATA.name() );
+        myEndPoints.get(theId).setEvent(new CometEvent("-1", Responses.NO_DATA.name() ));
       }
-      myEndPoints.put( theEndPoint.getId(), theEndPoint);
+      myEndPoints.put( theId, new EndPoint(theId));
+    }
+    
+    EndPoint theEndPoint = myEndPoints.get(theId);
+    
+    if(aRequest.getParameterMap().containsKey("eventid")){
+      String theEventId = aRequest.getParameter("eventid");
+      String theEventOutput = aRequest.getParameter("eventoutput");
+      if(myCometEvents.containsKey(theEventId)){
+        myCometEvents.get(theEventId).setOutput(theEventOutput);
+      }
     }
 
     try {
-      if(request.getParameter( "data" )  != null){
-        String theResponse = myDataHandler.handleData( request.getParameter( "data") );
-        response.getWriter().println( theResponse );
-      } else {
-        response.getWriter().println( theEndPoint.getData() );
-      }
+      CometEvent theEvent = theEndPoint.getEvent();
+      myCometEvents.put(theEvent.getId(), theEvent);
+      aResponse.getWriter().println( myCometEventConverter.toString(theEvent) );
     } catch ( Exception e ) {
-      response.getWriter().println(Responses.NO_DATA.name());
+      aResponse.getWriter().println(myCometEventConverter.toString(new CometEvent("-1", Responses.NO_DATA.name())));
     }
   }
 
