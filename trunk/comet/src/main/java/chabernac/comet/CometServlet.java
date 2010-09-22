@@ -10,6 +10,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
+
 import chabernac.io.Base64ObjectStringConverter;
 import chabernac.io.iObjectStringConverter;
 
@@ -18,6 +20,7 @@ import chabernac.io.iObjectStringConverter;
  */
 public class CometServlet extends HttpServlet {
   private static final long serialVersionUID = 1L;
+  private static Logger LOGGER = Logger.getLogger(CometServlet.class);
 
   public static enum Responses{NO_DATA, OK};
 
@@ -35,12 +38,22 @@ public class CometServlet extends HttpServlet {
    * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
    */
   protected void doGet(HttpServletRequest aRequest, HttpServletResponse aResponse) throws ServletException, IOException {
+    if(aRequest.getAttribute("test") != null){
+      aResponse.getWriter().println( Responses.OK.name() );
+    }
+    
     String theId = aRequest.getParameter( "id" );
+    
+    if(theId == null) return;
 
     synchronized(theId){
       if(myEndPoints.containsKey( theId)){
         //there is already a request associated with this peer, unlock the other request and replace it with this one
-        myEndPoints.get(theId).setEvent(new CometEvent("-1", Responses.NO_DATA.name() ));
+        try {
+          myEndPoints.get(theId).setEvent(new CometEvent("-1", Responses.NO_DATA.name() ));
+        } catch (CometException e) {
+          LOGGER.error("Unable to send no data response to endpoint", e);
+        }
       }
       myEndPoints.put( theId, new EndPoint(theId));
     }
