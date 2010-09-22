@@ -6,6 +6,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -109,7 +111,22 @@ public class SocketPeerSender implements iPeerSender {
 
   @Override
   public String send(String aMessage, WebPeer aPeer, int aTimeout)throws IOException {
-    // TODO Auto-generated method stub
-    return null;
+    PeerMessage theMessage = new PeerMessage(aMessage, aPeer);
+    if(isKeepHistory) {
+      myHistory.add(theMessage);
+      notifyListeners(theMessage);
+    }
+    
+    URL theCometURL = new URL(aPeer.getURL(), "P2PServlet");
+    URLConnection theConnection = theCometURL.openConnection();
+    theConnection.setDoOutput(true);
+    OutputStreamWriter theWriter = new OutputStreamWriter(theConnection.getOutputStream());
+    theWriter.write(aMessage);
+    theWriter.flush();
+    
+    changeState(theMessage, State.SEND);
+    
+    BufferedReader theReader = new BufferedReader(new InputStreamReader(theConnection.getInputStream()));
+    return theReader.readLine();
   }
 }

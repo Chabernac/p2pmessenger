@@ -6,12 +6,24 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
-import com.sun.mail.handlers.message_rfc822;
+import org.apache.log4j.Logger;
+
+import chabernac.comet.CometEvent;
+import chabernac.comet.CometException;
+import chabernac.io.Base64ObjectStringConverter;
+import chabernac.io.iObjectStringConverter;
 
 public class WebPeer extends AbstractPeer {
+  private static Logger LOGGER = Logger.getLogger(WebPeer.class);
+
   private final URL myURL;
-  
+  private iObjectStringConverter< CometEvent > myObjectStringConverter = new Base64ObjectStringConverter< CometEvent >();
+
+  private ExecutorService myService = Executors.newCachedThreadPool();
+
   public WebPeer(URL anUrl) {
     super();
     myURL = anUrl;
@@ -29,7 +41,7 @@ public class WebPeer extends AbstractPeer {
 
     return getURL().equals(thePeer.getURL());
   }
-  
+
   public URL getURL() {
     return myURL;
   }
@@ -39,19 +51,67 @@ public class WebPeer extends AbstractPeer {
     return myURL != null;
   }
 
-  @Override
-  public String send(String aMessage) throws IOException {
-    URLConnection theConnection = myURL.openConnection();
+  public CometEvent waitForEvent() throws IOException{
+    URL theCometURL = new URL(myURL, "CometServlet");
+    URLConnection theConnection = theCometURL.openConnection();
     theConnection.setDoOutput(true);
     OutputStreamWriter theWriter = new OutputStreamWriter(theConnection.getOutputStream());
-    theWriter.write("id=" + getPeerId() + "data=" + aMessage);
+    theWriter.write("id=" + getPeerId());
     theWriter.flush();
     BufferedReader theReader = new BufferedReader(new InputStreamReader(theConnection.getInputStream()));
-    return theReader.readLine();
-  }
-  
-  public String waitForServerEvent() throws IOException{
-    return send(null);
+    String theEvent = theReader.readLine();
+    CometEvent theCometEvent = myObjectStringConverter.getObject( theEvent );
+    myService.execute( new CometEventResponseSender(theCometEvent) );
+    return theCometEvent;
   }
 
+  private boolean sendResponseForCometEvent( CometEvent anEvent ) throws IOException
+  {
+    try{
+      URL theCometURL = new URL(myURL, "CometServlet");
+      URLConnection theConnection = theCometURL.openConnection();
+      theConnection.setDoOutput(true);
+      OutputStreamWriter theWriter = new OutputStreamWriter(theConnection.getOutputStream());
+      theWriter.write("id=" + getPeerId() + "&eventid=" + anEvent.getId() + "&eventoutput=" + anEvent.getOutput( 0 ));
+      theWriter.flush();
+      BufferedReader theReader = new BufferedReader(new InputStreamReader(theConnection.getInputStream()));
+      String theResult = theReader.readLine();
+      return theResult.equalsIgnoreCase( "OK" );
+    }catch(CometException e){
+      throw new IOException("Could not send response for comet event", e);
+    }
+  }
+
+
+  @Override
+  public String send(String aMessage) throws IOException{
+    return send(aMessage, 5);
+  }
+
+  public String send(String aMessage, int aTimeoutInSeconds) throws IOException {
+    if(PeerSenderHolder.getPeerSender() == null) throw new IOException("Could not send message to peer '" + getPeerId() + " because no message sender was defined");
+
+    return PeerSenderHolder.getPeerSender().send(aMessage, this, aTimeoutInSeconds);
+  }
+
+
+  private class CometEventResponseSender implements Runnable{
+    private final CometEvent myEvent;
+
+    public CometEventResponseSender ( CometEvent anEvent ) {
+      super();
+      myEvent = anEvent;
+    }
+
+    @Override
+    public void run() {
+      try {
+        myEvent.getOutput( 5000 );
+        sendResponseForCometEvent(myEvent);
+      } catch ( Exception e ) {
+        LOGGER.error("No response for comet event", e);
+      }
+    }
+
+  }
 }

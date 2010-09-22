@@ -9,6 +9,7 @@ import java.util.concurrent.Executors;
 
 import org.apache.log4j.Logger;
 
+import chabernac.comet.CometEvent;
 import chabernac.io.Base64ObjectStringConverter;
 import chabernac.protocol.Protocol;
 import chabernac.protocol.ProtocolContainer;
@@ -19,15 +20,14 @@ public class WebPeerListener extends Protocol{
   public static final String ID = "WPL";
   
   public static enum Input{EVENT};
+  public static enum Response{UNKNOWN_COMMAND};
   
-  private final ProtocolContainer myContainer;
   private Map<WebPeer, WebPeerEventListener> myListeners = Collections.synchronizedMap(new HashMap<WebPeer, WebPeerEventListener>());
   private ExecutorService myWebPeerListenerService = Executors.newCachedThreadPool();
   private Base64ObjectStringConverter<Event> myEventConvert = new Base64ObjectStringConverter<Event>();
 
-  public WebPeerListener(ProtocolContainer anContainer) throws ProtocolException {
+  public WebPeerListener() throws ProtocolException {
     super(ID);
-    myContainer = anContainer;
     addRemoveWebPeerListeners();
     addListener();
   }
@@ -46,9 +46,14 @@ public class WebPeerListener extends Protocol{
     }
 
   }
+  
+  private ProtocolContainer getProtocolContainer(){
+    return (ProtocolContainer)getMasterProtocol();
+  }
 
   private RoutingTable getRoutingTable() throws ProtocolException{
-    RoutingProtocol theRoutingProtocol = (RoutingProtocol)myContainer.getProtocol(RoutingProtocol.ID);
+    ProtocolContainer theProtocolContainer = getProtocolContainer();
+    RoutingProtocol theRoutingProtocol = (RoutingProtocol)theProtocolContainer.getProtocol(RoutingProtocol.ID);
     return theRoutingProtocol.getRoutingTable();
   }
 
@@ -64,14 +69,9 @@ public class WebPeerListener extends Protocol{
   @Override
   public String handleCommand(long aSessionId, String anInput) {
     if(anInput.startsWith(Input.EVENT.name())){
-      String[] theEvent = anInput.substring(Input.EVENT.name().length()).split(" ");
-      String thePeerId = theEvent[0];
-      Event theEventObject = myEventConvert.getObject(theEvent[1]);
-      String theResponse = myContainer.handleCommand(aSessionId, theEventObject.getData());
-      Event theResponseEvent = new Event(theEventObject.getId(), theResponse);
-      WebPeer thePeer = (WebPeer)getRoutingTable().getEntryForPeer(thePeerId).getPeer();
-      return thePeer.send(myEventConvert.toString(theResponseEvent));
+      return getProtocolContainer().handleCommand(aSessionId, anInput);
     }
+    return Response.UNKNOWN_COMMAND.name();
   }
 
   @Override
@@ -121,8 +121,9 @@ public class WebPeerListener extends Protocol{
       myListeners.put(myWebPeer, this);
       try{
         while(!stop){
-          String theResult = myWebPeer.send(null);
-          handleCommand(-1, myWebPeer.getPeerId() +  " " + theResult);
+          CometEvent theEvent = myWebPeer.waitForEvent();
+          String theResult = handleCommand(-1, Input.EVENT.name() + " " + theEvent.getInput());
+          theEvent.setOutput( theResult );
         }
       }catch(IOException e){
         LOGGER.error("An error occured while waiting for event from webpeer '" + myWebPeer.getPeerId() + "'", e);
