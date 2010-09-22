@@ -20,27 +20,28 @@ import chabernac.tools.NetTools;
 
 public class SocketPeer extends AbstractPeer implements Serializable {
   private static final long serialVersionUID = 7852961137229337616L;
-  private String myPeerId;
   private List<String> myHost = null;
   private int myPort;
   private String myChannel = "default";
 
-  public SocketPeer (){}
+  public SocketPeer (){
+    super(null);
+  }
 
   public SocketPeer(String aPeerId, int aPort) throws NoAvailableNetworkAdapterException{
-    myPeerId = aPeerId;
+    super(aPeerId);
     myPort = aPort;
     detectLocalInterfaces();
   }
 
   public SocketPeer(String aPeerId, List<String> aHosts, int aPort){
-    myPeerId = aPeerId;
+    super(aPeerId);
     myHost = aHosts;
     myPort = aPort;
   }
 
   public SocketPeer(String aPeerId, String aHost, int aPort){
-    myPeerId = aPeerId;
+    super(aPeerId);
     if(myHost == null){
       myHost = new ArrayList<String>();
     }
@@ -49,8 +50,7 @@ public class SocketPeer extends AbstractPeer implements Serializable {
   }
 
   public SocketPeer (String anPeerId ) {
-    super();
-    myPeerId = anPeerId;
+    super(anPeerId);
   }
 
   public void detectLocalInterfaces() throws NoAvailableNetworkAdapterException{
@@ -77,31 +77,12 @@ public class SocketPeer extends AbstractPeer implements Serializable {
     myPort = anPort;
   }
 
-  public String getPeerId() {
-    return myPeerId;
-  }
-
-  public void setPeerId( String anPeerId ) {
-    myPeerId = anPeerId;
-  }
-
   public String getChannel() {
     return myChannel;
   }
 
   public void setChannel(String anChannel) {
     myChannel = anChannel;
-  }
-  
-  public boolean equals(Object anObject){
-    if(!(anObject instanceof SocketPeer)) return false;
-    SocketPeer thePeer = (SocketPeer)anObject;
-
-    return myPeerId.equals(thePeer.getPeerId());
-  }
-
-  public int hashCode(){
-    return myPeerId.hashCode();
   }
   
   public String send(String aMessage) throws IOException{

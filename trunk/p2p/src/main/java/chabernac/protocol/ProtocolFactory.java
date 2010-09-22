@@ -25,6 +25,7 @@ import chabernac.protocol.message.MultiPeerMessageProtocol;
 import chabernac.protocol.ping.PingProtocol;
 import chabernac.protocol.pipe.PipeProtocol;
 import chabernac.protocol.routing.RoutingProtocol;
+import chabernac.protocol.routing.WebPeerProtocol;
 import chabernac.protocol.userinfo.DefaultUserInfoProvider;
 import chabernac.protocol.userinfo.UserInfoProtocol;
 import chabernac.protocol.userinfo.iUserInfoProvider;
@@ -122,6 +123,10 @@ public class ProtocolFactory implements iProtocolFactory{
       InfoObject theInfoObject = new InfoObject();
       InfoExchangeProtocol<InfoObject> theProtocol = new InfoExchangeProtocol< InfoObject >(theInfoObject);
       return theProtocol;
+    }
+    
+    if(WebPeerProtocol.ID.equalsIgnoreCase( aProtocolId )) {
+      return new WebPeerProtocol();
     }
 
     throw new ProtocolException("The protocol with id '" + aProtocolId + "' is not known");

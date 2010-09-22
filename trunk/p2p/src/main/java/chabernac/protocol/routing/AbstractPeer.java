@@ -6,9 +6,6 @@ public abstract class AbstractPeer {
   private String myPeerId;
   private String myChannel;
   
-  public AbstractPeer(){
-  }
-  
   public AbstractPeer(String anPeerId) {
     super();
     myPeerId = anPeerId;
@@ -41,5 +38,16 @@ public abstract class AbstractPeer {
   public abstract boolean isValidEndPoint();
   
   public abstract String getEndPointRepresentation();
+  
+  public boolean equals(Object anObject){
+    if(!(anObject instanceof SocketPeer)) return false;
+    SocketPeer thePeer = (SocketPeer)anObject;
+
+    return myPeerId.equals(thePeer.getPeerId());
+  }
+
+  public int hashCode(){
+    return myPeerId.hashCode();
+  }
 
 }
