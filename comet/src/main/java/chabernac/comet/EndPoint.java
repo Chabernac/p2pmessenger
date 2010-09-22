@@ -20,11 +20,19 @@ public class EndPoint {
     return myId;
   }
   
-  public void setEvent(CometEvent anEvent){
-    myEventQueue.add(anEvent);
+  public void setEvent(CometEvent anEvent) throws CometException{
+    try {
+      myEventQueue.put(anEvent);
+    } catch (InterruptedException e) {
+      throw new CometException("Unable to store event", e);
+    }
   }
   
-  public CometEvent getEvent(){
-    return myEventQueue.poll();
+  public CometEvent getEvent() throws CometException{
+    try {
+      return myEventQueue.take();
+    } catch (InterruptedException e) {
+      throw new CometException("No event available", e);
+    }
   }
 }

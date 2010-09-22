@@ -19,11 +19,11 @@ public class CometEvent implements Serializable{
   public synchronized String getOutput(long aTimeout) throws CometException {
     if(myOutput == null){
       try {
-        wait();
+        wait(aTimeout);
       } catch (InterruptedException e) {
       }
     }
-    if(myOutput == null) throw new CometException("Endpoint does not respond");
+    if(myOutput == null) throw new CometException("No output available");
     return myOutput;
   }
   public synchronized void setOutput(String anOutput) {
