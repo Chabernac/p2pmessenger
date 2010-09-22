@@ -6,6 +6,9 @@ public abstract class AbstractPeer {
   private String myPeerId;
   private String myChannel;
   
+  public AbstractPeer() {
+  }
+  
   public AbstractPeer(String anPeerId) {
     super();
     myPeerId = anPeerId;
