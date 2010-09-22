@@ -57,7 +57,7 @@ public class PeerMessageTableModel implements TableModel, iSocketPeerSenderListe
     if(aColumn == 0) return theMessage.getState().name();
     if(aColumn == 1) {
       if(theMessage.getPeer().getPeerId() != null) return theMessage.getPeer().getPeerId();
-      else return theMessage.getPeer().getHosts() + ":" + theMessage.getPeer().getPort();
+      else return theMessage.getPeer().getEndPointRepresentation();
     }
     if(aColumn == 2) return theMessage.getMessage();
     if(aColumn == 3) return theMessage.getResult();
