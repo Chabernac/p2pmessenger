@@ -1,13 +1,12 @@
 package chabernac.protocol.routing;
 
 import java.io.IOException;
+import java.io.Serializable;
 
-public abstract class AbstractPeer {
+public abstract class AbstractPeer implements Serializable{
+  private static final long serialVersionUID = 4466216283560470711L;
   private String myPeerId;
   private String myChannel;
-  
-  public AbstractPeer() {
-  }
   
   public AbstractPeer(String anPeerId) {
     super();
