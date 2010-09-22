@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -30,7 +31,11 @@ public class CometServlet extends HttpServlet {
   private iObjectStringConverter<CometEvent> myCometEventConverter =  new Base64ObjectStringConverter<CometEvent>();
 
 
-  public void init(){
+  public CometServlet(){
+    getServletContext().setAttribute("EndPoints", myEndPoints);
+  }
+  
+  public void init(ServletConfig aConfig){
     getServletContext().setAttribute("EndPoints", myEndPoints);
   }
 
@@ -38,8 +43,8 @@ public class CometServlet extends HttpServlet {
    * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
    */
   protected void doGet(HttpServletRequest aRequest, HttpServletResponse aResponse) throws ServletException, IOException {
-    if(aRequest.getAttribute("test") != null){
-      aResponse.getWriter().println( Responses.OK.name() );
+    if(aRequest.getParameter("test") != null){
+      aResponse.getWriter().println( Responses.OK.name() + aRequest.getParameter("test") );
     }
     
     String theId = aRequest.getParameter( "id" );
