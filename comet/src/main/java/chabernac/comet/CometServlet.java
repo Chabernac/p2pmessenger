@@ -19,7 +19,7 @@ import chabernac.io.iObjectStringConverter;
 public class CometServlet extends HttpServlet {
   private static final long serialVersionUID = 1L;
 
-  public static enum Responses{NO_DATA};
+  public static enum Responses{NO_DATA, OK};
 
   private Map<String, EndPoint> myEndPoints = Collections.synchronizedMap( new HashMap<String, EndPoint>() );
   private Map<String, CometEvent> myCometEvents = Collections.synchronizedMap( new HashMap<String, CometEvent>() );
@@ -53,6 +53,7 @@ public class CometServlet extends HttpServlet {
       if(myCometEvents.containsKey(theEventId)){
         myCometEvents.get(theEventId).setOutput(theEventOutput);
       }
+      aResponse.getWriter().println( Responses.OK.name() );
     }
 
     try {
