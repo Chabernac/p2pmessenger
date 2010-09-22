@@ -5,7 +5,16 @@
 package chabernac.protocol;
 
 public class ServerInfo {
+  public static enum Type{WEB, SOCKET};
+  
+  private final Type myServerType;
+  
+  public ServerInfo(Type aServerType){
+    myServerType = aServerType;
+  }
+  
   private int myServerPort;
+  private String myServerURL;
 
   public int getServerPort() {
     return myServerPort;
@@ -13,5 +22,17 @@ public class ServerInfo {
 
   public void setServerPort( int anServerPort ) {
     myServerPort = anServerPort;
+  }
+
+  public Type getServerType() {
+    return myServerType;
+  }
+
+  public String getServerURL() {
+    return myServerURL;
+  }
+
+  public void setServerURL( String anServerURL ) {
+    myServerURL = anServerURL;
   }
 }

@@ -43,6 +43,7 @@ import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.RoutingTable;
 import chabernac.protocol.routing.RoutingTableEntry;
 import chabernac.protocol.routing.SocketPeer;
+import chabernac.protocol.routing.WebPeerProtocol;
 import chabernac.protocol.userinfo.UserInfo;
 import chabernac.protocol.userinfo.UserInfoProtocol;
 import chabernac.protocol.userinfo.iUserInfoListener;
@@ -538,6 +539,8 @@ public class P2PFacade {
       //retrieve the user info protocol
       //this way it is instantiated and listens for routing table changes and retrieves user info of the changed peers
       myContainer.getProtocol( VersionProtocol.ID );
+      
+//      myContainer.getProtocol( WebPeerProtocol.ID );
       
       iSocketPool<SocketProxy> theSocketPool = SocketPoolFactory.getSocketPool();
       if(theSocketPool instanceof CachingSocketPool){

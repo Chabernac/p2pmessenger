@@ -19,6 +19,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.log4j.Logger;
 
+import chabernac.protocol.ServerInfo.Type;
 import chabernac.tools.NetTools;
 import chabernac.util.concurrent.MonitorrableRunnable;
 import chabernac.util.concurrent.iRunnableListener;
@@ -34,7 +35,7 @@ public class ProtocolServer implements Runnable{
   private boolean isStarted = false;
   private ServerSocket myServerSocket = null;
   private boolean isFindUnusedPort = false;
-  private ServerInfo myServerInfo = new ServerInfo();
+  private ServerInfo myServerInfo = new ServerInfo(Type.SOCKET);
 
   private Object LOCK = new Object();
   private AtomicLong mySimultanousThreads = new AtomicLong();

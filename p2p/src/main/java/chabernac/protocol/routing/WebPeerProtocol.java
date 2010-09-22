@@ -15,9 +15,9 @@ import chabernac.protocol.Protocol;
 import chabernac.protocol.ProtocolContainer;
 import chabernac.protocol.ProtocolException;
 
-public class WebPeerListener extends Protocol{
+public class WebPeerProtocol extends Protocol{
   private static Logger LOGGER = Logger.getLogger(WebPeerEventListener.class);
-  public static final String ID = "WPL";
+  public static final String ID = "WPP";
   
   public static enum Input{EVENT};
   public static enum Response{UNKNOWN_COMMAND};
@@ -26,7 +26,7 @@ public class WebPeerListener extends Protocol{
   private ExecutorService myWebPeerListenerService = Executors.newCachedThreadPool();
   private Base64ObjectStringConverter<Event> myEventConvert = new Base64ObjectStringConverter<Event>();
 
-  public WebPeerListener() throws ProtocolException {
+  public WebPeerProtocol() throws ProtocolException {
     super(ID);
     addRemoveWebPeerListeners();
     addListener();

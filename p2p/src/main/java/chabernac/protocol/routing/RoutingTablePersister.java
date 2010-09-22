@@ -11,6 +11,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -30,18 +31,24 @@ public class RoutingTablePersister implements iObjectPersister<RoutingTable> {
 
     //read peers
     theReader.readLine();
-    Map<String, SocketPeer> thePeers = new HashMap< String, SocketPeer >();
+    Map<String, AbstractPeer> thePeers = new HashMap< String, AbstractPeer >();
     String theLine = null;
     while( !(theLine = theReader.readLine()).equals( "" )  ){
       String[] thePeerVars = theLine.split( ";" );
-      SocketPeer thePeer = new SocketPeer();
-      thePeer.setPeerId( thePeerVars[0]  );
-      thePeer.setPort( Integer.parseInt( thePeerVars[1] ) );
-      List<String> theHosts = new ArrayList< String >();
-      for(int i=2;i<thePeerVars.length;i++){
-        theHosts.add(thePeerVars[i]);
+      AbstractPeer thePeer = null;
+      if(thePeerVars.length == 2){
+        thePeer = new WebPeer(thePeerVars[0], new URL(thePeerVars[1]));
+      } else {
+        thePeer = new SocketPeer();
+        SocketPeer theSocketPeer = (SocketPeer)thePeer;
+        theSocketPeer.setPeerId( thePeerVars[0]  );
+        theSocketPeer.setPort( Integer.parseInt( thePeerVars[1] ) );
+        List<String> theHosts = new ArrayList< String >();
+        for(int i=2;i<thePeerVars.length;i++){
+          theHosts.add(thePeerVars[i]);
+        }
+        theSocketPeer.setHosts( theHosts );
       }
-      thePeer.setHosts( theHosts );
       thePeers.put( thePeer.getPeerId(), thePeer );
     }
 

@@ -7,12 +7,14 @@ package chabernac.protocol.routing;
 import java.awt.BorderLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.net.URL;
 import java.util.UUID;
 
 import javax.swing.JFrame;
 import javax.swing.JTabbedPane;
 
 import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Logger;
 
 import chabernac.io.CachingSocketPool;
 import chabernac.io.SocketPoolFactory;
@@ -33,7 +35,8 @@ import chabernac.util.concurrent.MonitorPanel;
 
 public class RoutingFrame extends JFrame {
   private static final long serialVersionUID = 6198311092838546976L;
-  
+  private static Logger LOGGER = Logger.getLogger(RoutingFrame.class);
+
   private ProtocolContainer myProtocolContainer = null;
   private ProtocolServer myProtocolServer = null;
   private boolean isStopOnClose;
@@ -44,6 +47,17 @@ public class RoutingFrame extends JFrame {
     this.isStopOnClose = isStopOnClose;
     addListeners();
     buildGUI();
+//    addWebPeer();
+  }
+
+  private void addWebPeer(){
+    try{
+      WebPeer theWebPeer = new WebPeer("", new URL("http://x22p0212:8080/p2pwebnode"));
+      RoutingTableEntry theEntry = new RoutingTableEntry(theWebPeer, 1, theWebPeer, System.currentTimeMillis());
+      getRoutingTable().addEntry( theEntry );
+    }catch(Exception e){
+      LOGGER.error("Unable to add web peer", e);
+    }
   }
 
   public void setVisible(boolean isVisible){
@@ -55,7 +69,7 @@ public class RoutingFrame extends JFrame {
       }
     }
   }
-  
+
   private void init() throws ProtocolException{
     setDefaultCloseOperation( JFrame.DISPOSE_ON_CLOSE);
     getRoutingTable().setKeepHistory(true);
@@ -71,7 +85,7 @@ public class RoutingFrame extends JFrame {
   private void buildGUI() throws ProtocolException {
     RoutingProtocol theRoutingProtocl = (RoutingProtocol)myProtocolContainer.getProtocol( RoutingProtocol.ID );
     setTitle( theRoutingProtocl.getLocalPeerId() );
-    
+
     JTabbedPane thePane = new JTabbedPane();
     thePane.add("Routing Table",  new RoutingPanel(theRoutingProtocl) );
     thePane.add("Sockets", new SocketPoolPanel() );
@@ -80,16 +94,16 @@ public class RoutingFrame extends JFrame {
     MonitorPanel theMonitorPanel = new MonitorPanel();
     myProtocolServer.setRunnableListener( theMonitorPanel );
     thePane.add("Threads", theMonitorPanel);
-    
+
     MessageProtocol theMessageProtocol = (MessageProtocol)myProtocolContainer.getProtocol( MessageProtocol.ID );
     thePane.add("Messages", new MessagePanel(theMessageProtocol));
     thePane.add("Protocol", new ProtocolMessagePanel(myProtocolContainer));
     thePane.add("PeerMessages", new PeerMessagePanel());
-    
+
 
     getContentPane().setLayout( new BorderLayout() );
     getContentPane().add( thePane, BorderLayout.CENTER );
-    
+
 
     setSize( 1200, 700 );
   }
@@ -121,7 +135,7 @@ public class RoutingFrame extends JFrame {
     }
   }
 
-  public static void main(String args[]) throws ProtocolException{
+  public static void main(String args[]) throws ProtocolException, InterruptedException{
     //    PropertyConfigurator.configure( "log4j.properties" );
     BasicConfigurator.configure();
     PropertyMap theProperties = new PropertyMap();
@@ -131,11 +145,20 @@ public class RoutingFrame extends JFrame {
     ProtocolFactory theFactory = new ProtocolFactory(theProperties);
     ProtocolContainer theContainer = new ProtocolContainer(theFactory);
     ProtocolServer theServer1 = new ProtocolServer(theContainer, RoutingProtocol.START_PORT, 20, true);
+    
     RoutingFrame theFrame = new RoutingFrame(theServer1, theContainer, true);
     theServer1.start();
+    
+    Thread.sleep( 2000 );
+    
+    theContainer.getProtocol( RoutingProtocol.ID );
+    theContainer.getProtocol( UserInfoProtocol.ID );
+//    theContainer.getProtocol( VersionProtocol.ID );
+//    theContainer.getProtocol( WebPeerProtocol.ID );
+    
     theFrame.setVisible( true );
-    
-    
+
+
     iSocketPool<SocketProxy> theSocketPool = SocketPoolFactory.getSocketPool();
     if(theSocketPool instanceof CachingSocketPool){
       ((CachingSocketPool)theSocketPool).setCleanUpTimeInSeconds( 30 );

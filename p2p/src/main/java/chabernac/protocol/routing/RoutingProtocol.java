@@ -14,8 +14,10 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
+import java.net.MalformedURLException;
 import java.net.MulticastSocket;
 import java.net.SocketException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -39,6 +41,7 @@ import chabernac.protocol.AlreadyRunningException;
 import chabernac.protocol.Protocol;
 import chabernac.protocol.ProtocolException;
 import chabernac.protocol.ServerInfo;
+import chabernac.protocol.ServerInfo.Type;
 import chabernac.tools.IOTools;
 import chabernac.tools.NetTools;
 import chabernac.tools.TestTools;
@@ -165,15 +168,28 @@ public class RoutingProtocol extends Protocol {
 
     //add the entry for the local peer based on the server info
     if(myServerInfo != null){
-      try{
-        SocketPeer theLocalPeer = new SocketPeer(getLocalPeerId(), myServerInfo.getServerPort());
-        theLocalPeer.setChannel(myChannel);
-        RoutingTableEntry theLocalRoutingTableEntry = new RoutingTableEntry(theLocalPeer, 0, theLocalPeer, System.currentTimeMillis());
-        myRoutingTable.addRoutingTableEntry( theLocalRoutingTableEntry );
-      }catch(NoAvailableNetworkAdapterException e){
-        //TODO we should do something when the network adapter becomes available again
-        LOGGER.error( "The local network adapter could not be located", e );
+      AbstractPeer theLocalPeer = null;
+      if(myServerInfo.getServerType() == Type.SOCKET){
+        try{
+          theLocalPeer = new SocketPeer(getLocalPeerId(), myServerInfo.getServerPort());
+        }catch(NoAvailableNetworkAdapterException e){
+          //TODO we should do something when the network adapter becomes available again
+          LOGGER.error( "The local network adapter could not be located", e );
+        }
+      } else if(myServerInfo.getServerType() == Type.WEB){
+        try {
+          theLocalPeer = new WebPeer(getLocalPeerId(), new URL(myServerInfo.getServerURL()));
+        } catch ( MalformedURLException e ) {
+          LOGGER.error( "The local url is invalid", e);
+        }
       }
+      if(theLocalPeer == null){
+        throw new ProtocolException("The local peer could not be created");
+      }
+      
+      theLocalPeer.setChannel(myChannel);
+      RoutingTableEntry theLocalRoutingTableEntry = new RoutingTableEntry(theLocalPeer, 0, theLocalPeer, System.currentTimeMillis());
+      myRoutingTable.addRoutingTableEntry( theLocalRoutingTableEntry );
     }
 
     if(myExchangeDelay > 0 ) scheduleRoutingTableExchange();

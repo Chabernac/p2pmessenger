@@ -24,8 +24,8 @@ public class WebPeer extends AbstractPeer {
 
   private ExecutorService myService = Executors.newCachedThreadPool();
 
-  public WebPeer(URL anUrl) {
-    super();
+  public WebPeer(String aPeerId, URL anUrl) {
+    super(aPeerId);
     myURL = anUrl;
   }
 
