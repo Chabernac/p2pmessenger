@@ -46,6 +46,10 @@ public class RoutingTableEntry implements Serializable{
 	}
 	
 	private void checkValidity(){
+	  if(myPeer == null) throw new RuntimeException("Peer can not be null");
+	  if(myGateway == null) throw new RuntimeException("Gateway can not be null");
+	  if(myPeer.getPeerId() == null) throw new RuntimeException("Peer id can not be null");
+    if(myGateway.getPeerId() == null) throw new RuntimeException("Gateway peer id can not be null");
 	  if(!myPeer.getPeerId().equals( myGateway.getPeerId() ) && myHopDistance == 1){
 	    //this is not possible in this case hop distance must be > 1
 	    throw new RuntimeException("Hop distance can not be 1 when a gateway different from the peer is present");
