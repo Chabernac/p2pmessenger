@@ -6,8 +6,8 @@ import java.util.concurrent.Executors;
 
 import junit.framework.TestCase;
 
-import org.eclipse.jetty.testing.HttpTester;
-import org.eclipse.jetty.testing.ServletTester;
+import org.mortbay.jetty.testing.HttpTester;
+import org.mortbay.jetty.testing.ServletTester;
 
 import chabernac.io.Base64ObjectStringConverter;
 import chabernac.io.iObjectStringConverter;
@@ -33,18 +33,35 @@ public class CometServletTest extends TestCase {
        try {
         HttpTester response = new HttpTester();
         response.parse(theServletTester.getResponses(theRequest));
-        assertEquals("200", response.getStatus());
+        assertEquals(200, response.getStatus());
         String theContent = response.getContent();
         CometEvent theEvent = theConverter.getObject(theContent);
         assertEquals("event1", theEvent.getId());
         assertEquals("input", theEvent.getInput());
+        
+        HttpTester theNewInput = new HttpTester();
+        theNewInput.setMethod("GET");
+        theNewInput.setHeader("Host","tester");
+        theNewInput.setURI("/context/servlet/comet?id=1&eventid=event1&eventoutput=output");
+        theNewInput.setVersion("HTTP/1.0");
+//        theNewInput.setContent( "");
+        String theNewReplyString = theServletTester.getResponses( theNewInput.generate() );
+        
+        
+        HttpTester theNewReply = new HttpTester();
+        theNewReply.parse( theNewReplyString );
+        assertEquals(200, response.getStatus());
+        theContent = response.getContent();
+        assertEquals( "OK", theContent);
+
+        
       } catch (Exception e) {
         fail("Should not have an exception");
       }
      }
    });
    
-   Thread.sleep(1000);
+   Thread.sleep(2000);
    
    Map<String, EndPoint> theEndPoints  = (Map<String, EndPoint>)theServletTester.getContext().getServletContext().getAttribute("EndPoints");
    assertEquals(1, theEndPoints.size());
@@ -52,9 +69,8 @@ public class CometServletTest extends TestCase {
    EndPoint theEndPoint = theEndPoints.get("1");
    assertNotNull(theEndPoint);
    
-   theEndPoint.setEvent(new CometEvent("event1", "input"));
-   
-   Thread.sleep(2000);
-
+   CometEvent theCometEvent = new CometEvent("event1", "input"); 
+   theEndPoint.setEvent(theCometEvent);
+   assertEquals( "output", theCometEvent.getOutput( 2000000 ));
   }
 }
