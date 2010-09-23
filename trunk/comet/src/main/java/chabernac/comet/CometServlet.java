@@ -30,13 +30,8 @@ public class CometServlet extends HttpServlet {
   
   private iObjectStringConverter<CometEvent> myCometEventConverter =  new Base64ObjectStringConverter<CometEvent>();
 
-
-  public CometServlet(){
-    getServletContext().setAttribute("EndPoints", myEndPoints);
-  }
-  
   public void init(ServletConfig aConfig){
-    getServletContext().setAttribute("EndPoints", myEndPoints);
+    aConfig.getServletContext().setAttribute("EndPoints", myEndPoints);
   }
 
   /**
