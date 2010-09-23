@@ -52,7 +52,7 @@ public class WebPeer extends AbstractPeer {
   }
 
   public CometEvent waitForEvent() throws IOException{
-    URL theCometURL = new URL(myURL, "CometServlet");
+    URL theCometURL = new URL(myURL, "p2p/comet");
     URLConnection theConnection = theCometURL.openConnection();
     theConnection.setDoOutput(true);
     OutputStreamWriter theWriter = new OutputStreamWriter(theConnection.getOutputStream());
@@ -68,7 +68,7 @@ public class WebPeer extends AbstractPeer {
   private boolean sendResponseForCometEvent( CometEvent anEvent ) throws IOException
   {
     try{
-      URL theCometURL = new URL(myURL, "CometServlet");
+      URL theCometURL = new URL(myURL, "p2p/comet");
       URLConnection theConnection = theCometURL.openConnection();
       theConnection.setDoOutput(true);
       OutputStreamWriter theWriter = new OutputStreamWriter(theConnection.getOutputStream());
