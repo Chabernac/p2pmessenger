@@ -413,7 +413,8 @@ public class NewMessageDialog5 extends JDialog implements iMessageDialog{
   private class NoDialogAction extends AbstractAction{
     public void actionPerformed(ActionEvent e) {
       myMediator.setShowDialog(false);
-      sendOrClose();
+      cancelPendingTasks();
+      setVisible( false );
     }
   }
 
