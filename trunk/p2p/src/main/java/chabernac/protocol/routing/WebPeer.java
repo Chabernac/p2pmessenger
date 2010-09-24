@@ -51,12 +51,12 @@ public class WebPeer extends AbstractPeer {
     return myURL != null;
   }
 
-  public CometEvent waitForEvent() throws IOException{
+  public CometEvent waitForEvent(String aLocalPeerId) throws IOException{
     URL theCometURL = new URL(myURL, "p2p/comet");
     URLConnection theConnection = theCometURL.openConnection();
     theConnection.setDoOutput(true);
     OutputStreamWriter theWriter = new OutputStreamWriter(theConnection.getOutputStream());
-    theWriter.write("id=" + getPeerId());
+    theWriter.write("id=" + aLocalPeerId);
     theWriter.flush();
     BufferedReader theReader = new BufferedReader(new InputStreamReader(theConnection.getInputStream()));
     String theEvent = theReader.readLine();

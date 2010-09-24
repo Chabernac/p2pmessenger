@@ -1,6 +1,5 @@
 package chabernac.protocol.routing;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -121,11 +120,11 @@ public class WebPeerProtocol extends Protocol{
       myListeners.put(myWebPeer, this);
       try{
         while(!stop){
-          CometEvent theEvent = myWebPeer.waitForEvent();
+          CometEvent theEvent = myWebPeer.waitForEvent(getRoutingTable().getLocalPeerId());
           String theResult = handleCommand(-1, Input.EVENT.name() + " " + theEvent.getInput());
           theEvent.setOutput( theResult );
         }
-      }catch(IOException e){
+      }catch(Exception e){
         LOGGER.error("An error occured while waiting for event from webpeer '" + myWebPeer.getPeerId() + "'", e);
       } finally {
         myListeners.remove(myWebPeer);
