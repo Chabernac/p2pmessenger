@@ -55,9 +55,13 @@ public class InfoExchangeProtocol<T extends Observable & Serializable> extends P
 
   private enum Command{PUT};
   private enum Response{OK, NOK, UNKNOWN_COMMAND};
-
+  
   public InfoExchangeProtocol ( T anInformationObject ) {
-    super( ID );
+    this(ID, anInformationObject);
+  }
+
+  public InfoExchangeProtocol ( String anId, T anInformationObject ) {
+    super( anId );
     myInformationObject = anInformationObject;
     myInformationObject.addObserver( myObserver );
   }
