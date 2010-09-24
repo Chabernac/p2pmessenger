@@ -11,7 +11,7 @@ public class ReplyAllCommand extends AbstractMediatorCommand {
 
   @Override
   public void execute() {
-    myMediator.selectReplyUsers();
+    myMediator.selectReplyAllUsers();
   }
 
 }

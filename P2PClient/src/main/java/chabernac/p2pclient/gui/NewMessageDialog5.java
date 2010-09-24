@@ -220,7 +220,7 @@ public class NewMessageDialog5 extends JDialog implements iMessageDialog{
               myRobot.mouseMove( thePoint.x + getWidth() - 50, thePoint.y + 30 );
               myRobot.mousePress( InputEvent.BUTTON1_MASK);
               myRobot.mouseRelease( InputEvent.BUTTON1_MASK);
-              isFirstTime = false;
+//              isFirstTime = false;
             }
           }catch(P2PFacadeException e){
             logger.error( "Error occured while setting message", e );
@@ -386,6 +386,7 @@ public class NewMessageDialog5 extends JDialog implements iMessageDialog{
     public void actionPerformed(ActionEvent e) {
       MultiPeerMessage theReplyMessage = myMessage.replyAll();
       myMediator.getUserSelectionProvider().setSelectedUsers( theReplyMessage.getDestinations() );
+      myMediator.getMessageProvider().setMessage( myReplyText.getText() );
       try {
         ApplicationLauncher.showChatFrame();
       } catch ( P2PFacadeException e1 ) {
@@ -399,7 +400,6 @@ public class NewMessageDialog5 extends JDialog implements iMessageDialog{
     public void actionPerformed(ActionEvent e) {
       //TODO implement clear
       super.actionPerformed(e);
-
     }
 
   }
