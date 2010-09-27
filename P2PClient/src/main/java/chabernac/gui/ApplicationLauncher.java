@@ -39,6 +39,7 @@ import chabernac.preference.ApplicationPreferences;
 import chabernac.protocol.iProtocolDelegate;
 import chabernac.protocol.facade.P2PFacade;
 import chabernac.protocol.facade.P2PFacadeException;
+import chabernac.protocol.routing.PeerSender;
 import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.RoutingTableEntry;
 import chabernac.protocol.userinfo.UserInfoException;
@@ -132,7 +133,7 @@ public class ApplicationLauncher {
 
   private static boolean activate(){
     try {
-      RoutingProtocol theRoutingProtocol = new RoutingProtocol(null, -1, true, null, false, "AXA");
+      RoutingProtocol theRoutingProtocol = new RoutingProtocol(null, -1, true, null, false, "AXA", new PeerSender());
       RoutingTableEntry theLocalEntry = theRoutingProtocol.getRoutingTable().getEntryForLocalPeer();
       return "ok".equals( theLocalEntry.getPeer().send( "APPactivate" ));
     } catch ( Exception e ) {
