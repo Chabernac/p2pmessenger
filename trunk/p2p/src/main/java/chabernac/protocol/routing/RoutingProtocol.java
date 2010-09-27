@@ -118,6 +118,8 @@ public class RoutingProtocol extends Protocol {
 
   private final iObjectStringConverter< RoutingTable > myRoutingTableConverter = new Base64ObjectStringConverter< RoutingTable >();
   private final iObjectStringConverter< RoutingTableEntry > myRoutingTableEntryConverter = new Base64ObjectStringConverter< RoutingTableEntry >();
+  
+  private final iPeerSender myPeerSender;
 
   /**
    * 
@@ -125,11 +127,18 @@ public class RoutingProtocol extends Protocol {
    * @param aRoutingTable
    * @param anExchangeDelay the delay in seconds between exchaning routing tables with other peers
    */
-  public RoutingProtocol ( String aLocalPeerId, long anExchangeDelay, boolean isPersistRoutingTable, DataSource aSuperNodesDataSource, boolean isStopWhenAlreadyRunning, String aChannel) throws ProtocolException{
+  public RoutingProtocol ( String aLocalPeerId, 
+                            long anExchangeDelay, 
+                            boolean isPersistRoutingTable, 
+                            DataSource aSuperNodesDataSource, 
+                            boolean isStopWhenAlreadyRunning, 
+                            String aChannel,
+                            iPeerSender aPeerSender) throws ProtocolException{
     super( ID );
     myLocalPeerId = aLocalPeerId;
     myExchangeDelay = anExchangeDelay;
     myChannel = aChannel;
+    myPeerSender = aPeerSender;
     this.isPersistRoutingTable = isPersistRoutingTable;
     this.isStopWhenAlreadyRunning = isStopWhenAlreadyRunning;
 
@@ -335,9 +344,10 @@ public class RoutingProtocol extends Protocol {
   boolean contactPeer(AbstractPeer aPeer, List<String> anUnreachablePeers){
     try{
       LOGGER.debug("Sending message to '" + aPeer.getEndPointRepresentation() );
+      aPeer.setPeerSender(myPeerSender);
       String[] theIdTimeChannel = aPeer.send( createMessage( Command.WHO_ARE_YOU.name() )).split( "@" );
 
-      if(!anUnreachablePeers.contains( theIdTimeChannel[0] )){
+      if(anUnreachablePeers == null || !anUnreachablePeers.contains( theIdTimeChannel[0] )){
         aPeer.setPeerId( theIdTimeChannel[0] );
         if(theIdTimeChannel.length >= 2) aPeer.setChannel(theIdTimeChannel[1]);
         RoutingTableEntry theEntry = new RoutingTableEntry(aPeer, 1, aPeer, System.currentTimeMillis());
@@ -359,6 +369,7 @@ public class RoutingProtocol extends Protocol {
       //      } catch ( UnknownHostException e1 ) {
       //        e1.printStackTrace();
       //      }
+      return false;
     }
     return false;
   }
@@ -452,7 +463,11 @@ public class RoutingProtocol extends Protocol {
     try{
       List<String> theIps = IOTools.loadStreamAsList( mySuperNodesDataSource.getInputStream() );
       for(String theIp : theIps){
-        myScannerService.execute( new ScanSystem(RoutingProtocol.this, theIp, START_PORT, myUnreachablePeers));
+        if(theIp.startsWith("http:")){
+          myScannerService.execute( new ScanWebSystem(RoutingProtocol.this, new URL(theIp)));
+        } else {
+          myScannerService.execute( new ScanSystem(RoutingProtocol.this, theIp, START_PORT, myUnreachablePeers));
+        }
       }
     }catch(IOException e){
       LOGGER.error("An error occured while scanning super nodes", e);
@@ -468,6 +483,7 @@ public class RoutingProtocol extends Protocol {
 
     for(RoutingTableEntry theEntry : myRoutingTable.getEntries()){
       AbstractPeer thePeer = theEntry.getPeer();
+      thePeer.setPeerSender(myPeerSender);
 
       //simulate that we can not contact this peer directly, but we can contact it trough a gateway
       //so check if hop distance = 1
@@ -479,7 +495,8 @@ public class RoutingProtocol extends Protocol {
             //simulate that we cannot contact the peer
             throw new Exception("Simulate that we can not contact peer: " + thePeer.getPeerId());
           }
-          String theTable = thePeer.send( createMessage( Command.ANNOUNCEMENT_WITH_REPLY.name() + " "  + myRoutingTableEntryConverter.toString( myRoutingTable.getEntryForLocalPeer() ))) ;
+          String theCMD = createMessage( Command.ANNOUNCEMENT_WITH_REPLY.name() + " "  + myRoutingTableEntryConverter.toString( myRoutingTable.getEntryForLocalPeer() ));
+          String theTable = thePeer.send( theCMD ) ;
           //          String theTable = thePeer.send( createMessage( Command.REQUEST_TABLE.name() ));
           RoutingTable theRemoteTable = myRoutingTableConverter.getObject( theTable );
 
@@ -539,6 +556,7 @@ public class RoutingProtocol extends Protocol {
 
     for(RoutingTableEntry theEntry : myRoutingTable.getEntries()){
       AbstractPeer thePeer = theEntry.getPeer();
+      thePeer.setPeerSender(myPeerSender);
 
       //do not send the entry to our selfs, we already have the entry
       if(!thePeer.getPeerId().equals( myRoutingTable.getLocalPeerId()) &&

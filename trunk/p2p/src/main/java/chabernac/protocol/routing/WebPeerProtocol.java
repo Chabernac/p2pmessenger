@@ -9,7 +9,7 @@ import java.util.concurrent.Executors;
 import org.apache.log4j.Logger;
 
 import chabernac.comet.CometEvent;
-import chabernac.io.Base64ObjectStringConverter;
+import chabernac.protocol.IProtocol;
 import chabernac.protocol.Protocol;
 import chabernac.protocol.ProtocolContainer;
 import chabernac.protocol.ProtocolException;
@@ -23,12 +23,9 @@ public class WebPeerProtocol extends Protocol{
   
   private Map<WebPeer, WebPeerEventListener> myListeners = Collections.synchronizedMap(new HashMap<WebPeer, WebPeerEventListener>());
   private ExecutorService myWebPeerListenerService = Executors.newCachedThreadPool();
-  private Base64ObjectStringConverter<Event> myEventConvert = new Base64ObjectStringConverter<Event>();
 
   public WebPeerProtocol() throws ProtocolException {
     super(ID);
-    addRemoveWebPeerListeners();
-    addListener();
   }
 
   private void addRemoveWebPeerListeners() throws ProtocolException {
@@ -46,14 +43,22 @@ public class WebPeerProtocol extends Protocol{
 
   }
   
+  public void setMasterProtocol(IProtocol aProtocol){
+    super.setMasterProtocol(aProtocol);
+    try {
+      addListener();
+      addRemoveWebPeerListeners();
+    } catch (ProtocolException e) {
+      LOGGER.error("Unable to add listener", e);
+    }
+  }
+  
   private ProtocolContainer getProtocolContainer(){
     return (ProtocolContainer)getMasterProtocol();
   }
-
-  private RoutingTable getRoutingTable() throws ProtocolException{
-    ProtocolContainer theProtocolContainer = getProtocolContainer();
-    RoutingProtocol theRoutingProtocol = (RoutingProtocol)theProtocolContainer.getProtocol(RoutingProtocol.ID);
-    return theRoutingProtocol.getRoutingTable();
+  
+  public RoutingTable getRoutingTable() throws ProtocolException{
+    return ((RoutingProtocol)findProtocolContainer().getProtocol( RoutingProtocol.ID )).getRoutingTable();
   }
 
   private void addListener() throws ProtocolException{
@@ -68,7 +73,8 @@ public class WebPeerProtocol extends Protocol{
   @Override
   public String handleCommand(long aSessionId, String anInput) {
     if(anInput.startsWith(Input.EVENT.name())){
-      return getProtocolContainer().handleCommand(aSessionId, anInput);
+      String theProtocolPart = anInput.substring(Input.EVENT.name().length() + 1);
+      return getProtocolContainer().handleCommand(aSessionId, theProtocolPart);
     }
     return Response.UNKNOWN_COMMAND.name();
   }

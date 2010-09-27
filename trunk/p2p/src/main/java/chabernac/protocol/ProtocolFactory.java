@@ -24,8 +24,10 @@ import chabernac.protocol.message.MessageProtocol;
 import chabernac.protocol.message.MultiPeerMessageProtocol;
 import chabernac.protocol.ping.PingProtocol;
 import chabernac.protocol.pipe.PipeProtocol;
+import chabernac.protocol.routing.PeerSender;
 import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.WebPeerProtocol;
+import chabernac.protocol.routing.iPeerSender;
 import chabernac.protocol.userinfo.DefaultUserInfoProvider;
 import chabernac.protocol.userinfo.UserInfoProtocol;
 import chabernac.protocol.userinfo.iUserInfoProvider;
@@ -59,7 +61,14 @@ public class ProtocolFactory implements iProtocolFactory{
       boolean isStopWhenAlreadyRunning = Boolean.parseBoolean(myProtocolProperties.getProperty( "routingprotocol.stopwhenalreadyrunning",  "false").toString());
       String thePeerId = myProtocolProperties.getProperty( "peerid", "" ).toString();
       DataSource theSuperNodesDataSource = (DataSource)myProtocolProperties.getProperty( "routingprotocol.supernodes", null);
-      return new RoutingProtocol(thePeerId, theExchangeDelay, isPersistRoutingTable, theSuperNodesDataSource, isStopWhenAlreadyRunning, myProtocolProperties.getProperty( "routingprotocol.channel",  "default").toString());
+      iPeerSender thePeerSender = (iPeerSender)myProtocolProperties.getProperty("routingprotocol.peersender", new PeerSender());
+      return new RoutingProtocol(thePeerId, 
+          theExchangeDelay, 
+          isPersistRoutingTable, 
+          theSuperNodesDataSource, 
+          isStopWhenAlreadyRunning, 
+          myProtocolProperties.getProperty( "routingprotocol.channel",  "default").toString(),
+          thePeerSender);
     }
     
     if(ApplicationProtocol.ID.equalsIgnoreCase( aProtocolId )) {
