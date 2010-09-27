@@ -8,11 +8,11 @@ import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
 
 public class PeerMessageTableModel implements TableModel, iSocketPeerSenderListener {
-  private final SocketPeerSender mySocketPeerSender;
+  private final PeerSender mySocketPeerSender;
   
   private List<TableModelListener> myTableModelListeners = new ArrayList<TableModelListener>();
   
-  public PeerMessageTableModel(SocketPeerSender anSocketPeerSender) {
+  public PeerMessageTableModel(PeerSender anSocketPeerSender) {
     super();
     mySocketPeerSender = anSocketPeerSender;
     mySocketPeerSender.addPeerSenderListener(this);

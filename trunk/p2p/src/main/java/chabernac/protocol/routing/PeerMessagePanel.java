@@ -21,7 +21,7 @@ public class PeerMessagePanel extends JPanel {
   
   private void buildGUI(){
     setLayout( new BorderLayout() );
-    SocketPeerSender theSender = (SocketPeerSender)PeerSenderHolder.getPeerSender();
+    PeerSender theSender = (PeerSender)PeerSenderHolder.getPeerSender();
     PeerMessageTableModel theModel = new PeerMessageTableModel(theSender);
     JTable theTable = new JTable(theModel);
     theTable.getColumnModel().getColumn( 0 ).setPreferredWidth( 10 );

@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit;
 import chabernac.io.SocketPoolFactory;
 import chabernac.protocol.routing.PeerMessage.State;
 
-public class SocketPeerSender implements iPeerSender {
+public class PeerSender implements iPeerSender {
   private boolean isKeepHistory = false;
   private List<PeerMessage> myHistory = new ArrayList<PeerMessage>();
   private List<iSocketPeerSenderListener> myPeerSenderListeners = new ArrayList<iSocketPeerSenderListener>();
@@ -117,11 +117,11 @@ public class SocketPeerSender implements iPeerSender {
       notifyListeners(theMessage);
     }
     
-    URL theCometURL = new URL(aPeer.getURL(), "P2PServlet");
+    URL theCometURL = new URL(aPeer.getURL(), "p2p/protocol");
     URLConnection theConnection = theCometURL.openConnection();
     theConnection.setDoOutput(true);
     OutputStreamWriter theWriter = new OutputStreamWriter(theConnection.getOutputStream());
-    theWriter.write(aMessage);
+    theWriter.write("session=-1&input=" + aMessage);
     theWriter.flush();
     
     changeState(theMessage, State.SEND);

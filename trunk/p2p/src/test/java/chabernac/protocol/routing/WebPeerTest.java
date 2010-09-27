@@ -28,6 +28,7 @@ public class WebPeerTest extends TestCase {
     try{
       Context root = new Context(theServer,"/p2p",Context.SESSIONS);
       root.addServlet(new ServletHolder(new CometServlet()), "/comet");
+      
       theServer.start();
 
       final WebPeer theWebPeer = new WebPeer("1", new URL("http://localhost:9090"));
