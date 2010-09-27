@@ -22,9 +22,9 @@ import chabernac.protocol.ServerInfo.Type;
 import chabernac.protocol.routing.PeerSenderHolder;
 import chabernac.tools.PropertyMap;
 
-public class P2PServlet extends HttpServlet {
+public class ProtocolServlet extends HttpServlet {
   private static final long serialVersionUID = -1872170586728725631L;
-  private static Logger LOGGER = Logger.getLogger(P2PServlet.class);
+  private static Logger LOGGER = Logger.getLogger(ProtocolServlet.class);
   private ProtocolContainer myProtocolContainer = null;
 
   public void init() throws ServletException{
@@ -55,5 +55,9 @@ public class P2PServlet extends HttpServlet {
     } catch ( IOException e ) {
       LOGGER.error( "could not send response message ", e );
     }
+  }
+  
+  public void doPost(HttpServletRequest aRequest, HttpServletResponse aResponse){
+    doGet(aRequest, aResponse);
   }
 }
