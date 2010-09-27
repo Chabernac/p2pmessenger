@@ -75,7 +75,7 @@ public class RoutingFrame extends JFrame {
     getRoutingTable().setKeepHistory(true);
     SocketProxy.setTraceEnabled(true);
     ((MessageProtocol)myProtocolContainer.getProtocol( MessageProtocol.ID )).setKeepHistory( true );
-    ((SocketPeerSender)PeerSenderHolder.getPeerSender()).setKeepHistory(true);
+    ((PeerSender)PeerSenderHolder.getPeerSender()).setKeepHistory(true);
   }
 
   private void addListeners(){
@@ -122,7 +122,7 @@ public class RoutingFrame extends JFrame {
       getRoutingTable().setKeepHistory(false);
       getRoutingTable().clearHistory();
       SocketProxy.setTraceEnabled(false);
-      ((SocketPeerSender)PeerSenderHolder.getPeerSender()).setKeepHistory(true);
+      ((PeerSender)PeerSenderHolder.getPeerSender()).setKeepHistory(true);
       try {
         ((MessageProtocol)myProtocolContainer.getProtocol( MessageProtocol.ID )).setKeepHistory( false );
       } catch ( ProtocolException e ) {

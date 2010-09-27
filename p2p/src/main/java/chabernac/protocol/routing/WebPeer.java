@@ -17,7 +17,9 @@ import chabernac.io.Base64ObjectStringConverter;
 import chabernac.io.iObjectStringConverter;
 
 public class WebPeer extends AbstractPeer {
+  private static final long serialVersionUID = -6488979114630311123L;
   private static Logger LOGGER = Logger.getLogger(WebPeer.class);
+  private iPeerSender myPeerSender = null;
 
   private final URL myURL;
   private iObjectStringConverter< CometEvent > myObjectStringConverter = new Base64ObjectStringConverter< CometEvent >();
@@ -82,6 +84,13 @@ public class WebPeer extends AbstractPeer {
     }
   }
 
+  public iPeerSender getPeerSender() {
+    return myPeerSender;
+  }
+
+  public void setPeerSender(iPeerSender anPeerSender) {
+    myPeerSender = anPeerSender;
+  }
 
   @Override
   public String send(String aMessage) throws IOException{
@@ -89,6 +98,7 @@ public class WebPeer extends AbstractPeer {
   }
 
   public String send(String aMessage, int aTimeoutInSeconds) throws IOException {
+    if(myPeerSender != null) return myPeerSender.send(aMessage, this, aTimeoutInSeconds);
     if(PeerSenderHolder.getPeerSender() == null) throw new IOException("Could not send message to peer '" + getPeerId() + " because no message sender was defined");
 
     return PeerSenderHolder.getPeerSender().send(aMessage, this, aTimeoutInSeconds);

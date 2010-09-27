@@ -22,7 +22,8 @@ public class SocketPeer extends AbstractPeer implements Serializable {
   private static final long serialVersionUID = 7852961137229337616L;
   private List<String> myHost = null;
   private int myPort;
-
+  private iPeerSender myPeerSender;
+  
   public SocketPeer (){
     super(null);
   }
@@ -81,6 +82,7 @@ public class SocketPeer extends AbstractPeer implements Serializable {
   }
 
   public String send(String aMessage, int aTimeoutInSeconds) throws IOException{
+    if(myPeerSender != null) return myPeerSender.send(aMessage, this, aTimeoutInSeconds);
     if(PeerSenderHolder.getPeerSender() == null) throw new IOException("Could not send message to peer '" + getPeerId() + " because no message sender was defined");
     
     return PeerSenderHolder.getPeerSender().send(aMessage, this, aTimeoutInSeconds);
@@ -153,4 +155,13 @@ public class SocketPeer extends AbstractPeer implements Serializable {
   public String getEndPointRepresentation() {
    return myHost + ":" + myPort;
   }
+
+  public iPeerSender getPeerSender() {
+    return myPeerSender;
+  }
+
+  public void setPeerSender(iPeerSender anPeerSender) {
+    myPeerSender = anPeerSender;
+  }
+  
 }

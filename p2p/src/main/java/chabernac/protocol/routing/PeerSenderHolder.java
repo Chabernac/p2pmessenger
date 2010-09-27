@@ -1,7 +1,7 @@
 package chabernac.protocol.routing;
 
 public class PeerSenderHolder {
-  private static iPeerSender myPeerSender = new SocketPeerSender();
+  private static iPeerSender myPeerSender = new PeerSender();
 
   public static iPeerSender getPeerSender() {
     return myPeerSender;
