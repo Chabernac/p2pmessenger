@@ -75,4 +75,7 @@ public class CometServlet extends HttpServlet {
     doGet( request, response );
   }
 
+  public Map<String, EndPoint> getEndPoints(){
+    return myEndPoints;
+  }
 }
