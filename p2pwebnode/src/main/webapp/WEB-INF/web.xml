@@ -14,14 +14,14 @@
   	<servlet-name>P2PServlet</servlet-name>
   	<display-name>P2PServlet</display-name>
   	<description></description>
-  	<servlet-class>chabernac.p2p.P2PServlet</servlet-class>
+  	<servlet-class>chabernac.p2p.web.ProtocolServlet</servlet-class>
   </servlet>
   <servlet-mapping>
   	<servlet-name>CometServlet</servlet-name>
-  	<url-pattern>/CometServlet</url-pattern>
+  	<url-pattern>/comet</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
-  	<servlet-name>P2PServlet</servlet-name>
-  	<url-pattern>/P2PServlet</url-pattern>
+  	<servlet-name>ProtocolServlet</servlet-name>
+  	<url-pattern>/protocol</url-pattern>
   </servlet-mapping>
 </web-app>
