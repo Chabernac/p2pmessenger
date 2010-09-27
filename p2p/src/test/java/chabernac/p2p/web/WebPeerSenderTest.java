@@ -1,8 +1,4 @@
-/**
- * Copyright (c) 2010 Axa Holding Belgium, SA. All rights reserved.
- * This software is the confidential and proprietary information of the AXA Group.
- */
-package chabernac.protocol.routing;
+package chabernac.p2p.web;
 
 import java.io.IOException;
 import java.net.URL;
@@ -14,28 +10,32 @@ import junit.framework.TestCase;
 
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.servlet.Context;
+import org.mortbay.jetty.servlet.ServletHolder;
 
 import chabernac.comet.CometEvent;
+import chabernac.comet.CometServlet;
 import chabernac.comet.EndPoint;
+import chabernac.p2p.web.WebPeerSender;
+import chabernac.protocol.routing.SocketPeer;
+import chabernac.protocol.routing.WebPeer;
 
-public class WebPeerTest extends TestCase {
-  public void testWebPeer() throws Exception{
+public class WebPeerSenderTest extends TestCase {
+  public void testWebPeerSender() throws Exception{
     Server theServer = new Server(9090);
     ExecutorService theService = Executors.newCachedThreadPool();
-
     try{
       Context root = new Context(theServer,"/p2p",Context.SESSIONS);
-      root.addServlet(Class.forName("chabernac.comet.CometServlet"), "/comet");
-      root.addServlet(Class.forName("chabernac.p2p.web.ProtocolServlet"), "/protocol");
-      
+      root.addServlet(new ServletHolder(new CometServlet()), "/comet");
       theServer.start();
 
       final WebPeer theWebPeer = new WebPeer("1", new URL("http://localhost:9090"));
       theService.execute( new Runnable(){
         public void run(){
           try {
-            CometEvent theEvent = theWebPeer.waitForEvent("2");
-            theEvent.setOutput( "output" );
+            while(true){
+              CometEvent theEvent = theWebPeer.waitForEvent("2");
+              theEvent.setOutput( "output" );
+            }
           } catch ( IOException e ) {
             e.printStackTrace();
           }
@@ -48,13 +48,12 @@ public class WebPeerTest extends TestCase {
       assertNotNull( theEndPoints );
       assertTrue( theEndPoints.containsKey( "2" ) );
 
-      EndPoint theEndPoint = theEndPoints.get("2");
-      CometEvent theServerToClientEvent = new CometEvent("event1", "input");
-      theEndPoint.setEvent( theServerToClientEvent );
-      assertEquals( "output", theServerToClientEvent.getOutput( 2000 ));
-      
-      theWebPeer.setPeerSender(new PeerSender());
-      assertEquals("123", theWebPeer.send("ECO123"));
+
+      WebPeerSender theSender = new WebPeerSender(theEndPoints);
+      SocketPeer theLocalPeer = new SocketPeer("2");
+      assertEquals("output", theSender.send("event1", theLocalPeer, 2000));
+      WebPeer theWebPeer2 = new WebPeer("2", null);
+      assertEquals("output", theSender.send("event1", theWebPeer2, 2000));
     }finally{
       theServer.stop();
       theService.shutdownNow();

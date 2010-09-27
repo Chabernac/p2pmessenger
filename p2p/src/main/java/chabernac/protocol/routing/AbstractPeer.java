@@ -7,6 +7,7 @@ public abstract class AbstractPeer implements Serializable{
   private static final long serialVersionUID = 4466216283560470711L;
   private String myPeerId;
   private String myChannel;
+  protected transient iPeerSender myPeerSender = new PeerSender();
   
   public AbstractPeer(String anPeerId) {
     super();
@@ -52,4 +53,11 @@ public abstract class AbstractPeer implements Serializable{
     return myPeerId.hashCode();
   }
 
+  public iPeerSender getPeerSender() {
+    return myPeerSender;
+  }
+
+  public void setPeerSender(iPeerSender anPeerSender) {
+    myPeerSender = anPeerSender;
+  }
 }

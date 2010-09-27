@@ -22,7 +22,6 @@ public class SocketPeer extends AbstractPeer implements Serializable {
   private static final long serialVersionUID = 7852961137229337616L;
   private List<String> myHost = null;
   private int myPort;
-  private iPeerSender myPeerSender;
   
   public SocketPeer (){
     super(null);
@@ -155,13 +154,4 @@ public class SocketPeer extends AbstractPeer implements Serializable {
   public String getEndPointRepresentation() {
    return myHost + ":" + myPort;
   }
-
-  public iPeerSender getPeerSender() {
-    return myPeerSender;
-  }
-
-  public void setPeerSender(iPeerSender anPeerSender) {
-    myPeerSender = anPeerSender;
-  }
-  
 }

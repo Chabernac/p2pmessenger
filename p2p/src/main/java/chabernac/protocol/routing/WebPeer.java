@@ -19,13 +19,16 @@ import chabernac.io.iObjectStringConverter;
 public class WebPeer extends AbstractPeer {
   private static final long serialVersionUID = -6488979114630311123L;
   private static Logger LOGGER = Logger.getLogger(WebPeer.class);
-  private iPeerSender myPeerSender = null;
 
   private final URL myURL;
-  private iObjectStringConverter< CometEvent > myObjectStringConverter = new Base64ObjectStringConverter< CometEvent >();
+  private transient iObjectStringConverter< CometEvent > myObjectStringConverter = new Base64ObjectStringConverter< CometEvent >();
 
-  private ExecutorService myService = Executors.newCachedThreadPool();
+  private transient ExecutorService myService = Executors.newCachedThreadPool();
 
+  public WebPeer(URL anUrl) {
+    this("", anUrl);
+  }
+  
   public WebPeer(String aPeerId, URL anUrl) {
     super(aPeerId);
     myURL = anUrl;
@@ -82,14 +85,6 @@ public class WebPeer extends AbstractPeer {
     }catch(CometException e){
       throw new IOException("Could not send response for comet event", e);
     }
-  }
-
-  public iPeerSender getPeerSender() {
-    return myPeerSender;
-  }
-
-  public void setPeerSender(iPeerSender anPeerSender) {
-    myPeerSender = anPeerSender;
   }
 
   @Override

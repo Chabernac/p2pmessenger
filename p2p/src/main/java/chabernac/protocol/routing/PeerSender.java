@@ -8,6 +8,7 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -121,7 +122,7 @@ public class PeerSender implements iPeerSender {
     URLConnection theConnection = theCometURL.openConnection();
     theConnection.setDoOutput(true);
     OutputStreamWriter theWriter = new OutputStreamWriter(theConnection.getOutputStream());
-    theWriter.write("session=-1&input=" + aMessage);
+    theWriter.write("session=-1&input=" + URLEncoder.encode(aMessage, "UTF-8"));
     theWriter.flush();
     
     changeState(theMessage, State.SEND);

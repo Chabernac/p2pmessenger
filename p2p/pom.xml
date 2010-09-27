@@ -142,12 +142,5 @@
 			<type>jar</type>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>chabernac</groupId>
-			<artifactId>p2pwebnode</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-			<type>war</type>
-			<scope>test</scope>
-		</dependency>
 	</dependencies>
 </project>

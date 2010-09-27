@@ -242,14 +242,14 @@ public class RoutingPanel extends JPanel {
     }
 
     @Override
-    public void scanStarted( SocketPeer aPeer ) {
+    public void scanStarted( AbstractPeer aPeer ) {
 //      myStringBuilder.append( "Scan started '" + aPeer.getHosts() + ":" + aPeer.getPort() + "\r\n" );
 //      myInfoArea.setText( myStringBuilder.toString() );
     }
 
     @Override
-    public void peerFoundWithScan( SocketPeer aPeer ) {
-      myStringBuilder.insert(0, "Peer found after scan '" + aPeer.getHosts() + ":" + aPeer.getPort() + "\r\n" );
+    public void peerFoundWithScan( AbstractPeer aPeer ) {
+      myStringBuilder.insert(0, "Peer found after scan '" + aPeer.getEndPointRepresentation());
       myInfoArea.setText( myStringBuilder.toString() );
     }
 
