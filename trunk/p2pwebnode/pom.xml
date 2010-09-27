@@ -22,25 +22,18 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>chabernac</groupId>
-			<artifactId>p2p</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-			<type>jar</type>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>chabernac</groupId>
-			<artifactId>comet</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-			<type>jar</type>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
 			<groupId>org.mortbay.jetty</groupId>
 			<artifactId>jetty-servlet-tester</artifactId>
 			<version>7.0.0.pre5</version>
 			<type>jar</type>
 			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>chabernac</groupId>
+			<artifactId>p2p</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+			<type>jar</type>
+			<scope>compile</scope>
 		</dependency>
 	</dependencies>
 	<build>
