@@ -77,6 +77,7 @@ public class ApplicationLauncher {
 
     addActivationListener();
 
+    myChatFrame = new ChatFrame(myFacade);
     if("true".equals(theInterPretser.getKeyValue( "visible" ))){
       showChatFrame();
     }
