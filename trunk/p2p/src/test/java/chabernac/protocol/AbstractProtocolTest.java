@@ -4,6 +4,8 @@
  */
 package chabernac.protocol;
 
+import javax.activation.DataSource;
+
 import junit.framework.TestCase;
 import chabernac.io.SocketPoolFactory;
 import chabernac.protocol.routing.PeerSender;
@@ -26,4 +28,17 @@ public abstract class AbstractProtocolTest extends TestCase {
     ProtocolFactory theFactory = new ProtocolFactory(theProperties);
     return new ProtocolContainer(theFactory);
   }
+  
+  public ProtocolContainer getProtocolContainer(long anExchangeDelay, boolean isPersist, String aPeerId, DataSource aSuperNodesDataSource){
+    PropertyMap theProperties = new PropertyMap();
+    theProperties.setProperty( "routingprotocol.exchangedelay", Long.toString( anExchangeDelay));
+    theProperties.setProperty("routingprotocol.persist", Boolean.toString( isPersist));
+    theProperties.setProperty("routingprotocol.peersender", new PeerSender());
+    theProperties.setProperty("routingprotocol.supernodes", aSuperNodesDataSource );
+    
+    if(aPeerId != null) theProperties.setProperty("peerid", aPeerId);
+    ProtocolFactory theFactory = new ProtocolFactory(theProperties);
+    return new ProtocolContainer(theFactory);
+  }
+
 }

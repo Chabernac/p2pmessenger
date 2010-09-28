@@ -15,7 +15,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import chabernac.protocol.ProtocolMessageEntry.Status;
-import chabernac.protocol.routing.WhoIsRunningTableModel.Entry.State;
 
 public class ProtocolContainer implements IProtocol {
   public static enum Command {PROTOCOLS};

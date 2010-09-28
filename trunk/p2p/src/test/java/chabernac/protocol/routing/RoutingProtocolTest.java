@@ -12,11 +12,17 @@ import java.util.Properties;
 
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
+import org.mortbay.jetty.Server;
+import org.mortbay.jetty.servlet.Context;
+import org.mortbay.jetty.servlet.ServletHolder;
 
+import chabernac.comet.CometServlet;
+import chabernac.p2p.web.ProtocolServlet;
 import chabernac.protocol.AbstractProtocolTest;
 import chabernac.protocol.ProtocolContainer;
 import chabernac.protocol.ProtocolException;
 import chabernac.protocol.ProtocolServer;
+import chabernac.tools.SuperNodesDataSource;
 
 public class RoutingProtocolTest extends AbstractProtocolTest {
   private static Logger LOGGER = Logger.getLogger(RoutingProtocolTest.class);
@@ -863,6 +869,56 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
         if(theServer1 != null) theServer1.stop();
         if(theServer2 != null) theServer2.stop();
       }
+    }
+    
+    public void testScanSuperNodes() throws Exception{
+      ProtocolContainer theProtocol1 = getProtocolContainer( -1, false, "1", new SuperNodesDataSource("localhost", "http://localhost:9090/") );
+      ProtocolServer theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT, 5);
+
+      ProtocolContainer theProtocol2 = getProtocolContainer( -1, false, "2", new SuperNodesDataSource("localhost", "http://localhost:9090/") );
+      ProtocolServer theServer2 = new ProtocolServer(theProtocol2, RoutingProtocol.START_PORT + 1, 5 );
       
+      RoutingProtocol theRoutingProtocol1 = (RoutingProtocol)theProtocol1.getProtocol( RoutingProtocol.ID );
+      RoutingTable theRoutingTable1 = theRoutingProtocol1.getRoutingTable();
+      RoutingProtocol theRoutingProtocol2 = (RoutingProtocol)theProtocol2.getProtocol( RoutingProtocol.ID );
+      RoutingTable theRoutingTable2 = theRoutingProtocol2.getRoutingTable();
+      
+      Server theWebServer = new Server(9090);
+
+      try{
+        assertTrue( theServer1.start() );
+
+        Context root = new Context(theWebServer,"/p2p",Context.SESSIONS);
+        CometServlet theCometServlet= new CometServlet();
+        ServletHolder theCometHolder = new ServletHolder(theCometServlet);
+        theCometHolder.setInitOrder(1);
+        root.addServlet(theCometHolder, "/comet");
+        ProtocolServlet theProtocolServlet = new ProtocolServlet();
+        ServletHolder theProtocolHolder = new ServletHolder(theProtocolServlet);
+        theProtocolHolder.setInitOrder(2);
+        root.addServlet(theProtocolHolder, "/protocol");
+
+        theWebServer.start();
+
+        theServer1.start();
+        theServer2.start();
+        Thread.sleep( 2000 );
+        
+        assertEquals( 1, theRoutingTable1.getEntries().size() );
+        assertEquals( 1, theRoutingTable2.getEntries().size() );
+        
+        theRoutingProtocol1.scanSuperNodes();
+        theRoutingProtocol2.scanSuperNodes();
+        
+        Thread.sleep( SLEEP_AFTER_SCAN );
+        //only 2 because the super node scan only scans at the start port and not at start port + 1
+        assertEquals( 2, theRoutingTable1.getEntries().size() );
+        assertEquals( 3, theRoutingTable2.getEntries().size() );
+        
+      } finally{
+        theServer1.stop();
+        theServer2.stop();
+        theWebServer.stop();
+      }
     }
 }

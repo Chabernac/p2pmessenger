@@ -540,7 +540,7 @@ public class P2PFacade {
       //this way it is instantiated and listens for routing table changes and retrieves user info of the changed peers
       myContainer.getProtocol( VersionProtocol.ID );
       
-//      myContainer.getProtocol( WebPeerProtocol.ID );
+      myContainer.getProtocol( WebPeerProtocol.ID );
       
       iSocketPool<SocketProxy> theSocketPool = SocketPoolFactory.getSocketPool();
       if(theSocketPool instanceof CachingSocketPool){

@@ -31,6 +31,7 @@ import chabernac.protocol.message.MessageProtocol;
 import chabernac.protocol.userinfo.UserInfoPanel;
 import chabernac.protocol.userinfo.UserInfoProtocol;
 import chabernac.tools.PropertyMap;
+import chabernac.tools.SuperNodesDataSource;
 import chabernac.util.concurrent.MonitorPanel;
 
 public class RoutingFrame extends JFrame {
@@ -142,6 +143,15 @@ public class RoutingFrame extends JFrame {
     theProperties.setProperty( "routingprotocol.exchangedelay", "60");
     theProperties.setProperty("routingprotocol.persist", "true");
     theProperties.setProperty("peerid", UUID.randomUUID().toString());
+    theProperties.setProperty( "routingprotocol.supernodes", new SuperNodesDataSource("10.240.221.37"
+                                                                                      ,"10.240.222.204"
+                                                                                      ,"10.240.220.190"
+                                                                                      ,"10.240.223.56"
+                                                                                      ,"10.240.223.46"
+                                                                                      ,"10.240.222.101"
+                                                                                      ,"10.240.221.112"
+                                                                                      ,"10.240.221.73"
+                                                                                      ,"http://x22p0212:8080") );
     ProtocolFactory theFactory = new ProtocolFactory(theProperties);
     ProtocolContainer theContainer = new ProtocolContainer(theFactory);
     ProtocolServer theServer1 = new ProtocolServer(theContainer, RoutingProtocol.START_PORT, 20, true);
