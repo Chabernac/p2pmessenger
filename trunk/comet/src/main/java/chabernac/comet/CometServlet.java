@@ -56,12 +56,11 @@ public class CometServlet extends HttpServlet {
           myCometEvents.get(theEventId).setOutput(theEventOutput);
         }
         aResponse.getWriter().println( Responses.OK.name() );
+      } else {
+        CometEvent theEvent = theEndPoint.getEvent();
+        myCometEvents.put(theEvent.getId(), theEvent);
+        aResponse.getWriter().println( myCometEventConverter.toString(theEvent) );
       }
-
-
-      CometEvent theEvent = theEndPoint.getEvent();
-      myCometEvents.put(theEvent.getId(), theEvent);
-      aResponse.getWriter().println( myCometEventConverter.toString(theEvent) );
     } catch ( Exception e ) {
       aResponse.getWriter().println(myCometEventConverter.toString(new CometEvent("-1", Responses.NO_DATA.name())));
     } 
