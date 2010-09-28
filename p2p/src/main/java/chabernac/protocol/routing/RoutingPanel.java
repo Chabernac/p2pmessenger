@@ -249,7 +249,7 @@ public class RoutingPanel extends JPanel {
 
     @Override
     public void peerFoundWithScan( AbstractPeer aPeer ) {
-      myStringBuilder.insert(0, "Peer found after scan '" + aPeer.getEndPointRepresentation());
+      myStringBuilder.insert(0, "Peer found after scan '" + aPeer.getEndPointRepresentation() + "\r\n");
       myInfoArea.setText( myStringBuilder.toString() );
     }
 

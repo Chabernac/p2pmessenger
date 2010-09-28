@@ -25,6 +25,10 @@ public class WebPeer extends AbstractPeer {
 
   private transient ExecutorService myService = Executors.newCachedThreadPool();
 
+  public WebPeer(){
+    this(null);
+  }
+  
   public WebPeer(URL anUrl) {
     this("", anUrl);
   }
@@ -98,6 +102,17 @@ public class WebPeer extends AbstractPeer {
 
     return PeerSenderHolder.getPeerSender().send(aMessage, this, aTimeoutInSeconds);
   }
+  
+  public String toString(){
+    StringBuilder theBuilder = new StringBuilder();
+    theBuilder.append( getPeerId() );
+    theBuilder.append("@");
+    theBuilder.append(getChannel());
+    theBuilder.append( " (" );
+    theBuilder.append( myURL.toString() );
+    theBuilder.append( ")" );
+    return theBuilder.toString();
+  }
 
 
   private class CometEventResponseSender implements Runnable{
@@ -117,6 +132,5 @@ public class WebPeer extends AbstractPeer {
         LOGGER.error("No response for comet event", e);
       }
     }
-
   }
 }

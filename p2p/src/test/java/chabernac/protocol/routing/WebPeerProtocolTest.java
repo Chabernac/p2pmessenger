@@ -94,12 +94,13 @@ public class WebPeerProtocolTest extends AbstractProtocolTest {
       MessageCollector theCollector = new MessageCollector();
       theMessageProtocol2.addMessageListener(theCollector);
       
-      int times=100;
+      int times=1000;
       for(int i=0;i<times;i++){
        Message theMessage = new Message();
        theMessage.setDestination(theRoutingProtocol1.getRoutingTable().getEntryForPeer("2").getPeer());
        theMessage.setMessage("message " + i);
        theMessageProtocol1.sendMessage(theMessage);
+       System.out.println("Message " + i + " successfull");
       }
       
       assertEquals(times, theCollector.getMessages().size());

@@ -5,15 +5,17 @@
 package chabernac.tools;
 
 import java.io.IOException;
+import java.net.URL;
 
+import junit.framework.TestCase;
 import chabernac.io.Base64ObjectStringConverter;
 import chabernac.io.iObjectStringConverter;
 import chabernac.protocol.message.Message;
-import chabernac.protocol.routing.SocketPeer;
 import chabernac.protocol.routing.RoutingTable;
 import chabernac.protocol.routing.RoutingTableEntry;
+import chabernac.protocol.routing.SocketPeer;
 import chabernac.protocol.routing.UnknownPeerException;
-import junit.framework.TestCase;
+import chabernac.protocol.routing.WebPeer;
 
 public class ConverterTest extends TestCase {
   private iObjectStringConverter<RoutingTable> myRoutingTableConverter = new Base64ObjectStringConverter<RoutingTable>();
@@ -32,10 +34,16 @@ public class ConverterTest extends TestCase {
 
     SocketPeer thePeer3 = new SocketPeer("4", "x01p0880", 1003);
     RoutingTableEntry theEntry3 = new RoutingTableEntry(thePeer3, 1, thePeer3, 654321);
+    
+    WebPeer thePeer4 = new WebPeer("5", new URL("http://localhost:8080"));
+    thePeer4.setChannel( "peer4" );
+    RoutingTableEntry theEntry4 = new RoutingTableEntry(thePeer4, 1, thePeer4, 654321);
+    long theLastOnlineTime5 = theEntry4.getLastOnlineTime();
 
     theTable.addRoutingTableEntry( theEntry );
     theTable.addRoutingTableEntry( theEntry2 );
     theTable.addRoutingTableEntry( theEntry3 );
+    theTable.addRoutingTableEntry( theEntry4 );
 
     long theLastOnlineTime4 = theEntry3.getLastOnlineTime();
     theEntry3 = theEntry3.derivedEntry( RoutingTableEntry.MAX_HOP_DISTANCE );
@@ -43,7 +51,7 @@ public class ConverterTest extends TestCase {
 
     RoutingTable theTable2 = myRoutingTableConverter.getObject(myRoutingTableConverter.toString(theTable ));
 
-    assertEquals(3, theTable2.getEntries().size());
+    assertEquals(4, theTable2.getEntries().size());
 
     assertEquals("x20d1148", ((SocketPeer)theTable2.getEntryForPeer( "2" ).getPeer()).getHosts().get( 0 ));
     assertEquals(1002, ((SocketPeer)theTable2.getEntryForPeer( "2" ).getPeer()).getPort());
@@ -62,6 +70,12 @@ public class ConverterTest extends TestCase {
     assertEquals("4", theTable2.getEntryForPeer( "4" ).getPeer().getPeerId());
     assertEquals(theLastOnlineTime4, theTable2.getEntryForPeer( "4" ).getLastOnlineTime());
     assertEquals(RoutingTableEntry.MAX_HOP_DISTANCE, theTable2.getEntryForPeer( "4" ).getHopDistance());
+    
+    assertEquals("5", theTable2.getEntryForPeer( "5" ).getPeer().getPeerId());
+    assertEquals(theLastOnlineTime5, theTable2.getEntryForPeer( "4" ).getLastOnlineTime());
+    assertEquals(1, theTable2.getEntryForPeer( "5" ).getHopDistance());
+    assertEquals("peer4", theTable2.getEntryForPeer( "5" ).getPeer().getChannel());
+    assertEquals("http://localhost:8080", ((WebPeer)theTable2.getEntryForPeer( "5" ).getPeer()).getURL().toString());
 
   }
 
