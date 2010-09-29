@@ -9,7 +9,7 @@ goto :eof
 :COPY_EAR
 if "" == "%JBOSS_HOME%" goto :no_jboss_home
 @echo on
-copy target\p2pwebnode.war "%JBOSS_HOME%\server\default\deploy"
+copy p2pwebnode_ear\target\p2pwebnode.ear "%JBOSS_HOME%\server\default\deploy"
 @echo off
 goto :eof
 
