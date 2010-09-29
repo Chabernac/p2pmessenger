@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -18,7 +19,7 @@ import chabernac.protocol.ProtocolMessageEntry.Status;
 
 public class ProtocolContainer implements IProtocol {
   public static enum Command {PROTOCOLS};
-  public static enum Response {UNKNOWN_COMMAND, UNKNOWN_PROTOCOL, INVALID_PROTOCOL};
+  public static enum Response {UNKNOWN_COMMAND, UNKNOWN_PROTOCOL, INVALID_PROTOCOL, NOT_SUPPORTED};
   
   private Map<String, IProtocol> myProtocolMap = null;
   private List< ProtocolMessageEntry > myMessageHistory = Collections.synchronizedList( new ArrayList< ProtocolMessageEntry >() );
@@ -27,9 +28,16 @@ public class ProtocolContainer implements IProtocol {
   private iProtocolFactory myProtocolFactory = null;
   private ServerInfo myServerInfo = null;
   
+  private final Set<String> mySupportedProtocols;
+  
   public ProtocolContainer(iProtocolFactory aProtocolFactory){
+    this(aProtocolFactory, null);
+  }
+  
+  public ProtocolContainer(iProtocolFactory aProtocolFactory, Set< String > aSupportedProtocols){
     addProtocol( this );
     myProtocolFactory = aProtocolFactory;
+    mySupportedProtocols = aSupportedProtocols;
   }
 
   @Override
@@ -43,6 +51,7 @@ public class ProtocolContainer implements IProtocol {
       return Response.INVALID_PROTOCOL.name();
     }
     String theID = anInput.substring( 0, 3 );
+    
     IProtocol theProtocol;
     try {
       theProtocol = getProtocol( theID );
@@ -121,12 +130,18 @@ public class ProtocolContainer implements IProtocol {
   }
   
   public synchronized IProtocol getProtocol(String anId) throws ProtocolException{
+    if(mySupportedProtocols != null && 
+        mySupportedProtocols.size() > 0 &&
+        !mySupportedProtocols.contains( anId )){
+       throw new ProtocolException("The protocol with id '" + anId + "' is not supported on this peer");
+     }
+    
     if(!myProtocolMap.containsKey( anId )){
       IProtocol theProtocol = myProtocolFactory.createProtocol( anId );
+      addProtocol( theProtocol );
       if(myServerInfo != null){
         theProtocol.setServerInfo( myServerInfo );
       }
-      addProtocol( theProtocol );
     }
     IProtocol theProtocol = myProtocolMap.get( anId );
     
@@ -154,5 +169,9 @@ public class ProtocolContainer implements IProtocol {
   
   public List<ProtocolMessageEntry> getMessageHistory() {
     return Collections.unmodifiableList(myMessageHistory);
+  }
+
+  public Set< String > getSupportedProtocols() {
+    return mySupportedProtocols;
   }
 }

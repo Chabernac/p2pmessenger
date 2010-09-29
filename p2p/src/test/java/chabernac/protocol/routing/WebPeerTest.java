@@ -17,6 +17,8 @@ import org.mortbay.jetty.servlet.Context;
 
 import chabernac.comet.CometEvent;
 import chabernac.comet.EndPoint;
+import chabernac.protocol.echo.EchoProtocol;
+import chabernac.protocol.userinfo.UserInfoProtocol;
 
 public class WebPeerTest extends TestCase {
   public void testWebPeer() throws Exception{
@@ -59,5 +61,43 @@ public class WebPeerTest extends TestCase {
       theServer.stop();
       theService.shutdownNow();
     }
+  }
+  
+  public void testSupportedProtocols() throws IOException{
+    WebPeer theWebPeer = new WebPeer(  );
+    theWebPeer.setPeerSender( new MyPeerSender() );
+    assertTrue( theWebPeer.isProtocolSupported( EchoProtocol.ID ) );
+    assertTrue( theWebPeer.isProtocolSupported( UserInfoProtocol.ID ) );
+    assertTrue( theWebPeer.isProtocolSupported( RoutingProtocol.ID ) );
+    assertTrue( theWebPeer.isProtocolSupported( WebPeerProtocol.ID ) );
+    
+    theWebPeer.addSupportedProtocol( EchoProtocol.ID );
+    
+    assertTrue( theWebPeer.isProtocolSupported( EchoProtocol.ID ) );
+    assertFalse( theWebPeer.isProtocolSupported( UserInfoProtocol.ID ) );
+    assertFalse( theWebPeer.isProtocolSupported( RoutingProtocol.ID ) );
+    assertFalse( theWebPeer.isProtocolSupported( WebPeerProtocol.ID ) );
+    
+    
+    theWebPeer.send( "ECO123" );
+    try{
+      theWebPeer.send( "ROU123" );
+      fail("We should not get here");
+    }catch(Exception e){
+    }
+  }
+  
+  private class MyPeerSender implements iPeerSender{
+
+    @Override
+    public String send( String aMessage, SocketPeer aPeer, int aTimeout ) throws IOException {
+      return null;
+    }
+
+    @Override
+    public String send( String aMessage, WebPeer aPeer, int aTimeout ) throws IOException {
+      return null;
+    }
+    
   }
 }

@@ -107,6 +107,7 @@ public class WebPeerProtocolTest extends AbstractProtocolTest {
       
     } finally{
       theServer1.stop();
+      theServer2.stop();
       theWebServer.stop();
     }
   }

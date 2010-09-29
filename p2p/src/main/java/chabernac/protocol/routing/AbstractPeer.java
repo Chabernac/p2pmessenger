@@ -2,19 +2,29 @@ package chabernac.protocol.routing;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 public abstract class AbstractPeer implements Serializable{
   private static final long serialVersionUID = 4466216283560470711L;
   private String myPeerId;
   private String myChannel;
   protected transient iPeerSender myPeerSender = new PeerSender();
+  private Set<String> mySupportedProtocols = new HashSet< String >();
   
   public AbstractPeer(String anPeerId) {
     super();
     myPeerId = anPeerId;
   }
 
-  public abstract String send(String aMessage) throws IOException;
+  public final String send(String aMessage) throws IOException{
+    if(aMessage.length() < 3) throw new IOException("Can not send message which has no protocol");
+    String theProtocol = aMessage.substring( 0, 3 );
+    if(!isProtocolSupported( theProtocol )) throw new IOException("The protocol '" + theProtocol + "' is not supported by peer '" + myPeerId + "'");
+    return sendMessage(aMessage);
+  }
+  
+  protected abstract String sendMessage(String aMessage) throws IOException;
 
   public String getPeerId() {
     return myPeerId;
@@ -59,5 +69,15 @@ public abstract class AbstractPeer implements Serializable{
 
   public void setPeerSender(iPeerSender anPeerSender) {
     myPeerSender = anPeerSender;
+  }
+  
+  public void addSupportedProtocol(String aProtocolId){
+    mySupportedProtocols.add(aProtocolId);
+  }
+  
+  public boolean isProtocolSupported(String aProtocolId){
+    //if the list is empty we support all protocols for backward compatibility
+    if(mySupportedProtocols == null || mySupportedProtocols.size() == 0) return true;
+    return mySupportedProtocols.contains( aProtocolId );
   }
 }
