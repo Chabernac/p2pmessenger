@@ -196,7 +196,14 @@ public class RoutingProtocol extends Protocol {
         throw new ProtocolException("The local peer could not be created");
       }
       
+      if(findProtocolContainer().getSupportedProtocols() != null){
+        for(String theProtocol : findProtocolContainer().getSupportedProtocols()){
+          theLocalPeer.addSupportedProtocol( theProtocol );
+        }
+      }
+      
       theLocalPeer.setChannel(myChannel);
+      
       RoutingTableEntry theLocalRoutingTableEntry = new RoutingTableEntry(theLocalPeer, 0, theLocalPeer, System.currentTimeMillis());
       myRoutingTable.addRoutingTableEntry( theLocalRoutingTableEntry );
     }

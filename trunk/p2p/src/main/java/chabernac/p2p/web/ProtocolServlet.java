@@ -5,7 +5,9 @@
 package chabernac.p2p.web;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -19,6 +21,9 @@ import chabernac.protocol.ProtocolContainer;
 import chabernac.protocol.ProtocolFactory;
 import chabernac.protocol.ServerInfo;
 import chabernac.protocol.ServerInfo.Type;
+import chabernac.protocol.echo.EchoProtocol;
+import chabernac.protocol.message.MessageProtocol;
+import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.tools.PropertyMap;
 
 public class ProtocolServlet extends HttpServlet {
@@ -32,7 +37,13 @@ public class ProtocolServlet extends HttpServlet {
       thePropertyMap.setProperty("routingprotocol.exchangedelay", "-1");
       thePropertyMap.setProperty("routingprotocol.persist", "false");
       thePropertyMap.setProperty("routingprotocol.peersender", new WebPeerSender((Map<String, EndPoint>)getServletContext().getAttribute( "EndPoints" )));
-      myProtocolContainer = new ProtocolContainer(new ProtocolFactory(thePropertyMap));
+      
+      Set<String> theSupportedProtocols = new HashSet< String >();
+      theSupportedProtocols.add( RoutingProtocol.ID );
+      theSupportedProtocols.add( MessageProtocol.ID );
+      theSupportedProtocols.add( EchoProtocol.ID );
+      
+      myProtocolContainer = new ProtocolContainer(new ProtocolFactory(thePropertyMap), theSupportedProtocols);
 
       ServerInfo theServerInfo = new ServerInfo(Type.WEB);
       //TODO retrieve from servlet parameter

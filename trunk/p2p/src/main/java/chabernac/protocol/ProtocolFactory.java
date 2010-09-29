@@ -68,7 +68,7 @@ public class ProtocolFactory implements iProtocolFactory{
           theSuperNodesDataSource, 
           isStopWhenAlreadyRunning, 
           myProtocolProperties.getProperty( "routingprotocol.channel",  "default").toString(),
-          thePeerSender);
+          thePeerSender); 
     }
     
     if(ApplicationProtocol.ID.equalsIgnoreCase( aProtocolId )) {
