@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>chabernac</groupId>
 	<artifactId>p2pwebnode</artifactId>
-	<packaging>war</packaging>
+	<packaging>pom</packaging>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>p2pwebnode Maven Webapp</name>
 	<url>http://maven.apache.org</url>
@@ -49,4 +49,8 @@
 			</plugin>
 		</plugins>
 	</build>
+	<modules>
+		<module>p2pwebnode_ear</module>
+		<module>p2pwebnode_war</module>
+	</modules>
 </project>
