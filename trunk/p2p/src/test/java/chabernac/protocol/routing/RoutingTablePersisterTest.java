@@ -8,17 +8,23 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.BasicConfigurator;
+
 import junit.framework.TestCase;
 import chabernac.io.iObjectPersister;
-import chabernac.protocol.routing.SocketPeer;
-import chabernac.protocol.routing.RoutingTable;
-import chabernac.protocol.routing.RoutingTableEntry;
-import chabernac.protocol.routing.RoutingTablePersister;
 
 public class RoutingTablePersisterTest extends TestCase {
+  
+  static{
+    BasicConfigurator.resetConfiguration();
+    BasicConfigurator.configure();
+  }
+  
+  
   public void testPersistRoutingTable() throws IOException{
     RoutingTable theTable = new RoutingTable("1");
     
@@ -43,9 +49,12 @@ public class RoutingTablePersisterTest extends TestCase {
     thePeer3.setPort( RoutingProtocol.START_PORT + 2 );
     thePeer3.setHosts( theList3 );
     
+    WebPeer thePeer4 = new WebPeer("4", new URL("http://localhost:8080/"));
+    
     theTable.addRoutingTableEntry( new RoutingTableEntry(thePeer1, 0, thePeer1, System.currentTimeMillis()) );
     theTable.addRoutingTableEntry( new RoutingTableEntry(thePeer2, 1, thePeer2, System.currentTimeMillis()) );
     theTable.addRoutingTableEntry( new RoutingTableEntry(thePeer3, 2, thePeer2, System.currentTimeMillis()) );
+    theTable.addRoutingTableEntry( new RoutingTableEntry(thePeer4, 1, thePeer4, System.currentTimeMillis()) );
     
     File theFile = new File("routingtable.csv");
     

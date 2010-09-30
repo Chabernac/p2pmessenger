@@ -18,9 +18,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
+
 import chabernac.io.iObjectPersister;
 
 public class RoutingTablePersister implements iObjectPersister<RoutingTable> {
+  private static Logger LOGGER = Logger.getLogger( RoutingTablePersister.class );
 
   @Override
   public RoutingTable loadObject( InputStream anInputStream ) throws IOException {
@@ -56,20 +59,28 @@ public class RoutingTablePersister implements iObjectPersister<RoutingTable> {
 
     theLine = null;
     while( (theLine = theReader.readLine()) != null  ){
+      try{
       String[] theRoutingTableEntryVars = theLine.split( ";" );
-      long theLastOnlineTime = System.currentTimeMillis();
-      if(theRoutingTableEntryVars.length >= 4){
-        theLastOnlineTime = Long.parseLong( theRoutingTableEntryVars[3] );
-      }
-      RoutingTableEntry theEntry = new RoutingTableEntry(thePeers.get(  theRoutingTableEntryVars[0] ), Integer.parseInt(theRoutingTableEntryVars[1]), thePeers.get(theRoutingTableEntryVars[2]), theLastOnlineTime);
-      //      theEntry.setPeer( thePeers.get(  theRoutingTableEntryVars[0] ) ) ;
-      //      theEntry.setHopDistance( Integer.parseInt(theRoutingTableEntryVars[1] ));
-      //      theEntry.setGateway( thePeers.get(theRoutingTableEntryVars[2] )) ;
+      if(theRoutingTableEntryVars.length >=3){
+        long theLastOnlineTime = System.currentTimeMillis();
+        if(theRoutingTableEntryVars.length >= 4){
+          theLastOnlineTime = Long.parseLong( theRoutingTableEntryVars[3] );
+        }
+        RoutingTableEntry theEntry = new RoutingTableEntry(thePeers.get(  theRoutingTableEntryVars[0] ), Integer.parseInt(theRoutingTableEntryVars[1]), thePeers.get(theRoutingTableEntryVars[2]), theLastOnlineTime);
+        //      theEntry.setPeer( thePeers.get(  theRoutingTableEntryVars[0] ) ) ;
+        //      theEntry.setHopDistance( Integer.parseInt(theRoutingTableEntryVars[1] ));
+        //      theEntry.setGateway( thePeers.get(theRoutingTableEntryVars[2] )) ;
 
-      //TODO is this clean?
-      //only load the entries which are within the range of routing protocol
-      if(theEntry.getPeer() instanceof SocketPeer && RoutingProtocol.isInPortRange( ((SocketPeer)theEntry.getPeer()).getPort() )){
-        theTable.addRoutingTableEntry( theEntry );
+        //TODO is this clean?
+        //only load the entries which are within the range of routing protocol
+        if(theEntry.getPeer() instanceof SocketPeer && RoutingProtocol.isInPortRange( ((SocketPeer)theEntry.getPeer()).getPort() )){
+          theTable.addRoutingTableEntry( theEntry );
+        } else if(theEntry.getPeer() instanceof WebPeer){
+          theTable.addRoutingTableEntry( theEntry );
+        }
+      }
+      }catch(Exception e){
+        LOGGER.error("Could not parse line '" + theLine + "' as routing table entry", e);
       }
     }
 
@@ -96,8 +107,14 @@ public class RoutingTablePersister implements iObjectPersister<RoutingTable> {
           theWriter.print(";");
           theWriter.print(theHost);
         }
+        theWriter.println();
+      } else if(thePeer instanceof WebPeer){
+        WebPeer theWPeer = (WebPeer)thePeer;
+        theWriter.print(thePeer.getPeerId() );
+        theWriter.print(";");
+        theWriter.print(theWPeer.getURL());
+        theWriter.println();
       }
-      theWriter.println();
     }
     theWriter.println();
     //table
