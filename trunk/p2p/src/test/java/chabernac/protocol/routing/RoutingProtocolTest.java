@@ -899,9 +899,10 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
         root.addServlet(theProtocolHolder, "/protocol");
 
         theWebServer.start();
+        assertTrue(theWebServer.isStarted());
 
-        theServer1.start();
-        theServer2.start();
+        assertTrue(theServer1.start());
+        assertTrue(theServer2.start());
         Thread.sleep( 2000 );
         
         assertEquals( 1, theRoutingTable1.getEntries().size() );
