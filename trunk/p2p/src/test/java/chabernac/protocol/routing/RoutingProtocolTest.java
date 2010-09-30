@@ -764,7 +764,7 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
       try{
         assertTrue( theServer1.start() );
         
-        Thread.sleep( 2000 );
+        Thread.sleep( 6000 );
         
         RoutingTableEntry theEntry = theRoutingTable1.getEntryForLocalPeer();
         

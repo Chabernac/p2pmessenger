@@ -27,8 +27,8 @@ public class RoutingTable implements Iterable< RoutingTableEntry >, Serializable
   private String myLocalPeerId;
   private transient boolean isKeepHistory = false;
   private Map<String, RoutingTableEntry> myRoutingTable = new HashMap< String, RoutingTableEntry >();
-  private transient Set<IRoutingTableListener> myRoutingTableListeners = new HashSet< IRoutingTableListener >();
-  private transient List<RoutingTableEntryHistory> myRoutingTableEntryHistory = new ArrayList< RoutingTableEntryHistory >();
+  private transient Set<IRoutingTableListener> myRoutingTableListeners = null;
+  private transient List<RoutingTableEntryHistory> myRoutingTableEntryHistory = null;
 
   public RoutingTable(String aLocalPeerId){
     myLocalPeerId = aLocalPeerId;
@@ -39,6 +39,8 @@ public class RoutingTable implements Iterable< RoutingTableEntry >, Serializable
   }
 
   public synchronized void removeRoutingTableEntry(RoutingTableEntry anEntry){
+    inspectRoutingTableEntryHistory();
+    
     if(isKeepHistory){
       myRoutingTableEntryHistory.add( new RoutingTableEntryHistory(anEntry,RoutingTableEntryHistory.Action.DELETE) );
     }
@@ -60,6 +62,8 @@ public class RoutingTable implements Iterable< RoutingTableEntry >, Serializable
   }
   
   public synchronized void addRoutingTableEntry(RoutingTableEntry anEntry){
+    inspectRoutingTableEntryHistory();
+    
     if(isKeepHistory){
       myRoutingTableEntryHistory.add( new RoutingTableEntryHistory(anEntry,RoutingTableEntryHistory.Action.ADD ) );
     }
@@ -136,14 +140,20 @@ public class RoutingTable implements Iterable< RoutingTableEntry >, Serializable
       notifyAll();
     }
   }
+  
+  private void inspectRoutingTableEntryHistory() {
+    if(myRoutingTableEntryHistory == null){
+      myRoutingTableEntryHistory = new ArrayList< RoutingTableEntryHistory >();
+    }
+    
+  }
 
-  /*
+  /**
    * This method just solves a problem which should not occure.
    * Sometimes different routing tables are added with peers which reside on the same host and port
    * this is of course not possible.  So we remove the older peer entries which are on the same host and port
    * TODO this method can be removed as soon as the cause of the problem is found and fixed
    */
-
   private void removeEntriesOlderThanAndOnTheSameSocketAs(RoutingTableEntry anEntry){
     List<RoutingTableEntry> theEntriesToRemove = new ArrayList<RoutingTableEntry>();
     for(RoutingTableEntry theEntry : myRoutingTable.values()){
@@ -156,14 +166,22 @@ public class RoutingTable implements Iterable< RoutingTableEntry >, Serializable
       removeRoutingTableEntry(theEntry);
     }
   }
+  
+  private void inspectListeners(){
+    if(myRoutingTableListeners == null){
+      myRoutingTableListeners = new HashSet< IRoutingTableListener >();
+    }
+  }
 
   private void notifyListenersOfRoutingTableEntryChange(RoutingTableEntry anEntry){
+    inspectListeners();
     for(IRoutingTableListener theListener : myRoutingTableListeners){
       theListener.routingTableEntryChanged( anEntry );
     }
   }
   
   private void notifyListenersOfRoutingTableEntryRemoval(RoutingTableEntry anEntry){
+    inspectListeners();
     for(IRoutingTableListener theListener : myRoutingTableListeners){
       theListener.routingTableEntryRemoved( anEntry );
     }
@@ -266,14 +284,17 @@ public class RoutingTable implements Iterable< RoutingTableEntry >, Serializable
   }
 
   public void addRoutingTableListener(IRoutingTableListener aListener){
+    inspectListeners();
     myRoutingTableListeners.add( aListener );
   }
 
   public void removeRoutingTableListener(IRoutingTableListener aListener){
+    inspectListeners();
     myRoutingTableListeners.remove( aListener );
   }
 
   public void removeAllRoutingTableListeners(){
+    inspectListeners();
     myRoutingTableListeners.clear();
   }
 
@@ -305,10 +326,12 @@ public class RoutingTable implements Iterable< RoutingTableEntry >, Serializable
   }
 
   public List< RoutingTableEntryHistory > getHistory() {
+    inspectRoutingTableEntryHistory();
     return Collections.unmodifiableList( myRoutingTableEntryHistory );
   }
 
   public void clearHistory(){
+    inspectRoutingTableEntryHistory();
     myRoutingTableEntryHistory.clear();
   }
   
