@@ -17,10 +17,11 @@ import chabernac.io.SocketPoolFactory;
 import chabernac.io.SocketProxy;
 import chabernac.io.iSocketPool;
 import chabernac.tools.NetTools;
+import chabernac.tools.SimpleNetworkInterface;
 
 public class SocketPeer extends AbstractPeer implements Serializable {
   private static final long serialVersionUID = 7852961137229337616L;
-  private List<String> myHost = null;
+  private List<SimpleNetworkInterface> myHost = null;
   private int myPort;
   
   public SocketPeer (){
@@ -33,16 +34,16 @@ public class SocketPeer extends AbstractPeer implements Serializable {
     detectLocalInterfaces();
   }
 
-  public SocketPeer(String aPeerId, List<String> aHosts, int aPort){
+  public SocketPeer(String aPeerId,  int aPort, List<SimpleNetworkInterface> aHosts){
     super(aPeerId);
     myHost = aHosts;
     myPort = aPort;
   }
 
-  public SocketPeer(String aPeerId, String aHost, int aPort){
+  public SocketPeer(String aPeerId, SimpleNetworkInterface aHost, int aPort){
     super(aPeerId);
     if(myHost == null){
-      myHost = new ArrayList<String>();
+      myHost = new ArrayList<SimpleNetworkInterface>();
     }
     myHost.add(aHost);
     myPort = aPort;
@@ -52,9 +53,17 @@ public class SocketPeer extends AbstractPeer implements Serializable {
     super(anPeerId);
   }
 
+  public SocketPeer ( String aPeerId , List< String > anHosts , int aPort ) {
+    this(aPeerId, new SimpleNetworkInterface(anHosts), aPort);
+  }
+  
+  public SocketPeer ( String aPeerId , String anHosts , int aPort ) {
+    this(aPeerId, new SimpleNetworkInterface(anHosts, null), aPort);
+  }
+
   public void detectLocalInterfaces() throws NoAvailableNetworkAdapterException{
     try {
-      myHost = NetTools.getLocalExposedIpAddresses();
+      myHost = NetTools.getLocalExposedInterfaces();
     } catch ( SocketException e ) {
       throw new NoAvailableNetworkAdapterException("Could not detect local network adapter", e);
     }
@@ -63,10 +72,10 @@ public class SocketPeer extends AbstractPeer implements Serializable {
     }
   }
 
-  public List<String> getHosts() {
+  public List<SimpleNetworkInterface> getHosts() {
     return myHost;
   }
-  public void setHosts( List<String> anHost ) {
+  public void setHosts( List<SimpleNetworkInterface> anHost ) {
     myHost = anHost;
   }
   public int getPort() {
@@ -96,13 +105,15 @@ public class SocketPeer extends AbstractPeer implements Serializable {
   public synchronized Socket createSocket(int aPort){
     iSocketPool<SocketProxy> theSocketPool = SocketPoolFactory.getSocketPool();
 
-    for(Iterator< String > i = new ArrayList<String>(myHost).iterator(); i.hasNext();){
-      String theHost = i.next();
+    for(Iterator< SimpleNetworkInterface > i = new ArrayList<SimpleNetworkInterface>(myHost).iterator(); i.hasNext();){
+      SimpleNetworkInterface theHost = i.next();
       try{
-        Socket theSocket = theSocketPool.checkOut(new InetSocketAddress(theHost, aPort));
-        myHost.remove( theHost );
-        myHost.add( 0, theHost);
-        return theSocket;
+        for(String theIp : theHost.getIp()){
+          Socket theSocket = theSocketPool.checkOut(new InetSocketAddress(theIp, aPort));
+          myHost.remove( theHost );
+          myHost.add( 0, theHost);
+          return theSocket;
+        }
       }catch(Exception e){
 //        LOGGER.error("Could not open connection to peer: " + myHost + ":" + myPort, e);
       }
@@ -117,8 +128,8 @@ public class SocketPeer extends AbstractPeer implements Serializable {
     theBuilder.append(getChannel());
     theBuilder.append( " (" );
     if(getHosts() != null && getHosts().size() > 0){
-      for(Iterator< String > i = getHosts().iterator();i.hasNext();){
-        String theHost = i.next();
+      for(Iterator< SimpleNetworkInterface > i = getHosts().iterator();i.hasNext();){
+        SimpleNetworkInterface theHost = i.next();
         theBuilder.append( theHost );
         if(i.hasNext()) theBuilder.append( "," );
       }
@@ -133,9 +144,9 @@ public class SocketPeer extends AbstractPeer implements Serializable {
     if(!(aPeer instanceof SocketPeer)) return false;
     
     SocketPeer thePeer = (SocketPeer)aPeer;
-    List<String> theHosts = thePeer.getHosts();
+    List<SimpleNetworkInterface> theHosts = thePeer.getHosts();
     boolean isSameHost = false;
-    for(String theHost : theHosts){
+    for(SimpleNetworkInterface theHost : theHosts){
       isSameHost |= getHosts().contains( theHost );
     }
     if(!isSameHost) return false;

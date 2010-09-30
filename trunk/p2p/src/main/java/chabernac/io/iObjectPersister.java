@@ -9,6 +9,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 public interface iObjectPersister<T extends Object> {
-  public void persistObject(T anObject, OutputStream anOutputStream);
+  public void persistObject(T anObject, OutputStream anOutputStream) throws IOException;
   public T loadObject(InputStream anInputStream) throws IOException;
 }

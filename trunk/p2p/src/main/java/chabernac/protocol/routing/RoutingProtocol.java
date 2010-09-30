@@ -44,6 +44,7 @@ import chabernac.protocol.ServerInfo;
 import chabernac.protocol.ServerInfo.Type;
 import chabernac.tools.IOTools;
 import chabernac.tools.NetTools;
+import chabernac.tools.SimpleNetworkInterface;
 import chabernac.tools.TestTools;
 
 /**
@@ -93,7 +94,7 @@ public class RoutingProtocol extends Protocol {
 
   private ScheduledExecutorService mySheduledService = null;
 
-  private iObjectPersister< RoutingTable > myRoutingTablePersister = new RoutingTablePersister();
+  private iObjectPersister< RoutingTable > myRoutingTablePersister = new RoutingTableObjectPersister();
 
   private boolean isPersistRoutingTable = false;
   private boolean isStopWhenAlreadyRunning = false;
@@ -402,11 +403,11 @@ public class RoutingProtocol extends Protocol {
   public void scanRemoteSystem(boolean isExcludeLocal){
     if(myRoutingProtocolMonitor != null) myRoutingProtocolMonitor.remoteSystemScanStarted();
     //first search all hosts which have no single peer
-    Map<String, Boolean> theHosts = new HashMap< String, Boolean >();
+    Map<SimpleNetworkInterface, Boolean> theHosts = new HashMap< SimpleNetworkInterface, Boolean >();
 
     for(RoutingTableEntry theEntry : myRoutingTable){
       if(isExcludeLocal && !theEntry.getPeer().getPeerId().equals(myRoutingTable.getLocalPeerId()) && theEntry.getPeer() instanceof SocketPeer){
-        for(String theHost : ((SocketPeer)theEntry.getPeer()).getHosts()){
+        for(SimpleNetworkInterface theHost : ((SocketPeer)theEntry.getPeer()).getHosts()){
           boolean isReachable = false;
           if(theHosts.containsKey( theHost )){
             isReachable = theHosts.get(theHost);
@@ -417,7 +418,7 @@ public class RoutingProtocol extends Protocol {
     }
 
     //now try to scan all hosts which are not reachable
-    for(String theHost : theHosts.keySet()){
+    for(SimpleNetworkInterface theHost : theHosts.keySet()){
       if(!theHosts.get(theHost)){
         //this host is not reachable, scan it
         boolean isContacted = false;
@@ -622,12 +623,13 @@ public class RoutingProtocol extends Protocol {
         FileInputStream theInputStream = new FileInputStream(theFile);
         myRoutingTable = myRoutingTablePersister.loadObject( theInputStream );
         theInputStream.close();
+        return;
       }catch(Exception e){
         LOGGER.error( "Could not load routing table", e );
       }
-    } else {
-      myRoutingTable = new RoutingTable(getLocalPeerId());
-    }
+    } 
+      
+    myRoutingTable = new RoutingTable(getLocalPeerId());
   }
 
   public void resetRoutingTable(){

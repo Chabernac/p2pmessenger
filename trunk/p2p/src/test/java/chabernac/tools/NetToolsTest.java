@@ -10,4 +10,10 @@ public class NetToolsTest extends TestCase{
       System.out.println(theHost);
     }
   }
+  
+  public void testGetLocalExposedInterfaces() throws SocketException{
+    for(SimpleNetworkInterface theHost : NetTools.getLocalExposedInterfaces()){
+      System.out.println(theHost);
+    }
+  }
 }

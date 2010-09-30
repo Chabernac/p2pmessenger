@@ -16,6 +16,7 @@ import org.apache.log4j.BasicConfigurator;
 
 import junit.framework.TestCase;
 import chabernac.io.iObjectPersister;
+import chabernac.tools.SimpleNetworkInterface;
 
 public class RoutingTablePersisterTest extends TestCase {
   
@@ -29,23 +30,23 @@ public class RoutingTablePersisterTest extends TestCase {
     RoutingTable theTable = new RoutingTable("1");
     
     SocketPeer thePeer1 = new SocketPeer("1");
-    List<String> theList = new ArrayList< String >();
-    theList.add( "x20d1148" );
-    theList.add( "localhost" );
+    List<SimpleNetworkInterface> theList = new ArrayList< SimpleNetworkInterface >();
+    theList.add( new SimpleNetworkInterface("x20d1148") );
+    theList.add( new SimpleNetworkInterface("localhost") );
     thePeer1.setPort( RoutingProtocol.START_PORT );
     thePeer1.setHosts( theList );
     
     SocketPeer thePeer2 = new SocketPeer("2");
-    List<String> theList2 = new ArrayList< String >();
-    theList2.add( "x20d1149" );
-    theList2.add( "localhost" );
+    List<SimpleNetworkInterface> theList2 = new ArrayList< SimpleNetworkInterface >();
+    theList2.add( new SimpleNetworkInterface("x20d1149") );
+    theList2.add( new SimpleNetworkInterface("localhost") );
     thePeer2.setPort( RoutingProtocol.START_PORT + 1);
     thePeer2.setHosts( theList2 );
     
     SocketPeer thePeer3 = new SocketPeer("3");
-    List<String> theList3 = new ArrayList< String >();
-    theList3.add( "x20d1150" );
-    theList3.add( "localhost" );
+    List<SimpleNetworkInterface> theList3 = new ArrayList< SimpleNetworkInterface >();
+    theList3.add( new SimpleNetworkInterface("x20d1150") );
+    theList3.add( new SimpleNetworkInterface("localhost") );
     thePeer3.setPort( RoutingProtocol.START_PORT + 2 );
     thePeer3.setHosts( theList3 );
     
@@ -56,9 +57,9 @@ public class RoutingTablePersisterTest extends TestCase {
     theTable.addRoutingTableEntry( new RoutingTableEntry(thePeer3, 2, thePeer2, System.currentTimeMillis()) );
     theTable.addRoutingTableEntry( new RoutingTableEntry(thePeer4, 1, thePeer4, System.currentTimeMillis()) );
     
-    File theFile = new File("routingtable.csv");
+    File theFile = new File("routingtable.bin");
     
-    iObjectPersister< RoutingTable > thePersister = new RoutingTablePersister();
+    iObjectPersister< RoutingTable > thePersister = new RoutingTableObjectPersister();
     FileOutputStream theOutputStream = new FileOutputStream(theFile);
     thePersister.persistObject( theTable, theOutputStream );
     theOutputStream.flush();
