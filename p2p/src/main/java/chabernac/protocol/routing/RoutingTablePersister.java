@@ -21,6 +21,7 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import chabernac.io.iObjectPersister;
+import chabernac.tools.SimpleNetworkInterface;
 
 public class RoutingTablePersister implements iObjectPersister<RoutingTable> {
   private static Logger LOGGER = Logger.getLogger( RoutingTablePersister.class );
@@ -46,9 +47,9 @@ public class RoutingTablePersister implements iObjectPersister<RoutingTable> {
         SocketPeer theSocketPeer = (SocketPeer)thePeer;
         theSocketPeer.setPeerId( thePeerVars[0]  );
         theSocketPeer.setPort( Integer.parseInt( thePeerVars[1] ) );
-        List<String> theHosts = new ArrayList< String >();
+        List<SimpleNetworkInterface> theHosts = new ArrayList< SimpleNetworkInterface >();
         for(int i=2;i<thePeerVars.length;i++){
-          theHosts.add(thePeerVars[i]);
+          theHosts.add(new SimpleNetworkInterface(thePeerVars[i]));
         }
         theSocketPeer.setHosts( theHosts );
       }
@@ -103,9 +104,14 @@ public class RoutingTablePersister implements iObjectPersister<RoutingTable> {
         theWriter.print(thePeer.getPeerId() );
         theWriter.print(";");
         theWriter.print(theSPeer.getPort() );
-        for(String theHost : theSPeer.getHosts()){
+        theWriter.print(";");
+        for(SimpleNetworkInterface theHost : theSPeer.getHosts()){
+          theWriter.print(theHost.getMACAddress());
           theWriter.print(";");
-          theWriter.print(theHost);
+          for(String theIp : theHost.getIp()){
+            theWriter.print(theIp);
+            theWriter.print(";");
+          }
         }
         theWriter.println();
       } else if(thePeer instanceof WebPeer){

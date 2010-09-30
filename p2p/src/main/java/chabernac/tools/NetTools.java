@@ -27,6 +27,27 @@ public class NetTools {
     return theIpList;
   }
   
+  public static List<SimpleNetworkInterface> getLocalExposedInterfaces() throws SocketException{
+    List<SimpleNetworkInterface> theIpList = new ArrayList<SimpleNetworkInterface>();
+    Enumeration<NetworkInterface> theInterfaces = NetworkInterface.getNetworkInterfaces();
+    while(theInterfaces.hasMoreElements()){
+      NetworkInterface theInterface = theInterfaces.nextElement();
+      if(isCandidate( theInterface )){
+        List<String> theIpAddresses = new ArrayList< String >();
+        Enumeration<InetAddress> theAddresses = theInterface.getInetAddresses();
+        while(theAddresses.hasMoreElements()){
+          InetAddress theAddress = theAddresses.nextElement();
+          theIpAddresses.add(theAddress.getHostAddress());
+        }
+        if(theIpAddresses.size() > 0){
+          theIpList.add( new SimpleNetworkInterface(theIpAddresses, theInterface.getHardwareAddress()) );
+        }
+      }
+    }
+    return theIpList;
+  }
+  
+  
   private static boolean isCandidate(NetworkInterface anInterface) throws SocketException{
     if(anInterface.isLoopback()) return false;
     if(anInterface.getDisplayName().toLowerCase().contains( "check point" )) return true;

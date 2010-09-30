@@ -22,6 +22,7 @@ import chabernac.protocol.AbstractProtocolTest;
 import chabernac.protocol.ProtocolContainer;
 import chabernac.protocol.ProtocolException;
 import chabernac.protocol.ProtocolServer;
+import chabernac.tools.SimpleNetworkInterface;
 import chabernac.tools.SuperNodesDataSource;
 
 public class RoutingProtocolTest extends AbstractProtocolTest {
@@ -568,8 +569,8 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
       theRoutingProtocol2.exchangeRoutingTable();
       
       SocketPeer theDummyPeer = new SocketPeer("dummy");
-      List<String> theHosts = new ArrayList< String >();
-      theHosts.add( "10.240.111.22" );
+      List<SimpleNetworkInterface> theHosts = new ArrayList< SimpleNetworkInterface >();
+      theHosts.add( new SimpleNetworkInterface("10.240.111.22", null) );
       theDummyPeer.setHosts( theHosts );
       theDummyPeer.setPort( 54645 );
       
