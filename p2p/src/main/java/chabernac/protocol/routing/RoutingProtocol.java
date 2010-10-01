@@ -612,7 +612,7 @@ public class RoutingProtocol extends Protocol {
     if(isPeerIdInFile){
       theFile += "_" + myLocalPeerId;
     }
-    theFile += ".csv";
+    theFile += ".bin";
     return new File(theFile);
   }
 
