@@ -4,6 +4,7 @@
  */
 package chabernac.protocol.message;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -12,7 +13,8 @@ import java.util.UUID;
 
 import chabernac.protocol.routing.AbstractPeer;
 
-public class Message {
+public class Message implements Serializable{
+  private static final long serialVersionUID = -8695593402222208110L;
   private AbstractPeer mySource = null;
   private AbstractPeer myDestination = null;
   private String myMessage = null;
