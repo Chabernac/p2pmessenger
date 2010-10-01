@@ -4,6 +4,8 @@
  */
 package chabernac.protocol.message;
 
-public enum MessageIndicator {
+import java.io.Serializable;
+
+public enum MessageIndicator implements Serializable{
   ENCRYPTED, TO_BE_ENCRYPTED;
 }

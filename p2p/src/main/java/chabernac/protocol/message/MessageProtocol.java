@@ -12,18 +12,18 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import chabernac.io.Base64ObjectStringConverter;
+import chabernac.io.iObjectStringConverter;
 import chabernac.protocol.Protocol;
 import chabernac.protocol.ProtocolContainer;
 import chabernac.protocol.ProtocolException;
 import chabernac.protocol.encryption.EncryptionException;
 import chabernac.protocol.encryption.EncryptionProtocol;
 import chabernac.protocol.routing.AbstractPeer;
-import chabernac.protocol.routing.SocketPeer;
 import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.RoutingTable;
 import chabernac.protocol.routing.RoutingTableEntry;
 import chabernac.protocol.routing.UnknownPeerException;
-import chabernac.tools.XMLTools;
 
 /**
  * This protocol will accept a message and route it to the correct peer based on the routing table.
@@ -42,6 +42,8 @@ public class MessageProtocol extends Protocol {
 
   private List<iMessageListener> myListeners = new ArrayList< iMessageListener >();
   private List<iMessageListener> myHistoryListeners = new ArrayList< iMessageListener >();
+  
+  private iObjectStringConverter< Message > myMessageConverter = new Base64ObjectStringConverter< Message >();
 
   public MessageProtocol ( ) {
     super( ID );
@@ -58,10 +60,12 @@ public class MessageProtocol extends Protocol {
 
   @Override
   public String handleCommand( long aSessionId, String anInput ) {
-    Object theMessage = XMLTools.fromXML( anInput );
-    if(!(theMessage instanceof Message)){
+    Message theMessage;
+    try {
+      theMessage = myMessageConverter.getObject( anInput );
+    } catch ( IOException e ) {
       return STATUS_MESSAGE.UNCRECOGNIZED_MESSAGE.name();
-    } 
+    }
     return handleMessage( aSessionId, (Message)theMessage );
   }
 
@@ -132,7 +136,7 @@ public class MessageProtocol extends Protocol {
 
   private String forwardMessage(Message aMessage) throws UnknownPeerException, ProtocolException, UnknownHostException, IOException{
     if(aMessage.isEndOfTTL()){
-      LOGGER.error("This message can not be send further because its TTL has expired: " + XMLTools.toXML( aMessage ) );
+      LOGGER.error("This message can not be send further because its TTL has expired: " + aMessage.getMessageId() );
       return STATUS_MESSAGE.TTL_EXPIRED.name();
     } else {
       aMessage.decreaseTTL();
@@ -146,7 +150,7 @@ public class MessageProtocol extends Protocol {
 
       AbstractPeer theLocalPeer = getRoutingTable().getEntryForLocalPeer().getPeer();
       if(!theGateway.isSameEndPointAs( theLocalPeer )){
-        return theGateway.send( createMessage( XMLTools.toXML( aMessage ) ));
+        return theGateway.send( createMessage( myMessageConverter.toString( aMessage ) ));
       } else {
         //TODO we should not come in this situation
         LOGGER.error("Peer with id: '" + theGateway.getPeerId() + "' has same host and port as local peer: '" + theLocalPeer.getPeerId() + "'");

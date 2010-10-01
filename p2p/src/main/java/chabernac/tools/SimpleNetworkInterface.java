@@ -84,7 +84,7 @@ public class SimpleNetworkInterface implements Serializable{
         }
       }
     }
-    return true;
+    return false;
   }
   
   public int hashCode(){

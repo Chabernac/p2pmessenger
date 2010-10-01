@@ -4,11 +4,14 @@
  */
 package chabernac.protocol.userinfo;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Observable;
 
-public class UserInfo extends Observable{
+public class UserInfo extends Observable implements Serializable{
+  private static final long serialVersionUID = -3588126645189644239L;
+
   public static enum Status {OFFLINE, ONLINE, BUSY, AWAY};
   public static enum Property {ID, NAME, EMAIL, TELNR, LOCATION};
   

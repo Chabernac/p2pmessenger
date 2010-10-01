@@ -4,6 +4,7 @@
  */
 package chabernac.protocol.userinfo;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -18,6 +19,8 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 
+import chabernac.io.Base64ObjectStringConverter;
+import chabernac.io.iObjectStringConverter;
 import chabernac.protocol.IProtocol;
 import chabernac.protocol.Protocol;
 import chabernac.protocol.ProtocolContainer;
@@ -30,7 +33,6 @@ import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.RoutingTable;
 import chabernac.protocol.routing.RoutingTableEntry;
 import chabernac.protocol.userinfo.UserInfo.Status;
-import chabernac.tools.XMLTools;
 
 public class UserInfoProtocol extends Protocol {
   private static Logger LOGGER = Logger.getLogger(UserInfoProtocol.class);
@@ -52,6 +54,8 @@ public class UserInfoProtocol extends Protocol {
   private MyUserInfoListener myUserInfoListener = new MyUserInfoListener();
 
   private final UserInfo myPersonalUserInfo = new UserInfo();
+
+  private iObjectStringConverter< UserInfo > myConverter = new Base64ObjectStringConverter< UserInfo >();
 
 
   public UserInfoProtocol ( iUserInfoProvider aProvider ) throws UserInfoException{
@@ -152,19 +156,27 @@ public class UserInfoProtocol extends Protocol {
   public String handleCommand( long aSessionId, String anInput ) {
     if(Command.GET.name().equalsIgnoreCase( anInput )){
       try {
-        return XMLTools.toXML( getPersonalInfo() );
+        return myConverter.toString( getPersonalInfo() );
       } catch ( UserInfoException e ) {
         LOGGER.error( "Could not retrieve personal user info", e );
+        return Response.NOK.name();
+      } catch ( IOException e ) {
+        LOGGER.error( "Could not send personal user info", e );
         return Response.NOK.name();
       }
     }
     if(anInput.startsWith( Command.PUT.name() ) ){
       String[] theParts = anInput.split( ";" );
       String thePeerId = theParts[1];
-      UserInfo theUserInfo = (UserInfo)XMLTools.fromXML( theParts[2]);
-      myUserInfo.put( thePeerId, theUserInfo );
-      notifyUserInfoChanged( theUserInfo );
-      return Response.OK.name();
+      try{
+        UserInfo theUserInfo = myConverter.getObject( theParts[2] );
+        myUserInfo.put( thePeerId, theUserInfo );
+        notifyUserInfoChanged( theUserInfo );
+        return Response.OK.name();
+      }catch(IOException e){
+        LOGGER.error("Could not get user info from input", e);
+        return Response.NOK.name();
+      }
     }
 
     return ProtocolContainer.Response.UNKNOWN_COMMAND.name();
@@ -195,7 +207,7 @@ public class UserInfoProtocol extends Protocol {
       theMessage.setProtocolMessage( true );
       String theResult = ((MessageProtocol)findProtocolContainer().getProtocol( MessageProtocol.ID )).sendMessage( theMessage );
       LOGGER.debug("User info retrieved: '" + theResult + "'");
-      return (UserInfo)XMLTools.fromXML( theResult );
+      return myConverter.getObject( theResult );
     }catch(Exception e){
       throw new UserInfoException("Could not retrieve user info for peer '" + aPeerId + "'", e);
     }
@@ -206,7 +218,7 @@ public class UserInfoProtocol extends Protocol {
       Message theMessage = new Message(  );
       theMessage.setDestination( getRoutingTable().getEntryForPeer( aPeerId ).getPeer() );
       theMessage.setSource( getRoutingTable().getEntryForLocalPeer().getPeer() );
-      theMessage.setMessage( createMessage( Command.PUT.name() + ";" + getRoutingTable().getLocalPeerId() + ";" + XMLTools.toXML( myPersonalUserInfo )));
+      theMessage.setMessage( createMessage( Command.PUT.name() + ";" + getRoutingTable().getLocalPeerId() + ";" + myConverter.toString( myPersonalUserInfo )));
       theMessage.setProtocolMessage( true );
       String theResult = ((MessageProtocol)findProtocolContainer().getProtocol( MessageProtocol.ID )).sendMessage( theMessage );
       if(!theResult.equals( Response.OK.name() )){
