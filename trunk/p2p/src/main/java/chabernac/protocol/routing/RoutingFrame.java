@@ -155,7 +155,8 @@ public class RoutingFrame extends JFrame {
                                                                                       ,"10.240.222.101"
                                                                                       ,"10.240.221.112"
                                                                                       ,"10.240.221.73"
-                                                                                      ,"http://brolpeertopeerwebnode.appspot.com/") );
+                                                                                      ,"http://x22p0212:8080/p2p/"
+                                                                                      ,"http://peertopeerwebnode.appspot.com/") );
     ProtocolFactory theFactory = new ProtocolFactory(theProperties);
     ProtocolContainer theContainer = new ProtocolContainer(theFactory);
     ProtocolServer theServer1 = new ProtocolServer(theContainer, RoutingProtocol.START_PORT, 20, true);

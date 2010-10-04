@@ -115,9 +115,9 @@ public class UserInfoProtocolTest extends AbstractProtocolTest {
   }
   
   public void testUserInfoWithPersistingRoutingTable() throws InterruptedException, ProtocolException, UnknownPeerException, UserInfoException{
-    File theRoutingTable1File = new File("RoutingTable_1.csv");
+    File theRoutingTable1File = new File("RoutingTable_1.bin");
     if(theRoutingTable1File.exists()) theRoutingTable1File.delete();
-    File theRoutingTable2File = new File("RoutingTable_2.csv");
+    File theRoutingTable2File = new File("RoutingTable_2.bin");
     if(theRoutingTable2File.exists()) theRoutingTable2File.delete();
     
     

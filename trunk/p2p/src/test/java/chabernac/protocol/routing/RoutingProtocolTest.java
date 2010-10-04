@@ -640,7 +640,7 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
   }
   
   public void testPersistRoutingTableWithFixedPeerId() throws ProtocolException, InterruptedException{
-    File theRoutingTableFile = new File( "RoutingTable_1.csv" );
+    File theRoutingTableFile = new File( "RoutingTable_1.bin" );
     if(theRoutingTableFile.exists()) theRoutingTableFile.delete();
     
     ProtocolContainer theProtocol1 = getProtocolContainer( -1, true, "1" );
@@ -684,7 +684,7 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
   }
   
   public void testPersistRoutingTableWithNewPeerId() throws ProtocolException, InterruptedException{
-    File theRoutingTableFile = new File( "RoutingTable.csv" );
+    File theRoutingTableFile = new File( "RoutingTable.bin" );
     if(theRoutingTableFile.exists()) theRoutingTableFile.delete();
     
     ProtocolContainer theProtocol1 = getProtocolContainer( -1, true, null );
@@ -896,6 +896,7 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
         root.addServlet(theCometHolder, "/comet");
         ProtocolServlet theProtocolServlet = new ProtocolServlet();
         ServletHolder theProtocolHolder = new ServletHolder(theProtocolServlet);
+        theProtocolHolder.setInitParameter( "serverurl", "http://localhost:9090/p2p" );
         theProtocolHolder.setInitOrder(2);
         root.addServlet(theProtocolHolder, "/protocol");
 

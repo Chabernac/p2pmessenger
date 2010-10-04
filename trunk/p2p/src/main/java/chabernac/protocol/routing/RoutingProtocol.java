@@ -119,6 +119,7 @@ public class RoutingProtocol extends Protocol {
 
   private final iObjectStringConverter< RoutingTable > myRoutingTableConverter = new Base64ObjectStringConverter< RoutingTable >();
   private final iObjectStringConverter< RoutingTableEntry > myRoutingTableEntryConverter = new Base64ObjectStringConverter< RoutingTableEntry >();
+  private final iObjectStringConverter< AbstractPeer> myPeerConverter = new Base64ObjectStringConverter< AbstractPeer >();
 
   private final iPeerSender myPeerSender;
 
@@ -283,7 +284,7 @@ public class RoutingProtocol extends Protocol {
         //to check if I'm still alive and kicking
         try{
           RoutingTableEntry theEntryForLocalPeer = myRoutingTable.getEntryForLocalPeer();
-          return theEntryForLocalPeer.getPeer().getPeerId() + "@" + theEntryForLocalPeer.getPeer().getChannel();
+          return myPeerConverter.toString(theEntryForLocalPeer.getPeer());
         }catch(Exception e){
           LOGGER.error( "Could not obtain entry for local peer", e );
           return Response.NOK.name();
@@ -355,16 +356,15 @@ public class RoutingProtocol extends Protocol {
     try{
       LOGGER.debug("Sending message to '" + aPeer.getEndPointRepresentation() );
       aPeer.setPeerSender(myPeerSender);
-      String[] theIdTimeChannel = aPeer.send( createMessage( Command.WHO_ARE_YOU.name() )).split( "@" );
+      String theResponse = aPeer.send( createMessage( Command.WHO_ARE_YOU.name() ));
+      AbstractPeer theRemotePeer = myPeerConverter.getObject( theResponse );
 
-      if(anUnreachablePeers == null || !anUnreachablePeers.contains( theIdTimeChannel[0] )){
-        aPeer.setPeerId( theIdTimeChannel[0] );
-        if(theIdTimeChannel.length >= 2) aPeer.setChannel(theIdTimeChannel[1]);
-        RoutingTableEntry theEntry = new RoutingTableEntry(aPeer, 1, aPeer, System.currentTimeMillis());
+      if(anUnreachablePeers == null || !anUnreachablePeers.contains( theRemotePeer.getPeerId() )){
+        RoutingTableEntry theEntry = new RoutingTableEntry(theRemotePeer, 1, theRemotePeer, System.currentTimeMillis());
 
-        LOGGER.debug("Detected system on '" + aPeer.getEndPointRepresentation());
+        LOGGER.debug("Detected system on '" + theRemotePeer.getEndPointRepresentation());
         //only if we have detected our self we set the hop distance to 0
-        if(theIdTimeChannel[0].equals(myRoutingTable.getLocalPeerId())){
+        if(theRemotePeer.getPeerId().equals(myRoutingTable.getLocalPeerId())){
           theEntry = theEntry.derivedEntry( 0 );
         }
         myRoutingTable.addRoutingTableEntry( theEntry );
