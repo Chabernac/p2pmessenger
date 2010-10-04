@@ -39,7 +39,7 @@ public class RoutingTableModel implements TableModel {
 
   @Override
   public int getColumnCount() {
-    return 4;
+    return 5;
   }
     
     
@@ -50,6 +50,7 @@ public class RoutingTableModel implements TableModel {
     if(anColumnIndex == 1) return "Hop Distance";
     if(anColumnIndex == 2) return "Gateway";
     if(anColumnIndex == 3) return "Last online time";
+    if(anColumnIndex == 4) return "Supported protocols";
     return "Unkwnown column";
   }
 
@@ -72,6 +73,15 @@ public class RoutingTableModel implements TableModel {
       Date theDate = new Date();
       theDate.setTime( theRoutingTableEntry.getLastOnlineTime() );
       return FORMAT.format( theDate );
+    }
+    if(anColumnIndex == 4) {
+      String theProtocols = "";
+      for(String theProt : theRoutingTableEntry.getPeer().getSupportedProtocols()){
+        theProtocols += theProt;
+        theProtocols += ";";
+      }
+      return theProtocols;
+      
     }
     return "";
   }

@@ -2,6 +2,7 @@ package chabernac.protocol.routing;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -79,5 +80,9 @@ public abstract class AbstractPeer implements Serializable{
     //if the list is empty we support all protocols for backward compatibility
     if(mySupportedProtocols == null || mySupportedProtocols.size() == 0) return true;
     return mySupportedProtocols.contains( aProtocolId );
+  }
+  
+  public Set<String> getSupportedProtocols(){
+    return Collections.unmodifiableSet( mySupportedProtocols );
   }
 }

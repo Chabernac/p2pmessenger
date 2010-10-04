@@ -9,6 +9,7 @@ import java.util.concurrent.Executors;
 import org.apache.log4j.Logger;
 
 import chabernac.comet.CometEvent;
+import chabernac.comet.CometServlet;
 import chabernac.protocol.IProtocol;
 import chabernac.protocol.Protocol;
 import chabernac.protocol.ProtocolContainer;
@@ -127,8 +128,12 @@ public class WebPeerProtocol extends Protocol{
       try{
         while(!stop){
           CometEvent theEvent = myWebPeer.waitForEvent(getRoutingTable().getLocalPeerId());
-          String theResult = handleCommand(-1, Input.EVENT.name() + " " + theEvent.getInput());
-          theEvent.setOutput( theResult );
+          if(!theEvent.getInput().equals( CometServlet.Responses.NO_DATA.name() )){
+            String theResult = handleCommand(-1, Input.EVENT.name() + " " + theEvent.getInput());
+            theEvent.setOutput( theResult );
+          } else {
+            LOGGER.debug("Comet servlet timed out, waiting for new request...");
+          }
         }
       }catch(Exception e){
         LOGGER.error("An error occured while waiting for event from webpeer '" + myWebPeer.getPeerId() + "'", e);

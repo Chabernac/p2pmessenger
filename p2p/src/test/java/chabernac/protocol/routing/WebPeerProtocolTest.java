@@ -57,6 +57,7 @@ public class WebPeerProtocolTest extends AbstractProtocolTest {
       ServletHolder theProtocolHolder = new ServletHolder(theProtocolServlet);
       theProtocolHolder.setInitOrder(2);
       root.addServlet(theProtocolHolder, "/protocol");
+      theProtocolHolder.setInitParameter( "serverurl", "http://localhost:9090/p2p" );
 
       theWebServer.start();
 

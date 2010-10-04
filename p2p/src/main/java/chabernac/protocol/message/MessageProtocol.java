@@ -150,7 +150,10 @@ public class MessageProtocol extends Protocol {
 
       AbstractPeer theLocalPeer = getRoutingTable().getEntryForLocalPeer().getPeer();
       if(!theGateway.isSameEndPointAs( theLocalPeer )){
-        return theGateway.send( createMessage( myMessageConverter.toString( aMessage ) ));
+        aMessage.setLocked( true );
+        String theText = myMessageConverter.toString( aMessage );
+        aMessage.setLocked( false );
+        return theGateway.send( createMessage( theText ));
       } else {
         //TODO we should not come in this situation
         LOGGER.error("Peer with id: '" + theGateway.getPeerId() + "' has same host and port as local peer: '" + theLocalPeer.getPeerId() + "'");

@@ -8,6 +8,8 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
 
+import chabernac.io.Base64ObjectStringConverter;
+import chabernac.io.iObjectStringConverter;
 import chabernac.protocol.routing.WhoIsRunningTableModel.Entry.State;
 
 public class WhoIsRunningTableModel implements iWhoIsRunningListener, TableModel {
@@ -15,19 +17,20 @@ public class WhoIsRunningTableModel implements iWhoIsRunningListener, TableModel
   private final int myRange;
   private final List<Entry> myPeerIdsAtPort = new ArrayList<Entry>();
   private final List<TableModelListener> myListeners = new ArrayList<TableModelListener>();
-  
+  private final iObjectStringConverter< AbstractPeer> myPeerConverter = new Base64ObjectStringConverter< AbstractPeer >();
+
   public WhoIsRunningTableModel(int aPortFrom, int aPortEnd){
     myPortFrom = aPortFrom;
     myRange = aPortEnd - aPortFrom + 1;
     init();
   }
-  
+
   private void init(){
     for(int i=0;i<myRange;i++){
       myPeerIdsAtPort.add(new Entry("", myPortFrom + i, "", State.DOWN));
     }
   }
-  
+
 
   @Override
   public void noPeerAt(String aHost, int aPort) {
@@ -38,23 +41,28 @@ public class WhoIsRunningTableModel implements iWhoIsRunningListener, TableModel
 
   @Override
   public void peerDetected(String aHost, int aPort, String aPeerId) {
-    int theRow = aPort - myPortFrom;
-    myPeerIdsAtPort.set(theRow, new Entry(aHost, aPort, aPeerId, State.RUNNING));
-    notifyListeners(theRow);
+    try{
+      AbstractPeer thePeer = myPeerConverter.getObject( aPeerId );
+      int theRow = aPort - myPortFrom;
+      myPeerIdsAtPort.set(theRow, new Entry(aHost, aPort, thePeer.getPeerId(), State.RUNNING));
+      notifyListeners(theRow);
+    }catch(Exception e){
+      e.printStackTrace();
+    }
   }
-  
+
   private void notifyListeners(int aRow){
     for(TableModelListener theListener : myListeners){
       theListener.tableChanged(new TableModelEvent(this, aRow));
     }
   }
-  
+
   public static class Entry{
     public final String myHost;
     public final int myPort;
     public final String myPeer;
     public final State myState;
-    
+
     public static enum State{RUNNING, DOWN}
 
     public Entry(String anHost, int anPort, String anPeer, State anState) {
@@ -64,8 +72,8 @@ public class WhoIsRunningTableModel implements iWhoIsRunningListener, TableModel
       myPeer = anPeer;
       myState = anState;
     };
-    
-    
+
+
   }
 
   @Override
@@ -76,7 +84,7 @@ public class WhoIsRunningTableModel implements iWhoIsRunningListener, TableModel
 
   @Override
   public Class<?> getColumnClass(int anColumnIndex) {
-   return String.class;
+    return String.class;
   }
 
 
@@ -130,7 +138,7 @@ public class WhoIsRunningTableModel implements iWhoIsRunningListener, TableModel
   public List<Entry> getPeerIdsAtPort() {
     return Collections.unmodifiableList(myPeerIdsAtPort);
   }
-  
-  
+
+
 
 }
