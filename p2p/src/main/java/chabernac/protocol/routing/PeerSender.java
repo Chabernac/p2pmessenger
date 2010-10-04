@@ -31,7 +31,7 @@ public class PeerSender implements iPeerSender {
       myHistory.add(theMessage);
       notifyListeners(theMessage);
     }
-    
+
     Socket theSocket = aPeer.createSocket( aPeer.getPort() );
 
     if(theSocket == null) {
@@ -53,7 +53,7 @@ public class PeerSender implements iPeerSender {
       String theReturnMessage = theReader.readLine();
       theMessage.setResult(theReturnMessage);
       notifyListeners(theMessage);
-      
+
       return theReturnMessage;
     }catch(IOException e){
       theMessage.setState(State.NOK);
@@ -64,23 +64,23 @@ public class PeerSender implements iPeerSender {
       SocketPoolFactory.getSocketPool().checkIn( theSocket );
     }
   }
-  
+
   private void changeState(PeerMessage aMessage, PeerMessage.State aState){
     aMessage.setState(aState);
     notifyListeners(aMessage);
   }
 
-      
+
   private void notifyListeners(PeerMessage aMessage){
     for(iSocketPeerSenderListener theListener : myPeerSenderListeners){
       theListener.messageStateChanged(aMessage);
     }
   }
-  
+
   public List<PeerMessage> getHistory(){
     return Collections.unmodifiableList(myHistory);
   }
-  
+
   public boolean isKeepHistory() {
     return isKeepHistory;
   }
@@ -96,16 +96,16 @@ public class PeerSender implements iPeerSender {
       super();
       mySocket = anSocket;
     }
-    
+
     public void run(){
       SocketPoolFactory.getSocketPool().close(  mySocket );
     }
   }
-  
+
   public void addPeerSenderListener(iSocketPeerSenderListener aListener){
     myPeerSenderListeners.add(aListener);
   }
-  
+
   public void removePeerSenderListener(iSocketPeerSenderListener aListener){
     myPeerSenderListeners.remove(aListener);
   }
@@ -117,17 +117,34 @@ public class PeerSender implements iPeerSender {
       myHistory.add(theMessage);
       notifyListeners(theMessage);
     }
-    
+
     URL theCometURL = new URL(aPeer.getURL(), "p2p/protocol");
-    URLConnection theConnection = theCometURL.openConnection();
-    theConnection.setDoOutput(true);
-    OutputStreamWriter theWriter = new OutputStreamWriter(theConnection.getOutputStream());
-    theWriter.write("session=-1&input=" + URLEncoder.encode(aMessage, "UTF-8"));
-    theWriter.flush();
-    
-    changeState(theMessage, State.SEND);
-    
-    BufferedReader theReader = new BufferedReader(new InputStreamReader(theConnection.getInputStream()));
-    return theReader.readLine();
+    URLConnection theConnection = null;
+    BufferedReader theReader = null;
+    OutputStreamWriter theWriter= null;
+
+    try{
+      theConnection = theCometURL.openConnection();
+      theConnection.setDoOutput(true);
+      theWriter = new OutputStreamWriter(theConnection.getOutputStream());
+      theWriter.write("session=-1&input=" + URLEncoder.encode(aMessage, "UTF-8"));
+      theWriter.flush();
+
+      changeState(theMessage, State.SEND);
+
+      theReader = new BufferedReader(new InputStreamReader(theConnection.getInputStream()));
+      return theReader.readLine();
+    } finally {
+      if(theReader != null){
+        try{
+          theReader.close();
+        }catch(IOException e){}
+      }
+      if(theWriter != null){
+        try{
+          theWriter.close();
+        }catch(IOException e){}
+      }
+    }
   }
 }

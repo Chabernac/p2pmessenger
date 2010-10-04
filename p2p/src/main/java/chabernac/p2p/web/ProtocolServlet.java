@@ -29,26 +29,28 @@ import chabernac.tools.PropertyMap;
 public class ProtocolServlet extends HttpServlet {
   private static final long serialVersionUID = -1872170586728725631L;
   private static Logger LOGGER = Logger.getLogger(ProtocolServlet.class);
-  private ProtocolContainer myProtocolContainer = null;
 
   public void init() throws ServletException{
     try{
-      PropertyMap thePropertyMap = new PropertyMap();
-      thePropertyMap.setProperty("routingprotocol.exchangedelay", "-1");
-      thePropertyMap.setProperty("routingprotocol.persist", "false");
-      thePropertyMap.setProperty("routingprotocol.peersender", new WebPeerSender((Map<String, EndPoint>)getServletContext().getAttribute( "EndPoints" )));
-      
-      Set<String> theSupportedProtocols = new HashSet< String >();
-      theSupportedProtocols.add( RoutingProtocol.ID );
-      theSupportedProtocols.add( MessageProtocol.ID );
-      theSupportedProtocols.add( EchoProtocol.ID );
-      
-      myProtocolContainer = new ProtocolContainer(new ProtocolFactory(thePropertyMap), theSupportedProtocols);
+      if(getServletContext().getAttribute( "ProtocolContainer") == null){
+        PropertyMap thePropertyMap = new PropertyMap();
+        thePropertyMap.setProperty("routingprotocol.exchangedelay", "-1");
+        thePropertyMap.setProperty("routingprotocol.persist", "false");
+        thePropertyMap.setProperty("routingprotocol.peersender", new WebPeerSender((Map<String, EndPoint>)getServletContext().getAttribute( "EndPoints" )));
 
-      ServerInfo theServerInfo = new ServerInfo(Type.WEB);
-      //TODO retrieve from servlet parameter
-      theServerInfo.setServerURL( "http://localhost:9090" );
-      myProtocolContainer.setServerInfo( theServerInfo );
+        Set<String> theSupportedProtocols = new HashSet< String >();
+        theSupportedProtocols.add( RoutingProtocol.ID );
+        theSupportedProtocols.add( MessageProtocol.ID );
+        theSupportedProtocols.add( EchoProtocol.ID );
+
+        ProtocolContainer theProtocolContainer = new ProtocolContainer(new ProtocolFactory(thePropertyMap), theSupportedProtocols);
+
+        ServerInfo theServerInfo = new ServerInfo(Type.WEB);
+        //TODO retrieve from servlet parameter
+        theServerInfo.setServerURL( getServletConfig().getInitParameter( "serverurl" ));
+        theProtocolContainer.setServerInfo( theServerInfo );
+        getServletContext().setAttribute( "ProtocolContainer", theProtocolContainer );
+      }
     }catch(Exception e){
       throw new ServletException("Could not init p2p servlet", e);
     }
@@ -59,18 +61,18 @@ public class ProtocolServlet extends HttpServlet {
     String theSession = aRequest.getParameter( "session" );
     try {
 //      theInput = URLDecoder.decode(theInput, "UTF-8");
-      String theResult = myProtocolContainer.handleCommand( Long.parseLong( theSession ), theInput );
+      String theResult = getProtocolContainer().handleCommand( Long.parseLong( theSession ), theInput );
       aResponse.getWriter().println(theResult);
     } catch ( IOException e ) {
       LOGGER.error( "could not send response message ", e );
     }
   }
-  
+
   public void doPost(HttpServletRequest aRequest, HttpServletResponse aResponse){
     doGet(aRequest, aResponse);
   }
-  
+
   public ProtocolContainer getProtocolContainer(){
-    return myProtocolContainer;
+    return (ProtocolContainer)getServletContext().getAttribute( "ProtocolContainer" );
   }
 }

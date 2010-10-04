@@ -60,7 +60,7 @@ public class RoutingProtocol extends Protocol {
   public static String ID = "ROU";
 
   private static Logger LOGGER = Logger.getLogger( RoutingProtocol.class );
-  
+
   static{
     if(TestTools.isInUnitTest()){
       START_PORT = 12800;
@@ -119,7 +119,7 @@ public class RoutingProtocol extends Protocol {
 
   private final iObjectStringConverter< RoutingTable > myRoutingTableConverter = new Base64ObjectStringConverter< RoutingTable >();
   private final iObjectStringConverter< RoutingTableEntry > myRoutingTableEntryConverter = new Base64ObjectStringConverter< RoutingTableEntry >();
-  
+
   private final iPeerSender myPeerSender;
 
   /**
@@ -129,12 +129,12 @@ public class RoutingProtocol extends Protocol {
    * @param anExchangeDelay the delay in seconds between exchaning routing tables with other peers
    */
   public RoutingProtocol ( String aLocalPeerId, 
-                            long anExchangeDelay, 
-                            boolean isPersistRoutingTable, 
-                            DataSource aSuperNodesDataSource, 
-                            boolean isStopWhenAlreadyRunning, 
-                            String aChannel,
-                            iPeerSender aPeerSender) throws ProtocolException{
+                           long anExchangeDelay, 
+                           boolean isPersistRoutingTable, 
+                           DataSource aSuperNodesDataSource, 
+                           boolean isStopWhenAlreadyRunning, 
+                           String aChannel,
+                           iPeerSender aPeerSender) throws ProtocolException{
     super( ID );
     myLocalPeerId = aLocalPeerId;
     myExchangeDelay = anExchangeDelay;
@@ -168,7 +168,7 @@ public class RoutingProtocol extends Protocol {
             isAlreadyRunning(theLocalPeer)){
           throw new AlreadyRunningException(theLocalPeer);
         }
-        
+
       } catch (UnknownPeerException e) {
         LOGGER.error("Could not get entry for local peer");
       }
@@ -196,25 +196,27 @@ public class RoutingProtocol extends Protocol {
       if(theLocalPeer == null){
         throw new ProtocolException("The local peer could not be created");
       }
-      
+
       if(findProtocolContainer().getSupportedProtocols() != null){
         for(String theProtocol : findProtocolContainer().getSupportedProtocols()){
           theLocalPeer.addSupportedProtocol( theProtocol );
         }
       }
-      
+
       theLocalPeer.setChannel(myChannel);
-      
+
       RoutingTableEntry theLocalRoutingTableEntry = new RoutingTableEntry(theLocalPeer, 0, theLocalPeer, System.currentTimeMillis());
       myRoutingTable.addRoutingTableEntry( theLocalRoutingTableEntry );
     }
 
-    if(myExchangeDelay > 0 ) scheduleRoutingTableExchange();
-    myChangeService = Executors.newFixedThreadPool( 5 );
+    if(myServerInfo != null && myServerInfo.getServerType() == Type.SOCKET){
+      if(myExchangeDelay > 0 ) scheduleRoutingTableExchange();
+      myChangeService = Executors.newFixedThreadPool( 5 );
 
-    myRoutingTable.addRoutingTableListener( new RoutingTableListener() );
-    startUDPListener();
-    saveRoutingTable();
+      myRoutingTable.addRoutingTableListener( new RoutingTableListener() );
+      startUDPListener();
+      saveRoutingTable();
+    }
   }
 
   /**
@@ -292,11 +294,11 @@ public class RoutingProtocol extends Protocol {
         String thePeerEntry = anInput.substring( theFirstIndexOfSpace + 1 );
         RoutingTableEntry theEntry = myRoutingTableEntryConverter.getObject( thePeerEntry ).incHopDistance();
         myRoutingTable.addRoutingTableEntry( theEntry);
-        
+
         //before sending our routing table, let's verify if we can still reach our neighbours
         //this is just to avoid exchanging wrong information
 //        verifyNeighbours();
-        
+
 //        return myRoutingTableConverter.toString( myRoutingTable.copyWithoutUnreachablePeers() );
         return myRoutingTableConverter.toString(myRoutingTable);
       } else if(theCommand == Command.ANNOUNCEMENT){
@@ -322,7 +324,7 @@ public class RoutingProtocol extends Protocol {
     }
     return Response.UNKNOWN_COMMAND.name();
   }
-  
+
 //  private void verifyNeighbours(){
 //    for(RoutingTableEntry theEntry : myRoutingTable.getEntries()){
 //      if(theEntry.getHopDistance() == 1){
@@ -338,7 +340,7 @@ public class RoutingProtocol extends Protocol {
   public RoutingTable getRoutingTable(){
     return myRoutingTable;
   }
-  
+
   public void checkPeer(final AbstractPeer aPeer){
     if(!myRoutingTable.containsEntryForPeer( aPeer.getPeerId() )){
       myScannerService.execute( new Runnable(){
@@ -628,7 +630,7 @@ public class RoutingProtocol extends Protocol {
         LOGGER.error( "Could not load routing table", e );
       }
     } 
-      
+
     myRoutingTable = new RoutingTable(getLocalPeerId());
   }
 
@@ -711,7 +713,7 @@ public class RoutingProtocol extends Protocol {
       sendAnnoucement(myEntry); 
     }
   }
-  
+
   public static boolean isInPortRange(int aPort){
     if(aPort < START_PORT) return false;
     if(aPort > END_PORT) return false;
@@ -738,7 +740,7 @@ public class RoutingProtocol extends Protocol {
               if(!theEntry.getPeer().getPeerId().equals( myLocalPeerId )){
                 theEntry = theEntry.incHopDistance();
               }
-              
+
               myRoutingTable.addRoutingTableEntry( theEntry );
             }
           }

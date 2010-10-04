@@ -115,6 +115,24 @@ public class RoutingTableTest extends TestCase {
     }
   }
   
+  public void testGatewayNotReachable() throws NoAvailableNetworkAdapterException, UnknownPeerException{
+    RoutingTable theRoutingTable = new RoutingTable("1");
+    theRoutingTable.addRoutingTableEntry( new RoutingTableEntry(new SocketPeer("1",12800), 0, new SocketPeer("1",12800), System.currentTimeMillis() ));
+    theRoutingTable.addRoutingTableEntry( new RoutingTableEntry(new SocketPeer("2",12801), 2, new SocketPeer("3",12801), System.currentTimeMillis() ));
+    theRoutingTable.addRoutingTableEntry( new RoutingTableEntry(new SocketPeer("3",12802), 1, new SocketPeer("3",12802), System.currentTimeMillis() ));
+    
+    assertTrue( theRoutingTable.getEntryForPeer( "1" ).isReachable() );
+    assertTrue( theRoutingTable.getEntryForPeer( "2" ).isReachable() );
+    assertTrue( theRoutingTable.getEntryForPeer( "3" ).isReachable() );
+    
+    theRoutingTable.addRoutingTableEntry( new RoutingTableEntry(new SocketPeer("3",12802), RoutingTableEntry.MAX_HOP_DISTANCE, new SocketPeer("3",12802), System.currentTimeMillis() ));
+    
+    assertTrue( theRoutingTable.getEntryForPeer( "1" ).isReachable() );
+    //entry 2 must not be available because entry 3 is the gateway for entry 2 and entry 3 is not reachable
+    assertFalse( theRoutingTable.getEntryForPeer( "2" ).isReachable() );
+    assertFalse( theRoutingTable.getEntryForPeer( "3" ).isReachable() );
+  }
+  
   
   
 }
