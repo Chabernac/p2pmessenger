@@ -131,6 +131,7 @@ public class RoutingTableEntryHistoryDialog extends JDialog {
     public Component getTableCellRendererComponent(JTable anTable,
         Object anValue, boolean isSelected, boolean anHasFocus, int anRow,
         int anColumn) {
+      setOpaque( true );
       setForeground(Color.darkGray);
       RoutingTableEntryHistory theHistoryEntry = myRoutingTable.getHistory().get(anRow);
       RoutingTableEntry theEntry = theHistoryEntry.getRoutingTableEntry();
@@ -142,6 +143,9 @@ public class RoutingTableEntryHistoryDialog extends JDialog {
         }
       } else if(theHistoryEntry.getAction() == RoutingTableEntryHistory.Action.DELETE){
         setForeground(Color.RED);
+      }
+      if(theHistoryEntry.isResultedInUpdate()){
+        setBackground( Color.LIGHT_GRAY );
       }
       setText(anValue.toString());
       setToolTipText(parseToHtml(theHistoryEntry.getStackTrace()));

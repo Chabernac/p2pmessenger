@@ -138,6 +138,10 @@ public class RoutingFrame extends JFrame {
 
   public static void main(String args[]) throws ProtocolException, InterruptedException{
     //    PropertyConfigurator.configure( "log4j.properties" );
+    System.getProperties().put("http.proxyHost", "iproxy.axa.be");
+    System.getProperties().put("http.proxyPort", "8080");
+
+    
     BasicConfigurator.configure();
     PropertyMap theProperties = new PropertyMap();
     theProperties.setProperty( "routingprotocol.exchangedelay", "60");
@@ -151,7 +155,7 @@ public class RoutingFrame extends JFrame {
                                                                                       ,"10.240.222.101"
                                                                                       ,"10.240.221.112"
                                                                                       ,"10.240.221.73"
-                                                                                      ,"http://x22p0212:8080") );
+                                                                                      ,"http://brolpeertopeerwebnode.appspot.com/") );
     ProtocolFactory theFactory = new ProtocolFactory(theProperties);
     ProtocolContainer theContainer = new ProtocolContainer(theFactory);
     ProtocolServer theServer1 = new ProtocolServer(theContainer, RoutingProtocol.START_PORT, 20, true);

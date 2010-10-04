@@ -64,8 +64,10 @@ public class RoutingTable implements Iterable< RoutingTableEntry >, Serializable
   public synchronized void addRoutingTableEntry(RoutingTableEntry anEntry){
     inspectRoutingTableEntryHistory();
     
+    RoutingTableEntryHistory theHistoryRow =  null;
     if(isKeepHistory){
-      myRoutingTableEntryHistory.add( new RoutingTableEntryHistory(anEntry,RoutingTableEntryHistory.Action.ADD ) );
+      theHistoryRow = new RoutingTableEntryHistory(anEntry,RoutingTableEntryHistory.Action.ADD );
+      myRoutingTableEntryHistory.add( theHistoryRow );
     }
 
     if(anEntry.getPeer().getPeerId() == null || anEntry.getPeer().getPeerId().equals( "" )){
@@ -115,6 +117,7 @@ public class RoutingTable implements Iterable< RoutingTableEntry >, Serializable
           &&!thePeerEntry.equals( anEntry )){
 
         myRoutingTable.put( anEntry.getPeer().getPeerId(), anEntry );
+        if(theHistoryRow != null) theHistoryRow.setResultedInUpdate( true );
         notifyListenersOfRoutingTableEntryChange( anEntry );
         //        LOGGER.debug( "Updated routing table entry to routing table for peer:   " + myLocalPeerId + " : "  + anEntry );
 
@@ -129,15 +132,31 @@ public class RoutingTable implements Iterable< RoutingTableEntry >, Serializable
         } else {
           LOGGER.debug( "Updated routing table entry to routing table for peer:   " + myLocalPeerId + " : "  + anEntry + " because the entry is shorter than the entry we have" );
         }
+        checkIntegrityForEntry( anEntry );
       }
 
     } else {
       myRoutingTable.put(anEntry.getPeer().getPeerId(), anEntry);
+      if(theHistoryRow != null) theHistoryRow.setResultedInUpdate( true );
       notifyListenersOfRoutingTableEntryChange( anEntry );
       LOGGER.debug( "Added a new routing table entry to routing table for peer: " + myLocalPeerId + " : "  + anEntry);
+      checkIntegrityForEntry( anEntry );
     }
     synchronized(this){
       notifyAll();
+    }
+  }
+  
+  private void checkIntegrityForEntry(RoutingTableEntry anEntry){
+    if(!anEntry.isReachable()){
+      //look for entries which have this peer as gateway.  they will not be reachable as well
+      for(RoutingTableEntry theEntry : getReachableEntriesEntries()){
+        if(theEntry.getGateway().getPeerId().equals( anEntry.getPeer().getPeerId() )){
+          //this entry will not be reachable  because the gateway is not reachable
+          RoutingTableEntry theNewEntry = theEntry.derivedEntry( RoutingTableEntry.MAX_HOP_DISTANCE );
+          addRoutingTableEntry( theNewEntry );
+        }
+      }
     }
   }
   

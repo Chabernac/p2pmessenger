@@ -5,7 +5,6 @@
 package chabernac.protocol.routing;
 
 import java.net.URL;
-import java.util.List;
 
 public class ScanWebSystem implements Runnable{
   private RoutingProtocol myRoutingProtocol = null;

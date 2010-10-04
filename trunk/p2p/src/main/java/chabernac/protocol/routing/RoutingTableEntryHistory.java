@@ -12,6 +12,7 @@ public class RoutingTableEntryHistory {
   private final Exception myStackTrace;
   public static enum Action{ADD, DELETE};
   private final Action myAction; 
+  private boolean isResultedInUpdate = false;
 
   public RoutingTableEntryHistory ( RoutingTableEntry anRoutingTableEntry, Action anAction ) {
     super();
@@ -38,5 +39,13 @@ public class RoutingTableEntryHistory {
 
   public String toString(){
     return myRoutingTableEntry.toString() + "\r\n" + getStackTrace();
+  }
+
+  public boolean isResultedInUpdate() {
+    return isResultedInUpdate;
+  }
+
+  public void setResultedInUpdate( boolean anResultedInUpdate ) {
+    isResultedInUpdate = anResultedInUpdate;
   }
 }
