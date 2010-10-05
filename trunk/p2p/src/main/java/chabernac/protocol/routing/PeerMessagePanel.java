@@ -14,15 +14,17 @@ import chabernac.protocol.routing.PeerMessage.State;
 
 public class PeerMessagePanel extends JPanel {
   private static final long serialVersionUID = 1872558355864705752L;
+  private final iPeerSender myPeerSender;
   
-  public PeerMessagePanel(){
+  
+  public PeerMessagePanel ( iPeerSender aPeerSender ) {
+    myPeerSender = aPeerSender;
     buildGUI();
   }
-  
+
   private void buildGUI(){
     setLayout( new BorderLayout() );
-    PeerSender theSender = (PeerSender)PeerSenderHolder.getPeerSender();
-    PeerMessageTableModel theModel = new PeerMessageTableModel(theSender);
+    PeerMessageTableModel theModel = new PeerMessageTableModel((PeerSender) myPeerSender);
     JTable theTable = new JTable(theModel);
     theTable.getColumnModel().getColumn( 0 ).setPreferredWidth( 10 );
     theTable.getColumnModel().getColumn( 1 ).setPreferredWidth( 200 );

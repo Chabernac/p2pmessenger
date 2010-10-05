@@ -3,6 +3,7 @@ package chabernac.protocol.routing;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
@@ -32,37 +33,46 @@ public class PeerSender implements iPeerSender {
       notifyListeners(theMessage);
     }
 
-    Socket theSocket = aPeer.createSocket( aPeer.getPort() );
+    int theRetries = 10;
 
-    if(theSocket == null) {
-      changeState(theMessage, State.NOK);
-      throw new IOException("Could not open socket to peer: " + aPeer.getPeerId() + " " + aPeer.getHosts() + ":" + aPeer.getPort());
+    while(theRetries-- > 0){
+      Socket theSocket = aPeer.createSocket( aPeer.getPort() );
+
+      if(theSocket == null) {
+        changeState(theMessage, State.NOK);
+        throw new IOException("Could not open socket to peer: " + aPeer.getPeerId() + " " + aPeer.getHosts() + ":" + aPeer.getPort());
+      }
+
+      ScheduledExecutorService theService = Executors.newScheduledThreadPool( 1 );
+
+      BufferedReader theReader = null;
+      PrintWriter theWriter = null;
+      try{
+        theService.schedule( new SocketCloser(theSocket), aTimeoutInSeconds, TimeUnit.SECONDS );
+        theWriter = new PrintWriter(new OutputStreamWriter(theSocket.getOutputStream()));
+        theReader = new BufferedReader(new InputStreamReader(theSocket.getInputStream()));
+        theWriter.println(aMessage);
+        theWriter.flush();
+        changeState(theMessage, State.SEND);
+        String theReturnMessage = theReader.readLine();
+        theMessage.setResult(theReturnMessage);
+        notifyListeners(theMessage);
+
+        return theReturnMessage;
+      }catch(IOException e){
+        //for some reason the socket was corrupt just close the socket and retry untill retry counter is zero
+        SocketPoolFactory.getSocketPool().close( theSocket );
+        if(theRetries <= 0) {
+          theMessage.setState(State.NOK);
+          notifyListeners(theMessage);
+          throw e;
+        }
+      }finally{
+        theService.shutdownNow();
+        SocketPoolFactory.getSocketPool().checkIn( theSocket );
+      }
     }
-
-    ScheduledExecutorService theService = Executors.newScheduledThreadPool( 1 );
-
-    BufferedReader theReader = null;
-    PrintWriter theWriter = null;
-    try{
-      theService.schedule( new SocketCloser(theSocket), aTimeoutInSeconds, TimeUnit.SECONDS );
-      theWriter = new PrintWriter(new OutputStreamWriter(theSocket.getOutputStream()));
-      theReader = new BufferedReader(new InputStreamReader(theSocket.getInputStream()));
-      theWriter.println(aMessage);
-      theWriter.flush();
-      changeState(theMessage, State.SEND);
-      String theReturnMessage = theReader.readLine();
-      theMessage.setResult(theReturnMessage);
-      notifyListeners(theMessage);
-
-      return theReturnMessage;
-    }catch(IOException e){
-      theMessage.setState(State.NOK);
-      notifyListeners(theMessage);
-      throw e;
-    }finally{
-      theService.shutdownNow();
-      SocketPoolFactory.getSocketPool().checkIn( theSocket );
-    }
+    throw new IOException("Could not send message");
   }
 
   private void changeState(PeerMessage aMessage, PeerMessage.State aState){
@@ -102,6 +112,22 @@ public class PeerSender implements iPeerSender {
     }
   }
 
+  private class StreamCloser implements Runnable{
+    private final OutputStream myOutputStream;
+
+    public StreamCloser ( OutputStream anOutputStream) {
+      super();
+      myOutputStream = anOutputStream;
+    }
+
+    public void run(){
+      try {
+        myOutputStream.close();
+      } catch ( IOException e ) {
+      }
+    }
+  }
+
   public void addPeerSenderListener(iSocketPeerSenderListener aListener){
     myPeerSenderListeners.add(aListener);
   }
@@ -122,10 +148,11 @@ public class PeerSender implements iPeerSender {
     URLConnection theConnection = null;
     BufferedReader theReader = null;
     OutputStreamWriter theWriter= null;
-
+    ScheduledExecutorService theService = Executors.newScheduledThreadPool( 1 );
     try{
       theConnection = theCometURL.openConnection();
       theConnection.setDoOutput(true);
+      theService.schedule( new StreamCloser(theConnection.getOutputStream()), aTimeout, TimeUnit.SECONDS );
       theWriter = new OutputStreamWriter(theConnection.getOutputStream());
       theWriter.write("session=-1&input=" + URLEncoder.encode(aMessage, "UTF-8"));
       theWriter.flush();
@@ -133,8 +160,16 @@ public class PeerSender implements iPeerSender {
       changeState(theMessage, State.SEND);
 
       theReader = new BufferedReader(new InputStreamReader(theConnection.getInputStream()));
-      return theReader.readLine();
+      String theResponse = theReader.readLine();
+      theMessage.setResult( theResponse );
+      notifyListeners( theMessage );
+      return theResponse;
+    }catch(IOException e){
+      changeState(theMessage, State.NOK);
+      notifyListeners(theMessage);
+      throw e;
     } finally {
+      theService.shutdownNow();
       if(theReader != null){
         try{
           theReader.close();

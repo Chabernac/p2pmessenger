@@ -56,7 +56,7 @@ public class PeerMessageTableModel implements TableModel, iSocketPeerSenderListe
     PeerMessage theMessage = getPeerMessageAtRow(aRow);
     if(aColumn == 0) return theMessage.getState().name();
     if(aColumn == 1) {
-      if(theMessage.getPeer().getPeerId() != null) return theMessage.getPeer().getPeerId();
+      if(theMessage.getPeer().getPeerId() != null && !"".equals( theMessage.getPeer().getPeerId())) return theMessage.getPeer().getPeerId();
       else return theMessage.getPeer().getEndPointRepresentation();
     }
     if(aColumn == 2) return theMessage.getMessage();
