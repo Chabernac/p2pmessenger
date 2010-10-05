@@ -42,7 +42,7 @@ public class Server implements Runnable{
         new Thread(new SocketHandler(myServerSocket.accept())).start();
       }
     }catch(SocketException e){
-      LOGGER.debug("Socket has been closed");
+      LOGGER.debug("Socket has been closed", e);
     }catch(Exception e){ 
       LOGGER.debug("Error occured in server thread",e); 
     }
@@ -75,6 +75,10 @@ public class Server implements Runnable{
 
   public boolean isRunning(){
     return running;
+  }
+  
+  public int getPort(){
+    return port;
   }
 
   private class SocketHandler implements Runnable  {
