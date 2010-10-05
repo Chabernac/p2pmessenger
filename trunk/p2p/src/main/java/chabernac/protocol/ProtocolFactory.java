@@ -48,7 +48,7 @@ public class ProtocolFactory implements iProtocolFactory{
     Protocol theProtocol = createProt( aProtocolId );
     try {
       setupLogging( theProtocol );
-    } catch ( IOException e ) {
+    } catch ( Throwable e ) {
       LOGGER.error( "Could not setup logging for protocol '" + theProtocol.getClass().getName() + "'" );
     }
     return theProtocol;
