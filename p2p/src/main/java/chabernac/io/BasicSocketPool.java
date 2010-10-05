@@ -103,20 +103,6 @@ public class BasicSocketPool extends Observable implements iSocketPool<SocketPro
         myCheckedInPool.add( theProxy );
         notifyAllObs();
       }
-
-
-
-//    try {
-//      if(theProxy.getSocket() != null){
-//        aSocket.close();
-//      }
-//    } catch ( IOException e ) {
-//    } finally {
-//      synchronized(LOCK){
-//        myCheckedOutPool.remove( theProxy );
-//        notifyAllObs();
-//      }
-//    }
     }
 
     private void closeProxy(SocketProxy aProxy){ 
@@ -148,9 +134,6 @@ public class BasicSocketPool extends Observable implements iSocketPool<SocketPro
       }
 
       closeProxy( theProxy );
-
-      //close and check in are the same in the simple pool
-//    checkIn( aSocket );
     }
 
     @Override

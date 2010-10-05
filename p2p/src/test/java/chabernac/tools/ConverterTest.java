@@ -53,19 +53,19 @@ public class ConverterTest extends TestCase {
 
     assertEquals(4, theTable2.getEntries().size());
 
-    assertEquals("x20d1148", ((SocketPeer)theTable2.getEntryForPeer( "2" ).getPeer()).getHosts().get( 0 ));
+    assertEquals("x20d1148", ((SocketPeer)theTable2.getEntryForPeer( "2" ).getPeer()).getHosts().get( 0 ).getIp().get( 0 ));
     assertEquals(1002, ((SocketPeer)theTable2.getEntryForPeer( "2" ).getPeer()).getPort());
     assertEquals("2", theTable2.getEntryForPeer( "2" ).getPeer().getPeerId());
     assertEquals(theLastOnlineTime2, theTable2.getEntryForPeer( "2" ).getLastOnlineTime());
     assertEquals(1, theTable2.getEntryForPeer( "2" ).getHopDistance());
 
-    assertEquals("x01p0880", ((SocketPeer)theTable2.getEntryForPeer( "3" ).getPeer()).getHosts().get( 0 ));
+    assertEquals("x01p0880", ((SocketPeer)theTable2.getEntryForPeer( "3" ).getPeer()).getHosts().get( 0 ).getIp().get( 0 ));
     assertEquals(1003, ((SocketPeer)theTable2.getEntryForPeer( "3" ).getPeer()).getPort());
     assertEquals("3", theTable2.getEntryForPeer( "3" ).getPeer().getPeerId());
     assertEquals(theLastOnlineTime3, theTable2.getEntryForPeer( "3" ).getLastOnlineTime());
     assertEquals(2, theTable2.getEntryForPeer( "3" ).getHopDistance());
 
-    assertEquals("x01p0880", ((SocketPeer)theTable2.getEntryForPeer( "4" ).getPeer()).getHosts().get( 0 ));
+    assertEquals("x01p0880", ((SocketPeer)theTable2.getEntryForPeer( "4" ).getPeer()).getHosts().get( 0 ).getIp().get( 0 ));
     assertEquals(1003, ((SocketPeer)theTable2.getEntryForPeer( "4" ).getPeer()).getPort());
     assertEquals("4", theTable2.getEntryForPeer( "4" ).getPeer().getPeerId());
     assertEquals(theLastOnlineTime4, theTable2.getEntryForPeer( "4" ).getLastOnlineTime());

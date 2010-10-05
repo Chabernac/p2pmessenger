@@ -13,9 +13,10 @@ import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import junit.framework.TestCase;
+
 import org.apache.log4j.BasicConfigurator;
 
-import junit.framework.TestCase;
 import chabernac.nserver.EchoProtocol;
 import chabernac.nserver.Server;
 import chabernac.tools.NetTools;
@@ -145,6 +146,13 @@ public class SocketPoolTest extends TestCase {
       assertEquals( 0, theSocketPool.getCheckedOutPool().size() );
       assertEquals( 0, theSocketPool.getCheckedInPool().size() );
       assertEquals( 0, theSocketPool.getConnectingPool().size() );
+      
+      //test if the socket pool detects a closed socket and creates a new one
+      theSocket = theSocketPool.checkOut( new InetSocketAddress("localhost", theServer.getPort()) );
+      theSocket.close();
+      theSocketPool.checkIn( theSocket );
+      theSocket = theSocketPool.checkOut( new InetSocketAddress("localhost", theServer.getPort()) );
+      assertEquals( "123", writeAndReadToSocket( theSocket, "123" ));
       
     }finally {
       theServer.stop();

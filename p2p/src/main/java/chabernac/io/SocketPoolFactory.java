@@ -6,7 +6,7 @@ package chabernac.io;
 
 
 public class SocketPoolFactory {
-  private static iSocketPool<SocketProxy> INSTANCE = new SimpleSocketPool();
+  private static iSocketPool<SocketProxy> INSTANCE = new BasicSocketPool();
   
   public static iSocketPool<SocketProxy> getSocketPool(){
     return INSTANCE;
