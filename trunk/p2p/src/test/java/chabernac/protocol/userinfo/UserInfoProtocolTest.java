@@ -305,6 +305,8 @@ public class UserInfoProtocolTest extends AbstractProtocolTest {
       
       theServer1.kill();
       
+      Thread.sleep( SLEEP_AFTER_SCAN );
+      
       theRoutingProtocol2.exchangeRoutingTable();
       
       Thread.sleep( SLEEP_AFTER_SCAN );

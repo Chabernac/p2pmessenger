@@ -12,6 +12,8 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -40,6 +42,8 @@ public class ProtocolServer implements Runnable{
   private Object LOCK = new Object();
   private AtomicLong mySimultanousThreads = new AtomicLong();
   private iRunnableListener myRunnableListener = null;
+  private ExecutorService myClientHandlerService = null;
+  private List< Socket > myRunningSockets = new ArrayList< Socket >();
 
   public ProtocolServer(IProtocol aProtocol, int aPort, int aNumberOfThreads){
     this(aProtocol, aPort, aNumberOfThreads, false);
@@ -72,6 +76,14 @@ public class ProtocolServer implements Runnable{
       }
     } catch ( IOException e ) {
     }
+    myClientHandlerService.shutdownNow();
+    for(Socket theSocket : myRunningSockets){
+      try {
+        theSocket.close();
+      } catch ( IOException e ) {
+      }
+    }
+    myRunningSockets.clear();
   }
 
   public void stop(){
@@ -108,7 +120,7 @@ public class ProtocolServer implements Runnable{
       myServerInfo.setServerPort( myServerSocket.getLocalPort() );
       myProtocol.setServerInfo( myServerInfo );
 
-      ExecutorService theClientHandlerService = Executors.newFixedThreadPool( myNumberOfThreads );
+      myClientHandlerService = Executors.newFixedThreadPool( myNumberOfThreads );
 
       LOGGER.debug( "Starting protocol server at port '" + myPort + "'" );
 
@@ -119,7 +131,7 @@ public class ProtocolServer implements Runnable{
         if(myRunnableListener != null){
           theHandler.addListener( myRunnableListener );
         }
-        theClientHandlerService.execute( theHandler );
+        myClientHandlerService.execute( theHandler );
       }
     }catch(SocketException e){
       if(!"socket closed".equalsIgnoreCase( e.getMessage())){
@@ -158,6 +170,7 @@ public class ProtocolServer implements Runnable{
     }
 
     public void doRun(){
+      myRunningSockets.add( mySocket );
       long theSessionId = myRandom.nextLong();
 
       BufferedReader theReader = null;
@@ -177,6 +190,7 @@ public class ProtocolServer implements Runnable{
       }catch(IOException e){
         LOGGER.error( "Io exception occured in protocol server", e );
       } finally {
+        myRunningSockets.remove( mySocket );
         try{
           theWriter.flush();
           theWriter.close();

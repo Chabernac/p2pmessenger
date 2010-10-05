@@ -4,7 +4,6 @@
  */
 package chabernac.p2p.web;
 
-import java.io.IOException;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -60,10 +59,12 @@ public class ProtocolServlet extends HttpServlet {
     String theInput = aRequest.getParameter(  "input" );
     String theSession = aRequest.getParameter( "session" );
     try {
-//      theInput = URLDecoder.decode(theInput, "UTF-8");
+      if(theInput == null || "".equals( theInput ) || theSession == null || "".equals( theSession )){
+        aResponse.getWriter().println( ((RoutingProtocol)getProtocolContainer().getProtocol( RoutingProtocol.ID )).getLocalPeerId() );
+      }
       String theResult = getProtocolContainer().handleCommand( Long.parseLong( theSession ), theInput );
       aResponse.getWriter().println(theResult);
-    } catch ( IOException e ) {
+    } catch ( Exception e ) {
       LOGGER.error( "could not send response message ", e );
     }
   }
