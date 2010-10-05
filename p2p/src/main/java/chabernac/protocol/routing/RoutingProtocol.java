@@ -693,6 +693,8 @@ public class RoutingProtocol extends Protocol {
   private class RoutingTableListener implements IRoutingTableListener{
     @Override
     public void routingTableEntryChanged( RoutingTableEntry anEntry ) {
+      //make sure all peers in the routing table have the same peersender
+      anEntry.getPeer().setPeerSender( myPeerSender );
       myChangeService.execute( new SendAnnouncement(anEntry) );
     }
 
@@ -812,5 +814,9 @@ public class RoutingProtocol extends Protocol {
   public void setServerInfo( ServerInfo aServerInfo ) throws ProtocolException {
     myServerInfo = aServerInfo;
     start();
+  }
+  
+  public iPeerSender getPeerSender() {
+    return myPeerSender;
   }
 }

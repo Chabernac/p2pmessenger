@@ -99,7 +99,9 @@ public class RoutingFrame extends JFrame {
     MessageProtocol theMessageProtocol = (MessageProtocol)myProtocolContainer.getProtocol( MessageProtocol.ID );
     thePane.add("Messages", new MessagePanel(theMessageProtocol));
     thePane.add("Protocol", new ProtocolMessagePanel(myProtocolContainer));
-    thePane.add("PeerMessages", new PeerMessagePanel());
+    
+    
+    thePane.add("PeerMessages", new PeerMessagePanel(theRoutingProtocl.getPeerSender()));
 
 
     getContentPane().setLayout( new BorderLayout() );

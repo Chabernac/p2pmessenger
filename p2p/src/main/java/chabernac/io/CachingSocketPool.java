@@ -14,7 +14,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public class CachingSocketPool extends Observable{
+public class CachingSocketPool extends Observable implements iSocketPool< SocketProxy >{
   private Pool< SocketProxy > myCheckedInPool = new Pool< SocketProxy >();
   private Pool< SocketProxy > myCheckedOutPool = new Pool< SocketProxy >();
   private Pool< SocketProxy > myConnectingPool = new Pool< SocketProxy >();
@@ -158,15 +158,21 @@ public class CachingSocketPool extends Observable{
     cleanItemsOlderThan( myConnectingPool,  -1);
   }
 
-  List< SocketProxy > getCheckInPool(){
+  public List< SocketProxy > getCheckedInPool(){
     return Collections.unmodifiableList(  myCheckedInPool.getItemsOlderThan( System.currentTimeMillis() ) );
   }
 
-  List< SocketProxy > getCheckOutPool(){
+  public List< SocketProxy > getCheckedOutPool(){
     return Collections.unmodifiableList(  myCheckedOutPool.getItemsOlderThan( System.currentTimeMillis() ) );
   }
   
-  List< SocketProxy > getConnectingPool(){
+  public List< SocketProxy > getConnectingPool(){
     return Collections.unmodifiableList(  myConnectingPool.getItemsOlderThan( System.currentTimeMillis() ));
+  }
+
+  @Override
+  public void cleanUpOlderThan( long aTimestamp ) {
+    // TODO Auto-generated method stub
+    
   }
 }
