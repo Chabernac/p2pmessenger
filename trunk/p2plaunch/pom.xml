@@ -33,8 +33,10 @@
 						<argument>-classpath</argument>
 						<classpath />
 						<argument>chabernac.gui.ApplicationLauncher</argument>
-						<argument>visible=true</argument>
+						<argument>visible=false</argument>
 						<argument>persist=true</argument>
+						<argument>http.proxyHost=iproxy.axa.be</argument>
+						<argument>http.proxyPort=8080</argument>
 					</arguments>
 				</configuration>
 			</plugin>
