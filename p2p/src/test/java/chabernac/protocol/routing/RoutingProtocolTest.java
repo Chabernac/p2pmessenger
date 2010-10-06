@@ -12,6 +12,7 @@ import java.util.Properties;
 
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
+import org.junit.Ignore;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.ServletHolder;
@@ -590,6 +591,7 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
     }
   }
   
+  @Ignore("UDP message are blocked on some systems")
   public void testUDPAnnouncement() throws InterruptedException, ProtocolException, UnknownPeerException{
     ProtocolContainer theProtocol1 = getProtocolContainer( -1, false, "1" );
     ProtocolServer theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT, 5);
