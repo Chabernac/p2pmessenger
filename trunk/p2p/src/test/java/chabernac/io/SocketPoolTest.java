@@ -154,6 +154,23 @@ public class SocketPoolTest extends TestCase {
       theSocket = theSocketPool.checkOut( new InetSocketAddress("localhost", theServer.getPort()) );
       assertEquals( "123", writeAndReadToSocket( theSocket, "123" ));
       
+      assertEquals( 1, theSocketPool.getCheckedOutPool().size() );
+      assertEquals( 0, theSocketPool.getCheckedInPool().size() );
+      assertEquals( 0, theSocketPool.getConnectingPool().size() );
+      
+      Socket theSocket2 = theSocketPool.checkOut( new InetSocketAddress("localhost", theServer.getPort()) );
+      theSocketPool.checkIn( theSocket2 );
+      
+      assertEquals( 1, theSocketPool.getCheckedOutPool().size() );
+      assertEquals( 1, theSocketPool.getCheckedInPool().size() );
+      assertEquals( 0, theSocketPool.getConnectingPool().size() );
+      
+      theSocketPool.cleanUp();
+      
+      assertEquals( 0, theSocketPool.getCheckedOutPool().size() );
+      assertEquals( 0, theSocketPool.getCheckedInPool().size() );
+      assertEquals( 0, theSocketPool.getConnectingPool().size() );
+      
     }finally {
       theServer.stop();
     }

@@ -316,6 +316,9 @@ public class UserInfoProtocolTest extends AbstractProtocolTest {
       assertEquals( UserInfo.Status.OFFLINE, theUserInfo.getStatus() );
       
       theServer1.start();
+      
+      Thread.sleep( SLEEP_AFTER_SCAN );
+      
       theRoutingProtocol2.exchangeRoutingTable();
       
       Thread.sleep(SLEEP_AFTER_SCAN);

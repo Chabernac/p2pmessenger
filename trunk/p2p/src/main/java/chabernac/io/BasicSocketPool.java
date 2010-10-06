@@ -25,8 +25,7 @@ public class BasicSocketPool extends Observable implements iSocketPool<SocketPro
       SocketProxy theProxy = searchProxyForSocketAddressInPool( myCheckedInPool, anAddress);
       if(theProxy != null){
         Socket theSocket = theProxy.connect();
-        if(System.currentTimeMillis() - theProxy.getConnectTime().getTime() > 30000 ||
-            !theSocket.isBound() || 
+        if(!theSocket.isBound() || 
             theSocket.isClosed() ||
             !theSocket.isConnected() ||
             theSocket.isInputShutdown() ||
@@ -135,27 +134,26 @@ public class BasicSocketPool extends Observable implements iSocketPool<SocketPro
 
       closeProxy( theProxy );
     }
+    
+    private void clean(List<SocketProxy> aPool){
+      synchronized (LOCK) {
+        for(SocketProxy theSocket : aPool){
+          if(theSocket.getSocket() != null){
+            try {
+              theSocket.getSocket().close();
+            } catch ( IOException e ) {
+            }
+          }
+        }
+        aPool.clear();
+      }
+    }
 
     @Override
     public void cleanUp() {
-      synchronized (LOCK) {
-        for(SocketProxy theSocket : myCheckedOutPool){
-          if(theSocket.getSocket() != null){
-            try {
-              theSocket.getSocket().close();
-            } catch ( IOException e ) {
-            }
-          }
-        }
-        for(SocketProxy theSocket : myConnectingPool){
-          if(theSocket.getSocket() != null){
-            try {
-              theSocket.getSocket().close();
-            } catch ( IOException e ) {
-            }
-          }
-        }
-      }
+      clean(myCheckedInPool);
+      clean(myCheckedOutPool);
+      clean(myConnectingPool);
       notifyAllObs();
     }
 
