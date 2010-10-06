@@ -883,6 +883,7 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
       RoutingTable theRoutingTable1 = theRoutingProtocol1.getRoutingTable();
       RoutingProtocol theRoutingProtocol2 = (RoutingProtocol)theProtocol2.getProtocol( RoutingProtocol.ID );
       RoutingTable theRoutingTable2 = theRoutingProtocol2.getRoutingTable();
+      theRoutingTable2.setKeepHistory( true );
       
       Server theWebServer = new Server(9090);
 

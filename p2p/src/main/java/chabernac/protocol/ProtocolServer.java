@@ -77,7 +77,7 @@ public class ProtocolServer implements Runnable{
     } catch ( IOException e ) {
     }
     myClientHandlerService.shutdownNow();
-    for(Socket theSocket : myRunningSockets){
+    for(Socket theSocket : new ArrayList< Socket >(myRunningSockets)){
       try {
         theSocket.close();
       } catch ( IOException e ) {

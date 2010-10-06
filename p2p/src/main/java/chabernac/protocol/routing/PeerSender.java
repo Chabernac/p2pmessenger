@@ -55,6 +55,8 @@ public class PeerSender implements iPeerSender {
         theWriter.flush();
         changeState(theMessage, State.SEND);
         String theReturnMessage = theReader.readLine();
+        //TODO why do we sometimes have null replies when using BasicSocketPool
+        if(theReturnMessage == null || "".equals( theReturnMessage )) throw new IOException("empty result, socket corrupt?");
         theMessage.setResult(theReturnMessage);
         notifyListeners(theMessage);
 
