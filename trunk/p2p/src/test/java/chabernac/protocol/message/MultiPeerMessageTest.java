@@ -29,7 +29,7 @@ public class MultiPeerMessageTest extends TestCase {
     theMessage = theMessage.reply();
     
     assertEquals( 1, theMessage.getDestinations().size());
-    assertEquals( "a", theMessage.getDestinations().get( 0 ) );
+    assertEquals( "a", theMessage.getDestinations().iterator().next() );
     
     theMessage = MultiPeerMessage.createMessage( "a", "message" )
     .addDestination( "1" )

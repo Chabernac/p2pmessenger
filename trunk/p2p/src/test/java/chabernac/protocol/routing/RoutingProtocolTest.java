@@ -591,7 +591,7 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
     }
   }
   
-  @Ignore("UDP message are blocked on some systems")
+  @Ignore
   public void testUDPAnnouncement() throws InterruptedException, ProtocolException, UnknownPeerException{
     ProtocolContainer theProtocol1 = getProtocolContainer( -1, false, "1" );
     ProtocolServer theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT, 5);

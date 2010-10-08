@@ -8,7 +8,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 /*
@@ -18,14 +20,15 @@ import java.util.UUID;
 public class MultiPeerMessage implements Serializable{
   private static final long serialVersionUID = 7296768914758056021L;
   
-  private final List< String > myDestinations ;
+  private final Set< String > myDestinations ;
   private final String mySource;
   private final String myMessage;
   private final List<MessageIndicator> myIndicators;
   private final Date myCreationTime = new Date();
   private final UUID myUniqueId;
+  private final boolean isLoopBack;
   
-  public MultiPeerMessage ( List< String > anDestinations , String anSource , String anMessage , List< MessageIndicator > anIndicators, UUID aUniqueId ) {
+  public MultiPeerMessage ( Set< String > anDestinations , String anSource , String anMessage , List< MessageIndicator > anIndicators, UUID aUniqueId, boolean isLoopBack) {
     super();
     myDestinations = anDestinations;
     mySource = anSource;
@@ -36,11 +39,12 @@ public class MultiPeerMessage implements Serializable{
     } else {
       myUniqueId = aUniqueId;
     }
+    this.isLoopBack = isLoopBack;
   }
 
-  public List< String > getDestinations() {
-    if(myDestinations == null) return new ArrayList< String >();
-    return Collections.unmodifiableList( myDestinations );
+  public Set< String > getDestinations() {
+    if(myDestinations == null) return new HashSet< String >();
+    return Collections.unmodifiableSet( myDestinations );
   }
 
   public String getSource() {
@@ -51,51 +55,74 @@ public class MultiPeerMessage implements Serializable{
     return myMessage;
   }
 
+  
+  public boolean isLoopBack() {
+    return isLoopBack;
+  }
+
   public List< MessageIndicator > getIndicators() {
     if(myIndicators == null) return new ArrayList< MessageIndicator >();
     return Collections.unmodifiableList( myIndicators );
   }
-
+  
   public static MultiPeerMessage createMessage(String aMessage){
-    return new MultiPeerMessage(null, null, aMessage, null, null);
+    return new MultiPeerMessage(null, null, aMessage, null, null, false);
   }
   
   public static MultiPeerMessage createMessage(String aSource, String aMessage){
-    return new MultiPeerMessage(null, aSource, aMessage, null, null);
+    return new MultiPeerMessage(null, aSource, aMessage, null, null, false);
   }
   
   public MultiPeerMessage setSource(String aSource){
-    return new MultiPeerMessage(getDestinations(), aSource, getMessage(), getIndicators(), getUniqueId());
+    return new MultiPeerMessage(getDestinations(), aSource, getMessage(), getIndicators(), getUniqueId(), false);
   }
   
   public MultiPeerMessage addDestination(String aDestinationPeer){
-    List<String> theDestinations = new ArrayList< String >(getDestinations());
+    Set<String> theDestinations = new HashSet< String >(getDestinations());
     theDestinations.add( aDestinationPeer);
-    return new MultiPeerMessage(theDestinations, getSource(), getMessage(), getIndicators(), getUniqueId());
+    return new MultiPeerMessage(theDestinations, getSource(), getMessage(), getIndicators(), getUniqueId(), false);
   }
   
   public MultiPeerMessage removeDestination(String aDestinationPeer){
-    List<String> theDestinations = new ArrayList< String >(getDestinations());
+    Set<String> theDestinations = new HashSet< String >(getDestinations());
     theDestinations.remove( aDestinationPeer);
-    return new MultiPeerMessage(theDestinations, getSource(), getMessage(), getIndicators(), getUniqueId());
+    return new MultiPeerMessage(theDestinations, getSource(), getMessage(), getIndicators(), getUniqueId(), false);
   }
   
-  public MultiPeerMessage setDestinations(List<String> aDestinations){
-    return new MultiPeerMessage(aDestinations, getSource(), getMessage(), getIndicators(), getUniqueId());
+  public MultiPeerMessage setDestinations(Set<String> aDestinations){
+    return new MultiPeerMessage(aDestinations, getSource(), getMessage(), getIndicators(), getUniqueId(), false);
   }
   
   public MultiPeerMessage addMessageIndicator(MessageIndicator anIndicator){
     List<MessageIndicator> theMessageIndicators = new ArrayList< MessageIndicator >(getIndicators());
     theMessageIndicators.add( anIndicator );
-    return new MultiPeerMessage(getDestinations(), getSource(), getMessage(), theMessageIndicators, getUniqueId());
+    return new MultiPeerMessage(getDestinations(), getSource(), getMessage(), theMessageIndicators, getUniqueId(), false);
   }
   
+  public MultiPeerMessage removeMessageIndicator(MessageIndicator anIndicator){
+    List<MessageIndicator> theMessageIndicators = new ArrayList< MessageIndicator >(getIndicators());
+    theMessageIndicators.remove( anIndicator );
+    return new MultiPeerMessage(getDestinations(), getSource(), getMessage(), theMessageIndicators, getUniqueId(), false);
+  }
+  
+  public boolean containsIndicator(MessageIndicator anIndicator){
+    if(myIndicators == null){
+      return false;
+    }
+    return myIndicators.contains( anIndicator );
+  }
+  
+  
   public MultiPeerMessage setMessage(String aMessage){
-    return new MultiPeerMessage(getDestinations(), getSource(), aMessage, getIndicators(), getUniqueId());
+    return new MultiPeerMessage(getDestinations(), getSource(), aMessage, getIndicators(), getUniqueId(), false);
   }
   
   public MultiPeerMessage setMessageIndicators(List<MessageIndicator> anIndicators){
-    return new MultiPeerMessage(getDestinations(), getSource(), getMessage(), anIndicators, getUniqueId());
+    return new MultiPeerMessage(getDestinations(), getSource(), getMessage(), anIndicators, getUniqueId(), false);
+  }
+  
+  public MultiPeerMessage setLoopBack(boolean isLoopBack){
+    return new MultiPeerMessage(getDestinations(), getSource(), getMessage(), getIndicators(), getUniqueId(), isLoopBack);
   }
   
   public Date getCreationTime(){

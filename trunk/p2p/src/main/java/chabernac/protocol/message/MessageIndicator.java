@@ -7,5 +7,5 @@ package chabernac.protocol.message;
 import java.io.Serializable;
 
 public enum MessageIndicator implements Serializable{
-  ENCRYPTED, TO_BE_ENCRYPTED;
+  ENCRYPTED, TO_BE_ENCRYPTED, CLOSED_ENVELOPPE;
 }

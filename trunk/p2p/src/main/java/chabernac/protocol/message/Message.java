@@ -26,6 +26,7 @@ public class Message implements Serializable{
   private UUID myMessageId = UUID.randomUUID();
   private long myCreationTime = System.currentTimeMillis();
   private transient boolean isLocked = false;
+  private int myMessageTimeoutInSeconds = 5;
   
   private static int TTL = 8;
   
@@ -164,5 +165,11 @@ public class Message implements Serializable{
   }
   public void setLocked( boolean anLocked ) {
     isLocked = anLocked;
+  }
+  public int getMessageTimeoutInSeconds() {
+    return myMessageTimeoutInSeconds;
+  }
+  public void setMessageTimeoutInSeconds( int anMessageTimeoutInSeconds ) {
+    myMessageTimeoutInSeconds = anMessageTimeoutInSeconds;
   }
 }

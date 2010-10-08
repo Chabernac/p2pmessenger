@@ -16,7 +16,9 @@ import chabernac.protocol.application.ApplicationProtocol;
 import chabernac.protocol.echo.EchoProtocol;
 import chabernac.protocol.encryption.EncryptionException;
 import chabernac.protocol.encryption.EncryptionProtocol;
+import chabernac.protocol.filetransfer.FileHandlerDialogDispatcher;
 import chabernac.protocol.filetransfer.FileTransferProtocol;
+import chabernac.protocol.filetransfer.iFileHandler;
 import chabernac.protocol.infoexchange.InfoExchangeProtocol;
 import chabernac.protocol.infoexchange.InfoObject;
 import chabernac.protocol.list.ListProtocol;
@@ -24,7 +26,6 @@ import chabernac.protocol.message.MessageProtocol;
 import chabernac.protocol.message.MultiPeerMessageProtocol;
 import chabernac.protocol.ping.PingProtocol;
 import chabernac.protocol.pipe.PipeProtocol;
-import chabernac.protocol.routing.PeerSender;
 import chabernac.protocol.routing.PeerSenderHolder;
 import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.WebPeerProtocol;
@@ -86,7 +87,11 @@ public class ProtocolFactory implements iProtocolFactory{
     }
 
     if(FileTransferProtocol.ID.equalsIgnoreCase( aProtocolId )) {
-      return new FileTransferProtocol();
+      FileTransferProtocol theProtocol = new FileTransferProtocol();
+      if(myProtocolProperties.containsKey( "chabernac.protocol.filetransfer.iFileHandler" )){
+        theProtocol.setFileHandler( (iFileHandler )myProtocolProperties.getProperty( "chabernac.protocol.filetransfer.iFileHandler", new FileHandlerDialogDispatcher() ));
+      }
+      return theProtocol;
     }
 
     if(MessageProtocol.ID.equalsIgnoreCase( aProtocolId )) {

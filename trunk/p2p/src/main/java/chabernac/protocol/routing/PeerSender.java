@@ -48,7 +48,7 @@ public class PeerSender implements iPeerSender {
       BufferedReader theReader = null;
       PrintWriter theWriter = null;
       try{
-        theService.schedule( new SocketCloser(theSocket), aTimeoutInSeconds, TimeUnit.SECONDS );
+        if(aTimeoutInSeconds > 0) theService.schedule( new SocketCloser(theSocket), aTimeoutInSeconds, TimeUnit.SECONDS );
         theWriter = new PrintWriter(new OutputStreamWriter(theSocket.getOutputStream()));
         theReader = new BufferedReader(new InputStreamReader(theSocket.getInputStream()));
         theWriter.println(aMessage);
@@ -154,7 +154,7 @@ public class PeerSender implements iPeerSender {
     try{
       theConnection = theCometURL.openConnection();
       theConnection.setDoOutput(true);
-      theService.schedule( new StreamCloser(theConnection.getOutputStream()), aTimeout, TimeUnit.SECONDS );
+      if(aTimeout > 0) theService.schedule( new StreamCloser(theConnection.getOutputStream()), aTimeout, TimeUnit.SECONDS );
       theWriter = new OutputStreamWriter(theConnection.getOutputStream());
       theWriter.write("session=-1&input=" + URLEncoder.encode(aMessage, "UTF-8"));
       theWriter.flush();

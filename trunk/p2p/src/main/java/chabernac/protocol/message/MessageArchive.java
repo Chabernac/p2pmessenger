@@ -7,7 +7,6 @@ package chabernac.protocol.message;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -76,7 +75,7 @@ public class MessageArchive implements iDeliverReportListener, iMultiPeerMessage
   }
 
   public Set< MultiPeerMessage > getAllMessages() {
-    return Collections.unmodifiableSet( myAllMessages );
+    return Collections.unmodifiableSet( new LinkedHashSet< MultiPeerMessage >(myAllMessages) );
   }
 
   public void clear(){
