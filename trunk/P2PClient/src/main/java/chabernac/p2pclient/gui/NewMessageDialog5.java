@@ -43,6 +43,7 @@ import org.apache.log4j.Logger;
 
 import chabernac.gui.ApplicationLauncher;
 import chabernac.protocol.facade.P2PFacadeException;
+import chabernac.protocol.message.MessageIndicator;
 import chabernac.protocol.message.MultiPeerMessage;
 import chabernac.tools.Tools;
 
@@ -66,6 +67,7 @@ public class NewMessageDialog5 extends JDialog implements iMessageDialog{
   private InputMap myInputMap2 = null;
   private JScrollPane myReplyScrollPane = null;
   private Robot myRobot;
+  private boolean isEnveloppeAlwaysClosed = false;
 
   private ExecutorService myService = Executors.newFixedThreadPool( 1 );
   private ExecutorService mySendService = Executors.newFixedThreadPool( 5 );
@@ -101,7 +103,7 @@ public class NewMessageDialog5 extends JDialog implements iMessageDialog{
     myText.setWrapStyleWord(true);
     myText.setRows(4);
     myText.setColumns(20);
-    myText.setToolTipText("r = reply, a = reply all, c = chat, x = discard all");
+    myText.setToolTipText("r = reply, a = reply all, c = chat, x = discard all, o=open enveloppe");
     myReplyText = new JTextArea();
     myReplyText.setLineWrap(true);
     myReplyText.setWrapStyleWord(true);
@@ -126,6 +128,7 @@ public class NewMessageDialog5 extends JDialog implements iMessageDialog{
     myInputMap1.put(KeyStroke.getKeyStroke(KeyEvent.VK_A, 0), "replyall");
     myInputMap1.put(KeyStroke.getKeyStroke(KeyEvent.VK_C, 0), "chat");
     myInputMap1.put(KeyStroke.getKeyStroke(KeyEvent.VK_X, 0), "clear");
+    myInputMap1.put(KeyStroke.getKeyStroke(KeyEvent.VK_O, 0), "open");
     myInputMap1.put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "sendorclose");
     myInputMap1.put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), "sendorclose");
     myInputMap1.put(KeyStroke.getKeyStroke(KeyEvent.VK_PAUSE, 0), "nodialog");
@@ -145,6 +148,7 @@ public class NewMessageDialog5 extends JDialog implements iMessageDialog{
     theActionMap.put("nodialog", new NoDialogAction());
     theActionMap.put("setinvisible", new SetInvisibleAction());
     theActionMap.put("clear", new ClearAction());
+    theActionMap.put("open", new OpenAction());
 
 
 
@@ -187,6 +191,14 @@ public class NewMessageDialog5 extends JDialog implements iMessageDialog{
       repaint();
     }
   }
+  
+  public boolean isEnveloppeAlwaysClosed() {
+    return isEnveloppeAlwaysClosed;
+  }
+
+  public void setEnveloppeAlwaysClosed( boolean anEnveloppeAlwaysClosed ) {
+    isEnveloppeAlwaysClosed = anEnveloppeAlwaysClosed;
+  }
 
   private void setMessage(final MultiPeerMessage aMessage){
     System.out.println("Event dispatching thread: " + EventQueue.isDispatchThread());
@@ -202,7 +214,11 @@ public class NewMessageDialog5 extends JDialog implements iMessageDialog{
 
             myBorder.setTitle(theUserList);
             //myText.setToolTipText(theUserList);
-            myText.setText(aMessage.getMessage());
+            if(isEnveloppeAlwaysClosed || aMessage.containsIndicator( MessageIndicator.CLOSED_ENVELOPPE )){
+              myText.setText( "Typ 'o' om te openen'" );
+            } else {
+              myText.setText(aMessage.getMessage());
+            }
             myText.setEditable(false);
             myReplyText.setText("");
             myReplyMessage = null;
@@ -396,12 +412,16 @@ public class NewMessageDialog5 extends JDialog implements iMessageDialog{
   }
 
   private class ClearAction extends ChatAction{
-
     public void actionPerformed(ActionEvent e) {
       //TODO implement clear
       super.actionPerformed(e);
     }
-
+  }
+  
+  private class OpenAction extends ChatAction{
+    public void actionPerformed(ActionEvent e) {
+      myText.setText( myMessage.getMessage() );
+    }
   }
 
   private class NormalModeAction extends AbstractAction{

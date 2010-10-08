@@ -16,10 +16,12 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
@@ -59,7 +61,7 @@ public class UserPanel extends GPanel implements iUserSelectionProvider{
   private List< Component > myCheckBoxesList = new ArrayList< Component >();
   private List<iSelectionChangedListener> mySelectionListeners = new ArrayList< iSelectionChangedListener >();
   private ActionListener myCheckBoxListener = new MyCheckBoxListener();
-  private Map<String, List<String>> myGroups = new HashMap< String, List<String> >();
+  private Map<String, Set<String>> myGroups = new HashMap< String, Set<String> >();
 
   private iPaintable mySeperator = null;
 
@@ -130,7 +132,7 @@ public class UserPanel extends GPanel implements iUserSelectionProvider{
     anCheckBox.setStatus( anUserInfo.getStatus() );
   }
 
-  public Map<String, List<String>> getGroups(){
+  public Map<String, Set<String>> getGroups(){
     return Collections.unmodifiableMap( myGroups );
   }
 
@@ -164,7 +166,7 @@ public class UserPanel extends GPanel implements iUserSelectionProvider{
     String theGroups = thePreferences.getProperty( "userpanel.groups" );
     if(theGroups != null && theGroups.length() > 0){
       try {
-        myGroups = new Base64ObjectStringConverter<HashMap< String, List< String > >>().getObject( theGroups );
+        myGroups = new Base64ObjectStringConverter<HashMap< String, Set< String > >>().getObject( theGroups );
       } catch ( IOException e ) {
         LOGGER.error( "Could not load groups in preferences", e );
       }
@@ -282,8 +284,8 @@ public class UserPanel extends GPanel implements iUserSelectionProvider{
   }
 
   @Override
-  public List< String > getSelectedUsers() {
-    List<String> theSelectedUsers = new ArrayList< String >();
+  public Set< String > getSelectedUsers() {
+    Set<String> theSelectedUsers = new HashSet< String >();
     for(String thePeerId : myCheckBoxes.keySet()){
       if(myCheckBoxes.get( thePeerId ).isSelected()){
         theSelectedUsers.add(thePeerId);
@@ -293,7 +295,7 @@ public class UserPanel extends GPanel implements iUserSelectionProvider{
   }
 
   @Override
-  public void setSelectedUsers( List< String > aUserList ) {
+  public void setSelectedUsers( Set< String > aUserList ) {
     clear();
 
     //now select the ones from the list

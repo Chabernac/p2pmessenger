@@ -6,7 +6,7 @@
  */
 package chabernac.p2pclient.gui;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Observable;
 import java.util.Observer;
@@ -87,7 +87,7 @@ public class UserListPanelPopup extends GPanelPopupMenu {
   private class ClearCommand extends AbstractCommand{
     public String getName() { return "Clear"; }
     public boolean isEnabled() { return true; }
-    public void execute() { myPanel.setSelectedUsers( new ArrayList< String >() ); }
+    public void execute() { myPanel.setSelectedUsers( new HashSet< String >() ); }
   }
 
   private class NewGroupCommand extends AbstractCommand{

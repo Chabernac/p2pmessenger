@@ -5,13 +5,14 @@
 package chabernac.p2pclient.gui;
 
 import java.awt.Color;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
+
+import junit.framework.TestCase;
 
 import org.apache.log4j.BasicConfigurator;
 
-import junit.framework.TestCase;
 import chabernac.protocol.facade.P2PFacade;
 import chabernac.protocol.facade.P2PFacadeException;
 import chabernac.protocol.userinfo.DefaultUserInfoProvider;
@@ -81,13 +82,13 @@ public class UserPanelTest extends TestCase {
     
     assertEquals( new Color(0,200,0), theCheckBoxes.get( theFacade2.getPeerId() ).getForeground());
     
-    List<String> theSelectedUsers = new ArrayList< String >();
+    Set<String> theSelectedUsers = new HashSet< String >();
     theSelectedUsers.add(theFacade1.getPeerId());
     theUserPanel.setSelectedUsers( theSelectedUsers );
     
     assertTrue( theUserPanel.getCheckBoxes().get( theFacade1.getPeerId() ).isSelected() );
     
-    List<String> theSelected = theUserPanel.getSelectedUsers();
+    Set<String> theSelected = theUserPanel.getSelectedUsers();
     
     assertEquals( theSelectedUsers, theSelected );
     

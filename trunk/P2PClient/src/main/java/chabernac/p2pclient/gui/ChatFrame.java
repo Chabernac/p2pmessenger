@@ -88,6 +88,7 @@ public class ChatFrame extends SavedFrame implements iTitleProvider, isShowDialo
     ReceivedMessagesField theReceivedField = new ReceivedMessagesField(myMediator);
     
     myMediator.setMessageProvider( myMessageField );
+    myMediator.setAttachementProvider( myMessageField );
     myMediator.setReceivedMessagesProvider( theReceivedField );
     myMediator.setUserSelectionProvider( theUserPanel );
     myMediator.setTitleProvider( this );

@@ -4,21 +4,21 @@
  */
 package chabernac.p2pclient.gui;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import chabernac.protocol.message.MultiPeerMessage;
 
 public class DummyUserSelectionProvider implements iUserSelectionProvider {
-  private List<String> mySelectedUsers = new ArrayList< String >();
+  private Set<String> mySelectedUsers = new HashSet< String >();
 
   @Override
-  public List< String > getSelectedUsers() {
+  public Set< String > getSelectedUsers() {
     return mySelectedUsers;
   }
 
   @Override
-  public void setSelectedUsers( List< String > aUserList ) {
+  public void setSelectedUsers( Set< String > aUserList ) {
     mySelectedUsers = aUserList;
   }
 

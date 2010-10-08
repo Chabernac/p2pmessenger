@@ -15,7 +15,6 @@ import java.net.SocketException;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -191,17 +190,13 @@ public class Tools {
   public static String getEnvelop(P2PFacade aP2Facade, MultiPeerMessage aMessage) throws P2PFacadeException{
     String from = getShortNameForUser(aMessage.getSource(), aP2Facade);
 
-    List<String> to = aMessage.getDestinations();
+    Set<String> to = aMessage.getDestinations();
     String envelop = "[" + from;
     envelop += "-->";
-//    if(!aMessage.isHiddenTo()){
-      for(int i=0;i<to.size();i++){
-        envelop += getShortNameForUser( to.get(i), aP2Facade);
-        if(i < to.size() - 1) envelop += ",";
-      }
-//    } else {
-//      envelop += "verborgen";
-//    }
+    for(Iterator< String > i = to.iterator();i.hasNext();){
+      envelop += getShortNameForUser( i.next(), aP2Facade );
+      if(i.hasNext()) envelop += ",";
+    }
     envelop += "]";
     return envelop;
   }

@@ -4,7 +4,9 @@
  */
 package chabernac.gui;
 
+import java.awt.Font;
 import java.awt.Frame;
+import java.awt.Menu;
 import java.awt.MenuItem;
 import java.awt.PopupMenu;
 import java.awt.SystemTray;
@@ -39,6 +41,7 @@ import chabernac.preference.ApplicationPreferences;
 import chabernac.protocol.iProtocolDelegate;
 import chabernac.protocol.facade.P2PFacade;
 import chabernac.protocol.facade.P2PFacadeException;
+import chabernac.protocol.filetransfer.FileHandlerDialogDispatcher;
 import chabernac.protocol.routing.PeerSender;
 import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.RoutingTableEntry;
@@ -60,6 +63,8 @@ public class ApplicationLauncher {
    */
   public static void main( String[] args ) throws P2PFacadeException, UserInfoException {
     ArgsInterPreter theInterPretser = new ArgsInterPreter(args);
+
+    initProxy(theInterPretser);
 
     if("true".equals(theInterPretser.getKeyValue("checklock", "true"))){
       if(!checkLockAndActivate()) return;
@@ -83,6 +88,13 @@ public class ApplicationLauncher {
     }
 
     createSystemTray();
+  }
+
+  private static void initProxy(ArgsInterPreter anInterpreter){
+    if(anInterpreter.containsKey( "http.proxyHost" ) && anInterpreter.containsKey( "http.proxyPort" )){
+      System.getProperties().put("http.proxyHost", anInterpreter.getKeyValue( "http.proxyHost" ));
+      System.getProperties().put("http.proxyPort", anInterpreter.getKeyValue( "http.proxyPort" ));
+    }
   }
 
   private static void addActivationListener() throws P2PFacadeException{
@@ -110,6 +122,7 @@ public class ApplicationLauncher {
     .setSuperNodesDataSource( new ClassPathResource("supernodes.txt") )
     .setStopWhenAlreadyRunning( true )
     .setChannel(anInterPreter.getKeyValue("channel", "default"))
+    .setFileHandler( new FileHandlerDialogDispatcher() )
     .start( 20 );
   }
 
@@ -222,10 +235,76 @@ public class ApplicationLauncher {
           }
         });
 
-        theMenu.add( theOpenItem );
-        theMenu.add( theOntopItem );
-        theMenu.add( theExitItem );
+        final MenuItem theAlwaysClosedItem = new MenuItem("Enveloppe always closed");
+        theAlwaysClosedItem.addActionListener( new ActionListener(){
+          public void actionPerformed(ActionEvent evt){
+            NewMessageDialog5 theDialog = NewMessageDialog5.getInstance( myChatFrame.getMediator() );
+            theDialog.setEnveloppeAlwaysClosed( !theDialog.isEnveloppeAlwaysClosed() );
+            if(theDialog.isEnveloppeAlwaysClosed()){
+              theAlwaysClosedItem.setLabel( "Enveloppe closed as message indicates" );
+            } else {
+              theAlwaysClosedItem.setLabel( "Enveloppe always closed" );
+            }
+          }
+        });
 
+
+
+
+        Menu theSend = new Menu("Verzenden");
+        final MenuItem theSendClosedItem = new MenuItem("Verzend met gesloten enveloppe");
+        final MenuItem theSendOpenItem = new MenuItem("Verzend met open enveloppe");
+        theSend.add( theSendClosedItem );
+        theSend.add( theSendOpenItem );
+
+        ActionListener theSendActionListener = new ActionListener(){
+          {
+            setBold();
+          }
+
+          public void actionPerformed(ActionEvent evt){
+            setBold();
+            myChatFrame.getMediator().setSendWithClosedEnveloppe( evt.getSource() == theSendClosedItem );
+          }
+
+          private void setBold(){
+          theSendClosedItem.setFont( new Font("Arial", myChatFrame.getMediator().isSendWithClosedEnveloppe() ? Font.BOLD : Font.PLAIN, 12 ) );
+          theSendOpenItem.setFont( new Font("Arial", myChatFrame.getMediator().isSendWithClosedEnveloppe() ? Font.PLAIN : Font.BOLD, 12 ) );            
+          }
+        };
+        
+        theSendClosedItem.addActionListener( theSendActionListener );
+        theSendOpenItem.addActionListener( theSendActionListener );
+
+        Menu theReceive = new Menu("Ontvangen");
+        final MenuItem theReceiveClosedItem = new MenuItem("Ontvang met gesloten enveloppe");
+        final MenuItem theReceiveAsMessageIndicatesItem = new MenuItem("Ontvang zoals bericht aangeeft");
+        theReceive.add(theReceiveClosedItem);
+        theReceive.add(theReceiveAsMessageIndicatesItem);
+
+        ActionListener theReceiveActionListener = new ActionListener(){{
+          setBold();
+        }
+
+        public void actionPerformed(ActionEvent evt){
+          setBold();
+          NewMessageDialog5.getInstance( myChatFrame.getMediator() ).setEnveloppeAlwaysClosed( evt.getSource() == theReceiveClosedItem );
+        }
+
+        private void setBold(){
+          NewMessageDialog5 theDialog = NewMessageDialog5.getInstance( myChatFrame.getMediator() );
+          theReceiveClosedItem.setFont( new Font("Arial", theDialog.isEnveloppeAlwaysClosed() ? Font.BOLD : Font.PLAIN, 12 ) );
+          theReceiveAsMessageIndicatesItem.setFont( new Font("Arial", theDialog.isEnveloppeAlwaysClosed() ? Font.PLAIN : Font.BOLD, 12 ) );            
+        }
+        };
+        theReceiveClosedItem.addActionListener( theReceiveActionListener );
+        theReceiveAsMessageIndicatesItem.addActionListener( theReceiveActionListener );
+
+        theMenu.add( theOntopItem );
+        theMenu.add( theOpenItem );
+        theMenu.add( theSend );
+        theMenu.add( theReceive );
+        theMenu.add( theExitItem );
 
         theTray.add( theIcon );
         theIcon.addActionListener( new ActionListener(){

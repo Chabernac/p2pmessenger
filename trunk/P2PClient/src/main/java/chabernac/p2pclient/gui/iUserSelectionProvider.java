@@ -4,13 +4,13 @@
  */
 package chabernac.p2pclient.gui;
 
-import java.util.List;
+import java.util.Set;
 
 import chabernac.protocol.message.MultiPeerMessage;
 
 public interface iUserSelectionProvider {
-  public List< String > getSelectedUsers();
-  public void setSelectedUsers(List<String> aUserList);
+  public Set< String > getSelectedUsers();
+  public void setSelectedUsers(Set<String> aUserList);
   public void clear();
   public void setMultiPeerMessage(MultiPeerMessage aMessage);
   public void addSelectionChangedListener(iSelectionChangedListener aListener);
