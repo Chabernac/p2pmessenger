@@ -7,6 +7,7 @@
 package chabernac.p2pclient.gui;
 
 import java.awt.BorderLayout;
+import java.awt.Frame;
 import java.awt.Rectangle;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
@@ -132,6 +133,14 @@ public class ChatFrame extends SavedFrame implements iTitleProvider, isShowDialo
   
   public void requestFocus(){
     myMessageField.requestFocus();
+  }
+  
+  public void showFrame(){
+    setVisible( true );
+    setState( Frame.NORMAL );
+    requestFocus();
+    NewMessageDialog5.getInstance( getMediator() ).cancelPendingTasks();
+    NewMessageDialog5.getInstance( getMediator() ).setVisible( false );
   }
 
 }
