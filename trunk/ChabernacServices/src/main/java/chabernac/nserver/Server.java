@@ -61,7 +61,9 @@ public class Server implements Runnable{
 
   public void stop()  {
     try{
-      myServerSocket.close();
+      if(myServerSocket != null){
+        myServerSocket.close();
+      }
       running = false;
     }catch(Exception e){
       LOGGER.debug("Could not stop server",e);
