@@ -15,9 +15,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.jdo.annotations.PersistenceCapable;
+
 import org.apache.log4j.Logger;
 import org.doomdark.uuid.UUID;
 
+@PersistenceCapable
 public class RoutingTable implements Iterable< RoutingTableEntry >, Serializable{
 
   private static final long serialVersionUID = -6991803452368949789L;

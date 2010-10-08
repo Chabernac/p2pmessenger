@@ -85,10 +85,6 @@ public class SocketPeer extends AbstractPeer implements Serializable {
     myPort = anPort;
   }
   
-  protected String sendMessage(String aMessage) throws IOException{
-    return sendMessage(aMessage, 5);
-  }
-
   protected String sendMessage(String aMessage, int aTimeoutInSeconds) throws IOException{
     if(myPeerSender != null) return myPeerSender.send(aMessage, this, aTimeoutInSeconds);
     if(PeerSenderHolder.getPeerSender() == null) throw new IOException("Could not send message to peer '" + getPeerId() + " because no message sender was defined");

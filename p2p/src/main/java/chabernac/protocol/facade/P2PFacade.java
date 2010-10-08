@@ -13,6 +13,8 @@ import java.util.concurrent.Future;
 
 import javax.activation.DataSource;
 
+import org.omg.CosNaming.IstringHelper;
+
 import chabernac.io.CachingSocketPool;
 import chabernac.io.SocketPoolFactory;
 import chabernac.io.SocketProxy;
@@ -172,13 +174,16 @@ public class P2PFacade {
     }
   }
 
-  public void setFileHandler(iFileHandler aFileHandler) throws P2PFacadeException{
-    if(!isStarted()) throw new P2PFacadeException("Can not execute this action when the server is not started");
-    try {
-      ((FileTransferProtocol)myContainer.getProtocol( FileTransferProtocol.ID )).setFileHandler( aFileHandler );
-    } catch ( ProtocolException e ) {
-      throw new P2PFacadeException("An error occured while setting file handler", e);
+  public P2PFacade setFileHandler(iFileHandler aFileHandler) throws P2PFacadeException{
+    myProperties.setProperty( "chabernac.protocol.filetransfer.iFileHandler", aFileHandler );
+    if(isStarted()){
+      try {
+        ((FileTransferProtocol)myContainer.getProtocol( FileTransferProtocol.ID )).setFileHandler( aFileHandler );
+      } catch ( ProtocolException e ) {
+        throw new P2PFacadeException("An error occured while setting file handler", e);
+      }
     }
+    return this;
   }
 
   public Future<Boolean> sendMessage(final MultiPeerMessage aMessage, ExecutorService aService){

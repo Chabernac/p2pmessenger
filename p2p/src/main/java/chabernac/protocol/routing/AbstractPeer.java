@@ -17,15 +17,19 @@ public abstract class AbstractPeer implements Serializable{
     super();
     myPeerId = anPeerId;
   }
-
+  
   public final String send(String aMessage) throws IOException{
+    return send(aMessage, 5);
+  }
+
+  public final String send(String aMessage, int aTimeoutInSeconds) throws IOException{
     if(aMessage.length() < 3) throw new IOException("Can not send message which has no protocol");
     String theProtocol = aMessage.substring( 0, 3 );
     if(!isProtocolSupported( theProtocol )) throw new IOException("The protocol '" + theProtocol + "' is not supported by peer '" + myPeerId + "'");
-    return sendMessage(aMessage);
+    return sendMessage(aMessage, aTimeoutInSeconds);
   }
   
-  protected abstract String sendMessage(String aMessage) throws IOException;
+  protected abstract String sendMessage(String aMessage, int aTimeoutInSeconds) throws IOException;
 
   public String getPeerId() {
     return myPeerId;

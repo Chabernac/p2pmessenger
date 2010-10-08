@@ -86,8 +86,12 @@ public class MultiPeerMessageProtocol extends Protocol{
   public MultiPeerMessage sendMessage(MultiPeerMessage aMultiPeerMessage) throws MessageException{
     MultiPeerMessage theMultiPeerMessage = null;
     try {
-      theMultiPeerMessage = aMultiPeerMessage.setSource( getRoutingTable().getLocalPeerId() );
-      theMultiPeerMessage = theMultiPeerMessage.removeDestination( getRoutingTable().getLocalPeerId() );
+      if(aMultiPeerMessage.isLoopBack()){
+        theMultiPeerMessage = aMultiPeerMessage.addDestination( getRoutingTable().getLocalPeerId() );
+      } else {
+        theMultiPeerMessage = aMultiPeerMessage.setSource( getRoutingTable().getLocalPeerId() )
+         .removeDestination( getRoutingTable().getLocalPeerId() );
+      }
 
       for(String theDestination : theMultiPeerMessage.getDestinations()){
         Message theMessage = new Message();
