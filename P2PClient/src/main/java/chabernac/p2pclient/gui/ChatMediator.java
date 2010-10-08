@@ -4,8 +4,10 @@
  */
 package chabernac.p2pclient.gui;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -29,6 +31,7 @@ public class ChatMediator {
   private P2PFacade myP2PFacade = null;
   private iUserSelectionProvider myUserSelectionProvider = null;
   private iMessageProvider myMessageProvider = null;
+  private iAttachementProvider myAttachementProvider = null;
   private iReceivedMessagesProvider myReceivedMessagesProvider = null;
   private iTitleProvider myTitleProvider = null;
   private isShowDialogProvider myIsShowDialogProvider = null;
@@ -43,6 +46,10 @@ public class ChatMediator {
   private boolean isShowDialog = true;
 
   private int myRestoreIndex = -1;
+  private boolean isSendWithClosedEnveloppe = false;
+
+  private ExecutorService myFileTransferr = Executors.newFixedThreadPool( 5 );
+  private ExecutorService myFileTransferResponse = Executors.newFixedThreadPool( 5 );
 
   public ChatMediator ( P2PFacade anFacade ) throws P2PFacadeException {
     super();
@@ -74,7 +81,9 @@ public class ChatMediator {
 
   public synchronized Future< MultiPeerMessage > send(){
     if(checkForCommands()) return null;
+//    sendSystemMessage( "test" );
     if(myUserSelectionProvider.getSelectedUsers().size() == 0) return null;
+    if(handleAttachements()) return null;
     if("".equals( myMessageProvider.getMessage())) return null;
     myLastSendMessage = createMessage();
     Future< MultiPeerMessage > theFuture = myP2PFacade.sendEncryptedMessage( myLastSendMessage, myExecutorService );
@@ -82,6 +91,21 @@ public class ChatMediator {
     myRestoreIndex = -1;
     myConcept = null;
     return theFuture;
+  }
+
+  private boolean handleAttachements(){
+    boolean isFile = false;
+    if(myAttachementProvider.getAttachments() != null && myAttachementProvider.getAttachments().size() > 0){
+      isFile = true;
+      for(String theUser : myUserSelectionProvider.getSelectedUsers()){
+        for(File theFile : myAttachementProvider.getAttachments()){
+          myFileTransferResponse.execute( new  MyFileTransferResponseDisplayer(myP2PFacade.sendFile( theFile, theUser, myFileTransferr),
+                                                                               theFile, 
+                                                                               theUser));
+        }
+      }
+    }
+    return isFile;
   }
 
   private boolean checkForCommands() {
@@ -242,7 +266,7 @@ public class ChatMediator {
   }
 
   public void setTitle(){
-    List<String> theUsers = myUserSelectionProvider.getSelectedUsers();
+    Set<String> theUsers = myUserSelectionProvider.getSelectedUsers();
     String theTitle = ApplicationPreferences.getInstance().getProperty("frame.light.title","Chatterke");
     try{
       theTitle += " [" + myP2PFacade.getPersonalInfo().getStatus().name();
@@ -251,7 +275,7 @@ public class ChatMediator {
       }
       theTitle += "]";
       if(theUsers.size() == 1){
-        theTitle += " - sc " + Tools.getShortNameForUser( myP2PFacade.getUserInfo().get( theUsers.get( 0 ) )); 
+        theTitle += " - sc " + Tools.getShortNameForUser( myP2PFacade.getUserInfo().get( theUsers.iterator().next() )); 
       } else if(theUsers.size() > 1){
         theTitle += " - mc ";
       }
@@ -282,7 +306,7 @@ public class ChatMediator {
     }
     setTitle();
   }
-  
+
   public boolean isShowDialog(){
     return isShowDialog;
   }
@@ -295,6 +319,13 @@ public class ChatMediator {
     myIsShowDialogProvider = anIsShowDialogProvider;
   }
 
+  public boolean isSendWithClosedEnveloppe() {
+    return isSendWithClosedEnveloppe;
+  }
+
+  public void setSendWithClosedEnveloppe( boolean anSendWithClosedEnveloppe ) {
+    isSendWithClosedEnveloppe = anSendWithClosedEnveloppe;
+  }
 
   private class MyMessageListener implements iMultiPeerMessageListener {
 
@@ -308,5 +339,57 @@ public class ChatMediator {
 
   public void setLastSendMessage( MultiPeerMessage aMessage ) {
     myLastSendMessage = aMessage;
+  }
+
+  public iAttachementProvider getAttachementProvider() {
+    return myAttachementProvider;
+  }
+
+  public void setAttachementProvider( iAttachementProvider anAttachementProvider ) {
+    myAttachementProvider = anAttachementProvider;
+  }
+
+  private class MyFileTransferResponseDisplayer implements Runnable{
+    private final Future< Boolean > myResult;
+    private final File myFile;
+    private final String myPeer;
+
+    public MyFileTransferResponseDisplayer ( Future< Boolean > anResult, File aFile, String aPeer ) {
+      super();
+      myResult = anResult;
+      myFile = aFile;
+      myPeer = aPeer;
+    }
+
+    @Override
+    public void run() {
+      boolean isAccepted = false;
+      try{
+        isAccepted = myResult.get();
+      }catch(Exception e){
+      }
+      String theUserName = myPeer;
+      try{
+        if(myP2PFacade.getUserInfo().containsKey( myPeer )){
+          theUserName = myP2PFacade.getUserInfo().get( myPeer ).getName();
+        }
+      }catch(Exception e){
+        LOGGER.error("Could not get username for peer '" + myPeer + "'");
+      }
+      sendSystemMessage( myFile.toString() + " was " + (isAccepted ? "" : " NOT ") + " accepted by peer '" + theUserName + "'" );
+    }
+
+  }
+
+  private void sendSystemMessage(String aMessage){
+    try{
+      MultiPeerMessage theMessage = MultiPeerMessage.createMessage( aMessage )
+      .setSource( "SYSTEM" )
+      .addDestination( myP2PFacade.getPeerId() )
+      .setLoopBack( true );
+      myP2PFacade.sendMessage( theMessage, myExecutorService );    
+    }catch(Exception e){
+      LOGGER.error( "Could not send system message", e );
+    }
   }
 }

@@ -44,7 +44,7 @@ import chabernac.event.iEventListener;
 import chabernac.p2pclient.gui.action.ActionDecorator;
 
 
-public class MessageField extends JTextArea implements iMessageProvider{
+public class MessageField extends JTextArea implements iMessageProvider, iAttachementProvider{
   private static final long serialVersionUID = 8085069557786155534L;
 
   private static Logger logger = Logger.getLogger(MessageField.class);

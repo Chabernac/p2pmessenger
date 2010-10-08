@@ -5,7 +5,9 @@
 package chabernac.p2pclient.gui;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -58,7 +60,7 @@ public class ChatMediatorTest extends TestCase {
     int theNumber = 5;
     for(int i=0;i<theNumber;i++){
       theMessageProvider.setMessage( "test" + i );
-      List<String> theSelectedUsers = new ArrayList<String>();
+      Set<String> theSelectedUsers = new HashSet<String>();
       if(i%2 == 0){
         theSelectedUsers.add( theFacade3.getPeerId() );
       } else {
@@ -112,7 +114,7 @@ public class ChatMediatorTest extends TestCase {
     
     //set some text and user selection but do not send it, it should be saved as a concept
     theMessageProvider.setMessage( "concept" );
-    List<String> theSelectedUsers = new ArrayList<String>();
+    Set<String> theSelectedUsers = new HashSet<String>();
     theSelectedUsers.add( theFacade3.getPeerId() );
     theUserSelectionProvider.setSelectedUsers( theSelectedUsers );
     
