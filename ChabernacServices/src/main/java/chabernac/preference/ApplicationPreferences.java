@@ -39,6 +39,21 @@ public class ApplicationPreferences extends Properties{
       logger.error("Could not write to preference file", e);
     }
   }
-
   
+  public void setEnumProperty(Enum anEnum){
+    setProperty(anEnum.getClass().getName(), anEnum.toString());
+  }
+  
+  public boolean hasEnumProperty(Enum anEnum){
+    return anEnum.toString().equals(getProperty(anEnum.getClass().getName()));
+  }
+  
+  public boolean hasEnumType(Class<? extends Enum> anEnumType){
+    return containsKey(anEnumType.getName());
+  }
+
+  public boolean hasEnumProperty(Enum anEnum, Enum aDefault){
+    if(!containsKey(anEnum.getClass().getName())) return anEnum.equals(aDefault);
+    return anEnum.toString().equals(getProperty(anEnum.getClass().getName()));
+  }
 }
