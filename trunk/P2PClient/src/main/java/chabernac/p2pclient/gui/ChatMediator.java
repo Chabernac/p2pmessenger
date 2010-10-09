@@ -16,10 +16,12 @@ import org.apache.log4j.Logger;
 
 import chabernac.events.EventDispatcher;
 import chabernac.gui.event.SavePreferencesEvent;
+import chabernac.p2pclient.settings.Settings;
 import chabernac.preference.ApplicationPreferences;
 import chabernac.protocol.facade.P2PFacade;
 import chabernac.protocol.facade.P2PFacadeException;
 import chabernac.protocol.message.MessageArchive;
+import chabernac.protocol.message.MessageIndicator;
 import chabernac.protocol.message.MultiPeerMessage;
 import chabernac.protocol.message.iMultiPeerMessageListener;
 import chabernac.protocol.userinfo.UserInfo.Status;
@@ -46,7 +48,6 @@ public class ChatMediator {
   private boolean isShowDialog = true;
 
   private int myRestoreIndex = -1;
-  private boolean isSendWithClosedEnveloppe = false;
 
   private ExecutorService myFileTransferr = Executors.newFixedThreadPool( 5 );
   private ExecutorService myFileTransferResponse = Executors.newFixedThreadPool( 5 );
@@ -132,8 +133,11 @@ public class ChatMediator {
   }
 
   public MultiPeerMessage createMessage(){
-    return MultiPeerMessage.createMessage( myMessageProvider.getMessage() )
+    MultiPeerMessage theMessage = MultiPeerMessage.createMessage( myMessageProvider.getMessage() )
     .setDestinations( myUserSelectionProvider.getSelectedUsers() );
+    if(ApplicationPreferences.getInstance().hasEnumProperty(Settings.SendEnveloppe.CLOSED)) theMessage = theMessage.addMessageIndicator(MessageIndicator.CLOSED_ENVELOPPE);
+    return theMessage;
+    
   }
 
   public MultiPeerMessage getLastSendMessage() {
@@ -317,14 +321,6 @@ public class ChatMediator {
 
   public void setIsShowDialogProvider( isShowDialogProvider anIsShowDialogProvider ) {
     myIsShowDialogProvider = anIsShowDialogProvider;
-  }
-
-  public boolean isSendWithClosedEnveloppe() {
-    return isSendWithClosedEnveloppe;
-  }
-
-  public void setSendWithClosedEnveloppe( boolean anSendWithClosedEnveloppe ) {
-    isSendWithClosedEnveloppe = anSendWithClosedEnveloppe;
   }
 
   private class MyMessageListener implements iMultiPeerMessageListener {

@@ -42,6 +42,8 @@ import javax.swing.border.TitledBorder;
 import org.apache.log4j.Logger;
 
 import chabernac.gui.ApplicationLauncher;
+import chabernac.p2pclient.settings.Settings;
+import chabernac.preference.ApplicationPreferences;
 import chabernac.protocol.facade.P2PFacadeException;
 import chabernac.protocol.message.MessageIndicator;
 import chabernac.protocol.message.MultiPeerMessage;
@@ -67,7 +69,6 @@ public class NewMessageDialog5 extends JDialog implements iMessageDialog{
   private InputMap myInputMap2 = null;
   private JScrollPane myReplyScrollPane = null;
   private Robot myRobot;
-  private boolean isEnveloppeAlwaysClosed = false;
 
   private ExecutorService myService = Executors.newFixedThreadPool( 1 );
   private ExecutorService mySendService = Executors.newFixedThreadPool( 5 );
@@ -192,14 +193,6 @@ public class NewMessageDialog5 extends JDialog implements iMessageDialog{
     }
   }
   
-  public boolean isEnveloppeAlwaysClosed() {
-    return isEnveloppeAlwaysClosed;
-  }
-
-  public void setEnveloppeAlwaysClosed( boolean anEnveloppeAlwaysClosed ) {
-    isEnveloppeAlwaysClosed = anEnveloppeAlwaysClosed;
-  }
-
   private void setMessage(final MultiPeerMessage aMessage){
     System.out.println("Event dispatching thread: " + EventQueue.isDispatchThread());
 
@@ -214,7 +207,8 @@ public class NewMessageDialog5 extends JDialog implements iMessageDialog{
 
             myBorder.setTitle(theUserList);
             //myText.setToolTipText(theUserList);
-            if(isEnveloppeAlwaysClosed || aMessage.containsIndicator( MessageIndicator.CLOSED_ENVELOPPE )){
+            if(ApplicationPreferences.getInstance().hasEnumProperty(Settings.ReceiveEnveloppe.CLOSED) || 
+                aMessage.containsIndicator( MessageIndicator.CLOSED_ENVELOPPE )){
               myText.setText( "Typ 'o' om te openen'" );
             } else {
               myText.setText(aMessage.getMessage());

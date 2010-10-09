@@ -14,7 +14,12 @@ public class ReceiveMenu extends Menu {
   public ReceiveMenu(ChatFrame aFrame){
     super("Ontvangen");
     
-    add(new ReceiveClosedMenuItem(aFrame));
-    add(new ReceiveAsMessageIndicatesMenuItem(aFrame));
+    ReceiveClosedMenuItem theReceivedClosedMenuItem = new ReceiveClosedMenuItem();
+    ReceiveAsMessageIndicatesMenuItem theReceiveAsMessageIndictes = new ReceiveAsMessageIndicatesMenuItem();
+    theReceiveAsMessageIndictes.addActionListener(theReceivedClosedMenuItem);
+    theReceivedClosedMenuItem.addActionListener(theReceiveAsMessageIndictes);
+    
+    add(theReceivedClosedMenuItem);
+    add(theReceiveAsMessageIndictes);
   }
 }
