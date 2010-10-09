@@ -9,26 +9,24 @@ import java.awt.MenuItem;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import chabernac.p2pclient.gui.ChatFrame;
-import chabernac.p2pclient.gui.NewMessageDialog5;
+import chabernac.p2pclient.settings.Settings;
+import chabernac.preference.ApplicationPreferences;
 
 public class ReceiveClosedMenuItem extends MenuItem implements ActionListener {
   private static final long serialVersionUID = -5224352709920368154L;
-  private final ChatFrame myChatFrame;
 
-  public ReceiveClosedMenuItem(ChatFrame aChatFrame){
+  public ReceiveClosedMenuItem(){
     super("Ontvang met gesloten enveloppe");
-    myChatFrame = aChatFrame;
     addActionListener( this );
+    setBold();
   }
   
   public void actionPerformed(ActionEvent evt){
+    if(evt.getSource() == this) ApplicationPreferences.getInstance().setEnumProperty(Settings.ReceiveEnveloppe.CLOSED);
     setBold();
-    NewMessageDialog5.getInstance( myChatFrame.getMediator() ).setEnveloppeAlwaysClosed( true );
   }
 
   private void setBold(){
-    NewMessageDialog5 theDialog = NewMessageDialog5.getInstance( myChatFrame.getMediator() );
-    setFont( new Font("Arial", theDialog.isEnveloppeAlwaysClosed() ? Font.BOLD : Font.PLAIN, 12 ) );
+    setFont( new Font("Arial", ApplicationPreferences.getInstance().hasEnumProperty(Settings.ReceiveEnveloppe.CLOSED) ? Font.BOLD : Font.PLAIN, 12 ) );
   }
 }

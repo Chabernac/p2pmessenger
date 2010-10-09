@@ -40,7 +40,7 @@ public class SystemTrayMenu extends PopupMenu implements ActionListener {
     add( new OpenMenuItem() );
     add( new OnTopMenuItem(myChatFrame) );
 
-    add(new SendMenu(myChatFrame));
+    add(new SendMenu());
     add(new ReceiveMenu(myChatFrame));
     add( new ExitMenuItem(anIcon, myChatFrame, aFacade) );
 

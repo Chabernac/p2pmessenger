@@ -7,24 +7,26 @@ package chabernac.gui.tray;
 import java.awt.Font;
 import java.awt.MenuItem;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
-import chabernac.p2pclient.gui.ChatFrame;
+import chabernac.p2pclient.settings.Settings.SendEnveloppe;
+import chabernac.preference.ApplicationPreferences;
 
-public class SendOpenMenuItem extends MenuItem {
+public class SendOpenMenuItem extends MenuItem implements ActionListener {
   private static final long serialVersionUID = 1224284495962766775L;
-  private final ChatFrame myChatFrame;
   
-  public SendOpenMenuItem(ChatFrame aChatFrame){
+  public SendOpenMenuItem(){
     super("Verzend met open enveloppe");
-    myChatFrame = aChatFrame;
+    addActionListener(this);
+    setBold();
   }
 
   public void actionPerformed(ActionEvent evt){
+    if(evt.getSource() == this ) ApplicationPreferences.getInstance().setEnumProperty(SendEnveloppe.OPEN);
     setBold();
-    myChatFrame.getMediator().setSendWithClosedEnveloppe( false );
   }
 
   public void setBold(){
-    setFont( new Font("Arial", myChatFrame.getMediator().isSendWithClosedEnveloppe() ? Font.PLAIN : Font.BOLD, 12 ) );
+    setFont( new Font("Arial", ApplicationPreferences.getInstance().hasEnumProperty(SendEnveloppe.OPEN) ? Font.BOLD : Font.PLAIN, 12 ) );
   }
 }

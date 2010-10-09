@@ -9,26 +9,24 @@ import java.awt.MenuItem;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import chabernac.p2pclient.gui.ChatFrame;
-import chabernac.p2pclient.gui.NewMessageDialog5;
+import chabernac.p2pclient.settings.Settings;
+import chabernac.preference.ApplicationPreferences;
 
 public class ReceiveAsMessageIndicatesMenuItem extends MenuItem implements ActionListener {
   private static final long serialVersionUID = -5224352709920368154L;
-  private final ChatFrame myChatFrame;
 
-  public ReceiveAsMessageIndicatesMenuItem(ChatFrame aChatFrame){
+  public ReceiveAsMessageIndicatesMenuItem(){
     super("Ontvang zoals bericht aangeeft");
-    myChatFrame = aChatFrame;
     addActionListener( this );
+    setBold();
   }
   
   public void actionPerformed(ActionEvent evt){
+    if(evt.getSource() == this) ApplicationPreferences.getInstance().setEnumProperty(Settings.ReceiveEnveloppe.AS_MESSAGE_INDICATES);
     setBold();
-    NewMessageDialog5.getInstance( myChatFrame.getMediator() ).setEnveloppeAlwaysClosed( false );
   }
 
   private void setBold(){
-    NewMessageDialog5 theDialog = NewMessageDialog5.getInstance( myChatFrame.getMediator() );
-    setFont( new Font("Arial", theDialog.isEnveloppeAlwaysClosed() ? Font.BOLD : Font.PLAIN, 12 ) );
+    setFont( new Font("Arial", ApplicationPreferences.getInstance().hasEnumProperty(Settings.ReceiveEnveloppe.AS_MESSAGE_INDICATES) ? Font.BOLD : Font.PLAIN, 12 ) );
   }
 }

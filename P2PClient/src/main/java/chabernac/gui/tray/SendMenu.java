@@ -6,15 +6,16 @@ package chabernac.gui.tray;
 
 import java.awt.Menu;
 
-import chabernac.p2pclient.gui.ChatFrame;
-
 public class SendMenu extends Menu {
   private static final long serialVersionUID = 1489728033427618807L;
 
-  public SendMenu(ChatFrame aFrame){
+  public SendMenu(){
     super("Verzenden");
-    
-    add(new SendClosedMenuItem(aFrame));
-    add(new SendOpenMenuItem(aFrame));
+    SendClosedMenuItem theSendCloseMenuItem = new SendClosedMenuItem();
+    SendOpenMenuItem theSendOpenMenuItem = new SendOpenMenuItem();
+    add(theSendCloseMenuItem);
+    add(theSendOpenMenuItem);
+    theSendCloseMenuItem.addActionListener(theSendOpenMenuItem);
+    theSendOpenMenuItem.addActionListener(theSendCloseMenuItem);
   }
 }

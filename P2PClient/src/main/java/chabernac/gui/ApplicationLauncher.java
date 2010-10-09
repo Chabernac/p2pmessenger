@@ -22,6 +22,9 @@ import chabernac.ldapuserinfoprovider.BackupUserInfoProviderDecorator;
 import chabernac.lock.FileLock;
 import chabernac.lock.iLock;
 import chabernac.p2pclient.gui.ChatFrame;
+import chabernac.p2pclient.settings.Settings;
+import chabernac.p2pclient.settings.Settings.ReceiveEnveloppe;
+import chabernac.p2pclient.settings.Settings.SendEnveloppe;
 import chabernac.preference.ApplicationPreferences;
 import chabernac.protocol.iProtocolDelegate;
 import chabernac.protocol.facade.P2PFacade;
@@ -52,6 +55,8 @@ public class ApplicationLauncher {
     ArgsInterPreter theInterPretser = new ArgsInterPreter(args);
 
     initProxy(theInterPretser);
+    
+    initDefaultSettigns();
 
     if("true".equals(theInterPretser.getKeyValue("checklock", "true"))){
       if(!checkLockAndActivate()) return;
@@ -75,6 +80,12 @@ public class ApplicationLauncher {
     }
 
     SystemTrayMenu.buildSystemTray( myChatFrame, myFacade );
+  }
+
+  private static void initDefaultSettigns() {
+    ApplicationPreferences thePrefs = ApplicationPreferences.getInstance();
+    if(!thePrefs.hasEnumType(ReceiveEnveloppe.class)) thePrefs.setEnumProperty(ReceiveEnveloppe.AS_MESSAGE_INDICATES);
+    if(!thePrefs.hasEnumType(SendEnveloppe.class)) thePrefs.setEnumProperty(SendEnveloppe.OPEN);
   }
 
   private static void initProxy(ArgsInterPreter anInterpreter){
