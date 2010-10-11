@@ -5,17 +5,19 @@
 package chabernac.gui.tray;
 
 import java.awt.Menu;
+import java.awt.TrayIcon;
+import java.io.IOException;
 
 import chabernac.p2pclient.gui.ChatFrame;
 
 public class ReceiveMenu extends Menu {
   private static final long serialVersionUID = 1489728033427618807L;
 
-  public ReceiveMenu(ChatFrame aFrame){
+  public ReceiveMenu(ChatFrame aFrame, TrayIcon anIcon) throws IOException{
     super("Ontvangen");
     
-    ReceiveClosedMenuItem theReceivedClosedMenuItem = new ReceiveClosedMenuItem();
-    ReceiveAsMessageIndicatesMenuItem theReceiveAsMessageIndictes = new ReceiveAsMessageIndicatesMenuItem();
+    ReceiveClosedMenuItem theReceivedClosedMenuItem = new ReceiveClosedMenuItem(anIcon);
+    ReceiveAsMessageIndicatesMenuItem theReceiveAsMessageIndictes = new ReceiveAsMessageIndicatesMenuItem(anIcon);
     theReceiveAsMessageIndictes.addActionListener(theReceivedClosedMenuItem);
     theReceivedClosedMenuItem.addActionListener(theReceiveAsMessageIndictes);
     
