@@ -26,10 +26,11 @@ public class PeerMessagePanel extends JPanel {
     setLayout( new BorderLayout() );
     PeerMessageTableModel theModel = new PeerMessageTableModel((PeerSender) myPeerSender);
     JTable theTable = new JTable(theModel);
-    theTable.getColumnModel().getColumn( 0 ).setPreferredWidth( 10 );
-    theTable.getColumnModel().getColumn( 1 ).setPreferredWidth( 200 );
-    theTable.getColumnModel().getColumn( 2 ).setPreferredWidth( 400 );
+    theTable.getColumnModel().getColumn( 0 ).setPreferredWidth( 30 );
+    theTable.getColumnModel().getColumn( 1 ).setPreferredWidth( 10 );
+    theTable.getColumnModel().getColumn( 2 ).setPreferredWidth( 200 );
     theTable.getColumnModel().getColumn( 3 ).setPreferredWidth( 400 );
+    theTable.getColumnModel().getColumn( 4 ).setPreferredWidth( 400 );
     
     ColorRenderer theRenderer = new ColorRenderer(theModel);
     theTable.setDefaultRenderer(String.class, theRenderer);
