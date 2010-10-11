@@ -55,7 +55,7 @@ public class InfoExchangeProtocol<T extends Observable & Serializable> extends P
 
   private enum Command{PUT};
   private enum Response{OK, NOK, UNKNOWN_COMMAND};
-  
+
   public InfoExchangeProtocol ( T anInformationObject ) {
     this(ID, anInformationObject);
   }
@@ -84,6 +84,7 @@ public class InfoExchangeProtocol<T extends Observable & Serializable> extends P
         String thePeerId = theParts[0];
         T theInfoObject = (T)myObjectPersister.getObject( theParts[1] );
         storeInfo(thePeerId, theInfoObject);
+        return Response.OK.name();
       }
     }catch(Exception e){
       LOGGER.error("An error occured while handling command", e);
@@ -114,11 +115,11 @@ public class InfoExchangeProtocol<T extends Observable & Serializable> extends P
       LOGGER.error( "Could not fully initialize UserInfoProtocol", e );
     }
   }
-  
+
   public void addInfoListener(iInfoListener<T> anInfoListener){
     myInfoListeners.add( anInfoListener );
   }
-  
+
   public void removeInfoListener( iInfoListener< InfoObject > anListener ) {
     myInfoListeners.remove( anListener );
   }
@@ -143,7 +144,7 @@ public class InfoExchangeProtocol<T extends Observable & Serializable> extends P
   public void addListeners() throws ProtocolException{
     getRoutingTable().addRoutingTableListener( new MyRoutingTableListener() );
   }
-  
+
   public T getInfoObject(){
     return myInformationObject;
   }
@@ -168,14 +169,16 @@ public class InfoExchangeProtocol<T extends Observable & Serializable> extends P
       try{
         RoutingTableEntry theEntry = getRoutingTable().getEntryForPeer( myPeerId );
 
-        Message theMessage = new Message();
-        theMessage.setDestination( theEntry.getPeer() );
-        theMessage.setSource( getRoutingTable().getEntryForLocalPeer().getPeer() );
-        theMessage.setProtocolMessage( true );
-        theMessage.setMessage( createMessage( Command.PUT.name() + " " + getRoutingTable().getLocalPeerId() + " " + myObjectPersister.toString( myInformationObject ) ));
-        String theResult = ((MessageProtocol)findProtocolContainer().getProtocol( MessageProtocol.ID )).sendMessage( theMessage );
-        if(!theResult.equalsIgnoreCase( Response.OK.name() )){
-          LOGGER.error("Could not send information to peer '" + myPeerId + "' result '" + theResult + "'");
+        if(theEntry.isReachable() && theEntry.getPeer().isOnSameChannel(getRoutingTable().getEntryForLocalPeer().getPeer())){
+          Message theMessage = new Message();
+          theMessage.setDestination( theEntry.getPeer() );
+          theMessage.setSource( getRoutingTable().getEntryForLocalPeer().getPeer() );
+          theMessage.setProtocolMessage( true );
+          theMessage.setMessage( createMessage( Command.PUT.name() + " " + getRoutingTable().getLocalPeerId() + " " + myObjectPersister.toString( myInformationObject ) ));
+          String theResult = ((MessageProtocol)findProtocolContainer().getProtocol( MessageProtocol.ID )).sendMessage( theMessage );
+          if(!theResult.equalsIgnoreCase( Response.OK.name() )){
+            LOGGER.error("Could not send information to peer '" + myPeerId + "' result '" + theResult + "'");
+          }
         }
       }catch(Exception e){
         LOGGER.error("An error occured while sending message to peer '" + myPeerId + "'", e);
@@ -195,7 +198,7 @@ public class InfoExchangeProtocol<T extends Observable & Serializable> extends P
     @Override
     public void routingTableEntryRemoved( RoutingTableEntry anEntry ) {
       // TODO implement this function
-      
+
     }
   }
 }
