@@ -7,6 +7,7 @@ package chabernac.gui;
 import java.awt.AWTException;
 import java.io.File;
 import java.io.IOException;
+import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -22,7 +23,6 @@ import chabernac.ldapuserinfoprovider.BackupUserInfoProviderDecorator;
 import chabernac.lock.FileLock;
 import chabernac.lock.iLock;
 import chabernac.p2pclient.gui.ChatFrame;
-import chabernac.p2pclient.settings.Settings;
 import chabernac.p2pclient.settings.Settings.ReceiveEnveloppe;
 import chabernac.p2pclient.settings.Settings.SendEnveloppe;
 import chabernac.preference.ApplicationPreferences;
@@ -30,6 +30,9 @@ import chabernac.protocol.iProtocolDelegate;
 import chabernac.protocol.facade.P2PFacade;
 import chabernac.protocol.facade.P2PFacadeException;
 import chabernac.protocol.filetransfer.FileHandlerDialogDispatcher;
+import chabernac.protocol.infoexchange.InfoObject;
+import chabernac.protocol.infoexchange.iInfoListener;
+import chabernac.protocol.pominfoexchange.POMInfo;
 import chabernac.protocol.routing.PeerSender;
 import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.RoutingTableEntry;
@@ -118,6 +121,24 @@ public class ApplicationLauncher {
     .setChannel(anInterPreter.getKeyValue("channel", "default"))
     .setFileHandler( new FileHandlerDialogDispatcher() )
     .start( 20 );
+    
+    try {
+      myFacade.getInfoObject().put( "pom.info", new POMInfo() );
+      myFacade.addInfoListener( new iInfoListener< InfoObject >(){
+
+        @Override
+        public void infoChanged( String aPeerId, Map< String, InfoObject > aInfoMap ) {
+          for(InfoObject theObject : aInfoMap.values()){
+            if(theObject.containsKey( "pom.info" )){
+              System.out.println(theObject.get( "pom.info" ).toString());
+            }
+          }
+        }
+        
+      });
+    } catch ( IOException e ) {
+      LOGGER.error("Could not load pom info", e);
+    }
   }
 
   private static void addRun2Startup(){
