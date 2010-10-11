@@ -16,7 +16,6 @@ import org.apache.log4j.Logger;
 
 import chabernac.events.EventDispatcher;
 import chabernac.gui.event.SavePreferencesEvent;
-import chabernac.p2pclient.settings.Settings;
 import chabernac.preference.ApplicationPreferences;
 import chabernac.protocol.facade.P2PFacade;
 import chabernac.protocol.facade.P2PFacadeException;
@@ -135,7 +134,9 @@ public class ChatMediator {
   public MultiPeerMessage createMessage(){
     MultiPeerMessage theMessage = MultiPeerMessage.createMessage( myMessageProvider.getMessage() )
     .setDestinations( myUserSelectionProvider.getSelectedUsers() );
-    if(ApplicationPreferences.getInstance().hasEnumProperty(Settings.SendEnveloppe.CLOSED)) theMessage = theMessage.addMessageIndicator(MessageIndicator.CLOSED_ENVELOPPE);
+    if(myMessageProvider.isSendClosed()){
+      theMessage = theMessage.addMessageIndicator(MessageIndicator.CLOSED_ENVELOPPE);
+    }
     return theMessage;
     
   }
@@ -162,6 +163,7 @@ public class ChatMediator {
       myUserSelectionProvider.setSelectedUsers( aMessage.getDestinations() );
       myUserSelectionProvider.setMultiPeerMessage( aMessage );
       myMessageProvider.setMessage( aMessage.getMessage() );
+      myMessageProvider.setSendClosed( aMessage.getIndicators().contains( MessageIndicator.CLOSED_ENVELOPPE ) );
     } else {
       clearAll();
     }

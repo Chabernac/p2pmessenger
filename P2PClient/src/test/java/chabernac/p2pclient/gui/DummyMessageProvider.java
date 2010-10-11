@@ -33,4 +33,16 @@ public class DummyMessageProvider implements iMessageProvider {
     myMessageTitle = aMessageTitle;
   }
 
+  @Override
+  public boolean isSendClosed() {
+    // TODO Auto-generated method stub
+    return false;
+  }
+
+  @Override
+  public void setSendClosed( boolean isSendClosed ) {
+    // TODO Auto-generated method stub
+    
+  }
+
 }

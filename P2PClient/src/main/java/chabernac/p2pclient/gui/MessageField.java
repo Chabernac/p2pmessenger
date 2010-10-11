@@ -6,7 +6,10 @@
  */
 package chabernac.p2pclient.gui;
 
+import java.awt.Cursor;
 import java.awt.EventQueue;
+import java.awt.Graphics;
+import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
@@ -15,14 +18,18 @@ import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.im.InputContext;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
 import javax.swing.InputMap;
@@ -41,8 +48,8 @@ import org.apache.log4j.Logger;
 
 import chabernac.event.Event;
 import chabernac.event.iEventListener;
+import chabernac.io.ClassPathResource;
 import chabernac.p2pclient.gui.action.ActionDecorator;
-
 
 public class MessageField extends JTextArea implements iMessageProvider, iAttachementProvider{
   private static final long serialVersionUID = 8085069557786155534L;
@@ -52,13 +59,65 @@ public class MessageField extends JTextArea implements iMessageProvider, iAttach
   private ChatMediator myMediator = null;
   private List<File> myAttachments = null;
   private TitledBorder myBorder = null;
+  
+  private BufferedImage myClosedIndicator = null;
+  private BufferedImage myOpenIndicator = null;
+  
+  private boolean isSendClosed = false;
 
   public MessageField(ChatMediator aMediator){
     myMediator = aMediator;
     createInputMap();
     buildGUI();
     initDropTarget();
+    loadImages();
+    addMouseListener();
   }
+  
+  private void loadImages(){
+    try{
+      myOpenIndicator = ImageIO.read( new ClassPathResource("images/message_open.png").getInputStream());
+      myClosedIndicator = ImageIO.read( new ClassPathResource("images/message.png").getInputStream());
+    }catch(Exception e){
+      logger.error("Could not load images", e);
+    }
+  }
+  
+  private void addMouseListener(){
+    MyMouseListener theMouseListener = new MyMouseListener();
+    addMouseListener( new MyMouseListener() );
+    addMouseMotionListener( theMouseListener );
+  }
+  
+  private BufferedImage getCurrentIndicatorImage(){
+    if(isSendClosed){
+      return myClosedIndicator;
+    } else {
+      return myOpenIndicator;
+    }
+  }
+  
+  private void changeSendIndicator(){
+    isSendClosed = !isSendClosed;
+    repaint();
+  }
+  
+  private boolean isInIndicator(int x, int y){
+    return getIndicatorRectangle().contains( x, y );
+  }
+  
+  private Rectangle getIndicatorRectangle(){
+    BufferedImage theImage = getCurrentIndicatorImage();
+    return new Rectangle(getWidth() - myClosedIndicator.getWidth() - 4, getHeight() - theImage.getHeight() - 4, myClosedIndicator.getWidth(), myClosedIndicator.getHeight());
+  }
+  
+  public void paint(Graphics g){
+    super.paint( g );
+    BufferedImage theImage = getCurrentIndicatorImage();
+    Rectangle theRect = getIndicatorRectangle();
+    g.drawImage( theImage, theRect.x, theRect.y, null);
+  }
+
 
   private void createInputMap(){
     new ActionDecorator(this, myMediator).decorate(JComponent.WHEN_FOCUSED);
@@ -103,6 +162,7 @@ public class MessageField extends JTextArea implements iMessageProvider, iAttach
         setText("");
         myBorder.setTitle("Nieuw bericht");
         myAttachments = null;
+        isSendClosed = false;
         repaint();
       }
     });
@@ -330,6 +390,35 @@ public class MessageField extends JTextArea implements iMessageProvider, iAttach
   @Override
   public void setMessageTitle( String aMessage ) {
     myBorder.setTitle( aMessage );
+    repaint();
+  }
+  
+  public class MyMouseListener extends MouseAdapter {
+
+    @Override
+    public void mouseClicked( MouseEvent anE ) {
+      if(anE.getClickCount() >= 2){
+        changeSendIndicator();
+      }
+    }
+    
+    public void mouseMoved(MouseEvent e){
+      if(isInIndicator(e.getX(), e.getY())){
+        setCursor( Cursor.getDefaultCursor() );
+      } else {
+        setCursor( Cursor.getPredefinedCursor( Cursor.TEXT_CURSOR ));
+      }
+    }
+  }
+
+  @Override
+  public boolean isSendClosed() {
+    return isSendClosed;
+  }
+
+  @Override
+  public void setSendClosed( boolean isSendClosed ) {
+    this.isSendClosed = isSendClosed;
     repaint();
   }
 }
