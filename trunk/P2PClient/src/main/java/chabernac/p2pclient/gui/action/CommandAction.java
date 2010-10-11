@@ -8,22 +8,25 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
 
-import chabernac.command.Command;
+import chabernac.command.CommandSession;
+import chabernac.p2pclient.gui.action.ActionFactory.Action;
 
 public class CommandAction extends AbstractAction {
   private static final long serialVersionUID = 4564182788232730364L;
-  private final Command myCommand;
+  private final Action myAction;
+  private final ActionFactory myActionFactory;
   
 
-  public CommandAction ( Command anCommand ) {
+  public CommandAction ( ActionFactory aFactory, Action anAction) {
     super();
-    myCommand = anCommand;
+    myAction = anAction;
+    myActionFactory = aFactory;
   }
 
 
   @Override
   public void actionPerformed( ActionEvent anE ) {
-    myCommand.execute();
+    CommandSession.getInstance().execute( myActionFactory.getCommand( myAction ) );
   }
 
 }

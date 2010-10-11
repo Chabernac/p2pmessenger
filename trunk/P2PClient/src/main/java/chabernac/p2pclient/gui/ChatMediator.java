@@ -168,7 +168,8 @@ public class ChatMediator {
     setTitle();
   }
 
-  private void restoreMessageAtIndex(){
+  public void restoreMessageAtIndex(int anIndex){
+    myRestoreIndex = anIndex;
     List< MultiPeerMessage > theMessageList = new ArrayList< MultiPeerMessage >(myMessagArchive.getDeliveryReports().keySet());
     MultiPeerMessage theMessage = theMessageList.get( myRestoreIndex );
     myMessageProvider.setMessageTitle( theMessageList.indexOf( theMessage ) + 1 + "/" + theMessageList.size() );
@@ -176,13 +177,11 @@ public class ChatMediator {
   }
 
   public void restoreLastMessage(){
-    myRestoreIndex = myMessagArchive.getDeliveryReports().values().size() - 1;
-    restoreMessageAtIndex();
+    restoreMessageAtIndex(myMessagArchive.getDeliveryReports().values().size() - 1);
   }
 
   public void restoreFirstMessage(){
-    myRestoreIndex = 0;
-    restoreMessageAtIndex();
+    restoreMessageAtIndex(0);
   }
 
   public void restorePreviousMessage(){
@@ -199,7 +198,7 @@ public class ChatMediator {
     }
 
     if(myRestoreIndex >= 0){
-      restoreMessageAtIndex();
+      restoreMessageAtIndex(myRestoreIndex);
     }
   }
 
@@ -210,7 +209,7 @@ public class ChatMediator {
         myRestoreIndex = -1;
         restoreConcept();
       } else {
-        restoreMessageAtIndex();
+        restoreMessageAtIndex(myRestoreIndex);
       }
     }
   }
