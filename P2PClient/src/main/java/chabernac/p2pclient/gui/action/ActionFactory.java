@@ -17,7 +17,9 @@ public class ActionFactory {
                       FIRST_MESSAGE,
                       LAST_MESSAGE,
                       DELETE_MESSAGE,
-                      FOCUS_INPUT_MESSAGE,
+                      FOCUS_INPUT_MESSAGE, 
+                      UNDO,
+                      REDO
                         };
 
   public ActionFactory(ChatMediator anMediator) {
@@ -28,8 +30,7 @@ public class ActionFactory {
   public Command getCommand(Action anAction){
     if(anAction == Action.PREVIOUS_MESSAGE) return new PreviousMessageCommand(myMediator);
     if(anAction == Action.NEXT_MESSAGE) return new NextMessageCommand(myMediator);
-    if(anAction == Action.CLEAR_MESSAGE) return new ClearMessageCommand(myMediator);
-    if(anAction == Action.CLEAR_MESSAGE) return new ClearUsersCommand(myMediator);
+    if(anAction == Action.CLEAR_MESSAGE) return new ClearCommand(myMediator);
     if(anAction == Action.SEND_MESSAGE) return new SendMessageCommand(myMediator);
     if(anAction == Action.PAUSE) return new PauseCommand(myMediator);
     if(anAction == Action.REPLY) return new ReplyCommand(myMediator);
@@ -37,6 +38,8 @@ public class ActionFactory {
     if(anAction == Action.FIRST_MESSAGE) return new FirstMessageCommand(myMediator);
     if(anAction == Action.LAST_MESSAGE) return new LastMessageCommand(myMediator);
     if(anAction == Action.DELETE_MESSAGE) return new DeleteMessageCommand(myMediator);
+    if(anAction == Action.UNDO) return new UndoCommand();
+    if(anAction == Action.REDO) return new RedoCommand();
     
     return null;
   }

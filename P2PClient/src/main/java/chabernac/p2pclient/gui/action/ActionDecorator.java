@@ -42,6 +42,8 @@ public class ActionDecorator {
     theInputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_R, KeyEvent.ALT_DOWN_MASK), "reply");
     theInputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, KeyEvent.SHIFT_DOWN_MASK), "clearusers");
     theInputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_PAUSE, 0), "pause");
+    theInputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_Z, InputEvent.CTRL_DOWN_MASK), "undo");
+    theInputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_Y, InputEvent.CTRL_DOWN_MASK), "redo");
     
     if(!(myComponent instanceof JTextArea)){
       for(char theChar=33;theChar<=126;theChar++){
@@ -52,17 +54,19 @@ public class ActionDecorator {
     }
     
     ActionMap theActionMap = myComponent.getActionMap();
-    theActionMap.put("previous", new CommandAction(theActionFactory.getCommand( ActionFactory.Action.PREVIOUS_MESSAGE )));
-    theActionMap.put("next", new CommandAction(theActionFactory.getCommand( ActionFactory.Action.NEXT_MESSAGE )));
-    theActionMap.put("clear", new CommandAction(theActionFactory.getCommand( ActionFactory.Action.CLEAR_MESSAGE)));
-    theActionMap.put("clearusers", new CommandAction(theActionFactory.getCommand( ActionFactory.Action.CLEAR_USERS )));
-    theActionMap.put("send", new CommandAction(theActionFactory.getCommand( ActionFactory.Action.SEND_MESSAGE)));
-    theActionMap.put("first", new CommandAction(theActionFactory.getCommand( ActionFactory.Action.FIRST_MESSAGE)));
-    theActionMap.put("last", new CommandAction(theActionFactory.getCommand( ActionFactory.Action.LAST_MESSAGE)));
-    theActionMap.put("delete", new CommandAction(theActionFactory.getCommand( ActionFactory.Action.DELETE_MESSAGE)));
-    theActionMap.put("reply", new CommandAction(theActionFactory.getCommand( ActionFactory.Action.REPLY)));
-    theActionMap.put("replyall", new CommandAction(theActionFactory.getCommand( ActionFactory.Action.REPLY_ALL)));
-    theActionMap.put("pause", new CommandAction(theActionFactory.getCommand( ActionFactory.Action.PAUSE)));
+    theActionMap.put("previous", new CommandAction(theActionFactory,ActionFactory.Action.PREVIOUS_MESSAGE ));
+    theActionMap.put("next", new CommandAction(theActionFactory,ActionFactory.Action.NEXT_MESSAGE ));
+    theActionMap.put("clear", new CommandAction(theActionFactory,ActionFactory.Action.CLEAR_MESSAGE));
+    theActionMap.put("clearusers", new CommandAction(theActionFactory,ActionFactory.Action.CLEAR_USERS ));
+    theActionMap.put("send", new CommandAction(theActionFactory,ActionFactory.Action.SEND_MESSAGE));
+    theActionMap.put("first", new CommandAction(theActionFactory,ActionFactory.Action.FIRST_MESSAGE));
+    theActionMap.put("last", new CommandAction(theActionFactory,ActionFactory.Action.LAST_MESSAGE));
+    theActionMap.put("delete", new CommandAction(theActionFactory,ActionFactory.Action.DELETE_MESSAGE));
+    theActionMap.put("reply", new CommandAction(theActionFactory,ActionFactory.Action.REPLY));
+    theActionMap.put("replyall", new CommandAction(theActionFactory,ActionFactory.Action.REPLY_ALL));
+    theActionMap.put("pause", new CommandAction(theActionFactory,ActionFactory.Action.PAUSE));
+    theActionMap.put("undo", new CommandAction(theActionFactory,ActionFactory.Action.UNDO));
+    theActionMap.put("redo", new CommandAction(theActionFactory,ActionFactory.Action.REDO));
     theActionMap.put("focusinput", new FocusInputAction(myMediator));
   }
 
