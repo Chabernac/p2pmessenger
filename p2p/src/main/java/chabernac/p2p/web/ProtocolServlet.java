@@ -61,9 +61,10 @@ public class ProtocolServlet extends HttpServlet {
     try {
       if(theInput == null || "".equals( theInput ) || theSession == null || "".equals( theSession )){
         aResponse.getWriter().println( ((RoutingProtocol)getProtocolContainer().getProtocol( RoutingProtocol.ID )).getLocalPeerId() );
+      } else {
+        String theResult = getProtocolContainer().handleCommand( Long.parseLong( theSession ), theInput );
+        aResponse.getWriter().println(theResult);
       }
-      String theResult = getProtocolContainer().handleCommand( Long.parseLong( theSession ), theInput );
-      aResponse.getWriter().println(theResult);
     } catch ( Exception e ) {
       LOGGER.error( "could not send response message ", e );
     }

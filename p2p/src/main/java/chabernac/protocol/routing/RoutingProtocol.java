@@ -64,10 +64,10 @@ public class RoutingProtocol extends Protocol {
   static{
     if(TestTools.isInUnitTest()){
       START_PORT = 12800;
-      END_PORT = 12820;
+      END_PORT = 12808;
     } else {
       START_PORT = 12700;
-      END_PORT = 12720;
+      END_PORT = 12708;
     }
   }
 
