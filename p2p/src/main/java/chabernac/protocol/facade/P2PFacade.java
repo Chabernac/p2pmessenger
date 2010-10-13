@@ -448,6 +448,15 @@ public class P2PFacade {
     return this;
   }
   
+  public Map<String, InfoObject> getInfoMap() throws P2PFacadeException{
+    if(!isStarted()) throw new P2PFacadeException("Can not execute this action when the server is started");
+    try{
+      return  ((InfoExchangeProtocol< InfoObject >)myContainer.getProtocol( InfoExchangeProtocol.ID )).getInfoMap();
+    }catch(Exception e){
+      throw new P2PFacadeException("An error occured while getting info object", e);
+    }
+  }
+  
   public void addInfoListener(iInfoListener< InfoObject > aListener) throws P2PFacadeException{
     if(!isStarted()) throw new P2PFacadeException("Can not execute this action when the server is not started");
     

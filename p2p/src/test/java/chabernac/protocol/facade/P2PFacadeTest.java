@@ -430,4 +430,59 @@ public class P2PFacadeTest extends TestCase {
       if(theFacade4 != null) theFacade4.stop();
     }
   }
+  
+  public void testSetInfoObject() throws P2PFacadeException, InterruptedException{
+
+    P2PFacade theFacade1 = new P2PFacade()
+    .setExchangeDelay( 300 )
+    .setPersist( false )
+    .setInfoObject( "test", "test1" )
+    .start( 20 );
+
+    P2PFacade theFacade2 = new P2PFacade()
+    .setExchangeDelay( 300 )
+    .setInfoObject( "test", "test2" )
+    .setPersist( false )
+    .start( 20 );
+
+    Thread.sleep( 2000 );
+
+    try{
+      assertTrue( theFacade1.getInfoMap().containsKey( theFacade1.getPeerId() ));
+      assertEquals( "test1", theFacade1.getInfoMap().get( theFacade1.getPeerId() ).get( "test" ));
+      
+      assertTrue( theFacade1.getInfoMap().containsKey( theFacade2.getPeerId() ));
+      assertEquals( "test2", theFacade1.getInfoMap().get( theFacade2.getPeerId() ).get( "test" ));
+      
+      assertTrue( theFacade2.getInfoMap().containsKey( theFacade1.getPeerId() ));
+      assertEquals( "test1", theFacade2.getInfoMap().get( theFacade1.getPeerId() ).get( "test" ));
+      
+      assertTrue( theFacade2.getInfoMap().containsKey( theFacade2.getPeerId() ));
+      assertEquals( "test2", theFacade2.getInfoMap().get( theFacade2.getPeerId() ).get( "test" ));
+      
+      //now modify when running
+      theFacade1.setInfoObject( "test", "test1running" );
+      theFacade2.setInfoObject( "test", "test2running" );
+      
+      //give some time to synchronize
+      
+      Thread.sleep( 2000 );
+      
+      assertTrue( theFacade1.getInfoMap().containsKey( theFacade1.getPeerId() ));
+      assertEquals( "test1running", theFacade1.getInfoMap().get( theFacade1.getPeerId() ).get( "test" ));
+      
+      assertTrue( theFacade1.getInfoMap().containsKey( theFacade2.getPeerId() ));
+      assertEquals( "test2running", theFacade1.getInfoMap().get( theFacade2.getPeerId() ).get( "test" ));
+      
+      assertTrue( theFacade2.getInfoMap().containsKey( theFacade1.getPeerId() ));
+      assertEquals( "test1running", theFacade2.getInfoMap().get( theFacade1.getPeerId() ).get( "test" ));
+      
+      assertTrue( theFacade2.getInfoMap().containsKey( theFacade2.getPeerId() ));
+      assertEquals( "test2running", theFacade2.getInfoMap().get( theFacade2.getPeerId() ).get( "test" ));
+      
+    } finally {
+      if(theFacade1 != null) theFacade1.stop();
+      if(theFacade2 != null) theFacade2.stop();
+    }
+  }
 }
