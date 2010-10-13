@@ -16,12 +16,8 @@ public class ReceiveMenu extends Menu {
   public ReceiveMenu(ChatFrame aFrame, TrayIcon anIcon) throws IOException{
     super("Ontvangen");
     
-    ReceiveClosedMenuItem theReceivedClosedMenuItem = new ReceiveClosedMenuItem(anIcon);
-    ReceiveAsMessageIndicatesMenuItem theReceiveAsMessageIndictes = new ReceiveAsMessageIndicatesMenuItem(anIcon);
-    theReceiveAsMessageIndictes.addActionListener(theReceivedClosedMenuItem);
-    theReceivedClosedMenuItem.addActionListener(theReceiveAsMessageIndictes);
-    
-    add(theReceivedClosedMenuItem);
-    add(theReceiveAsMessageIndictes);
+    add(new ReceiveClosedMenuItem(anIcon));
+    add(new ReceiveAsMessageIndicatesMenuItem(anIcon));
+    add(new NoPopupMenuItem(anIcon));
   }
 }

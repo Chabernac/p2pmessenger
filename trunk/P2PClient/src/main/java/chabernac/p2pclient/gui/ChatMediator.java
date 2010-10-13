@@ -16,7 +16,10 @@ import org.apache.log4j.Logger;
 
 import chabernac.events.EventDispatcher;
 import chabernac.gui.event.SavePreferencesEvent;
+import chabernac.p2pclient.gui.action.ActionFactory;
+import chabernac.p2pclient.settings.Settings;
 import chabernac.preference.ApplicationPreferences;
+import chabernac.preference.iApplicationPreferenceListener;
 import chabernac.protocol.facade.P2PFacade;
 import chabernac.protocol.facade.P2PFacadeException;
 import chabernac.protocol.message.MessageArchive;
@@ -44,16 +47,22 @@ public class ChatMediator {
   private MultiPeerMessage myConcept = null;
   private MessageArchive myMessagArchive = null;
 
-  private boolean isShowDialog = true;
-
   private int myRestoreIndex = -1;
 
   private ExecutorService myFileTransferr = Executors.newFixedThreadPool( 5 );
   private ExecutorService myFileTransferResponse = Executors.newFixedThreadPool( 5 );
+  
+  private final ActionFactory myActionFactory;
 
   public ChatMediator ( P2PFacade anFacade ) throws P2PFacadeException {
     super();
+    myActionFactory = new ActionFactory(this);
     setP2PFacade( anFacade );
+    addPreferenceListener();
+  }
+  
+  private void addPreferenceListener(){
+    ApplicationPreferences.getInstance().addApplicationPreferenceListener( new MyPreferenceListener() );
   }
 
   public iMessageProvider getMessageProvider() {
@@ -275,8 +284,10 @@ public class ChatMediator {
     String theTitle = ApplicationPreferences.getInstance().getProperty("frame.light.title","Chatterke");
     try{
       theTitle += " [" + myP2PFacade.getPersonalInfo().getStatus().name();
-      if(!isShowDialog){
-        theTitle += " - popup blocked";
+      if(ApplicationPreferences.getInstance().hasEnumProperty( Settings.ReceiveEnveloppe.NO_POPUP )){
+        theTitle += " - popup geblokkeerd";
+      } else if(ApplicationPreferences.getInstance().hasEnumProperty( Settings.ReceiveEnveloppe.CLOSED )){
+        theTitle += " - ontvang gesloten";
       }
       theTitle += "]";
       if(theUsers.size() == 1){
@@ -298,22 +309,17 @@ public class ChatMediator {
     }
   }
 
-  public void setShowDialog( boolean isShowDialog ) {
-    this.isShowDialog = isShowDialog;
+  private void checkReceiveStatus( ) {
     try{
-      if(isShowDialog){
-        myP2PFacade.getPersonalInfo().setStatus(Status.ONLINE);
-      } else {
+      if(ApplicationPreferences.getInstance().hasEnumProperty( Settings.ReceiveEnveloppe.NO_POPUP )){
         myP2PFacade.getPersonalInfo().setStatus(Status.BUSY);
+      } else {
+        myP2PFacade.getPersonalInfo().setStatus(Status.ONLINE);
       }
     }catch(P2PFacadeException e){
       LOGGER.error("Could not change status", e);
     }
     setTitle();
-  }
-
-  public boolean isShowDialog(){
-    return isShowDialog;
   }
 
   public isShowDialogProvider getIsShowDialogProvider() {
@@ -324,11 +330,15 @@ public class ChatMediator {
     myIsShowDialogProvider = anIsShowDialogProvider;
   }
 
+  public ActionFactory getActionFactory() {
+    return myActionFactory;
+  }
+
   private class MyMessageListener implements iMultiPeerMessageListener {
 
     @Override
     public void messageReceived( MultiPeerMessage aMessage ) {
-      if(isShowDialog && myIsShowDialogProvider.isShowDialog()){
+      if(!ApplicationPreferences.getInstance().hasEnumProperty( Settings.ReceiveEnveloppe.NO_POPUP ) && myIsShowDialogProvider.isShowDialog()){
         myMessageDialog.showMessage( aMessage );
       }
     }
@@ -387,6 +397,20 @@ public class ChatMediator {
       myP2PFacade.sendMessage( theMessage, myExecutorService );    
     }catch(Exception e){
       LOGGER.error( "Could not send system message", e );
+    }
+  }
+  
+  public class MyPreferenceListener implements iApplicationPreferenceListener {
+    @Override
+    public void applicationPreferenceChanged( String aKey, String aValue ) {
+
+    }
+
+    @Override
+    public void applicationPreferenceChanged( Enum anEnumValue ) {
+      if(anEnumValue instanceof Settings.ReceiveEnveloppe){
+        checkReceiveStatus();
+      }
     }
   }
 }

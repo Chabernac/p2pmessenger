@@ -7,10 +7,8 @@
 package chabernac.p2pclient.gui;
 
 import java.awt.Cursor;
-import java.awt.EventQueue;
 import java.awt.Graphics;
 import java.awt.Rectangle;
-import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
@@ -46,8 +44,6 @@ import javax.swing.text.JTextComponent;
 
 import org.apache.log4j.Logger;
 
-import chabernac.event.Event;
-import chabernac.event.iEventListener;
 import chabernac.io.ClassPathResource;
 import chabernac.p2pclient.gui.action.ActionDecorator;
 
@@ -169,92 +165,13 @@ public class MessageField extends JTextArea implements iMessageProvider, iAttach
 
   }
 
-  private class MessageSendListener implements iEventListener{
-    public void eventFired(Event anEvt) {
-      clear();
-    }
-
-  }
-
-  private class PreviousAction extends AbstractAction{
-    public void actionPerformed(ActionEvent evt){
-      myMediator.restorePreviousMessage();
-    }
-  }
-
-
-  private class NextAction extends AbstractAction{
-    public void actionPerformed(ActionEvent evt){
-      myMediator.restoreNextMesssage();
-    }
-  }
-
-  private class FirstAction extends AbstractAction{
-    public void actionPerformed(ActionEvent evt){
-      myMediator.restoreFirstMessage();
-    }
-  }
-
-  private class LastAction extends AbstractAction{
-    public void actionPerformed(ActionEvent evt){
-      myMediator.restoreLastMessage();
-    }
-  }
-
-  private class DeleteAction extends AbstractAction{
-    public void actionPerformed(ActionEvent evt){
-      myMediator.deleteCurrentMessage();      
-    }
-  }
-
-  private class ClearAction extends AbstractAction{
-    public void actionPerformed(ActionEvent evt){
-      myMediator.clear();
-    }
-  }
-
-  private class ClearUsersAction extends AbstractAction{
-    public void actionPerformed(ActionEvent evt){
-      myMediator.clearAll();
-    }
-  }
-
-  private class SendAction extends AbstractAction{
-    public void actionPerformed(ActionEvent evt){
-      myMediator.send();
-    }
-  }
-
   private class NextRowAction extends AbstractAction{
     public void actionPerformed(ActionEvent evt){
       setText(getText() + "<br>\n");
     }
   }
 
-  private class ReplyAction extends AbstractAction{
-    public void actionPerformed(ActionEvent evt){
-      myMediator.selectReplyUsers();
-    }
-  }
-
-  private class ReplyAllAction extends AbstractAction{
-    public void actionPerformed(ActionEvent evt){
-      myMediator.selectReplyAllUsers();
-    }
-  }
-
-  private class UnlockAction extends AbstractAction{
-    public void actionPerformed(ActionEvent evt){
-      EventQueue theEventQueue = Toolkit.getDefaultToolkit().getSystemEventQueue();
-    }
-  }
   
-  private class PauseAction extends AbstractAction{
-    public void actionPerformed(ActionEvent evt){
-      myMediator.setShowDialog(!myMediator.isShowDialog());
-    }
-  }
-
   private class MyMouseWheelListener implements MouseWheelListener{
 
     public void mouseWheelMoved(MouseWheelEvent anEvent) {
