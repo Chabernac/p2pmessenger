@@ -14,6 +14,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 
+import chabernac.gui.tray.NewMessageTrayIconDisplayer;
 import chabernac.gui.tray.SystemTrayMenu;
 import chabernac.io.ClassPathResource;
 import chabernac.io.SocketProxy;
@@ -80,6 +81,8 @@ public class ApplicationLauncher {
     }
 
     SystemTrayMenu.buildSystemTray( myChatFrame, myFacade );
+    
+    new NewMessageTrayIconDisplayer(myChatFrame.getMediator());
   }
 
   private static void initDefaultSettigns() {

@@ -4,14 +4,21 @@
  */
 package chabernac.gui.tray;
 
+import java.awt.FocusTraversalPolicy;
 import java.awt.Image;
 import java.awt.SystemTray;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
+import javax.swing.JFrame;
 
+import chabernac.events.EventDispatcher;
+import chabernac.events.iEventListener;
+import chabernac.gui.event.FocusGainedEvent;
 import chabernac.io.ClassPathResource;
 import chabernac.p2pclient.gui.ChatMediator;
 import chabernac.p2pclient.settings.Settings;
@@ -30,25 +37,44 @@ public class NewMessageTrayIconDisplayer {
     myMediator = anMediator;
     myMediator.getP2PFacade().addMessageListener( new MyMessageListener() );
     myNewMessageImage = ImageIO.read( new ClassPathResource("images/message_new.png").getInputStream());
-    SystemTray.getSystemTray().getTrayIcons()[0].addActionListener( new MyActionListener() );
+    MyListener theListener = new MyListener();
+    SystemTray.getSystemTray().getTrayIcons()[0].addActionListener( theListener );
+    SystemTray.getSystemTray().getTrayIcons()[0].addMouseListener( theListener );
+    EventDispatcher.getInstance(FocusGainedEvent.class).addEventListener(theListener);
   }
 
   public class MyMessageListener implements iMultiPeerMessageListener {
 
     @Override
     public void messageReceived( MultiPeerMessage aMessage ) {
-      if(ApplicationPreferences.getInstance().hasEnumProperty( Settings.ReceiveEnveloppe.NO_POPUP )){
+      if(ApplicationPreferences.getInstance().hasEnumProperty( Settings.ReceiveEnveloppe.NO_POPUP ) && !((JFrame)myMediator.getTitleProvider()).hasFocus()){
         myPreviousImage = SystemTray.getSystemTray().getTrayIcons()[0].getImage();
         SystemTray.getSystemTray().getTrayIcons()[0].setImage( myNewMessageImage );
       }
     }
   }
   
+  private void resetImage(){
+    if(myPreviousImage != null){
+      SystemTray.getSystemTray().getTrayIcons()[0].setImage( myPreviousImage ); 
+    }
+  }
   
-  public class MyActionListener implements ActionListener {
+  
+  public class MyListener extends MouseAdapter implements ActionListener, iEventListener<FocusGainedEvent>{
     @Override
     public void actionPerformed( ActionEvent anE ) {
-      SystemTray.getSystemTray().getTrayIcons()[0].setImage( myPreviousImage );
+     resetImage();
+    }
+
+    @Override
+    public void mouseClicked(MouseEvent anArg0) {
+      resetImage();
+    }
+    
+    @Override
+    public void eventFired(FocusGainedEvent anEvent) {
+      resetImage();
     }
   }
 }

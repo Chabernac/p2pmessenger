@@ -9,6 +9,8 @@ package chabernac.p2pclient.gui;
 import java.awt.BorderLayout;
 import java.awt.Frame;
 import java.awt.Rectangle;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
@@ -21,8 +23,10 @@ import javax.swing.JSplitPane;
 
 import org.apache.log4j.Logger;
 
+import chabernac.events.EventDispatcher;
 import chabernac.gui.SavedFrame;
-import chabernac.gui.tray.NewMessageTrayIconDisplayer;
+import chabernac.gui.event.FocusGainedEvent;
+import chabernac.gui.event.FocusLostEvent;
 import chabernac.p2pclient.gui.action.ActionDecorator;
 import chabernac.preference.ApplicationPreferences;
 import chabernac.protocol.facade.P2PFacade;
@@ -51,7 +55,10 @@ public class ChatFrame extends SavedFrame implements iTitleProvider, isShowDialo
   }
 
   private void addWindowListener() {
-    addWindowListener(new MyWindowListener());
+    MyWindowListener theWindowListener = new MyWindowListener();
+    addWindowListener(theWindowListener);
+    addWindowFocusListener(theWindowListener);
+    addFocusListener(new MyFocusListener());
   }
 
   private void loadIcon(){
@@ -67,7 +74,6 @@ public class ChatFrame extends SavedFrame implements iTitleProvider, isShowDialo
   
   private void init() throws P2PFacadeException{
     myMediator = new ChatMediator(myP2PFacade);
-    new NewMessageTrayIconDisplayer(myMediator);
   }
   
   public ChatMediator getMediator(){
@@ -120,7 +126,11 @@ public class ChatFrame extends SavedFrame implements iTitleProvider, isShowDialo
 //      ApplicationPreferences.getInstance().save();
 //      System.exit( 0 );
     }
-  }
+    
+    public void windowGainedFocus(WindowEvent aWindowEvent){
+      EventDispatcher.getInstance(FocusGainedEvent.class).fireEvent(new FocusGainedEvent(ChatFrame.this));
+    }
+  } 
 
   @Override
   public boolean isShowDialog() {
@@ -138,5 +148,17 @@ public class ChatFrame extends SavedFrame implements iTitleProvider, isShowDialo
     NewMessageDialog5.getInstance( getMediator() ).cancelPendingTasks();
     NewMessageDialog5.getInstance( getMediator() ).setVisible( false );
   }
+  
+  public class MyFocusListener implements FocusListener {
 
+    @Override
+    public void focusGained(FocusEvent anArg0) {
+      EventDispatcher.getInstance(FocusGainedEvent.class).fireEvent(new FocusGainedEvent(ChatFrame.this));
+    }
+
+    @Override
+    public void focusLost(FocusEvent anArg0) {
+      EventDispatcher.getInstance(FocusLostEvent.class).fireEvent(new FocusLostEvent(ChatFrame.this));
+    }
+  }
 }
