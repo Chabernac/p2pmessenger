@@ -5,6 +5,7 @@
 package chabernac.protocol.facade;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -12,8 +13,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
 import javax.activation.DataSource;
-
-import org.omg.CosNaming.IstringHelper;
 
 import chabernac.io.CachingSocketPool;
 import chabernac.io.SocketPoolFactory;
@@ -430,13 +429,23 @@ public class P2PFacade {
   }
   
   public InfoObject getInfoObject() throws P2PFacadeException{
-    if(!isStarted()) throw new P2PFacadeException("Can not execute this action when the server is not started");
-    
-    try{
-      return  ((InfoExchangeProtocol< InfoObject >)myContainer.getProtocol( InfoExchangeProtocol.ID )).getInfoObject();
-    }catch(Exception e){
-      throw new P2PFacadeException("An error occured while getting info object", e);
+    if(!isStarted()) {
+      if(!myProperties.containsKey( "chabernac.protocol.infoexchange.InfoObject" )){
+        myProperties.setProperty( "chabernac.protocol.infoexchange.InfoObject", new InfoObject() );
+      }
+      return (InfoObject)myProperties.getProperty( "chabernac.protocol.infoexchange.InfoObject", new InfoObject() );
+    } else {
+      try{
+        return  ((InfoExchangeProtocol< InfoObject >)myContainer.getProtocol( InfoExchangeProtocol.ID )).getInfoObject();
+      }catch(Exception e){
+        throw new P2PFacadeException("An error occured while getting info object", e);
+      }
     }
+  }
+  
+  public P2PFacade setInfoObject(String aKey, Serializable anObject) throws P2PFacadeException{
+    getInfoObject().put( aKey, anObject );
+    return this;
   }
   
   public void addInfoListener(iInfoListener< InfoObject > aListener) throws P2PFacadeException{
@@ -546,6 +555,8 @@ public class P2PFacade {
       myContainer.getProtocol( VersionProtocol.ID );
       
       myContainer.getProtocol( WebPeerProtocol.ID );
+      
+      myContainer.getProtocol( InfoExchangeProtocol.ID );
       
       iSocketPool<SocketProxy> theSocketPool = SocketPoolFactory.getSocketPool();
       if(theSocketPool instanceof CachingSocketPool){

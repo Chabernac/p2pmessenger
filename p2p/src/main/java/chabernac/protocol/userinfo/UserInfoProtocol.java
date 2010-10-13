@@ -314,7 +314,7 @@ public class UserInfoProtocol extends Protocol {
       if(myUserInfo.containsKey( anEntry.getPeer().getPeerId() )){
         UserInfo theInfo = myUserInfo.get( anEntry.getPeer().getPeerId() );
         theInfo.setStatus( Status.OFFLINE );
-        myUserInfo.remove( anEntry.getPeer().getPeerId() );
+//        myUserInfo.remove( anEntry.getPeer().getPeerId() );
         notifyUserInfoChanged(theInfo);
       }
     }

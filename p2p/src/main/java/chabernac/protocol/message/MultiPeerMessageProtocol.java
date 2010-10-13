@@ -79,7 +79,7 @@ public class MultiPeerMessageProtocol extends Protocol{
     return (MessageProtocol)findProtocolContainer().getProtocol( MessageProtocol.ID);
   }
 
-  private RoutingTable getRoutingTable() throws ProtocolException{
+  public RoutingTable getRoutingTable() throws ProtocolException{
     return ((RoutingProtocol)findProtocolContainer().getProtocol( RoutingProtocol.ID)).getRoutingTable();
   }
 

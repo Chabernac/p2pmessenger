@@ -7,6 +7,7 @@ package chabernac.protocol.routing;
 import java.awt.BorderLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.IOException;
 import java.net.URL;
 import java.util.UUID;
 
@@ -26,8 +27,14 @@ import chabernac.protocol.ProtocolException;
 import chabernac.protocol.ProtocolFactory;
 import chabernac.protocol.ProtocolMessagePanel;
 import chabernac.protocol.ProtocolServer;
+import chabernac.protocol.infoexchange.InfoExchangeProtocol;
+import chabernac.protocol.infoexchange.InfoObject;
+import chabernac.protocol.infoexchange.InfoObjectPanel;
+import chabernac.protocol.message.MessageArchivePanel;
 import chabernac.protocol.message.MessagePanel;
 import chabernac.protocol.message.MessageProtocol;
+import chabernac.protocol.message.MultiPeerMessageProtocol;
+import chabernac.protocol.pominfoexchange.POMInfo;
 import chabernac.protocol.userinfo.UserInfoPanel;
 import chabernac.protocol.userinfo.UserInfoProtocol;
 import chabernac.tools.PropertyMap;
@@ -100,8 +107,12 @@ public class RoutingFrame extends JFrame {
     thePane.add("Messages", new MessagePanel(theMessageProtocol));
     thePane.add("Protocol", new ProtocolMessagePanel(myProtocolContainer));
     
+    InfoExchangeProtocol<InfoObject> theInfoExchangeProtocol = (InfoExchangeProtocol< InfoObject >)myProtocolContainer.getProtocol( InfoExchangeProtocol.ID );
+    thePane.add("Info", new InfoObjectPanel(theInfoExchangeProtocol));
     
     thePane.add("PeerMessages", new PeerMessagePanel(theRoutingProtocl.getPeerSender()));
+    
+    thePane.add("Message Archive", new MessageArchivePanel((MultiPeerMessageProtocol)myProtocolContainer.getProtocol( MultiPeerMessageProtocol.ID )));
 
 
     getContentPane().setLayout( new BorderLayout() );
@@ -138,7 +149,7 @@ public class RoutingFrame extends JFrame {
     }
   }
 
-  public static void main(String args[]) throws ProtocolException, InterruptedException{
+  public static void main(String args[]) throws ProtocolException, InterruptedException, IOException{
     //    PropertyConfigurator.configure( "log4j.properties" );
     System.getProperties().put("http.proxyHost", "iproxy.axa.be");
     System.getProperties().put("http.proxyPort", "8080");
@@ -166,10 +177,12 @@ public class RoutingFrame extends JFrame {
     RoutingFrame theFrame = new RoutingFrame(theServer1, theContainer, true);
     theServer1.start();
     
+    
     Thread.sleep( 2000 );
     
     theContainer.getProtocol( RoutingProtocol.ID );
     theContainer.getProtocol( UserInfoProtocol.ID );
+    ((InfoExchangeProtocol< InfoObject >)theContainer.getProtocol( InfoExchangeProtocol.ID )).getInfoObject().put( "pom.info", new POMInfo() );
 //    theContainer.getProtocol( VersionProtocol.ID );
 //    theContainer.getProtocol( WebPeerProtocol.ID );
     

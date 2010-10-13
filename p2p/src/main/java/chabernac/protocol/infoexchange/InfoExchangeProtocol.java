@@ -99,6 +99,10 @@ public class InfoExchangeProtocol<T extends Observable & Serializable> extends P
       theListener.infoChanged( anPeerId, Collections.unmodifiableMap( myInfoMap  ) );
     }
   }
+  
+  public Map<String, T> getInfoMap(){
+    return Collections.unmodifiableMap( myInfoMap );
+  }
 
   @Override
   public void stop() {
