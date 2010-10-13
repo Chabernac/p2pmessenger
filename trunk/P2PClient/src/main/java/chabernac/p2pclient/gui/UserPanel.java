@@ -176,7 +176,10 @@ public class UserPanel extends GPanel implements iUserSelectionProvider{
 
 
   private Color getColorForStatus( UserInfo anUserInfo ) {
-    Status theStatus = anUserInfo.getStatus();
+    Status theStatus = Status.OFFLINE;
+    if(anUserInfo != null){
+      theStatus = anUserInfo.getStatus();
+    }
 
     if(theStatus == Status.OFFLINE) return Color.GRAY;
     return new Color(0,0,200);
@@ -209,7 +212,7 @@ public class UserPanel extends GPanel implements iUserSelectionProvider{
 
   public class UserInfoListener implements iUserInfoListener {
     public void userInfoChanged( UserInfo aUserInfo, Map<String,  UserInfo > aFullUserInfoList ) {
-      addUsers(aFullUserInfoList);
+      addUsers(new HashMap< String, UserInfo >(aFullUserInfoList));
     }
   }
 
