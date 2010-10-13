@@ -15,7 +15,6 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
-import javax.swing.JPopupMenu.Separator;
 
 import org.apache.log4j.Logger;
 

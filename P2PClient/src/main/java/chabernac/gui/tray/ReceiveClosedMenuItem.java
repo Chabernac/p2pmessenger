@@ -17,8 +17,9 @@ import javax.imageio.ImageIO;
 import chabernac.io.ClassPathResource;
 import chabernac.p2pclient.settings.Settings;
 import chabernac.preference.ApplicationPreferences;
+import chabernac.preference.iApplicationPreferenceListener;
 
-public class ReceiveClosedMenuItem extends MenuItem implements ActionListener {
+public class ReceiveClosedMenuItem extends MenuItem implements ActionListener, iApplicationPreferenceListener {
   private static final long serialVersionUID = -5224352709920368154L;
   private final TrayIcon myTrayIcon;
   private final BufferedImage myImage;
@@ -29,11 +30,15 @@ public class ReceiveClosedMenuItem extends MenuItem implements ActionListener {
     myTrayIcon = aTrayIcon;
     myImage = ImageIO.read( new ClassPathResource("images/message.png").getInputStream());
     setBold();
+    addPreferenceListener();
+  }
+  
+  private void addPreferenceListener(){
+    ApplicationPreferences.getInstance().addApplicationPreferenceListener( this );
   }
   
   public void actionPerformed(ActionEvent evt){
     if(evt.getSource() == this) ApplicationPreferences.getInstance().setEnumProperty(Settings.ReceiveEnveloppe.CLOSED);
-    setBold();
   }
 
   private void setBold(){
@@ -41,5 +46,14 @@ public class ReceiveClosedMenuItem extends MenuItem implements ActionListener {
     if(ApplicationPreferences.getInstance().hasEnumProperty(Settings.ReceiveEnveloppe.CLOSED)){
       myTrayIcon.setImage( myImage );
     }
+  }
+  
+  @Override
+  public void applicationPreferenceChanged( String aKey, String aValue ) {
+  }
+
+  @Override
+  public void applicationPreferenceChanged( Enum anEnumValue ) {
+    setBold();
   }
 }

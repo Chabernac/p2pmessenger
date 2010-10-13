@@ -19,16 +19,16 @@ import chabernac.p2pclient.settings.Settings;
 import chabernac.preference.ApplicationPreferences;
 import chabernac.preference.iApplicationPreferenceListener;
 
-public class ReceiveAsMessageIndicatesMenuItem extends MenuItem implements ActionListener, iApplicationPreferenceListener {
+public class NoPopupMenuItem extends MenuItem implements ActionListener, iApplicationPreferenceListener {
   private static final long serialVersionUID = -5224352709920368154L;
-  private final BufferedImage myImage;
   private final TrayIcon myTrayIcon;
+  private final BufferedImage myImage;
 
-  public ReceiveAsMessageIndicatesMenuItem(TrayIcon aTrayIcon) throws IOException{
-    super("Ontvang zoals bericht aangeeft");
+  public NoPopupMenuItem(TrayIcon aTrayIcon) throws IOException{
+    super("Popup geblokkeerd");
     addActionListener( this );
-    myImage = ImageIO.read( new ClassPathResource("images/message_open.png").getInputStream());
     myTrayIcon = aTrayIcon;
+    myImage = ImageIO.read( new ClassPathResource("images/message_blocked.png").getInputStream());
     setBold();
     addPreferenceListener();
   }
@@ -38,16 +38,16 @@ public class ReceiveAsMessageIndicatesMenuItem extends MenuItem implements Actio
   }
   
   public void actionPerformed(ActionEvent evt){
-    if(evt.getSource() == this) ApplicationPreferences.getInstance().setEnumProperty(Settings.ReceiveEnveloppe.AS_MESSAGE_INDICATES);
+    if(evt.getSource() == this) ApplicationPreferences.getInstance().setEnumProperty(Settings.ReceiveEnveloppe.NO_POPUP);
   }
 
   private void setBold(){
-    setFont( new Font("Arial", ApplicationPreferences.getInstance().hasEnumProperty(Settings.ReceiveEnveloppe.AS_MESSAGE_INDICATES) ? Font.BOLD : Font.PLAIN, 12 ) );
-    if(ApplicationPreferences.getInstance().hasEnumProperty(Settings.ReceiveEnveloppe.AS_MESSAGE_INDICATES)){
+    setFont( new Font("Arial", ApplicationPreferences.getInstance().hasEnumProperty(Settings.ReceiveEnveloppe.NO_POPUP) ? Font.BOLD : Font.PLAIN, 12 ) );
+    if(ApplicationPreferences.getInstance().hasEnumProperty(Settings.ReceiveEnveloppe.NO_POPUP)){
       myTrayIcon.setImage( myImage );
     }
   }
-
+  
   @Override
   public void applicationPreferenceChanged( String aKey, String aValue ) {
   }

@@ -26,52 +26,55 @@ import chabernac.protocol.pipe.PipeException;
 import chabernac.protocol.userinfo.UserInfo;
 import chabernac.protocol.userinfo.iUserInfoListener;
 
-public class P2PEventAdapter implements iUserInfoListener, iInfoListener< InfoObject >, iDeliverReportListener, iMultiPeerMessageListener, IPipeListener {
+public class P2PEventAdapter {
   private final P2PFacade myFacade;
-  
+  private MyListener myListener = new MyListener();
+
   public P2PEventAdapter(P2PFacade aFacade){
     myFacade = aFacade;
   }
-  
+
   public void link() throws P2PFacadeException{
-    myFacade.addUserInfoListener( this );
-    myFacade.addInfoListener( this );
-    myFacade.addDeliveryReportListener( this );
-    myFacade.addMessageListener( this );
-    myFacade.addPipeListener( this );
+    myFacade.addUserInfoListener( myListener );
+    myFacade.addInfoListener( myListener );
+    myFacade.addDeliveryReportListener( myListener );
+    myFacade.addMessageListener( myListener );
+    myFacade.addPipeListener( myListener );
   }
-  
+
   public void unLink() throws P2PFacadeException{
-    myFacade.removeDeliveryReportListener( this );
-    myFacade.removeMessageListener( this );
-    myFacade.removeUserInfoListener( this );
-    myFacade.removeInfoListener( this );
-    myFacade.removePipeListener( this );
+    myFacade.removeDeliveryReportListener( myListener );
+    myFacade.removeMessageListener( myListener );
+    myFacade.removeUserInfoListener( myListener );
+    myFacade.removeInfoListener( myListener );
+    myFacade.removePipeListener( myListener );
   }
 
-  @Override
-  public void userInfoChanged( UserInfo aUserInfo, Map< String, UserInfo > aFullUserInfoList ) {
-    EventDispatcher.getInstance( UserInfoChangeEvent.class ).fireEvent( new UserInfoChangeEvent(aUserInfo, aFullUserInfoList) );     
-  }
 
-  @Override
-  public void infoChanged( String aPeerId, Map< String, InfoObject > aInfoMap ) {
-    EventDispatcher.getInstance( InfoChangedEvent.class ).fireEvent( new InfoChangedEvent(aPeerId, aInfoMap));
-  }
+  private class MyListener implements iUserInfoListener, iInfoListener< InfoObject >, iDeliverReportListener, iMultiPeerMessageListener, IPipeListener { 
+    @Override
+    public void userInfoChanged( UserInfo aUserInfo, Map< String, UserInfo > aFullUserInfoList ) {
+      EventDispatcher.getInstance( UserInfoChangeEvent.class ).fireEvent( new UserInfoChangeEvent(aUserInfo, aFullUserInfoList) );     
+    }
 
-  @Override
-  public void acceptDeliveryReport( DeliveryReport aDeliverReport ) {
-    EventDispatcher.getInstance( DeliveryReportEvent.class ).fireEvent( new DeliveryReportEvent(aDeliverReport));
-  }
+    @Override
+    public void infoChanged( String aPeerId, Map< String, InfoObject > aInfoMap ) {
+      EventDispatcher.getInstance( InfoChangedEvent.class ).fireEvent( new InfoChangedEvent(aPeerId, aInfoMap));
+    }
 
-  @Override
-  public void messageReceived( MultiPeerMessage aMessage ) {
-    EventDispatcher.getInstance( MultiPeerMessageEvent.class ).fireEvent( new MultiPeerMessageEvent(aMessage));
-  }
+    @Override
+    public void acceptDeliveryReport( DeliveryReport aDeliverReport ) {
+      EventDispatcher.getInstance( DeliveryReportEvent.class ).fireEvent( new DeliveryReportEvent(aDeliverReport));
+    }
 
-  @Override
-  public void incomingPipe( Pipe aPipe ) throws PipeException {
-    EventDispatcher.getInstance( PipeEvent.class ).fireEvent( new PipeEvent(aPipe));
-  }
+    @Override
+    public void messageReceived( MultiPeerMessage aMessage ) {
+      EventDispatcher.getInstance( MultiPeerMessageEvent.class ).fireEvent( new MultiPeerMessageEvent(aMessage));
+    }
 
+    @Override
+    public void incomingPipe( Pipe aPipe ) throws PipeException {
+      EventDispatcher.getInstance( PipeEvent.class ).fireEvent( new PipeEvent(aPipe));
+    }
+  }
 }

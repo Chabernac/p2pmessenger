@@ -42,8 +42,11 @@ import javax.swing.border.TitledBorder;
 import org.apache.log4j.Logger;
 
 import chabernac.gui.ApplicationLauncher;
+import chabernac.p2pclient.gui.action.ActionFactory;
+import chabernac.p2pclient.gui.action.CommandAction;
 import chabernac.p2pclient.settings.Settings;
 import chabernac.preference.ApplicationPreferences;
+import chabernac.preference.iApplicationPreferenceListener;
 import chabernac.protocol.facade.P2PFacadeException;
 import chabernac.protocol.message.MessageIndicator;
 import chabernac.protocol.message.MultiPeerMessage;
@@ -79,7 +82,7 @@ public class NewMessageDialog5 extends JDialog implements iMessageDialog{
   private boolean isFirstTime = true;
 
   private List< Future > myPendingMessages = Collections.synchronizedList( new ArrayList< Future >());
-
+  
   private NewMessageDialog5(ChatMediator aMediator){
     myMediator = aMediator;
     init();
@@ -95,6 +98,7 @@ public class NewMessageDialog5 extends JDialog implements iMessageDialog{
 
   private void addListener(){
     addComponentListener(  new MyComponentAdapter() );
+    ApplicationPreferences.getInstance().addApplicationPreferenceListener( new MyApplicationPreferenceListener() );
   }
 
   private void init(){
@@ -146,7 +150,7 @@ public class NewMessageDialog5 extends JDialog implements iMessageDialog{
     theActionMap.put("chat", new ChatAction());
     theActionMap.put("sendorclose", new SendOrCloseAction());
     theActionMap.put("normalmode", new NormalModeAction());
-    theActionMap.put("nodialog", new NoDialogAction());
+    theActionMap.put("nodialog", new CommandAction(myMediator.getActionFactory(), ActionFactory.Action.NO_POPUP));
     theActionMap.put("setinvisible", new SetInvisibleAction());
     theActionMap.put("clear", new ClearAction());
     theActionMap.put("open", new OpenAction());
@@ -424,14 +428,6 @@ public class NewMessageDialog5 extends JDialog implements iMessageDialog{
     }
   }
 
-  private class NoDialogAction extends AbstractAction{
-    public void actionPerformed(ActionEvent e) {
-      myMediator.setShowDialog(false);
-      cancelPendingTasks();
-      setVisible( false );
-    }
-  }
-
   private class MyComponentAdapter extends ComponentAdapter {
     public void componentHidden(ComponentEvent e) {
       synchronized ( VISIBLE_LOCK ) {
@@ -439,5 +435,22 @@ public class NewMessageDialog5 extends JDialog implements iMessageDialog{
       }
     }
   }
+  
+  public class MyApplicationPreferenceListener implements iApplicationPreferenceListener {
+
+    @Override
+    public void applicationPreferenceChanged( String aKey, String aValue ) {
+
+    }
+
+    @Override
+    public void applicationPreferenceChanged( Enum anEnumValue ) {
+      if(anEnumValue == Settings.ReceiveEnveloppe.NO_POPUP){
+        cancelPendingTasks();
+        setVisible( false );
+      }
+    }
+  }
+
 }
 

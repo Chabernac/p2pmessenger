@@ -9,27 +9,21 @@ package chabernac.p2pclient.gui;
 import java.awt.BorderLayout;
 import java.awt.Frame;
 import java.awt.Rectangle;
-import java.awt.event.InputEvent;
-import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
-import javax.swing.ActionMap;
-import javax.swing.InputMap;
 import javax.swing.JComponent;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
-import javax.swing.KeyStroke;
 
 import org.apache.log4j.Logger;
 
 import chabernac.gui.SavedFrame;
+import chabernac.gui.tray.NewMessageTrayIconDisplayer;
 import chabernac.p2pclient.gui.action.ActionDecorator;
-import chabernac.p2pclient.gui.action.ActionFactory;
-import chabernac.p2pclient.gui.action.CommandAction;
 import chabernac.preference.ApplicationPreferences;
 import chabernac.protocol.facade.P2PFacade;
 import chabernac.protocol.facade.P2PFacadeException;
@@ -73,6 +67,7 @@ public class ChatFrame extends SavedFrame implements iTitleProvider, isShowDialo
   
   private void init() throws P2PFacadeException{
     myMediator = new ChatMediator(myP2PFacade);
+    new NewMessageTrayIconDisplayer(myMediator);
   }
   
   public ChatMediator getMediator(){
@@ -94,6 +89,7 @@ public class ChatFrame extends SavedFrame implements iTitleProvider, isShowDialo
     myMediator.setUserSelectionProvider( theUserPanel );
     myMediator.setTitleProvider( this );
     myMediator.setIsShowDialogProvider( this );
+    myMediator.setTitle();
     
     mySplitPane.setTopComponent(new JScrollPane(myMessageField, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER));
     mySplitPane.setBottomComponent(theReceivedField);
