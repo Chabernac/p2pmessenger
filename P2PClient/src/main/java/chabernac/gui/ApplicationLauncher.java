@@ -7,7 +7,6 @@ package chabernac.gui;
 import java.awt.AWTException;
 import java.io.File;
 import java.io.IOException;
-import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -30,8 +29,6 @@ import chabernac.protocol.iProtocolDelegate;
 import chabernac.protocol.facade.P2PFacade;
 import chabernac.protocol.facade.P2PFacadeException;
 import chabernac.protocol.filetransfer.FileHandlerDialogDispatcher;
-import chabernac.protocol.infoexchange.InfoObject;
-import chabernac.protocol.infoexchange.iInfoListener;
 import chabernac.protocol.pominfoexchange.POMInfo;
 import chabernac.protocol.routing.PeerSender;
 import chabernac.protocol.routing.RoutingProtocol;
@@ -109,7 +106,7 @@ public class ApplicationLauncher {
     myChatFrame.showFrame();
   }
 
-  private static void startFacade(ArgsInterPreter anInterPreter) throws P2PFacadeException{
+  private static void startFacade(ArgsInterPreter anInterPreter) throws P2PFacadeException, IOException{
     iUserInfoProvider theUserInfoProvider = new BackupUserInfoProviderDecorator(new AXALDAPUserInfoProvider());
 
     myFacade = new P2PFacade()
@@ -120,25 +117,9 @@ public class ApplicationLauncher {
     .setStopWhenAlreadyRunning( true )
     .setChannel(anInterPreter.getKeyValue("channel", "default"))
     .setFileHandler( new FileHandlerDialogDispatcher() )
+    .setInfoObject( "pom.info", new POMInfo() )
+    .setInfoObject( "version", "v2010.10.13" )
     .start( 20 );
-    
-    try {
-      myFacade.getInfoObject().put( "pom.info", new POMInfo() );
-      myFacade.addInfoListener( new iInfoListener< InfoObject >(){
-
-        @Override
-        public void infoChanged( String aPeerId, Map< String, InfoObject > aInfoMap ) {
-          for(InfoObject theObject : aInfoMap.values()){
-            if(theObject.containsKey( "pom.info" )){
-              System.out.println(theObject.get( "pom.info" ).toString());
-            }
-          }
-        }
-        
-      });
-    } catch ( IOException e ) {
-      LOGGER.error("Could not load pom info", e);
-    }
   }
 
   private static void addRun2Startup(){
