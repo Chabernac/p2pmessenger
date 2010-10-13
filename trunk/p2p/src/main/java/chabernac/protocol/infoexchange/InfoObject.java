@@ -75,5 +75,20 @@ public class InfoObject extends Observable implements Serializable, Map<String, 
     myDelegate.putAll( anM );
   }
   
+  public String toString(){
+    StringBuilder theBuilder = new StringBuilder();
+    
+    theBuilder.append( "InfoObject\r\n" );
+    for(String theKey : myDelegate.keySet()){
+      Object theObject = myDelegate.get(theKey);
+      theBuilder.append(theKey);
+      theBuilder.append("=");
+      theBuilder.append(theObject.toString());
+      theBuilder.append("\r\n");
+    }
+    return theBuilder.toString();
+      
+    
+  }
   
 }

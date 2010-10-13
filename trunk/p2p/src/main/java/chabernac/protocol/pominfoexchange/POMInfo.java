@@ -51,9 +51,10 @@ public class POMInfo implements Serializable {
       theReader = new BufferedReader(new InputStreamReader(anInputStream));
       String theLine = null;
       while((theLine = theReader.readLine()) != null){
-        System.out.println(theLine);
-//        thePOM.addLine( theLine );
+//        System.out.println(theLine);
+        thePOM.addLine( theLine );
       }
+      myPomInfo.add( thePOM );
     } finally {
       theReader.close();
     }
@@ -66,7 +67,9 @@ public class POMInfo implements Serializable {
   public String toString(){
     StringBuilder theBuilder = new StringBuilder();
     for(POM thePOM : myPomInfo){
+      theBuilder.append( "<POM>\r\n" );
       theBuilder.append(thePOM.toString());
+      theBuilder.append( "</POM>\r\n" );
     }
     return theBuilder.toString();
   }

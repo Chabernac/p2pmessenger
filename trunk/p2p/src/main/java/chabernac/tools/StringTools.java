@@ -23,4 +23,14 @@ public class StringTools {
     UUID.add( anID );
     return Integer.toString( new ArrayList< String >(UUID).indexOf( anID ));
   }
+  
+  public static String convertToLocalUniqueId(String[] anID){
+    StringBuilder theString = new StringBuilder();
+    for(int i=0;i<anID.length;i++){
+      theString.append( convertToLocalUniqueId( anID[i] ));
+      if(i < anID.length - 1) theString.append(",");
+    }
+    return theString.toString();
+    
+  }
 }

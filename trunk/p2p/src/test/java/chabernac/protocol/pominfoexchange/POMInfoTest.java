@@ -11,6 +11,6 @@ import junit.framework.TestCase;
 public class POMInfoTest extends TestCase {
   public void testPOMInfo() throws IOException{
     POMInfo thePOMInfo = new POMInfo();
-    System.out.println(thePOMInfo.toString());
+    System.out.println("POMInfo: " + thePOMInfo.toString());
   }
 }

@@ -4,12 +4,14 @@
  */
 package chabernac.protocol.pominfoexchange;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class POM {
+public class POM implements Serializable{
+  private static final long serialVersionUID = 8431189295452621525L;
   private final List<String> myHeaders = new ArrayList< String >();
   private final Map<String, String> myProperties = new HashMap< String, String >();
   

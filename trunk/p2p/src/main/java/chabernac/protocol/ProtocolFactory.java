@@ -128,14 +128,13 @@ public class ProtocolFactory implements iProtocolFactory{
     }
     
     if(VersionProtocol.ID.equalsIgnoreCase( aProtocolId )) {
-      Version theLocalVersion = (Version)myProtocolProperties.get( "chabernac.protocol.version" );
-      if(theLocalVersion == null) theLocalVersion = new Version("0.0.1");
+      Version theLocalVersion = (Version)myProtocolProperties.getProperty( "chabernac.protocol.version", new Version("0.0.1"));
       VersionProtocol theProtocol = new VersionProtocol(theLocalVersion);
       return theProtocol;
     }
     
     if(InfoExchangeProtocol.ID.equalsIgnoreCase( aProtocolId )) {
-      InfoObject theInfoObject = new InfoObject();
+      InfoObject theInfoObject = (InfoObject)myProtocolProperties.getProperty( "chabernac.protocol.infoexchange.InfoObject",  new InfoObject());
       InfoExchangeProtocol<InfoObject> theProtocol = new InfoExchangeProtocol< InfoObject >(theInfoObject);
       return theProtocol;
     }

@@ -4,6 +4,7 @@
  */
 package chabernac.protocol.infoexchange;
 
+import java.io.IOException;
 import java.util.Map;
 
 import junit.framework.TestCase;
@@ -12,8 +13,7 @@ import org.apache.log4j.BasicConfigurator;
 
 import chabernac.protocol.facade.P2PFacade;
 import chabernac.protocol.facade.P2PFacadeException;
-import chabernac.protocol.infoexchange.InfoObject;
-import chabernac.protocol.infoexchange.iInfoListener;
+import chabernac.protocol.pominfoexchange.POMInfo;
 import chabernac.protocol.version.Version;
 
 public class InfoExchangeProtocolTest extends TestCase {
@@ -61,7 +61,47 @@ public class InfoExchangeProtocolTest extends TestCase {
       theFacade1.stop();
       theFacade2.stop();
     }
+  }
 
+  public void testInfoProtocolWithPomInfo() throws P2PFacadeException, IOException, InterruptedException{
+    P2PFacade theFacade1 = new P2PFacade()
+    .setExchangeDelay( 3 )
+    .setPersist( false )
+    .start( 5 );
+
+    InfoCollecter theInfoCollecter1 = new InfoCollecter();
+    theFacade1.addInfoListener( theInfoCollecter1 );
+
+    theFacade1.getInfoObject().put( "pom.info", new POMInfo());
+
+    P2PFacade theFacade2 = new P2PFacade()
+    .setExchangeDelay( 3 )
+    .setPersist( false )
+    .start( 5 );
+
+    try{
+      InfoCollecter theInfoCollecter2 = new InfoCollecter();
+      theFacade2.addInfoListener( theInfoCollecter2 );
+
+      theFacade2.getInfoObject().put( "pom.info", new POMInfo());
+
+      Thread.sleep( 2000 );
+
+      assertNotNull( theInfoCollecter1.getInfo() );
+      assertNotNull( theInfoCollecter2.getInfo() );
+
+      assertTrue( theInfoCollecter1.getInfo().containsKey( theFacade2.getPeerId() ) );
+      assertTrue( theInfoCollecter2.getInfo().containsKey( theFacade1.getPeerId() ) );
+
+      InfoObject theInfoObjectOfPeer2inPeer1 = theInfoCollecter1.getInfo().get( theFacade2.getPeerId() );
+      assertTrue( theInfoObjectOfPeer2inPeer1.get( "pom.info" ) instanceof POMInfo);
+
+      InfoObject theInfoObjectOfPeer1inPeer2 = theInfoCollecter2.getInfo().get( theFacade1.getPeerId() );
+      assertTrue( theInfoObjectOfPeer1inPeer2.get( "pom.info" ) instanceof POMInfo);
+    }finally{
+      theFacade1.stop();
+      theFacade2.stop();
+    }
   }
 
   private class InfoCollecter implements iInfoListener< InfoObject >{
