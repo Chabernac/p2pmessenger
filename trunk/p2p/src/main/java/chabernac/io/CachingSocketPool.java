@@ -172,7 +172,5 @@ public class CachingSocketPool extends Observable implements iSocketPool< Socket
 
   @Override
   public void cleanUpOlderThan( long aTimestamp ) {
-    // TODO Auto-generated method stub
-    
   }
 }
