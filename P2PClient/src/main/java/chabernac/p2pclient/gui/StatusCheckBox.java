@@ -58,7 +58,7 @@ public class StatusCheckBox extends JCheckBox {
 
   public void setStatus(Status aStatus){
     myStatus = aStatus;
-    setEnabled( myStatus != Status.OFFLINE );
+//    setEnabled( myStatus != Status.OFFLINE );
     if(myStatus == Status.OFFLINE){
       setSelected( false );
     }

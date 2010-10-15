@@ -280,6 +280,7 @@ public class ChatMediator {
   }
 
   public void setTitle(){
+    if(true) return;
     Set<String> theUsers = myUserSelectionProvider.getSelectedUsers();
     String theTitle = ApplicationPreferences.getInstance().getProperty("frame.light.title","Chatterke");
     try{

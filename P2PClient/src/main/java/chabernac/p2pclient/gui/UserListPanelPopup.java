@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.ResourceBundle;
 
 import javax.swing.JOptionPane;
 
@@ -41,6 +42,7 @@ public class UserListPanelPopup extends GPanelPopupMenu {
     removeAll();
     add(new CommandMenuItem(new ClearCommand()));
     add(new CommandMenuItem(new NewGroupCommand()));
+    add(new CommandMenuItem(new AddToGroupCommand()));
     add(new CommandMenuItem(new RemoveGroupCommand()));
 //    add(new CommandMenuItem(new RemoveOfflineUsers()));
     addSeparator();
@@ -50,31 +52,15 @@ public class UserListPanelPopup extends GPanelPopupMenu {
 //    addSeparator();
 
     try{
-      StatusCommand theAvailableCommand = new StatusCommand(Status.ONLINE); 
-      StatusCommand theAwayCommand = new StatusCommand(Status.AWAY);
-      StatusCommand theBussyCommand = new StatusCommand(Status.BUSY);
-
-      CommandMenuItem theAvailableItem = new CommandMenuItem(theAvailableCommand);
-      CommandMenuItem theAwayItem = new CommandMenuItem(theAwayCommand);
-      CommandMenuItem theBussyItem = new CommandMenuItem(theBussyCommand);
-
-      theAvailableCommand.addObserver(theAwayItem);
-      theAvailableCommand.addObserver(theBussyItem);
-
-      theAwayCommand.addObserver(theAvailableItem);
-      theAwayCommand.addObserver(theBussyItem);
-
-      theBussyCommand.addObserver(theAvailableItem);
-      theBussyCommand.addObserver(theAwayItem);
-
-      add(theAvailableItem);
-      add(theAwayItem);
-      add(theBussyItem);
+      add(new CommandMenuItem(new StatusCommand(Status.ONLINE)));
+      add(new CommandMenuItem(new StatusCommand(Status.AWAY)));
+      add(new CommandMenuItem(new StatusCommand(Status.BUSY)));
+      add(new CommandMenuItem(new StatusCommand(Status.OFFLINE)));
     }catch(P2PFacadeException e){
       logger.error( "Error occured while constructing menu", e );
     }
-
     addSeparator();
+    add(new CommandMenuItem(new SearchPeersCommand()));
 
   }
 
@@ -85,26 +71,40 @@ public class UserListPanelPopup extends GPanelPopupMenu {
   }
 
   private class ClearCommand extends AbstractCommand{
-    public String getName() { return "Clear"; }
+    public String getName() { return "Wissen"; }
     public boolean isEnabled() { return true; }
     public void execute() { myPanel.setSelectedUsers( new HashSet< String >() ); }
   }
 
   private class NewGroupCommand extends AbstractCommand{
-    public String getName() { return "New group"; }
+    public String getName() { return "Nieuwe groep"; }
     public boolean isEnabled() { return true; }
     public void execute() {
 
       //TODO implement Group
-      String groupName = JOptionPane.showInputDialog(myPanel, "Group name");
+      String groupName = JOptionPane.showInputDialog(myPanel, "Naam van de groep");
       if(groupName == null || groupName.equals("")) return;
       myPanel.createGroupForSelectedUsers( groupName );
       buildMenu();
     }
   }
 
+  private class AddToGroupCommand extends AbstractCommand{
+    public String getName() { return "Toevoegen aan groep"; }
+    public boolean isEnabled() { return true; }
+    public void execute() {
+
+      //TODO implement Group
+      String groupName = JOptionPane.showInputDialog(myPanel, "Naam van de groep");
+      if(groupName == null || groupName.equals("")) return;
+      myPanel.addSelectedUsersToGroup( groupName );
+      buildMenu();
+    }
+  }
+
+  
   private class RemoveGroupCommand extends AbstractCommand{
-    public String getName() { return "Remove group"; }
+    public String getName() { return "Groep verwijderen"; }
     public boolean isEnabled() { return true; }
     public void execute() {
       myPanel.removeGroup( lastSelectedGroup );
@@ -126,6 +126,20 @@ public class UserListPanelPopup extends GPanelPopupMenu {
     public void execute(){
       lastSelectedGroup = myGroup;
       myPanel.selectGroup(myGroup);
+    }
+  }
+  
+  private class SearchPeersCommand extends AbstractCommand{
+    public String getName() { return "Zoeken naar peers"; }
+
+    public boolean isEnabled() { return true; }
+
+    public void execute(){
+      try {
+        myMediator.getP2PFacade().scanSuperNodes();
+      } catch ( P2PFacadeException e ) {
+        logger.error( "Unable to scan super nodes" );
+      }
     }
   }
 
@@ -159,10 +173,7 @@ public class UserListPanelPopup extends GPanelPopupMenu {
     }
 
     public String getName() {
-      if(myStatus == Status.ONLINE) return "Online";
-      if(myStatus == Status.AWAY) return "Eventjes weg";
-      if(myStatus == Status.BUSY) return "Ben bezig";
-      return "";
+      return ResourceBundle.getBundle( "resources" ).getString( myStatus.name() );
     }
 
     public boolean isEnabled() {
@@ -172,7 +183,6 @@ public class UserListPanelPopup extends GPanelPopupMenu {
     public void execute() {
       try {
         myMediator.getP2PFacade().getPersonalInfo().setStatus( myStatus );
-        myMediator.setTitle();
       } catch ( P2PFacadeException e ) {
         logger.error( "Unable to execute status command", e );
       }

@@ -1,0 +1,25 @@
+/**
+ * Copyright (c) 2010 Axa Holding Belgium, SA. All rights reserved.
+ * This software is the confidential and proprietary information of the AXA Group.
+ */
+package chabernac.gui.tray;
+
+import java.awt.Menu;
+import java.io.IOException;
+
+import chabernac.p2pclient.gui.ChatMediator;
+import chabernac.protocol.facade.P2PFacadeException;
+import chabernac.protocol.userinfo.UserInfo;
+
+public class StatusMenu extends Menu {
+  
+  
+  public StatusMenu(ChatMediator aMediator) throws IOException, P2PFacadeException{
+    super("Status");
+    
+    add(new ChangeStatusMenuItem(aMediator, UserInfo.Status.ONLINE));
+    add(new ChangeStatusMenuItem(aMediator, UserInfo.Status.AWAY));
+    add(new ChangeStatusMenuItem(aMediator, UserInfo.Status.BUSY));
+    add(new ChangeStatusMenuItem(aMediator, UserInfo.Status.OFFLINE));
+  }
+}
