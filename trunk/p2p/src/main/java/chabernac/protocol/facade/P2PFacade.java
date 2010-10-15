@@ -534,6 +534,16 @@ public class P2PFacade {
       throw new P2PFacadeException("Could not show routing frame", e);
     }
   }
+  
+  public void scanSuperNodes() throws P2PFacadeException{
+    if(!isStarted()) throw new P2PFacadeException("Can not execute this action when the server is not started");
+    
+    try{
+      ((RoutingProtocol)myContainer.getProtocol( RoutingProtocol.ID )).scanSuperNodes();
+    }catch(Exception e){
+      throw new P2PFacadeException("Could not show routing frame", e);
+    }
+  }
 
   public boolean isStarted(){
     if(myProtocolServer == null) return false;
