@@ -239,7 +239,7 @@ public class RoutingProtocol extends Protocol {
     mySheduledService.scheduleWithFixedDelay( new ScanLocalSystem(), 1, myExchangeDelay, TimeUnit.SECONDS);
     mySheduledService.scheduleWithFixedDelay( new ExchangeRoutingTable(), 2, myExchangeDelay, TimeUnit.SECONDS);
     mySheduledService.scheduleWithFixedDelay( new SendUDPAnnouncement(), 4, myExchangeDelay, TimeUnit.SECONDS);
-    mySheduledService.schedule( new ScanFixedIpList(), 10, TimeUnit.SECONDS);
+    mySheduledService.scheduleWithFixedDelay( new ScanFixedIpList(), 10, myExchangeDelay, TimeUnit.SECONDS);
     mySheduledService.scheduleWithFixedDelay( new ScanRemoteSystem(), 20 , 4 * myExchangeDelay, TimeUnit.SECONDS);
     mySheduledService.scheduleWithFixedDelay( new DetectRemoteSystem(), 100, 10 * myExchangeDelay, TimeUnit.SECONDS);
   }
@@ -473,15 +473,26 @@ public class RoutingProtocol extends Protocol {
     try{
       List<String> theIps = IOTools.loadStreamAsList( mySuperNodesDataSource.getInputStream() );
       for(String theIp : theIps){
-        if(theIp.startsWith("http:")){
-          myScannerService.execute( new ScanWebSystem(RoutingProtocol.this, new URL(theIp)));
-        } else {
-          myScannerService.execute( new ScanSystem(RoutingProtocol.this, theIp, START_PORT, myUnreachablePeers));
+        if(!hostHasActivePeer( theIp )){
+          if(theIp.startsWith("http:")){
+            myScannerService.execute( new ScanWebSystem(RoutingProtocol.this, new URL(theIp)));
+          } else {
+            myScannerService.execute( new ScanSystem(RoutingProtocol.this, theIp, START_PORT, myUnreachablePeers));
+          }
         }
       }
     }catch(IOException e){
       LOGGER.error("An error occured while scanning super nodes", e);
     }
+  }
+  
+  private boolean hostHasActivePeer(String anIp){
+    for(RoutingTableEntry theEntry : getRoutingTable()){
+      if(theEntry.getPeer().getEndPointRepresentation().contains( anIp ) && theEntry.isResponding()){
+        return true;
+      }
+    }
+    return false;
   }
 
   /**
