@@ -15,8 +15,6 @@ import java.util.concurrent.TimeUnit;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 
-import com.sun.org.apache.bcel.internal.generic.ANEWARRAY;
-
 import chabernac.gui.tray.NewMessageTrayIconDisplayer;
 import chabernac.gui.tray.SystemTrayMenu;
 import chabernac.io.ClassPathResource;
