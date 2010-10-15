@@ -45,7 +45,6 @@ public class ProtocolServlet extends HttpServlet {
         ProtocolContainer theProtocolContainer = new ProtocolContainer(new ProtocolFactory(thePropertyMap), theSupportedProtocols);
 
         ServerInfo theServerInfo = new ServerInfo(Type.WEB);
-        //TODO retrieve from servlet parameter
         theServerInfo.setServerURL( getServletConfig().getInitParameter( "serverurl" ));
         theProtocolContainer.setServerInfo( theServerInfo );
         getServletContext().setAttribute( "ProtocolContainer", theProtocolContainer );

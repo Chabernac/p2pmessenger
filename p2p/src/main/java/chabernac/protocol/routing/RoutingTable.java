@@ -174,20 +174,19 @@ public class RoutingTable implements Iterable< RoutingTableEntry >, Serializable
    * This method just solves a problem which should not occure.
    * Sometimes different routing tables are added with peers which reside on the same host and port
    * this is of course not possible.  So we remove the older peer entries which are on the same host and port
-   * TODO this method can be removed as soon as the cause of the problem is found and fixed
    */
-  private void removeEntriesOlderThanAndOnTheSameSocketAs(RoutingTableEntry anEntry){
-    List<RoutingTableEntry> theEntriesToRemove = new ArrayList<RoutingTableEntry>();
-    for(RoutingTableEntry theEntry : myRoutingTable.values()){
-      if(theEntry.getPeer().isSameEndPointAs(anEntry.getPeer()) && theEntry.getCreationTime() < anEntry.getCreationTime()){
-        theEntriesToRemove.add(theEntry);
-      }
-    }
-    for(RoutingTableEntry theEntry : theEntriesToRemove){
-      LOGGER.error("Removing entry with peer id: '" + theEntry.getPeer().getPeerId() + "' because it is on the same host and port as the new entry: '" + anEntry.getPeer().getPeerId() + "'");
-      removeRoutingTableEntry(theEntry);
-    }
-  }
+//  private void removeEntriesOlderThanAndOnTheSameSocketAs(RoutingTableEntry anEntry){
+//    List<RoutingTableEntry> theEntriesToRemove = new ArrayList<RoutingTableEntry>();
+//    for(RoutingTableEntry theEntry : myRoutingTable.values()){
+//      if(theEntry.getPeer().isSameEndPointAs(anEntry.getPeer()) && theEntry.getCreationTime() < anEntry.getCreationTime()){
+//        theEntriesToRemove.add(theEntry);
+//      }
+//    }
+//    for(RoutingTableEntry theEntry : theEntriesToRemove){
+//      LOGGER.error("Removing entry with peer id: '" + theEntry.getPeer().getPeerId() + "' because it is on the same host and port as the new entry: '" + anEntry.getPeer().getPeerId() + "'");
+//      removeRoutingTableEntry(theEntry);
+//    }
+//  }
   
   private void inspectListeners(){
     if(myRoutingTableListeners == null){

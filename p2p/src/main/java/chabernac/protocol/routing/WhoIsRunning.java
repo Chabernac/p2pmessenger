@@ -58,7 +58,6 @@ public class WhoIsRunning implements Runnable{
           try {
             theSocket.close();
           } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
           }
         }

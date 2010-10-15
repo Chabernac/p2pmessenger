@@ -113,8 +113,6 @@ public class SimpleSocketPool extends Observable implements iSocketPool<SocketPr
 
   @Override
   public void cleanUpOlderThan( long aTimestamp ) {
-    // TODO Auto-generated method stub
-
   }
 
   @Override
