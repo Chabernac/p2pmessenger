@@ -137,13 +137,20 @@ public class UserPanel extends GPanel implements iUserSelectionProvider{
   }
 
   public void createGroupForSelectedUsers(String aGroupName){
-    myGroups.put( aGroupName, getSelectedUsers());
+    myGroups.put( aGroupName, getSelectedUserIds());
+    saveGroupsInPreferences();
+  }
+  
+  public void addSelectedUsersToGroup( String anGroupName ) {
+    if(!myGroups.containsKey( anGroupName )) createGroupForSelectedUsers( anGroupName );
+    Set<String> theUsersInGroup = myGroups.get(anGroupName);
+    theUsersInGroup.addAll( getSelectedUserIds() );
     saveGroupsInPreferences();
   }
 
   public void selectGroup(String aGroupName){
     if(myGroups.containsKey( aGroupName )){
-      setSelectedUsers( myGroups.get( aGroupName ) );
+      setSelectedUserIds( myGroups.get( aGroupName ) );
     }
   }
 
@@ -200,7 +207,7 @@ public class UserPanel extends GPanel implements iUserSelectionProvider{
 
   private void buildActionMap(){
     new ActionDecorator(this, myMediator).decorate(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
-    
+
     InputMap theMap = getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
     theMap.put(KeyStroke.getKeyStroke('+'), "largerfont");
     theMap.put(KeyStroke.getKeyStroke('-'), "smallerfont");
@@ -297,17 +304,76 @@ public class UserPanel extends GPanel implements iUserSelectionProvider{
     return theSelectedUsers;
   }
 
+  public Set<String> getSelectedUserIds(){
+    Set<String> theSelectedUsers = new HashSet< String >();
+    try{
+      Map< String, UserInfo > theUserInfoMap = myMediator.getP2PFacade().getUserInfo();
+      for(String thePeerId : myCheckBoxes.keySet()){
+        if(myCheckBoxes.get( thePeerId ).isSelected()){
+          UserInfo theUserInfo = theUserInfoMap.get( thePeerId );
+          if(theUserInfo != null){
+            theSelectedUsers.add(theUserInfo.getId());
+          }
+        }
+      }
+    }catch(Exception e){
+      LOGGER.error( "Could not get selected user id's " );
+    }
+    return theSelectedUsers;
+  }
+
   @Override
   public void setSelectedUsers( Set< String > aUserList ) {
     clear();
 
     //now select the ones from the list
     for(String thePeerId : aUserList){
-      JCheckBox theCheckBox = myCheckBoxes.get( thePeerId );
-      if(theCheckBox != null){
-        theCheckBox.setSelected( true );
+      selectedCheckBoxForUser( thePeerId );
+    }
+  }
+
+  private void setSelectedUserIds( Set< String > aUserList ) {
+    clear();
+
+    //now select the ones from the list
+    for(String theUserId : aUserList){
+      Set<String> theUsersWithId = findUsersForUserId( theUserId );
+
+      for(String thePeerId : theUsersWithId){
+        selectedCheckBoxForUser( thePeerId );
       }
     }
+  }
+
+  private void selectedCheckBoxForUser(String aPeerId){
+    try{
+      UserInfo theUserInfo = myMediator.getP2PFacade().getUserInfo().get( aPeerId );
+      JCheckBox theCheckBox = myCheckBoxes.get(aPeerId);
+      if(theCheckBox == null) return;
+      if(theUserInfo == null || theUserInfo.getStatus() == Status.OFFLINE){
+        theCheckBox.setSelected( false );
+      } else {
+        theCheckBox.setSelected( true );
+      }
+    }catch(Exception e){
+      LOGGER.error("Could not select checkbox for user '" + aPeerId + "'");
+    }
+  }
+
+  private Set<String> findUsersForUserId(String aUserId){
+    Set< String > theUsers = new HashSet< String >();
+    try{
+      Map< String, UserInfo > theUserInfo = myMediator.getP2PFacade().getUserInfo();
+      for(String thePeerId : theUserInfo.keySet()){
+        UserInfo theUser = theUserInfo.get(thePeerId);
+        if(theUser.getId().equalsIgnoreCase( aUserId )){
+          theUsers.add( thePeerId );
+        }
+      }
+    }catch(Exception e){
+      LOGGER.error("Could not find users for user id '" + aUserId + "'");
+    }
+    return theUsers;
   }
 
   private void clearColors() throws P2PFacadeException{

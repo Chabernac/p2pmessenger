@@ -6,48 +6,43 @@ package chabernac.gui.tray;
 
 import java.awt.Font;
 import java.awt.MenuItem;
-import java.awt.TrayIcon;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.SystemTray;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
 import chabernac.io.ClassPathResource;
+import chabernac.p2pclient.gui.ChatMediator;
+import chabernac.p2pclient.gui.action.ActionFactory;
+import chabernac.p2pclient.gui.action.CommandActionListener;
 import chabernac.p2pclient.settings.Settings;
 import chabernac.preference.ApplicationPreferences;
 import chabernac.preference.iApplicationPreferenceListener;
 
-public class ReceiveClosedMenuItem extends MenuItem implements ActionListener, iApplicationPreferenceListener {
+public class ReceiveClosedMenuItem extends MenuItem implements iApplicationPreferenceListener {
   private static final long serialVersionUID = -5224352709920368154L;
-  private final TrayIcon myTrayIcon;
   private final BufferedImage myImage;
 
-  public ReceiveClosedMenuItem(TrayIcon aTrayIcon) throws IOException{
+  public ReceiveClosedMenuItem(ChatMediator aMediator) throws IOException{
     super("Ontvang met gesloten enveloppe");
-    addActionListener( this );
-    myTrayIcon = aTrayIcon;
+    addActionListener( new CommandActionListener(aMediator.getActionFactory(), ActionFactory.Action.RECEIVE_CLOSED));
     myImage = ImageIO.read( new ClassPathResource("images/message.png").getInputStream());
     setBold();
     addPreferenceListener();
   }
-  
+
   private void addPreferenceListener(){
     ApplicationPreferences.getInstance().addApplicationPreferenceListener( this );
-  }
-  
-  public void actionPerformed(ActionEvent evt){
-    if(evt.getSource() == this) ApplicationPreferences.getInstance().setEnumProperty(Settings.ReceiveEnveloppe.CLOSED);
   }
 
   private void setBold(){
     setFont( new Font("Arial", ApplicationPreferences.getInstance().hasEnumProperty(Settings.ReceiveEnveloppe.CLOSED) ? Font.BOLD : Font.PLAIN, 12 ) );
     if(ApplicationPreferences.getInstance().hasEnumProperty(Settings.ReceiveEnveloppe.CLOSED)){
-      myTrayIcon.setImage( myImage );
+      SystemTray.getSystemTray().getTrayIcons()[0].setImage( myImage );
     }
   }
-  
+
   @Override
   public void applicationPreferenceChanged( String aKey, String aValue ) {
   }

@@ -7,12 +7,15 @@ package chabernac.gui;
 import java.awt.AWTException;
 import java.io.File;
 import java.io.IOException;
+import java.util.Locale;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
+
+import com.sun.org.apache.bcel.internal.generic.ANEWARRAY;
 
 import chabernac.gui.tray.NewMessageTrayIconDisplayer;
 import chabernac.gui.tray.SystemTrayMenu;
@@ -57,6 +60,8 @@ public class ApplicationLauncher {
 
     initProxy(theInterPretser);
     
+    initLocale(theInterPretser);
+    
     initDefaultSettigns();
 
     if("true".equals(theInterPretser.getKeyValue("checklock", "true"))){
@@ -96,6 +101,10 @@ public class ApplicationLauncher {
       System.getProperties().put("http.proxyHost", anInterpreter.getKeyValue( "http.proxyHost" ));
       System.getProperties().put("http.proxyPort", anInterpreter.getKeyValue( "http.proxyPort" ));
     }
+  }
+  
+  private static void initLocale(ArgsInterPreter anInterpreter){
+    Locale.setDefault( new Locale(anInterpreter.getKeyValue( "locale", "nl" )));
   }
 
   private static void addActivationListener() throws P2PFacadeException{

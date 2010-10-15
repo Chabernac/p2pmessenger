@@ -2,6 +2,7 @@ package chabernac.p2pclient.gui.action;
 
 import chabernac.command.Command;
 import chabernac.p2pclient.gui.ChatMediator;
+import chabernac.protocol.userinfo.UserInfo;
 
 public class ActionFactory {
   private final ChatMediator myMediator;
@@ -22,7 +23,11 @@ public class ActionFactory {
                       RECEIVE_CLOSED,
                       RECEIVE_AS_MESSAGE_INDICATES,
                       NO_POPUP,
-                      TOGGLE_POPUP
+                      TOGGLE_POPUP,
+                      STATUS_AWAY,
+                      STATUS_ONLINE,
+                      STATUS_BUSSY,
+                      STATUS_OFFLINE
                         };
 
   public ActionFactory(ChatMediator anMediator) {
@@ -46,6 +51,10 @@ public class ActionFactory {
     if(anAction == Action.RECEIVE_AS_MESSAGE_INDICATES) return new ReceiveAsMessageIndicatesCommand();
     if(anAction == Action.NO_POPUP) return new NoPopupCommand();
     if(anAction == Action.TOGGLE_POPUP) return new TogglePopupCommand();
+    if(anAction == Action.STATUS_AWAY) return new ChangeStatusCommand(myMediator.getP2PFacade(), UserInfo.Status.ONLINE);
+    if(anAction == Action.STATUS_BUSSY) return new ChangeStatusCommand(myMediator.getP2PFacade(), UserInfo.Status.BUSY);
+    if(anAction == Action.STATUS_OFFLINE) return new ChangeStatusCommand(myMediator.getP2PFacade(), UserInfo.Status.OFFLINE);
+    if(anAction == Action.STATUS_ONLINE) return new ChangeStatusCommand(myMediator.getP2PFacade(), UserInfo.Status.ONLINE);
     
     return null;
   }

@@ -34,13 +34,15 @@ public class SystemTrayMenu extends PopupMenu implements ActionListener {
     addActionListener( this );
   }
 
-  private void build ( P2PFacade aFacade, TrayIcon anIcon ) throws HeadlessException, IOException {
+  private void build ( P2PFacade aFacade, TrayIcon anIcon ) throws HeadlessException, IOException, P2PFacadeException {
 
     add( new OpenMenuItem() );
     add( new OnTopMenuItem(myChatFrame) );
 
 //    add(new SendMenu());
-    add(new ReceiveMenu(myChatFrame, anIcon));
+    add(new ReceiveMenu(myChatFrame.getMediator()));
+    add(new StatusMenu(myChatFrame.getMediator()));
+    add(new SearchPeersMenuItem(myChatFrame.getMediator()));
     add( new ExitMenuItem(anIcon, myChatFrame, aFacade) );
 
   }
@@ -57,15 +59,13 @@ public class SystemTrayMenu extends PopupMenu implements ActionListener {
     }
   }
 
-  public static void buildSystemTray(ChatFrame aChatFrame, P2PFacade aFacade) throws IOException, AWTException{
+  public static void buildSystemTray(ChatFrame aChatFrame, P2PFacade aFacade) throws IOException, AWTException, HeadlessException, P2PFacadeException{
     if(SystemTray.isSupported()){
       SystemTray theTray = SystemTray.getSystemTray();
-
       SystemTrayMenu theMenu = new SystemTrayMenu(aChatFrame);
       TrayIcon theIcon = new TrayIcon(ImageIO.read( new ClassPathResource("images/message.png").getInputStream()), "P2PClient", theMenu);
-      theMenu.build( aFacade, theIcon);
-
       theTray.add( theIcon );
+      theMenu.build( aFacade, theIcon);
     }
   }
 }

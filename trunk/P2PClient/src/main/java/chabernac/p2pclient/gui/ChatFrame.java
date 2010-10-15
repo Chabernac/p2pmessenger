@@ -15,6 +15,9 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
+import java.util.Observable;
+import java.util.Observer;
+import java.util.Set;
 
 import javax.imageio.ImageIO;
 import javax.swing.JComponent;
@@ -28,9 +31,12 @@ import chabernac.gui.SavedFrame;
 import chabernac.gui.event.FocusGainedEvent;
 import chabernac.gui.event.FocusLostEvent;
 import chabernac.p2pclient.gui.action.ActionDecorator;
+import chabernac.p2pclient.settings.Settings;
 import chabernac.preference.ApplicationPreferences;
+import chabernac.preference.iApplicationPreferenceListener;
 import chabernac.protocol.facade.P2PFacade;
 import chabernac.protocol.facade.P2PFacadeException;
+import chabernac.tools.Tools;
 
 public class ChatFrame extends SavedFrame implements iTitleProvider, isShowDialogProvider{
   private static final long serialVersionUID = 8845601746540726343L;
@@ -46,7 +52,7 @@ public class ChatFrame extends SavedFrame implements iTitleProvider, isShowDialo
     init();
     loadIcon();
     buildGUI();
-    addWindowListener();
+    addListeners();
     createInputMap();
   }
   
@@ -54,11 +60,15 @@ public class ChatFrame extends SavedFrame implements iTitleProvider, isShowDialo
     new ActionDecorator(mySplitPane, myMediator).decorate(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
   }
 
-  private void addWindowListener() {
+  private void addListeners() throws P2PFacadeException {
     MyWindowListener theWindowListener = new MyWindowListener();
     addWindowListener(theWindowListener);
     addWindowFocusListener(theWindowListener);
     addFocusListener(new MyFocusListener());
+    myMediator.getUserSelectionProvider().addSelectionChangedListener( new UserSelectionChangedListener() );
+    ApplicationPreferences.getInstance().addApplicationPreferenceListener( new ApplicationPreferenceListener() );
+    myMediator.getP2PFacade().getPersonalInfo().addObserver( new UserInfoObserver() );
+    
   }
 
   private void loadIcon(){
@@ -116,6 +126,28 @@ public class ChatFrame extends SavedFrame implements iTitleProvider, isShowDialo
     thePreferences.setProperty("chat.light.dividerlocation", Integer.toString(mySplitPane.getDividerLocation()));
   }
   
+  private void setTitle(){
+    Set<String> theUsers = myMediator.getUserSelectionProvider().getSelectedUsers();
+    String theTitle = ApplicationPreferences.getInstance().getProperty("frame.light.title","Chatterke");
+    try{
+      theTitle += " [" + myP2PFacade.getPersonalInfo().getStatus().name();
+      if(ApplicationPreferences.getInstance().hasEnumProperty( Settings.ReceiveEnveloppe.NO_POPUP )){
+        theTitle += " - popup geblokkeerd";
+      } else if(ApplicationPreferences.getInstance().hasEnumProperty( Settings.ReceiveEnveloppe.CLOSED )){
+        theTitle += " - ontvang gesloten";
+      }
+      theTitle += "]";
+      if(theUsers.size() == 1){
+        theTitle += " - sc " + Tools.getShortNameForUser( myP2PFacade.getUserInfo().get( theUsers.iterator().next() )); 
+      } else if(theUsers.size() > 1){
+        theTitle += " - mc ";
+      }
+    }catch(P2PFacadeException e){
+      logger.error( "Could not set title", e );
+    }
+    setTitle( theTitle );
+  }
+  
   public class MyWindowListener extends WindowAdapter {
     @Override
     public void windowClosing( WindowEvent anEvent ) {
@@ -150,7 +182,6 @@ public class ChatFrame extends SavedFrame implements iTitleProvider, isShowDialo
   }
   
   public class MyFocusListener implements FocusListener {
-
     @Override
     public void focusGained(FocusEvent anArg0) {
       EventDispatcher.getInstance(FocusGainedEvent.class).fireEvent(new FocusGainedEvent(ChatFrame.this));
@@ -160,5 +191,32 @@ public class ChatFrame extends SavedFrame implements iTitleProvider, isShowDialo
     public void focusLost(FocusEvent anArg0) {
       EventDispatcher.getInstance(FocusLostEvent.class).fireEvent(new FocusLostEvent(ChatFrame.this));
     }
+  }
+  
+  public class UserSelectionChangedListener implements iSelectionChangedListener {
+    @Override
+    public void selectionChanged() {
+      setTitle();
+    }
+  }
+  
+  public class ApplicationPreferenceListener implements iApplicationPreferenceListener {
+    @Override
+    public void applicationPreferenceChanged( String aKey, String aValue ) {
+      setTitle();
+    }
+
+    @Override
+    public void applicationPreferenceChanged( Enum anEnumValue ) {
+      setTitle();
+    }
+  }
+  
+  public class UserInfoObserver implements Observer {
+    @Override
+    public void update( Observable anO, Object anArg ) {
+      setTitle();
+    }
+
   }
 }
