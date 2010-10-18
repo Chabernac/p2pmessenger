@@ -442,10 +442,10 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
       testEntry( theRoutingTable4.getEntryForPeer("3"), 6, "3", false, false);
       testEntry( theRoutingTable4.getEntryForPeer("4"), 0, "4", true, true);
     }finally{
-      theServer1.stop();
-      theServer2.stop();
-      theServer3.stop();
-      theServer4.stop();
+      if(theServer1 != null) theServer1.stop();
+      if(theServer2 != null) theServer2.stop();
+      if(theServer3 != null) theServer3.stop();
+      if(theServer4 != null) theServer4.stop();
     }
   }
   
