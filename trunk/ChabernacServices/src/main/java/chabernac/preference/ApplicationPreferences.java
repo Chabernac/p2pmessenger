@@ -76,13 +76,13 @@ public class ApplicationPreferences extends Properties{
     myListeners.remove(aListener);
   }
   
-  private void notifyListeners(String aChangedKey){
+  public void notifyListeners(String aChangedKey){
     for(iApplicationPreferenceListener theListener : myListeners){
       theListener.applicationPreferenceChanged( aChangedKey, getProperty( aChangedKey ) );
     }
   }
   
-  private void notifyListeners(Enum aChangedEnum){
+  public void notifyListeners(Enum aChangedEnum){
     for(iApplicationPreferenceListener theListener : myListeners){
       theListener.applicationPreferenceChanged( aChangedEnum );
     }
