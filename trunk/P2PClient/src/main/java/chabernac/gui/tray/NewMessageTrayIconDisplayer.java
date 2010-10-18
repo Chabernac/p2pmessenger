@@ -4,7 +4,6 @@
  */
 package chabernac.gui.tray;
 
-import java.awt.FocusTraversalPolicy;
 import java.awt.Image;
 import java.awt.SystemTray;
 import java.awt.event.ActionEvent;
@@ -30,7 +29,6 @@ import chabernac.protocol.message.iMultiPeerMessageListener;
 public class NewMessageTrayIconDisplayer {
   private final ChatMediator myMediator;
   private Image myNewMessageImage = null;
-  private Image myPreviousImage = null;
 
   public NewMessageTrayIconDisplayer ( ChatMediator anMediator ) throws P2PFacadeException, IOException {
     super();
@@ -48,16 +46,14 @@ public class NewMessageTrayIconDisplayer {
     @Override
     public void messageReceived( MultiPeerMessage aMessage ) {
       if(ApplicationPreferences.getInstance().hasEnumProperty( Settings.ReceiveEnveloppe.NO_POPUP ) && !((JFrame)myMediator.getTitleProvider()).hasFocus()){
-        myPreviousImage = SystemTray.getSystemTray().getTrayIcons()[0].getImage();
         SystemTray.getSystemTray().getTrayIcons()[0].setImage( myNewMessageImage );
       }
     }
   }
   
   private void resetImage(){
-    if(myPreviousImage != null){
-      SystemTray.getSystemTray().getTrayIcons()[0].setImage( myPreviousImage ); 
-    }
+    //just trigger the ReceiveEnveloppe property, it will cause the other menu items to evaluate and reset the tray icon to the correct one
+    ApplicationPreferences.getInstance().notifyListeners( (Enum)null );
   }
   
   

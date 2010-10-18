@@ -418,7 +418,11 @@ public class NewMessageDialog5 extends JDialog implements iMessageDialog{
   
   private class OpenAction extends ChatAction{
     public void actionPerformed(ActionEvent e) {
-      myText.setText( myMessage.getMessage() );
+      SwingUtilities.invokeLater( new Runnable(){
+        public void run(){
+          myText.setText( myMessage.getMessage() );
+        }
+      });
     }
   }
 

@@ -7,8 +7,6 @@ package chabernac.gui.tray;
 import java.awt.Font;
 import java.awt.MenuItem;
 import java.awt.SystemTray;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
@@ -22,7 +20,7 @@ import chabernac.p2pclient.settings.Settings;
 import chabernac.preference.ApplicationPreferences;
 import chabernac.preference.iApplicationPreferenceListener;
 
-public class NoPopupMenuItem extends MenuItem implements ActionListener, iApplicationPreferenceListener {
+public class NoPopupMenuItem extends MenuItem implements iApplicationPreferenceListener {
   private static final long serialVersionUID = -5224352709920368154L;
   private final BufferedImage myImage;
 
@@ -38,10 +36,6 @@ public class NoPopupMenuItem extends MenuItem implements ActionListener, iApplic
     ApplicationPreferences.getInstance().addApplicationPreferenceListener( this );
   }
   
-  public void actionPerformed(ActionEvent evt){
-    if(evt.getSource() == this) ApplicationPreferences.getInstance().setEnumProperty(Settings.ReceiveEnveloppe.NO_POPUP);
-  }
-
   private void setBold(){
     setFont( new Font("Arial", ApplicationPreferences.getInstance().hasEnumProperty(Settings.ReceiveEnveloppe.NO_POPUP) ? Font.BOLD : Font.PLAIN, 12 ) );
     if(ApplicationPreferences.getInstance().hasEnumProperty(Settings.ReceiveEnveloppe.NO_POPUP)){
