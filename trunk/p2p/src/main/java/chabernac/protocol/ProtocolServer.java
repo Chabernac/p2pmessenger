@@ -76,7 +76,7 @@ public class ProtocolServer implements Runnable{
       }
     } catch ( IOException e ) {
     }
-    myClientHandlerService.shutdownNow();
+    if(myClientHandlerService != null) myClientHandlerService.shutdownNow();
     for(Socket theSocket : new ArrayList< Socket >(myRunningSockets)){
       try {
         theSocket.close();
@@ -125,17 +125,19 @@ public class ProtocolServer implements Runnable{
       LOGGER.debug( "Starting protocol server at port '" + myPort + "'" );
 
       while(true){ 
-        Socket theClientSocket = myServerSocket.accept();
+        synchronized(this){
+          Socket theClientSocket = myServerSocket.accept();
 //        LOGGER.debug("Client accepted, current number of clients: " + mySimultanousThreads.get());
 
-        killOldestSocket();
-        myRunningSockets.add( theClientSocket );
-        
-        ClientSocketHandler theHandler = new ClientSocketHandler(theClientSocket);
-        if(myRunnableListener != null){
-          theHandler.addListener( myRunnableListener );
+//          killOldestSocket();
+          myRunningSockets.add( theClientSocket );
+
+          ClientSocketHandler theHandler = new ClientSocketHandler(theClientSocket);
+          if(myRunnableListener != null){
+            theHandler.addListener( myRunnableListener );
+          }
+          myClientHandlerService.execute( theHandler );
         }
-        myClientHandlerService.execute( theHandler );
       }
     }catch(SocketException e){
       if(!"socket closed".equalsIgnoreCase( e.getMessage())){
@@ -152,7 +154,18 @@ public class ProtocolServer implements Runnable{
     }
   }
 
+  /**
+   * if no threads are available this method will kill the oldest socket
+   * so the new socket can be handled in the newly available thread
+   */
   private void killOldestSocket(){
+    int theCounter = 15;
+    while(myRunningSockets.size() == myNumberOfThreads && theCounter-- > 0){
+      try {
+        Thread.sleep( 500 );
+      } catch ( InterruptedException e ) {
+      }
+    }
     try{
       if(myRunningSockets.size() == myNumberOfThreads){
         //there are no free threads kill the oldest one
