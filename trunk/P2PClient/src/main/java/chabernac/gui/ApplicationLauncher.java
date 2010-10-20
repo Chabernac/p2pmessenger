@@ -129,7 +129,7 @@ public class ApplicationLauncher {
     .setFileHandler( new FileHandlerDialogDispatcher() )
     .setInfoObject( "pom.info", new POMInfo() )
     .setInfoObject( "version", "v2010.10.13" )
-    .start( 20 );
+    .start( 10 );
   }
 
   private static void addRun2Startup(){
