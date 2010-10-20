@@ -68,7 +68,7 @@ public class ProtocolServer implements Runnable{
     }
     return isStarted;
   }
-  
+
   public void kill(){
     try {
       if(myServerSocket != null){
@@ -127,6 +127,10 @@ public class ProtocolServer implements Runnable{
       while(true){ 
         Socket theClientSocket = myServerSocket.accept();
 //        LOGGER.debug("Client accepted, current number of clients: " + mySimultanousThreads.get());
+
+        killOldestSocket();
+        myRunningSockets.add( theClientSocket );
+        
         ClientSocketHandler theHandler = new ClientSocketHandler(theClientSocket);
         if(myRunnableListener != null){
           theHandler.addListener( myRunnableListener );
@@ -145,6 +149,21 @@ public class ProtocolServer implements Runnable{
         LOCK.notify();
       }
       mySimultanousThreads.decrementAndGet();
+    }
+  }
+
+  private void killOldestSocket(){
+    try{
+      if(myRunningSockets.size() == myNumberOfThreads){
+        //there are no free threads kill the oldest one
+        Socket theOldestSocket = myRunningSockets.get( 0 );
+        try{
+          theOldestSocket.close();
+        } finally {
+          myRunningSockets.remove( theOldestSocket );
+        }
+      }
+    }catch(Exception e){
     }
   }
 
@@ -170,7 +189,6 @@ public class ProtocolServer implements Runnable{
     }
 
     public void doRun(){
-      myRunningSockets.add( mySocket );
       long theSessionId = myRandom.nextLong();
 
       BufferedReader theReader = null;
