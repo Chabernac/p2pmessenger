@@ -74,7 +74,7 @@ public class ProtocolServerTest extends AbstractProtocolTest {
   public void testKillOldestSocket() throws UnknownHostException, IOException{
     ProtocolContainer theMasterProtocol = new ProtocolContainer(new ProtocolFactory(new PropertyMap()));
 
-    int thePort = 12026;
+    int thePort = 12028;
 
 
     int theNrOfThreads = 5;
