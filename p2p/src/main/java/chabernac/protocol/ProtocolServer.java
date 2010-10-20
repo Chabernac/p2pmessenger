@@ -129,7 +129,7 @@ public class ProtocolServer implements Runnable{
           Socket theClientSocket = myServerSocket.accept();
 //        LOGGER.debug("Client accepted, current number of clients: " + mySimultanousThreads.get());
 
-//          killOldestSocket();
+          killOldestSocket();
           myRunningSockets.add( theClientSocket );
 
           ClientSocketHandler theHandler = new ClientSocketHandler(theClientSocket);
