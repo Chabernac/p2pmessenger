@@ -33,7 +33,7 @@ public class PeerSender implements iPeerSender {
       notifyListeners(theMessage);
     }
 
-    int theRetries = 2;
+    int theRetries = 3;
 
     while(theRetries-- > 0){
       Socket theSocket = aPeer.createSocket( aPeer.getPort() );
@@ -48,7 +48,7 @@ public class PeerSender implements iPeerSender {
       BufferedReader theReader = null;
       PrintWriter theWriter = null;
       try{
-        if(aTimeoutInSeconds > 0) theService.schedule( new SocketCloser(theSocket), theRetries * aTimeoutInSeconds, TimeUnit.SECONDS );
+        if(aTimeoutInSeconds > 0) theService.schedule( new SocketCloser(theSocket), aTimeoutInSeconds, TimeUnit.SECONDS );
         theWriter = new PrintWriter(new OutputStreamWriter(theSocket.getOutputStream()));
         theReader = new BufferedReader(new InputStreamReader(theSocket.getInputStream()));
         theWriter.println(aMessage);

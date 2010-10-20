@@ -157,7 +157,7 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
     ProtocolServer theServer3 = new ProtocolServer(theProtocol3, RoutingProtocol.START_PORT + 2, 10);
     
     ProtocolContainer theProtocol4 = getProtocolContainer( -1, false, "4" );
-    ProtocolServer theServer4 = new ProtocolServer(theProtocol4, RoutingProtocol.START_PORT + 3, 5);
+    ProtocolServer theServer4 = new ProtocolServer(theProtocol4, RoutingProtocol.START_PORT + 3, 10);
 
     RoutingProtocol theRoutingProtocol1 = (RoutingProtocol)theProtocol1.getProtocol( RoutingProtocol.ID );
     RoutingTable theRoutingTable1 = theRoutingProtocol1.getRoutingTable();
@@ -176,11 +176,14 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
       assertTrue( theServer2.start() );
       assertTrue( theServer3.start() );
 
+      Thread.sleep( SLEEP_AFTER_SCAN );
+      
       theRoutingProtocol1.scanLocalSystem();
       theRoutingProtocol2.scanLocalSystem();
       theRoutingProtocol3.scanLocalSystem();
       
-      Thread.sleep( SLEEP_AFTER_SCAN );
+      //TODO why do we need to sleep so long at this time to detect peer 2
+      Thread.sleep( 2 * SLEEP_AFTER_SCAN );
       
       theRoutingProtocol2.exchangeRoutingTable();
       theRoutingProtocol1.exchangeRoutingTable();
