@@ -124,7 +124,7 @@ public class SocketPoolTest extends TestCase {
       
       Thread.sleep( 1000 );
 
-      iSocketPool< SocketProxy > theSocketPool = new BasicSocketPool();
+      BasicSocketPool theSocketPool = new BasicSocketPool();
 
       Socket theSocket = theSocketPool.checkOut( new InetSocketAddress("localhost", theServer.getPort()));
       assertEquals( 1, theSocketPool.getCheckedOutPool().size() );
@@ -163,6 +163,30 @@ public class SocketPoolTest extends TestCase {
       
       assertEquals( 1, theSocketPool.getCheckedOutPool().size() );
       assertEquals( 1, theSocketPool.getCheckedInPool().size() );
+      assertEquals( 0, theSocketPool.getConnectingPool().size() );
+      
+      theSocketPool.cleanUp();
+      
+      assertEquals( 0, theSocketPool.getCheckedOutPool().size() );
+      assertEquals( 0, theSocketPool.getCheckedInPool().size() );
+      assertEquals( 0, theSocketPool.getConnectingPool().size() );
+
+      
+      //test the max allowed sockets per socket address
+      
+      theSocketPool.setMaxAllowSocketsPerSocketAddress( 2 );
+      
+      Socket theSocket_1 = theSocketPool.checkOut( new InetSocketAddress("localhost", theServer.getPort()) );
+      Socket theSocket_2 = theSocketPool.checkOut( new InetSocketAddress("localhost", theServer.getPort()) );
+      Socket theSocket_3 = theSocketPool.checkOut( new InetSocketAddress("localhost", theServer.getPort()) );
+      
+      theSocketPool.checkIn( theSocket_1 );
+      theSocketPool.checkIn( theSocket_2 );
+      theSocketPool.checkIn( theSocket_3 );
+      
+      //only 2 sockets are allowed in the socket pool per socket address
+      assertEquals( 0, theSocketPool.getCheckedOutPool().size() );
+      assertEquals( theSocketPool.getMaxAllowSocketsPerSocketAddress(), theSocketPool.getCheckedInPool().size() );
       assertEquals( 0, theSocketPool.getConnectingPool().size() );
       
       theSocketPool.cleanUp();
