@@ -18,6 +18,8 @@ public class BasicSocketPool extends Observable implements iSocketPool<SocketPro
   private List<SocketProxy> myCheckedInPool = new ArrayList< SocketProxy >() ;
 
   private Object LOCK = new Object();
+  
+  private int myMaxAllowSocketsPerSocketAddress = 2;
 
   @Override
   public Socket checkOut( SocketAddress anAddress ) throws IOException{
@@ -30,155 +32,182 @@ public class BasicSocketPool extends Observable implements iSocketPool<SocketPro
             !theSocket.isConnected() ||
             theSocket.isInputShutdown() ||
             theSocket.isOutputShutdown()){
-            closeProxy( theProxy );
-          } else {
-            myCheckedInPool.remove( theProxy );
-            myCheckedOutPool.add( theProxy );
-            return theProxy.connect();
-          }
-        }
-      }
-
-      SocketProxy theSocket = new SocketProxy(anAddress);
-
-      synchronized(LOCK){
-        myConnectingPool.add( theSocket );
-        notifyAllObs();
-      }
-
-      try{
-        theSocket.connect();
-      }catch(IOException e){
-        synchronized(LOCK){
-          myConnectingPool.remove( theSocket );
-          notifyAllObs();
-        }
-        throw e;
-      }
-
-      synchronized(LOCK){
-        myConnectingPool.remove( theSocket );
-        myCheckedOutPool.add(theSocket);
-        notifyAllObs();
-      }
-
-      return theSocket.getSocket();
-    }
-
-    private SocketProxy searchProxyForSocketInPool(List<SocketProxy> aPool, Socket aSocket){
-      synchronized(LOCK){
-        for(SocketProxy theProxy : aPool){
-          if(theProxy.getSocket() == aSocket){
-            return theProxy;
-          }
-        }
-      }
-      return null;
-    }
-
-    private SocketProxy searchProxyForSocketAddressInPool(List<SocketProxy> aPool, SocketAddress aSocketAddress){
-      for(SocketProxy theProxy : myCheckedInPool){
-        if(theProxy.getSocketAddress().equals( aSocketAddress )){
-          return theProxy;
-        }
-      }
-      return null;
-    }
-
-    @Override
-    public void checkIn( Socket aSocket ) {
-      SocketProxy theProxy = searchProxyForSocketInPool( myCheckedOutPool, aSocket );
-
-      if(theProxy == null) {
-        try {
-          aSocket.close();
-        } catch ( IOException e ) {
-        }
-        return;
-      }
-
-      synchronized(LOCK){
-        myCheckedOutPool.remove( theProxy );
-        myCheckedInPool.add( theProxy );
-        notifyAllObs();
-      }
-    }
-
-    private void closeProxy(SocketProxy aProxy){ 
-      try {
-        if(aProxy.getSocket() != null){
-          aProxy.getSocket().close();
-        }
-      } catch ( IOException e ) {
-      } finally {
-        synchronized(LOCK){
-          myCheckedOutPool.remove( aProxy );
-          myCheckedInPool.remove(aProxy);
-          notifyAllObs();
+          closeProxy( theProxy );
+        } else {
+          myCheckedInPool.remove( theProxy );
+          myCheckedOutPool.add( theProxy );
+          return theProxy.connect();
         }
       }
     }
 
-    @Override
-    public void close( Socket aSocket ) {
-      SocketProxy theProxy = searchProxyForSocketInPool( myCheckedOutPool, aSocket );
-      if(theProxy == null) theProxy = searchProxyForSocketInPool( myCheckedInPool, aSocket );
+    SocketProxy theSocket = new SocketProxy(anAddress);
 
-      if(theProxy == null) {
-        try {
-          aSocket.close();
-        } catch ( IOException e ) {
-        }
-        return;
-      }
-
-      closeProxy( theProxy );
-    }
-    
-    private void clean(List<SocketProxy> aPool){
-      synchronized (LOCK) {
-        for(SocketProxy theSocket : aPool){
-          if(theSocket.getSocket() != null){
-            try {
-              theSocket.getSocket().close();
-            } catch ( IOException e ) {
-            }
-          }
-        }
-        aPool.clear();
-      }
-    }
-
-    @Override
-    public void cleanUp() {
-      clean(myCheckedInPool);
-      clean(myCheckedOutPool);
-      clean(myConnectingPool);
+    synchronized(LOCK){
+      myConnectingPool.add( theSocket );
       notifyAllObs();
     }
 
-    @Override
-    public void cleanUpOlderThan( long aTimestamp ) {
+    try{
+      theSocket.connect();
+    }catch(IOException e){
+      synchronized(LOCK){
+        myConnectingPool.remove( theSocket );
+        notifyAllObs();
+      }
+      throw e;
     }
 
-    @Override
-    public List< SocketProxy > getCheckedInPool() {
-      return Collections.unmodifiableList( myCheckedInPool );
+    synchronized(LOCK){
+      myConnectingPool.remove( theSocket );
+      myCheckedOutPool.add(theSocket);
+      notifyAllObs();
     }
 
-    @Override
-    public List< SocketProxy > getCheckedOutPool() {
-      return Collections.unmodifiableList( myCheckedOutPool );
-    }
-
-    @Override
-    public List< SocketProxy > getConnectingPool() {
-      return Collections.unmodifiableList( myConnectingPool );
-    }
-
-    private void notifyAllObs(){
-      setChanged();
-      notifyObservers();
-    }
-
+    return theSocket.getSocket();
   }
+
+  private SocketProxy searchProxyForSocketInPool(List<SocketProxy> aPool, Socket aSocket){
+    synchronized(LOCK){
+      for(SocketProxy theProxy : aPool){
+        if(theProxy.getSocket() == aSocket){
+          return theProxy;
+        }
+      }
+    }
+    return null;
+  }
+
+  private SocketProxy searchProxyForSocketAddressInPool(List<SocketProxy> aPool, SocketAddress aSocketAddress){
+    for(SocketProxy theProxy : myCheckedInPool){
+      if(theProxy.getSocketAddress().equals( aSocketAddress )){
+        return theProxy;
+      }
+    }
+    return null;
+  }
+
+  private int countProxyForSocketAddressInPool(List<SocketProxy> aPool, SocketAddress aSocketAddress){
+    int theCounter = 0;
+    for(SocketProxy theProxy : myCheckedInPool){
+      if(theProxy.getSocketAddress().equals( aSocketAddress )){
+        theCounter ++;
+      }
+    }
+    return theCounter;
+  }
+
+  @Override
+  public void checkIn( Socket aSocket ) {
+    SocketProxy theProxy = searchProxyForSocketInPool( myCheckedOutPool, aSocket );
+
+    if(theProxy == null) {
+      try {
+        aSocket.close();
+      } catch ( IOException e ) {
+      }
+      return;
+    }
+
+    synchronized(LOCK){
+      int theProxiesForSocketAddress = countProxyForSocketAddressInPool( myCheckedInPool, theProxy.getSocketAddress() );
+
+      myCheckedOutPool.remove( theProxy );
+
+      if(theProxiesForSocketAddress >= 2){
+        //only allow 2 sockets to be stored in the pool per address
+        try{
+          theProxy.getSocket().close();
+        }catch(Exception e){}
+      } else {
+        myCheckedInPool.add( theProxy );
+      }
+      notifyAllObs();
+    }
+  }
+
+  private void closeProxy(SocketProxy aProxy){ 
+    try {
+      if(aProxy.getSocket() != null){
+        aProxy.getSocket().close();
+      }
+    } catch ( IOException e ) {
+    } finally {
+      synchronized(LOCK){
+        myCheckedOutPool.remove( aProxy );
+        myCheckedInPool.remove(aProxy);
+        notifyAllObs();
+      }
+    }
+  }
+
+  @Override
+  public void close( Socket aSocket ) {
+    SocketProxy theProxy = searchProxyForSocketInPool( myCheckedOutPool, aSocket );
+    if(theProxy == null) theProxy = searchProxyForSocketInPool( myCheckedInPool, aSocket );
+
+    if(theProxy == null) {
+      try {
+        aSocket.close();
+      } catch ( IOException e ) {
+      }
+      return;
+    }
+
+    closeProxy( theProxy );
+  }
+
+  private void clean(List<SocketProxy> aPool){
+    synchronized (LOCK) {
+      for(SocketProxy theSocket : aPool){
+        if(theSocket.getSocket() != null){
+          try {
+            theSocket.getSocket().close();
+          } catch ( IOException e ) {
+          }
+        }
+      }
+      aPool.clear();
+    }
+  }
+
+  @Override
+  public void cleanUp() {
+    clean(myCheckedInPool);
+    clean(myCheckedOutPool);
+    clean(myConnectingPool);
+    notifyAllObs();
+  }
+
+  @Override
+  public void cleanUpOlderThan( long aTimestamp ) {
+  }
+
+  @Override
+  public List< SocketProxy > getCheckedInPool() {
+    return Collections.unmodifiableList( myCheckedInPool );
+  }
+
+  @Override
+  public List< SocketProxy > getCheckedOutPool() {
+    return Collections.unmodifiableList( myCheckedOutPool );
+  }
+
+  @Override
+  public List< SocketProxy > getConnectingPool() {
+    return Collections.unmodifiableList( myConnectingPool );
+  }
+
+  private void notifyAllObs(){
+    setChanged();
+    notifyObservers();
+  }
+
+  public int getMaxAllowSocketsPerSocketAddress() {
+    return myMaxAllowSocketsPerSocketAddress;
+  }
+
+  public void setMaxAllowSocketsPerSocketAddress( int aMaxAllowSocketsPerSocketAddress ) {
+    myMaxAllowSocketsPerSocketAddress = aMaxAllowSocketsPerSocketAddress;
+  }
+}

@@ -176,14 +176,12 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
       assertTrue( theServer2.start() );
       assertTrue( theServer3.start() );
 
-      Thread.sleep( SLEEP_AFTER_SCAN );
       
       theRoutingProtocol1.scanLocalSystem();
       theRoutingProtocol2.scanLocalSystem();
       theRoutingProtocol3.scanLocalSystem();
       
-      //TODO why do we need to sleep so long at this time to detect peer 2
-      Thread.sleep( 2 * SLEEP_AFTER_SCAN );
+      Thread.sleep( SLEEP_AFTER_SCAN );
       
       theRoutingProtocol2.exchangeRoutingTable();
       theRoutingProtocol1.exchangeRoutingTable();
