@@ -9,6 +9,7 @@ import java.net.Socket;
 import java.net.SocketAddress;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Observable;
 
@@ -181,6 +182,17 @@ public class BasicSocketPool extends Observable implements iSocketPool<SocketPro
 
   @Override
   public void cleanUpOlderThan( long aTimestamp ) {
+    synchronized(LOCK){
+      for(Iterator< SocketProxy > i = myCheckedInPool.iterator();i.hasNext();){
+        SocketProxy theProxy = i.next();
+        if(theProxy.getConnectTime().getTime() < aTimestamp){
+          try{
+            theProxy.getSocket().close();
+          }catch(Exception e){}
+          i.remove();
+        }
+      }
+    }
   }
 
   @Override
