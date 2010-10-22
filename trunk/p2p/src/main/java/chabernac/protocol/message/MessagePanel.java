@@ -59,7 +59,8 @@ public class MessagePanel extends JPanel {
       setForeground(Color.darkGray);
       Message theMessage = myModel.getMessageAtRow( anRow);
      
-      if(theMessage.getSource().getPeerId().equals( myPeerId ) && anColumn == 2){
+      if( (theMessage.getSource().getPeerId().equals( myPeerId ) && anColumn == 2) ||
+          (theMessage.getDestination().getPeerId().equals( myPeerId ) && anColumn == 3) ){
         setForeground( Color.blue );
       }
       
