@@ -502,13 +502,15 @@ public class P2PFacade {
     if(!isStarted()) throw new P2PFacadeException("Can not execute this action when the server is not started");
 
     try{
-      if(myRoutingFrame == null){
-        myRoutingFrame = new RoutingFrame( myProtocolServer,  myContainer, false);
-      }
+      initRoutingFrame();
       myRoutingFrame.setVisible( true );
     }catch(Exception e){
       throw new P2PFacadeException("Could not show routing frame", e);
     }
+  }
+  
+  private void initRoutingFrame() throws ProtocolException{
+    if(myRoutingFrame == null) myRoutingFrame = new RoutingFrame( myProtocolServer,  myContainer, false);
   }
   
   P2PFacade setKeepRoutingTableHistory(boolean isKeepHistory) throws P2PFacadeException{
@@ -556,6 +558,7 @@ public class P2PFacade {
       ProtocolFactory theFactory = new ProtocolFactory(myProperties);
       myContainer = new ProtocolContainer(theFactory);
       myProtocolServer = new ProtocolServer(myContainer, RoutingProtocol.START_PORT, aNumberOfThreads, true);
+      initRoutingFrame();
       myProtocolServer.start();
 
       //we retrieve the routing protcol
@@ -581,6 +584,7 @@ public class P2PFacade {
         ((CachingSocketPool)theSocketPool).setCleanUpTimeInSeconds( 30 );
       }
 
+      
       return this;
     }catch(Exception e){
       if(myProtocolServer != null){
