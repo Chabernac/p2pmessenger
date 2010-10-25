@@ -6,7 +6,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.net.Socket;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
@@ -18,6 +17,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import chabernac.io.SocketPoolFactory;
+import chabernac.io.SocketProxy;
 import chabernac.protocol.routing.PeerMessage.State;
 
 public class PeerSender implements iPeerSender {
@@ -36,7 +36,7 @@ public class PeerSender implements iPeerSender {
     int theRetries = 3;
 
     while(theRetries-- > 0){
-      Socket theSocket = aPeer.createSocket( aPeer.getPort() );
+      SocketProxy theSocket = aPeer.createSocket( aPeer.getPort() );
 
       if(theSocket == null) {
         changeState(theMessage, State.NOK);
@@ -102,9 +102,9 @@ public class PeerSender implements iPeerSender {
   }
 
   private class SocketCloser implements Runnable{
-    private final Socket mySocket;
+    private final SocketProxy mySocket;
 
-    public SocketCloser ( Socket anSocket ) {
+    public SocketCloser ( SocketProxy anSocket ) {
       super();
       mySocket = anSocket;
     }

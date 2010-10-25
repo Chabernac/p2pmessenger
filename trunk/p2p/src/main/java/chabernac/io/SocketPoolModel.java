@@ -4,7 +4,6 @@
  */
 package chabernac.io;
 
-import java.net.Socket;
 import java.text.SimpleDateFormat;
 
 import javax.swing.event.TableModelListener;
@@ -82,7 +81,7 @@ public class SocketPoolModel implements TableModel {
       if(anColumnIndex == 0) return theSocketProxy.getSocketAddress();
       if(anColumnIndex == 1) {
         if(theSocketProxy.isConnected()) {
-          return theSocketProxy.getSocket().getLocalSocketAddress();
+          return theSocketProxy.getLocalSocketAddress();
         }
         return "NOT CONNECTED";
       }
@@ -94,8 +93,8 @@ public class SocketPoolModel implements TableModel {
         }
         return "";
       }
-    } else if(theSocket instanceof Socket){
-      Socket theS = (Socket)theSocket;
+    } else if(theSocket instanceof SocketProxy){
+      SocketProxy theS = (SocketProxy)theSocket;
       if(anColumnIndex == 0) return theS.getRemoteSocketAddress();
       if(anColumnIndex == 1) return theS.getLocalAddress();
       if(anColumnIndex == 2) return thePool;

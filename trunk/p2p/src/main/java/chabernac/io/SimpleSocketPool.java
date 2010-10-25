@@ -5,21 +5,20 @@
 package chabernac.io;
 
 import java.io.IOException;
-import java.net.Socket;
 import java.net.SocketAddress;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Observable;
 
-public class SimpleSocketPool extends Observable implements iSocketPool<SocketProxy>{
+public class SimpleSocketPool extends Observable implements iSocketPool{
   private List<SocketProxy> myCheckedOutPool = new ArrayList< SocketProxy >() ;
   private List<SocketProxy> myConnectingPool = new ArrayList< SocketProxy >() ;
 
   private Object LOCK = new Object();
 
   @Override
-  public Socket checkOut( SocketAddress anAddress ) throws IOException{
+  public SocketProxy checkOut( SocketAddress anAddress ) throws IOException{
     SocketProxy theSocket = new SocketProxy(anAddress);
 
     synchronized(LOCK){
@@ -43,47 +42,21 @@ public class SimpleSocketPool extends Observable implements iSocketPool<SocketPr
       notifyAllObs();
     }
 
-    return theSocket.getSocket();
+    return theSocket;
   }
 
-  private SocketProxy searchProxyForSocketInPool(List<SocketProxy> aPool, Socket aSocket){
+  @Override
+  public void checkIn( SocketProxy aSocket ) {
+    if(aSocket == null) return;
+    aSocket.close();
     synchronized(LOCK){
-      for(SocketProxy theProxy : aPool){
-        if(theProxy.getSocket() == aSocket){
-          return theProxy;
-        }
-      }
-    }
-    return null;
-  }
-
-  @Override
-  public void checkIn( Socket aSocket ) {
-    SocketProxy theProxy = searchProxyForSocketInPool( myCheckedOutPool, aSocket );
-    
-    if(theProxy == null) {
-      try {
-        aSocket.close();
-      } catch ( IOException e ) {
-      }
-      return;
-    }
-
-    try {
-      if(theProxy.getSocket() != null){
-        aSocket.close();
-      }
-    } catch ( IOException e ) {
-    } finally {
-      synchronized(LOCK){
-        myCheckedOutPool.remove( theProxy );
-        notifyAllObs();
-      }
+      myCheckedOutPool.remove( aSocket );
+      notifyAllObs();
     }
   }
 
   @Override
-  public void close( Socket aSocket ) {
+  public void close( SocketProxy aSocket ) {
     //close and check in are the same in the simple pool
     checkIn( aSocket );
   }
@@ -92,20 +65,10 @@ public class SimpleSocketPool extends Observable implements iSocketPool<SocketPr
   public void cleanUp() {
     synchronized (LOCK) {
       for(SocketProxy theSocket : myCheckedOutPool){
-        if(theSocket.getSocket() != null){
-          try {
-            theSocket.getSocket().close();
-          } catch ( IOException e ) {
-          }
-        }
+        theSocket.close();
       }
       for(SocketProxy theSocket : myConnectingPool){
-        if(theSocket.getSocket() != null){
-          try {
-            theSocket.getSocket().close();
-          } catch ( IOException e ) {
-          }
-        }
+        theSocket.close();
       }
     }
     notifyAllObs();

@@ -5,20 +5,19 @@
 package chabernac.io;
 
 import java.io.IOException;
-import java.net.Socket;
 import java.net.SocketAddress;
 import java.util.List;
 
-public interface iSocketPool <T>{
-  public Socket checkOut(SocketAddress anAddress) throws IOException;
-  public void checkIn(Socket aSocket);
-  public void close(Socket aSocket);
+public interface iSocketPool{
+  public SocketProxy checkOut(SocketAddress anAddress) throws IOException;
+  public void checkIn(SocketProxy aSocket);
+  public void close(SocketProxy aSocket);
   
   public void cleanUp();
   public void cleanUpOlderThan(long aTimestamp);
   
-  public List<T> getCheckedInPool();
-  public List<T> getCheckedOutPool();
-  public List<T> getConnectingPool();
+  public List<SocketProxy> getCheckedInPool();
+  public List<SocketProxy> getCheckedOutPool();
+  public List<SocketProxy> getConnectingPool();
   
 }

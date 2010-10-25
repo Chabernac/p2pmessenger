@@ -16,7 +16,6 @@ import javax.activation.DataSource;
 
 import chabernac.io.CachingSocketPool;
 import chabernac.io.SocketPoolFactory;
-import chabernac.io.SocketProxy;
 import chabernac.io.iSocketPool;
 import chabernac.protocol.ProtocolContainer;
 import chabernac.protocol.ProtocolException;
@@ -577,7 +576,7 @@ public class P2PFacade {
       
       myContainer.getProtocol( InfoExchangeProtocol.ID );
       
-      iSocketPool<SocketProxy> theSocketPool = SocketPoolFactory.getSocketPool();
+      iSocketPool theSocketPool = SocketPoolFactory.getSocketPool();
       if(theSocketPool instanceof CachingSocketPool){
         ((CachingSocketPool)theSocketPool).setCleanUpTimeInSeconds( 30 );
       }

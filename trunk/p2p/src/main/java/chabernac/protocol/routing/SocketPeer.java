@@ -7,7 +7,6 @@ package chabernac.protocol.routing;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.InetSocketAddress;
-import java.net.Socket;
 import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -98,14 +97,14 @@ public class SocketPeer extends AbstractPeer implements Serializable {
    * @param aPort
    * @return
    */
-  public synchronized Socket createSocket(int aPort){
-    iSocketPool<SocketProxy> theSocketPool = SocketPoolFactory.getSocketPool();
+  public synchronized SocketProxy createSocket(int aPort){
+    iSocketPool theSocketPool = SocketPoolFactory.getSocketPool();
 
     for(Iterator< SimpleNetworkInterface > i = new ArrayList<SimpleNetworkInterface>(myHost).iterator(); i.hasNext();){
       SimpleNetworkInterface theHost = i.next();
       try{
         for(String theIp : theHost.getIp()){
-          Socket theSocket = theSocketPool.checkOut(new InetSocketAddress(theIp, aPort));
+          SocketProxy theSocket = theSocketPool.checkOut(new InetSocketAddress(theIp, aPort));
           myHost.remove( theHost );
           myHost.add( 0, theHost);
           return theSocket;

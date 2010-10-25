@@ -5,7 +5,6 @@
 package chabernac.io;
 
 import java.io.IOException;
-import java.net.Socket;
 import java.net.SocketAddress;
 import java.util.Collections;
 import java.util.List;
@@ -14,16 +13,16 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public class CachingSocketPool extends Observable implements iSocketPool< SocketProxy >{
+public class CachingSocketPool extends Observable implements iSocketPool{
   private Pool< SocketProxy > myCheckedInPool = new Pool< SocketProxy >();
   private Pool< SocketProxy > myCheckedOutPool = new Pool< SocketProxy >();
   private Pool< SocketProxy > myConnectingPool = new Pool< SocketProxy >();
 
   private ScheduledExecutorService myService = null;
-  
+
   //default clean timeout is 30 seconds
   private long myCleanUpTimeoutInSeconds = 30;
-  
+
 
   protected CachingSocketPool(){
   }
@@ -39,14 +38,14 @@ public class CachingSocketPool extends Observable implements iSocketPool< Socket
       myCleanUpTimeoutInSeconds = aCleanUpTimeoutInSeconds;
       myService = Executors.newScheduledThreadPool(1);
       myService.scheduleAtFixedRate( 
-          new Runnable(){
-            public void run(){
-              cleanUp();
-            }
-          }, 
-          aCleanUpTimeoutInSeconds, 
-          aCleanUpTimeoutInSeconds, 
-          TimeUnit.SECONDS);
+                                    new Runnable(){
+                                      public void run(){
+                                        cleanUp();
+                                      }
+                                    }, 
+                                    aCleanUpTimeoutInSeconds, 
+                                    aCleanUpTimeoutInSeconds, 
+                                    TimeUnit.SECONDS);
     }
   }
 
@@ -59,17 +58,18 @@ public class CachingSocketPool extends Observable implements iSocketPool< Socket
     return null;
   }
 
-  public Socket checkOut(SocketAddress anAddress) throws IOException{
+  public SocketProxy checkOut(SocketAddress anAddress) throws IOException{
     SocketProxy theSocketProxy = null;
     while((theSocketProxy  = searchFirstSocketWithAddressInPool( anAddress, myCheckedInPool)) != null){
       synchronized(this){
         myCheckedInPool.remove( theSocketProxy );
         myCheckedOutPool.add( theSocketProxy );
         notifyAllObs();
-        return theSocketProxy.connect();
+        theSocketProxy.connect();
+        return theSocketProxy;
       }
     }
-    
+
 //    theSocketProxy = searchFirstSocketWithAddressInPool( anAddress, myConnectingPool );
 //    if(theSocketProxy != null){
 //      //in this case some other thread also is trying to connect to the same address.  We will not allow two seperate threads
@@ -82,56 +82,37 @@ public class CachingSocketPool extends Observable implements iSocketPool< Socket
     myConnectingPool.add( theSocketProxy );
     notifyAllObs();
     try{
-      Socket theSocket = theSocketProxy.connect( );
+      theSocketProxy.connect( );
       myCheckedOutPool.add( theSocketProxy );
-      return theSocket;
+      return theSocketProxy;
     } finally{
       myConnectingPool.remove( theSocketProxy );
       notifyAllObs();
     }
   }
-  
-  private SocketProxy searchProxyForSocketInPool(Pool<SocketProxy> aPool, Socket aSocket){
-    for(SocketProxy theProxy : aPool){
-      if(theProxy.getSocket() == aSocket){
-        return theProxy;
-      }
-    }
-    return null;
-  }
 
-  public void checkIn(Socket aSocket){
+  public void checkIn(SocketProxy aSocket){
     if(aSocket != null){
       synchronized(this){
-        SocketProxy theProxy = searchProxyForSocketInPool(myCheckedOutPool, aSocket );
-        if(theProxy != null){
-          myCheckedOutPool.remove( theProxy );
-          myCheckedInPool.add(theProxy);
-        }
+        myCheckedOutPool.remove( aSocket );
+        myCheckedInPool.add(aSocket);
       }
       notifyAllObs();
     }
   }
 
-  public synchronized void close(Socket aSocket){
-    try {
-      aSocket.close();
-    } catch ( IOException e ) {
-    }
-    myCheckedInPool.remove( searchProxyForSocketInPool(myCheckedInPool,  aSocket ));
-    myCheckedOutPool.remove( searchProxyForSocketInPool(myCheckedOutPool,  aSocket ));
-    myConnectingPool.remove( searchProxyForSocketInPool(myConnectingPool,  aSocket ));
+  public synchronized void close(SocketProxy aSocket){
+    if(aSocket == null) return;
+    aSocket.close();
+    myCheckedInPool.remove( aSocket );
+    myCheckedOutPool.remove( aSocket );
+    myConnectingPool.remove( aSocket );
     notifyAllObs();
   }
-  
+
   private void cleanItemsOlderThan(Pool<SocketProxy> aPool, long aTime){
     for(SocketProxy theSocket : aPool.getItemsOlderThan( System.currentTimeMillis() - aTime * 1000 )){
-      if(theSocket.getSocket() != null){
-        try {
-          theSocket.getSocket().close();
-        } catch ( IOException e ) {
-        }
-      }
+      theSocket.close();
       aPool.remove( theSocket );
     }
   }
@@ -144,10 +125,10 @@ public class CachingSocketPool extends Observable implements iSocketPool< Socket
     cleanItemsOlderThan( myCheckedInPool,  myCleanUpTimeoutInSeconds);
     cleanItemsOlderThan( myCheckedOutPool,  myCleanUpTimeoutInSeconds);
     cleanItemsOlderThan( myConnectingPool,  myCleanUpTimeoutInSeconds);
-    
+
     notifyAllObs();
   }
-  
+
   /**
    * cleans up all items.
    * all the sockets in the pools are closed
@@ -165,7 +146,7 @@ public class CachingSocketPool extends Observable implements iSocketPool< Socket
   public List< SocketProxy > getCheckedOutPool(){
     return Collections.unmodifiableList(  myCheckedOutPool.getItemsOlderThan( System.currentTimeMillis() ) );
   }
-  
+
   public List< SocketProxy > getConnectingPool(){
     return Collections.unmodifiableList(  myConnectingPool.getItemsOlderThan( System.currentTimeMillis() ));
   }
