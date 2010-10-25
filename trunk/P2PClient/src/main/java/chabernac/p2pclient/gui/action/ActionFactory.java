@@ -28,7 +28,8 @@ public class ActionFactory {
                       STATUS_ONLINE,
                       STATUS_BUSSY,
                       STATUS_OFFLINE,
-                      EXIT
+                      EXIT,
+                      EXIT_WITHOUT_ASKING
                         };
 
   public ActionFactory(ChatMediator anMediator) {
@@ -56,7 +57,8 @@ public class ActionFactory {
     if(anAction == Action.STATUS_BUSSY) return new ChangeStatusCommand(myMediator.getP2PFacade(), UserInfo.Status.BUSY);
     if(anAction == Action.STATUS_OFFLINE) return new ChangeStatusCommand(myMediator.getP2PFacade(), UserInfo.Status.OFFLINE);
     if(anAction == Action.STATUS_ONLINE) return new ChangeStatusCommand(myMediator.getP2PFacade(), UserInfo.Status.ONLINE);
-    if(anAction == Action.EXIT) return new ExitCommand(myMediator);
+    if(anAction == Action.EXIT) return new ExitCommand(myMediator, false);
+    if(anAction == Action.EXIT_WITHOUT_ASKING) return new ExitCommand(myMediator, true);
     
     return null;
   }

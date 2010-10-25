@@ -20,9 +20,11 @@ import chabernac.preference.ApplicationPreferences;
 public class ExitCommand implements Command {
   private static Logger LOGGER = Logger.getLogger( ExitCommand.class );
   private final ChatMediator myMediator;
+  private final boolean isCloseDirectly;
 
-  public ExitCommand ( ChatMediator aMediator ) {
+  public ExitCommand ( ChatMediator aMediator, boolean isCloseDirectly ) {
     myMediator = aMediator;
+    this.isCloseDirectly = isCloseDirectly;
   }
 
   @Override
@@ -32,7 +34,7 @@ public class ExitCommand implements Command {
       myFrame = ((JFrame)myMediator.getTitleProvider());
     }
     
-    if(JOptionPane.OK_OPTION == JOptionPane.showConfirmDialog( myFrame, "Ben je zeker dat je wilt afsluiten? Als je afsluit kan je geen berichten meer ontvangen.", "Afsluiten", JOptionPane.OK_CANCEL_OPTION)){
+    if(isCloseDirectly || JOptionPane.OK_OPTION == JOptionPane.showConfirmDialog( myFrame, "Ben je zeker dat je wilt afsluiten? Als je afsluit kan je geen berichten meer ontvangen.", "Afsluiten", JOptionPane.OK_CANCEL_OPTION)){
       try{
         SystemTray.getSystemTray().getTrayIcons()[0].setToolTip( "P2PClient: Bezig met afsluiten" );
         
@@ -44,7 +46,7 @@ public class ExitCommand implements Command {
         myMediator.getP2PFacade().stop();
         
         //give some time to end sockets
-        Thread.sleep( 3000 );
+        Thread.sleep( 1000 );
       }catch(Throwable e){
         LOGGER.error("Could not properly exit", e);
       } finally {

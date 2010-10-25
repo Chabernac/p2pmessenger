@@ -14,9 +14,11 @@ import java.util.concurrent.Future;
 
 import org.apache.log4j.Logger;
 
+import chabernac.command.CommandSession;
 import chabernac.events.EventDispatcher;
 import chabernac.gui.event.SavePreferencesEvent;
 import chabernac.p2pclient.gui.action.ActionFactory;
+import chabernac.p2pclient.gui.action.ActionFactory.Action;
 import chabernac.p2pclient.settings.Settings;
 import chabernac.preference.ApplicationPreferences;
 import chabernac.preference.iApplicationPreferenceListener;
@@ -127,15 +129,7 @@ public class ChatMediator {
       return true;
     }
     if(myMessageProvider.getMessage().equalsIgnoreCase( "exit" )){
-      try{
-        EventDispatcher.getInstance( SavePreferencesEvent.class ).fireEvent( new SavePreferencesEvent() );
-        ApplicationPreferences.getInstance().save();
-        myP2PFacade.stop();
-      }catch(Throwable e){
-        LOGGER.error("Could not properly exit", e);
-      } finally {
-        System.exit(0);
-      }
+      CommandSession.getInstance().execute(myActionFactory.getCommand(Action.EXIT_WITHOUT_ASKING));
     }
     return false;
   }
