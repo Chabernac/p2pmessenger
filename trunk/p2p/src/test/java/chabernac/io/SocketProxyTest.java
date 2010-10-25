@@ -23,8 +23,30 @@ public class SocketProxyTest extends TestCase {
       SocketProxy theProxy = new SocketProxy( new InetSocketAddress("localhost", theServer.getPort()));
       assertEquals( "a", writeAndReadToSocket( theProxy, "a" ) );
       theProxy.close();
+      
+      assertFalse( theProxy.isBound() );
+      assertTrue( theProxy.isClosed() );
+      assertFalse( theProxy.isConnected() );
+      assertTrue( theProxy.isInputShutdown() );
+      assertTrue( theProxy.isOutputShutdown() );
+      assertNull( theProxy.getLocalAddress() );
+      assertNotNull( theProxy.getSocketAddress() );
+      assertNull( theProxy.getLocalSocketAddress());
+      assertNull( theProxy.getRemoteSocketAddress());
+      
+      
       //the proxy just reconnects and we can use it again
       assertEquals( "a", writeAndReadToSocket( theProxy, "a" ) );
+      
+      assertTrue( theProxy.isBound() );
+      assertFalse( theProxy.isClosed() );
+      assertTrue( theProxy.isConnected() );
+      assertFalse( theProxy.isInputShutdown() );
+      assertFalse( theProxy.isOutputShutdown() );
+      assertNotNull( theProxy.getLocalAddress() );
+      assertNotNull( theProxy.getSocketAddress() );
+      assertNotNull( theProxy.getLocalSocketAddress());
+      assertNotNull( theProxy.getRemoteSocketAddress());
       
     } finally {
       theServer.stop();
