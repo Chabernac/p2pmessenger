@@ -148,20 +148,4 @@ public class SocketProxy {
   public static void setTraceEnabled(boolean anIsTraceEnabled) {
     isTraceEnabled = anIsTraceEnabled;
   }
-
-  private class SocketInterrupter implements Runnable{
-    private final Socket mySocket;
-
-    public SocketInterrupter ( Socket anSocket ) {
-      super();
-      mySocket = anSocket;
-    }
-
-    public void run(){
-      try {
-        mySocket.close();
-      } catch ( IOException e ) {
-      }
-    }
-  }
 }
