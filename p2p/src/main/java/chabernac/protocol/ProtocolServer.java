@@ -221,7 +221,11 @@ public class ProtocolServer implements Runnable{
       }catch(IOException e){
         LOGGER.error( "Io exception occured in protocol server", e );
       } finally {
-        myRunningSockets.remove( mySocket );
+        try{
+          myRunningSockets.remove( mySocket );
+        }catch(Throwable e){
+          LOGGER.error( "Error occured while removing socket from running sockets pool", e );
+        }
         try{
           theWriter.flush();
           theWriter.close();

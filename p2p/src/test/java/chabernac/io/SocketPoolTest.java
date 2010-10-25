@@ -12,6 +12,7 @@ import java.io.PrintWriter;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.UnknownHostException;
 
 import junit.framework.TestCase;
 
@@ -35,8 +36,8 @@ public class SocketPoolTest extends TestCase {
       CachingSocketPool thePool = new CachingSocketPool();
       thePool.setCleanUpTimeInSeconds( 30 );
       thePool.cleanUp();
-      Socket theSocket1 = thePool.checkOut( new InetSocketAddress("localhost", theServerSocket.getLocalPort()) );
-      Socket theSocket2 = thePool.checkOut( new InetSocketAddress("localhost", theServerSocket.getLocalPort()) );
+      SocketProxy theSocket1 = thePool.checkOut( new InetSocketAddress("localhost", theServerSocket.getLocalPort()) );
+      SocketProxy theSocket2 = thePool.checkOut( new InetSocketAddress("localhost", theServerSocket.getLocalPort()) );
 
       //we now have 2 checked out connections and none checked in
       assertEquals( 2, thePool.getCheckedOutPool().size() );
@@ -53,7 +54,7 @@ public class SocketPoolTest extends TestCase {
       assertEquals( 2, thePool.getCheckedInPool().size() );
 
       //check out a connections which is in the checked in pool, one of the available sockets must be returned
-      Socket theSocket3 = thePool.checkOut( new InetSocketAddress("localhost", theServerSocket.getLocalPort()) );
+      SocketProxy theSocket3 = thePool.checkOut( new InetSocketAddress("localhost", theServerSocket.getLocalPort()) );
       assertEquals( 1, thePool.getCheckedOutPool().size() );
       assertEquals( 1, thePool.getCheckedInPool().size() );
       assertTrue( theSocket3 == theSocket1 || theSocket3 == theSocket2 );
@@ -126,7 +127,7 @@ public class SocketPoolTest extends TestCase {
 
       BasicSocketPool theSocketPool = new BasicSocketPool();
 
-      Socket theSocket = theSocketPool.checkOut( new InetSocketAddress("localhost", theServer.getPort()));
+      SocketProxy theSocket = theSocketPool.checkOut( new InetSocketAddress("localhost", theServer.getPort()));
       assertEquals( 1, theSocketPool.getCheckedOutPool().size() );
       assertEquals( "123", writeAndReadToSocket( theSocket, "123" ));
       
@@ -134,7 +135,7 @@ public class SocketPoolTest extends TestCase {
       assertEquals( 0, theSocketPool.getCheckedOutPool().size() );
       assertEquals( 1, theSocketPool.getCheckedInPool().size() );
       assertEquals( 0, theSocketPool.getConnectingPool().size() );
-      Socket theNewSocket = theSocketPool.checkOut( new InetSocketAddress("localhost", theServer.getPort()));
+      SocketProxy theNewSocket = theSocketPool.checkOut( new InetSocketAddress("localhost", theServer.getPort()));
       assertEquals( 1, theSocketPool.getCheckedOutPool().size() );
       assertEquals( 0, theSocketPool.getCheckedInPool().size() );
       assertEquals( 0, theSocketPool.getConnectingPool().size() );
@@ -158,7 +159,7 @@ public class SocketPoolTest extends TestCase {
       assertEquals( 0, theSocketPool.getCheckedInPool().size() );
       assertEquals( 0, theSocketPool.getConnectingPool().size() );
       
-      Socket theSocket2 = theSocketPool.checkOut( new InetSocketAddress("localhost", theServer.getPort()) );
+      SocketProxy theSocket2 = theSocketPool.checkOut( new InetSocketAddress("localhost", theServer.getPort()) );
       theSocketPool.checkIn( theSocket2 );
       
       assertEquals( 1, theSocketPool.getCheckedOutPool().size() );
@@ -176,9 +177,9 @@ public class SocketPoolTest extends TestCase {
       
       theSocketPool.setMaxAllowSocketsPerSocketAddress( 2 );
       
-      Socket theSocket_1 = theSocketPool.checkOut( new InetSocketAddress("localhost", theServer.getPort()) );
-      Socket theSocket_2 = theSocketPool.checkOut( new InetSocketAddress("localhost", theServer.getPort()) );
-      Socket theSocket_3 = theSocketPool.checkOut( new InetSocketAddress("localhost", theServer.getPort()) );
+      SocketProxy theSocket_1 = theSocketPool.checkOut( new InetSocketAddress("localhost", theServer.getPort()) );
+      SocketProxy theSocket_2 = theSocketPool.checkOut( new InetSocketAddress("localhost", theServer.getPort()) );
+      SocketProxy theSocket_3 = theSocketPool.checkOut( new InetSocketAddress("localhost", theServer.getPort()) );
       
       theSocketPool.checkIn( theSocket_1 );
       theSocketPool.checkIn( theSocket_2 );
@@ -199,8 +200,41 @@ public class SocketPoolTest extends TestCase {
       theServer.stop();
     }
   }
+  
+  public void testFailingSockets() throws IOException{
+    BasicSocketPool theSocketPool = new BasicSocketPool();
+    for(int i=0;i<100;i++){
+      try{
+        System.out.println("testing at port " + i);
+        theSocketPool.checkOut( new InetSocketAddress("brol", i));
+      }catch(Exception e){
+        e.printStackTrace();
+      }
+    }
+  }
+  
+  public void testSocketExhaustion() throws InterruptedException, UnknownHostException, IOException{
 
-  private String writeAndReadToSocket(Socket aSocket, String aMessage) throws IOException{
+    Server theServer = new Server(1600, new EchoProtocol());
+    try{
+      theServer.start();
+      
+      Thread.sleep( 1000 );
+      
+      for(int i=0;i<100;i++){
+        Socket theSocket = new Socket("localhost", 1600);
+        theSocket.close();
+      }
+      
+      Thread.sleep( 2000 );
+      
+    } finally {
+      theServer.stop();
+    }
+
+  }
+
+  private String writeAndReadToSocket(SocketProxy aSocket, String aMessage) throws IOException{
     PrintWriter theWriter = new PrintWriter(new OutputStreamWriter(aSocket.getOutputStream()));
     BufferedReader theReader= new BufferedReader(new InputStreamReader(aSocket.getInputStream()));
     theWriter.println(aMessage);
@@ -210,7 +244,6 @@ public class SocketPoolTest extends TestCase {
       theLine = theReader.readLine();
     }
     return theLine;
-
   }
 
 

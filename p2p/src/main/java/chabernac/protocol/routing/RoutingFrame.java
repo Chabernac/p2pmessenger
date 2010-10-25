@@ -189,7 +189,7 @@ public class RoutingFrame extends JFrame {
     theFrame.setVisible( true );
 
 
-    iSocketPool<SocketProxy> theSocketPool = SocketPoolFactory.getSocketPool();
+    iSocketPool theSocketPool = SocketPoolFactory.getSocketPool();
     if(theSocketPool instanceof CachingSocketPool){
       ((CachingSocketPool)theSocketPool).setCleanUpTimeInSeconds( 30 );
     }

@@ -5,7 +5,6 @@
 package chabernac.io;
 
 import java.io.IOException;
-import java.net.Socket;
 import java.net.SocketAddress;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -13,31 +12,32 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Observable;
 
-public class BasicSocketPool extends Observable implements iSocketPool<SocketProxy>{
+public class BasicSocketPool extends Observable implements iSocketPool{
+//  private static Logger LOGGER = Logger.getLogger(BasicSocketPool.class);
   private List<SocketProxy> myCheckedOutPool = new ArrayList< SocketProxy >() ;
   private List<SocketProxy> myConnectingPool = new ArrayList< SocketProxy >() ;
   private List<SocketProxy> myCheckedInPool = new ArrayList< SocketProxy >() ;
 
   private Object LOCK = new Object();
-  
+
   private int myMaxAllowSocketsPerSocketAddress = 2;
 
   @Override
-  public Socket checkOut( SocketAddress anAddress ) throws IOException{
+  public SocketProxy checkOut( SocketAddress anAddress ) throws IOException{
     synchronized(LOCK){
       SocketProxy theProxy = searchProxyForSocketAddressInPool( myCheckedInPool, anAddress);
       if(theProxy != null){
-        Socket theSocket = theProxy.connect();
-        if(!theSocket.isBound() || 
-            theSocket.isClosed() ||
-            !theSocket.isConnected() ||
-            theSocket.isInputShutdown() ||
-            theSocket.isOutputShutdown()){
-          closeProxy( theProxy );
+        theProxy.connect();
+        if(!theProxy.isBound() || 
+            theProxy.isClosed() ||
+            !theProxy.isConnected() ||
+            theProxy.isInputShutdown() ||
+            theProxy.isOutputShutdown()){
+          close( theProxy );
         } else {
           myCheckedInPool.remove( theProxy );
           myCheckedOutPool.add( theProxy );
-          return theProxy.connect();
+          return theProxy;
         }
       }
     }
@@ -65,18 +65,7 @@ public class BasicSocketPool extends Observable implements iSocketPool<SocketPro
       notifyAllObs();
     }
 
-    return theSocket.getSocket();
-  }
-
-  private SocketProxy searchProxyForSocketInPool(List<SocketProxy> aPool, Socket aSocket){
-    synchronized(LOCK){
-      for(SocketProxy theProxy : aPool){
-        if(theProxy.getSocket() == aSocket){
-          return theProxy;
-        }
-      }
-    }
-    return null;
+    return theSocket;
   }
 
   private SocketProxy searchProxyForSocketAddressInPool(List<SocketProxy> aPool, SocketAddress aSocketAddress){
@@ -99,74 +88,41 @@ public class BasicSocketPool extends Observable implements iSocketPool<SocketPro
   }
 
   @Override
-  public void checkIn( Socket aSocket ) {
-    SocketProxy theProxy = searchProxyForSocketInPool( myCheckedOutPool, aSocket );
+  public void checkIn( SocketProxy aSocket ) {
+    if(aSocket == null) return;
 
-    if(theProxy == null) {
-      try {
-        aSocket.close();
-      } catch ( IOException e ) {
-      }
-      return;
-    }
 
     synchronized(LOCK){
-      int theProxiesForSocketAddress = countProxyForSocketAddressInPool( myCheckedInPool, theProxy.getSocketAddress() );
+      int theProxiesForSocketAddress = countProxyForSocketAddressInPool( myCheckedInPool, aSocket.getSocketAddress() );
 
-      myCheckedOutPool.remove( theProxy );
+      myCheckedOutPool.remove( aSocket );
 
       if(theProxiesForSocketAddress >= 2){
         //only allow 2 sockets to be stored in the pool per address
-        try{
-          theProxy.getSocket().close();
-        }catch(Exception e){}
+        aSocket.close();
       } else {
-        myCheckedInPool.add( theProxy );
+        myCheckedInPool.add( aSocket );
       }
       notifyAllObs();
     }
   }
 
-  private void closeProxy(SocketProxy aProxy){ 
-    try {
-      if(aProxy.getSocket() != null){
-        aProxy.getSocket().close();
-      }
-    } catch ( IOException e ) {
-    } finally {
-      synchronized(LOCK){
-        myCheckedOutPool.remove( aProxy );
-        myCheckedInPool.remove(aProxy);
-        notifyAllObs();
-      }
-    }
-  }
-
   @Override
-  public void close( Socket aSocket ) {
-    SocketProxy theProxy = searchProxyForSocketInPool( myCheckedOutPool, aSocket );
-    if(theProxy == null) theProxy = searchProxyForSocketInPool( myCheckedInPool, aSocket );
-
-    if(theProxy == null) {
-      try {
-        aSocket.close();
-      } catch ( IOException e ) {
-      }
-      return;
+  public void close( SocketProxy aSocket ) {
+    if(aSocket == null) return;
+    
+    aSocket.close();
+    synchronized(LOCK){
+      myCheckedOutPool.remove( aSocket );
+      myCheckedInPool.remove(aSocket);
+      notifyAllObs();
     }
-
-    closeProxy( theProxy );
   }
 
   private void clean(List<SocketProxy> aPool){
     synchronized (LOCK) {
       for(SocketProxy theSocket : aPool){
-        if(theSocket.getSocket() != null){
-          try {
-            theSocket.getSocket().close();
-          } catch ( IOException e ) {
-          }
-        }
+        theSocket.close();
       }
       aPool.clear();
     }
@@ -186,9 +142,7 @@ public class BasicSocketPool extends Observable implements iSocketPool<SocketPro
       for(Iterator< SocketProxy > i = myCheckedInPool.iterator();i.hasNext();){
         SocketProxy theProxy = i.next();
         if(theProxy.getConnectTime().getTime() < aTimestamp){
-          try{
-            theProxy.getSocket().close();
-          }catch(Exception e){}
+          theProxy.close();
           i.remove();
         }
       }

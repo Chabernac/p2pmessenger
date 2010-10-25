@@ -5,18 +5,17 @@
 package chabernac.io;
 
 import java.io.IOException;
-import java.net.Socket;
 import java.net.SocketAddress;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public class SocketPoolCleanUpDecorator implements iSocketPool< SocketProxy > {
+public class SocketPoolCleanUpDecorator implements iSocketPool {
 
-  private final iSocketPool< SocketProxy > mySocketPool;
+  private final iSocketPool mySocketPool;
 
-  public SocketPoolCleanUpDecorator ( iSocketPool< SocketProxy > aSocketPool, long aTimeout, TimeUnit aTimeUnit ) {
+  public SocketPoolCleanUpDecorator ( iSocketPool aSocketPool, long aTimeout, TimeUnit aTimeUnit ) {
     super();
     mySocketPool = aSocketPool;
     scheduleCleanUp(aTimeout, aTimeUnit);
@@ -31,15 +30,15 @@ public class SocketPoolCleanUpDecorator implements iSocketPool< SocketProxy > {
     }, aTimeout, aTimeout, aTimeUnit);
   }
 
-  public Socket checkOut( SocketAddress anAddress ) throws IOException {
+  public SocketProxy checkOut( SocketAddress anAddress ) throws IOException {
     return mySocketPool.checkOut( anAddress );
   }
 
-  public void checkIn( Socket aSocket ) {
+  public void checkIn( SocketProxy aSocket ) {
     mySocketPool.checkIn( aSocket );
   }
 
-  public void close( Socket aSocket ) {
+  public void close( SocketProxy aSocket ) {
     mySocketPool.close( aSocket );
   }
 

@@ -4,13 +4,12 @@
  */
 package chabernac.protocol.pipe;
 
-import java.net.Socket;
-
+import chabernac.io.SocketProxy;
 import chabernac.protocol.routing.SocketPeer;
 
 public class Pipe {
   private SocketPeer myPeer = null;
-  private Socket mySocket = null;
+  private SocketProxy mySocket = null;
   private String myPipeDescription = "";
   
   public Pipe ( SocketPeer anPeer ) {
@@ -18,11 +17,11 @@ public class Pipe {
     myPeer = anPeer;
   }
 
-  public Socket getSocket() {
+  public SocketProxy getSocket() {
     return mySocket;
   }
 
-  public void setSocket( Socket anSocket ) {
+  public void setSocket( SocketProxy anSocket ) {
     mySocket = anSocket;
   }
 
