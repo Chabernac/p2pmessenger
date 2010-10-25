@@ -43,7 +43,7 @@ public class SystemTrayMenu extends PopupMenu implements ActionListener {
     add(new ReceiveMenu(myChatFrame.getMediator()));
     add(new StatusMenu(myChatFrame.getMediator()));
     add(new SearchPeersMenuItem(myChatFrame.getMediator()));
-    add( new ExitMenuItem(anIcon, myChatFrame, aFacade) );
+    add( new ExitMenuItem(myChatFrame.getMediator()) );
 
   }
 
