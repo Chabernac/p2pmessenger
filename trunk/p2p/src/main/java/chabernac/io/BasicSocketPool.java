@@ -22,6 +22,8 @@ public class BasicSocketPool extends Observable implements iSocketPool{
 
   private int myMaxAllowSocketsPerSocketAddress = 2;
 
+  private boolean isSocketReuse = true;
+
   @Override
   public SocketProxy checkOut( SocketAddress anAddress ) throws IOException{
     synchronized(LOCK){
@@ -91,26 +93,29 @@ public class BasicSocketPool extends Observable implements iSocketPool{
   public void checkIn( SocketProxy aSocket ) {
     if(aSocket == null) return;
 
+    if(!isSocketReuse) {
+      close(aSocket);
+    } else {
+      synchronized(LOCK){
+        int theProxiesForSocketAddress = countProxyForSocketAddressInPool( myCheckedInPool, aSocket.getSocketAddress() );
 
-    synchronized(LOCK){
-      int theProxiesForSocketAddress = countProxyForSocketAddressInPool( myCheckedInPool, aSocket.getSocketAddress() );
+        myCheckedOutPool.remove( aSocket );
 
-      myCheckedOutPool.remove( aSocket );
-
-      if(theProxiesForSocketAddress >= 2){
-        //only allow 2 sockets to be stored in the pool per address
-        aSocket.close();
-      } else {
-        myCheckedInPool.add( aSocket );
+        if(theProxiesForSocketAddress >= 2){
+          //only allow 2 sockets to be stored in the pool per address
+          aSocket.close();
+        } else {
+          myCheckedInPool.add( aSocket );
+        }
+        notifyAllObs();
       }
-      notifyAllObs();
     }
   }
 
   @Override
   public void close( SocketProxy aSocket ) {
     if(aSocket == null) return;
-    
+
     aSocket.close();
     synchronized(LOCK){
       myCheckedOutPool.remove( aSocket );
@@ -175,5 +180,13 @@ public class BasicSocketPool extends Observable implements iSocketPool{
 
   public void setMaxAllowSocketsPerSocketAddress( int aMaxAllowSocketsPerSocketAddress ) {
     myMaxAllowSocketsPerSocketAddress = aMaxAllowSocketsPerSocketAddress;
+  }
+
+  public boolean isSocketReuse() {
+    return isSocketReuse;
+  }
+
+  public void setSocketReuse( boolean aSocketReuse ) {
+    isSocketReuse = aSocketReuse;
   }
 }
