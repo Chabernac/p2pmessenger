@@ -19,5 +19,4 @@ public interface iSocketPool{
   public List<SocketProxy> getCheckedInPool();
   public List<SocketProxy> getCheckedOutPool();
   public List<SocketProxy> getConnectingPool();
-  
 }

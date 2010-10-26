@@ -14,6 +14,7 @@ import java.util.concurrent.Future;
 
 import javax.activation.DataSource;
 
+import chabernac.io.BasicSocketPool;
 import chabernac.io.CachingSocketPool;
 import chabernac.io.SocketPoolFactory;
 import chabernac.io.iSocketPool;
@@ -483,6 +484,13 @@ public class P2PFacade {
       ((ApplicationProtocol)myContainer.getProtocol( ApplicationProtocol.ID )).setDelegate( aProtolDelegate );
     }catch(Exception e){
       throw new P2PFacadeException("An error occured while setting protocol deleegate", e);
+    }
+    return this;
+  }
+  
+  public P2PFacade setSocketReuse(boolean isSocketReuse){
+    if(SocketPoolFactory.getSocketPool() instanceof BasicSocketPool){
+      ((BasicSocketPool)SocketPoolFactory.getSocketPool()).setSocketReuse( isSocketReuse );
     }
     return this;
   }

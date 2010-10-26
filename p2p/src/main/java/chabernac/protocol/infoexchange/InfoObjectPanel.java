@@ -8,6 +8,7 @@ import java.awt.BorderLayout;
 import java.util.Map;
 
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
@@ -38,7 +39,7 @@ public class InfoObjectPanel extends JPanel {
           JTextArea theArea = new JTextArea();
           theArea.setEditable( false );
           theArea.setText( theObject.toString() );
-          myCurrentPane.addTab( thePeer,  theArea);
+          myCurrentPane.addTab( thePeer,  new JScrollPane(theArea));
         }
         
         setLayout( new BorderLayout() );
