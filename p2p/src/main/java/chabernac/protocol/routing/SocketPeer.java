@@ -12,9 +12,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import chabernac.io.SocketPoolFactory;
 import chabernac.io.SocketProxy;
 import chabernac.io.iSocketPool;
+import chabernac.p2p.settings.P2PSettings;
 import chabernac.tools.NetTools;
 import chabernac.tools.SimpleNetworkInterface;
 
@@ -85,10 +85,8 @@ public class SocketPeer extends AbstractPeer implements Serializable {
   }
   
   protected String sendMessage(String aMessage, int aTimeoutInSeconds) throws IOException{
-    if(myPeerSender != null) return myPeerSender.send(aMessage, this, aTimeoutInSeconds);
-    if(PeerSenderHolder.getPeerSender() == null) throw new IOException("Could not send message to peer '" + getPeerId() + " because no message sender was defined");
-    
-    return PeerSenderHolder.getPeerSender().send(aMessage, this, aTimeoutInSeconds);
+    if(myPeerSender == null) throw new IOException("Could not send message to peer '" + getPeerId() + " because no message sender was defined");
+    return myPeerSender.send(aMessage, this, aTimeoutInSeconds);
   }
 
   /**
@@ -98,7 +96,7 @@ public class SocketPeer extends AbstractPeer implements Serializable {
    * @return
    */
   public synchronized SocketProxy createSocket(int aPort){
-    iSocketPool theSocketPool = SocketPoolFactory.getSocketPool();
+    iSocketPool theSocketPool = P2PSettings.getInstance().getSocketPool();
 
     for(Iterator< SimpleNetworkInterface > i = new ArrayList<SimpleNetworkInterface>(myHost).iterator(); i.hasNext();){
       SimpleNetworkInterface theHost = i.next();

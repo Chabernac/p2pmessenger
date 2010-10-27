@@ -6,11 +6,13 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import chabernac.p2p.settings.P2PSettings;
+
 public abstract class AbstractPeer implements Serializable{
   private static final long serialVersionUID = 4466216283560470711L;
   private String myPeerId;
   private String myChannel;
-  protected transient iPeerSender myPeerSender = new PeerSender();
+  protected transient iPeerSender myPeerSender = P2PSettings.getInstance().getPeerSender();
   private Set<String> mySupportedProtocols = new HashSet< String >();
   
   public AbstractPeer(String anPeerId) {

@@ -56,15 +56,26 @@ public class MessagePanel extends JPanel {
     public Component getTableCellRendererComponent(JTable anTable,
         Object anValue, boolean isSelected, boolean anHasFocus, int anRow,
         int anColumn) {
+      setOpaque( true );
       setForeground(Color.darkGray);
-      Message theMessage = myModel.getMessageAtRow( anRow);
+      MessageAndResponse theMessage = myModel.getMessageAtRow( anRow);
      
-      if( (theMessage.getSource().getPeerId().equals( myPeerId ) && anColumn == 2) ||
-          (theMessage.getDestination().getPeerId().equals( myPeerId ) && anColumn == 3) ){
+      if( (theMessage.getMessage().getSource().getPeerId().equals( myPeerId ) && anColumn == 2) ||
+          (theMessage.getMessage().getDestination().getPeerId().equals( myPeerId ) && anColumn == 3) ){
         setForeground( Color.blue );
       }
       
-      setText(anValue.toString());
+      if(theMessage.getResponse() == null){
+        setBackground( Color.YELLOW );
+      } else {
+        setBackground( Color.WHITE);
+      }
+      
+      if(anValue == null) {
+        setText( "" );
+      } else {
+        setText(  anValue.toString());
+      }
       
       return this;
     }

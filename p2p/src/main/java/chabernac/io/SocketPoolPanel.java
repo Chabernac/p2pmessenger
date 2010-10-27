@@ -9,7 +9,6 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
-import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -24,6 +23,8 @@ import javax.swing.border.TitledBorder;
 import javax.swing.event.TableModelEvent;
 import javax.swing.table.TableCellRenderer;
 
+import chabernac.p2p.settings.P2PSettings;
+
 public class SocketPoolPanel extends JPanel implements Observer {
   private static final long serialVersionUID = 2297825614322988606L;
   private JTable myTable = null;
@@ -36,7 +37,7 @@ public class SocketPoolPanel extends JPanel implements Observer {
   
   private void buildGUI(){
     setLayout(  new BorderLayout() );
-    myModel =new SocketPoolModel(SocketPoolFactory.getSocketPool());
+    myModel = new SocketPoolModel(P2PSettings.getInstance().getSocketPool());
     myTable = new JTable(myModel);
     myTable.setDefaultRenderer(String.class, new ColorRenderer());
     add(new JScrollPane(myTable), BorderLayout.CENTER);
@@ -51,8 +52,8 @@ public class SocketPoolPanel extends JPanel implements Observer {
   }
   
   private void addListeners(){
-    if(SocketPoolFactory.getSocketPool() instanceof Observable){
-      ((Observable)SocketPoolFactory.getSocketPool()).addObserver( this );
+    if(P2PSettings.getInstance().getSocketPool() instanceof Observable){
+      ((Observable)P2PSettings.getInstance().getSocketPool()).addObserver( this );
     }
   }
 
@@ -104,7 +105,7 @@ public class SocketPoolPanel extends JPanel implements Observer {
     
     @Override
     public void actionPerformed( ActionEvent anE ) {
-      SocketPoolFactory.getSocketPool().cleanUp();
+      P2PSettings.getInstance().getSocketPool().cleanUp();
     }
   }  
 }

@@ -7,13 +7,13 @@ package chabernac.protocol.message;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
 
+import chabernac.protocol.ProtocolFactory;
 import chabernac.tools.StringTools;
 
 public class MessageModel implements TableModel {
@@ -41,7 +41,7 @@ public class MessageModel implements TableModel {
 
   @Override
   public int getColumnCount() {
-    return 6;
+    return 8;
   }
 
   @Override
@@ -51,7 +51,9 @@ public class MessageModel implements TableModel {
     if(anColumnIndex == 2) return "From";
     if(anColumnIndex == 3) return "To";
     if(anColumnIndex == 4) return "TTL";
-    if(anColumnIndex == 5) return "Message";
+    if(anColumnIndex == 5) return "Protocol";
+    if(anColumnIndex == 6) return "Message";
+    if(anColumnIndex == 7) return "Response";
     return "";
   }
 
@@ -60,23 +62,25 @@ public class MessageModel implements TableModel {
     return myProtocol.getHistory().size();
   }
   
-  public Message getMessageAtRow(int aRow){
+  public MessageAndResponse getMessageAtRow(int aRow){
     return myProtocol.getHistory().get( aRow );
   }
 
   @Override
   public Object getValueAt( int anRowIndex, int anColumnIndex ) {
-    Message theMessage = getMessageAtRow( anRowIndex );
+    MessageAndResponse theMessage = getMessageAtRow( anRowIndex );
     if(anColumnIndex == 0) {
       Date theDate = new Date();
-      theDate.setTime( theMessage.getCreationTime() );
+      theDate.setTime( theMessage.getMessage().getCreationTime() );
       return FORMAT.format( theDate );
     }
-    if(anColumnIndex == 1) return StringTools.convertToLocalUniqueId(theMessage.getMessageId().toString());
-    if(anColumnIndex == 2) return theMessage.getSource().getPeerId();
-    if(anColumnIndex == 3) return theMessage.getDestination().getPeerId();
-    if(anColumnIndex == 4) return theMessage.getTTL();
-    if(anColumnIndex == 5) return theMessage.getMessage();
+    if(anColumnIndex == 1) return StringTools.convertToLocalUniqueId(theMessage.getMessage().getMessageId().toString());
+    if(anColumnIndex == 2) return theMessage.getMessage().getSource().getPeerId();
+    if(anColumnIndex == 3) return theMessage.getMessage().getDestination().getPeerId();
+    if(anColumnIndex == 4) return theMessage.getMessage().getTTL();
+    if(anColumnIndex == 5) return theMessage.getMessage().getMessage().substring( 0,3 );
+    if(anColumnIndex == 6) return theMessage.getMessage().getMessage().substring( 3 );
+    if(anColumnIndex == 7) return theMessage.getResponse();
     return null;
   }
 

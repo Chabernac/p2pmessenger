@@ -92,10 +92,8 @@ public class WebPeer extends AbstractPeer {
   }
 
   protected String sendMessage(String aMessage, int aTimeoutInSeconds) throws IOException {
-    if(myPeerSender != null) return myPeerSender.send(aMessage, this, aTimeoutInSeconds);
-    if(PeerSenderHolder.getPeerSender() == null) throw new IOException("Could not send message to peer '" + getPeerId() + " because no message sender was defined");
-
-    return PeerSenderHolder.getPeerSender().send(aMessage, this, aTimeoutInSeconds);
+    if(myPeerSender == null) throw new IOException("Could not send message to peer '" + getPeerId() + " because no message sender was defined");
+    return myPeerSender.send(aMessage, this, aTimeoutInSeconds);
   }
   
   public String toString(){

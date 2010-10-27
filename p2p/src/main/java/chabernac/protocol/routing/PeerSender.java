@@ -16,8 +16,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import chabernac.io.SocketPoolFactory;
 import chabernac.io.SocketProxy;
+import chabernac.p2p.settings.P2PSettings;
 import chabernac.protocol.routing.PeerMessage.State;
 
 public class PeerSender implements iPeerSender {
@@ -63,7 +63,7 @@ public class PeerSender implements iPeerSender {
         return theReturnMessage;
       }catch(IOException e){
         //for some reason the socket was corrupt just close the socket and retry untill retry counter is zero
-        SocketPoolFactory.getSocketPool().close( theSocket );
+        P2PSettings.getInstance().getSocketPool().close( theSocket );
         if(theRetries <= 0) {
           theMessage.setState(State.NOK);
           notifyListeners(theMessage);
@@ -71,7 +71,7 @@ public class PeerSender implements iPeerSender {
         }
       }finally{
         theService.shutdownNow();
-        SocketPoolFactory.getSocketPool().checkIn( theSocket );
+        P2PSettings.getInstance().getSocketPool().checkIn( theSocket );
       }
     }
     throw new IOException("Could not send message");
@@ -110,7 +110,7 @@ public class PeerSender implements iPeerSender {
     }
 
     public void run(){
-      SocketPoolFactory.getSocketPool().close(  mySocket );
+      P2PSettings.getInstance().getSocketPool().close(  mySocket );
     }
   }
 
