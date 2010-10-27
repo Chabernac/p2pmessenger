@@ -12,7 +12,7 @@ public abstract class AbstractPeer implements Serializable{
   private static final long serialVersionUID = 4466216283560470711L;
   private String myPeerId;
   private String myChannel;
-  protected transient iPeerSender myPeerSender = P2PSettings.getInstance().getPeerSender();
+  protected transient iPeerSender myPeerSender = null;
   private Set<String> mySupportedProtocols = new HashSet< String >();
   
   public AbstractPeer(String anPeerId) {
@@ -28,6 +28,7 @@ public abstract class AbstractPeer implements Serializable{
     if(aMessage.length() < 3) throw new IOException("Can not send message which has no protocol");
     String theProtocol = aMessage.substring( 0, 3 );
     if(!isProtocolSupported( theProtocol )) throw new IOException("The protocol '" + theProtocol + "' is not supported by peer '" + myPeerId + "'");
+    if(myPeerSender == null) myPeerSender = P2PSettings.getInstance().getPeerSender();
     return sendMessage(aMessage, aTimeoutInSeconds);
   }
   
