@@ -18,10 +18,10 @@ import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 
 import chabernac.io.CachingSocketPool;
-import chabernac.io.SocketPoolFactory;
 import chabernac.io.SocketPoolPanel;
 import chabernac.io.SocketProxy;
 import chabernac.io.iSocketPool;
+import chabernac.p2p.settings.P2PSettings;
 import chabernac.protocol.ProtocolContainer;
 import chabernac.protocol.ProtocolException;
 import chabernac.protocol.ProtocolFactory;
@@ -83,7 +83,7 @@ public class RoutingFrame extends JFrame {
     getRoutingTable().setKeepHistory(true);
     SocketProxy.setTraceEnabled(true);
     ((MessageProtocol)myProtocolContainer.getProtocol( MessageProtocol.ID )).setKeepHistory( true );
-    ((PeerSender)PeerSenderHolder.getPeerSender()).setKeepHistory(true);
+    ((PeerSender)P2PSettings.getInstance().getPeerSender()).setKeepHistory(true);
   }
 
   private void addListeners(){
@@ -136,7 +136,7 @@ public class RoutingFrame extends JFrame {
       getRoutingTable().setKeepHistory(false);
       getRoutingTable().clearHistory();
       SocketProxy.setTraceEnabled(false);
-      ((PeerSender)PeerSenderHolder.getPeerSender()).setKeepHistory(true);
+      ((PeerSender)P2PSettings.getInstance().getPeerSender()).setKeepHistory(true);
       try {
         ((MessageProtocol)myProtocolContainer.getProtocol( MessageProtocol.ID )).setKeepHistory( false );
       } catch ( ProtocolException e ) {
@@ -189,7 +189,7 @@ public class RoutingFrame extends JFrame {
     theFrame.setVisible( true );
 
 
-    iSocketPool theSocketPool = SocketPoolFactory.getSocketPool();
+    iSocketPool theSocketPool = P2PSettings.getInstance().getSocketPool();
     if(theSocketPool instanceof CachingSocketPool){
       ((CachingSocketPool)theSocketPool).setCleanUpTimeInSeconds( 30 );
     }

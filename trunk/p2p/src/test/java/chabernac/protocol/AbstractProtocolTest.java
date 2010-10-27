@@ -7,7 +7,7 @@ package chabernac.protocol;
 import javax.activation.DataSource;
 
 import junit.framework.TestCase;
-import chabernac.io.SocketPoolFactory;
+import chabernac.p2p.settings.P2PSettings;
 import chabernac.protocol.routing.PeerSender;
 import chabernac.tools.PropertyMap;
 
@@ -15,7 +15,7 @@ public abstract class AbstractProtocolTest extends TestCase {
   protected static final int SLEEP_AFTER_SCAN = 2000;
   
   public void setUp(){
-    SocketPoolFactory.getSocketPool().cleanUp();
+    P2PSettings.getInstance().getSocketPool().cleanUp();
   }
   
   public ProtocolContainer getProtocolContainer(long anExchangeDelay, boolean isPersist, String aPeerId){

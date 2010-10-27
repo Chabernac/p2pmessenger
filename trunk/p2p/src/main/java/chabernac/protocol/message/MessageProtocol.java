@@ -38,7 +38,7 @@ public class MessageProtocol extends Protocol {
 
   private boolean isKeepHistory = false;
 
-  private List< Message > myHistory = new ArrayList< Message >();
+  private List< MessageAndResponse > myHistory = new ArrayList< MessageAndResponse >();
 
   private List<iMessageListener> myListeners = new ArrayList< iMessageListener >();
   private List<iMessageListener> myHistoryListeners = new ArrayList< iMessageListener >();
@@ -70,8 +70,9 @@ public class MessageProtocol extends Protocol {
   }
 
   public String handleMessage(long aSessionId, Message aMessage){
+    MessageAndResponse theHistoryItem = new MessageAndResponse( aMessage );
     if(isKeepHistory){
-      myHistory.add(aMessage);
+      myHistory.add(theHistoryItem);
       for(iMessageListener theListener : myHistoryListeners) theListener.messageReceived( aMessage );
     }
 
@@ -80,11 +81,16 @@ public class MessageProtocol extends Protocol {
     AbstractPeer theDestination = aMessage.getDestination();
     try {
       if(theDestination.getPeerId().equals( getRoutingTable().getLocalPeerId() )){
-        return handleMessageForUs(aSessionId, aMessage);
+        String theResult = handleMessageForUs(aSessionId, aMessage);
+        if(isKeepHistory) theHistoryItem.setResponse( theResult );
+        return theResult;
       } else {
         //the message is not intented for us, it needs to be sended further.
         //only send the message further if the time to live (TTL) is not yet 0.
-        return forwardMessage(aMessage);
+        String theResult = forwardMessage(aMessage);
+        //TODO the history thing is poluting our code, we should do it with an aspect
+        if(isKeepHistory) theHistoryItem.setResponse( theResult );
+        return theResult;
       }
     } catch ( UnknownPeerException e ) {
       LOGGER.error( "Unknown peer", e );
@@ -218,7 +224,7 @@ public class MessageProtocol extends Protocol {
     myHistoryListeners.remove( aListener );
   }
 
-  public List<Message> getHistory(){
+  public List<MessageAndResponse> getHistory(){
     return Collections.unmodifiableList( myHistory );
   }
 

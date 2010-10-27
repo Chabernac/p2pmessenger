@@ -16,8 +16,8 @@ import javax.activation.DataSource;
 
 import chabernac.io.BasicSocketPool;
 import chabernac.io.CachingSocketPool;
-import chabernac.io.SocketPoolFactory;
 import chabernac.io.iSocketPool;
+import chabernac.p2p.settings.P2PSettings;
 import chabernac.protocol.ProtocolContainer;
 import chabernac.protocol.ProtocolException;
 import chabernac.protocol.ProtocolFactory;
@@ -489,8 +489,9 @@ public class P2PFacade {
   }
   
   public P2PFacade setSocketReuse(boolean isSocketReuse){
-    if(SocketPoolFactory.getSocketPool() instanceof BasicSocketPool){
-      ((BasicSocketPool)SocketPoolFactory.getSocketPool()).setSocketReuse( isSocketReuse );
+    iSocketPool theSocketPool = P2PSettings.getInstance().getSocketPool();
+    if(theSocketPool instanceof BasicSocketPool){
+      ((BasicSocketPool)theSocketPool).setSocketReuse( isSocketReuse );
     }
     return this;
   }
@@ -587,7 +588,7 @@ public class P2PFacade {
       
       myContainer.getProtocol( InfoExchangeProtocol.ID );
       
-      iSocketPool theSocketPool = SocketPoolFactory.getSocketPool();
+      iSocketPool theSocketPool = P2PSettings.getInstance().getSocketPool();
       if(theSocketPool instanceof CachingSocketPool){
         ((CachingSocketPool)theSocketPool).setCleanUpTimeInSeconds( 30 );
       }
@@ -606,7 +607,7 @@ public class P2PFacade {
     if(myProtocolServer != null){
       myProtocolServer.stop();
     }
-    SocketPoolFactory.getSocketPool().cleanUp();
+    P2PSettings.getInstance().getSocketPool().cleanUp();
     return this;
   }
 
