@@ -21,10 +21,12 @@ import chabernac.protocol.AbstractProtocolTest;
 import chabernac.protocol.ProtocolContainer;
 import chabernac.protocol.ProtocolException;
 import chabernac.protocol.ProtocolServer;
+import chabernac.protocol.routing.AbstractPeer;
 import chabernac.protocol.routing.NoAvailableNetworkAdapterException;
 import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.RoutingTable;
 import chabernac.protocol.routing.RoutingTableEntry;
+import chabernac.protocol.routing.SocketPeer;
 import chabernac.protocol.routing.UnknownPeerException;
 
 public class MessageProtocolTest extends AbstractProtocolTest {
@@ -239,9 +241,9 @@ public class MessageProtocolTest extends AbstractProtocolTest {
               theMessage.setMessage( "test message");
               theMessageProtocol1.sendMessage( theMessage );
               theLatch.countDown();
-//              if(theLatch.getCount() % 100 == 0){
-                System.out.println("message nr: " + theCurrMessage);
-//              }
+              //              if(theLatch.getCount() % 100 == 0){
+              System.out.println("message nr: " + theCurrMessage);
+              //              }
             }catch(Exception e){
               e.printStackTrace();
             }
@@ -249,9 +251,9 @@ public class MessageProtocolTest extends AbstractProtocolTest {
         });
 
       }
-      
+
       theLatch.await(40, TimeUnit.SECONDS);
-      
+
       assertEquals( 0, theLatch.getCount() );
 
       assertEquals( times, theListener.getMessages().size() );
@@ -264,7 +266,7 @@ public class MessageProtocolTest extends AbstractProtocolTest {
       theServer2.stop();
     }
   }
-  
+
   public void testMessageLoop() throws ProtocolException, InterruptedException, UnknownPeerException, MessageException{
     ProtocolContainer theProtocol1 = getProtocolContainer( -1, false, "1" );
     ProtocolServer theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT, 6);
@@ -283,14 +285,35 @@ public class MessageProtocolTest extends AbstractProtocolTest {
     try{
       assertTrue( theServer1.start() );
       assertTrue( theServer2.start() );
-      
-//      theRoutingTable1.addRoutingTableEntry(s)
+
+      Thread.sleep(SLEEP_AFTER_SCAN);
+
+
+      AbstractPeer thePeer1 = theRoutingTable1.getEntryForLocalPeer().getPeer();
+      AbstractPeer thePeer2 = theRoutingTable2.getEntryForLocalPeer().getPeer();
+
+      SocketPeer thePeer3 = new SocketPeer("3","brol",124);
+      thePeer3.setChannel(thePeer1.getChannel());
+
+      theRoutingTable1.addRoutingTableEntry(new RoutingTableEntry(thePeer3, 2, thePeer2, System.currentTimeMillis()));
+      theRoutingTable2.addRoutingTableEntry(new RoutingTableEntry(thePeer3, 2, thePeer1, System.currentTimeMillis()));
+
+      Message theMessage = new Message();
+      theMessage.setDestination(thePeer3);
+      theMessage.setMessage("test");
+      try{
+        theMessageProtocol1.sendMessage(theMessage);
+        fail("Should not get here");
+      }catch(MessageException e){
+        assertEquals(MessageProtocol.Response.MESSAGE_LOOP_DETECTED, e.getResponse());
+      }
+
     } finally {
       if(theServer1 != null) theServer1.stop();
       if(theServer2 != null) theServer2.stop();
     }
   }
-  
+
   public void testMessageFromUnknownPeer() throws ProtocolException, InterruptedException, UnknownPeerException, MessageException{
     LOGGER.debug("Begin of testMessageProtocol");
     ProtocolContainer theProtocol1 = getProtocolContainer( -1, false, "1" );
@@ -312,31 +335,31 @@ public class MessageProtocolTest extends AbstractProtocolTest {
       assertTrue( theServer2.start() );
 
       theRoutingProtocol1.scanLocalSystem();
-      
+
       Thread.sleep( SLEEP_AFTER_SCAN );
-      
+
       //peer 1 should now peer 2
       assertTrue( theRoutingTable1.containsEntryForPeer( theRoutingProtocol2.getLocalPeerId() ) );
       //but peer 2 should not know peer 1
       if(theRoutingTable2.containsEntryForPeer( theRoutingProtocol1.getLocalPeerId() )){
         //and if it does remove the entry
-       theRoutingTable2.removeRoutingTableEntry( theRoutingTable2.getEntryForPeer( theRoutingProtocol1.getLocalPeerId() ) );
-       Thread.sleep( SLEEP_AFTER_SCAN );
+        theRoutingTable2.removeRoutingTableEntry( theRoutingTable2.getEntryForPeer( theRoutingProtocol1.getLocalPeerId() ) );
+        Thread.sleep( SLEEP_AFTER_SCAN );
       }
       assertFalse( theRoutingTable2.containsEntryForPeer( theRoutingProtocol1.getLocalPeerId() ) );
-      
+
       //now send a message from peer 1 to peer 2
       Message theMessage = new Message();
       theMessage.setDestination( theRoutingTable2.getEntryForLocalPeer().getPeer() );
       theMessage.setMessage( "test" );
-      
+
       theMessageProtocol1.sendMessage( theMessage );
-      
+
       Thread.sleep( SLEEP_AFTER_SCAN );
-      
+
       //if the message has been received by peer 2, the routing table of peer 2 must now contain peer 1
       assertTrue( theRoutingTable2.containsEntryForPeer( theRoutingProtocol1.getLocalPeerId() ) );
-      
+
 
       //scanning the local system might take a small time
     } finally {
