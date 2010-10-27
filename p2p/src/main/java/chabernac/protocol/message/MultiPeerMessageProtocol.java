@@ -17,6 +17,7 @@ import chabernac.io.iObjectStringConverter;
 import chabernac.protocol.Protocol;
 import chabernac.protocol.ProtocolException;
 import chabernac.protocol.message.DeliveryReport.Status;
+import chabernac.protocol.routing.DummyPeer;
 import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.RoutingTable;
 
@@ -96,13 +97,14 @@ public class MultiPeerMessageProtocol extends Protocol{
       for(String theDestination : theMultiPeerMessage.getDestinations()){
         Message theMessage = new Message();
         try{
-          theMessage.setDestination( getRoutingTable().getEntryForPeer( theDestination ).getPeer() );
           theMessage.setSource( getRoutingTable().getEntryForPeer(theMultiPeerMessage.getSource()).getPeer() );
           theMessage.setProtocolMessage( true );
           theMessage.setIndicators( new ArrayList< MessageIndicator >(theMultiPeerMessage.getIndicators()) );
           theMessage.setMessage( createMessage( myObjectStringConverter.toString( theMultiPeerMessage ) ) );
           mySendService.execute( new MessageSender(theMultiPeerMessage, theMessage) );
+          theMessage.setDestination( getRoutingTable().getEntryForPeer( theDestination ).getPeer() );
         }catch(Exception e){
+          if(theMessage.getDestination() == null) theMessage.setDestination(new DummyPeer(theDestination) );
           sendDeliveryReport( new DeliveryReport(theMultiPeerMessage, Status.FAILED, theMessage));
           LOGGER.error( "Sending multi peer message to '"  +  theDestination + "' failed", e );
         }
