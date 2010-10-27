@@ -265,6 +265,32 @@ public class MessageProtocolTest extends AbstractProtocolTest {
     }
   }
   
+  public void testMessageLoop() throws ProtocolException, InterruptedException, UnknownPeerException, MessageException{
+    ProtocolContainer theProtocol1 = getProtocolContainer( -1, false, "1" );
+    ProtocolServer theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT, 6);
+
+    ProtocolContainer theProtocol2 = getProtocolContainer( -1, false, "2" );
+    ProtocolServer theServer2 = new ProtocolServer(theProtocol2, RoutingProtocol.START_PORT + 1, 6);
+
+    RoutingProtocol theRoutingProtocol1 = (RoutingProtocol)theProtocol1.getProtocol( RoutingProtocol.ID );
+    RoutingTable theRoutingTable1 = theRoutingProtocol1.getRoutingTable();
+    MessageProtocol theMessageProtocol1 = (MessageProtocol)theProtocol1.getProtocol( MessageProtocol.ID );
+
+    RoutingProtocol theRoutingProtocol2 = (RoutingProtocol)theProtocol2.getProtocol( RoutingProtocol.ID );
+    RoutingTable theRoutingTable2 = theRoutingProtocol2.getRoutingTable();
+    MessageProtocol theMessageProtocol2 = (MessageProtocol)theProtocol2.getProtocol( MessageProtocol.ID );
+
+    try{
+      assertTrue( theServer1.start() );
+      assertTrue( theServer2.start() );
+      
+//      theRoutingTable1.addRoutingTableEntry(s)
+    } finally {
+      if(theServer1 != null) theServer1.stop();
+      if(theServer2 != null) theServer2.stop();
+    }
+  }
+  
   public void testMessageFromUnknownPeer() throws ProtocolException, InterruptedException, UnknownPeerException, MessageException{
     LOGGER.debug("Begin of testMessageProtocol");
     ProtocolContainer theProtocol1 = getProtocolContainer( -1, false, "1" );

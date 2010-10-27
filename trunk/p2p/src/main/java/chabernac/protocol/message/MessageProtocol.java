@@ -9,6 +9,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 import org.apache.log4j.Logger;
 
@@ -34,7 +35,7 @@ public class MessageProtocol extends Protocol {
   private static Logger LOGGER = Logger.getLogger( MessageProtocol.class );
   public static final String ID = "MSG";
 
-  private static enum STATUS_MESSAGE {UNKNOWN_PEER, UNKNOWN_HOST, UNDELIVERABLE, DELIVERED, UNCRECOGNIZED_MESSAGE, COULD_NOT_DECRYPT, TTL_EXPIRED};
+  private static enum STATUS_MESSAGE {UNKNOWN_PEER, UNKNOWN_HOST, UNDELIVERABLE, DELIVERED, UNCRECOGNIZED_MESSAGE, COULD_NOT_DECRYPT, TTL_EXPIRED, MESSAGE_LOOP_DETECTED};
 
   private boolean isKeepHistory = false;
 
@@ -44,6 +45,8 @@ public class MessageProtocol extends Protocol {
   private List<iMessageListener> myHistoryListeners = new ArrayList< iMessageListener >();
   
   private iObjectStringConverter< Message > myMessageConverter = new Base64ObjectStringConverter< Message >();
+  
+  private List<UUID> myProcessingMessages = Collections.synchronizedList(new ArrayList<UUID>());
 
   public MessageProtocol ( ) {
     super( ID );
@@ -66,9 +69,19 @@ public class MessageProtocol extends Protocol {
     } catch ( IOException e ) {
       return STATUS_MESSAGE.UNCRECOGNIZED_MESSAGE.name();
     }
-    return handleMessage( aSessionId, (Message)theMessage );
+    
+    if(myProcessingMessages.contains(theMessage.getMessageId())){
+      return STATUS_MESSAGE.MESSAGE_LOOP_DETECTED.name();
+    } 
+    
+    myProcessingMessages.add(theMessage.getMessageId());
+    try{
+      return  handleMessage( aSessionId, theMessage );
+    } finally{
+      myProcessingMessages.remove(theMessage.getMessageId());
+    }
   }
-
+  
   public String handleMessage(long aSessionId, Message aMessage){
     MessageAndResponse theHistoryItem = new MessageAndResponse( aMessage );
     if(isKeepHistory){
