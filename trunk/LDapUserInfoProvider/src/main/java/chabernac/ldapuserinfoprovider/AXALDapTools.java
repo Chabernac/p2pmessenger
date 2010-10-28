@@ -25,7 +25,7 @@ import javax.naming.ldap.InitialLdapContext;
  * @author <a href="mailto:Guy.Chauliac@axa.be"> Guy Chauliac </a>
  */
 public class AXALDapTools {
-  private static final String PROVIDER="ldap://ldapuser.axa.be:1034/o=axa.be";
+  private static final String PROVIDER="ldap://user.dir:1034/o=axa.be";
   private static AXALDapTools instance = null;
 
   private InitialLdapContext myDirContext = null;
