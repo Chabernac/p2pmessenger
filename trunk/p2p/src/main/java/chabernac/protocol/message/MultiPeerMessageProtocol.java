@@ -101,8 +101,8 @@ public class MultiPeerMessageProtocol extends Protocol{
           theMessage.setProtocolMessage( true );
           theMessage.setIndicators( new ArrayList< MessageIndicator >(theMultiPeerMessage.getIndicators()) );
           theMessage.setMessage( createMessage( myObjectStringConverter.toString( theMultiPeerMessage ) ) );
-          mySendService.execute( new MessageSender(theMultiPeerMessage, theMessage) );
           theMessage.setDestination( getRoutingTable().getEntryForPeer( theDestination ).getPeer() );
+          mySendService.execute( new MessageSender(theMultiPeerMessage, theMessage) );
         }catch(Exception e){
           if(theMessage.getDestination() == null) theMessage.setDestination(new DummyPeer(theDestination) );
           sendDeliveryReport( new DeliveryReport(theMultiPeerMessage, Status.FAILED, theMessage));
