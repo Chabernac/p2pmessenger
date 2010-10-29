@@ -15,8 +15,6 @@ import java.util.concurrent.Future;
 import org.apache.log4j.Logger;
 
 import chabernac.command.CommandSession;
-import chabernac.events.EventDispatcher;
-import chabernac.gui.event.SavePreferencesEvent;
 import chabernac.p2pclient.gui.action.ActionFactory;
 import chabernac.p2pclient.gui.action.ActionFactory.Action;
 import chabernac.p2pclient.settings.Settings;
@@ -42,6 +40,7 @@ public class ChatMediator {
   private iTitleProvider myTitleProvider = null;
   private isShowDialogProvider myIsShowDialogProvider = null;
   private iMessageDialog myMessageDialog = null;
+  private iChatFrame myChatFrame = null;
 
   private ExecutorService myExecutorService = Executors.newFixedThreadPool( 5 );
 
@@ -88,6 +87,14 @@ public class ChatMediator {
   public void setUserSelectionProvider( iUserSelectionProvider anUserSelectionProvider ) {
     myUserSelectionProvider = anUserSelectionProvider;
     myUserSelectionProvider.addSelectionChangedListener( new MySelectionChangedListener() );
+  }
+  
+  public iChatFrame getChatFrame() {
+    return myChatFrame;
+  }
+
+  public void setChatFrame( iChatFrame myFrameProvider ) {
+    this.myChatFrame = myFrameProvider;
   }
 
   public synchronized Future< MultiPeerMessage > send(){

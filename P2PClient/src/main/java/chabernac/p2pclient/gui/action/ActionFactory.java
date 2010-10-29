@@ -7,7 +7,8 @@ import chabernac.protocol.userinfo.UserInfo;
 public class ActionFactory {
   private final ChatMediator myMediator;
   
-  public static enum Action{PREVIOUS_MESSAGE,
+  public static enum Action{
+	  				  PREVIOUS_MESSAGE,
                       NEXT_MESSAGE,
                       CLEAR_MESSAGE,
                       CLEAR_USERS,
@@ -29,7 +30,10 @@ public class ActionFactory {
                       STATUS_BUSSY,
                       STATUS_OFFLINE,
                       EXIT,
-                      EXIT_WITHOUT_ASKING
+                      EXIT_WITHOUT_ASKING,
+                      SHOW_FRAME,
+                      TOGGLE_SHOW_FRAME,
+                      SHOW_ABOUT
                         };
 
   public ActionFactory(ChatMediator anMediator) {
@@ -59,6 +63,10 @@ public class ActionFactory {
     if(anAction == Action.STATUS_ONLINE) return new ChangeStatusCommand(myMediator.getP2PFacade(), UserInfo.Status.ONLINE);
     if(anAction == Action.EXIT) return new ExitCommand(myMediator, false);
     if(anAction == Action.EXIT_WITHOUT_ASKING) return new ExitCommand(myMediator, true);
+    if(anAction == Action.SHOW_FRAME) return new ShowFrameCommand();
+    if(anAction == Action.TOGGLE_SHOW_FRAME) return new ToggleShowFrameCommand(myMediator);
+    if(anAction == Action.SHOW_ABOUT) return new ShowAboutCommand(myMediator);
+    
     
     return null;
   }
