@@ -44,7 +44,8 @@ public class MessagePanel extends JPanel {
     theTable.getColumnModel().getColumn( 2 ).setPreferredWidth( 220 );
     theTable.getColumnModel().getColumn( 3 ).setPreferredWidth( 220 );
     theTable.getColumnModel().getColumn( 4 ).setPreferredWidth( 50 );
-    theTable.getColumnModel().getColumn( 5 ).setPreferredWidth( 400 );
+    theTable.getColumnModel().getColumn( 5 ).setPreferredWidth( 50 );
+    theTable.getColumnModel().getColumn( 6 ).setPreferredWidth( 400 );
     
     add(new JScrollPane(theTable), BorderLayout.CENTER);
   }
