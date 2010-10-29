@@ -42,6 +42,7 @@ public class ActionDecorator {
     theInputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_PAUSE, 0), "pause");
     theInputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_Z, InputEvent.CTRL_DOWN_MASK), "undo");
     theInputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_Y, InputEvent.CTRL_DOWN_MASK), "redo");
+    theInputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0), "info");
     
     if(!(myComponent instanceof JTextArea)){
       for(char theChar=33;theChar<=126;theChar++){
@@ -65,6 +66,7 @@ public class ActionDecorator {
     theActionMap.put("pause", new CommandAction(myMediator.getActionFactory(),ActionFactory.Action.TOGGLE_POPUP));
     theActionMap.put("undo", new CommandAction(myMediator.getActionFactory(),ActionFactory.Action.UNDO));
     theActionMap.put("redo", new CommandAction(myMediator.getActionFactory(),ActionFactory.Action.REDO));
+    theActionMap.put("info", new CommandAction(myMediator.getActionFactory(),ActionFactory.Action.SHOW_ABOUT));
     theActionMap.put("focusinput", new FocusInputAction(myMediator));
   }
 

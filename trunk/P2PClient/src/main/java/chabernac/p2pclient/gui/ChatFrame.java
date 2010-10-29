@@ -23,6 +23,7 @@ import javax.imageio.ImageIO;
 import javax.swing.JComponent;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
+import javax.swing.SwingUtilities;
 
 import org.apache.log4j.Logger;
 
@@ -38,7 +39,7 @@ import chabernac.protocol.facade.P2PFacade;
 import chabernac.protocol.facade.P2PFacadeException;
 import chabernac.tools.Tools;
 
-public class ChatFrame extends SavedFrame implements iTitleProvider, isShowDialogProvider{
+public class ChatFrame extends SavedFrame implements iTitleProvider, isShowDialogProvider, iChatFrame{
   private static final long serialVersionUID = 8845601746540726343L;
   private static Logger logger = Logger.getLogger(ChatFrame.class);
   private ChatMediator myMediator = null;
@@ -105,6 +106,7 @@ public class ChatFrame extends SavedFrame implements iTitleProvider, isShowDialo
     myMediator.setUserSelectionProvider( theUserPanel );
     myMediator.setTitleProvider( this );
     myMediator.setIsShowDialogProvider( this );
+    myMediator.setChatFrame( this );
     myMediator.setTitle();
     
     mySplitPane.setTopComponent(new JScrollPane(myMessageField, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER));
@@ -174,9 +176,14 @@ public class ChatFrame extends SavedFrame implements iTitleProvider, isShowDialo
   }
   
   public void showFrame(){
-    setVisible( true );
-    setState( Frame.NORMAL );
-    requestFocus();
+    SwingUtilities.invokeLater( new Runnable(){
+      public void run(){
+        setVisible( true );
+        setState( Frame.NORMAL );
+        requestFocus();  
+      }
+    });
+      
     NewMessageDialog5.getInstance( getMediator() ).cancelPendingTasks();
     NewMessageDialog5.getInstance( getMediator() ).setVisible( false );
   }
