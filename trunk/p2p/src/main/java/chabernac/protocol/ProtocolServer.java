@@ -112,17 +112,17 @@ public class ProtocolServer implements Runnable{
         myServerSocket = new ServerSocket(myPort);
       }
 
-      synchronized ( LOCK ) {
-        isStarted = true;
-        LOCK.notify();
-      }
-
       myServerInfo.setServerPort( myServerSocket.getLocalPort() );
       myProtocol.setServerInfo( myServerInfo );
 
       myClientHandlerService = Executors.newFixedThreadPool( myNumberOfThreads );
 
       LOGGER.debug( "Starting protocol server at port '" + myPort + "'" );
+      
+      synchronized ( LOCK ) {
+        isStarted = true;
+        LOCK.notify();
+      }
 
       while(true){ 
         synchronized(this){

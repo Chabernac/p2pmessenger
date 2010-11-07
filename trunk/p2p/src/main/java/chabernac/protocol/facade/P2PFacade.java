@@ -568,7 +568,8 @@ public class P2PFacade {
       myContainer = new ProtocolContainer(theFactory);
       myProtocolServer = new ProtocolServer(myContainer, RoutingProtocol.START_PORT, aNumberOfThreads, true);
       initRoutingFrame();
-      myProtocolServer.start();
+      
+      if(!myProtocolServer.start()) throw new P2PFacadeException("Unable to start protocol server");
 
       //we retrieve the routing protcol
       //this way it is instantiated and start exchanging routing information
