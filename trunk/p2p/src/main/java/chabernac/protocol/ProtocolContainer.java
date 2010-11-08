@@ -20,20 +20,20 @@ import chabernac.protocol.ProtocolMessageEntry.Status;
 public class ProtocolContainer implements IProtocol {
   public static enum Command {PROTOCOLS};
   public static enum Response {UNKNOWN_COMMAND, UNKNOWN_PROTOCOL, INVALID_PROTOCOL, NOT_SUPPORTED};
-  
+
   private Map<String, IProtocol> myProtocolMap = null;
   private List< ProtocolMessageEntry > myMessageHistory = Collections.synchronizedList( new ArrayList< ProtocolMessageEntry >() );
   private List<iProtocolMessageListener> myListeners = new ArrayList< iProtocolMessageListener >();
-  
+
   private iProtocolFactory myProtocolFactory = null;
   private ServerInfo myServerInfo = null;
-  
+
   private final Set<String> mySupportedProtocols;
-  
+
   public ProtocolContainer(iProtocolFactory aProtocolFactory){
     this(aProtocolFactory, null);
   }
-  
+
   public ProtocolContainer(iProtocolFactory aProtocolFactory, Set< String > aSupportedProtocols){
     addProtocol( this );
     myProtocolFactory = aProtocolFactory;
@@ -45,13 +45,13 @@ public class ProtocolContainer implements IProtocol {
     ProtocolMessageEntry theEntry = new ProtocolMessageEntry(anInput, Status.INPROGRESS);
     myMessageHistory.add( theEntry );
     notifyListeners();
-    
+
     if(anInput.length() < 3) {
       theEntry.setStatus( Status.INVALID );
       return Response.INVALID_PROTOCOL.name();
     }
     String theID = anInput.substring( 0, 3 );
-    
+
     IProtocol theProtocol;
     try {
       theProtocol = getProtocol( theID );
@@ -66,13 +66,13 @@ public class ProtocolContainer implements IProtocol {
       return Response.UNKNOWN_PROTOCOL.name();
     }
   }
-  
+
   private void notifyListeners(){
-   for(iProtocolMessageListener theListener : myListeners){
-     theListener.messageReceived();
-   }
+    for(iProtocolMessageListener theListener : myListeners){
+      theListener.messageReceived();
+    }
   }
-  
+
   public String getProtocolString() {
     StringBuilder theBuilder = new StringBuilder();
     for(String theId : myProtocolMap.keySet()){
@@ -82,21 +82,26 @@ public class ProtocolContainer implements IProtocol {
     return theBuilder.toString();
   }
 
-  private void addProtocol(IProtocol aProtocol) {
+  public void addProtocol(IProtocol aProtocol) {
     if(aProtocol.getId() == null){
       throw new IllegalArgumentException("Can only add a sub protocol which has an id");
     }
-    
+
     if(myProtocolMap == null){
       myProtocolMap = Collections.synchronizedMap( new HashMap< String, IProtocol > ());
     }
-    
+
     if(myProtocolMap.containsKey( aProtocol.getId() )){
       throw new IllegalArgumentException("a subprotocol with this id is already registered");
     }
-    
+
     myProtocolMap.put( aProtocol.getId(), aProtocol);
     aProtocol.setMasterProtocol( this );
+  }
+
+  public void removeProtocol(IProtocol aProtocol){
+    if(myProtocolMap == null) return;
+    myProtocolMap.remove( aProtocol.getId() );
   }
 
   @Override
@@ -128,14 +133,14 @@ public class ProtocolContainer implements IProtocol {
     } catch ( InterruptedException e ) {
     }
   }
-  
+
   public synchronized IProtocol getProtocol(String anId) throws ProtocolException{
     if(mySupportedProtocols != null && 
         mySupportedProtocols.size() > 0 &&
         !mySupportedProtocols.contains( anId )){
-       throw new ProtocolException("The protocol with id '" + anId + "' is not supported on this peer");
-     }
-    
+      throw new ProtocolException("The protocol with id '" + anId + "' is not supported on this peer");
+    }
+
     if(!myProtocolMap.containsKey( anId )){
       IProtocol theProtocol = myProtocolFactory.createProtocol( anId );
       addProtocol( theProtocol );
@@ -144,7 +149,7 @@ public class ProtocolContainer implements IProtocol {
       }
     }
     IProtocol theProtocol = myProtocolMap.get( anId );
-    
+
     return theProtocol;
   }
 
@@ -158,15 +163,15 @@ public class ProtocolContainer implements IProtocol {
       }
     }
   }
-  
+
   public void addProtocolMessageListener(iProtocolMessageListener aListener){
     myListeners.add(aListener);
   }
-  
+
   public void removeProtocolMessageListener(iProtocolMessageListener aListener){
     myListeners.remove( aListener );
   }
-  
+
   public List<ProtocolMessageEntry> getMessageHistory() {
     return Collections.unmodifiableList(myMessageHistory);
   }
