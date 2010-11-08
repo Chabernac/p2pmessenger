@@ -8,6 +8,9 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.sun.mail.handlers.multipart_mixed;
+
+import chabernac.protocol.message.MultiPeerMessage;
 import chabernac.protocol.routing.AbstractPeer;
 
 public class Group {
@@ -21,5 +24,13 @@ public class Group {
   public Group removeMember(AbstractPeer aPeer){
     myMembers.remove( aPeer );
     return this;
+  }
+  
+  public MultiPeerMessage createEmptyMessage(){
+    MultiPeerMessage theMessage = MultiPeerMessage.createMessage(null);
+    for(AbstractPeer thePeer : myMembers){
+      theMessage = theMessage.addDestination(thePeer.getPeerId());
+    }
+    return theMessage;
   }
 }
