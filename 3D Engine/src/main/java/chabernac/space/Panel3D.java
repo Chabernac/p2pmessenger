@@ -10,14 +10,17 @@ import java.awt.event.MouseListener;
 
 import javax.swing.JPanel;
 
+import org.apache.log4j.Logger;
+
 import chabernac.control.iSynchronizedEvent;
 import chabernac.space.buffer.ZBuffer;
 import chabernac.space.geom.Point3D;
 import chabernac.space.shading.GouroudShading;
-import chabernac.utils.Debug;
 
 
 public class Panel3D extends JPanel implements  iSynchronizedEvent, MouseListener, ComponentListener{
+  private static final Logger LOGGER = Logger.getLogger(Panel3D.class);
+  
   private World myWorld = null;
   private Graphics3D myGraphics = null;
   private Camera myCamera = null;
@@ -129,7 +132,7 @@ public class Panel3D extends JPanel implements  iSynchronizedEvent, MouseListene
         
       }
     }catch(Exception e){
-      Debug.log(this,"Error occured while drawing world",e);
+      LOGGER.error("Error occured while drawing world",e);
     }
   }
 

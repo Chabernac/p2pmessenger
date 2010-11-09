@@ -14,7 +14,7 @@ import chabernac.space.geom.Point3D;
 import chabernac.space.texture.Texture2;
 import chabernac.space.texture.TextureFactory;
 import chabernac.space.texture.TextureImage;
-import chabernac.utils.Tools;
+import chabernac.utils.ArrayTools;
 
 public class Polygon implements iTranslatable{
   private static Logger LOGGER = Logger.getLogger(Polygon.class);
@@ -76,8 +76,8 @@ public class Polygon implements iTranslatable{
 
   public void addVertex(Vertex aVertex){
     if(myCurrentVertex >= w.length){
-      w = (Vertex[])Tools.growArray(w, myGrowSize);
-      c = (Vertex[])Tools.growArray(c, myGrowSize * 2);
+      w = (Vertex[])ArrayTools.growArray(w, myGrowSize);
+      c = (Vertex[])ArrayTools.growArray(c, myGrowSize * 2);
       mySize += myGrowSize;
       myCamSize += myGrowSize * 2;
     }

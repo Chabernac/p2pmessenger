@@ -1,10 +1,12 @@
 package chabernac.space;
 
+import org.apache.log4j.Logger;
+
 import chabernac.space.geom.Point2D;
 import chabernac.space.geom.Point3D;
-import chabernac.utils.*;
 
 public class SimpleTransform implements Transform3D{
+  private static final Logger LOGGER = Logger.getLogger( SimpleTransform.class );
   private double myAngle;
   
   public SimpleTransform(double anAngle){
@@ -15,7 +17,7 @@ public class SimpleTransform implements Transform3D{
     int x = (int)(aPoint.x + aPoint.z * Math.cos(myAngle));
     int y = (int)(aPoint.y + aPoint.z * Math.sin(myAngle));
     Point2D thePoint = new Point2D(x,y);
-    Debug.log(this, aPoint.toString() + " --> " + thePoint.toString());
+    LOGGER.debug( aPoint.toString() + " --> " + thePoint.toString());
     //Debug.log(this,"X: " + x  + " Y: " + y);
     return new Point2D(x,y);
   }

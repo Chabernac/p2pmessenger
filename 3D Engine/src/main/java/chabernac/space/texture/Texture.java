@@ -9,15 +9,18 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
+import org.apache.log4j.Logger;
+
 import chabernac.space.Camera;
 import chabernac.space.Vector2D;
 import chabernac.space.geom.GVector;
-import chabernac.space.geom.GeomFunctions;
 import chabernac.space.geom.Point2D;
 import chabernac.space.geom.Point3D;
-import chabernac.utils.Debug;
+import chabernac.space.shapes.Cylinder;
 
 public class Texture {
+  private static final Logger LOGGER = Logger.getLogger(Cylinder.class);
+  
 	private Point3D myOrigin = null;
 	private Point3D myXUnit = null;
 	private Point3D myYUnit = null;
@@ -64,7 +67,7 @@ public class Texture {
 			imageWidth = myImage.getWidth();
 			imageHeight = myImage.getHeight();
 		}catch(IOException e){
-			Debug.log(this,"could not read image", e);
+		  LOGGER.error( "could not read image", e);
 		}
 		calculateMagicVectors();
 	}

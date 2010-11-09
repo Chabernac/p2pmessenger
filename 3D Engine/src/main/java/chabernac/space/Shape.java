@@ -7,7 +7,7 @@ import chabernac.math.MatrixException;
 import chabernac.space.geom.GVector;
 import chabernac.space.geom.Point3D;
 import chabernac.space.texture.TextureImage;
-import chabernac.utils.Tools;
+import chabernac.utils.ArrayTools;
 
 public class Shape implements Comparable, iTranslatable{
   public int mySize;
@@ -44,7 +44,7 @@ public class Shape implements Comparable, iTranslatable{
 
   public void addPolygon(Polygon aPolygon){
     if(myCurrentPolygon >= myPolygons.length){
-      myPolygons = (Polygon[])Tools.growArray(myPolygons, myGrowSize);
+      myPolygons = (Polygon[])ArrayTools.growArray(myPolygons, myGrowSize);
       mySize += myGrowSize;
     }
     myPolygons[myCurrentPolygon++] = aPolygon;
