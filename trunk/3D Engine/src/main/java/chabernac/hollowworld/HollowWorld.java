@@ -20,8 +20,8 @@ import java.awt.event.KeyEvent;
 
 import javax.swing.JButton;
 
-import chabernac.GUI.components.DefaultExitFrame;
-import chabernac.GUI.utils.GUIUtils;
+import org.apache.log4j.Logger;
+
 import chabernac.control.KeyCommand;
 import chabernac.control.KeyCommandListener;
 import chabernac.control.KeyConfigurationDialog;
@@ -29,6 +29,8 @@ import chabernac.control.KeyMap;
 import chabernac.control.KeyMapContainer;
 import chabernac.control.MouseCommandListener;
 import chabernac.control.SynchronizedEventManager;
+import chabernac.gui.components.DefaultExitFrame;
+import chabernac.gui.utils.GUIUtils;
 import chabernac.math.MatrixException;
 import chabernac.space.Camera;
 import chabernac.space.CameraMouseCommand;
@@ -43,8 +45,6 @@ import chabernac.space.buffer.iBufferStrategy;
 import chabernac.space.geom.Point3D;
 import chabernac.space.geom.Rotation;
 import chabernac.space.shapes.Cube;
-import chabernac.utils.Debug;
-import chabernac.utils.TimeTracker;
 
 /**
  * @author Administrator
@@ -53,6 +53,8 @@ import chabernac.utils.TimeTracker;
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
 public class HollowWorld extends DefaultExitFrame{
+  private static final Logger LOGGER = Logger.getLogger(HollowWorld.class);
+  
   private JButton myKeysButton = null;
   private JButton myStartButton = null;
   private Camera myCamera = null;
@@ -62,14 +64,13 @@ public class HollowWorld extends DefaultExitFrame{
 
   public HollowWorld(){
     try{
-      Debug.setDebug(true);
       myManager = new SynchronizedEventManager(50);
       myCamera = new Camera(new Point3D(0,0,-1000),new Rotation(0,0,0),1F);
       buildKeyMapContainer();
       initialize();
       buildGUI();
     }catch(MatrixException e){
-      Debug.log(this, "Could not start hollowworld", e);
+      LOGGER.error("Could not start hollowworld", e);
     }
   }
 
@@ -143,7 +144,7 @@ public class HollowWorld extends DefaultExitFrame{
     try {
       new MouseCommandListener(theFrame, new CameraMouseCommand(myCamera));
     } catch (AWTException e) {
-      Debug.log(this,"could not attach mouse listener", e);
+      LOGGER.error("could not attach mouse listener", e);
     }
     myManager.startManager();
   }
@@ -317,10 +318,10 @@ public class HollowWorld extends DefaultExitFrame{
 
 
     }catch(PolygonException e){
-      Debug.log(this,"Could not create world", e);
+      LOGGER.error("Could not create world", e);
     }
     catch (MatrixException e) {
-      Debug.log(this,"Could not create world", e);
+      LOGGER.error("Could not create world", e);
     }
 
     return theWorld;
@@ -354,7 +355,6 @@ public class HollowWorld extends DefaultExitFrame{
   }
 
   public static void main(String args[]){
-    TimeTracker.setEnabled(false);
     new HollowWorld();
   }
 
@@ -377,7 +377,7 @@ public class HollowWorld extends DefaultExitFrame{
     }
 
     public void keyPressed() {
-      Debug.log(this,"leaving full screen");
+      LOGGER.debug("leaving full screen");
       //myFullScreenComponent.stopRendering();
       myFullScreenComponent.dispose();
       myFullScreenComponent = null;

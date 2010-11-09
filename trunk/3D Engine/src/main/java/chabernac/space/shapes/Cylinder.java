@@ -6,6 +6,8 @@
  */
 package chabernac.space.shapes;
 
+import org.apache.log4j.Logger;
+
 import chabernac.math.MatrixException;
 import chabernac.space.Camera;
 import chabernac.space.Polygon;
@@ -17,7 +19,6 @@ import chabernac.space.geom.GVector;
 import chabernac.space.geom.GeomFunctions;
 import chabernac.space.geom.Point3D;
 import chabernac.space.geom.Rotation;
-import chabernac.utils.Debug;
 
 /**
  * @author Administrator
@@ -26,6 +27,8 @@ import chabernac.utils.Debug;
  * Window - Preferences - Java - Code Generation - Code and Comments
  */
 public class Cylinder extends Shape {
+  private static final Logger LOGGER = Logger.getLogger(Cylinder.class);
+  
 	private static final int POLYGONS = 8;
 	
 	private Point3D myLocation = null;
@@ -74,13 +77,13 @@ public class Cylinder extends Shape {
 		Point3D theTranslationPoint = (Point3D)myLocation.clone();
 		theTranslationPoint.invert();
 		Rotation theRotation = GeomFunctions.vector2Rotation(myDirection);
-		Debug.log(this,myDirection.toString() + " converted to rotation: " + theRotation);
+		LOGGER.debug(myDirection.toString() + " converted to rotation: " + theRotation);
 		//theRotation.invert();
 		Camera theTranslationCamera = new Camera(new Point3D(0,0,0),theRotation , 1);
 		translate(theTranslationCamera);
 		theTranslationCamera = new Camera(theTranslationPoint,new Rotation(0,0,0) , 1);
 		translate(theTranslationCamera);
-		Debug.log(this, myPolygons[1].toString());
+		LOGGER.debug(myPolygons[1].toString());
 	}
 	
 	public GVector getDirection(){

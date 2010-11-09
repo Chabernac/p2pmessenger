@@ -3,12 +3,11 @@ package chabernac.space.texture;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 import javax.swing.JPanel;
 
-import chabernac.GUI.components.DefaultExitFrame;
+import chabernac.gui.components.DefaultExitFrame;
 
 public class TexturePanel extends JPanel{
   private TextureImage myImage = null;

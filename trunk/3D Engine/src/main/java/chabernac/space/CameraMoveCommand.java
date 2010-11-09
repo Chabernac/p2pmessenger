@@ -6,10 +6,11 @@
  */
 package chabernac.space;
 
+import org.apache.log4j.Logger;
+
 import chabernac.control.SynchronizedEventManager;
 import chabernac.control.SynchronizedKeyCommand;
 import chabernac.math.MatrixException;
-import chabernac.utils.Debug;
 
 /**
  * @author Administrator
@@ -18,6 +19,8 @@ import chabernac.utils.Debug;
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
 public class CameraMoveCommand extends SynchronizedKeyCommand {
+  private static Logger LOGGER = Logger.getLogger(CameraMoveCommand.class);
+  
 	private Camera myTargetCamera = null;
 	private Camera myTranslationCamera = null;
 
@@ -48,7 +51,7 @@ public class CameraMoveCommand extends SynchronizedKeyCommand {
 		try {
 			myTargetCamera.translate(myTranslationCamera);
 		}catch(MatrixException e){ 
-			Debug.log(this,"Error in keyDown", e);
+			LOGGER.error("Error in keyDown", e);
 		}
 	}
 

@@ -17,7 +17,6 @@ import chabernac.space.geom.GVector;
 import chabernac.space.geom.Point2D;
 import chabernac.space.geom.Point3D;
 import chabernac.space.geom.PolarPoint3D;
-import chabernac.utils.TimeTracker;
 
 public class Texture2 {
 
@@ -80,10 +79,7 @@ public class Texture2 {
   }
 
   public int getColor(Point2D aPoint){
-    long t = TimeTracker.start();
-    int theColor = myImage.getColorAt((int)Math.floor(aPoint.x), (int)Math.floor(aPoint.y));
-    t = TimeTracker.logTime("retrieving color from buffered image");
-    return theColor;
+    return myImage.getColorAt((int)Math.floor(aPoint.x), (int)Math.floor(aPoint.y));
   }
 
   public CoordinateSystem getSystem() {

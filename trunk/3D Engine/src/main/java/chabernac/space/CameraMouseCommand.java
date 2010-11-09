@@ -6,11 +6,12 @@
  */
 package chabernac.space;
 
+import org.apache.log4j.Logger;
+
 import chabernac.control.MouseCommand;
 import chabernac.math.MatrixException;
 import chabernac.space.geom.Point3D;
 import chabernac.space.geom.Rotation;
-import chabernac.utils.Debug;
 
 /**
  * @author Administrator
@@ -19,6 +20,8 @@ import chabernac.utils.Debug;
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
 public class CameraMouseCommand implements MouseCommand {
+  private static Logger LOGGER = Logger.getLogger(CameraMouseCommand.class);
+  
 	private Camera myTargetCamera = null;
 	
 	public CameraMouseCommand(Camera aTargetCamera){
@@ -33,7 +36,7 @@ public class CameraMouseCommand implements MouseCommand {
 			Camera theRotationCamera = new Camera(new Point3D(0,0,0), new Rotation(0, - aSpeedY / 10000, - aSpeedX / 10000), 1F);
 			myTargetCamera.translate(theRotationCamera);
 		} catch (MatrixException e) {
-			Debug.log(this, "Could not create rotation matrix", e);
+			LOGGER.error("Could not create rotation matrix", e);
 		}
 	}
 	/* (non-Javadoc)
