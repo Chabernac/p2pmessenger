@@ -51,9 +51,10 @@ public class EasterEggPanel extends JPanel implements Runnable, iEasterEggWindow
 		Dimension theSize = myRootFrame.getSize();
 		
     BufferedImage theWindowImage = new BufferedImage(theSize.width, theSize.height, BufferedImage.TYPE_INT_RGB);
+    
+    myRootFrame.setGlassPane(this);
     myRootFrame.getContentPane().paint(theWindowImage.getGraphics());
 
-    myRootFrame.setGlassPane(this);
     setVisible(true);
     setFocusable(true);
     requestFocus();
