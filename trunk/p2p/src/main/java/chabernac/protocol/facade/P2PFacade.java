@@ -83,7 +83,6 @@ public class P2PFacade {
   private PropertyMap myProperties = new PropertyMap();
   private MessageArchive myMessageArchive = null;
   private boolean myIsKeepHistory = false;
-  private RoutingFrame myRoutingFrame = null;
 
   /**
    * set the exchange delay.
@@ -511,15 +510,10 @@ public class P2PFacade {
     if(!isStarted()) throw new P2PFacadeException("Can not execute this action when the server is not started");
 
     try{
-      initRoutingFrame();
-      myRoutingFrame.setVisible( true );
+      new RoutingFrame( myProtocolServer,  myContainer, false);
     }catch(Exception e){
       throw new P2PFacadeException("Could not show routing frame", e);
     }
-  }
-  
-  private void initRoutingFrame() throws ProtocolException{
-    if(myRoutingFrame == null) myRoutingFrame = new RoutingFrame( myProtocolServer,  myContainer, false);
   }
   
   P2PFacade setKeepRoutingTableHistory(boolean isKeepHistory) throws P2PFacadeException{
@@ -567,7 +561,6 @@ public class P2PFacade {
       ProtocolFactory theFactory = new ProtocolFactory(myProperties);
       myContainer = new ProtocolContainer(theFactory);
       myProtocolServer = new ProtocolServer(myContainer, RoutingProtocol.START_PORT, aNumberOfThreads, true);
-      initRoutingFrame();
       
       if(!myProtocolServer.start()) throw new P2PFacadeException("Unable to start protocol server");
 

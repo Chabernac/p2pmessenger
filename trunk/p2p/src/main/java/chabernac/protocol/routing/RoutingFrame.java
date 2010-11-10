@@ -136,10 +136,14 @@ public class RoutingFrame extends JFrame {
     public void windowClosing( WindowEvent anE ) {
       getRoutingTable().setKeepHistory(false);
       getRoutingTable().clearHistory();
+      
       SocketProxy.setTraceEnabled(false);
       ((PeerSender)P2PSettings.getInstance().getPeerSender()).setKeepHistory(true);
+      ((PeerSender)P2PSettings.getInstance().getPeerSender()).clearHistory();
+      
       try {
         ((MessageProtocol)myProtocolContainer.getProtocol( MessageProtocol.ID )).setKeepHistory( false );
+        ((MessageProtocol)myProtocolContainer.getProtocol( MessageProtocol.ID )).clearHistory();
       } catch ( ProtocolException e ) {
       }
 
