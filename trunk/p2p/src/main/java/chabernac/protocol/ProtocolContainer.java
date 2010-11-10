@@ -27,6 +27,8 @@ public class ProtocolContainer implements IProtocol {
 
   private iProtocolFactory myProtocolFactory = null;
   private ServerInfo myServerInfo = null;
+  
+  private boolean isKeepHistory = false;
 
   private final Set<String> mySupportedProtocols;
 
@@ -43,7 +45,7 @@ public class ProtocolContainer implements IProtocol {
   @Override
   public String handleCommand( long aSessionId, String anInput ) {
     ProtocolMessageEntry theEntry = new ProtocolMessageEntry(anInput, Status.INPROGRESS);
-    myMessageHistory.add( theEntry );
+    if(isKeepHistory) myMessageHistory.add( theEntry );
     notifyListeners();
 
     if(anInput.length() < 3) {
@@ -178,5 +180,13 @@ public class ProtocolContainer implements IProtocol {
 
   public Set< String > getSupportedProtocols() {
     return mySupportedProtocols;
+  }
+  
+  public void setKeepHistory(boolean isKeepHistory){
+    this.isKeepHistory = isKeepHistory;
+  }
+  
+  public void clearHistory(){
+    myMessageHistory.clear();
   }
 }
