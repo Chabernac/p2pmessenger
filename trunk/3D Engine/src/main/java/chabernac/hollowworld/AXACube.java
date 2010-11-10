@@ -234,12 +234,11 @@ public class AXACube extends JFrame implements iSynchronizedEvent{
   }
 
   public void executeEvent(long anCounter) {
-    if(anCounter % 100 == 0){
+    if(anCounter >> 6 << 6 == anCounter){
       Rotation theRotation = myRotationManager.getRotation();
       Rotation theNewRotation = new Rotation(theRotation.getPitch(), theRotation.getYaw(), theRotation.getRoll());
       myRotationManager.setRotation(theNewRotation);
     }
-    
   }
   
   public static void main(String args[]){
