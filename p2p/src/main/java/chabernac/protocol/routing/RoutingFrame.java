@@ -139,7 +139,7 @@ public class RoutingFrame extends JFrame {
       getRoutingTable().clearHistory();
       
       SocketProxy.setTraceEnabled(false);
-      ((PeerSender)P2PSettings.getInstance().getPeerSender()).setKeepHistory(true);
+      ((PeerSender)P2PSettings.getInstance().getPeerSender()).setKeepHistory(false);
       ((PeerSender)P2PSettings.getInstance().getPeerSender()).clearHistory();
       
       try {
