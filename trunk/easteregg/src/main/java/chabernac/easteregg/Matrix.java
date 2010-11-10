@@ -85,6 +85,8 @@ public class Matrix extends DefaultEasterEggPaintable {
     slotTaken = new boolean[horizontalSlots];
     myLines = new VerticalLine[(int)(horizontalSlots * myLinesFactor)];
     
+    if(myMessages.size() == 0) myMessages.add("This software rocks");
+    
     TEXTS = (String[])myMessages.toArray(new String[]{});
 
     for(int i=0;i<myLines.length;i++){
