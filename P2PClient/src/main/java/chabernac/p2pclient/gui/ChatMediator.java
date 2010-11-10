@@ -12,9 +12,13 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import javax.swing.JFrame;
+
 import org.apache.log4j.Logger;
 
 import chabernac.command.CommandSession;
+import chabernac.easteregg.EasterEggFactory;
+import chabernac.easteregg.iEasterEgg;
 import chabernac.p2pclient.gui.action.ActionFactory;
 import chabernac.p2pclient.gui.action.ActionFactory.Action;
 import chabernac.p2pclient.settings.Settings;
@@ -135,7 +139,7 @@ public class ChatMediator {
       }
       return true;
     }
-    if(myMessageProvider.getMessage().equalsIgnoreCase( "exit" )){
+    else if(myMessageProvider.getMessage().equalsIgnoreCase( "exit" )){
       CommandSession.getInstance().execute(myActionFactory.getCommand(Action.EXIT_WITHOUT_ASKING));
     }
     return false;
@@ -340,10 +344,19 @@ public class ChatMediator {
 
     @Override
     public void messageReceived( MultiPeerMessage aMessage ) {
-      if(!ApplicationPreferences.getInstance().hasEnumProperty( Settings.ReceiveEnveloppe.NO_POPUP ) && myIsShowDialogProvider.isShowDialog()){
+      if(!checkEasterEgg(aMessage) && !ApplicationPreferences.getInstance().hasEnumProperty( Settings.ReceiveEnveloppe.NO_POPUP ) && myIsShowDialogProvider.isShowDialog()){
         myMessageDialog.showMessage( aMessage );
       }
     }
+  }
+  
+  private boolean checkEasterEgg(MultiPeerMessage aMessage){
+    if(aMessage.getMessage().startsWith( "easteregg" ) && myChatFrame instanceof JFrame){
+      iEasterEgg theEgg = EasterEggFactory.createEasterEgg( (JFrame)myChatFrame, aMessage.getMessage().substring( aMessage.getMessage().indexOf( " " ) ));
+      theEgg.start();
+      return true;
+    }
+    return false;
   }
 
   public void setLastSendMessage( MultiPeerMessage aMessage ) {
