@@ -510,7 +510,8 @@ public class P2PFacade {
     if(!isStarted()) throw new P2PFacadeException("Can not execute this action when the server is not started");
 
     try{
-      new RoutingFrame( myProtocolServer,  myContainer, false);
+      RoutingFrame theFrame = new RoutingFrame( myProtocolServer,  myContainer, false);
+      theFrame.setVisible( true );
     }catch(Exception e){
       throw new P2PFacadeException("Could not show routing frame", e);
     }
