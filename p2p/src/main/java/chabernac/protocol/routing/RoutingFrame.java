@@ -85,6 +85,7 @@ public class RoutingFrame extends JFrame {
     SocketProxy.setTraceEnabled(true);
     ((MessageProtocol)myProtocolContainer.getProtocol( MessageProtocol.ID )).setKeepHistory( true );
     ((PeerSender)P2PSettings.getInstance().getPeerSender()).setKeepHistory(true);
+    myProtocolContainer.setKeepHistory( true );
   }
 
   private void addListeners(){
@@ -146,6 +147,9 @@ public class RoutingFrame extends JFrame {
         ((MessageProtocol)myProtocolContainer.getProtocol( MessageProtocol.ID )).clearHistory();
       } catch ( ProtocolException e ) {
       }
+      
+      myProtocolContainer.setKeepHistory( false );
+      myProtocolContainer.clearHistory();
 
       if(isStopOnClose){
         myProtocolServer.stop();
