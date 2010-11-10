@@ -100,6 +100,10 @@ public class PeerSender implements iPeerSender {
   public void setKeepHistory(boolean anIsKeepHistory) {
     isKeepHistory = anIsKeepHistory;
   }
+  
+  public void clearHistory(){
+    myHistory.clear();
+  }
 
   private class SocketCloser implements Runnable{
     private final SocketProxy mySocket;

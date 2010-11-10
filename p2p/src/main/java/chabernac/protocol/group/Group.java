@@ -8,8 +8,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.sun.mail.handlers.multipart_mixed;
-
 import chabernac.protocol.message.MultiPeerMessage;
 import chabernac.protocol.routing.AbstractPeer;
 
@@ -32,5 +30,9 @@ public class Group {
       theMessage = theMessage.addDestination(thePeer.getPeerId());
     }
     return theMessage;
+  }
+  
+  public Set<AbstractPeer> getMembers(){
+    return Collections.unmodifiableSet( myMembers );
   }
 }

@@ -264,6 +264,10 @@ public class MessageProtocol extends Protocol {
     public void setKeepHistory( boolean anKeepHistory ) {
       isKeepHistory = anKeepHistory;
     }
+    
+    public void clearHistory(){
+      myHistory.clear();
+    }
 
     @Override
     public void stop() {
