@@ -1,10 +1,14 @@
 package chabernac.math;
 
+import java.util.concurrent.CountDownLatch;
+
 
 public class Matrix{
   private double[] myMatrix = null;
   private int myRows;
   private int myColumns;
+  
+  private static MultiThreadedCalculation myCalculator = new MultiThreadedCalculation();
   
   public Matrix(int aRows, int aColumns){
     this(aRows, aColumns, new double[aRows * aColumns]);
@@ -53,6 +57,44 @@ public class Matrix{
     }
     //System.out.println("Value: " + theValue);
     return theValue;
+  }
+  
+  /**
+   * calculate the cross product of 2 matrices
+   * @param aMatrix
+   * @return
+   * @throws MatrixException
+   */
+  public Matrix multiplyMultiThreaded(Matrix aMatrix) throws MatrixException{
+    if(getColumns() != aMatrix.getRows()){
+      throw new MatrixException("Could not multiply matrices [" + getRows() + "," + getColumns() + "] x [" + aMatrix.getRows() + "," + aMatrix.getColumns() + "]");
+    }
+    
+    Matrix theMatrix = new Matrix(getRows(), aMatrix.getColumns());
+    
+    CountDownLatch theLatch = new CountDownLatch( getRows() * aMatrix.getColumns() );
+    for(int i=0;i<myCalculator.getProcessors();i++){
+      MatrixMultiplyElementCalculation.freeInstance( new MatrixMultiplyElementCalculation( this, aMatrix, theMatrix, 0, 0, theLatch ) );
+    }
+    
+    for(int theMultiplyColumn=0;theMultiplyColumn<aMatrix.getColumns();theMultiplyColumn++){
+      for(int theMultiplyRow=0;theMultiplyRow<getRows();theMultiplyRow++){
+        MatrixMultiplyElementCalculation theCalc = MatrixMultiplyElementCalculation.getInstance();
+        theCalc.setRow( theMultiplyRow );
+        theCalc.setColumn( theMultiplyColumn );
+        myCalculator.calculate( theCalc );
+      }
+    }
+    
+    try {
+      theLatch.await();
+    } catch ( InterruptedException e ) {
+      throw new MatrixException( "Could not wait" );
+    }
+    
+    MatrixMultiplyElementCalculation.clear();
+    
+    return theMatrix;
   }
   
   /**
