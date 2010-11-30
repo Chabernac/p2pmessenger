@@ -7,6 +7,8 @@ import java.awt.event.KeyEvent;
 
 import javax.swing.JFrame;
 
+import org.apache.log4j.BasicConfigurator;
+
 import chabernac.control.KeyCommandListener;
 import chabernac.control.KeyMap;
 import chabernac.control.KeyMapContainer;
@@ -42,10 +44,11 @@ public class AXACube extends JFrame implements iSynchronizedEvent{
   }
   
   private void init(){
+    BasicConfigurator.configure();
     setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     setSize(new Dimension(400,400));
     setVisible(true);
-    myWorld = new World(1);
+    myWorld = new World(2);
     myCamera = new Camera();
   }
   
@@ -185,6 +188,18 @@ public class AXACube extends JFrame implements iSynchronizedEvent{
 //    theShape.myPolygons[1].setTexture("leslie", false, false);
     myWorld.addShape(theShape);
     theMouseTranslationManager.addTranslatable(theShape);
+    myRotationManager.addTranslatable(theShape);
+    
+    theShape = ShapeFactory.makeCube(new Point3D(300,100,200), 94,94,94);
+    theShape.setColor(new Color(0,0,255,100));
+    //theShape.setTexture(new TextureImage(ImageFactory.createImage("AXA", new Font("Arial", Font.BOLD, 40), 100, 100, Color.BLUE, Color.WHITE, true)));
+    theShape.setTexture("leslie","leslie", false, false);
+//    theShape.setTexture("leslie", false, false);
+//    theShape.myPolygons[0].setTexture("axa", false);
+//    theShape.myPolygons[0].setTexture("guy", false, false);
+//    theShape.myPolygons[1].setTexture("leslie", false, false);
+    myWorld.addShape(theShape);
+//    theMouseTranslationManager.addTranslatable(theShape);
     myRotationManager.addTranslatable(theShape);
     
 //    Shape theWindow = ShapeFactory.makeSinglePolygonShape(new Point3D(0,0,300), 100, 100);
