@@ -290,10 +290,10 @@ public class Segment {
 	 zStart = start;
 	 }
    */
-  public double getXEnd() {
+  public int getXEnd() {
     return xEnd;
   }
-  public double getXStart() {
+  public int getXStart() {
     return xStart;
   }
 

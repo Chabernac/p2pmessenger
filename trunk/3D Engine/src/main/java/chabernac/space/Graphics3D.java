@@ -19,7 +19,7 @@ public class Graphics3D{
   private Frustrum myFrustrum = null;
   private Camera myCamera = null;
   private World myWorld= null;
-  private Color myBackGroundColor = null;
+  private int myBackGroundColor = Color.black.getRGB();
   //private Graphics myGraphics = null;
   private boolean drawNormals = false;
   private boolean drawVertexNormals = false;
@@ -366,11 +366,11 @@ public class Graphics3D{
   }
 
   public void setBackGroundColor(Color aColor){
-    myBackGroundColor = aColor;
+    myBackGroundColor = aColor.getRGB();
   }
 
   public Color getBackGroundColor(){
-    return myBackGroundColor;
+    return new Color(myBackGroundColor);
   }
 
   public boolean isDrawTextureCoordinates() {

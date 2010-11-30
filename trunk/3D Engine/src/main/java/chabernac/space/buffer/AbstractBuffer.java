@@ -10,108 +10,75 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferInt;
+import java.util.HashMap;
+import java.util.Map;
 
 import chabernac.space.World;
 
 
 public abstract class AbstractBuffer implements iBufferStrategy {
-  //private BufferedImage myImage = null;
   protected BufferedImage myImage = null;
   protected int myWidth, myHeight,mySize;
   //Graphics object only serves for debugging purposes
   protected Graphics g = null;
   protected Graphics myGraphics = null;
   private int debugMode = 0;
-  private Color myBackGroundColor = new Color(0,0,0,0);
-  protected int[] myDataBuffer = null;
+  private int myBackGroundColor = new Color(0,0,0,0).getRGB();
   protected World myWorld = null;
 
-
+  
+  private Map<Object, Rect> myDrawingAreas = new HashMap<Object, Rect>();
+  
+//  private int minX = -1, maxX = -1, minY = -1, maxY = -1;
+  
   public AbstractBuffer(World aWorld, int aWidth, int aHeight){
     myWidth = aWidth;
     myHeight = aHeight;
     myWorld = aWorld;
     mySize = myWidth * myHeight;
-
+    init();
+  }
+  
+  private void init(){
     myImage = new BufferedImage(myWidth, myHeight, BufferedImage.TYPE_INT_ARGB);
-    myDataBuffer = ((DataBufferInt)myImage.getData().getDataBuffer()).getData();
-
     myGraphics = myImage.getGraphics();
+    clearFull();
   }
 
   public final Image getImage(){
-    prepareImage();
-
     return myImage;
   }
 
-  protected void prepareImage(){
-    myImage.setRGB(0, 0, myWidth, myHeight, myDataBuffer, 0, myWidth);
+
+  public void clearFull(){
+    new Rect(0,0,myWidth,myHeight).clear( myBackGroundColor );
   }
 
   public final void clear(){
     clearBuffer();
 
-    for(int i=0;i<myDataBuffer.length;i++){
-      myDataBuffer[i] = myBackGroundColor.getRGB();
+    for(Rect theRect : myDrawingAreas.values()){
+      theRect.clear( myBackGroundColor );
+      theRect.reset();
     }
-
-//    myGraphics.setColor(myBackGroundColor);
-//    myGraphics.fillRect(0,0,myWidth, myHeight); 
   }
 
-  protected void drawSegment(Segment aSegment, int y){
+  protected void drawSegment(Segment aSegment, int y, Object anObject){
+    if(!myDrawingAreas.containsKey( anObject )){
+      myDrawingAreas.put( anObject, new Rect() );
+    }
+    
+    Rect theRect = myDrawingAreas.get(anObject);
+    
+    if((theRect.minY == -1 || y < theRect.minY) && y > 0) theRect.minY = y;
+    if((theRect.maxY == -1 || y > theRect.maxY) && y < myHeight) theRect.maxY = y;
+    if((theRect.minX == -1 || aSegment.getX() < theRect.minX) && aSegment.getX() > 0) theRect.minX = aSegment.getX();
+    if((theRect.maxX == -1 || aSegment.getXEnd() > theRect.maxX) && aSegment.getXEnd() < myWidth) theRect.maxX = aSegment.getXEnd();
+
     while(aSegment.hasNext()){
       aSegment.next();
       setValueAt(aSegment.getX(), y, aSegment.getInverseZ(), aSegment.getColor(), false);
     } 
-    /*
-		aSegment.setXStart(Math.ceil(aSegment.getXStart()));
-		int color = aSegment.getColor();
-		double redStart = aSegment.getLStart() * ( ( color & 0x00FFFFFF ) >> 16 );
-		double greenStart = aSegment.getLStart() * ( ( color & 0x0000FFFF ) >> 8 );
-		double blueStart = aSegment.getLStart() * ( ( color & 0x000000FF ) >> 0 );
-
-		double redEnd = aSegment.getLEnd() * ( ( color & 0x00FFFFFF ) >> 16 );
-		double greenEnd= aSegment.getLEnd() * ( ( color & 0x0000FFFF ) >> 8 );
-		double blueEnd= aSegment.getLEnd() * ( ( color & 0x000000FF ) >> 0 );
-
-		double deltaRed = (redEnd - redStart) / aSegment.getXDiff();
-		double deltaGreen = (greenEnd - greenStart) / aSegment.getXDiff();
-		double deltaBlue = (blueEnd - blueStart) / aSegment.getXDiff();
-
-		double currentRed = redStart;
-		double currentGreen = greenStart;
-		double currentBlue = blueStart;
-
-		double z = aSegment.getZStart();
-		double deltaZ = aSegment.getZRico();
-
-
-
-		for(int x = (int)(aSegment.getXStart());x <= aSegment.getXEnd();x++){
-			int red = (int)currentRed;
-			int green = (int)currentGreen;
-			int blue = (int)currentBlue;
-			if(red > 255) red = 255;
-			if(green > 255) green = 255;
-			if(blue > 255) blue = 255;
-			if(blue < 0 ) blue = 0;
-			if(green < 0) green = 0;
-			if(blue < 0) blue = 0;
-			if(aSegment.getTexture() != null){
-				setValueAt(x, y, z, aSegment.getTexture().getColorAtScreenLocation(x, y, z), false);
-			} else {
-				setValueAt(x, y, z, 0xFF << 24 | red << 16 | green << 8 | blue, false);
-			}
-
-			currentRed += deltaRed;
-			currentGreen += deltaGreen;
-			currentBlue += deltaBlue;
-			z+= deltaZ;
-		}
-     */
   }
 
   protected abstract void clearBuffer();
@@ -125,25 +92,18 @@ public abstract class AbstractBuffer implements iBufferStrategy {
     return myWidth;
   }
 
-  protected void setPixelAt(int i, int aColor){
-    myDataBuffer[i] = aColor;
-  }
 
   protected void setPixelAt(int x, int y, int aColor){
-    myDataBuffer[y * myWidth + x] = aColor; 
-    //myImage.setRGB(x, y, aColor);
+    //TODO we sometimes pain pixels at the border giving out of bounds exceptions
+    //this should in fact never happen and the following 2 lines could be removed
+    if(x >= myWidth) return;
+    if(y >= myHeight) return;
+    myImage.setRGB( x, y, aColor );
   }
 
-  protected int getPixelAt(int i){
-    return myDataBuffer[i];
-  }
 
   protected int getPixelAt(int x, int y){
-    return myDataBuffer[y * myWidth + x];
-  }
-
-  public void setValueAt(int x, int y, double z, int aColor, boolean ignoreDepth){
-    setPixelAt(x, y, aColor);
+    return myImage.getRGB( x, y );
   }
 
   public void setDebugMode(int aDebugMode){
@@ -162,13 +122,47 @@ public abstract class AbstractBuffer implements iBufferStrategy {
     return g;
   }
 
-  public Color getBackGroundColor() {
+  public int getBackGroundColor() {
     return myBackGroundColor;
   }
 
-  public void setBackGroundColor(Color aBackGroundColor) {
-    if(aBackGroundColor != null){
-      myBackGroundColor = new Color(aBackGroundColor.getRed(), aBackGroundColor.getGreen(), aBackGroundColor.getBlue(), 255);
+  public void setBackGroundColor(int aBackGroundColor) {
+    if(myBackGroundColor != aBackGroundColor){
+      myBackGroundColor = aBackGroundColor;
+      clearFull();
+    }
+  }
+  
+  private class Rect{
+    private int minX = -1;
+    private int maxX = -1;
+    private int minY = -1;
+    private int maxY = -1;
+    
+    public Rect(){
+    }
+    
+    public Rect( int aMinX, int aMinY, int aMaxX, int aMaxY ) {
+      super();
+      minX = aMinX;
+      maxX = aMaxX;
+      minY = aMinY;
+      maxY = aMaxY;
+    }
+
+    public void reset(){
+      minX = -1;
+      maxX = -1;
+      minY = -1;
+      maxY = -1;
+    }
+    
+    public void clear(int aColor){
+      for(int x = minX;x<maxX;x++){
+        for(int y = minY;y<maxY;y++){
+          setPixelAt( x, y, aColor);
+        }
+      }
     }
   }
 

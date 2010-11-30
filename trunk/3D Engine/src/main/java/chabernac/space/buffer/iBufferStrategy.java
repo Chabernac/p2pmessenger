@@ -23,6 +23,6 @@ public interface iBufferStrategy {
 	public int getDebugMode();
 	public void drawLine(Vertex2D theStartVertex, Vertex2D theEndVertex, int aColor);
 	public void setValueAt(int x, int y, double aDepth, int aColor, boolean ignoreDepth);
-	public void setBackGroundColor(Color aBackgroundColor);
+	public void setBackGroundColor(int aBackGroundColor);
   public void drawText(Point2D aPoint, String aText, Color aColor);
 }
