@@ -24,7 +24,7 @@ import javax.swing.JFrame;
 import org.apache.log4j.Logger;
 
 import chabernac.control.iSynchronizedEvent;
-import chabernac.space.buffer.ZBuffer;
+import chabernac.space.buffer.Buffer;
 import chabernac.space.geom.Point3D;
 import chabernac.space.shading.GouroudShading;
 
@@ -102,7 +102,7 @@ public class Frame3D extends JFrame implements iSynchronizedEvent{
                                 theEyePoint,
                                 myCamera,
                                 myWorld,
-                                new ZBuffer(myWorld, getWidth(), getHeight()));
+                                new Buffer(myWorld, getWidth(), getHeight()));
     myGraphics.setLightManager(new GouroudShading(0.3));
   }
 

@@ -24,7 +24,7 @@ public class Vertex2D {
 		myPoint = aPoint;
 		myTexturePoint = aTexturePoint;
 		myDepth = aDepth;
-		myInverseDepth = 1 / myDepth;
+		myInverseDepth = 1D / myDepth;
 		myLightning = aLightning;
 	}
 	

@@ -2,7 +2,12 @@ package chabernac.space;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.Rectangle;
+import java.util.Collection;
 
+import chabernac.space.buffer.DrawingRectangle;
+import chabernac.space.buffer.DrawingRectangleContainer;
 import chabernac.space.buffer.iBufferStrategy;
 import chabernac.space.geom.GVector;
 import chabernac.space.geom.GeomFunctions;
@@ -31,7 +36,8 @@ public class Graphics3D{
   private boolean drawWorldOrigin = false;
   private boolean drawTextureCoordinates = false;
   private boolean drawCamZ = false;
-
+  private boolean isShowDrawingAreas = false;
+  private boolean isUseClipping = false;
 
   private iBufferStrategy myBuffer = null;
 
@@ -201,7 +207,7 @@ public class Graphics3D{
   public void fillPolygon(Polygon aPolygon){
     if(!aPolygon.visible) return;
     if(aPolygon.myCamSize < 2) return;
-    myBuffer.drawPolygon(convertPolygon(aPolygon));
+    myBuffer.drawPolygon(convertPolygon(aPolygon), aPolygon);
   }
 
   public void fillPolygon(Polygon aPolygon, Graphics g){
@@ -218,6 +224,8 @@ public class Graphics3D{
   }
 
   public void drawWorld(Graphics aG){
+    Rectangle theOrigClip = aG.getClipBounds();
+    
     myBuffer.setGraphics(aG);
     myBuffer.setBackGroundColor(myBackGroundColor);
 
@@ -239,24 +247,48 @@ public class Graphics3D{
 
     if(drawWorldOrigin) drawWorldAxis();
 
-
-    //		myImageQueue.put(myBuffer.getImage());
-    aG.drawImage(myBuffer.getImage(), 0,0, null);
-
+    if(isUseClipping){
+      Image theImage = myBuffer.getImage();
+      Collection<DrawingRectangleContainer> theDrawingAreas = myBuffer.getDrawingRectangles();
+      for(DrawingRectangleContainer theRect : theDrawingAreas){
+        DrawingRectangle theSpanningRect = theRect.getSpanningRect();
+        aG.setClip( theSpanningRect.getX(), theSpanningRect.getY(), theSpanningRect.getWidth() + 1, theSpanningRect.getHeight() + 1);
+        aG.drawImage(theImage, 0,0, null);
+      }  
+    } else {
+      aG.drawImage(myBuffer.getImage(), 0,0, null);
+    }
+    
+    aG.setClip( theOrigClip );
 
     for(int i=myWorld.myPointShapeSize - 1;i>=0;i--){
       drawPointShape(myWorld.myPointShapes[i], aG);
     }
 
-
     if(drawLightSources){
       for(int i=0;i<myWorld.getLightSources().size();i++){
         drawLightSource( (LightSource)(myWorld.getLightSources().get(i)), aG );
       }
-
     }
 
+    if(isShowDrawingAreas) showDrawingAreas(aG);
+
+    myBuffer.cycleDone();
+
   }
+
+  private void showDrawingAreas(Graphics aG){
+    for(DrawingRectangleContainer theRectContainer : myBuffer.getDrawingRectangles()){
+      aG.setColor( Color.red );
+      DrawingRectangle theClaeringRect = theRectContainer.getClearingRect();
+      aG.drawRect( theClaeringRect.getX(), theClaeringRect.getY(), theClaeringRect.getWidth(), theClaeringRect.getHeight());
+
+      aG.setColor( Color.blue);
+      DrawingRectangle theDrawingRect = theRectContainer.getDrawingRect();
+      aG.drawRect( theDrawingRect.getX(), theDrawingRect.getY(), theDrawingRect.getWidth(), theDrawingRect.getHeight());
+    }
+  }
+
 
   private void drawLightSource(LightSource source, Graphics g) {
     Point3D theLocation = source.getCamLocation();
@@ -389,7 +421,21 @@ public class Graphics3D{
     drawCamZ = anDrawCamZ;
   }
 
+  public boolean isShowDrawingAreas() {
+    return isShowDrawingAreas;
+  }
 
+  public void setShowDrawingAreas( boolean aShowDrawingAreas ) {
+    isShowDrawingAreas = aShowDrawingAreas;
+  }
+
+  public boolean isUseClipping() {
+    return isUseClipping;
+  }
+
+  public void setUseClipping( boolean aUseClipping ) {
+    isUseClipping = aUseClipping;
+  }
 
 }
 
