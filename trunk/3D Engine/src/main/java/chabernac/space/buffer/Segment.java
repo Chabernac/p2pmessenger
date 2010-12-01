@@ -49,37 +49,6 @@ public class Segment {
     repositionStartEnd();
   }
 
-  /*
-	 public Segment(Vertex2D aStartVertex, Vertex2D anEndVertex, int aColor){
-	 //this(aStartVertex, anEndVertex, aColor, null);
-	  start = aStartVertex;
-	  end = anEndVertex;
-	  color = aColor;
-	  calculateRicos();
-	  repositionStartEnd();
-	  }
-   */
-
-  /*
-	 public Segment(double xStart, double xEnd, double zStart, double zEnd, double lStart, double lEnd, int aColor, Texture aTexture){
-	 this.xStart = xStart;
-	 this.xEnd = xEnd;
-	 this.zStart = zStart;
-	 this.zEnd = zEnd;
-	 this.lStart = lStart;
-	 this.lEnd = lEnd;
-	 this.color = aColor;
-	 this.texture = aTexture;
-	 calculateRicos();
-	 }
-   */
-
-  /*
-	 public Segment(Vertex2D aStartVertex, Vertex2D anEndVertex, int aColor, Texture aTexture){
-	 this(aStartVertex.getPoint().x, anEndVertex.getPoint().x, aStartVertex.getInverseDepth(), anEndVertex.getInverseDepth(), aStartVertex.getLightning(), anEndVertex.getLightning(), aColor, aTexture);
-	 }
-   */
-
   private void calculateRicos() {
     Point2D theStartPoint = start.getPoint();
     Point2D theEndPoint = end.getPoint();
@@ -115,17 +84,7 @@ public class Segment {
         vrico = vdiff / zdiff;
         urico = udiff / zdiff;
       }
-      //      LOGGER.debug("Start point: " + theStartPoint + " texture point: " + theTextureStartPoint);
-      //      LOGGER.debug("End point: " + theEndPoint + " texture point: " + theTextureEndPoint);
-      //      LOGGER.debug("Affine: " + isAffine + " urico: " + urico + " vrico: " + vrico);
     }
-
-
-    /*
-		 xDiff = xEnd - xStart;
-		 zRico = (zEnd - zStart) / xDiff;
-		 lRico = (lEnd - lStart) / xDiff;
-     */
   }
 
   private void repositionStartEnd(){
@@ -147,12 +106,9 @@ public class Segment {
   }
 
   public void next(){
-    //long t = TimeTracker.start();
     x++;
     invz += invzRico;
     l += lRico;
-
-    //t = TimeTracker.logTime("calculating x, invz, l", t);
 
     if(isTexture){
       if(isAffine){
@@ -173,29 +129,26 @@ public class Segment {
     int theColor;
 
     if(isTexture){
+      //texture color
       theColor = texture.getColor(theU, theV);
+      
+      //bump mapping
       if(texture.getBumpMap() != null){
         chabernac.space.geom.GVector theCamNormalVector = texture.getNormalVector(theU, theV);
         Point3D theCamPoint = texture.getSystem().getTransformator().inverseTransform(new Point3D(theU, theV, 0.0D));
         theL += LightSource.calculateLight(myWorld, theCamPoint, theCamNormalVector);
         theL /= 2D;
-
-        //TODO why do we calculate the z value again, we already have it?
-        z = theCamPoint.z;
-        invz = 1.0D / z;
       }
-      //    color = texture.getColor((int)Math.floor(u),(int)Math.floor(v));
-      //t = TimeTracker.logTime("retrieving color from texture", t);
     } else {
       theColor = color;
     }
 
-    //t = TimeTracker.start();
-    int alpha = color >> 24 & 0xff;
+    //lightning
+    int alpha = theColor >> 24 & 0xff;
     int red=  (int)(theL * (  theColor >> 16 & 0xff));
     int green= (int) (theL * (  theColor >> 8 & 0xff));
     int blue= (int) (theL * (  theColor & 0xff));
-
+    
     if(red > 255) red = 255;
     if(green > 255) green = 255;
     if(blue > 255) blue = 255;
@@ -238,30 +191,6 @@ public class Segment {
     return l;
   }
 
-
-
-  /*
-	 public void setXStart(double x){
-	 zStart = getZ(x);
-	 lStart = getL(x);
-	 xStart = x;
-	 calculateRicos();
-	 }
-
-	 public void setXEnd(double x){
-	 zEnd = getZ(x);
-	 lEnd = getL(x);
-	 xEnd = x;
-	 calculateRicos();
-	 }
-   */
-
-//  public int getColor() {
-//    return c;
-//  }
-//  public void setColor(int color) {
-//    this.color = color;
-//  }
   
   public double getLEnd() {
     return lEnd;
@@ -275,20 +204,7 @@ public class Segment {
   public void setLStart(double start) {
     lStart = start;
   }
-  /*
-	 public double getZEnd() {
-	 return zEnd;
-	 }
-	 public void setZEnd(double end) {
-	 zEnd = end;
-	 }
-	 public double getZStart() {
-	 return zStart;
-	 }
-	 public void setZStart(double start) {
-	 zStart = start;
-	 }
-   */
+
   public int getXEnd() {
     return xEnd;
   }
@@ -296,14 +212,6 @@ public class Segment {
     return xStart;
   }
 
-  /*
-	 public double getZRico() {
-	 return zRico;
-	 }
-	 public void setZRico(double rico) {
-	 zRico = rico;
-	 }
-   */
   public double getLRico() {
     return lRico;
   }
@@ -318,150 +226,6 @@ public class Segment {
   }
   public void setTexture(Texture2 texture) {
     this.texture = texture;
-  }
-
-  public Segment[] intersect(Segment aSegment){
-    return null;
-    /*
-		 if(aSegment.getXStart() > getXEnd()){
-		 return new Segment[]{this, aSegment};
-		 }
-		 if(aSegment.getXEnd() < getXStart()){
-		 return new Segment[]{aSegment, this};
-		 }
-		 //From no one we have an overlap
-		  Segment theLeftSegment = this;
-		  Segment theRightSegment = aSegment;
-		  if(aSegment.getXStart() < getXStart()){
-		  Segment theSegment = theLeftSegment;
-		  theLeftSegment = theRightSegment;
-		  theRightSegment = theSegment;
-		  }
-
-		  double theZ = theLeftSegment.getZ(theRightSegment.getXStart());
-		  double theIntersectX = theLeftSegment.intersectX(theRightSegment);
-		  if(theIntersectX != -1){
-		  if(theIntersectX == theLeftSegment.getXStart() || theIntersectX == theLeftSegment.getXEnd() || theIntersectX == theRightSegment.getXStart() || theIntersectX == theRightSegment.getXEnd()){
-		  theIntersectX = -1;
-		  }
-		  }
-
-
-		  if(theIntersectX == -1){
-		  //The segments have no intersection
-		   if(theZ < theRightSegment.getZStart() || (theZ == theRightSegment.getZStart() && theRightSegment.getZEnd() > theLeftSegment.getZEnd())){
-		   //theRightSegment lies behind this segment
-		    if(theRightSegment.getXEnd() <= theLeftSegment.getXEnd()){
-		    //  --   (left)
-		     //------ (right)
-		      //theRightSegment is completely hidden by this segment
-		       return new Segment[]{theLeftSegment};
-		       } else {
-		       //  -----
-		        //----
-		         //theRightSegment is cut of by this segment
-		          theRightSegment.setXStart(theLeftSegment.getXEnd());
-		          return new Segment[]{theLeftSegment, theRightSegment};
-		          }
-		          } else {
-		          //theRightSegment lies in front of this segment
-		           if(theRightSegment.getXEnd() >= theLeftSegment.getXEnd()){
-		           if(theRightSegment.getXStart() == theLeftSegment.getXStart()){
-		           //--    (left)
-		            //----  (right)
-		             //the left segment is completely hidden by the right segment
-		              return new Segment[]{theRightSegment};
-		              } else {
-		              //-----   (left)
-		               //   ---- (right)
-		                //the left segment is cut off by theRightSegment
-		                 theLeftSegment.setXEnd(theRightSegment.getXStart());
-		                 return new Segment[]{theLeftSegment, theRightSegment};
-		                 }
-		                 } else {
-		                 if(theRightSegment.getXStart() == theLeftSegment.getXStart()){
-		                 //--------- (left)
-		                  //---       (right)
-		                   //theRightSegment cuts off the left part of the left segment (sounds onlogic euh?)
-		                    theLeftSegment.setXStart(theRightSegment.getXEnd());
-		                    return new Segment[]{theRightSegment, theLeftSegment};
-		                    } else {
-		                    //---------- (left)
-		                     //   --      (right)
-		                      //theRightSegment divides this segment in two seperate segments with theRightSegment inbetween.
-		                       Segment theSegment = theLeftSegment.cloneSegment();
-		                       theLeftSegment.setXEnd(theRightSegment.getXStart());
-		                       theSegment.setXStart(theRightSegment.getXEnd());
-		                       return new Segment[]{theLeftSegment, theRightSegment, theSegment};
-		                       }
-		                       }
-		                       }
-		                       } else {
-		                       //The two segments intersect
-		                        if(theRightSegment.getZStart() < theZ){
-		                        if(theRightSegment.getXEnd() > theLeftSegment.getXEnd()){
-		                        //4 seperate segments
-		                         Segment theSegment2 = theRightSegment.cloneSegment();
-		                         Segment theSegment3 = theLeftSegment.cloneSegment();
-		                         theLeftSegment.setXEnd(theRightSegment.getXStart());
-		                         theSegment2.setXEnd(theIntersectX);
-		                         theSegment3.setXStart(theIntersectX);
-		                         theRightSegment.setXStart(theSegment3.getXEnd());
-		                         return new Segment[]{theLeftSegment, theSegment2, theSegment3, theRightSegment};
-		                         } else {
-		                         if(theRightSegment.getXStart() == theLeftSegment.getXStart()){
-		                         //----**		-- = left
-		                          //****-------   ** = right
-		                           //2 segments
-		                            theRightSegment.setXEnd(theIntersectX);
-		                            theLeftSegment.setXStart(theIntersectX);
-		                            return new Segment[]{theRightSegment, theLeftSegment};
-
-		                            } else {
-		                            //3 seperate segments
-		                             Segment theSegment3 = theLeftSegment.cloneSegment();
-		                             theLeftSegment.setXEnd(theRightSegment.getXStart());
-		                             theRightSegment.setXEnd(theIntersectX);
-		                             theSegment3.setXStart(theIntersectX);
-		                             return new Segment[]{theLeftSegment, theRightSegment, theSegment3};
-		                             }
-		                             }
-		                             } else {
-		                             if(theRightSegment.getXEnd() >= theLeftSegment.getXEnd()){
-		                             //2 seperate segments
-		                              theLeftSegment.setXEnd(theIntersectX);
-		                              theRightSegment.setXStart(theIntersectX);
-		                              return new Segment[]{theLeftSegment, theRightSegment};
-		                              } else {
-		                              //3 seperate segments
-		                               Segment theSegment3 = theLeftSegment.cloneSegment();
-		                               theLeftSegment.setXEnd(theIntersectX);
-		                               theRightSegment.setXStart(theIntersectX);
-		                               theSegment3.setXStart(theRightSegment.getXEnd());
-		                               return new Segment[]{theLeftSegment, theRightSegment, theSegment3};
-		                               }
-		                               }
-		                               }
-     */   
-  }
-
-  public double intersectX(Segment aSegment){
-    return 0;
-    /*
-		 double x = (getZStart() - getZRico() * getXStart() - aSegment.getZStart() + aSegment.getZRico() * aSegment.getXStart()) / (aSegment.getZRico() - getZRico());
-		 if(x < getXStart()) return -1;
-		 if(x > getXEnd()) return -1;
-		 if(x < aSegment.getXStart()) return -1;
-		 if(x > aSegment.getXEnd()) return -1;
-		 return x;
-     */
-  }
-
-  public Segment cloneSegment(){
-    return null;
-    /*
-		 return new Segment(xStart, xEnd, zStart, zEnd, lStart, lEnd, color, null);
-     */
   }
 
   public String toString(){
