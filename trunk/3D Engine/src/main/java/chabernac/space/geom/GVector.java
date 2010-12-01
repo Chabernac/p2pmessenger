@@ -3,9 +3,9 @@ package chabernac.space.geom;
 
 public class GVector{
   public double x,y,z;
-  
+
   public GVector(Point3D aPoint){
-  	this(aPoint.x, aPoint.y, aPoint.z);
+    this(aPoint.x, aPoint.y, aPoint.z);
   }
 
   public GVector(double x, double y, double z){
@@ -53,17 +53,17 @@ public class GVector{
   }
 
   public void normalize(){
-    double c = (double)Math.sqrt((double)(x * x  + y * y + z * z));
+    double c = Math.sqrt(x * x  + y * y + z * z);
     if(c > 0){
-	    x = x / c;
-	    y = y / c;
-	    z = z / c;
+      x = x / c;
+      y = y / c;
+      z = z / c;
     }
   }
-  
+
   public GVector norm(){
-  	double length = length();
-  	return new GVector(x / length, y / length, z / length);
+    double length = length();
+    return new GVector(x / length, y / length, z / length);
   }
 
   public void invert(){
@@ -71,47 +71,47 @@ public class GVector{
     y = -y;
     z = -z;
   }
-  
+
   public GVector inv(){
-	  return new GVector(-x, -y, -z);
+    return new GVector(-x, -y, -z);
   }
 
   public double dotProdukt(GVector aVector){
     return x * aVector.x + y * aVector.y + z * aVector.z;
   }
-  
+
   public GVector produkt(GVector aVector){
     return new GVector(y * aVector.z - z * aVector.y, z * aVector.x - x * aVector.z, x * aVector.y - y * aVector.x);
   }
-  
+
   public double length(){
-  	return (double)Math.sqrt(dotProdukt(this));
+    return Math.sqrt(dotProdukt(this));
   }
 
   public void multiply(double adouble){
-	  x *= adouble;
-	  y *= adouble;
-	  z *= adouble;
+    x *= adouble;
+    y *= adouble;
+    z *= adouble;
   }
-  
+
   public GVector multip(double adouble){
-  	return new GVector(	x * adouble, y * adouble, z * adouble);
+    return new GVector(	x * adouble, y * adouble, z * adouble);
   }
-  
+
   public GVector addittion(GVector aVector){
-  	return new GVector(x + aVector.x, y + aVector.y, z + aVector.z);
+    return new GVector(x + aVector.x, y + aVector.y, z + aVector.z);
   }
-  
+
   public void add(GVector aVector){
-  	x += aVector.x;
-	y += aVector.y;
-	z += aVector.z;
+    x += aVector.x;
+    y += aVector.y;
+    z += aVector.z;
   }
 
   public Object clone(){
-	  return new GVector(x, y, z);
+    return new GVector(x, y, z);
   }
-  
+
   public boolean equals(Object anObject){
     if(anObject instanceof GVector){
       GVector theVector = (GVector)anObject;
