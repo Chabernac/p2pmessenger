@@ -125,10 +125,13 @@ public class Buffer implements iBufferStrategy {
 
 
   protected void setPixelAt(int x, int y, int aColor){
+    
     //TODO we sometimes pain pixels at the border giving out of bounds exceptions
     //this should in fact never happen and the following 2 lines could be removed
-    //    if(x >= myWidth) return;    
-    //    if(y >= myHeight) return;
+        if(x >= myWidth) return;    
+        if(y >= myHeight) return;
+        if(x < 0) return;
+        if(y < 0) return;
 
     myImage.setRGB( x, y, aColor );
   }
