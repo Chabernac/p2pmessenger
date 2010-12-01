@@ -112,46 +112,63 @@ public class World{
       myShapes[i].calculateNormalVectors();
     }
   }
-
+  
   public void world2Cam(final Camera aCamera) throws PolygonException, MatrixException{
     //TODO optimized code for multi core processors, but does dis has the wanted effect?
     
-    final CountDownLatch theLatch = new CountDownLatch( mySize  + myPointShapeSize + lightSources.size());
 
     for(int i=0;i<mySize;i++){
-      final int theIndex = i;
-      myService.execute( new Runnable(){
-        public void run(){
-          myShapes[theIndex].world2Cam(aCamera);
-          theLatch.countDown();
-        }
-      });
+          myShapes[i].world2Cam(aCamera);
     }
     for(int i=0;i<myPointShapeSize;i++){
-      final int theIndex = i;
-      myService.execute( new Runnable(){
-        public void run(){
-          myPointShapes[theIndex].world2Cam(aCamera);
-          theLatch.countDown();
-        }
-      });
+          myPointShapes[i].world2Cam(aCamera);
     }
 
     for(int i=0;i<lightSources.size();i++){
-      final int theIndex = i;
-      myService.execute( new Runnable(){
-        public void run(){
-          ((LightSource)lightSources.get(theIndex)).world2Cam(aCamera);
-          theLatch.countDown();
-        }
-      });
+          ((LightSource)lightSources.get(i)).world2Cam(aCamera);
     }
     
-    try {
-      theLatch.await();
-    } catch ( InterruptedException e ) {
-    }
   }
+
+//  public void world2Cam(final Camera aCamera) throws PolygonException, MatrixException{
+//    //TODO optimized code for multi core processors, but does dis has the wanted effect?
+//    
+//    final CountDownLatch theLatch = new CountDownLatch( mySize  + myPointShapeSize + lightSources.size());
+//
+//    for(int i=0;i<mySize;i++){
+//      final int theIndex = i;
+//      myService.execute( new Runnable(){
+//        public void run(){
+//          myShapes[theIndex].world2Cam(aCamera);
+//          theLatch.countDown();
+//        }
+//      });
+//    }
+//    for(int i=0;i<myPointShapeSize;i++){
+//      final int theIndex = i;
+//      myService.execute( new Runnable(){
+//        public void run(){
+//          myPointShapes[theIndex].world2Cam(aCamera);
+//          theLatch.countDown();
+//        }
+//      });
+//    }
+//
+//    for(int i=0;i<lightSources.size();i++){
+//      final int theIndex = i;
+//      myService.execute( new Runnable(){
+//        public void run(){
+//          ((LightSource)lightSources.get(theIndex)).world2Cam(aCamera);
+//          theLatch.countDown();
+//        }
+//      });
+//    }
+//    
+//    try {
+//      theLatch.await();
+//    } catch ( InterruptedException e ) {
+//    }
+//  }
 
   public void clip2Frustrum(Frustrum aFrustrum) throws PolygonException{
     for(int i=0;i<mySize;i++){

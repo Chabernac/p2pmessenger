@@ -279,9 +279,9 @@ public class Graphics3D{
 
   private void showDrawingAreas(Graphics aG){
     for(DrawingRectangleContainer theRectContainer : myBuffer.getDrawingRectangles()){
-      aG.setColor( Color.red );
-      DrawingRectangle theClaeringRect = theRectContainer.getClearingRect();
-      aG.drawRect( theClaeringRect.getX(), theClaeringRect.getY(), theClaeringRect.getWidth(), theClaeringRect.getHeight());
+//      aG.setColor( Color.red );
+//      DrawingRectangle theClaeringRect = theRectContainer.getClearingRect();
+//      aG.drawRect( theClaeringRect.getX(), theClaeringRect.getY(), theClaeringRect.getWidth(), theClaeringRect.getHeight());
 
       aG.setColor( Color.blue);
       DrawingRectangle theDrawingRect = theRectContainer.getDrawingRect();
