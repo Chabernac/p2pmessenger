@@ -11,14 +11,17 @@ import java.io.IOException;
 import org.apache.log4j.Logger;
 
 import chabernac.space.CoordinateSystem;
+import chabernac.space.TranslateException;
 import chabernac.space.Vector2D;
 import chabernac.space.Vertex;
+import chabernac.space.iTransformator;
+import chabernac.space.iTranslatable;
 import chabernac.space.geom.GVector;
 import chabernac.space.geom.Point2D;
 import chabernac.space.geom.Point3D;
 import chabernac.space.geom.PolarPoint3D;
 
-public class Texture2 {
+public class Texture2 implements iTranslatable{
 
   private static Logger LOGGER = Logger.getLogger(Texture2.class);
 
@@ -112,5 +115,16 @@ public class Texture2 {
 
   public void setBumpMap( BumpMap anBumpMap ) {
     myBumpMap = anBumpMap;
+  }
+
+  @Override
+  public Point3D getCenterPoint() {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public void translate(iTransformator aTransformator)throws TranslateException {
+    mySystem.translate(aTransformator);
   }
 }
