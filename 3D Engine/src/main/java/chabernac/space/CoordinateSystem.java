@@ -12,7 +12,7 @@ import chabernac.space.geom.Plane;
 import chabernac.space.geom.Point2D;
 import chabernac.space.geom.Point3D;
 
-public class CoordinateSystem {
+public class CoordinateSystem implements iTranslatable{
 	private Point3D myOrigin = null;
   private GVector myXUnit = null;
   private GVector myYUnit = null;
@@ -105,8 +105,20 @@ public class CoordinateSystem {
   public GVector getZUnit() {
     return myZUnit;
   }
-  
-  
 
+  @Override
+  public Point3D getCenterPoint() {
+    // TODO Auto-generated method stub
+    return null;
+  }
 
+  @Override
+  public void translate(iTransformator aTransformator) throws TranslateException {
+    myOrigin = aTransformator.transform(myOrigin);
+    myXUnit = aTransformator.transform(myXUnit);
+    myYUnit = aTransformator.transform(myYUnit);
+    myZUnit = aTransformator.transform(myZUnit);
+    myTransformation = new Transformation();
+    myTransformation.addTransformation(MatrixOperations.buildTransformationMatrix(this));
+  }
 }

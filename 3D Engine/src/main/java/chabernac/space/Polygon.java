@@ -234,6 +234,7 @@ public class Polygon implements iTranslatable{
     }
     myNormalVector = aTransformator.transform(myNormalVector);
     myCenterPoint = aTransformator.transform(myCenterPoint);
+    myTexture.translate(aTransformator);
   }
 
   public void clip2Plane(Plane aPlane) throws PolygonException{

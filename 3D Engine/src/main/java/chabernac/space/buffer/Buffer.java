@@ -100,9 +100,7 @@ public class Buffer implements iBufferStrategy {
 
     while(aSegment.hasNext()){
       aSegment.next();
-      if(myDepthBuffer.isDrawPixel( aSegment.getX(), y, aSegment.getInverseZ() )){
-        setPixelAt( aSegment.getX(),y, aSegment.applyShading());
-      }
+      setPixelAt( aSegment.getX(),y, aSegment.getInverseZ(), aSegment.applyShading());
     } 
   }
   
@@ -123,6 +121,11 @@ public class Buffer implements iBufferStrategy {
     return myWidth;
   }
 
+  public void setPixelAt(int x, int y, double anInverseDepth, int aColor){
+    if(myDepthBuffer.isDrawPixel( x, y, anInverseDepth )){
+      setPixelAt(x, y, aColor);
+    }
+  }
 
   protected void setPixelAt(int x, int y, int aColor){
     
@@ -196,7 +199,7 @@ public class Buffer implements iBufferStrategy {
       double y = aStartPoint.getPoint().y;
       double z = aStartPoint.getInverseDepth();
       for(int x=(int)Math.ceil(aStartPoint.getPoint().x);x<(int)Math.floor(anEndEPoint.getPoint().x);x++){
-        setPixelAt( (int)x, (int)y, aColor);
+        setPixelAt( (int)x, (int)y, z, aColor);
         y += deltaY;
         z += deltaZ;
       }
@@ -213,7 +216,7 @@ public class Buffer implements iBufferStrategy {
       double x = aStartPoint.getPoint().x;
       double z = aStartPoint.getInverseDepth();
       for(int y=(int)Math.ceil(aStartPoint.getPoint().y);y<(int)Math.floor(anEndEPoint.getPoint().y);y++){
-        setPixelAt( (int)x, y, aColor);
+        setPixelAt( (int)x, y, z, aColor);
         x += deltaX;
         z += deltaZ;
       }

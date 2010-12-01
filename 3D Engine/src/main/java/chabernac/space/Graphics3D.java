@@ -11,6 +11,7 @@ import chabernac.space.buffer.DrawingRectangleContainer;
 import chabernac.space.buffer.iBufferStrategy;
 import chabernac.space.geom.GVector;
 import chabernac.space.geom.GeomFunctions;
+import chabernac.space.geom.Line2D;
 import chabernac.space.geom.Point2D;
 import chabernac.space.geom.Point3D;
 import chabernac.space.shading.iLightManager;
