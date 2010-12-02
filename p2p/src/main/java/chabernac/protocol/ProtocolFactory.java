@@ -30,6 +30,7 @@ import chabernac.protocol.pipe.PipeProtocol;
 import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.WebPeerProtocol;
 import chabernac.protocol.routing.iPeerSender;
+import chabernac.protocol.stacktrace.ProcessProtocol;
 import chabernac.protocol.userinfo.DefaultUserInfoProvider;
 import chabernac.protocol.userinfo.UserInfoProtocol;
 import chabernac.protocol.userinfo.iUserInfoProvider;
@@ -141,6 +142,10 @@ public class ProtocolFactory implements iProtocolFactory{
     
     if(WebPeerProtocol.ID.equalsIgnoreCase( aProtocolId )) {
       return new WebPeerProtocol();
+    }
+    
+    if(ProcessProtocol.ID.equalsIgnoreCase( aProtocolId )) {
+      return new ProcessProtocol();
     }
 
     throw new ProtocolException("The protocol with id '" + aProtocolId + "' is not known");
