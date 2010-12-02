@@ -9,11 +9,11 @@ package chabernac.space.shading;
 import java.util.ArrayList;
 
 import chabernac.space.LightSource;
-import chabernac.space.Polygon;
-import chabernac.space.Shape;
 import chabernac.space.Vertex;
 import chabernac.space.World;
 import chabernac.space.geom.GVector;
+import chabernac.space.geom.Polygon;
+import chabernac.space.geom.Shape;
 
 public class GouroudShading implements iLightManager {
 	private double myAmbient;

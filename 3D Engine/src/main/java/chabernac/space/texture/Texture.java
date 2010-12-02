@@ -12,10 +12,10 @@ import javax.imageio.ImageIO;
 import org.apache.log4j.Logger;
 
 import chabernac.space.Camera;
-import chabernac.space.Vector2D;
 import chabernac.space.geom.GVector;
 import chabernac.space.geom.Point2D;
 import chabernac.space.geom.Point3D;
+import chabernac.space.geom.Vector2D;
 import chabernac.space.shapes.Cylinder;
 
 public class Texture {

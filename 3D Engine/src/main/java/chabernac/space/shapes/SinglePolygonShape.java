@@ -6,10 +6,10 @@
  */
 package chabernac.space.shapes;
 
-import chabernac.space.Polygon;
-import chabernac.space.Shape;
 import chabernac.space.Vertex;
 import chabernac.space.geom.Point3D;
+import chabernac.space.geom.Polygon;
+import chabernac.space.geom.Shape;
 
 public class SinglePolygonShape extends Shape {
 	private Point3D myOrigin = null;

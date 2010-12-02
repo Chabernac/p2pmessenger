@@ -7,11 +7,11 @@ import chabernac.control.iSynchronizedEvent;
 import chabernac.space.LightSource;
 import chabernac.space.MouseTranslationManager;
 import chabernac.space.RotationManager;
-import chabernac.space.Shape;
 import chabernac.space.ShapeFactory;
 import chabernac.space.World;
 import chabernac.space.geom.Point3D;
 import chabernac.space.geom.Rotation;
+import chabernac.space.geom.Shape;
 
 public class AXACube extends AbstractWorld implements iSynchronizedEvent{
   private static final long serialVersionUID = 3362645587237603262L;

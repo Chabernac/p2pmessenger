@@ -1,5 +1,7 @@
 package chabernac.space;
 
+import chabernac.space.geom.Shape;
+
 
 //import chabernac.utils.Debug;
 

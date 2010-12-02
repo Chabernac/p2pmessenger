@@ -6,6 +6,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import chabernac.math.MatrixException;
+import chabernac.space.geom.PointShape;
+import chabernac.space.geom.Shape;
 import chabernac.utils.sort.FastArrayQSortAlgorithm;
 
 public class World{

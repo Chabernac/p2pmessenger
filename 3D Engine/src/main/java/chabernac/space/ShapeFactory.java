@@ -5,6 +5,8 @@ import java.awt.Color;
 import chabernac.space.geom.GVector;
 import chabernac.space.geom.Point3D;
 import chabernac.space.geom.PolarPoint3D;
+import chabernac.space.geom.Polygon;
+import chabernac.space.geom.Shape;
 
 public class ShapeFactory{
 

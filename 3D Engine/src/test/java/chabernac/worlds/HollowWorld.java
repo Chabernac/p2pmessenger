@@ -38,12 +38,12 @@ import chabernac.space.Command3dFactory;
 import chabernac.space.Frame3D;
 import chabernac.space.LightSource;
 import chabernac.space.PolygonException;
-import chabernac.space.Shape;
 import chabernac.space.ShapeFactory;
 import chabernac.space.World;
 import chabernac.space.buffer.iBufferStrategy;
 import chabernac.space.geom.Point3D;
 import chabernac.space.geom.Rotation;
+import chabernac.space.geom.Shape;
 import chabernac.space.shapes.Cube;
 
 /**

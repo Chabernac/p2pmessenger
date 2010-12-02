@@ -6,8 +6,8 @@
  */
 package chabernac.space.buffer;
 
-import chabernac.space.Polygon2D;
-import chabernac.space.Vertex2D;
+import chabernac.space.geom.Polygon2D;
+import chabernac.space.geom.Vertex2D;
 
 public class BufferTools {
 	public static double[] findMinMaxY(Polygon2D aPolygon){

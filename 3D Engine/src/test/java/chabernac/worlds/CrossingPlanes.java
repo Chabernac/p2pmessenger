@@ -8,13 +8,13 @@ import java.awt.Color;
 import java.awt.Dimension;
 
 import chabernac.space.MatrixOperations;
-import chabernac.space.Shape;
 import chabernac.space.ShapeFactory;
 import chabernac.space.Transformation;
 import chabernac.space.World;
 import chabernac.space.geom.GVector;
 import chabernac.space.geom.Point3D;
 import chabernac.space.geom.Rotation;
+import chabernac.space.geom.Shape;
 
 public class CrossingPlanes extends AbstractWorld{
 

@@ -1,6 +1,5 @@
-package chabernac.space;
+package chabernac.space.geom;
 
-import chabernac.space.geom.Point2D;
 
 public class Vector2D {
   private static final int POOL_SIZE = 10;

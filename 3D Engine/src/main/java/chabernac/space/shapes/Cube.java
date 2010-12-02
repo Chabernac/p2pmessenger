@@ -1,10 +1,10 @@
 package chabernac.space.shapes;
 
 import chabernac.space.MoveableShape;
-import chabernac.space.Polygon;
 import chabernac.space.PolygonException;
 import chabernac.space.Vertex;
 import chabernac.space.geom.Point3D;
+import chabernac.space.geom.Polygon;
 
 
 

@@ -1,6 +1,5 @@
 package chabernac.space.geom;
 
-import chabernac.space.Vector2D;
 
 public class Line2D {
 	private Point2D myStartPoint = null;
