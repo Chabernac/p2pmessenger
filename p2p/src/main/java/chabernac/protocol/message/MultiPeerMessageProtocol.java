@@ -131,15 +131,15 @@ public class MultiPeerMessageProtocol extends Protocol{
 
     @Override
     public void run() {
-      sendDeliveryReport( new DeliveryReport(myMultiPeerMessage, Status.IN_PROGRESS, myMessage) );
       try {
+        sendDeliveryReport( new DeliveryReport(myMultiPeerMessage, Status.IN_PROGRESS, myMessage) );
         String theResult = getMessageProtocol().sendMessage( myMessage );
         if(theResult.equalsIgnoreCase( STATUS_MESSAGE.DELIVERED.name() )){
           sendDeliveryReport( new DeliveryReport(myMultiPeerMessage, Status.DELIVERED, myMessage));
         } else {
           sendDeliveryReport( new DeliveryReport(myMultiPeerMessage, Status.FAILED, myMessage) );
         }
-      } catch ( Exception e ) {
+      } catch ( Throwable e ) {
         LOGGER.error( "Could not send message to peer '" + myMessage.getDestination().getPeerId() + "'", e );
         sendDeliveryReport( new DeliveryReport(myMultiPeerMessage, Status.FAILED, myMessage) );
       }
