@@ -99,7 +99,7 @@ public class AXACube extends AbstractWorld implements iSynchronizedEvent{
     Shape theShape = ShapeFactory.makeCube(new Point3D(5,0,400), 94,94,94);
     theShape.setColor(new Color(0,0,255,100));
     //theShape.setTexture(new TextureImage(ImageFactory.createImage("AXA", new Font("Arial", Font.BOLD, 40), 100, 100, Color.BLUE, Color.WHITE, true)));
-    theShape.setTexture("axa","axa", false, false);
+    theShape.setTexture("axa","guy", false, false);
 //    theShape.setTexture("leslie", false, false);
 //    theShape.myPolygons[0].setTexture("axa", false);
 //    theShape.myPolygons[0].setTexture("guy", false, false);
