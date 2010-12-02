@@ -10,15 +10,15 @@ import org.apache.log4j.Logger;
 
 import chabernac.math.MatrixException;
 import chabernac.space.Camera;
-import chabernac.space.Polygon;
 import chabernac.space.PolygonException;
-import chabernac.space.Shape;
 import chabernac.space.TranslateException;
 import chabernac.space.Vertex;
 import chabernac.space.geom.GVector;
 import chabernac.space.geom.GeomFunctions;
 import chabernac.space.geom.Point3D;
+import chabernac.space.geom.Polygon;
 import chabernac.space.geom.Rotation;
+import chabernac.space.geom.Shape;
 
 /**
  * @author Administrator

@@ -3,11 +3,11 @@ package chabernac.space.buffer;
 import org.apache.log4j.Logger;
 
 import chabernac.space.LightSource;
-import chabernac.space.Vector2D;
-import chabernac.space.Vertex2D;
 import chabernac.space.World;
 import chabernac.space.geom.Point2D;
 import chabernac.space.geom.Point3D;
+import chabernac.space.geom.Vector2D;
+import chabernac.space.geom.Vertex2D;
 import chabernac.space.texture.Texture2;
 
 public class Segment {

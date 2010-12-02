@@ -1,4 +1,4 @@
-package chabernac.space;
+package chabernac.space.geom;
 
 //import chabernac.utils.Debug;
 import java.awt.Color;
@@ -7,10 +7,12 @@ import java.io.IOException;
 import org.apache.log4j.Logger;
 
 import chabernac.math.MatrixException;
-import chabernac.space.geom.GVector;
-import chabernac.space.geom.Plane;
-import chabernac.space.geom.Point2D;
-import chabernac.space.geom.Point3D;
+import chabernac.space.Camera;
+import chabernac.space.Frustrum;
+import chabernac.space.PolygonException;
+import chabernac.space.Vertex;
+import chabernac.space.iTransformator;
+import chabernac.space.iTranslatable;
 import chabernac.space.texture.Texture2;
 import chabernac.space.texture.TextureFactory;
 import chabernac.space.texture.TextureImage;

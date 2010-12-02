@@ -12,7 +12,6 @@ import org.apache.log4j.Logger;
 
 import chabernac.space.CoordinateSystem;
 import chabernac.space.TranslateException;
-import chabernac.space.Vector2D;
 import chabernac.space.Vertex;
 import chabernac.space.iTransformator;
 import chabernac.space.iTranslatable;
@@ -20,6 +19,7 @@ import chabernac.space.geom.GVector;
 import chabernac.space.geom.Point2D;
 import chabernac.space.geom.Point3D;
 import chabernac.space.geom.PolarPoint3D;
+import chabernac.space.geom.Vector2D;
 
 public class Texture2 implements iTranslatable{
 

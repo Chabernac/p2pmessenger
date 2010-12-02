@@ -1,11 +1,9 @@
-package chabernac.space;
+package chabernac.space.geom;
 
 import java.awt.Color;
 
 import org.apache.log4j.Logger;
 
-import chabernac.space.geom.Line2D;
-import chabernac.space.geom.Point2D;
 import chabernac.space.texture.Texture2;
 
 public class Polygon2D {

@@ -1,11 +1,16 @@
-package chabernac.space;
+package chabernac.space.geom;
 
 //import chabernac.utils.Debug;
 import java.awt.Color;
 
 import chabernac.math.MatrixException;
-import chabernac.space.geom.GVector;
-import chabernac.space.geom.Point3D;
+import chabernac.space.Camera;
+import chabernac.space.Frustrum;
+import chabernac.space.PolygonException;
+import chabernac.space.TranslateException;
+import chabernac.space.Vertex;
+import chabernac.space.iTransformator;
+import chabernac.space.iTranslatable;
 import chabernac.space.texture.TextureImage;
 import chabernac.utils.ArrayTools;
 

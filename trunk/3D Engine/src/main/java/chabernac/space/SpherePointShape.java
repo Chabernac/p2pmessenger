@@ -1,6 +1,7 @@
 package chabernac.space;
 
 import chabernac.space.geom.Point3D;
+import chabernac.space.geom.PointShape;
 
 public class SpherePointShape extends PointShape{
   protected double myRadius;

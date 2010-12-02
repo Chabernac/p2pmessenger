@@ -1,11 +1,10 @@
-package chabernac.space;
+package chabernac.space.geom;
 
 import org.apache.log4j.Logger;
 
 import chabernac.math.MatrixException;
-import chabernac.space.geom.GVector;
-import chabernac.space.geom.Point3D;
-import chabernac.space.geom.Rotation;
+import chabernac.space.Camera;
+import chabernac.space.MoveableShape;
 
 
 public class PathShape extends MoveableShape{

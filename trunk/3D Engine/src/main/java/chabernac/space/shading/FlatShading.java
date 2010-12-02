@@ -4,10 +4,10 @@ import java.awt.Color;
 import java.util.ArrayList;
 
 import chabernac.space.LightSource;
-import chabernac.space.Polygon;
-import chabernac.space.Shape;
 import chabernac.space.World;
 import chabernac.space.geom.GVector;
+import chabernac.space.geom.Polygon;
+import chabernac.space.geom.Shape;
 
 public class FlatShading implements iLightManager{
 	private double myAmbient = 0;

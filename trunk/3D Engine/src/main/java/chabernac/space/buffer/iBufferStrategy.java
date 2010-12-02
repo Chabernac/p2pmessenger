@@ -11,10 +11,10 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.util.Collection;
 
-import chabernac.space.Polygon;
-import chabernac.space.Polygon2D;
-import chabernac.space.Vertex2D;
 import chabernac.space.geom.Point2D;
+import chabernac.space.geom.Polygon;
+import chabernac.space.geom.Polygon2D;
+import chabernac.space.geom.VertexLine2D;
 
 public interface iBufferStrategy {
 	public Image getImage();
@@ -26,7 +26,7 @@ public interface iBufferStrategy {
 	
 	public void setBackGroundColor(int aBackGroundColor);
 	
-	public void drawLine(Vertex2D theStartVertex, Vertex2D theEndVertex, int aColor);
+	public void drawLine(VertexLine2D aLine);
 	public void drawPolygon(Polygon2D aPolygon, Polygon aOrigPoligon);
   public void drawText(Point2D aPoint, String aText, Color aColor);
   

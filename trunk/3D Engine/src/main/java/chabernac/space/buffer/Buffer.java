@@ -17,11 +17,12 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import chabernac.space.Polygon;
-import chabernac.space.Polygon2D;
-import chabernac.space.Vertex2D;
 import chabernac.space.World;
 import chabernac.space.geom.Point2D;
+import chabernac.space.geom.Polygon;
+import chabernac.space.geom.Polygon2D;
+import chabernac.space.geom.Vertex2D;
+import chabernac.space.geom.VertexLine2D;
 
 
 public class Buffer implements iBufferStrategy {
@@ -181,42 +182,44 @@ public class Buffer implements iBufferStrategy {
     return myDrawingAreas;
   }
   
-  public void drawLine(Vertex2D aStartPoint, Vertex2D anEndEPoint, int aColor){
+  public void drawLine(VertexLine2D aLine){
     Vertex2D theTempVertex = null;
 
-    double xDiff =  anEndEPoint.getPoint().x - aStartPoint.getPoint().x;
-    double yDiff =  anEndEPoint.getPoint().y - aStartPoint.getPoint().y;
+    Vertex2D theStartPoint = aLine.getStart();
+    Vertex2D theEndPoint = aLine.getEnd();
+    double xDiff =  theEndPoint.getPoint().x - theStartPoint.getPoint().x;
+    double yDiff =  theEndPoint.getPoint().y - theStartPoint.getPoint().y;
 
     if(Math.abs(xDiff) > Math.abs(yDiff)){
-      if(aStartPoint.getPoint().x > anEndEPoint.getPoint().x){
-        theTempVertex = aStartPoint;
-        aStartPoint = anEndEPoint;
-        anEndEPoint = theTempVertex;
+      if(theStartPoint.getPoint().x > theEndPoint.getPoint().x){
+        theTempVertex = theStartPoint;
+        theStartPoint = theEndPoint;
+        theEndPoint = theTempVertex;
       }
-      double zDiff = anEndEPoint.getInverseDepth() - aStartPoint.getInverseDepth();
+      double zDiff = theEndPoint.getInverseDepth() - theStartPoint.getInverseDepth();
       double deltaY = yDiff / xDiff;
       double deltaZ = zDiff / xDiff;
-      double y = aStartPoint.getPoint().y;
-      double z = aStartPoint.getInverseDepth();
-      for(int x=(int)Math.ceil(aStartPoint.getPoint().x);x<(int)Math.floor(anEndEPoint.getPoint().x);x++){
-        setPixelAt( (int)x, (int)y, z, aColor);
+      double y = theStartPoint.getPoint().y;
+      double z = theStartPoint.getInverseDepth();
+      for(int x=(int)Math.ceil(theStartPoint.getPoint().x);x<(int)Math.floor(theEndPoint.getPoint().x);x++){
+        setPixelAt( (int)x, (int)y, z, aLine.getColor());
         y += deltaY;
         z += deltaZ;
       }
 
     } else {
-      if(aStartPoint.getPoint().y > anEndEPoint.getPoint().y){
-        theTempVertex = aStartPoint;
-        aStartPoint = anEndEPoint;
-        anEndEPoint = theTempVertex;
+      if(theStartPoint.getPoint().y > theEndPoint.getPoint().y){
+        theTempVertex = theStartPoint;
+        theStartPoint = theEndPoint;
+        theEndPoint = theTempVertex;
       }
-      double zDiff = anEndEPoint.getInverseDepth() - aStartPoint.getInverseDepth();
+      double zDiff = theEndPoint.getInverseDepth() - theStartPoint.getInverseDepth();
       double deltaX = xDiff / yDiff;
       double deltaZ = zDiff / yDiff;
-      double x = aStartPoint.getPoint().x;
-      double z = aStartPoint.getInverseDepth();
-      for(int y=(int)Math.ceil(aStartPoint.getPoint().y);y<(int)Math.floor(anEndEPoint.getPoint().y);y++){
-        setPixelAt( (int)x, y, z, aColor);
+      double x = theStartPoint.getPoint().x;
+      double z = theStartPoint.getInverseDepth();
+      for(int y=(int)Math.ceil(theStartPoint.getPoint().y);y<(int)Math.floor(theEndPoint.getPoint().y);y++){
+        setPixelAt( (int)x, y, z, aLine.getColor());
         x += deltaX;
         z += deltaZ;
       }

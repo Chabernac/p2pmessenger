@@ -4,13 +4,13 @@
  * To change the template for this generated file go to
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
-package chabernac.space;
+package chabernac.space.geom;
 
 import java.awt.Color;
 
 import chabernac.math.MatrixException;
-import chabernac.space.geom.Plane;
-import chabernac.space.geom.Point3D;
+import chabernac.space.Camera;
+import chabernac.space.Frustrum;
 
 /**
  * @author Administrator

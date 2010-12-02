@@ -14,6 +14,12 @@ import chabernac.space.geom.GeomFunctions;
 import chabernac.space.geom.Line2D;
 import chabernac.space.geom.Point2D;
 import chabernac.space.geom.Point3D;
+import chabernac.space.geom.PointShape;
+import chabernac.space.geom.Polygon;
+import chabernac.space.geom.Polygon2D;
+import chabernac.space.geom.Shape;
+import chabernac.space.geom.Vertex2D;
+import chabernac.space.geom.VertexLine2D;
 import chabernac.space.shading.iLightManager;
 import chabernac.space.texture.Texture2;
 
@@ -61,7 +67,7 @@ public class Graphics3D{
     Point2D theEndPoint = GeomFunctions.cam2Screen(anEndPoint, myEyePoint);
     Vertex2D theStartVertex = new Vertex2D(theStartPoint, aStartPoint.z, 1);
     Vertex2D theEndVertex = new Vertex2D(theEndPoint, anEndPoint.z, 1);
-    myBuffer.drawLine(theStartVertex, theEndVertex, aColor);
+    myBuffer.drawLine(new VertexLine2D( theStartVertex, theEndVertex, aColor));
 
     /*
 		 Point2D theStartPoint = GeomFunctions.cam2Screen(aStartPoint, myEyePoint);
