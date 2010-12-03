@@ -2,10 +2,8 @@ package chabernac.space.buffer;
 
 import org.apache.log4j.Logger;
 
-import chabernac.space.LightSource;
 import chabernac.space.World;
 import chabernac.space.geom.Point2D;
-import chabernac.space.geom.Point3D;
 import chabernac.space.geom.Vector2D;
 import chabernac.space.geom.Vertex2D;
 import chabernac.space.texture.Texture2;
@@ -18,8 +16,8 @@ public class Segment {
   private static Logger LOGGER = Logger.getLogger(Segment.class);
 
   private Texture2 texture = null;
-  private int xStart, xEnd, x;
-  private double invzStart, invzEnd, lStart, lEnd = 0, invz, z, u, v, l;
+  private int xStart, xEnd;
+  private double invzStart, invzEnd, lStart, lEnd = 0;
   private double zdiff, xDiff, invzRico, udiff, vdiff, urico, vrico, lRico = 0;
 //  private int c = 0;
   public int color = 0;
@@ -31,6 +29,7 @@ public class Segment {
   private static boolean FORCEAFFINE = true;
   private static boolean FORCENOTAFFINE = false;
   private World myWorld = null;
+  private Pixel myPixel = new Pixel( );
 
 
   public Segment(){
@@ -47,6 +46,7 @@ public class Segment {
     myWorld = aWorld;
     calculateRicos();
     repositionStartEnd();
+    myPixel = new Pixel( aColor, aTexture );
   }
 
   private void calculateRicos() {
@@ -94,75 +94,35 @@ public class Segment {
     invzEnd = getZ(xEnd);
     lStart = getL(xStart);
 
-    x = xStart;
-    invz = invzStart;
-    l = lStart;
-    u = start.getTexturePoint().x;
-    v = start.getTexturePoint().y;
+    myPixel.x = xStart;
+    myPixel.invZ = invzStart;
+    myPixel.light = lStart;
+    
+    myPixel.u = start.getTexturePoint().x;
+    myPixel.v = start.getTexturePoint().y;
   }
 
   public boolean hasNext(){
-    return x < xEnd;
+    return myPixel.x < xEnd;
   }
 
   public void next(){
-    x++;
-    invz += invzRico;
-    l += lRico;
+    myPixel.x++;
+    myPixel.invZ += invzRico;
+    myPixel.light += lRico;
 
     if(isTexture){
       if(isAffine){
-        u += urico;
-        v += vrico;
+        myPixel.u += urico;
+        myPixel.v += vrico;
       } else {
-        z = 1 / invz;
-        u = getU(z);
-        v = getV(z);
+        myPixel.z = 1 / myPixel.invZ;
+        myPixel.u = getU(myPixel.z);
+        myPixel.v = getV(myPixel.z);
       }
     }
   }
-
-  public int applyShading(){
-    int theU = (int)u;
-    int theV = (int)v;
-    double theL = l;
-    int theColor;
-
-    if(isTexture){
-      //texture color
-      theColor = texture.getColor(theU, theV);
-      
-      //bump mapping
-      if(texture.getBumpMap() != null){
-        chabernac.space.geom.GVector theCamNormalVector = texture.getNormalVector(theU, theV);
-        Point3D theCamPoint = texture.getSystem().getTransformator().inverseTransform(new Point3D(theU, theV, 0.0D));
-        theL += LightSource.calculateLight(myWorld, theCamPoint, theCamNormalVector);
-        theL /= 2D;
-      }
-    } else {
-      theColor = color;
-    }
-
-    //lightning
-    int alpha = theColor >> 24 & 0xff;
-    int red=  (int)(theL * (  theColor >> 16 & 0xff));
-    int green= (int) (theL * (  theColor >> 8 & 0xff));
-    int blue= (int) (theL * (  theColor & 0xff));
-    
-    if(red > 255) red = 255;
-    if(green > 255) green = 255;
-    if(blue > 255) blue = 255;
-    if(red < 0 ) red = 0;
-    if(green < 0) green = 0;
-    if(blue < 0) blue = 0;
-
-    return (alpha << 24 & 0xFF000000) | (red << 16 & 0x00FF0000) | (green << 8 & 0x0000FF00) | (blue << 0 & 0x000000FF);
-  }
-
-  public int getX(){
-    return x;
-  }
-
+  
   private double getU(double z){
     return start.getTexturePoint().x + (z - start.getDepth()) * urico;
   }
@@ -177,32 +137,6 @@ public class Segment {
 
   private double getL(double x){
     return start.getLightning() + (x - start.getPoint().x) * lRico;
-  }
-
-  public Point2D getTextureCoordinate(){
-    return new Point2D(u, v);
-  }
-
-  public double getInverseZ(){
-    return invz;
-  }
-
-  public double getLightning(){
-    return l;
-  }
-
-  
-  public double getLEnd() {
-    return lEnd;
-  }
-  public void setLEnd(double end) {
-    lEnd = end;
-  }
-  public double getLStart() {
-    return lStart;
-  }
-  public void setLStart(double start) {
-    lStart = start;
   }
 
   public int getXEnd() {
@@ -228,11 +162,6 @@ public class Segment {
     this.texture = texture;
   }
 
-  public String toString(){
-    return "";
-    //return "<Segment p0=(" + xStart + "," + zStart + ") p1=(" + xEnd + "," + zEnd + ")>";
-  }
-
   public static Segment getInstance(World aWorld, Vertex2D aStartVertex, Vertex2D anEndVertex, int aColor, Texture2 aTexture){
     Segment result;
     if (countFree == 0) {
@@ -246,6 +175,8 @@ public class Segment {
     result.texture = aTexture;
     result.isTexture = aTexture != null;
     result.myWorld = aWorld;
+    result.myPixel.backGroundColor = aColor;
+    result.myPixel.texture = aTexture;
 
     result.calculateRicos();
     result.repositionStartEnd();
@@ -317,6 +248,10 @@ public class Segment {
     //  for(int i=0;i<theSegments.length;i++){
     //  System.out.println("Segment " + i + ": " + theSegments[i].toString());
     //  }
+  }
+  
+  public Pixel getPixel(){
+    return myPixel;
   }
 
 }

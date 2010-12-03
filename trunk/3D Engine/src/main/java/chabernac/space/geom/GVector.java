@@ -98,7 +98,7 @@ public class GVector{
     return new GVector(	x * adouble, y * adouble, z * adouble);
   }
 
-  public GVector addittion(GVector aVector){
+  public GVector addition(GVector aVector){
     return new GVector(x + aVector.x, y + aVector.y, z + aVector.z);
   }
 

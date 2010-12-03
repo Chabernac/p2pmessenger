@@ -18,7 +18,7 @@ public class World{
   private int myCurrentShape = 0;
   private int myCurrentPointShape = 0;
   private FastArrayQSortAlgorithm theSortAlgorithm = null;
-  private ArrayList lightSources = new ArrayList();
+  private ArrayList<LightSource> lightSources = new ArrayList<LightSource>();
   private TranslateManagerContainer myTranslateManagerContainer = new TranslateManagerContainer();
 
   private ExecutorService myService = Executors.newFixedThreadPool( Runtime.getRuntime().availableProcessors() );
@@ -114,63 +114,63 @@ public class World{
       myShapes[i].calculateNormalVectors();
     }
   }
-  
+
   public void world2Cam(final Camera aCamera) throws PolygonException, MatrixException{
     //TODO optimized code for multi core processors, but does dis has the wanted effect?
-    
+
 
     for(int i=0;i<mySize;i++){
-          myShapes[i].world2Cam(aCamera);
+      myShapes[i].world2Cam(aCamera);
     }
     for(int i=0;i<myPointShapeSize;i++){
-          myPointShapes[i].world2Cam(aCamera);
+      myPointShapes[i].world2Cam(aCamera);
     }
 
-    for(int i=0;i<lightSources.size();i++){
-          ((LightSource)lightSources.get(i)).world2Cam(aCamera);
+    for(LightSource theLighteSource : lightSources){
+      theLighteSource.world2Cam(aCamera);
     }
-    
+
   }
 
-//  public void world2Cam(final Camera aCamera) throws PolygonException, MatrixException{
-//    //TODO optimized code for multi core processors, but does dis has the wanted effect?
-//    
-//    final CountDownLatch theLatch = new CountDownLatch( mySize  + myPointShapeSize + lightSources.size());
-//
-//    for(int i=0;i<mySize;i++){
-//      final int theIndex = i;
-//      myService.execute( new Runnable(){
-//        public void run(){
-//          myShapes[theIndex].world2Cam(aCamera);
-//          theLatch.countDown();
-//        }
-//      });
-//    }
-//    for(int i=0;i<myPointShapeSize;i++){
-//      final int theIndex = i;
-//      myService.execute( new Runnable(){
-//        public void run(){
-//          myPointShapes[theIndex].world2Cam(aCamera);
-//          theLatch.countDown();
-//        }
-//      });
-//    }
-//
-//    for(int i=0;i<lightSources.size();i++){
-//      final int theIndex = i;
-//      myService.execute( new Runnable(){
-//        public void run(){
-//          ((LightSource)lightSources.get(theIndex)).world2Cam(aCamera);
-//          theLatch.countDown();
-//        }
-//      });
-//    }
-//    
-//    try {
-//      theLatch.await();
-//    } catch ( InterruptedException e ) {
-//    }
-//  }
+  //  public void world2Cam(final Camera aCamera) throws PolygonException, MatrixException{
+  //    //TODO optimized code for multi core processors, but does dis has the wanted effect?
+  //    
+  //    final CountDownLatch theLatch = new CountDownLatch( mySize  + myPointShapeSize + lightSources.size());
+  //
+  //    for(int i=0;i<mySize;i++){
+  //      final int theIndex = i;
+  //      myService.execute( new Runnable(){
+  //        public void run(){
+  //          myShapes[theIndex].world2Cam(aCamera);
+  //          theLatch.countDown();
+  //        }
+  //      });
+  //    }
+  //    for(int i=0;i<myPointShapeSize;i++){
+  //      final int theIndex = i;
+  //      myService.execute( new Runnable(){
+  //        public void run(){
+  //          myPointShapes[theIndex].world2Cam(aCamera);
+  //          theLatch.countDown();
+  //        }
+  //      });
+  //    }
+  //
+  //    for(int i=0;i<lightSources.size();i++){
+  //      final int theIndex = i;
+  //      myService.execute( new Runnable(){
+  //        public void run(){
+  //          ((LightSource)lightSources.get(theIndex)).world2Cam(aCamera);
+  //          theLatch.countDown();
+  //        }
+  //      });
+  //    }
+  //    
+  //    try {
+  //      theLatch.await();
+  //    } catch ( InterruptedException e ) {
+  //    }
+  //  }
 
   public void clip2Frustrum(Frustrum aFrustrum) throws PolygonException{
     for(int i=0;i<mySize;i++){
@@ -194,7 +194,7 @@ public class World{
     lightSources.remove(aLightSource);
   }
 
-  public ArrayList getLightSources(){
+  public ArrayList<LightSource> getLightSources(){
     return lightSources;
   }
 

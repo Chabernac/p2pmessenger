@@ -13,9 +13,11 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.WeakHashMap;
 
 import chabernac.space.World;
 import chabernac.space.geom.Point2D;
@@ -23,6 +25,12 @@ import chabernac.space.geom.Polygon;
 import chabernac.space.geom.Polygon2D;
 import chabernac.space.geom.Vertex2D;
 import chabernac.space.geom.VertexLine2D;
+import chabernac.space.shading.BumpShading;
+import chabernac.space.shading.DepthShading;
+import chabernac.space.shading.PhongShader;
+import chabernac.space.shading.SpecularShader;
+import chabernac.space.shading.TextureShader;
+import chabernac.space.shading.iPixelShader;
 
 
 public class Buffer implements iBufferStrategy {
@@ -36,10 +44,11 @@ public class Buffer implements iBufferStrategy {
   private int myBackGroundColor = new Color(0,0,0,0).getRGB();
   protected World myWorld = null;
 
-  private Map<Object, DrawingRectangleContainer> myDrawingAreas = new HashMap<Object, DrawingRectangleContainer>();
+  private Map<Object, DrawingRectangleContainer> myDrawingAreas = new WeakHashMap<Object, DrawingRectangleContainer>();
   private double myMinY, myMaxY;
   
   private iDepthBuffer myDepthBuffer = null;
+  private iPixelShader[] myPixelShaders = null; 
   
   public Buffer(World aWorld, int aWidth, int aHeight){
     myWidth = aWidth;
@@ -47,14 +56,26 @@ public class Buffer implements iBufferStrategy {
     myWorld = aWorld;
     mySize = myWidth * myHeight;
     init();
+    createPixelShaders();
   }
-
   private void init(){
     myImage = new BufferedImage(myWidth, myHeight, BufferedImage.TYPE_INT_ARGB);
     myGraphics = myImage.getGraphics();
     //we should be able to specify the depth buffering technique
     myDepthBuffer = new ZBuffer( myWidth, myHeight );
     clearFull();
+  }
+  
+  private void createPixelShaders(){
+    List<iPixelShader> theShaders = new ArrayList<iPixelShader>();
+    
+    theShaders.add(new TextureShader(false));
+//    theShaders.add(new BumpShading( myWorld ));
+//    theShaders.add(new PhongShader( myWorld ));
+//    theShaders.add(new DepthShading( 5000 ));
+//    theShaders.add(new SpecularShader( myWorld ));
+    
+    myPixelShaders = theShaders.toArray( new iPixelShader[]{} );
   }
 
   public final Image getImage(){
@@ -96,12 +117,15 @@ public class Buffer implements iBufferStrategy {
 
     if(theRect.minY == -1 || y < theRect.minY)  theRect.minY = y;
     if(theRect.maxY == -1 || y > theRect.maxY)  theRect.maxY = y;
-    if(theRect.minX == -1 || aSegment.getX() < theRect.minX)  theRect.minX = aSegment.getX();
+    if(theRect.minX == -1 || aSegment.getXStart() < theRect.minX)  theRect.minX = aSegment.getXStart();
     if(theRect.maxX == -1 || aSegment.getXEnd() > theRect.maxX)  theRect.maxX = aSegment.getXEnd();
 
+    Pixel thePixel = aSegment.getPixel();
+    
     while(aSegment.hasNext()){
       aSegment.next();
-      setPixelAt( aSegment.getX(),y, aSegment.getInverseZ(), aSegment.applyShading());
+      
+      setPixelAt( thePixel.x, y, thePixel.invZ, thePixel);
     } 
   }
   
@@ -121,10 +145,23 @@ public class Buffer implements iBufferStrategy {
   public final int getWidth(){
     return myWidth;
   }
-
+  
   public void setPixelAt(int x, int y, double anInverseDepth, int aColor){
     if(myDepthBuffer.isDrawPixel( x, y, anInverseDepth )){
       setPixelAt(x, y, aColor);
+    }
+  }
+
+  public void setPixelAt(int x, int y, double anInverseDepth, Pixel aPixel){
+    if(myDepthBuffer.isDrawPixel( x, y, anInverseDepth )){
+      
+      for(iPixelShader theShader : myPixelShaders){
+        theShader.calculatePixel( aPixel );
+      }
+      
+      aPixel.applyLightning();
+      
+      setPixelAt(x, y, aPixel.color);
     }
   }
 
@@ -183,6 +220,20 @@ public class Buffer implements iBufferStrategy {
   }
   
   public void drawLine(VertexLine2D aLine){
+    if(!myDrawingAreas.containsKey( aLine )){
+      myDrawingAreas.put( aLine, new DrawingRectangleContainer() );
+    }
+    
+    DrawingRectangleContainer theRectContainer = myDrawingAreas.get(aLine);
+    DrawingRectangle theRect = theRectContainer.getDrawingRect();
+    Point2D theP1 = aLine.getStart().getPoint();
+    Point2D theP2 = aLine.getEnd().getPoint();
+    
+    theRect.minX = (int)Math.floor( theP1.x < theP2.x ? theP1.x : theP2.x) - 10;
+    theRect.maxX = (int)Math.ceil(theP1.x > theP2.x ? theP1.x : theP2.x) + 10;
+    theRect.minY = (int)Math.floor(theP1.y < theP2.y ? theP1.y : theP2.y) - 10;
+    theRect.maxY = (int)Math.ceil(theP1.y > theP2.y ? theP1.y : theP2.y) + 10;
+    
     Vertex2D theTempVertex = null;
 
     Vertex2D theStartPoint = aLine.getStart();

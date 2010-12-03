@@ -4,8 +4,8 @@
  */
 package chabernac.space.shading;
 
-import chabernac.space.buffer.Segment;
+import chabernac.space.buffer.Pixel;
 
 public interface iPixelShader {
-  public int calculatePixel(Segment aSegment);
+  public void calculatePixel(Pixel aPixel);
 }

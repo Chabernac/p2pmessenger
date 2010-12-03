@@ -4,15 +4,31 @@
  */
 package chabernac.space.shading;
 
-import chabernac.space.buffer.Segment;
+import chabernac.space.buffer.Pixel;
 
 public class TextureShader implements iPixelShader {
-
-  @Override
-  public int calculatePixel( Segment aSegment ) {
-//    aSegment.getTexture().getColor( aSegment., y )
-    // TODO Auto-generated method stub
-    return 0;
+  private boolean isTextureEnabled = true;
+  
+  public TextureShader(boolean isTextureEnabled){
+    this.isTextureEnabled = isTextureEnabled;
   }
 
+  @Override
+  public void calculatePixel( Pixel aPixel ) {
+    if(isTextureEnabled && aPixel.texture != null){
+      aPixel.uInt = (int)aPixel.u;
+      aPixel.vInt = (int)aPixel.v;
+      aPixel.color = aPixel.texture.getColor( aPixel.uInt, aPixel.vInt );
+    } else {
+      aPixel.color = aPixel.backGroundColor;
+    }
+  }
+
+  public boolean isTextureEnabled() {
+    return isTextureEnabled;
+  }
+
+  public void setTextureEnabled( boolean aTextureEnabled ) {
+    isTextureEnabled = aTextureEnabled;
+  }
 }
