@@ -3,6 +3,6 @@ package chabernac.space.shading;
 import chabernac.space.World;
 
 
-public interface iLightManager {
+public interface iVertexShader {
 	public void calculateLight(World aWorld);
 }

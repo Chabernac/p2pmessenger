@@ -9,7 +9,7 @@ import chabernac.space.geom.GVector;
 import chabernac.space.geom.Polygon;
 import chabernac.space.geom.Shape;
 
-public class FlatShading implements iLightManager{
+public class FlatShading implements iVertexShader{
 	private double myAmbient = 0;
 	
 	public FlatShading(double ambient){
