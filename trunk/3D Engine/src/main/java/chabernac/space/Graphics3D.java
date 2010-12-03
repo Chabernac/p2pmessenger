@@ -20,13 +20,13 @@ import chabernac.space.geom.Polygon2D;
 import chabernac.space.geom.Shape;
 import chabernac.space.geom.Vertex2D;
 import chabernac.space.geom.VertexLine2D;
-import chabernac.space.shading.iLightManager;
+import chabernac.space.shading.iVertexShader;
 import chabernac.space.texture.Texture2;
 
 public class Graphics3D{
   //public static final boolean debug = false;
 
-  private iLightManager myLightManager = null;
+  private iVertexShader myLightManager = null;
   private Point3D myEyePoint = null;
   private Frustrum myFrustrum = null;
   private Camera myCamera = null;
@@ -345,7 +345,7 @@ public class Graphics3D{
     drawRibs = b;
   }
 
-  public void setLightManager(iLightManager aLightManager){
+  public void setLightManager(iVertexShader aLightManager){
     myLightManager = aLightManager;
   }
 

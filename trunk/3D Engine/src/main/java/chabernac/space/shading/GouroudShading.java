@@ -15,7 +15,7 @@ import chabernac.space.geom.GVector;
 import chabernac.space.geom.Polygon;
 import chabernac.space.geom.Shape;
 
-public class GouroudShading implements iLightManager {
+public class GouroudShading implements iVertexShader {
 	private double myAmbient;
 	
 	public GouroudShading(double ambient){
