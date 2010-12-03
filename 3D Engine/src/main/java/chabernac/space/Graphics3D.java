@@ -267,7 +267,7 @@ public class Graphics3D{
     }
     
     aG.setClip( theOrigClip );
-
+    
     for(int i=myWorld.myPointShapeSize - 1;i>=0;i--){
       drawPointShape(myWorld.myPointShapes[i], aG);
     }
@@ -279,6 +279,7 @@ public class Graphics3D{
     }
 
     if(isShowDrawingAreas) showDrawingAreas(aG);
+    
 
     myBuffer.cycleDone();
 
@@ -286,9 +287,9 @@ public class Graphics3D{
 
   private void showDrawingAreas(Graphics aG){
     for(DrawingRectangleContainer theRectContainer : myBuffer.getDrawingRectangles()){
-//      aG.setColor( Color.red );
-//      DrawingRectangle theClaeringRect = theRectContainer.getClearingRect();
-//      aG.drawRect( theClaeringRect.getX(), theClaeringRect.getY(), theClaeringRect.getWidth(), theClaeringRect.getHeight());
+      aG.setColor( Color.red );
+      DrawingRectangle theClaeringRect = theRectContainer.getClearingRect();
+      aG.drawRect( theClaeringRect.getX(), theClaeringRect.getY(), theClaeringRect.getWidth(), theClaeringRect.getHeight());
 
       aG.setColor( Color.blue);
       DrawingRectangle theDrawingRect = theRectContainer.getDrawingRect();
@@ -444,5 +445,12 @@ public class Graphics3D{
     isUseClipping = aUseClipping;
   }
 
+  public boolean isDrawLightSources() {
+    return drawLightSources;
+  }
+
+  public void setDrawLightSources( boolean aDrawLightSources ) {
+    drawLightSources = aDrawLightSources;
+  }
 }
 

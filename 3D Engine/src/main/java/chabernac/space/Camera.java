@@ -102,7 +102,7 @@ public class Camera implements iTranslatable, iTransformator{
 	public Matrix getInvMatrix(){ return myInvMatrix;}
 	public Point3D getLocation(){ return new Point3D(-myTranslationMatrix.getValueAt(3,0),-myTranslationMatrix.getValueAt(3,1), -myTranslationMatrix.getValueAt(3,2));}
 
-	public Point3D getCenterPoint() { return getCenterPoint(); }
+	public Point3D getCenterPoint() { return getLocation(); }
 	
 	public static Camera makeTranslationCamera(GVector aDirection){
 		return new Camera(new Point3D(-aDirection.x ,-aDirection.y, -aDirection.z), new Rotation(), 1);

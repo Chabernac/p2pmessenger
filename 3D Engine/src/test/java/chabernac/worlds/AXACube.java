@@ -21,10 +21,10 @@ public class AXACube extends AbstractWorld implements iSynchronizedEvent{
   protected void buildWorld(World aWorld){
 //    myManager.addSyncronizedEvent(this);
     
-    aWorld.addLightSource(new LightSource(new Point3D(0,2000,-5000), 5000));
+    aWorld.addLightSource(new LightSource(new Point3D(200,0,-1000), 1500));
     
     MouseTranslationManager theMouseTranslationManager = new MouseTranslationManager(myPanel3D.getGraphics3D(), 100, 10);
-    myRotationManager = new RotationManager(new Rotation(Math.PI / 180,Math.PI / 120,Math.PI / 60));
+    myRotationManager = new RotationManager(new Rotation(Math.PI / 500,Math.PI / 400,Math.PI / 360));
     RotationManager theRotationManager = new RotationManager(new Rotation(0,0,Math.PI / 180));
     myWorld.getTranslateManagerContainer().addTranslateManager(theMouseTranslationManager);
     myWorld.getTranslateManagerContainer().addTranslateManager(myRotationManager);

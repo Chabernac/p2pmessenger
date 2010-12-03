@@ -55,13 +55,14 @@ public abstract class AbstractWorld extends JFrame {
     myPanel3D.getGraphics3D().setDrawRibs(false);
     myPanel3D.getGraphics3D().setDrawBackFacing(false);
     myPanel3D.getGraphics3D().setDrawPlanes(true);
-    myPanel3D.getGraphics3D().setDrawTextureNormals(false);
-    myPanel3D.getGraphics3D().setDrawVertexNormals(false);
+    myPanel3D.getGraphics3D().setDrawLightSources( false );
+    myPanel3D.getGraphics3D().setDrawTextureNormals( false );
+    myPanel3D.getGraphics3D().setDrawVertexNormals( false);
     myPanel3D.getGraphics3D().setDrawTextureCoordinates(false);
     myPanel3D.getGraphics3D().setDrawCamZ(false);
     //myPanel3D.getGraphics3D().setBackGroundColor(new Color(100,100,200));
     myPanel3D.getGraphics3D().setBackGroundColor(new Color(0,0,0));
-    myPanel3D.getGraphics3D().setShowDrawingAreas( false);
+    myPanel3D.getGraphics3D().setShowDrawingAreas( false );
     myPanel3D.getGraphics3D().setUseClipping( true );
     
     //myPanel3D.setBorder(new TitledBorder("hallo"));
@@ -70,7 +71,7 @@ public abstract class AbstractWorld extends JFrame {
   }
   
   private final void setupRendering(){
-    myManager = new SynchronizedEventManager(50);
+    myManager = new SynchronizedEventManager(40);
     myManager.addSyncronizedEvent(myPanel3D);
     myManager.startManager();
   }
