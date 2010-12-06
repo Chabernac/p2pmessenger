@@ -22,12 +22,12 @@ public class GouroudShading implements iVertexShader {
 		myAmbient = ambient;
 	}
 
-	public void calculateLight(World aWorld) {
+	public void applyShading(World aWorld) {
 		LightSource theCurrentLight = null;
 		Shape theCurrentShape = null;
 		Polygon theCurrentPolygon = null;
 		Vertex theCurrentVertex = null;
-		ArrayList theLightSources = aWorld.getLightSources();
+		ArrayList<LightSource> theLightSources = aWorld.getLightSources();
 		
 		
 		for(int j=0;j<aWorld.myShapes.length;j++){
@@ -40,7 +40,7 @@ public class GouroudShading implements iVertexShader {
 							theCurrentVertex = theCurrentPolygon.c[l];
 							theCurrentVertex.lightIntensity = myAmbient;
 							for(int i=0;i<theLightSources.size();i++){
-								theCurrentLight = (LightSource)theLightSources.get(i);
+								theCurrentLight = theLightSources.get(i);
 								theCurrentVertex.lightIntensity += calculateIlluminatingFactor(theCurrentLight, theCurrentVertex);
 							}
 						}

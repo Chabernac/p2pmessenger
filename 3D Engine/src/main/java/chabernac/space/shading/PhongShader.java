@@ -16,16 +16,17 @@ import chabernac.space.geom.Point3D;
 public class PhongShader implements iPixelShader {
  private final World myWorld;
  
- private final double myAmbient = 0.5;
- private final double myDiffuse = 0.1;
- private final double mySpecular = 2;
- private final double myPower = 0.5;
+ private final double myAmbient = 0.3;
+ private final double myDiffuse = 0.2;
+ private final double mySpecular = 100;
+ private final double myPower = 500;
   
-  private final Point3D myCamLocation = new Point3D( 0, 0, 0 );
+  private Point3D myCamLocation = null;
   
-  public PhongShader( World aWorld ) {
+  public PhongShader( World aWorld, Point3D anEyePoint ) {
     super();
     myWorld = aWorld;
+    myCamLocation = new Point3D( 0, 0, 0 );
   }
 
   @Override
@@ -54,7 +55,9 @@ public class PhongShader implements iPixelShader {
       
       GVector theMoyenVector = theVectorTowarsLightSource.addition( theVectorTowardsCamera ).multip( 0.5D ); 
       
-      double theLight = myAmbient + myDiffuse * theNormalAtCamPoint.dotProdukt( theVectorTowarsLightSource );
+      double theLight = 0;
+      theLight += myAmbient + myDiffuse * theNormalAtCamPoint.dotProdukt( theVectorTowarsLightSource );
+      //onlye specular
       theLight += mySpecular * Math.pow( theNormalAtCamPoint.dotProdukt( theMoyenVector ), myPower);
       
       theSpecularLightning += theLight;
@@ -62,7 +65,7 @@ public class PhongShader implements iPixelShader {
     
 //    System.out.println(aPixel.u + ", " + aPixel.v + ": " + theSpecularLightning);
     
-    aPixel.light = theSpecularLightning; 
+    aPixel.light += theSpecularLightning; 
 
   }
 

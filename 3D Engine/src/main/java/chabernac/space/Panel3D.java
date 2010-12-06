@@ -13,9 +13,10 @@ import javax.swing.JPanel;
 import org.apache.log4j.Logger;
 
 import chabernac.control.iSynchronizedEvent;
-import chabernac.space.buffer.Buffer;
+import chabernac.space.buffer.Graphics3D2D;
 import chabernac.space.geom.Point3D;
 import chabernac.space.shading.GouroudShading;
+import chabernac.space.shading.iVertexShader;
 
 
 public class Panel3D extends JPanel implements  iSynchronizedEvent, MouseListener, ComponentListener{
@@ -59,8 +60,8 @@ public class Panel3D extends JPanel implements  iSynchronizedEvent, MouseListene
         theEyePoint,
         myCamera,
         myWorld,
-        new Buffer(myWorld, getWidth(), getHeight()));
-    myGraphics.setLightManager(new GouroudShading(0.4));
+        new Graphics3D2D(myWorld, getWidth(), getHeight()));
+    myGraphics.setVertexShaders(new iVertexShader[]{new GouroudShading(0.4)});
   }
 
 
@@ -146,7 +147,7 @@ public class Panel3D extends JPanel implements  iSynchronizedEvent, MouseListene
 	  Point3D theEyePoint = new Point3D(getWidth()/2,getHeight()/2,(getWidth() + getHeight())/2);
 	  myGraphics.setEyePoint(theEyePoint);
 	  myGraphics.setFrustrum(new ScreenFrustrum(theEyePoint, new Dimension(getWidth(),getHeight())));
-	  myGraphics.setBufferStrategy(new Buffer(myWorld, getWidth(), getHeight()));
+	  myGraphics.setGraphics3D2D( new Graphics3D2D(myWorld, getWidth(), getHeight()));
   }
 
   public void componentShown(ComponentEvent anE) {

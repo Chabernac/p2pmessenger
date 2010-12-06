@@ -1,7 +1,5 @@
 package chabernac.space.geom;
 
-import java.awt.Color;
-
 import org.apache.log4j.Logger;
 
 import chabernac.space.texture.Texture2;
@@ -12,7 +10,7 @@ public class Polygon2D {
   private static boolean FORCEAFFINE = true;
   private static boolean FORCENOTAFFINE = false;
   
-  private Color myColor = null;
+//  private Color myColor = null;
   private Vertex2D[] myVertexes = null;
   private int currentVertex = 0;
   private Line2D[] myLines = null;
@@ -120,13 +118,13 @@ public class Polygon2D {
     return theVertexes;
   }
 
-  public void setColor(Color aColor){
-    myColor = aColor;
-  }
-
-  public Color getColor(){
-    return myColor;
-  }
+//  public void setColor(Color aColor){
+//    myColor = aColor;
+//  }
+//
+//  public Color getColor(){
+//    return myColor;
+//  }
 
   public void setTexture(Texture2 aTexture){
     myTexture = aTexture;
