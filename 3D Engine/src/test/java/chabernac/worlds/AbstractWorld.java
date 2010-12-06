@@ -21,6 +21,11 @@ import chabernac.space.Camera;
 import chabernac.space.Command3dFactory;
 import chabernac.space.Panel3D;
 import chabernac.space.World;
+import chabernac.space.shading.BumpShader;
+import chabernac.space.shading.GouroudShading;
+import chabernac.space.shading.TextureShader;
+import chabernac.space.shading.iPixelShader;
+import chabernac.space.shading.iVertexShader;
 
 public abstract class AbstractWorld extends JFrame {
   private static final long serialVersionUID = -8099358160922769319L;
@@ -62,16 +67,42 @@ public abstract class AbstractWorld extends JFrame {
     myPanel3D.getGraphics3D().setDrawCamZ(false);
     //myPanel3D.getGraphics3D().setBackGroundColor(new Color(100,100,200));
     myPanel3D.getGraphics3D().setBackGroundColor(new Color(0,0,0));
-    myPanel3D.getGraphics3D().setShowDrawingAreas( true );
+    myPanel3D.getGraphics3D().setShowDrawingAreas( false );
     myPanel3D.getGraphics3D().setUseClipping( true );
+    myPanel3D.getGraphics3D().setVertexShaders( getVertexShaders() );
+    myPanel3D.getGraphics3D().getGraphics3D2D().setPixelShaders( getPixelShaders() );
     
     //myPanel3D.setBorder(new TitledBorder("hallo"));
     getContentPane().setLayout(new BorderLayout());
     getContentPane().add(myPanel3D, BorderLayout.CENTER);
   }
   
+  /**
+   * override if you want to define other pixel shaders
+   * @return
+   */
+  protected iPixelShader[] getPixelShaders(){
+    return new iPixelShader[]{new TextureShader( ), new BumpShader( myWorld )};
+  }
+  
+  
+  /**
+   * override if you want to change the fps rate
+   * @return
+   */
+  protected int getFPS(){
+    return 30;
+  }
+  /**
+   * override if you want to define other pixel shaders
+   * @return
+   */
+  protected iVertexShader[] getVertexShaders(){
+    return new iVertexShader[]{new GouroudShading( 0.4 )};
+  }
+  
   private final void setupRendering(){
-    myManager = new SynchronizedEventManager(40);
+    myManager = new SynchronizedEventManager(getFPS());
     myManager.addSyncronizedEvent(myPanel3D);
     myManager.startManager();
   }
