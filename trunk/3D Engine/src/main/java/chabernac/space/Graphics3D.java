@@ -24,6 +24,7 @@ import chabernac.space.shading.FlatShading;
 import chabernac.space.shading.GouroudShading;
 import chabernac.space.shading.iVertexShader;
 import chabernac.space.texture.Texture2;
+import chabernac.space.texture.TextureImage;
 
 public class Graphics3D{
   public static enum VertextShader{FLAT, GOUROUD};
@@ -47,6 +48,8 @@ public class Graphics3D{
   private boolean drawCamZ = false;
   private boolean isShowDrawingAreas = false;
   private boolean isUseClipping = false;
+  private boolean isDrawBumpVectors = true;
+  private boolean isSingleFullRepaint = true;
 
   private Graphics3D2D myGraphics3D2D = null;
 
@@ -90,7 +93,7 @@ public class Graphics3D{
   public void drawCoordinateSystem(CoordinateSystem aSystem){
     double enLargement = 100;
 
-    Point3D theOrigin = myCamera.world2Cam(aSystem.getOrigin());
+    Point3D theOrigin = aSystem.getOrigin();
 
     GVector theCamXVector = myCamera.world2Cam(aSystem.getXUnit().multip(enLargement));
     GVector theCamYVector = myCamera.world2Cam(aSystem.getYUnit().multip(enLargement));
@@ -114,7 +117,7 @@ public class Graphics3D{
   }
 
   public void drawTextureNormals(Texture2 aTexture){
-    drawCoordinateSystem(aTexture.getSystem());
+    drawCoordinateSystem(aTexture.getCamSystem());
   }
 
 
@@ -134,6 +137,11 @@ public class Graphics3D{
         if(drawPlanes) {
           fillPolygon(aShape.myPolygons[i]);
         }
+        
+        if(isDrawBumpVectors){
+          drawBumpMap(aShape.myPolygons[i].getTexture());
+        }
+        
         if(drawRibs){
           g.setColor(Color.black);
           //Draw the outlines of the polygons
@@ -186,7 +194,6 @@ public class Graphics3D{
             drawText(theText, theCoordinate, theColor);
           }
         }
-
       }
     }
   }
@@ -217,6 +224,20 @@ public class Graphics3D{
     if(!aPolygon.visible) return;
     if(aPolygon.myCamSize < 2) return;
     myGraphics3D2D.drawPolygon(convertPolygon(aPolygon), aPolygon);
+    
+  }
+  
+  public void drawBumpMap(Texture2 aTexture){
+    if(aTexture.getBumpMap() == null) return;
+    TextureImage theImage = aTexture.getBumpMap().getImage();
+    
+    for(int x=0;x<theImage.width;x+=10){
+      for(int y=0;y<theImage.height;y+=10){
+        GVector theVector = aTexture.getBumpMap().getNormalAt(x, y).multip(30);
+        Point3D theCamPoint = aTexture.getCamSystem().getTransformator().inverseTransform(new Point3D(x,y,0));
+        drawLine(theCamPoint, theCamPoint.addition(theVector), Color.red.getRGB());
+      }
+    }
   }
 
   public void fillPolygon(Polygon aPolygon, Graphics g){
@@ -257,7 +278,7 @@ public class Graphics3D{
 
     if(drawWorldOrigin) drawWorldAxis();
 
-    if(isUseClipping){
+    if(!isSingleFullRepaint && isUseClipping){
       Image theImage = myGraphics3D2D.getImage();
       Collection<DrawingRectangleContainer> theDrawingAreas = myGraphics3D2D.getDrawingRectangles();
       for(DrawingRectangleContainer theRect : theDrawingAreas){
@@ -286,6 +307,7 @@ public class Graphics3D{
 
     myGraphics3D2D.cycleDone();
 
+    isSingleFullRepaint = false;
   }
 
   private void showDrawingAreas(Graphics aG){
@@ -467,6 +489,22 @@ public class Graphics3D{
 
   public void setGraphics3D2D( Graphics3D2D aGraphics3d2d ) {
     myGraphics3D2D = aGraphics3d2d;
+  }
+
+  public boolean isDrawBumpVectors() {
+    return isDrawBumpVectors;
+  }
+
+  public void setDrawBumpVectors(boolean anIsDrawBumpVectors) {
+    isDrawBumpVectors = anIsDrawBumpVectors;
+  }
+
+  public boolean isSingleFullRepaint() {
+    return isSingleFullRepaint;
+  }
+
+  public void setSingleFullRepaint(boolean anIsSingleFullRepaint) {
+    isSingleFullRepaint = anIsSingleFullRepaint;
   }
 }
 

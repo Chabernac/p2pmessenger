@@ -66,5 +66,9 @@ public class BumpMap {
       e.printStackTrace();
     }
   }
+  
+  public TextureImage getImage(){
+    return myImage;
+  }
 
 }

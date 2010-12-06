@@ -200,6 +200,7 @@ public class Polygon implements iTranslatable{
     if(myNormalVector == null)  calculateNormalVector();
     myNormalCamVector = aCamera.world2Cam(myNormalVector);
     myCamCenterPoint = aCamera.world2Cam(myCenterPoint);
+    myTexture.world2cam(aCamera);
     //if(myTexture != null) myTexture.world2Cam(aCamera);
   }
 

@@ -37,6 +37,18 @@ public class TextureImage{
 
     return colors[y * width + x];
   }
+  
+  public int getX(int x){
+    while(x < 0) x += width;
+    while(x >= width) x -= width;
+    return x;
+  }
+  
+  public int getY(int y){
+    while(y < 0) y += height;
+    while(y >= height) y -= height;
+    return y;
+  }
 
   /**
    * fast method for loading RGB array from a BufferedImage

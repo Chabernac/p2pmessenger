@@ -10,6 +10,7 @@ import java.io.IOException;
 
 import org.apache.log4j.Logger;
 
+import chabernac.space.Camera;
 import chabernac.space.CoordinateSystem;
 import chabernac.space.TranslateException;
 import chabernac.space.Vertex;
@@ -27,6 +28,7 @@ public class Texture2 implements iTranslatable{
 
   private TextureImage myImage = null;
   private CoordinateSystem mySystem = null;
+  private CoordinateSystem myCamSystem = null;
   private boolean isSpherical = false;
   private double mySphereRadius = 200;
   private BumpMap myBumpMap = null;
@@ -66,7 +68,7 @@ public class Texture2 implements iTranslatable{
 
   public GVector getNormalVector(int x, int y){
     GVector theNormal = myBumpMap.getNormalAt(x, y);
-    return mySystem.getTransformator().inverseTransform(theNormal);
+    return myCamSystem.getTransformator().inverseTransform(theNormal);
   }
 
   public static Vector2D distance(Texture2 aTexture, Point2D ap1, Point2D ap2){
@@ -134,5 +136,21 @@ public class Texture2 implements iTranslatable{
   @Override
   public void translate(iTransformator aTransformator)throws TranslateException {
     mySystem.translate(aTransformator);
+  }
+  
+  public TextureImage getTextureImage(){
+    return myImage;
+  }
+  
+  public void world2cam(Camera aCamera){
+    myCamSystem = new CoordinateSystem(
+    aCamera.world2Cam(mySystem.getOrigin()),
+    aCamera.world2Cam(mySystem.getXUnit()),
+    aCamera.world2Cam(mySystem.getYUnit()),
+    aCamera.world2Cam(mySystem.getZUnit()));
+  }
+
+  public CoordinateSystem getCamSystem() {
+    return myCamSystem;
   }
 }
