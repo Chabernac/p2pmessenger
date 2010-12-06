@@ -30,6 +30,7 @@ public class Texture2 implements iTranslatable{
   private boolean isSpherical = false;
   private double mySphereRadius = 200;
   private BumpMap myBumpMap = null;
+  private int myColor;
 
   public Texture2(Point3D anOrigin, GVector anXUnit, GVector anYUnit, TextureImage anImage){
     myImage = anImage;
@@ -39,6 +40,11 @@ public class Texture2 implements iTranslatable{
   public Texture2(Point3D anOrigin, GVector anXUnit, GVector anYUnit, String aTexture, boolean isTransparent) throws IOException{
     myImage = TextureFactory.getTexture(aTexture, isTransparent);
     mySystem = new CoordinateSystem(anOrigin, anXUnit, anYUnit);
+  }
+  
+  public Texture2(Point3D anOrigin, GVector anXUnit, GVector anYUnit, int aColor) throws IOException{
+    mySystem = new CoordinateSystem(anOrigin, anXUnit, anYUnit);
+    myColor = aColor;
   }
 
 
@@ -78,10 +84,12 @@ public class Texture2 implements iTranslatable{
   }
 
   public int getColor(int x, int y){
+    if(myImage == null) return myColor;
     return myImage.getColorAt(x, y);
   }
 
   public int getColor(Point2D aPoint){
+    if(myImage == null) return myColor;
     return myImage.getColorAt((int)Math.floor(aPoint.x), (int)Math.floor(aPoint.y));
   }
 
