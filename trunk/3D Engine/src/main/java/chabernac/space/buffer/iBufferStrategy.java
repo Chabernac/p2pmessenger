@@ -15,6 +15,7 @@ import chabernac.space.geom.Point2D;
 import chabernac.space.geom.Polygon;
 import chabernac.space.geom.Polygon2D;
 import chabernac.space.geom.VertexLine2D;
+import chabernac.space.shading.iPixelShader;
 
 public interface iBufferStrategy {
 	public Image getImage();
@@ -31,4 +32,6 @@ public interface iBufferStrategy {
   public void drawText(Point2D aPoint, String aText, Color aColor);
   
   public Collection<DrawingRectangleContainer> getDrawingRectangles();
+  
+  public void setPixelShaders(iPixelShader[] aPixelShaders);
 }
