@@ -148,6 +148,7 @@ public class Panel3D extends JPanel implements  iSynchronizedEvent, MouseListene
 	  myGraphics.setEyePoint(theEyePoint);
 	  myGraphics.setFrustrum(new ScreenFrustrum(theEyePoint, new Dimension(getWidth(),getHeight())));
 	  myGraphics.setGraphics3D2D( new Graphics3D2D(myWorld, getWidth(), getHeight()));
+	  myGraphics.setSingleFullRepaint(true);
   }
 
   public void componentShown(ComponentEvent anE) {
