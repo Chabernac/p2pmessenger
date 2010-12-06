@@ -10,10 +10,10 @@ import chabernac.space.buffer.Pixel;
 import chabernac.space.geom.GVector;
 import chabernac.space.geom.Point3D;
 
-public class BumpShading implements iPixelShader {
+public class BumpShader implements iPixelShader {
   private final World myWorld;
   
-  public BumpShading(World aWorld){
+  public BumpShader(World aWorld){
     myWorld = aWorld;
   }
 
@@ -23,6 +23,12 @@ public class BumpShading implements iPixelShader {
       GVector theCamNormalVector = aPixel.texture.getNormalVector(aPixel.uInt, aPixel.vInt);
       Point3D theCamPoint = aPixel.texture.getSystem().getTransformator().inverseTransform(new Point3D(aPixel.u, aPixel.v, 0.0D));
       aPixel.light += LightSource.calculateLight(myWorld, theCamPoint, theCamNormalVector);
+      
+      if(aPixel.uInt == 10 && aPixel.vInt == -75){
+        System.out.println(LightSource.calculateLight(myWorld, theCamPoint, theCamNormalVector));
+      }
+        
+        
       aPixel.light /= 2D;
     }
   }

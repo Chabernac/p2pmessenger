@@ -8,9 +8,6 @@ import chabernac.space.texture.Texture2;
 
 public class Pixel {
   //the color of the pixel, initialized at the background color
-  public int backGroundColor = 0;
-
-  //the color of the pixel, initialized at the background color
   public int color = 0;
   
   //the x coordinate of the pixel in screen space
@@ -43,8 +40,7 @@ public class Pixel {
     
   }
   
-  public Pixel(int aBackGroundColor, Texture2 aTextue){
-    backGroundColor = aBackGroundColor;
+  public Pixel(Texture2 aTextue){
     texture = aTextue;
   }
   

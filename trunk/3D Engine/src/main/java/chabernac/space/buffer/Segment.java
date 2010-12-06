@@ -17,10 +17,9 @@ public class Segment {
 
   private Texture2 texture = null;
   private int xStart, xEnd;
-  private double invzStart, invzEnd, lStart, lEnd = 0;
+  private double invzStart, invzEnd, lStart, lEnd, l = 0;
   private double zdiff, xDiff, invzRico, udiff, vdiff, urico, vrico, lRico = 0;
 //  private int c = 0;
-  public int color = 0;
   private Vertex2D start = null;
   private Vertex2D end = null;
   private boolean isTexture = false;
@@ -36,17 +35,16 @@ public class Segment {
 
   }
 
-  public Segment(World aWorld, Vertex2D aStartVertex, Vertex2D anEndVertex, int aColor, Texture2 aTexture){
+  public Segment(World aWorld, Vertex2D aStartVertex, Vertex2D anEndVertex, Texture2 aTexture){
     //this(aStartVertex, anEndVertex, Color.black.getRGB(), aTexture);
     start = aStartVertex;
     end = anEndVertex;
     texture = aTexture;
     isTexture = aTexture != null;
-    color = aColor;
     myWorld = aWorld;
     calculateRicos();
     repositionStartEnd();
-    myPixel = new Pixel( aColor, aTexture );
+    myPixel = new Pixel( aTexture );
   }
 
   private void calculateRicos() {
@@ -96,7 +94,7 @@ public class Segment {
 
     myPixel.x = xStart;
     myPixel.invZ = invzStart;
-    myPixel.light = lStart;
+    l = lStart;
     
     myPixel.u = start.getTexturePoint().x;
     myPixel.v = start.getTexturePoint().y;
@@ -109,7 +107,8 @@ public class Segment {
   public void next(){
     myPixel.x++;
     myPixel.invZ += invzRico;
-    myPixel.light += lRico;
+    l += lRico;
+    myPixel.light = l;
 
     if(isTexture){
       if(isAffine){
@@ -162,7 +161,7 @@ public class Segment {
     this.texture = texture;
   }
 
-  public static Segment getInstance(World aWorld, Vertex2D aStartVertex, Vertex2D anEndVertex, int aColor, Texture2 aTexture){
+  public static Segment getInstance(World aWorld, Vertex2D aStartVertex, Vertex2D anEndVertex, Texture2 aTexture){
     Segment result;
     if (countFree == 0) {
       result = new Segment();
@@ -171,11 +170,9 @@ public class Segment {
     }
     result.start = aStartVertex;
     result.end = anEndVertex;
-    result.color = aColor;
     result.texture = aTexture;
     result.isTexture = aTexture != null;
     result.myWorld = aWorld;
-    result.myPixel.backGroundColor = aColor;
     result.myPixel.texture = aTexture;
 
     result.calculateRicos();

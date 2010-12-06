@@ -33,7 +33,6 @@ public class Polygon implements iTranslatable{
   public Point3D myCenterPoint = null;
   public Point3D myCamCenterPoint = null;
   public Color color = new Color(0,0,0);
-  public Color lightedColor = new Color(0,0,0);
   public int myGrowSize = 10;
   public boolean visible = true;
   private Texture2 myTexture = null;
@@ -43,7 +42,7 @@ public class Polygon implements iTranslatable{
   private String myTextureName = null;
   private boolean isTransparentTexture = true;
   private String myBumpMap = null;
-
+  
   public Polygon(Vertex[] worldVertexes){
     mySize = worldVertexes.length;
     initialize();
@@ -98,11 +97,6 @@ public class Polygon implements iTranslatable{
   }
   
   public void calculateTexturePoints(){
-    if(myTextureImage == null && myTextureName == null){
-      return;
-    }
-    
-	  System.out.println("Calculating texture points");
     try {
       //we take the x vector of the texture parallel to the first 2 points of the polygon
       GVector theXVector = new GVector(w[0].myPoint, w[1].myPoint);
@@ -115,6 +109,10 @@ public class Polygon implements iTranslatable{
         myTexture = new Texture2(w[0].myPoint, theXVector, theYVector, myTextureName, isTransparentTexture );
       } else if(myTextureImage != null){
         myTexture = new Texture2(w[0].myPoint, theXVector, theYVector, myTextureImage);
+      } else {
+        //there is not texture image, but still we create a texture and say that is always have to return the color of the polygon
+        //this way we can still use the texture object for calculating camera and real world points for points on the screen
+        myTexture = new Texture2(w[0].myPoint, theXVector, theYVector, color.getRGB() );
       }
       if(myBumpMap != null){
         myTexture.setBumpMap(TextureFactory.getBumpMap(myBumpMap));
@@ -319,7 +317,7 @@ public class Polygon implements iTranslatable{
 
   public void setColor(Color aColor) {
     color = aColor;
-    lightedColor = aColor;
+    calculateTexturePoints();
   }
 
   public boolean containsVertex(Vertex aVertex){

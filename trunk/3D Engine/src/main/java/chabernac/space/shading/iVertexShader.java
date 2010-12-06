@@ -4,5 +4,5 @@ import chabernac.space.World;
 
 
 public interface iVertexShader {
-	public void calculateLight(World aWorld);
+	public void applyShading(World aWorld);
 }

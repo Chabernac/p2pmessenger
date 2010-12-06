@@ -12,6 +12,12 @@ import chabernac.space.World;
 import chabernac.space.geom.Point3D;
 import chabernac.space.geom.Rotation;
 import chabernac.space.geom.Shape;
+import chabernac.space.shading.AmbientShading;
+import chabernac.space.shading.BumpShader;
+import chabernac.space.shading.PhongShader;
+import chabernac.space.shading.TextureShader;
+import chabernac.space.shading.iPixelShader;
+import chabernac.space.shading.iVertexShader;
 
 public class AXACube extends AbstractWorld implements iSynchronizedEvent{
   private static final long serialVersionUID = 3362645587237603262L;
@@ -21,13 +27,13 @@ public class AXACube extends AbstractWorld implements iSynchronizedEvent{
   protected void buildWorld(World aWorld){
 //    myManager.addSyncronizedEvent(this);
     
-    aWorld.addLightSource(new LightSource(new Point3D(200,0,-1000), 1500));
+    aWorld.addLightSource(new LightSource(new Point3D(0,0,-50), 1500));
     
     MouseTranslationManager theMouseTranslationManager = new MouseTranslationManager(myPanel3D.getGraphics3D(), 100, 10);
     myRotationManager = new RotationManager(new Rotation(Math.PI / 500,Math.PI / 400,Math.PI / 360));
     RotationManager theRotationManager = new RotationManager(new Rotation(0,0,Math.PI / 180));
     myWorld.getTranslateManagerContainer().addTranslateManager(theMouseTranslationManager);
-    myWorld.getTranslateManagerContainer().addTranslateManager(myRotationManager);
+//    myWorld.getTranslateManagerContainer().addTranslateManager(myRotationManager);
     myWorld.getTranslateManagerContainer().addTranslateManager(theRotationManager);
     
     
@@ -99,7 +105,7 @@ public class AXACube extends AbstractWorld implements iSynchronizedEvent{
     Shape theShape = ShapeFactory.makeCube(new Point3D(5,0,400), 94,94,94);
     theShape.setColor(new Color(0,0,255,100));
     //theShape.setTexture(new TextureImage(ImageFactory.createImage("AXA", new Font("Arial", Font.BOLD, 40), 100, 100, Color.BLUE, Color.WHITE, true)));
-    theShape.setTexture("axa","guy", false, false);
+    theShape.setTexture(null,"guy", false, false);
 //    theShape.setTexture("leslie", false, false);
 //    theShape.myPolygons[0].setTexture("axa", false);
 //    theShape.myPolygons[0].setTexture("guy", false, false);
@@ -108,17 +114,17 @@ public class AXACube extends AbstractWorld implements iSynchronizedEvent{
     theMouseTranslationManager.addTranslatable(theShape);
     myRotationManager.addTranslatable(theShape);
     
-    theShape = ShapeFactory.makeCube(new Point3D(300,100,200), 94,94,94);
-    theShape.setColor(new Color(0,0,255,100));
-    //theShape.setTexture(new TextureImage(ImageFactory.createImage("AXA", new Font("Arial", Font.BOLD, 40), 100, 100, Color.BLUE, Color.WHITE, true)));
-    theShape.setTexture("leslie","leslie", false, false);
-//    theShape.setTexture("leslie", false, false);
-//    theShape.myPolygons[0].setTexture("axa", false);
-//    theShape.myPolygons[0].setTexture("guy", false, false);
-//    theShape.myPolygons[1].setTexture("leslie", false, false);
-    myWorld.addShape(theShape);
-//    theMouseTranslationManager.addTranslatable(theShape);
-    myRotationManager.addTranslatable(theShape);
+//    theShape = ShapeFactory.makeCube(new Point3D(300,100,200), 94,94,94);
+//    theShape.setColor(new Color(0,0,255,100));
+//    //theShape.setTexture(new TextureImage(ImageFactory.createImage("AXA", new Font("Arial", Font.BOLD, 40), 100, 100, Color.BLUE, Color.WHITE, true)));
+//    theShape.setTexture("leslie","leslie", false, false);
+////    theShape.setTexture("leslie", false, false);
+////    theShape.myPolygons[0].setTexture("axa", false);
+////    theShape.myPolygons[0].setTexture("guy", false, false);
+////    theShape.myPolygons[1].setTexture("leslie", false, false);
+//    myWorld.addShape(theShape);
+////    theMouseTranslationManager.addTranslatable(theShape);
+//    myRotationManager.addTranslatable(theShape);
     
 //    Shape theWindow = ShapeFactory.makeSinglePolygonShape(new Point3D(0,0,300), 100, 100);
 //    theWindow.setColor(new Color(255,100,100, 200));
@@ -156,6 +162,21 @@ public class AXACube extends AbstractWorld implements iSynchronizedEvent{
 //    myWorld.getTranslateManagerContainer().addTranslateManager(theRManager);
     
 
+    myPanel3D.getGraphics3D().setDrawNormals(false);
+    myPanel3D.getGraphics3D().setDrawRibs(false);
+    myPanel3D.getGraphics3D().setDrawBackFacing(false);
+    myPanel3D.getGraphics3D().setDrawPlanes(true);
+    myPanel3D.getGraphics3D().setDrawLightSources( true );
+    myPanel3D.getGraphics3D().setDrawTextureNormals( true );
+    myPanel3D.getGraphics3D().setDrawVertexNormals( false);
+    myPanel3D.getGraphics3D().setDrawTextureCoordinates(false);
+    myPanel3D.getGraphics3D().setDrawCamZ(false);
+    //myPanel3D.getGraphics3D().setBackGroundColor(new Color(100,100,200));
+    myPanel3D.getGraphics3D().setBackGroundColor(new Color(0,0,0));
+    myPanel3D.getGraphics3D().setShowDrawingAreas( false );
+    myPanel3D.getGraphics3D().setUseClipping( false );
+    myPanel3D.getGraphics3D().getGraphics3D2D().setUsePartialClearing( false );
+    myPanel3D.getGraphics3D().setVertexShaders( getVertexShaders() );
     
   }
   
@@ -173,12 +194,38 @@ public class AXACube extends AbstractWorld implements iSynchronizedEvent{
 
   @Override
   protected int getNrOfObjectsInWorld() {
-    return 2;
+    return 1;
   }
 
   @Override
   protected Dimension getPanelSize() {
     return new Dimension( 400, 400 );
+  }
+  
+  /**
+   * override if you want to define other pixel shaders
+   * @return
+   */
+  protected iPixelShader[] getPixelShaders(){
+    return new iPixelShader[]{
+                              new TextureShader( ), 
+                              new BumpShader( myWorld ),
+//                              new PhongShader( myWorld, myPanel3D.getGraphics3D().getEyePoint() )
+                              };
+  }
+  
+  /**
+   * override if you want to define other pixel shaders
+   * @return
+   */
+  protected iVertexShader[] getVertexShaders(){
+    return new iVertexShader[]{
+                               new AmbientShading( 0 )
+                               };
+  }
+  
+  protected int getFPS(){
+    return 40;
   }
   
 
