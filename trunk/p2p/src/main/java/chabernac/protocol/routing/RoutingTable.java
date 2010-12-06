@@ -208,10 +208,10 @@ public class RoutingTable implements Iterable< RoutingTableEntry >, Serializable
     }
   }
 
-  public synchronized AbstractPeer getGatewayForPeer(AbstractPeer aPeer) throws UnknownPeerException{
-    if(!myRoutingTable.containsKey( aPeer.getPeerId() )) throw new UnknownPeerException(aPeer, "Peer with id: " + aPeer.getPeerId() + " is not kwown in the routingtable for peer: " + myLocalPeerId);
+  public AbstractPeer getGatewayForPeer(AbstractPeer aPeer) throws UnknownPeerException{
+    if(!copyOfRoutingTable().containsKey( aPeer.getPeerId() )) throw new UnknownPeerException(aPeer, "Peer with id: " + aPeer.getPeerId() + " is not kwown in the routingtable for peer: " + myLocalPeerId);
 
-    return myRoutingTable.get( aPeer.getPeerId() ).getGateway();
+    return copyOfRoutingTable().get( aPeer.getPeerId() ).getGateway();
   }
 
   public String getLocalPeerId() {
@@ -222,8 +222,8 @@ public class RoutingTable implements Iterable< RoutingTableEntry >, Serializable
     myLocalPeerId = anLocalPeerId;
   }
 
-  public synchronized Iterator< RoutingTableEntry > iterator(){
-    return Collections.unmodifiableCollection(  myRoutingTable.values() ).iterator();
+  public Iterator< RoutingTableEntry > iterator(){
+    return Collections.unmodifiableCollection(  copyOfRoutingTable().values() ).iterator();
   }
 
   public synchronized void merge(RoutingTable anotherRoutingTable) throws SocketException, NoAvailableNetworkAdapterException, UnknownPeerException{
@@ -269,23 +269,30 @@ public class RoutingTable implements Iterable< RoutingTableEntry >, Serializable
   public void setRoutingTable( Map< String, RoutingTableEntry > anRoutingTable ) {
     myRoutingTable = anRoutingTable;
   }
-
-  public synchronized boolean containsEntryForPeer(String aPeerId){
-    return myRoutingTable.containsKey(aPeerId);
+  
+  private Map< String, RoutingTableEntry > copyOfRoutingTable(){
+    return new HashMap< String, RoutingTableEntry >(myRoutingTable);
   }
 
-  public synchronized RoutingTableEntry getEntryForPeer( String aPeerId ) throws UnknownPeerException{
-    if(!myRoutingTable.containsKey( aPeerId )){
+  public boolean containsEntryForPeer(String aPeerId){
+    //take a copy and then test it for the key
+    //this way we can not have concurrent modification errors
+    //and we avoid deadlocks because there is no need for synchronization
+    return copyOfRoutingTable().containsKey(aPeerId);
+  }
+
+  public RoutingTableEntry getEntryForPeer( String aPeerId ) throws UnknownPeerException{
+    if(!copyOfRoutingTable().containsKey( aPeerId )){
       throw new UnknownPeerException("The routing table does not contain a peer with id '" + aPeerId + "'");
     }
-    return myRoutingTable.get( aPeerId );
+    return copyOfRoutingTable().get( aPeerId );
   }
 
-  public synchronized RoutingTableEntry getEntryForLocalPeer( ) throws UnknownPeerException {
-    if(!myRoutingTable.containsKey( getLocalPeerId() )){
+  public RoutingTableEntry getEntryForLocalPeer( ) throws UnknownPeerException {
+    if(!copyOfRoutingTable().containsKey( getLocalPeerId() )){
       throw new UnknownPeerException("The local entry is not known");
     }
-    return myRoutingTable.get( getLocalPeerId() );
+    return copyOfRoutingTable().get( getLocalPeerId() );
   }
 
   public Set<AbstractPeer> getAllPeers(){
@@ -356,9 +363,9 @@ public class RoutingTable implements Iterable< RoutingTableEntry >, Serializable
     myRoutingTableEntryHistory.clear();
   }
   
-  public synchronized RoutingTable copyWithoutUnreachablePeers(){
+  public RoutingTable copyWithoutUnreachablePeers(){
     RoutingTable theRoutingTable = new RoutingTable(myLocalPeerId);
-    for(RoutingTableEntry theEntry : myRoutingTable.values()){
+    for(RoutingTableEntry theEntry : copyOfRoutingTable().values()){
       if(theEntry.isReachable()){
         theRoutingTable.addRoutingTableEntry( theEntry );
       }
