@@ -8,10 +8,10 @@ import java.util.Collection;
 
 import chabernac.space.buffer.DrawingRectangle;
 import chabernac.space.buffer.DrawingRectangleContainer;
+import chabernac.space.buffer.Graphics3D2D;
 import chabernac.space.buffer.iBufferStrategy;
 import chabernac.space.geom.GVector;
 import chabernac.space.geom.GeomFunctions;
-import chabernac.space.geom.Line2D;
 import chabernac.space.geom.Point2D;
 import chabernac.space.geom.Point3D;
 import chabernac.space.geom.PointShape;
@@ -20,13 +20,15 @@ import chabernac.space.geom.Polygon2D;
 import chabernac.space.geom.Shape;
 import chabernac.space.geom.Vertex2D;
 import chabernac.space.geom.VertexLine2D;
+import chabernac.space.shading.FlatShading;
+import chabernac.space.shading.GouroudShading;
 import chabernac.space.shading.iVertexShader;
 import chabernac.space.texture.Texture2;
 
 public class Graphics3D{
-  //public static final boolean debug = false;
+  public static enum VertextShader{FLAT, GOUROUD};
 
-  private iVertexShader myLightManager = null;
+  private iVertexShader[] myVertexShaders = null;
   private Point3D myEyePoint = null;
   private Frustrum myFrustrum = null;
   private Camera myCamera = null;
@@ -45,17 +47,15 @@ public class Graphics3D{
   private boolean drawCamZ = false;
   private boolean isShowDrawingAreas = false;
   private boolean isUseClipping = false;
-  
-  private boolean isUseTextureShading = true;
 
-  private iBufferStrategy myBuffer = null;
+  private Graphics3D2D myGraphics3D2D = null;
 
-  public Graphics3D(Frustrum aFrustrum, Point3D anEyePoint, Camera aCamera, World aWorld, iBufferStrategy aBuffer){
+  public Graphics3D(Frustrum aFrustrum, Point3D anEyePoint, Camera aCamera, World aWorld, Graphics3D2D aBuffer){
     myFrustrum = aFrustrum;
     myEyePoint = anEyePoint;
     myCamera = aCamera;
     myWorld = aWorld;
-    myBuffer = aBuffer;
+    myGraphics3D2D = aBuffer;
   }
 
   public void drawPoint(Point3D aPoint, Graphics g){
@@ -69,18 +69,18 @@ public class Graphics3D{
     Point2D theEndPoint = GeomFunctions.cam2Screen(anEndPoint, myEyePoint);
     Vertex2D theStartVertex = new Vertex2D(theStartPoint, aStartPoint.z, 1);
     Vertex2D theEndVertex = new Vertex2D(theEndPoint, anEndPoint.z, 1);
-    myBuffer.drawLine(new VertexLine2D( theStartVertex, theEndVertex, aColor));
+    myGraphics3D2D.drawLine(new VertexLine2D( theStartVertex, theEndVertex, aColor));
 
     /*
-		 Point2D theStartPoint = GeomFunctions.cam2Screen(aStartPoint, myEyePoint);
-		 Point2D theEndPoint = GeomFunctions.cam2Screen(anEndPoint, myEyePoint);
-		 aGraphics.drawLine((int)theStartPoint.getX(), (int)theStartPoint.getY(), (int)theEndPoint.getX(), (int)theEndPoint.getY());
+     Point2D theStartPoint = GeomFunctions.cam2Screen(aStartPoint, myEyePoint);
+     Point2D theEndPoint = GeomFunctions.cam2Screen(anEndPoint, myEyePoint);
+     aGraphics.drawLine((int)theStartPoint.getX(), (int)theStartPoint.getY(), (int)theEndPoint.getX(), (int)theEndPoint.getY());
      */
   }
 
   public void drawText(String aText, Point3D aPoint, Color aColor){
     Point2D thePoint = GeomFunctions.cam2Screen(aPoint, myEyePoint);
-    myBuffer.drawText(thePoint, aText, aColor);
+    myGraphics3D2D.drawText(thePoint, aText, aColor);
   }
 
   private void drawWorldAxis(){
@@ -100,15 +100,15 @@ public class Graphics3D{
     Point3D theYEndPoint = theOrigin.addition(theCamYVector);
     Point3D theZEndPoint = theOrigin.addition(theCamZVector);
 
-    //		Debug.log(this,"Drawing line from " + theOrigin + " --> " + theXEndPoint);
+    //    Debug.log(this,"Drawing line from " + theOrigin + " --> " + theXEndPoint);
 
     drawLine(theOrigin, theXEndPoint, Color.red.getRGB());
 
-    //		Debug.log(this,"Drawing line from " + theOrigin + " --> " + theYEndPoint);
+    //    Debug.log(this,"Drawing line from " + theOrigin + " --> " + theYEndPoint);
 
     drawLine(theOrigin, theYEndPoint, Color.green.getRGB());
 
-    //		Debug.log(this,"Drawing line from " + theOrigin + " --> " + theZEndPoint);
+    //    Debug.log(this,"Drawing line from " + theOrigin + " --> " + theZEndPoint);
 
     drawLine(theOrigin, theZEndPoint, Color.yellow.getRGB());
   }
@@ -198,7 +198,7 @@ public class Graphics3D{
       //hier
       thePolygon.addVertex(new Vertex2D(GeomFunctions.cam2Screen(aPolygon.c[i].myPoint, myEyePoint),  aPolygon.c[i].myTextureCoordinate, aPolygon.c[i].myPoint.z, aPolygon.c[i].lightIntensity));
     }
-    thePolygon.setColor(aPolygon.getColor());
+//    thePolygon.setColor(aPolygon.getColor());
     //aPolygon.getTexture().cam2screen(myEyePoint);
     thePolygon.setTexture(aPolygon.getTexture());
 
@@ -216,7 +216,7 @@ public class Graphics3D{
   public void fillPolygon(Polygon aPolygon){
     if(!aPolygon.visible) return;
     if(aPolygon.myCamSize < 2) return;
-    myBuffer.drawPolygon(convertPolygon(aPolygon), aPolygon);
+    myGraphics3D2D.drawPolygon(convertPolygon(aPolygon), aPolygon);
   }
 
   public void fillPolygon(Polygon aPolygon, Graphics g){
@@ -228,27 +228,28 @@ public class Graphics3D{
       xPoints[i] = (int)thePoint.x;
       yPoints[i] = (int)thePoint.y;
     }
-    g.setColor(aPolygon.lightedColor);
+    g.setColor(aPolygon.color);
     g.fillPolygon(xPoints, yPoints, aPolygon.myCamSize);
   }
 
   public void drawWorld(Graphics aG){
     Rectangle theOrigClip = aG.getClipBounds();
     
-    myBuffer.setGraphics(aG);
-    myBuffer.setBackGroundColor(myBackGroundColor);
+    myGraphics3D2D.setBackGroundColor(myBackGroundColor);
 
-    myBuffer.clear();
+    myGraphics3D2D.clear();
 
     myWorld.getTranslateManagerContainer().doTranslation();
 
     myWorld.world2Cam(myCamera);
 
-    //myWorld.sort();
+//    myWorld.sort();
 
     myWorld.clip2Frustrum(myFrustrum);
 
-    if(myLightManager != null) myLightManager.calculateLight(myWorld);
+    for(iVertexShader theShader : myVertexShaders){
+      theShader.applyShading( myWorld );
+    }
 
     for(int i=myWorld.mySize - 1;i>=0;i--){
       drawShape(myWorld.myShapes[i], aG);
@@ -257,15 +258,15 @@ public class Graphics3D{
     if(drawWorldOrigin) drawWorldAxis();
 
     if(isUseClipping){
-      Image theImage = myBuffer.getImage();
-      Collection<DrawingRectangleContainer> theDrawingAreas = myBuffer.getDrawingRectangles();
+      Image theImage = myGraphics3D2D.getImage();
+      Collection<DrawingRectangleContainer> theDrawingAreas = myGraphics3D2D.getDrawingRectangles();
       for(DrawingRectangleContainer theRect : theDrawingAreas){
         DrawingRectangle theSpanningRect = theRect.getSpanningRect();
         aG.setClip( theSpanningRect.getX(), theSpanningRect.getY(), theSpanningRect.getWidth() + 1, theSpanningRect.getHeight() + 1);
         aG.drawImage(theImage, 0,0, null);
       }  
     } else {
-      aG.drawImage(myBuffer.getImage(), 0,0, null);
+      aG.drawImage(myGraphics3D2D.getImage(), 0,0, null);
     }
     
     aG.setClip( theOrigClip );
@@ -283,15 +284,15 @@ public class Graphics3D{
     if(isShowDrawingAreas) showDrawingAreas(aG);
     
 
-    myBuffer.cycleDone();
+    myGraphics3D2D.cycleDone();
 
   }
 
   private void showDrawingAreas(Graphics aG){
-    for(DrawingRectangleContainer theRectContainer : myBuffer.getDrawingRectangles()){
-//      aG.setColor( Color.red );
-//      DrawingRectangle theClaeringRect = theRectContainer.getClearingRect();
-//      aG.drawRect( theClaeringRect.getX(), theClaeringRect.getY(), theClaeringRect.getWidth(), theClaeringRect.getHeight());
+    for(DrawingRectangleContainer theRectContainer : myGraphics3D2D.getDrawingRectangles()){
+      aG.setColor( Color.red );
+      DrawingRectangle theClaeringRect = theRectContainer.getClearingRect();
+      aG.drawRect( theClaeringRect.getX(), theClaeringRect.getY(), theClaeringRect.getWidth(), theClaeringRect.getHeight());
 
       aG.setColor( Color.blue);
       DrawingRectangle theDrawingRect = theRectContainer.getDrawingRect();
@@ -347,12 +348,21 @@ public class Graphics3D{
     drawRibs = b;
   }
 
-  public void setLightManager(iVertexShader aLightManager){
-    myLightManager = aLightManager;
+  public void setVertexShaders(VertextShader[] aVertexShaders){
+    myVertexShaders = new iVertexShader[aVertexShaders.length];
+    int i=0;
+    for(VertextShader theShader : aVertexShaders){
+      if(theShader == VertextShader.FLAT) myVertexShaders[i++] = new FlatShading( 0.3 );
+      else if(theShader == VertextShader.GOUROUD) myVertexShaders[i++] = new GouroudShading( 0.3 );
+    }
+  }
+  
+  public void setVertexShaders(iVertexShader[] aVertexShaders){
+    myVertexShaders = aVertexShaders;
   }
 
   public iBufferStrategy getBufferStrategy(){
-    return myBuffer;
+    return myGraphics3D2D;
   }
 
   public boolean isDrawTextureNormals() {
@@ -393,10 +403,6 @@ public class Graphics3D{
 
   public void setFrustrum(Frustrum aFrustrum){
     myFrustrum = aFrustrum;
-  }
-
-  public void setBufferStrategy(iBufferStrategy aStrategy){
-    myBuffer = aStrategy;
   }
 
   public boolean isDrawVertexNormals() {
@@ -453,6 +459,14 @@ public class Graphics3D{
 
   public void setDrawLightSources( boolean aDrawLightSources ) {
     drawLightSources = aDrawLightSources;
+  }
+
+  public Graphics3D2D getGraphics3D2D() {
+    return myGraphics3D2D;
+  }
+
+  public void setGraphics3D2D( Graphics3D2D aGraphics3d2d ) {
+    myGraphics3D2D = aGraphics3d2d;
   }
 }
 
