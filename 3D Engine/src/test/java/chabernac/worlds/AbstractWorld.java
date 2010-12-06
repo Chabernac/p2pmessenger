@@ -62,7 +62,7 @@ public abstract class AbstractWorld extends JFrame {
     myPanel3D.getGraphics3D().setDrawCamZ(false);
     //myPanel3D.getGraphics3D().setBackGroundColor(new Color(100,100,200));
     myPanel3D.getGraphics3D().setBackGroundColor(new Color(0,0,0));
-    myPanel3D.getGraphics3D().setShowDrawingAreas( false );
+    myPanel3D.getGraphics3D().setShowDrawingAreas( true );
     myPanel3D.getGraphics3D().setUseClipping( true );
     
     //myPanel3D.setBorder(new TitledBorder("hallo"));

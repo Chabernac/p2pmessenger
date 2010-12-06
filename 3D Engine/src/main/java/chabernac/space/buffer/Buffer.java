@@ -69,8 +69,8 @@ public class Buffer implements iBufferStrategy {
   private void createPixelShaders(){
     List<iPixelShader> theShaders = new ArrayList<iPixelShader>();
     
-    theShaders.add(new TextureShader(false));
-//    theShaders.add(new BumpShading( myWorld ));
+    theShaders.add(new TextureShader(true));
+    theShaders.add(new BumpShading( myWorld ));
 //    theShaders.add(new PhongShader( myWorld ));
 //    theShaders.add(new DepthShading( 5000 ));
 //    theShaders.add(new SpecularShader( myWorld ));
@@ -84,7 +84,14 @@ public class Buffer implements iBufferStrategy {
 
 
   public void clearFull(){
-    setBackGroundColor( myBackGroundColor );
+    DrawingRectangleContainer theContainer = new DrawingRectangleContainer();
+    theContainer.getClearingRect().minX = 0;
+    theContainer.getClearingRect().maxX = myWidth - 1;
+    theContainer.getClearingRect().minY = 0;
+    theContainer.getClearingRect().maxY = myHeight - 1;
+    myDrawingAreas.clear();
+    myDrawingAreas.put( new Integer(myBackGroundColor), theContainer );
+    clear(theContainer.getClearingRect());
   }
 
   public final void clear(){
@@ -205,13 +212,7 @@ public class Buffer implements iBufferStrategy {
   public void setBackGroundColor(int aBackGroundColor) {
     if(myBackGroundColor != aBackGroundColor){
       myBackGroundColor = aBackGroundColor;
-      DrawingRectangleContainer theContainer = new DrawingRectangleContainer();
-      theContainer.getClearingRect().minX = 0;
-      theContainer.getClearingRect().maxX = myWidth - 1;
-      theContainer.getClearingRect().minY = 0;
-      theContainer.getClearingRect().maxY = myHeight - 1;
-      myDrawingAreas.put( new Integer(aBackGroundColor), theContainer );
-      clear(theContainer.getClearingRect());
+      clearFull();
     }
   }
 
@@ -347,6 +348,10 @@ public class Buffer implements iBufferStrategy {
 
   public void setFont(Font anFont) {
     myFont = anFont;
+  }
+  @Override
+  public void setPixelShaders(iPixelShader[] aPixelShaders) {
+    myPixelShaders = aPixelShaders;
   }
 
 }
