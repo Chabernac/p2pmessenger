@@ -16,7 +16,7 @@ import chabernac.space.geom.Point3D;
 public class PhongShader implements iPixelShader {
  private final World myWorld;
  
- private final double myAmbient = 0.3;
+ private final double myAmbient = 0.4;
  private final double myDiffuse = 0.2;
  private final double mySpecular = 100;
  private final double myPower = 500;
@@ -45,7 +45,17 @@ public class PhongShader implements iPixelShader {
     Point3D theCamPoint = aPixel.texture.getSystem().getTransformator().inverseTransform(new Point3D(aPixel.u, aPixel.v, 0.0D));
 
     GVector theVectorTowardsCamera = new GVector( theCamPoint, myCamLocation ).norm();
-    GVector theNormalAtCamPoint = aPixel.texture.getSystem().getZUnit();
+    
+    //the normal of the plane
+//    GVector theNormalAtCamPoint = aPixel.texture.getSystem().getZUnit();
+    
+    //but we can as well use the normal of the  bump map
+    GVector theNormalAtCamPoint = null;
+    if(aPixel.texture.getBumpMap() != null){
+      theNormalAtCamPoint = aPixel.texture.getNormalVector(aPixel.uInt, aPixel.vInt);
+    } else {
+      theNormalAtCamPoint = aPixel.texture.getSystem().getZUnit();
+    }
     
     
     double theSpecularLightning = 0;

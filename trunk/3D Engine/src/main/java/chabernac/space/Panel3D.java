@@ -129,7 +129,7 @@ public class Panel3D extends JPanel implements  iSynchronizedEvent, MouseListene
         
         //theGraphics.clearRect(0,0,getWidth(),getHeight());
         //super.paint(theGraphics);
-        myGraphics.drawWorld(theGraphics);
+        myGraphics.drawWorld(theGraphics, anCounter);
         
       }
     }catch(Exception e){

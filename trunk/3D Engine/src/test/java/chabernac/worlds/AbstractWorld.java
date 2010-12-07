@@ -10,6 +10,7 @@ import java.awt.Dimension;
 import java.awt.event.KeyEvent;
 
 import javax.swing.JFrame;
+import javax.xml.crypto.dsig.keyinfo.KeyValue;
 
 import org.apache.log4j.BasicConfigurator;
 
@@ -117,19 +118,19 @@ public abstract class AbstractWorld extends JFrame {
     theContainer.addKeyMap(new KeyMap(KeyEvent.VK_F, Command3dFactory.strafeRight(mySynchronizedTimer, aCamera, 1000000),2));
      */
 
-    myKeyMapContainer.addKeyMap(new KeyMap(KeyEvent.VK_D, Command3dFactory.strafeDown(myManager, myCamera, 20),1));
-    myKeyMapContainer.addKeyMap(new KeyMap(KeyEvent.VK_E, Command3dFactory.strafeUp(myManager, myCamera, 20),1)); 
-    myKeyMapContainer.addKeyMap(new KeyMap(KeyEvent.VK_S, Command3dFactory.strafeLeft(myManager, myCamera, 20),1));
-    myKeyMapContainer.addKeyMap(new KeyMap(KeyEvent.VK_F, Command3dFactory.strafeRight(myManager, myCamera, 20),1));
+    myKeyMapContainer.addKeyMap(new KeyMap(KeyEvent.VK_D, Command3dFactory.strafeDown(myManager, myCamera, 5),2));
+    myKeyMapContainer.addKeyMap(new KeyMap(KeyEvent.VK_E, Command3dFactory.strafeUp(myManager, myCamera, 5),2)); 
+    myKeyMapContainer.addKeyMap(new KeyMap(KeyEvent.VK_S, Command3dFactory.strafeLeft(myManager, myCamera, 5),2));
+    myKeyMapContainer.addKeyMap(new KeyMap(KeyEvent.VK_F, Command3dFactory.strafeRight(myManager, myCamera, 5),2));
 
 
-    myKeyMapContainer.addKeyMap(new KeyMap(KeyEvent.VK_SPACE, Command3dFactory.forward(myManager, myCamera, 20),1));
-    myKeyMapContainer.addKeyMap(new KeyMap(KeyEvent.VK_ALT, Command3dFactory.backward(myManager, myCamera, 20),1));
+    myKeyMapContainer.addKeyMap(new KeyMap(KeyEvent.VK_SPACE, Command3dFactory.forward(myManager, myCamera, 5),2));
+    myKeyMapContainer.addKeyMap(new KeyMap(KeyEvent.VK_ALT, Command3dFactory.backward(myManager, myCamera, 5),2));
 
-    myKeyMapContainer.addKeyMap(new KeyMap(KeyEvent.VK_LEFT, Command3dFactory.left(myManager, myCamera, (float)Math.PI/144),2));
-    myKeyMapContainer.addKeyMap(new KeyMap(KeyEvent.VK_RIGHT, Command3dFactory.right(myManager, myCamera, (float)Math.PI/144),2));
-    myKeyMapContainer.addKeyMap(new KeyMap(KeyEvent.VK_DOWN, Command3dFactory.down(myManager, myCamera, (float)Math.PI/144),2));
-    myKeyMapContainer.addKeyMap(new KeyMap(KeyEvent.VK_UP, Command3dFactory.up(myManager, myCamera, (float)Math.PI/144),2));
+    myKeyMapContainer.addKeyMap(new KeyMap(new int[]{KeyEvent.VK_LEFT, KeyEvent.VK_NUMPAD4}, Command3dFactory.left(myManager, myCamera, (float)Math.PI/144)));
+    myKeyMapContainer.addKeyMap(new KeyMap(new int[]{KeyEvent.VK_RIGHT, KeyEvent.VK_NUMPAD6}, Command3dFactory.right(myManager, myCamera, (float)Math.PI/144)));
+    myKeyMapContainer.addKeyMap(new KeyMap(new int[]{KeyEvent.VK_DOWN, KeyEvent.VK_NUMPAD2}, Command3dFactory.down(myManager, myCamera, (float)Math.PI/144)));
+    myKeyMapContainer.addKeyMap(new KeyMap(new int[]{KeyEvent.VK_UP, KeyEvent.VK_NUMPAD8}, Command3dFactory.up(myManager, myCamera, (float)Math.PI/144)));
 
     myKeyMapContainer.addKeyMap(new KeyMap(KeyEvent.VK_NUMPAD7, Command3dFactory.rollLeft(myManager, myCamera, (float)Math.PI/144),2));
     myKeyMapContainer.addKeyMap(new KeyMap(KeyEvent.VK_NUMPAD9, Command3dFactory.rollRight(myManager, myCamera, (float)Math.PI/144),2));
