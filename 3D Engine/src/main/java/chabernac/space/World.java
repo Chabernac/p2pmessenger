@@ -1,20 +1,18 @@
 package chabernac.space;
 
 import java.util.ArrayList;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import chabernac.math.MatrixException;
 import chabernac.space.geom.PointShape;
 import chabernac.space.geom.Shape;
+import chabernac.utils.ArrayTools;
 import chabernac.utils.sort.FastArrayQSortAlgorithm;
 
 public class World{
-  public int mySize;
-  public Shape[] myShapes;
-  public int myPointShapeSize;
-  public PointShape[] myPointShapes;
+  public Shape[] myShapes = new Shape[0];
+  public PointShape[] myPointShapes = new PointShape[0];
   private int myCurrentShape = 0;
   private int myCurrentPointShape = 0;
   private FastArrayQSortAlgorithm theSortAlgorithm = null;
@@ -23,29 +21,20 @@ public class World{
 
   private ExecutorService myService = Executors.newFixedThreadPool( Runtime.getRuntime().availableProcessors() );
 
-
-  public World(int aSize){
-    this(aSize, 0);
-  }
-
-  public World(int aSize, int aPointShapeSize){
-    mySize = aSize;
-    myPointShapeSize = aPointShapeSize;
+  public World(){
     initialize();
   }
 
   private void initialize(){
-    myShapes = new Shape[mySize];
-    myPointShapes = new PointShape[myPointShapeSize];
     theSortAlgorithm = new FastArrayQSortAlgorithm();
     clear();
   }
 
   public void clear(){
-    for(int i=0;i<mySize;i++){
+    for(int i=0;i<myShapes.length;i++){
       myShapes[i] = null;
     }
-    for(int i=0;i<myPointShapeSize;i++){
+    for(int i=0;i<myPointShapes.length;i++){
       myPointShapes[i] = null;
     }
     myCurrentShape = 0;
@@ -53,15 +42,16 @@ public class World{
   }
 
   public void addShape(Shape aShape){
+    if(myCurrentShape == myShapes.length) myShapes = (Shape[])ArrayTools.growArray( myShapes, 1 );
     myShapes[myCurrentShape++] = aShape;
   }
 
   public void addPointShape(PointShape aPointShape){
+    if(myCurrentPointShape == myShapes.length) myShapes = (Shape[])ArrayTools.growArray( myCurrentPointShape, 1 );
     myPointShapes[myCurrentPointShape++] = aPointShape;
   }
 
   public void done() throws PolygonException{
-    optimize();
     //affectLightning();
     calculateCenterPoints();
     calculateNormalVectors();
@@ -85,32 +75,17 @@ public class World{
 	}
    */
 
-  public void optimize(){
-    if(myCurrentShape < mySize){
-      Shape[] theTempShapes = new Shape[myCurrentShape];
-      System.arraycopy(myShapes, 0, theTempShapes, 0, myCurrentShape);
-      myShapes = theTempShapes;
-      mySize = myCurrentShape;
-    }
-    if(myCurrentPointShape < myPointShapeSize){
-      PointShape[] theTempShapes = new PointShape[myCurrentPointShape];
-      System.arraycopy(myPointShapes, 0, theTempShapes, 0, myCurrentPointShape);
-      myPointShapes = theTempShapes;
-      myPointShapeSize = myCurrentShape;
-    }
-  }
-
   public void calculateCenterPoints(){
-    for(int i=0;i<mySize;i++){
+    for(int i=0;i<myShapes.length;i++){
       myShapes[i].calculateCenterPoint();
     }
-    for(int i=0;i<myPointShapeSize;i++){
+    for(int i=0;i<myPointShapes.length;i++){
       myPointShapes[i].calculateCenterPoint();
     }
   }
 
   public void calculateNormalVectors() throws PolygonException{
-    for(int i=0;i<mySize;i++){
+    for(int i=0;i<myShapes.length;i++){
       myShapes[i].calculateNormalVectors();
     }
   }
@@ -118,18 +93,16 @@ public class World{
   public void world2Cam(final Camera aCamera) throws PolygonException, MatrixException{
     //TODO optimized code for multi core processors, but does dis has the wanted effect?
 
-
-    for(int i=0;i<mySize;i++){
+    for(int i=0;i<myShapes.length;i++){
       myShapes[i].world2Cam(aCamera);
     }
-    for(int i=0;i<myPointShapeSize;i++){
+    for(int i=0;i<myPointShapes.length;i++){
       myPointShapes[i].world2Cam(aCamera);
     }
 
     for(LightSource theLighteSource : lightSources){
       theLighteSource.world2Cam(aCamera);
     }
-
   }
 
   //  public void world2Cam(final Camera aCamera) throws PolygonException, MatrixException{
@@ -173,10 +146,10 @@ public class World{
   //  }
 
   public void clip2Frustrum(Frustrum aFrustrum) throws PolygonException{
-    for(int i=0;i<mySize;i++){
+    for(int i=0;i<myShapes.length;i++){
       myShapes[i].clip2Frustrum(aFrustrum);
     }
-    for(int i=0;i<myPointShapeSize;i++){
+    for(int i=0;i<myPointShapes.length;i++){
       myPointShapes[i].clip2Frustrum(aFrustrum);
     }
   }

@@ -10,7 +10,9 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import java.util.Collection;
@@ -60,6 +62,7 @@ public class Graphics3D2D implements iBufferStrategy {
   private void init(){
     myImage = new BufferedImage(myWidth, myHeight, BufferedImage.TYPE_INT_ARGB);
     myGraphics = myImage.getGraphics();
+    ((Graphics2D)myGraphics).setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
     //we should be able to specify the depth buffering technique
     myDepthBuffer = new ZBuffer( myWidth, myHeight );
     clearFull();

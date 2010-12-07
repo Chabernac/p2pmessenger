@@ -272,7 +272,7 @@ public class Graphics3D{
       theShader.applyShading( myWorld );
     }
 
-    for(int i=myWorld.mySize - 1;i>=0;i--){
+    for(int i=myWorld.myShapes.length - 1;i>=0;i--){
       drawShape(myWorld.myShapes[i], aG);
     }
 
@@ -292,7 +292,7 @@ public class Graphics3D{
     
     aG.setClip( theOrigClip );
     
-    for(int i=myWorld.myPointShapeSize - 1;i>=0;i--){
+    for(int i=myWorld.myPointShapes.length - 1;i>=0;i--){
       drawPointShape(myWorld.myPointShapes[i], aG);
     }
 
