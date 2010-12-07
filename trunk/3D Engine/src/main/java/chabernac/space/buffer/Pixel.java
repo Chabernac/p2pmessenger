@@ -4,6 +4,7 @@
  */
 package chabernac.space.buffer;
 
+import chabernac.space.geom.Point3D;
 import chabernac.space.texture.Texture2;
 
 public class Pixel {
@@ -36,6 +37,8 @@ public class Pixel {
   
   public Texture2 texture;
   
+  public Point3D myCamPoint = null;
+  
   public Pixel(){
     
   }
@@ -59,4 +62,12 @@ public class Pixel {
 
     color = (alpha << 24 & 0xFF000000) | (red << 16 & 0x00FF0000) | (green << 8 & 0x0000FF00) | (blue << 0 & 0x000000FF);
   }
+  
+  public Point3D getCamPoint(){
+    if(myCamPoint == null){
+      myCamPoint = texture.getSystem().getTransformator().inverseTransform(new Point3D(u, v, 0.0D));      
+    }
+    return myCamPoint;
+  }
 }
+

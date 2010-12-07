@@ -41,7 +41,7 @@ public class PhongShader implements iPixelShader {
 //    R  = light reflection unit vector (mirror of L about N)
 
   //we might already have calculated this point for the bump mapping, make sure we do not do the calculation twice
-    Point3D theCamPoint = aPixel.texture.getSystem().getTransformator().inverseTransform(new Point3D(aPixel.u, aPixel.v, 0.0D));
+    Point3D theCamPoint = aPixel.getCamPoint();
 
     GVector theVectorTowardsCamera = new GVector( theCamPoint, myCamLocation ).norm();
     
