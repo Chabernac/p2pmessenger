@@ -253,7 +253,7 @@ public class Graphics3D{
     g.fillPolygon(xPoints, yPoints, aPolygon.myCamSize);
   }
 
-  public void drawWorld(Graphics aG){
+  public void drawWorld(Graphics aG, long aCycle){
     Rectangle theOrigClip = aG.getClipBounds();
     
     myGraphics3D2D.setBackGroundColor(myBackGroundColor);
@@ -278,7 +278,7 @@ public class Graphics3D{
 
     if(drawWorldOrigin) drawWorldAxis();
 
-    if(!isSingleFullRepaint && isUseClipping){
+    if(!isSingleFullRepaint && isUseClipping && ((aCycle & 256) != 256)){
       Image theImage = myGraphics3D2D.getImage();
       Collection<DrawingRectangleContainer> theDrawingAreas = myGraphics3D2D.getDrawingRectangles();
       for(DrawingRectangleContainer theRect : theDrawingAreas){
