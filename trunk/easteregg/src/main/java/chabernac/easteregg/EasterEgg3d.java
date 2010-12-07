@@ -19,13 +19,18 @@ import chabernac.space.LightSource;
 import chabernac.space.OneLocationTranslateManager;
 import chabernac.space.RotationManager;
 import chabernac.space.ScreenFrustrum;
-import chabernac.space.Shape;
 import chabernac.space.ShapeFactory;
 import chabernac.space.World;
-import chabernac.space.buffer.ZBuffer;
+import chabernac.space.buffer.Graphics3D2D;
 import chabernac.space.geom.Point3D;
 import chabernac.space.geom.Rotation;
-import chabernac.space.shading.GouroudShading;
+import chabernac.space.geom.Shape;
+import chabernac.space.shading.AmbientShading;
+import chabernac.space.shading.BumpShader;
+import chabernac.space.shading.PhongShader;
+import chabernac.space.shading.TextureShader;
+import chabernac.space.shading.iPixelShader;
+import chabernac.space.shading.iVertexShader;
 
 public class EasterEgg3d extends DefaultEasterEggPaintable {
   private World myWorld = null;
@@ -42,28 +47,28 @@ public class EasterEgg3d extends DefaultEasterEggPaintable {
   }
 
   private void buildWorld(){
-    myWorld = new World(1);
+    myWorld = new World();
 
     MouseTranslationManager theMouseTranslationManager = new MouseTranslationManager(100, 10);
     ((Component)myWindow).addMouseMotionListener(theMouseTranslationManager);
     ((Component)myWindow).addMouseWheelListener(theMouseTranslationManager);
 
     myRotationManager = new RotationManager(new Rotation(Math.PI / 180,Math.PI / 120,Math.PI / 80));
-//  TranslateManager theManager2 = new RotationManager(new Rotation(Math.PI / 180,Math.PI / 60,Math.PI / 40));
-//  TranslateManager theManager3 = new PathTranslateManager(new Point3D[]{new Point3D(-300,100,100), new Point3D(-300,-200,200), new Point3D(300,-200,100)}, 10);
+    //  TranslateManager theManager2 = new RotationManager(new Rotation(Math.PI / 180,Math.PI / 60,Math.PI / 40));
+    //  TranslateManager theManager3 = new PathTranslateManager(new Point3D[]{new Point3D(-300,100,100), new Point3D(-300,-200,200), new Point3D(300,-200,100)}, 10);
 
     myWorld.getTranslateManagerContainer().addTranslateManager(myRotationManager);
-//  myWorld.getTranslateManagerContainer().addTranslateManager(theManager2);
-//  myWorld.getTranslateManagerContainer().addTranslateManager(theManager3);
+    //  myWorld.getTranslateManagerContainer().addTranslateManager(theManager2);
+    //  myWorld.getTranslateManagerContainer().addTranslateManager(theManager3);
     myWorld.getTranslateManagerContainer().addTranslateManager(theMouseTranslationManager);
 
     Shape theShape = ShapeFactory.makeCube(new Point3D(0,0,1000), 94,94,94);
     theShape.setTexture("axa", "axa", false, false);
-//    theShape.myPolygons[0].setTexture("guy", null, false, false);
-//    theShape.myPolygons[1].setTexture("leslie", null, false, false);
+    //    theShape.myPolygons[0].setTexture("guy", null, false, false);
+    //    theShape.myPolygons[1].setTexture("leslie", null, false, false);
     myWorld.addShape(theShape);
     myRotationManager.addTranslatable(theShape);
-//  theManager3.addTranslatable(theShape);
+    //  theManager3.addTranslatable(theShape);
     theMouseTranslationManager.addTranslatable(theShape);
 
     /*
@@ -77,7 +82,7 @@ public class EasterEgg3d extends DefaultEasterEggPaintable {
      */
 
     //myWorld.addLightSource(new LightSource(new Point3D(0,0,-50), 100));
-    myWorld.addLightSource(new LightSource(new Point3D(0,200,0), 500));
+    myWorld.addLightSource(new LightSource(new Point3D(0,0,-100), 500));
 
     myCamera = new Camera();
 
@@ -98,21 +103,28 @@ public class EasterEgg3d extends DefaultEasterEggPaintable {
       myRotationManager.setRotation(theNewRotation);
     }
 
-    myGraphics.drawWorld(aG);
+    myGraphics.drawWorld(aG, myCounter);
   }
 
   private void initGraphics(Rectangle aBounds){
-    ZBuffer theBuffer = new ZBuffer(myWorld, aBounds.width, aBounds.height);
-    theBuffer.setBufferEnabled(true);
     myEyePoint = new Point3D(aBounds.width/2,aBounds.height/2,(aBounds.width + aBounds.height)/2);
     myGraphics = new Graphics3D(new ScreenFrustrum(myEyePoint, new Dimension(aBounds.width, aBounds.height)),
-        myEyePoint,
-        myCamera,
-        myWorld,
-        theBuffer
-        );
-    myGraphics.setLightManager(new GouroudShading(0.2));
+                                myEyePoint,
+                                myCamera,
+                                myWorld,
+                                new Graphics3D2D(myWorld, aBounds.width, aBounds.height)
+    );
+    myGraphics.setVertexShaders(new iVertexShader[]{new AmbientShading(0)});
     myGraphics.setBackGroundColor( Color.black );
+
+    myGraphics.getGraphics3D2D().setPixelShaders( 
+                                                 new iPixelShader[]{
+                                                                    new TextureShader( ), 
+                                                                    new BumpShader( myWorld ),
+                                                                    new PhongShader( myWorld )
+                                                 }
+
+    );
   }
 
   private class MouseTranslationManager extends OneLocationTranslateManager implements MouseMotionListener, MouseWheelListener{
