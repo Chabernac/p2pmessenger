@@ -24,6 +24,11 @@ public class KeyMap extends Observable{
     myKeyPressedCommand = aCommand;
   }
   
+  public KeyMap(int[] aKeyCodes, KeyCommand aCommand){
+    myKeyCodes = aKeyCodes;
+    myKeyPressedCommand = aCommand;
+  }
+  
   public int[] getKeyCodes(){ return myKeyCodes; }
   public void setKey(int aKeyCode, int aIndex) throws ArrayIndexOutOfBoundsException{ myKeyCodes[aIndex] = aKeyCode; }
   public KeyCommand getCommand(){ return myKeyPressedCommand; }
