@@ -47,8 +47,8 @@ public class Graphics3D{
   private boolean drawTextureCoordinates = false;
   private boolean drawCamZ = false;
   private boolean isShowDrawingAreas = false;
-  private boolean isUseClipping = false;
-  private boolean isDrawBumpVectors = true;
+  private boolean isUseClipping = true;
+  private boolean isDrawBumpVectors = false;
   private boolean isSingleFullRepaint = true;
 
   private Graphics3D2D myGraphics3D2D = null;

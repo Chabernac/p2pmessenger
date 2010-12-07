@@ -19,14 +19,13 @@ public class PhongShader implements iPixelShader {
  private final double myAmbient = 0.4;
  private final double myDiffuse = 0.2;
  private final double mySpecular = 100;
- private final double myPower = 500;
+ private final double myPower = 300;
   
-  private Point3D myCamLocation = null;
+  private final Point3D myCamLocation = new Point3D( 0, 0, 0 ); 
   
-  public PhongShader( World aWorld, Point3D anEyePoint ) {
+  public PhongShader( World aWorld) {
     super();
     myWorld = aWorld;
-    myCamLocation = new Point3D( 0, 0, 0 );
   }
 
   @Override
