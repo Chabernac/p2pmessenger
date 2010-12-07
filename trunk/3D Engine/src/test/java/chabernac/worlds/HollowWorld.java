@@ -154,7 +154,7 @@ public class HollowWorld extends DefaultExitFrame{
 
 
   private World buildSinglePolygonWorld(){
-    World theWorld = new World(1, 0);
+    World theWorld = new World();
 
     /*
     SinglePolygonShape thePolygonShape = new SinglePolygonShape(new Point3D(500,0,500), 300, 300);
@@ -240,7 +240,7 @@ public class HollowWorld extends DefaultExitFrame{
   }
 
   private World buildWorld() {
-    World theWorld = new World(1, 0);
+    World theWorld = new World();
 
     try{
 

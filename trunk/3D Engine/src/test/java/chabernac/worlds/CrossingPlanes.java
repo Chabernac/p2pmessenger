@@ -55,11 +55,6 @@ public class CrossingPlanes extends AbstractWorld{
   }
 
   @Override
-  protected int getNrOfObjectsInWorld() {
-    return 3;
-  }
-
-  @Override
   protected Dimension getPanelSize() {
     return new Dimension( 300, 300 );
   }

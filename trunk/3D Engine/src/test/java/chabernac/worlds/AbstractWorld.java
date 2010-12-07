@@ -10,7 +10,6 @@ import java.awt.Dimension;
 import java.awt.event.KeyEvent;
 
 import javax.swing.JFrame;
-import javax.xml.crypto.dsig.keyinfo.KeyValue;
 
 import org.apache.log4j.BasicConfigurator;
 
@@ -51,7 +50,7 @@ public abstract class AbstractWorld extends JFrame {
     setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     setSize(getPanelSize());
     setVisible(true);
-    myWorld = new World(getNrOfObjectsInWorld());
+    myWorld = new World();
     myCamera = new Camera();
   }
   
@@ -141,6 +140,5 @@ public abstract class AbstractWorld extends JFrame {
   }
   
   protected abstract Dimension getPanelSize();
-  protected abstract int getNrOfObjectsInWorld();
   protected abstract void buildWorld(World aWorld);
 }
