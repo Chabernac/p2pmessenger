@@ -30,7 +30,7 @@ public class Point2D{
     return true;
   }
 
-  public static Point2D getInstance(double x, double y) {
+  public static synchronized Point2D getInstance(double x, double y) {
     Point2D result;
     if (countFree == 0) {
       result = new Point2D();
@@ -42,7 +42,7 @@ public class Point2D{
     return result;
   }
 
-  public static void freeInstance(Point2D aPoint) {
+  public static synchronized void freeInstance(Point2D aPoint) {
     if (countFree < POOL_SIZE) {
       STACK[countFree++] = aPoint;
     }

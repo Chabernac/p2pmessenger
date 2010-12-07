@@ -89,7 +89,6 @@ public class Polygon implements iTranslatable{
   }
   
   private void calculateTexturePoints(){
-	  System.out.println("Calculating texture points");
     try {
       //we take the x vector of the texture parallel to the first 2 points of the polygon
       GVector theXVector = new GVector(w[0].myPoint, w[1].myPoint);

@@ -115,10 +115,10 @@ public class AXACube extends AbstractWorld implements iSynchronizedEvent{
     theMouseTranslationManager.addTranslatable(theShape);
     myRotationManager.addTranslatable(theShape);
     
-    theShape = ShapeFactory.makeCube(new Point3D(300,100,200), 94,94,94);
+    theShape = ShapeFactory.makeCube(new Point3D(300,100,200), 340,340,340);
     theShape.setColor(new Color(0,0,255,100));
     //theShape.setTexture(new TextureImage(ImageFactory.createImage("AXA", new Font("Arial", Font.BOLD, 40), 100, 100, Color.BLUE, Color.WHITE, true)));
-    theShape.setTexture("leslie","leslie", false, false);
+    theShape.setTexture("metal006","metal006", false, false);
 //    theShape.setTexture("leslie", false, false);
 //    theShape.myPolygons[0].setTexture("axa", false);
 //    theShape.myPolygons[0].setTexture("guy", false, false);
@@ -212,7 +212,7 @@ public class AXACube extends AbstractWorld implements iSynchronizedEvent{
     return new iPixelShader[]{
                               new TextureShader( ), 
                               new BumpShader( myWorld ),
-                              new PhongShader( myWorld, myPanel3D.getGraphics3D().getEyePoint() )
+                              new PhongShader( myWorld  )
                               };
   }
   

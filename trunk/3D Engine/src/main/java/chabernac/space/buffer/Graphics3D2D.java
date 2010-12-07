@@ -19,7 +19,6 @@ import java.util.WeakHashMap;
 
 import chabernac.space.World;
 import chabernac.space.geom.Point2D;
-import chabernac.space.geom.Point3D;
 import chabernac.space.geom.Polygon;
 import chabernac.space.geom.Polygon2D;
 import chabernac.space.geom.Vertex2D;
@@ -42,7 +41,6 @@ public class Graphics3D2D implements iBufferStrategy {
   protected World myWorld = null;
 
   private Map<Object, DrawingRectangleContainer> myDrawingAreas = new WeakHashMap<Object, DrawingRectangleContainer>();
-  private double myMinY, myMaxY;
 
   private iDepthBuffer myDepthBuffer = null;
   private iPixelShader[] myPixelShaders = null;
@@ -74,7 +72,7 @@ public class Graphics3D2D implements iBufferStrategy {
       if(theShader == Shader.TEXTURE) myPixelShaders[i++] = new TextureShader( ); 
       else if(theShader == Shader.BUMP) myPixelShaders[i++] = new BumpShader( myWorld );
       else if(theShader == Shader.DEPTH) myPixelShaders[i++] = new DepthShading( 5000 );
-      else if(theShader == Shader.PHONG) myPixelShaders[i++] = new PhongShader( myWorld, new Point3D( myWidth / 2, myHeight / 2, 0 ) );
+      else if(theShader == Shader.PHONG) myPixelShaders[i++] = new PhongShader( myWorld );
       else if(theShader == Shader.SPECULAR) myPixelShaders[i++] = new SpecularShader( myWorld );
     }
   }
@@ -310,10 +308,12 @@ public class Graphics3D2D implements iBufferStrategy {
 
   public void drawPolygon(Polygon2D aPolygon, Polygon anOrigPolygon) {
     //TimeTracker.start();
-    findMinMaxY(aPolygon);
+    
+    double[] minmax = BufferTools.findMinMaxY(aPolygon);
+    
     //TimeTracker.logTime("finding min max y");
     Vertex2D[] theScanLine;
-    for(int y = (int)Math.ceil(myMinY);y <= myMaxY;y++){
+    for(int y = (int)Math.ceil(minmax[0]);y <= minmax[1];y++){
       //TimeTracker.start();
       theScanLine = aPolygon.intersectHorizontalLine(y);
       //TimeTracker.logTime("Intersecting with horizontal line: " + y);
@@ -329,12 +329,6 @@ public class Graphics3D2D implements iBufferStrategy {
       Vertex2D.freeInstance(theScanLine[0]);
       Vertex2D.freeInstance(theScanLine[1]);
     }
-  }
-
-  public void findMinMaxY(Polygon2D aPolygon){
-    double[] minmax = BufferTools.findMinMaxY(aPolygon);
-    myMinY = minmax[0];
-    myMaxY = minmax[1];
   }
 
   public Font getFont() {

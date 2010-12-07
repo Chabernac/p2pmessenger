@@ -23,11 +23,6 @@ public class BumpShader implements iPixelShader {
       GVector theCamNormalVector = aPixel.texture.getNormalVector(aPixel.uInt, aPixel.vInt);
       Point3D theCamPoint = aPixel.texture.getCamSystem().getTransformator().inverseTransform(new Point3D(aPixel.u, aPixel.v, 0.0D));
       aPixel.light += LightSource.calculateLight(myWorld, theCamPoint, theCamNormalVector);
-      
-      if(aPixel.uInt == 10 && aPixel.vInt == -75){
-        System.out.println(LightSource.calculateLight(myWorld, theCamPoint, theCamNormalVector));
-      }
-        
         
       aPixel.light /= 2D;
     }
