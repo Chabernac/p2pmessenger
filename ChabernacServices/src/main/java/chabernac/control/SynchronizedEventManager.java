@@ -7,10 +7,12 @@
 package chabernac.control;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
-
-import chabernac.math.Average;
 
 /**
  * @author Administrator
@@ -20,39 +22,54 @@ import chabernac.math.Average;
  */
 public class SynchronizedEventManager implements Runnable{
   private static Logger LOGGER = Logger.getLogger(SynchronizedEventManager.class);
-  
-	private ArrayList myList = null;
-	private long myCycleTime = 0;
-	private boolean stop = false;
+//  private static final int PROCESSORS = Runtime.getRuntime().availableProcessors();
+  private static final int PROCESSORS = 1;
+
+  private List<iSynchronizedEvent> myList = null;
+  private long myCycleTime = 0;
+  private TimeUnit myTimeUnit = null;
   private double myFPS;
 
-	public SynchronizedEventManager(long aCycleTime){
-		myList = new ArrayList();
-		myCycleTime = aCycleTime;
-	}
+  private ScheduledExecutorService myService = Executors.newScheduledThreadPool( PROCESSORS );
 
-	public void addSyncronizedEvent(iSynchronizedEvent anEvent){
-		myList.add(anEvent);
-	}
+  private boolean stop = false;
+  private int myCounter = 0;
 
-	public void removeSyncronizedEvent(iSynchronizedEvent anEvent){
-		myList.remove(anEvent);
-	}
+  public SynchronizedEventManager(int aFPS){
+    this((long)(1000D / (double)aFPS), TimeUnit.MILLISECONDS);
+  }
 
-	public void startManager(){
-		stop = false;
-		new Thread(this).start();
-	}
+  public SynchronizedEventManager(long aCycleTime, TimeUnit aTimeUnit){
+    myList =  new ArrayList<iSynchronizedEvent>() ;
+    myCycleTime = aCycleTime;
+    myTimeUnit = aTimeUnit;
+  }
 
-	public void stopManager(){
-		stop = true;
-	}
+  public void addSyncronizedEvent(iSynchronizedEvent anEvent){
+    myList.add(anEvent);
+  }
 
-	public boolean isRunning(){
-		return !stop;
-	}
+  public void removeSyncronizedEvent(iSynchronizedEvent anEvent){
+    myList.remove(anEvent);
+  }
 
-	public double getFPS() {
+  public void startManager(){
+    stop = false;
+    for(int i=0;i<PROCESSORS;i++){
+      myService.scheduleAtFixedRate( this, i * myCycleTime, PROCESSORS * myCycleTime, myTimeUnit ); 
+    }
+  }
+
+  public void stopManager(){
+    stop = true;
+    myService.shutdownNow();
+  }
+
+  public boolean isRunning(){
+    return !myService.isShutdown();
+  }
+
+  public double getFPS() {
     return myFPS;
   }
 
@@ -61,69 +78,13 @@ public class SynchronizedEventManager implements Runnable{
   }
 
   public void run(){
-    Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
-    long startTime = System.currentTimeMillis();
-    long counter = 0;
-    
-    double theSleepTime = (double)myCycleTime / 2d;
-    long thePreviousSleeptime = 0;
-    
-    Average theAverage = new Average(30);
+    try{
+      for(iSynchronizedEvent theEvent : new ArrayList<iSynchronizedEvent>(myList) ){
+        theEvent.executeEvent(myCounter++);
+      }
+    }catch(Throwable e){
+      LOGGER.error( "Error occured while cycling", e );
+    }
+  }
 
-    
-    
-		while(!stop){
-      long t1 = System.currentTimeMillis();
-   
-      counter++;
-			for(int i=0;i<myList.size();i++){
-				((iSynchronizedEvent)myList.get(i)).executeEvent(counter);
-			}
-      
-      
-      long calcEndTime = startTime + counter * myCycleTime;
-      
-      long currentSleepTime = calcEndTime - System.currentTimeMillis();
-      
-      double theSleepStep = Math.abs((double)currentSleepTime / 1000d);
-      
-      if(currentSleepTime > 0 && currentSleepTime > thePreviousSleeptime){
-        //if(counter % 100 == 0) LOGGER.debug("Increasing");
-        theSleepTime += theSleepStep;
-      } else if(currentSleepTime < 0 && currentSleepTime < thePreviousSleeptime){
-        //if(counter % 100 == 0) LOGGER.debug("Decreasing");
-        theSleepTime -= theSleepStep;
-        
-      }
-      thePreviousSleeptime = currentSleepTime;
-      
-      if(theSleepTime < 0){
-        theSleepTime = 0;
-      }
-      
-      long ms = (long)Math.floor(theSleepTime);
-      int ns = (int)((theSleepTime - (double)ms) * 1000000);
-      
-      /*
-      if(counter % 100 == 0) {
-        LOGGER.debug("sleeptime: " + theSleepTime + "ms: " + ms + "ns: " + ns + " current: " + currentSleepTime);
-      }
-      */
-      
-      if(ms>= 0 && ns > 0){
-        try{
-          Thread.sleep(ms,ns);
-        }catch(InterruptedException e){
-          LOGGER.error( "Could not sleep", e);
-        }
-      }
-			Thread.yield();
-      
-      theAverage.addNumber(System.currentTimeMillis() - t1);
-      
-      //calculate fps
-      myFPS = 1000 / theAverage.getAverage();
-		}
-	}
-  
 }

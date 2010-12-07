@@ -10,7 +10,7 @@ public class MatrixTest extends TestCase{
     Matrix theOtherMatrix = new Matrix(3,2);
     theOtherMatrix.setSource(new double[]{7,8,9,10,11,12});
     
-    Matrix theNewMatrix = theMatrix.multiThreadedMultiply(theOtherMatrix);
+    Matrix theNewMatrix = theMatrix.multiply( theOtherMatrix);
     
     System.out.println(theNewMatrix.toString());
     
@@ -32,7 +32,7 @@ public class MatrixTest extends TestCase{
     long theStartTime = System.currentTimeMillis();
     
     for(int i=0;i<times;i++){
-      theMatrix.multiThreadedMultiply(theOtherMatrix);
+      theMatrix.multiply(theOtherMatrix);
     }
     
     long theEndTime = System.currentTimeMillis();
