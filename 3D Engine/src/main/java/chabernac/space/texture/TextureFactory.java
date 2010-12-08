@@ -29,7 +29,7 @@ public class TextureFactory {
   public static BumpMap getBumpMap(String aBumpMap) throws IOException{
     if(!BUMP_MAP.containsKey(aBumpMap)){
       BufferedImage theImage = ImageFactory.loadImage(aBumpMap, false);
-      BumpMap theBumpMap = new BumpMap(new TextureImage(theImage), 2D);
+      BumpMap theBumpMap = new BumpMap(new TextureImage(theImage), 2F);
       BUMP_MAP.put(aBumpMap, theBumpMap);
     }
     return (BumpMap)BUMP_MAP.get(aBumpMap);

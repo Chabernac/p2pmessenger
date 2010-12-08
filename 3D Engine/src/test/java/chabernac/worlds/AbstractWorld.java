@@ -98,7 +98,7 @@ public abstract class AbstractWorld extends JFrame {
    * @return
    */
   protected iVertexShader[] getVertexShaders(){
-    return new iVertexShader[]{new GouroudShading( 0.4 )};
+    return new iVertexShader[]{new GouroudShading( (float)0.4 )};
   }
   
   private final void setupRendering(){

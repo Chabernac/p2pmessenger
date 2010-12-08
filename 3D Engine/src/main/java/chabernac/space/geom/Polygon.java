@@ -38,7 +38,7 @@ public class Polygon implements iTranslatable{
   private Texture2 myTexture = null;
   private TextureImage myTextureImage = null;
   private boolean isSphericalTexture;
-  public boolean doubleSided = false;
+  public boolean floatSided = false;
   private String myTextureName = null;
   private boolean isTransparentTexture = true;
   private String myBumpMap = null;
@@ -181,7 +181,7 @@ public class Polygon implements iTranslatable{
 
   public void calculateCenterPoint(){
     if(myCenterPoint != null) return;
-    double x = 0,y = 0,z = 0;
+    float x = 0,y = 0,z = 0;
     for(int i=0;i<mySize;i++){
       x += w[i].myPoint.x;
       y += w[i].myPoint.y;
@@ -241,8 +241,8 @@ public class Polygon implements iTranslatable{
   public void clip2Plane(Plane aPlane) throws PolygonException{
     Vertex[] theTempVertexes = new Vertex[c.length];
 
-    double dist1, dist2; // distances of points to plane
-    double distratio; // fraction of distance between two points
+    float dist1, dist2; // distances of points to plane
+    float distratio; // fraction of distance between two points
 
     int ii, j=0;
 

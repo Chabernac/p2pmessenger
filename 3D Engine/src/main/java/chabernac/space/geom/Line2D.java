@@ -5,7 +5,7 @@ public class Line2D {
 	private Point2D myStartPoint = null;
 	private Point2D myEndPoint = null;
 	private Vector2D myDirection = null;
-  private double myLength = 0;
+  private float myLength = 0;
 	
 	public Line2D(Point2D p1, Vector2D aVector){
 		myStartPoint = p1;
@@ -31,26 +31,26 @@ public class Line2D {
 		return -1;
 	}
 	
-	public double intersectHorizontalLine(double y){
+	public float intersectHorizontalLine(float y){
 		return  (y - myStartPoint.y) / (myEndPoint.y - myStartPoint.y);
 	}
 	
-	public Point2D getPoint(double aTime){
+	public Point2D getPoint(float aTime){
 		return new Point2D(myStartPoint.x + aTime * myDirection.x, myStartPoint.y  +  aTime * myDirection.y);
 	}
   
-  public double length(){
+  public float length(){
     if(myLength == 0){
-      double xDiff = myEndPoint.x - myStartPoint.x;
-      double yDiff = myEndPoint.y - myStartPoint.y;
-      myLength = Math.sqrt(xDiff * xDiff + yDiff * yDiff);
+      float xDiff = myEndPoint.x - myStartPoint.x;
+      float yDiff = myEndPoint.y - myStartPoint.y;
+      myLength = (float)Math.sqrt(xDiff * xDiff + yDiff * yDiff);
     }
     return myLength;
   }
 	
 	public static void main(String args[]){
 		Line2D theLine = new Line2D(new Point2D(0,0), new Point2D(100,100));
-		double time = theLine.intersectHorizontalLine(50);
+		float time = theLine.intersectHorizontalLine(50);
 		Point2D thePoint = theLine.getPoint(time);
 		
 	}

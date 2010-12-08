@@ -8,7 +8,7 @@ public class AxisRotationManager extends TranslateManager {
   private Transformation myTransformation = null;
   
   
-  public AxisRotationManager(Line3D anAxis, double aRotation){
+  public AxisRotationManager(Line3D anAxis, float aRotation){
     CoordinateSystem theSystem = new CoordinateSystem(anAxis);
     myTransformation = theSystem.getTransformator();
     Matrix theInvMatrix = myTransformation.getTransformationMatrix().inverse();

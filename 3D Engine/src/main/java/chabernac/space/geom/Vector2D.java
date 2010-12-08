@@ -6,13 +6,13 @@ public class Vector2D {
   private static final Vector2D[] STACK = new Vector2D[POOL_SIZE];
   private static int countFree;
   
-	public double x,y;
+	public float x,y;
 	
   private Vector2D(){
     
   }
   
-	public Vector2D(double x, double y){
+	public Vector2D(float x, float y){
 		this.x = x;
 		this.y = y;
 	}
@@ -32,7 +32,7 @@ public class Vector2D {
 		y += aVector.y;
 	}
 		
-  public static Vector2D getInstance(double x, double y) {
+  public static Vector2D getInstance(float x, float y) {
     Vector2D result;
     if (countFree == 0) {
       result = new Vector2D();

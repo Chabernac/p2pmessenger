@@ -3,6 +3,7 @@ package chabernac.space;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.MouseEvent;
@@ -25,7 +26,7 @@ public class Panel3D extends JPanel implements  iSynchronizedEvent, MouseListene
   private World myWorld = null;
   private Graphics3D myGraphics = null;
   private Camera myCamera = null;
-  private Graphics myG = null;
+  private Graphics2D myG = null;
 
   public Panel3D(World aWorld, Camera aCamera, Dimension aDimension){
     super(true);
@@ -34,7 +35,6 @@ public class Panel3D extends JPanel implements  iSynchronizedEvent, MouseListene
     myWorld = aWorld;
     myCamera = aCamera;
     init();
-    myG = getGraphics();
   }
   
   private void init(){
@@ -50,7 +50,9 @@ public class Panel3D extends JPanel implements  iSynchronizedEvent, MouseListene
   }
 
   private void getGraphicsObject(){
-    myG = (Graphics2D)getGraphics();
+    if(myG == null){
+      myG = (Graphics2D)getGraphics();
+    }
   }
 
 
@@ -61,7 +63,7 @@ public class Panel3D extends JPanel implements  iSynchronizedEvent, MouseListene
         myCamera,
         myWorld,
         new Graphics3D2D(myWorld, getWidth(), getHeight()));
-    myGraphics.setVertexShaders(new iVertexShader[]{new GouroudShading(0.4)});
+    myGraphics.setVertexShaders(new iVertexShader[]{new GouroudShading((float)0.4)});
   }
 
 
@@ -121,15 +123,15 @@ public class Panel3D extends JPanel implements  iSynchronizedEvent, MouseListene
 
   public void executeEvent(long anCounter) {
     try{
-      Graphics theGraphics = getGraphics();
-      if(theGraphics != null){
+      getGraphicsObject();
+      if(myG != null){
         if(!hasFocus()){
           requestFocus();
         }
         
         //theGraphics.clearRect(0,0,getWidth(),getHeight());
         //super.paint(theGraphics);
-        myGraphics.drawWorld(theGraphics, anCounter);
+        myGraphics.drawWorld(myG, anCounter);
         
       }
     }catch(Exception e){

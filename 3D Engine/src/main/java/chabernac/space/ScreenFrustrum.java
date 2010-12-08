@@ -22,7 +22,7 @@ public class ScreenFrustrum extends Frustrum{
   public void createPlanes(){
     Point3D theEyePoint = new Point3D(0,0,-myEyePoint.z);
     //z = 0 plane
-    addPlane(new Plane(new GVector(0,0,0.01),new Point3D(0,0,0)));
+    addPlane(new Plane(new GVector(0,0,(float)0.01),new Point3D(0,0,0)));
     //left plane
     addPlane(new Plane(new GVector(myEyePoint.z,0F,(float)(myScreenDimension.getWidth() / 2) - 1),theEyePoint));
     //right plane

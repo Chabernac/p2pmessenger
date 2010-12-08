@@ -33,14 +33,14 @@ public class OldCamera{
 
   /*
   public Point3D getLocation(){ return myLocation; }
-  public double getPitch(){ return myRotation.myPitch; }
-  public double getYaw(){ return myYaw; }
-  public double getRoll(){ return myRoll; }
+  public float getPitch(){ return myRotation.myPitch; }
+  public float getYaw(){ return myYaw; }
+  public float getRoll(){ return myRoll; }
 
   public void setLocation(Point3D aLocation){ myLocation = aLocation; }
-  public void setPitch(double pitch){ myRotation.myPitch = pitch; }
-  public void setYaw(double yaw){ myYaw = yaw; }
-  public void setRoll(double roll){ myRoll = roll; }
+  public void setPitch(float pitch){ myRotation.myPitch = pitch; }
+  public void setYaw(float yaw){ myYaw = yaw; }
+  public void setRoll(float roll){ myRoll = roll; }
   */
 
   public Point3D world2Cam(Point3D aPoint){

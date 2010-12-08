@@ -5,6 +5,6 @@
 package chabernac.space.buffer;
 
 public interface iDepthBuffer {
-  public boolean isDrawPixel(int x, int y, double anInverseDepth);
+  public boolean isDrawPixel(int x, int y, float anInverseDepth);
   public void clearBuffer();
 }

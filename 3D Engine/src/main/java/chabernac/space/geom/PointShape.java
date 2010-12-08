@@ -23,7 +23,7 @@ public class PointShape implements Comparable{
 	public Point3D[] c;
 	public int mySize;
 	public int myCamSize;
-	private double myCamDistance;
+	private float myCamDistance;
 	public Point3D myCenterPoint;
 	public Point3D myCamCenterPoint;
 	public Color myColor = Color.black;
@@ -75,9 +75,9 @@ public class PointShape implements Comparable{
 	}
 	
 	public void calculateCenterPoint(){
-		double x = 0;
-		double y = 0;
-		double z = 0;
+		float x = 0;
+		float y = 0;
+		float z = 0;
 		for(int i=0;i<w.length;i++){
 			x += w[i].x;
 			y += w[i].y;

@@ -24,7 +24,7 @@ public class BumpShader implements iPixelShader {
       Point3D theCamPoint = aPixel.getCamPoint();
       aPixel.light += LightSource.calculateLight(myWorld, theCamPoint, theCamNormalVector);
         
-      aPixel.light /= 2D;
+//      aPixel.light /= 2D;
     }
   }
 

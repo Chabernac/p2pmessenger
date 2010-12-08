@@ -33,9 +33,9 @@ public class Cylinder extends Shape {
 	
 	private Point3D myLocation = null;
 	private GVector myDirection = null;
-	private double myRadius = 0;
+	private float myRadius = 0;
 
-	public Cylinder(Point3D aLocation, GVector aDirection, double aRadius) throws TranslateException, PolygonException, MatrixException{
+	public Cylinder(Point3D aLocation, GVector aDirection, float aRadius) throws TranslateException, PolygonException, MatrixException{
 		super(POLYGONS + 2, false);
 		myLocation = aLocation;
 		myDirection = aDirection;
@@ -46,12 +46,12 @@ public class Cylinder extends Shape {
 	private void createPolygons() throws TranslateException, PolygonException, MatrixException{
 		//first create all points of the ground polygon in the xy plane
 		//Color theBlueColor = new Color(0,0,200);
-		double depth = myDirection.length();
+		float depth = myDirection.length();
 		Polygon ground = new Polygon(POLYGONS);
 		Polygon top = new Polygon(POLYGONS);
-		for(double alpha=0;alpha<2*Math.PI;alpha += 2 * Math.PI / POLYGONS){
-			double x = myRadius * Math.cos(alpha);
-			double y = myRadius * Math.sin(alpha);
+		for(float alpha=0;alpha<2*Math.PI;alpha += 2 * Math.PI / POLYGONS){
+			float x = myRadius * (float)Math.cos(alpha);
+			float y = myRadius * (float)Math.sin(alpha);
 			ground.addVertex(new Vertex(new Point3D(x, y, 0)));
 			top.addVertex(new Vertex(new Point3D(x, y, depth)));
 		}

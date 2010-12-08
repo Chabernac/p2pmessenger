@@ -2,9 +2,9 @@ package chabernac.space.geom;
 
 
 public class Point3D{
-  public double x;
-  public double y;
-  public double z;
+  public float x;
+  public float y;
+  public float z;
   
   public Point3D(GVector aVector){
     x = aVector.x;
@@ -13,12 +13,12 @@ public class Point3D{
   }
   
   public Point3D(PolarPoint3D aPoint){
-    x = aPoint.radius * Math.cos(aPoint.beta) * Math.cos(aPoint.alpha);
-    y = aPoint.radius * Math.sin(aPoint.beta);
-    z = aPoint.radius * Math.cos(aPoint.beta) * Math.sin(aPoint.alpha);
+    x = aPoint.radius * (float)Math.cos(aPoint.beta) * (float)Math.cos(aPoint.alpha);
+    y = aPoint.radius * (float)Math.sin(aPoint.beta);
+    z = aPoint.radius * (float)Math.cos(aPoint.beta) * (float)Math.sin(aPoint.alpha);
   }
   
-  public Point3D(double x, double y, double z){
+  public Point3D(float x, float y, float z){
     this.x = x;
     this.y = y;
     this.z = z;
@@ -51,13 +51,13 @@ public class Point3D{
   }
 
   /*
-  public double getX(){ return x; }
-  public double getY(){ return y; }
-  public double getZ(){ return z; }
+  public float getX(){ return x; }
+  public float getY(){ return y; }
+  public float getZ(){ return z; }
 
-  public void setX(double x){ this.x = x; }
-  public void setY(double y){ this.y = y; }
-  public void setZ(double z){ this.z = z; }
+  public void setX(float x){ this.x = x; }
+  public void setY(float y){ this.y = y; }
+  public void setZ(float z){ this.z = z; }
   */
 
   public String toString(){
@@ -78,7 +78,7 @@ public class Point3D{
     return new GVector(x - aPoint.x,y - aPoint.y,z - aPoint.z);
   }
   
-  public void divide(double aFactor){
+  public void divide(float aFactor){
     x /= aFactor;
     y /= aFactor;
     z /= aFactor;

@@ -112,12 +112,12 @@ public class Texture {
 		
 	}
 	
-	public int getColorAtScreenLocation(int x, int y, double z){
+	public int getColorAtScreenLocation(int x, int y, float z){
 		GVector theSVector = new GVector(x - 400, y - 300, z + 700);
 		theSVector.normalize();
-		double a = theSVector.dotProdukt(myCamAVector);
-		double b = theSVector.dotProdukt(myCamBVector);
-		double c = theSVector.dotProdukt(myCamCVector);
+		float a = theSVector.dotProdukt(myCamAVector);
+		float b = theSVector.dotProdukt(myCamBVector);
+		float c = theSVector.dotProdukt(myCamCVector);
 		int u = (int)(imageWidth * a / c);
 		int  v = (int)(imageHeight * b / c);
 		if(u < 0 || u >= imageWidth || v < 0 || v >= imageHeight) {
@@ -137,12 +137,12 @@ public class Texture {
 //	
 //	public int getColorAtScreenLocation(int x, int y){
 //		Vector2D P = new Vector2D(myScreenOrigin, new Point2D(x, y));
-//		double u = P.x;
-//		double v = P.y;
+//		float u = P.x;
+//		float v = P.y;
 //		
 //		if((myXVector.x == 0 && myYVector.x == 0) || (myXVector.y == 0 && myYVector.y ==0)) return Color.black.getRGB();
 //		
-//		double a,b;
+//		float a,b;
 //		
 //		if(myXVector.x == 0){
 //			b = u / myYVector.x;

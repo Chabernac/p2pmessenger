@@ -17,14 +17,14 @@ public class Segment {
 
   private Texture2 texture = null;
   private int xStart, xEnd;
-  private double invzStart, invzEnd, lStart, lEnd, l = 0;
-  private double zdiff, xDiff, invzRico, udiff, vdiff, urico, vrico, lRico = 0;
+  private float invzStart, invzEnd, lStart, lEnd, l = 0;
+  private float zdiff, xDiff, invzRico, udiff, vdiff, urico, vrico, lRico = 0;
 //  private int c = 0;
   private Vertex2D start = null;
   private Vertex2D end = null;
   private boolean isTexture = false;
   private boolean isAffine = false;
-  private static final double AFFINEBORDER = Math.tan(Math.PI / 10);
+  private static final float AFFINEBORDER = (float)Math.tan(Math.PI / 10);
   private static boolean FORCEAFFINE = true;
   private static boolean FORCENOTAFFINE = false;
   private World myWorld = null;
@@ -52,13 +52,13 @@ public class Segment {
     Point2D theEndPoint = end.getPoint();
 
     xDiff = theEndPoint.x - theStartPoint.x;
-    double yDiff = theEndPoint.y - theStartPoint.y;
+    float yDiff = theEndPoint.y - theStartPoint.y;
     zdiff = end.getDepth() - start.getDepth();
 
     //TODO very inperformant
-    double length = Math.sqrt(xDiff * xDiff + yDiff * yDiff); 
+    float length = (float)Math.sqrt(xDiff * xDiff + yDiff * yDiff); 
 
-    double tanangle = Math.abs(zdiff) / length;
+    float tanangle = Math.abs(zdiff) / length;
 
     invzRico = (end.getInverseDepth() - start.getInverseDepth()) / xDiff;
     lRico = (end.getLightning() - start.getLightning()) / xDiff;
@@ -123,19 +123,19 @@ public class Segment {
     }
   }
   
-  private double getU(double z){
+  private float getU(float z){
     return start.getTexturePoint().x + (z - start.getDepth()) * urico;
   }
 
-  private double getV(double z){
+  private float getV(float z){
     return start.getTexturePoint().y + (z - start.getDepth()) * vrico;
   }
 
-  private double getZ(double x){
+  private float getZ(float x){
     return start.getInverseDepth() + (x - start.getPoint().x) * invzRico;
   }
 
-  private double getL(double x){
+  private float getL(float x){
     return start.getLightning() + (x - start.getPoint().x) * lRico;
   }
 
@@ -146,13 +146,13 @@ public class Segment {
     return xStart;
   }
 
-  public double getLRico() {
+  public float getLRico() {
     return lRico;
   }
-  public void setLRico(double rico) {
+  public void setLRico(float rico) {
     lRico = rico;
   }
-  public double getXDiff() {
+  public float getXDiff() {
     return xDiff;
   }
   public Texture2 getTexture() {
@@ -242,7 +242,7 @@ public class Segment {
     //  theSegments = theSegment1.intersect(theSegment2);
     //  }
     //  long time2 = System.currentTimeMillis();
-    //  System.out.println("time per intersect: " + ((double)time2 - (double)time1) / (double)times);
+    //  System.out.println("time per intersect: " + ((float)time2 - (float)time1) / (float)times);
     //  for(int i=0;i<theSegments.length;i++){
     //  System.out.println("Segment " + i + ": " + theSegments[i].toString());
     //  }

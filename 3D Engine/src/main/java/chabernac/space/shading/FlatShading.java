@@ -10,9 +10,9 @@ import chabernac.space.geom.Polygon;
 import chabernac.space.geom.Shape;
 
 public class FlatShading implements iVertexShader{
-  private double myAmbient = 0;
+  private float myAmbient = 0;
 
-  public FlatShading(double ambient){
+  public FlatShading(float ambient){
     myAmbient = ambient;
   }
 
@@ -22,7 +22,7 @@ public class FlatShading implements iVertexShader{
     Shape theCurrentShape = null;
     Polygon theCurrentPolygon = null;
     ArrayList<LightSource> theLightSources = aWorld.getLightSources();
-    double illuminatingFactor = 0;
+    float illuminatingFactor = 0;
 
 
     for(int j=0;j<aWorld.myShapes.length;j++){
@@ -42,16 +42,16 @@ public class FlatShading implements iVertexShader{
   }
 
 
-  private double calculateIlluminatingFactor(LightSource theCurrentLight, Polygon theCurrentPolygon) {
+  private float calculateIlluminatingFactor(LightSource theCurrentLight, Polygon theCurrentPolygon) {
     GVector theDirectionToPolygon = new GVector(theCurrentPolygon.myCamCenterPoint, theCurrentLight.getCamLocation());
-    double distance = theDirectionToPolygon.length();
+    float distance = theDirectionToPolygon.length();
     theDirectionToPolygon.normalize();
-    double lightningFactor = theDirectionToPolygon.dotProdukt(theCurrentPolygon.myNormalCamVector) *  theCurrentLight.getIntensity() / distance;
+    float lightningFactor = theDirectionToPolygon.dotProdukt(theCurrentPolygon.myNormalCamVector) *  theCurrentLight.getIntensity() / distance;
     if(lightningFactor < 0) lightningFactor = 0;
     return lightningFactor;
   }
 
-  private void applyIlluminatingFactor(double illuminatingFactor, Polygon theCurrentPolygon) {
+  private void applyIlluminatingFactor(float illuminatingFactor, Polygon theCurrentPolygon) {
     Vertex theCurrentVertex = null;
 
     for(int l=0;l<theCurrentPolygon.myCamSize;l++){

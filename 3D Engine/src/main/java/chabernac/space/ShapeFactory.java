@@ -82,21 +82,21 @@ public class ShapeFactory{
 		return theShape;
 	}
 
-	public static Shape makeSphere(Point3D anOrigin, double aRadius, int aNrOfSections){
+	public static Shape makeSphere(Point3D anOrigin, float aRadius, int aNrOfSections){
 		System.out.println("Calculating sphere");
 		Shape theShape = new Shape(aNrOfSections *  aNrOfSections);
 
 		Point3D[][] thePointArray = new Point3D[aNrOfSections / 2 + 1][aNrOfSections+1];
 
-		double startAngle = 0.001;
-		double deltah = 2 * Math.PI  / aNrOfSections;
-    double deltav = (2 * Math.PI  -  4  * startAngle ) / aNrOfSections;
+		float startAngle = (float)0.001;
+		float deltah = 2 * (float)Math.PI  / aNrOfSections;
+    float deltav = (2 * (float)Math.PI  -  4  * startAngle ) / aNrOfSections;
 
 		for(int i=0;i<aNrOfSections / 2  + 1;i++){
-			double beta = startAngle - Math.PI/2 + i *  deltav;
+			float beta = startAngle - (float)Math.PI/2 + i *  deltav;
 
 			for(int j=0;j<=aNrOfSections;j++){
-				double alpha= j * deltah;
+				float alpha= j * deltah;
 				thePointArray[i][j] = new Point3D(new PolarPoint3D(alpha, beta, aRadius));
 			}
 		}
@@ -169,7 +169,7 @@ public class ShapeFactory{
 		thePolygon.addVertex(new Vertex(new Point3D(aOrigin.x + aWidth, aOrigin.y - aHeight, aOrigin.z)));
 		thePolygon.addVertex(new Vertex(new Point3D(aOrigin.x, aOrigin.y - aHeight, aOrigin.z)));
 
-		thePolygon.doubleSided = true;
+		thePolygon.floatSided = true;
 		thePolygon.done();
 		theShape.addPolygon(thePolygon);
 		theShape.done();

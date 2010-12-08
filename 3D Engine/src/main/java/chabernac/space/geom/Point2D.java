@@ -5,20 +5,20 @@ public class Point2D{
   private static final Point2D[] STACK = new Point2D[POOL_SIZE];
   private static int countFree;
 
-  public double x;
-  public double y;
+  public float x;
+  public float y;
 
   private Point2D(){
 
   }
 
-  public Point2D(double x, double y){
+  public Point2D(float x, float y){
     this.x = x;
     this.y = y;
   }
 
-  public double getX(){ return x; }
-  public double getY(){ return y; }
+  public float getX(){ return x; }
+  public float getY(){ return y; }
 
   public String toString(){
     return "<Point2D x: " + x + " y: " + y + ">";
@@ -30,7 +30,7 @@ public class Point2D{
     return true;
   }
 
-  public static synchronized Point2D getInstance(double x, double y) {
+  public static synchronized Point2D getInstance(float x, float y) {
     Point2D result;
     if (countFree == 0) {
       result = new Point2D();

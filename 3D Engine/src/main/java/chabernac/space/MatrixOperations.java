@@ -72,7 +72,7 @@ public class MatrixOperations {
 		return theMatrix;
 	}
 	
-	public static Matrix buildScalingMatrix(double xScaling, double yScaling, double zScaling) throws MatrixException{
+	public static Matrix buildScalingMatrix(float xScaling, float yScaling, float zScaling) throws MatrixException{
 		Matrix theMatrix = new Matrix(4,4);
 		theMatrix.setValueAt(0,0,xScaling);
 		theMatrix.setValueAt(1,1,yScaling);
@@ -118,16 +118,16 @@ public class MatrixOperations {
 	}
 	
 	public static Matrix buildMatrix(Point3D aPoint){
-		return new Matrix(1,4,new double[]{aPoint.x,aPoint.y,aPoint.z,1});		
+		return new Matrix(1,4,new float[]{aPoint.x,aPoint.y,aPoint.z,1});		
 	}
 	
 	public static Point3D buildPoint3d(Matrix aMatrix){
-		double[] theSource = aMatrix.getSource();
+		float[] theSource = aMatrix.getSource();
 		return new Point3D(theSource[0], theSource[1], theSource[2]);
 	}
 	
 	public static Matrix buildMatrix(GVector aVector){
-		return new Matrix(1,4,new double[]{aVector.x,aVector.y,aVector.z,1});		
+		return new Matrix(1,4,new float[]{aVector.x,aVector.y,aVector.z,1});		
 	}
   
   public static Matrix buildIdentityMatrix(){
@@ -145,7 +145,7 @@ public class MatrixOperations {
   }
 	
 	public static GVector buildGVector(Matrix aMatrix){
-		double[] theSource = aMatrix.getSource();
+		float[] theSource = aMatrix.getSource();
 		return new GVector(theSource[0], theSource[1], theSource[2]);
 	}
 }

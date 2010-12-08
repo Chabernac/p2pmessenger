@@ -15,10 +15,10 @@ public class Pixel {
   public int x;
   
   //the x coordinate of the pixel in texture space
-  public double u;
+  public float u;
   
   //the y coordinate of the pixel in texture space
-  public double v;
+  public float v;
   
   //the x coordinate of the pixel in texture space rounded to an integer
   public int uInt;
@@ -27,13 +27,13 @@ public class Pixel {
   public int vInt;
   
   //the inverse of the depth in camera space
-  public double invZ;
+  public float invZ;
   
   //the depth in camera space
-  public double z;
+  public float z;
 
   //the lightning of the pixel initialized at the background light
-  public double light;
+  public float light;
   
   public Texture2 texture;
   
@@ -65,7 +65,7 @@ public class Pixel {
   
   public Point3D getCamPoint(){
     if(camPoint == null){
-      camPoint = texture.getSystem().getTransformator().inverseTransform(new Point3D(u, v, 0.0D));      
+      camPoint = texture.getSystem().getTransformator().inverseTransform(new Point3D(u, v, (float)0.0));      
     }
     return camPoint;
   }

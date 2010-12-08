@@ -9,9 +9,9 @@ package chabernac.space.buffer;
 
 public class ZBuffer implements iDepthBuffer{
 //  private static Logger LOGGER = Logger.getLogger(ZBuffer.class);
-  private double myZBuffer[];
+  private float myZBuffer[];
 //  private int myAlphaBuffer[];
-  private double myTransparencyBuffer[];
+  private float myTransparencyBuffer[];
   
   private int cycle = 0;
   private boolean isBufferEnabled = true;
@@ -25,9 +25,9 @@ public class ZBuffer implements iDepthBuffer{
     myWidth = aWidth;
 //    myHeight = aHeight;
     mySize = aWidth * aHeight;
-    myZBuffer = new double[mySize];
+    myZBuffer = new float[mySize];
 //    myAlphaBuffer = new int[mySize];
-    myTransparencyBuffer = new double[mySize];
+    myTransparencyBuffer = new float[mySize];
     clearBuffer();
   }
 
@@ -43,14 +43,14 @@ public class ZBuffer implements iDepthBuffer{
     }
   }
   
-  public boolean isDrawPixel(int x, int y, double anInverseDepth){
+  public boolean isDrawPixel(int x, int y, float anInverseDepth){
     int i = y * myWidth + x; 
 
     if( i < 0 || i >= mySize || anInverseDepth < 0 || anInverseDepth > 1){
       return false;
     }
    
-    double cycleDepth = cycle + anInverseDepth;
+    float cycleDepth = cycle + anInverseDepth;
     
     if(cycleDepth > myZBuffer[i]){
       //this pixel will be drawn only at this point we should calculate the color and apply pixel shading
@@ -63,7 +63,7 @@ public class ZBuffer implements iDepthBuffer{
   }
   
 
-//  public void setValueAt(int x, int y, double aDepth, int aColor, boolean ignoreDepth){
+//  public void setValueAt(int x, int y, float aDepth, int aColor, boolean ignoreDepth){
 //    int i = y * myWidth + x; 
 //
 //    if( i < 0 || i >= mySize || aDepth < 0 || aDepth > 1){
@@ -79,7 +79,7 @@ public class ZBuffer implements iDepthBuffer{
 //    //true when 0x00 < transparency < 0xff 
 //    boolean transparent = (theTransparency != 0xff);
 //
-//    double cycleDepth = cycle + aDepth;
+//    float cycleDepth = cycle + aDepth;
 //
 //    if(transparent && cycleDepth > myZBuffer[i]){
 //      myAlphaBuffer[i] = aColor;
@@ -110,8 +110,8 @@ public class ZBuffer implements iDepthBuffer{
 //        int green2 = aColor >> 8 & 0xff;
 //        int blue2 = aColor & 0xff;
 //
-//        double thePercentage = alpha / 256D;
-//        double theInvPercentage = 1 - thePercentage;
+//        float thePercentage = alpha / 256D;
+//        float theInvPercentage = 1 - thePercentage;
 //
 //        red = (int)(thePercentage * red + theInvPercentage * red2); 
 //        green = (int)(thePercentage * green + theInvPercentage * green2);
