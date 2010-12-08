@@ -216,7 +216,7 @@ public class Shape implements Comparable, iTranslatable{
 
   public void setfloatSidedPolygons(boolean floatSided){
     for(int i=0;i<myPolygons.length;i++){
-      myPolygons[i].floatSided = floatSided;
+      myPolygons[i].doubleSided = floatSided;
     }
   }
 

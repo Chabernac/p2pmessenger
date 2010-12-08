@@ -27,7 +27,6 @@ public class Segment {
   private static final float AFFINEBORDER = (float)Math.tan(Math.PI / 10);
   private static boolean FORCEAFFINE = true;
   private static boolean FORCENOTAFFINE = false;
-  private World myWorld = null;
   private Pixel myPixel = new Pixel( );
 
 
@@ -35,16 +34,16 @@ public class Segment {
 
   }
 
-  public Segment(World aWorld, Vertex2D aStartVertex, Vertex2D anEndVertex, Texture2 aTexture){
+  public Segment(Vertex2D aStartVertex, Vertex2D anEndVertex, Texture2 aTexture){
     //this(aStartVertex, anEndVertex, Color.black.getRGB(), aTexture);
     start = aStartVertex;
     end = anEndVertex;
     texture = aTexture;
     isTexture = aTexture != null;
-    myWorld = aWorld;
+    myPixel = new Pixel( aTexture );
+    myPixel.texture = aTexture;
     calculateRicos();
     repositionStartEnd();
-    myPixel = new Pixel( aTexture );
   }
 
   private void calculateRicos() {
@@ -162,7 +161,7 @@ public class Segment {
     this.texture = texture;
   }
 
-  public static Segment getInstance(World aWorld, Vertex2D aStartVertex, Vertex2D anEndVertex, Texture2 aTexture){
+  public static Segment getInstance(Vertex2D aStartVertex, Vertex2D anEndVertex, Texture2 aTexture){
     Segment result;
     if (countFree == 0) {
       result = new Segment();
@@ -173,7 +172,6 @@ public class Segment {
     result.end = anEndVertex;
     result.texture = aTexture;
     result.isTexture = aTexture != null;
-    result.myWorld = aWorld;
     result.myPixel.texture = aTexture;
 
     result.calculateRicos();

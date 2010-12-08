@@ -1,5 +1,6 @@
 package chabernac.space;
 
+import java.awt.Color;
 import java.util.Iterator;
 
 import chabernac.math.MatrixException;
@@ -11,6 +12,7 @@ public class LightSource implements iTranslatable{
   private Point3D myWorldLocation = null;
   private Point3D myCamLocation = null;
   private float myIntensity = 0;
+  private int myColor = Color.white.getRGB();
 
   public LightSource(Point3D aLocation, float anNeutralDistance){
     myWorldLocation = aLocation;
