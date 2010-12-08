@@ -13,6 +13,7 @@ import chabernac.space.geom.Point3D;
 import chabernac.space.geom.Rotation;
 import chabernac.space.geom.Shape;
 import chabernac.space.shading.AmbientShading;
+import chabernac.space.shading.BumpShader;
 import chabernac.space.shading.PhongShader;
 import chabernac.space.shading.TextureShader;
 import chabernac.space.shading.iPixelShader;
@@ -26,12 +27,12 @@ public class AXACube extends AbstractWorld implements iSynchronizedEvent{
   protected void buildWorld(World aWorld){
 //    myManager.addSyncronizedEvent(this);
     
-    aWorld.addLightSource(new LightSource(new Point3D(0,0,-300), 1500));
+    aWorld.addLightSource(new LightSource(new Point3D(0,0,-300), 500));
 //    aWorld.addLightSource(new LightSource(new Point3D(200,0,0), 1500));
     
     MouseTranslationManager theMouseTranslationManager = new MouseTranslationManager(myPanel3D.getGraphics3D(), 100, 10);
-    myRotationManager = new RotationManager(new Rotation(Math.PI / 500,Math.PI / 400,Math.PI / 360));
-    RotationManager theRotationManager = new RotationManager(new Rotation(0,0,Math.PI / 180));
+    myRotationManager = new RotationManager(new Rotation((float)Math.PI / 500,(float)Math.PI / 400,(float)Math.PI / 360));
+    RotationManager theRotationManager = new RotationManager(new Rotation(0,0,(float)Math.PI / 180));
     myWorld.getTranslateManagerContainer().addTranslateManager(theMouseTranslationManager);
     myWorld.getTranslateManagerContainer().addTranslateManager(myRotationManager);
     myWorld.getTranslateManagerContainer().addTranslateManager(theRotationManager);
@@ -105,7 +106,7 @@ public class AXACube extends AbstractWorld implements iSynchronizedEvent{
     Shape theShape = ShapeFactory.makeCube(new Point3D(5,0,400), 94,94,94);
     theShape.setColor(new Color(0,0,255,100));
     //theShape.setTexture(new TextureImage(ImageFactory.createImage("AXA", new Font("Arial", Font.BOLD, 40), 100, 100, Color.BLUE, Color.WHITE, true)));
-    theShape.setTexture("axa",null, false, false);
+    theShape.setTexture("axa","axa", false, false);
 //    theShape.setTexture("leslie", false, false);
 //    theShape.myPolygons[0].setTexture("axa", false);
 //    theShape.myPolygons[0].setTexture("guy", false, false);
@@ -114,15 +115,15 @@ public class AXACube extends AbstractWorld implements iSynchronizedEvent{
     theMouseTranslationManager.addTranslatable(theShape);
     myRotationManager.addTranslatable(theShape);
     
-//    theShape = ShapeFactory.makeCube(new Point3D(300,100,200), 340,340,340);
+    theShape = ShapeFactory.makeCube(new Point3D(300,100,200), 340,340,340);
 //    theShape.setColor(new Color(0,0,255,100));
     //theShape.setTexture(new TextureImage(ImageFactory.createImage("AXA", new Font("Arial", Font.BOLD, 40), 100, 100, Color.BLUE, Color.WHITE, true)));
-//    theShape.setTexture("metal006","metal006", false, false);
+    theShape.setTexture("metal006","metal006", false, false);
 //    theShape.setTexture("leslie", false, false);
 //    theShape.myPolygons[0].setTexture("axa", false);
 //    theShape.myPolygons[0].setTexture("guy", false, false);
 //    theShape.myPolygons[1].setTexture("leslie", false, false);
-//    myWorld.addShape(theShape);
+    myWorld.addShape(theShape);
 //    theMouseTranslationManager.addTranslatable(theShape);
 //    myRotationManager.addTranslatable(theShape);
     
@@ -205,7 +206,7 @@ public class AXACube extends AbstractWorld implements iSynchronizedEvent{
   protected iPixelShader[] getPixelShaders(){
     return new iPixelShader[]{
                               new TextureShader( ), 
-//                              new BumpShader( myWorld ),
+                              new BumpShader( myWorld ),
                               new PhongShader( myWorld  )
                               };
   }

@@ -6,12 +6,12 @@ import chabernac.space.geom.Point3D;
 
 public class Vertex{
   public Point3D myPoint = null; // its position, xyz in 3D, xy in 2D
-  //public double u, v, c; // u and v are coordinates of the source texture
+  //public float u, v, c; // u and v are coordinates of the source texture
   public Point2D myTextureCoordinate = null;
   public GVector normal = null;
-  public double lightIntensity;
+  public float lightIntensity;
 
-  public Vertex(Point3D aPoint, Point2D aTextureCoordinate, double aLight){
+  public Vertex(Point3D aPoint, Point2D aTextureCoordinate, float aLight){
 	  this.myPoint = aPoint;
 	  this.myTextureCoordinate = aTextureCoordinate;
 	  this.lightIntensity = aLight;

@@ -104,7 +104,7 @@ public class Frame3D extends JFrame implements iSynchronizedEvent{
                                 myCamera,
                                 myWorld,
                                 new Graphics3D2D(myWorld, getWidth(), getHeight()));
-    myGraphics.setVertexShaders(new iVertexShader[]{new GouroudShading(0.3)});
+    myGraphics.setVertexShaders(new iVertexShader[]{new GouroudShading((float)0.3)});
   }
 
   /*

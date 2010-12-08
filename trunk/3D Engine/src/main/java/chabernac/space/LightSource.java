@@ -10,15 +10,15 @@ import chabernac.space.geom.Point3D;
 public class LightSource implements iTranslatable{
   private Point3D myWorldLocation = null;
   private Point3D myCamLocation = null;
-  private double myIntensity = 0;
+  private float myIntensity = 0;
 
-  public LightSource(Point3D aLocation, double anNeutralDistance){
+  public LightSource(Point3D aLocation, float anNeutralDistance){
     myWorldLocation = aLocation;
     myIntensity = anNeutralDistance;
   }
 
-  public double getIntensity() {	return myIntensity; }
-  public void setIntensity(double intensity) { this.myIntensity = intensity; }
+  public float getIntensity() {	return myIntensity; }
+  public void setIntensity(float intensity) { this.myIntensity = intensity; }
   public Point3D getLocation() {	return myWorldLocation;  }
   public void setLocation(Point3D location)  { this.myWorldLocation = location;	 }
 
@@ -30,20 +30,20 @@ public class LightSource implements iTranslatable{
     return myCamLocation;
   }
 
-  public double calculateLight(Point3D aPixel, GVector aNormalVector){
+  public float calculateLight(Point3D aPixel, GVector aNormalVector){
     GVector theDirectionToPixel = new GVector(aPixel, getCamLocation());
-    double distance = theDirectionToPixel.length();
+    float distance = theDirectionToPixel.length();
     theDirectionToPixel.normalize();
-    double lightningFactor = (theDirectionToPixel.dotProdukt(aNormalVector) * getIntensity()) / distance;
-    if(lightningFactor < 0.0D){
-      lightningFactor = 0.0D;
+    float lightningFactor = (theDirectionToPixel.dotProdukt(aNormalVector) * getIntensity()) / distance;
+    if(lightningFactor < 0.0){
+      lightningFactor = (float)0.0;
     }
     return lightningFactor;
   }
 
-  public static double calculateLight(World aWorld, Point3D aPixel, GVector aNormalVector)
+  public static float calculateLight(World aWorld, Point3D aPixel, GVector aNormalVector)
   {
-    double light = 0.0D;
+    float light = 0;
     for(Iterator i = aWorld.getLightSources().iterator(); i.hasNext();){
       light += ((LightSource)i.next()).calculateLight(aPixel, aNormalVector);
     }

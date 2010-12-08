@@ -13,22 +13,22 @@ package chabernac.space.geom;
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
 public class Rotation {
-	public double myRoll;
-	public double myPitch;
-	public double myYaw;
+	public float myRoll;
+	public float myPitch;
+	public float myYaw;
 	
-	public double myPitchSin;
-	public double myPitchCos;
-	public double myYawSin;
-	public double myYawCos;
-	public double myRollSin;
-	public double myRollCos;
+	public float myPitchSin;
+	public float myPitchCos;
+	public float myYawSin;
+	public float myYawCos;
+	public float myRollSin;
+	public float myRollCos;
 	
 	public Rotation(){
 		this(0F, 0F, 0F);
 	} 
 	
-	public Rotation(double aRoll, double aPitch, double aYaw){
+	public Rotation(float aRoll, float aPitch, float aYaw){
 		myRoll = aRoll;
 		myPitch = aPitch; 
 		myYaw = aYaw;
@@ -36,12 +36,12 @@ public class Rotation {
 	}
 	
 	public void preCalculate(){
-	  myPitchSin = (double)Math.sin(myPitch);
-	  myPitchCos = (double)Math.cos(myPitch);
-	  myYawSin   = (double)Math.sin(myYaw);
-	  myYawCos   = (double)Math.cos(myYaw);
-	  myRollSin  = (double)Math.sin(myRoll);
-	  myRollCos  = (double)Math.cos(myRoll);
+	  myPitchSin = (float)Math.sin(myPitch);
+	  myPitchCos = (float)Math.cos(myPitch);
+	  myYawSin   = (float)Math.sin(myYaw);
+	  myYawCos   = (float)Math.cos(myYaw);
+	  myRollSin  = (float)Math.sin(myRoll);
+	  myRollCos  = (float)Math.cos(myRoll);
 	}
 	
 	public void add(Rotation aRotation){
@@ -71,30 +71,30 @@ public class Rotation {
 		return "<rotation pitch=" + myPitch + " yaw=" + myYaw + " roll=" + myRoll + "/>"; 
 	}
 	
-	public void setPitch(double aPitch){
+	public void setPitch(float aPitch){
 		myPitch = aPitch;
 		preCalculate();
 	}
 	
-	public double getPitch(){
+	public float getPitch(){
 		return myPitch;
 	}
 	
-	public void setYaw(double aYaw) {
+	public void setYaw(float aYaw) {
 		myYaw = aYaw;
 		preCalculate();
 	}
 	
-	public double getYaw(){
+	public float getYaw(){
 		return myYaw;
 	}
 	
-	public void setRoll(double aRoll){
+	public void setRoll(float aRoll){
 		myRoll = aRoll;
 		preCalculate();
 	}
 	
-	public double getRoll(){
+	public float getRoll(){
 		return myRoll;
 	}
 }

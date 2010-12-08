@@ -3,7 +3,7 @@ package chabernac.space.geom;
 
 public class Plane{
   public GVector myNormalVector;
-  public double myD = 0F;
+  public float myD = 0F;
   
   public Plane(GVector aNormalVector, Point3D aPoint){
     myNormalVector = aNormalVector;
@@ -32,7 +32,7 @@ public class Plane{
     myD = - distanceToPoint(aPoint2);
   }
 
-  public double distanceToPoint(Point3D aPoint){
+  public float distanceToPoint(Point3D aPoint){
     return myNormalVector.x * aPoint.x + myNormalVector.y * aPoint.y + myNormalVector.z * aPoint.z + myD;
   }
   
@@ -45,16 +45,16 @@ public class Plane{
    * @return
    */
   public Point3D pointOnPlane(Point2D aPoint){
-    double z = -(myD + (myNormalVector.x * aPoint.x + myNormalVector.y * aPoint.y))  / myNormalVector.z;
+    float z = -(myD + (myNormalVector.x * aPoint.x + myNormalVector.y * aPoint.y))  / myNormalVector.z;
     return new Point3D(aPoint.x, aPoint.y, z);
   }
   
   public Line3D intersect(Plane aPlane){
     GVector theDirection = myNormalVector.produkt(aPlane.myNormalVector);
-    double div = myNormalVector.x * aPlane.myNormalVector.y - aPlane.myNormalVector.x * myNormalVector.y;
-    double x = ( (myNormalVector.y * aPlane.myD  - aPlane.myNormalVector.y * myD) / div);
-    double y = ( (aPlane.myNormalVector.x * myD  - myNormalVector.x * aPlane.myD) / div);
-    double z = 0;
+    float div = myNormalVector.x * aPlane.myNormalVector.y - aPlane.myNormalVector.x * myNormalVector.y;
+    float x = ( (myNormalVector.y * aPlane.myD  - aPlane.myNormalVector.y * myD) / div);
+    float y = ( (aPlane.myNormalVector.x * myD  - myNormalVector.x * aPlane.myD) / div);
+    float z = 0;
     return new Line3D(new Point3D(x,y,z), theDirection);
   }
   

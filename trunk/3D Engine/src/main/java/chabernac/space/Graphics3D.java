@@ -91,7 +91,7 @@ public class Graphics3D{
   }
 
   public void drawCoordinateSystem(CoordinateSystem aSystem){
-    double enLargement = 100;
+    float enLargement = 100;
 
     Point3D theOrigin = aSystem.getOrigin();
 
@@ -132,7 +132,7 @@ public class Graphics3D{
   public void drawShape(Shape aShape, Graphics g){
     if(!aShape.visible) return;
     for(int i=0;i<aShape.mySize;i++){
-      if(drawBackFacing || aShape.myPolygons[i].doubleSided || !isBackFacing(aShape.myPolygons[i])){
+      if(drawBackFacing || aShape.myPolygons[i].floatSided || !isBackFacing(aShape.myPolygons[i])){
 
         if(drawPlanes) {
           fillPolygon(aShape.myPolygons[i]);
@@ -189,7 +189,7 @@ public class Graphics3D{
           Vertex[] theCamVertextes = aShape.myPolygons[i].c;
           for(int j=0;j<aShape.myPolygons[i].myCamSize;j++){
             Point3D theCoordinate = theCamVertextes[j].myPoint; 
-            String theText = Double.toString(theCoordinate.z);
+            String theText = Float.toString(theCoordinate.z);
             Color theColor = Color.white;
             drawText(theText, theCoordinate, theColor);
           }
@@ -331,7 +331,7 @@ public class Graphics3D{
   }
 
   public boolean isBackFacing(Polygon aPolygon){
-    double theDotProd = aPolygon.myCamCenterPoint.x * aPolygon.myNormalCamVector.x +
+    float theDotProd = aPolygon.myCamCenterPoint.x * aPolygon.myNormalCamVector.x +
     aPolygon.myCamCenterPoint.y * aPolygon.myNormalCamVector.y +
     (aPolygon.myCamCenterPoint.z + myEyePoint.z ) * aPolygon.myNormalCamVector.z;
     if(theDotProd < 0) return false;
@@ -374,8 +374,8 @@ public class Graphics3D{
     myVertexShaders = new iVertexShader[aVertexShaders.length];
     int i=0;
     for(VertextShader theShader : aVertexShaders){
-      if(theShader == VertextShader.FLAT) myVertexShaders[i++] = new FlatShading( 0.3 );
-      else if(theShader == VertextShader.GOUROUD) myVertexShaders[i++] = new GouroudShading( 0.3 );
+      if(theShader == VertextShader.FLAT) myVertexShaders[i++] = new FlatShading( (float)0.3 );
+      else if(theShader == VertextShader.GOUROUD) myVertexShaders[i++] = new GouroudShading( (float)0.3 );
     }
   }
   

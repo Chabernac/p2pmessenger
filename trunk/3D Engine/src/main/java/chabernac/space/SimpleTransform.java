@@ -7,9 +7,9 @@ import chabernac.space.geom.Point3D;
 
 public class SimpleTransform implements Transform3D{
   private static final Logger LOGGER = Logger.getLogger( SimpleTransform.class );
-  private double myAngle;
+  private float myAngle;
   
-  public SimpleTransform(double anAngle){
+  public SimpleTransform(float anAngle){
     myAngle = anAngle;
   }
   

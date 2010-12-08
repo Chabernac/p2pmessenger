@@ -8,22 +8,22 @@ public class Vertex2D {
   
 	private Point2D myPoint = null;
 	private Point2D myTexturePoint = null;
-	private double myDepth, myInverseDepth;
-	private double myLightning;
+	private float myDepth, myInverseDepth;
+	private float myLightning;
 	
   private Vertex2D(){
     
   }
   
-	public Vertex2D(Point2D aPoint, double aDepth, double aLightning){
+	public Vertex2D(Point2D aPoint, float aDepth, float aLightning){
 		this(aPoint, null, aDepth, aLightning);
 	}
 	
-	public Vertex2D(Point2D aPoint, Point2D aTexturePoint, double aDepth, double aLightning){
+	public Vertex2D(Point2D aPoint, Point2D aTexturePoint, float aDepth, float aLightning){
 		myPoint = aPoint;
 		myTexturePoint = aTexturePoint;
 		myDepth = aDepth;
-		myInverseDepth = 1D / myDepth;
+		myInverseDepth = (float)1 / myDepth;
 		myLightning = aLightning;
 	}
 	
@@ -35,19 +35,19 @@ public class Vertex2D {
 		return myTexturePoint;
 	}
 	
-	public double getDepth(){
+	public float getDepth(){
 		return myDepth;
 	}
 	
-	public double getInverseDepth(){
+	public float getInverseDepth(){
 		return myInverseDepth;
 	}
 	
-	public double getLightning(){
+	public float getLightning(){
 		return myLightning;
 	}
   
-  public static Vertex2D getInstance(Point2D aPoint, Point2D aTexturePoint, double aDepth, double aLightning){
+  public static Vertex2D getInstance(Point2D aPoint, Point2D aTexturePoint, float aDepth, float aLightning){
     Vertex2D result;
     if (countFree == 0) {
       result = new Vertex2D();

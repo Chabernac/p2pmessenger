@@ -7,11 +7,11 @@ import chabernac.space.geom.GVector;
 public class BumpMap {
   private TextureImage myImage = null;
   private GVector[] myVectorMap = null;
-  private double myMaxDepth;
+  private float myMaxDepth;
   private int myXOffset = 0;
   private int myYOffset = 0;
   
-  public BumpMap(TextureImage anImage, double aMaxDepth){
+  public BumpMap(TextureImage anImage, float aMaxDepth){
     myImage = anImage;
     myMaxDepth = aMaxDepth;
     myVectorMap = new GVector[myImage.width * myImage.height];
@@ -29,13 +29,13 @@ public class BumpMap {
     }
   }
 
-  private double getDepth(int aColor) {
+  private float getDepth(int aColor) {
     int red   = aColor >> 16 & 0xff;
     int green = aColor >>  8 & 0xff;
     int blue  = aColor & 0xff;
     
-    double theAverageColor = ((red + green + blue) / 3) - 128;
-    double thePercentage = theAverageColor / 128;
+    float theAverageColor = ((red + green + blue) / 3) - 128;
+    float thePercentage = theAverageColor / 128;
     
     return thePercentage * myMaxDepth;
   }

@@ -6,7 +6,7 @@ import chabernac.space.texture.Texture2;
 
 public class Polygon2D {
   private static Logger LOGGER = Logger.getLogger(Polygon2D.class);
-  private static final double AFFINEBORDER = Math.tan(Math.PI / 10);
+  private static final float AFFINEBORDER = (float)Math.tan(Math.PI / 10);
   private static boolean FORCEAFFINE = true;
   private static boolean FORCENOTAFFINE = false;
   
@@ -40,7 +40,7 @@ public class Polygon2D {
   public Vertex2D[] intersectHorizontalLine(int y){
     Vertex2D theTempVertex = null;
     Vertex2D[] theVertexes = new Vertex2D[2];
-    double time, inversezDiff, zDiff, lDiff, uDiff, vDiff, inverseZ = 0, z, uRico = 0, vRico = 0, u = 0, v = 0;
+    float time, inversezDiff, zDiff, lDiff, uDiff, vDiff, inverseZ = 0, z, uRico = 0, vRico = 0, u = 0, v = 0;
     int j = 0, current = 0;
     for(int i=0;i<myLines.length;i++){
       time = myLines[i].intersectHorizontalLine(y);
@@ -61,7 +61,7 @@ public class Polygon2D {
         
         //LOGGER.debug("udiff: " + uDiff + " vdiff: " + vDiff);
         
-//        double tanangle = Math.abs(zDiff) / myLines[i].length();
+//        float tanangle = Math.abs(zDiff) / myLines[i].length();
 
 //        if(FORCENOTAFFINE || (!FORCEAFFINE && tanangle > AFFINEBORDER)){
 //          //System.out.println("not affine");

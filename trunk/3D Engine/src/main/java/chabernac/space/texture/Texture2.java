@@ -30,7 +30,7 @@ public class Texture2 implements iTranslatable{
   private CoordinateSystem mySystem = null;
   private CoordinateSystem myCamSystem = null;
   private boolean isSpherical = false;
-  private double mySphereRadius = 200;
+  private float mySphereRadius = 200;
   private BumpMap myBumpMap = null;
   private int myColor;
 
@@ -57,8 +57,8 @@ public class Texture2 implements iTranslatable{
       if(thePoint.getAlpha() <= 0){
         System.out.println("Alpha: " + thePoint.getAlpha());
       }
-      double u = thePoint.getAlpha() / (2 * Math.PI) ;
-      double v = 0.5 - thePoint.getBeta() / Math.PI;
+      float u = thePoint.getAlpha() / (2 * (float)Math.PI) ;
+      float v = (float)0.5 - thePoint.getBeta() / (float)Math.PI;
       return new Point2D(u * myImage.width, v * myImage.height);
     } else {
       Point3D thePoint = mySystem.getTransformator().transform(aVertex.myPoint);
@@ -72,8 +72,8 @@ public class Texture2 implements iTranslatable{
   }
 
   public static Vector2D distance(Texture2 aTexture, Point2D ap1, Point2D ap2){
-    double width = ap2.x - ap1.x;
-    double height = ap2.y - ap1.y;
+    float width = ap2.x - ap1.x;
+    float height = ap2.y - ap1.y;
     if(aTexture != null && aTexture.isSpherical && Math.abs(width) > aTexture.myImage.halfWidth){
       if(width < 0){
         width += aTexture.myImage.width;
@@ -107,11 +107,11 @@ public class Texture2 implements iTranslatable{
     this.isSpherical = isSpherical;
   }
 
-  public double getSphereRadius() {
+  public float getSphereRadius() {
     return mySphereRadius;
   }
 
-  public void setSphereRadius(double anSphereRadius) {
+  public void setSphereRadius(float anSphereRadius) {
     mySphereRadius = anSphereRadius;
   }
 

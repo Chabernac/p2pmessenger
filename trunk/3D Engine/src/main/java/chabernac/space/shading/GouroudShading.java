@@ -16,9 +16,9 @@ import chabernac.space.geom.Polygon;
 import chabernac.space.geom.Shape;
 
 public class GouroudShading implements iVertexShader {
-	private double myAmbient;
+	private float myAmbient;
 	
-	public GouroudShading(double ambient){
+	public GouroudShading(float ambient){
 		myAmbient = ambient;
 	}
 
@@ -50,12 +50,12 @@ public class GouroudShading implements iVertexShader {
 		}
 	}
 
-	private double calculateIlluminatingFactor(LightSource theCurrentLight, Vertex theCurrentVertex) {
+	private float calculateIlluminatingFactor(LightSource theCurrentLight, Vertex theCurrentVertex) {
 		GVector theDirectionToPolygon = new GVector(theCurrentVertex.myPoint, theCurrentLight.getCamLocation());
-		double distance = theDirectionToPolygon.length();
+		float distance = theDirectionToPolygon.length();
 		theDirectionToPolygon.normalize();
-		double lightningFactor = theDirectionToPolygon.dotProdukt(theCurrentVertex.normal) *  theCurrentLight.getIntensity() / distance;
-		//double lightningFactor = theDirectionToPolygon.dotProdukt(theCurrentVertex.normal);
+		float lightningFactor = theDirectionToPolygon.dotProdukt(theCurrentVertex.normal) *  theCurrentLight.getIntensity() / distance;
+		//float lightningFactor = theDirectionToPolygon.dotProdukt(theCurrentVertex.normal);
 		if(lightningFactor < 0) lightningFactor = 0;
 		return lightningFactor;
 	}

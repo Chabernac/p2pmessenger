@@ -10,9 +10,9 @@ import chabernac.space.geom.Polygon;
 import chabernac.space.geom.Shape;
 
 public class AmbientShading implements iVertexShader {
-  private double myAmbientLigth;
+  private float myAmbientLigth;
   
-    public AmbientShading( double aAmbientLigth ) {
+    public AmbientShading( float aAmbientLigth ) {
     super();
     myAmbientLigth = aAmbientLigth;
   }
@@ -33,7 +33,7 @@ public class AmbientShading implements iVertexShader {
     }
   }
   
-  private void applyIlluminatingFactor(double illuminatingFactor, Polygon theCurrentPolygon) {
+  private void applyIlluminatingFactor(float illuminatingFactor, Polygon theCurrentPolygon) {
     Vertex theCurrentVertex = null;
 
     for(int l=0;l<theCurrentPolygon.myCamSize;l++){
@@ -42,11 +42,11 @@ public class AmbientShading implements iVertexShader {
     }
   }
 
-  public double getAmbientLigth() {
+  public float getAmbientLigth() {
     return myAmbientLigth;
   }
 
-  public void setAmbientLigth( double aAmbientLigth ) {
+  public void setAmbientLigth( float aAmbientLigth ) {
     myAmbientLigth = aAmbientLigth;
   }
 }

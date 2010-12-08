@@ -4,12 +4,12 @@ import chabernac.space.geom.Point3D;
 import chabernac.space.geom.PointShape;
 
 public class SpherePointShape extends PointShape{
-  protected double myRadius;
+  protected float myRadius;
   protected Point3D myCenterPoint;
   private int myCurrentPoint;
   private int myPoints;
   
-  public SpherePointShape(Point3D aCenterPoint, double aRadius, int points){
+  public SpherePointShape(Point3D aCenterPoint, float aRadius, int points){
   	super(((points / 2) + 1) * (points + 1));
 	myPoints = points;
     myCenterPoint = aCenterPoint;
@@ -28,22 +28,22 @@ public class SpherePointShape extends PointShape{
     System.out.println("Current point: " + myCurrentPoint);
   }
   
-  private void generatePoint(double alpha, double beta, double aRadius){
-    double z = aRadius * (double)Math.sin(alpha);
-    double a = (double)Math.cos(alpha);
-    double y = aRadius * a * (double)Math.sin(beta);
-    double x = aRadius * a * (double)Math.cos(beta);
+  private void generatePoint(float alpha, float beta, float aRadius){
+    float z = aRadius * (float)Math.sin(alpha);
+    float a = (float)Math.cos(alpha);
+    float y = aRadius * a * (float)Math.sin(beta);
+    float x = aRadius * a * (float)Math.cos(beta);
     w[myCurrentPoint] = new Point3D(myCenterPoint.x + x,myCenterPoint.y + y,myCenterPoint.z + z);
     myCurrentPoint++;
   }
 
   
-  public double getRadius() {
+  public float getRadius() {
     return myRadius;
   }
 
 
-  public void setRadius(double aF) {
+  public void setRadius(float aF) {
     myRadius = aF;
   }
   

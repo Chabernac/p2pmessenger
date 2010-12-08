@@ -33,19 +33,19 @@ public class CrossingPlanes extends AbstractWorld{
     
     Transformation theTransform = new Transformation();
     theTransform.addTransformation(MatrixOperations.buildTranslationMatrix( new GVector( 100, 100, -300 ) ));
-    theTransform.addTransformation(MatrixOperations.buildRotationMatrix(new Rotation( 0, -Math.PI / 8, 0 )));
+    theTransform.addTransformation(MatrixOperations.buildRotationMatrix(new Rotation( 0, -(float)Math.PI / 8, 0 )));
     theTransform.addTransformation(MatrixOperations.buildTranslationMatrix( new GVector( -100, -100, +300 ) ));
     thePlane1.translate( theTransform );
     
     theTransform = new Transformation();
     theTransform.addTransformation(MatrixOperations.buildTranslationMatrix( new GVector( 100, 100, -300 ) ));
-    theTransform.addTransformation(MatrixOperations.buildRotationMatrix(new Rotation( 0, Math.PI / 8, 0 )));
+    theTransform.addTransformation(MatrixOperations.buildRotationMatrix(new Rotation( 0, (float)Math.PI / 8, 0 )));
     theTransform.addTransformation(MatrixOperations.buildTranslationMatrix( new GVector( -100, -100, +300 ) ));
     thePlane2.translate( theTransform );
     
     theTransform = new Transformation();
     theTransform.addTransformation(MatrixOperations.buildTranslationMatrix( new GVector( -100, 0, -300 ) ));
-    theTransform.addTransformation(MatrixOperations.buildRotationMatrix(new Rotation( 0, 0, Math.PI / 2 )));
+    theTransform.addTransformation(MatrixOperations.buildRotationMatrix(new Rotation( 0, 0, (float)Math.PI / 2 )));
     theTransform.addTransformation(MatrixOperations.buildTranslationMatrix( new GVector( 100, 0, +300 ) ));
     thePlane3.translate( theTransform );
     

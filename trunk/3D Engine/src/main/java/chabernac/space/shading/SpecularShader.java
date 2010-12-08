@@ -24,25 +24,25 @@ public class SpecularShader implements iPixelShader {
   @Override
   public void calculatePixel( Pixel aPixel ) {
     //we might already have calculated this point for the bump mapping, make sure we do not do the calculation twice
-    Point3D theCamPoint = aPixel.texture.getSystem().getTransformator().inverseTransform(new Point3D(aPixel.u, aPixel.v, 0.0D));
+    Point3D theCamPoint = aPixel.texture.getSystem().getTransformator().inverseTransform(new Point3D(aPixel.u, aPixel.v, (float)0.0));
 
     GVector theVectorTowardsCamera = new GVector( theCamPoint, myCamLocation ).norm();
     GVector theNormalAtCamPoint = aPixel.texture.getSystem().getZUnit();
     
-    double theSpecularLightning = 0;
+    float theSpecularLightning = 0;
     
     for(LightSource theLightSource : myWorld.getLightSources()){
       GVector theVectorTowarsLightSource = new GVector( theCamPoint, theLightSource.getCamLocation());
       
-      double theDistanceTowardsLightSource = theVectorTowarsLightSource.length();
+      float theDistanceTowardsLightSource = theVectorTowarsLightSource.length();
       
       theVectorTowarsLightSource = theVectorTowarsLightSource.norm();
       
-      double theProjectionOfVectorTowardsCamera = theNormalAtCamPoint.dotProdukt( theVectorTowardsCamera );
-      double theProjectionsOfVectorTowardsLightSource = theNormalAtCamPoint.dotProdukt( theVectorTowarsLightSource );
+      float theProjectionOfVectorTowardsCamera = theNormalAtCamPoint.dotProdukt( theVectorTowardsCamera );
+      float theProjectionsOfVectorTowardsLightSource = theNormalAtCamPoint.dotProdukt( theVectorTowarsLightSource );
       
       //when the angle of the normal and the vector towards camera and light source are equal the division between the 2 will be 1
-      double theFactor = (1 - Math.abs(theProjectionOfVectorTowardsCamera - theProjectionsOfVectorTowardsLightSource));
+      float theFactor = (1 - Math.abs(theProjectionOfVectorTowardsCamera - theProjectionsOfVectorTowardsLightSource));
       theFactor *= theLightSource.getIntensity();
       theFactor /= theDistanceTowardsLightSource;
       

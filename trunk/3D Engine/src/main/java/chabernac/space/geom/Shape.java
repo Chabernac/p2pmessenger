@@ -20,7 +20,7 @@ public class Shape implements Comparable, iTranslatable{
   public Polygon[] myPolygons;
   public  Point3D myCenterPoint = null;
   public  Point3D myCamCenterPoint = null;
-  public double myCamDistance;
+  public float myCamDistance;
   private boolean isRoom = false;
   public int myGrowSize = 10;
   public boolean visible;
@@ -80,7 +80,7 @@ public class Shape implements Comparable, iTranslatable{
 
   public void calculateCenterPoint(){
     if(myCenterPoint != null) return;
-    double x = 0, y = 0, z = 0;
+    float x = 0, y = 0, z = 0;
     for(int i=0;i<mySize;i++){
       myPolygons[i].calculateCenterPoint();
       x += myPolygons[i].myCenterPoint.x;
@@ -214,9 +214,9 @@ public class Shape implements Comparable, iTranslatable{
     return myCenterPoint;
   }
 
-  public void setDoubleSidedPolygons(boolean doubleSided){
+  public void setfloatSidedPolygons(boolean floatSided){
     for(int i=0;i<myPolygons.length;i++){
-      myPolygons[i].doubleSided = doubleSided;
+      myPolygons[i].floatSided = floatSided;
     }
   }
 

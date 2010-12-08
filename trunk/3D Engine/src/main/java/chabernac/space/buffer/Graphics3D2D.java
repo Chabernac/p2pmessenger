@@ -62,7 +62,6 @@ public class Graphics3D2D implements iBufferStrategy {
   private void init(){
     myImage = new BufferedImage(myWidth, myHeight, BufferedImage.TYPE_INT_ARGB);
     myGraphics = myImage.getGraphics();
-    ((Graphics2D)myGraphics).setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
     //we should be able to specify the depth buffering technique
     myDepthBuffer = new ZBuffer( myWidth, myHeight );
     clearFull();
@@ -164,13 +163,13 @@ public class Graphics3D2D implements iBufferStrategy {
     return myWidth;
   }
 
-  public void setPixelAt(int x, int y, double anInverseDepth, int aColor){
+  public void setPixelAt(int x, int y, float anInverseDepth, int aColor){
     if(myDepthBuffer.isDrawPixel( x, y, anInverseDepth )){
       setPixelAt(x, y, aColor);
     }
   }
 
-  public void setPixelAt(int x, int y, double anInverseDepth, Pixel aPixel){
+  public void setPixelAt(int x, int y, float anInverseDepth, Pixel aPixel){
     if(myDepthBuffer.isDrawPixel( x, y, anInverseDepth )){
 
       for(iPixelShader theShader : myPixelShaders){
@@ -236,8 +235,8 @@ public class Graphics3D2D implements iBufferStrategy {
 
     Vertex2D theStartPoint = aLine.getStart();
     Vertex2D theEndPoint = aLine.getEnd();
-    double xDiff =  theEndPoint.getPoint().x - theStartPoint.getPoint().x;
-    double yDiff =  theEndPoint.getPoint().y - theStartPoint.getPoint().y;
+    float xDiff =  theEndPoint.getPoint().x - theStartPoint.getPoint().x;
+    float yDiff =  theEndPoint.getPoint().y - theStartPoint.getPoint().y;
 
     if(Math.abs(xDiff) > Math.abs(yDiff)){
       if(theStartPoint.getPoint().x > theEndPoint.getPoint().x){
@@ -245,11 +244,11 @@ public class Graphics3D2D implements iBufferStrategy {
         theStartPoint = theEndPoint;
         theEndPoint = theTempVertex;
       }
-      double zDiff = theEndPoint.getInverseDepth() - theStartPoint.getInverseDepth();
-      double deltaY = yDiff / xDiff;
-      double deltaZ = zDiff / xDiff;
-      double y = theStartPoint.getPoint().y;
-      double z = theStartPoint.getInverseDepth();
+      float zDiff = theEndPoint.getInverseDepth() - theStartPoint.getInverseDepth();
+      float deltaY = yDiff / xDiff;
+      float deltaZ = zDiff / xDiff;
+      float y = theStartPoint.getPoint().y;
+      float z = theStartPoint.getInverseDepth();
       for(int x=(int)Math.ceil(theStartPoint.getPoint().x);x<(int)Math.floor(theEndPoint.getPoint().x);x++){
         setPixelAt( (int)x, (int)y, z, aLine.getColor());
         y += deltaY;
@@ -262,11 +261,11 @@ public class Graphics3D2D implements iBufferStrategy {
         theStartPoint = theEndPoint;
         theEndPoint = theTempVertex;
       }
-      double zDiff = theEndPoint.getInverseDepth() - theStartPoint.getInverseDepth();
-      double deltaX = xDiff / yDiff;
-      double deltaZ = zDiff / yDiff;
-      double x = theStartPoint.getPoint().x;
-      double z = theStartPoint.getInverseDepth();
+      float zDiff = theEndPoint.getInverseDepth() - theStartPoint.getInverseDepth();
+      float deltaX = xDiff / yDiff;
+      float deltaZ = zDiff / yDiff;
+      float x = theStartPoint.getPoint().x;
+      float z = theStartPoint.getInverseDepth();
       for(int y=(int)Math.ceil(theStartPoint.getPoint().y);y<(int)Math.floor(theEndPoint.getPoint().y);y++){
         setPixelAt( (int)x, y, z, aLine.getColor());
         x += deltaX;
@@ -312,7 +311,7 @@ public class Graphics3D2D implements iBufferStrategy {
   public void drawPolygon(Polygon2D aPolygon, Polygon anOrigPolygon) {
     //TimeTracker.start();
     
-    double[] minmax = BufferTools.findMinMaxY(aPolygon);
+    float[] minmax = BufferTools.findMinMaxY(aPolygon);
     
     //TimeTracker.logTime("finding min max y");
     Vertex2D[] theScanLine;

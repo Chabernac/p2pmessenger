@@ -37,7 +37,7 @@ public class SinglePolygonShape extends Shape {
 		thePolygon.addVertex(new Vertex(new Point3D(myOrigin.x + myWidth, myOrigin.y - myHeight, myOrigin.z)));
 		thePolygon.addVertex(new Vertex(new Point3D(myOrigin.x, myOrigin.y - myHeight, myOrigin.z)));
 		
-		thePolygon.doubleSided = true;
+		thePolygon.floatSided = true;
 		thePolygon.done();
 		addPolygon(thePolygon);
 		done();

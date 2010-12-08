@@ -87,7 +87,7 @@ public class Transformation implements iTransformator{
     Transformation theTrans = new Transformation();
     theTrans.getTransformationMatrix().print();
     theTrans.addTransformation(MatrixOperations.buildTranslationMatrix(new GVector(-1,-1,0)));
-    theTrans.addTransformation(MatrixOperations.buildRotationMatrix(new Rotation(Math.PI/2,0,0)));
+    theTrans.addTransformation(MatrixOperations.buildRotationMatrix(new Rotation((float)Math.PI/2,0,0)));
     theTrans.addTransformation(MatrixOperations.buildTranslationMatrix(new GVector(1,1,0)));
     theTrans.getTransformationMatrix().print();
     

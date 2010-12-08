@@ -191,7 +191,7 @@ public class HollowWorld extends DefaultExitFrame{
     
     /*
      theCube = new Cube(new Point3D(0,0,500), 500,500,500);
-    theCube.setDoubleSidedPolygons(true);
+    theCube.setfloatSidedPolygons(true);
     theCube.setTexture("lhermitte2");
     theCube.setColor(Color.blue);
     theWorld.addShape(theCube);

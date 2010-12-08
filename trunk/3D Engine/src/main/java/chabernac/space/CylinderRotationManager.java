@@ -18,9 +18,9 @@ import chabernac.space.shapes.Cylinder;
  * Window - Preferences - Java - Code Generation - Code and Comments
  */
 public class CylinderRotationManager extends TranslateManager {
-	private double myRoll = 0;
+	private float myRoll = 0;
 	
-	public CylinderRotationManager(double aRoll){
+	public CylinderRotationManager(float aRoll){
 		myRoll = aRoll;
 	}
 	
@@ -41,7 +41,7 @@ public class CylinderRotationManager extends TranslateManager {
 	
 	public static void main(String args[]){
 		Point3D thePoint = new Point3D(100,100,100);
-		Rotation theRotation = new Rotation(0.2,0.3,0.4);
+		Rotation theRotation = new Rotation((float)0.2,(float)0.3,(float)0.4);
 		Camera theCamera = new Camera(new Point3D(0,0,0), theRotation, 1);
 		theRotation.invert();
 		Camera theCamera2 = new Camera(new Point3D(0,0,0), theRotation, 1);

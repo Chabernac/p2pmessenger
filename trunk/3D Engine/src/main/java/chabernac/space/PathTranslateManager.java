@@ -15,9 +15,9 @@ import chabernac.space.geom.Point3D;
 public class PathTranslateManager extends TranslateManager{
 	private Point3D[] myPath = null;
 	private Map myCurrentDestination = null;
-	private double mySpeed;
+	private float mySpeed;
 	
-	public PathTranslateManager(Point3D[] aPath, double aSpeed){
+	public PathTranslateManager(Point3D[] aPath, float aSpeed){
 		myPath = aPath;
 		myCurrentDestination = new HashMap();
 		mySpeed = aSpeed;

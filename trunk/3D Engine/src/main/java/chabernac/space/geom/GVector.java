@@ -2,13 +2,13 @@ package chabernac.space.geom;
 
 
 public class GVector{
-  public double x,y,z;
+  public float x,y,z;
 
   public GVector(Point3D aPoint){
     this(aPoint.x, aPoint.y, aPoint.z);
   }
 
-  public GVector(double x, double y, double z){
+  public GVector(float x, float y, float z){
     this.x = x;
     this.y = y;
     this.z = z;
@@ -53,7 +53,7 @@ public class GVector{
   }
 
   public void normalize(){
-    double c = Math.sqrt(x * x  + y * y + z * z);
+    float c = (float)Math.sqrt(x * x  + y * y + z * z);
     if(c > 0){
       x = x / c;
       y = y / c;
@@ -62,7 +62,7 @@ public class GVector{
   }
 
   public GVector norm(){
-    double length = length();
+    float length = length();
     return new GVector(x / length, y / length, z / length);
   }
 
@@ -76,7 +76,7 @@ public class GVector{
     return new GVector(-x, -y, -z);
   }
 
-  public double dotProdukt(GVector aVector){
+  public float dotProdukt(GVector aVector){
     return x * aVector.x + y * aVector.y + z * aVector.z;
   }
 
@@ -84,18 +84,18 @@ public class GVector{
     return new GVector(y * aVector.z - z * aVector.y, z * aVector.x - x * aVector.z, x * aVector.y - y * aVector.x);
   }
 
-  public double length(){
-    return Math.sqrt(dotProdukt(this));
+  public float length(){
+    return (float)Math.sqrt(dotProdukt(this));
   }
 
-  public void multiply(double adouble){
-    x *= adouble;
-    y *= adouble;
-    z *= adouble;
+  public void multiply(float afloat){
+    x *= afloat;
+    y *= afloat;
+    z *= afloat;
   }
 
-  public GVector multip(double adouble){
-    return new GVector(	x * adouble, y * adouble, z * adouble);
+  public GVector multip(float afloat){
+    return new GVector(	x * afloat, y * afloat, z * afloat);
   }
 
   public GVector addition(GVector aVector){

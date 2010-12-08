@@ -11,9 +11,9 @@ import chabernac.space.geom.Point3D;
 
 public class OneLocationTranslateManager extends TranslateManager{
 	private Point3D myDestination = null;
-	private double mySpeed;
+	private float mySpeed;
 	
-	public OneLocationTranslateManager(Point3D aDestination, double aSpeed){
+	public OneLocationTranslateManager(Point3D aDestination, float aSpeed){
 		myDestination = aDestination;
 		mySpeed = aSpeed;
 	}
@@ -38,11 +38,11 @@ public class OneLocationTranslateManager extends TranslateManager{
 		this.myDestination = aDestination;
 	}
 
-	public double getSpeed() {
+	public float getSpeed() {
 		return mySpeed;
 	}
 
-	public void setpeed(double aSpeed) {
+	public void setpeed(float aSpeed) {
 		this.mySpeed = aSpeed;
 	}
 	
