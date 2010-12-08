@@ -278,21 +278,21 @@ public class Graphics3D{
       theShader.applyShading( myWorld );
     }
 
-    final CountDownLatch theLatch = new CountDownLatch( myWorld.myShapes.length );
+//    final CountDownLatch theLatch = new CountDownLatch( myWorld.myShapes.length );
     for(int i=myWorld.myShapes.length - 1;i>=0;i--){
       final Shape theShape = myWorld.myShapes[i];
-      myService.execute( new Runnable() {
-        public void run(){
+//      myService.execute( new Runnable() {
+//        public void run(){
           drawShape(theShape, aG);
-          theLatch.countDown();
-        }
-      });
+//          theLatch.countDown();
+//        }
+//      });
     }
     
-    try {
-      theLatch.await();
-    } catch ( InterruptedException e ) {
-    }
+//    try {
+//      theLatch.await();
+//    } catch ( InterruptedException e ) {
+//    }
 
     if(drawWorldOrigin) drawWorldAxis();
 
