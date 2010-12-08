@@ -1,20 +1,20 @@
 package chabernac.math;
 
 public class Matrix{
-  protected double[] myMatrix = null;
+  protected float[] myMatrix = null;
   private int myRows;
   private int myColumns;
 
   public Matrix(int aRows, int aColumns){
-    this(aRows, aColumns, new double[aRows * aColumns]);
+    this(aRows, aColumns, new float[aRows * aColumns]);
   }
-  public Matrix(int aRows, int aColumns, double[] aMatrix){
+  public Matrix(int aRows, int aColumns, float[] aMatrix){
     myRows = aRows;
     myColumns = aColumns;
     myMatrix = aMatrix;
   }
 
-  public double[] getSource(){
+  public float[] getSource(){
     return myMatrix;
   }
 
@@ -26,19 +26,19 @@ public class Matrix{
     return myColumns;
   }
 
-  public void setSource(double[] aMatrix){
+  public void setSource(float[] aMatrix){
     myMatrix = aMatrix;
   }
 
-  public double getValueAt(int aRow, int aColumn){
+  public float getValueAt(int aRow, int aColumn){
     return myMatrix[aRow * myColumns + aColumn];
   }
 
-  public void setValueAt(int aRow, int aColumn, double aValue){
+  public void setValueAt(int aRow, int aColumn, float aValue){
     myMatrix[aRow * myColumns + aColumn] = aValue;
   }
 
-  public double getDeterminant() throws MatrixException{
+  public float getDeterminant() throws MatrixException{
     if(myRows != myColumns){
       throw new MatrixException("Could not calculate determinant");
     }
@@ -46,7 +46,7 @@ public class Matrix{
     if(myRows == 1){
       return myMatrix[0];
     }
-    double theValue = 0;
+    float theValue = 0;
     for(int theColumn=0;theColumn<myColumns;theColumn++){
       theValue += Math.pow(-1, theColumn) * myMatrix[theColumn] * exclude(0,theColumn).getDeterminant();
     }
@@ -104,7 +104,7 @@ public class Matrix{
     }
     int theColumns = aMatrix.getColumns();
     Matrix theMatrix = new Matrix(myRows, theColumns);
-    double theValue;
+    float theValue;
     for(int theMultiplyColumn=0;theMultiplyColumn<theColumns;theMultiplyColumn++){
       for(int theMultiplyRow=0;theMultiplyRow<myRows;theMultiplyRow++){
         theValue = 0;
@@ -128,7 +128,7 @@ public class Matrix{
     Matrix theMatrix = new Matrix(myRows, theColomsOfGivenMatrix);
     
     //the value at row, column with which we will do all calculations at once
-    double theTemp;
+    float theTemp;
     
     //the index in the matrix of this object
     int theMeIndex = 0;
@@ -159,7 +159,7 @@ public class Matrix{
       throw new MatrixException("Could not multiply matrices [" + getRows() + "," + getColumns() + "] x [" + aMatrix.getRows() + "," + aMatrix.getColumns() + "]");
     }
     Matrix theMatrix = new Matrix(getRows(), aMatrix.getColumns());
-    double theValue = 0;
+    float theValue = 0;
     int theMultiplyColumn=0; 
     do{
       int theMultiplyRow=0;
@@ -179,10 +179,10 @@ public class Matrix{
   }
 
 
-  public Matrix multiply(double adouble){
-    double[] theMatrix = new double[myMatrix.length];  	
+  public Matrix multiply(float afloat){
+    float[] theMatrix = new float[myMatrix.length];  	
     for(int i=0;i<myMatrix.length;i++){
-      theMatrix[i] = myMatrix[i] * adouble; 
+      theMatrix[i] = myMatrix[i] * afloat; 
     }
     return new Matrix(getRows(), getColumns(), theMatrix);
   }
@@ -202,7 +202,7 @@ public class Matrix{
     if(aRow >= myRows || aColumn >= myColumns || aRow < 0 || aColumn < 0){
       throw new MatrixException("Index out of bounds");
     }
-    double theMatrix[] = new double[(myRows - 1)*(myColumns - 1)];
+    float theMatrix[] = new float[(myRows - 1)*(myColumns - 1)];
     int i=0;
     for(int theRow=0;theRow<myRows;theRow++){
       for(int theColumn=0;theColumn<myColumns;theColumn++){
@@ -225,13 +225,13 @@ public class Matrix{
   }
 
   public Matrix inverse() throws MatrixException{
-    double theDet = getDeterminant();
+    float theDet = getDeterminant();
     if(theDet == 0) throw new MatrixException("This matrix has no inverse");
     if(isOrthogonal()) return transpose();
     Matrix theMatrix = new Matrix(getRows(),getColumns());
     for(int theColumn=0;theColumn<getColumns();theColumn++){
       for(int theRow=0;theRow<getRows();theRow++){
-        theMatrix.setValueAt(theRow, theColumn, (double)Math.pow(-1,theRow + theColumn) * exclude(theRow, theColumn).getDeterminant() / theDet);
+        theMatrix.setValueAt(theRow, theColumn, (float)Math.pow(-1,theRow + theColumn) * exclude(theRow, theColumn).getDeterminant() / theDet);
       }
     }
     return theMatrix.transpose();
@@ -241,7 +241,7 @@ public class Matrix{
     if(getRows() != getColumns()) return false;
     for(int theRow=0; theRow<getRows() - 1; theRow++){
       for(int theRow2=theRow + 1; theRow2<getRows(); theRow2++){
-        double theValue = 0;
+        float theValue = 0;
         for(int theColumn=0; theColumn<getColumns(); theColumn++){
           theValue += getValueAt(theRow, theColumn) * getValueAt(theRow2, theColumn);
         }        
@@ -264,8 +264,8 @@ public class Matrix{
     if(getColumns() != aMatrix.getColumns() || getRows() != aMatrix.getRows()){
       throw new MatrixException("Can not add matrices");
     }
-    double theMatrix[] = new double[myMatrix.length];
-    double theSource[] = aMatrix.getSource();
+    float theMatrix[] = new float[myMatrix.length];
+    float theSource[] = aMatrix.getSource();
     for(int i=0;i<myMatrix.length;i++){
       theMatrix[i] = myMatrix[i] + theSource[i];
     }
