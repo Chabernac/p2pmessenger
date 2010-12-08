@@ -20,7 +20,7 @@ public class BumpShader implements iPixelShader {
   @Override
   public void calculatePixel( Pixel aPixel ) {
     if(aPixel.texture.getBumpMap() != null){
-      GVector theCamNormalVector = aPixel.texture.getNormalVector(aPixel.uInt, aPixel.vInt);
+      GVector theCamNormalVector = aPixel.getNormal();
       Point3D theCamPoint = aPixel.getCamPoint();
       aPixel.light += LightSource.calculateLight(myWorld, theCamPoint, theCamNormalVector);
         

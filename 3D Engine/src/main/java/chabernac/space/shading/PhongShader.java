@@ -51,7 +51,7 @@ public class PhongShader implements iPixelShader {
     //but we can as well use the normal of the  bump map
     GVector theNormalAtCamPoint = null;
     if(aPixel.texture.getBumpMap() != null){
-      theNormalAtCamPoint = aPixel.texture.getNormalVector(aPixel.uInt, aPixel.vInt);
+      theNormalAtCamPoint = aPixel.getNormal();
     } else {
       theNormalAtCamPoint = aPixel.texture.getSystem().getZUnit();
     }

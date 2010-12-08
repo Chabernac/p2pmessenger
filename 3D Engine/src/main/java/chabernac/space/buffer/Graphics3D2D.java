@@ -10,9 +10,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.Image;
-import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import java.util.Collection;
@@ -321,10 +319,10 @@ public class Graphics3D2D implements iBufferStrategy {
       //TimeTracker.logTime("Intersecting with horizontal line: " + y);
       if(theScanLine.length == 2 && theScanLine[0] != null && theScanLine[1] != null){
 //        synchronized(this){
-//        Segment theSegment = Segment.getInstance(theScanLine[0],theScanLine[1], aPolygon.getTexture() ); 
-        Segment theSegment = new Segment(theScanLine[0],theScanLine[1], aPolygon.getTexture() );
+        Segment theSegment = Segment.getInstance(theScanLine[0],theScanLine[1], aPolygon.getTexture() ); 
+//        Segment theSegment = new Segment(theScanLine[0],theScanLine[1], aPolygon.getTexture() );
         drawSegment(theSegment, y, anOrigPolygon);
-//        Segment.freeInstance(theSegment);
+        Segment.freeInstance(theSegment);
 //        }
         //TimeTracker.logTime("Drawing segment");;
       }

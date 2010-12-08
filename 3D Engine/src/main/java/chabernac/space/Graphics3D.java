@@ -296,7 +296,7 @@ public class Graphics3D{
 
     if(drawWorldOrigin) drawWorldAxis();
 
-    if(!isSingleFullRepaint && isUseClipping && ((aCycle & 256) != 256)){
+    if(!isSingleFullRepaint && isUseClipping ){
       Image theImage = myGraphics3D2D.getImage();
       Collection<DrawingRectangleContainer> theDrawingAreas = myGraphics3D2D.getDrawingRectangles();
       for(DrawingRectangleContainer theRect : theDrawingAreas){
@@ -330,9 +330,9 @@ public class Graphics3D{
 
   private void showDrawingAreas(Graphics aG){
     for(DrawingRectangleContainer theRectContainer : myGraphics3D2D.getDrawingRectangles()){
-      aG.setColor( Color.red );
-      DrawingRectangle theClaeringRect = theRectContainer.getClearingRect();
-      aG.drawRect( theClaeringRect.getX(), theClaeringRect.getY(), theClaeringRect.getWidth(), theClaeringRect.getHeight());
+//      aG.setColor( Color.red );
+//      DrawingRectangle theClaeringRect = theRectContainer.getClearingRect();
+//      aG.drawRect( theClaeringRect.getX(), theClaeringRect.getY(), theClaeringRect.getWidth(), theClaeringRect.getHeight());
 
       aG.setColor( Color.blue);
       DrawingRectangle theDrawingRect = theRectContainer.getDrawingRect();
