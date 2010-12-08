@@ -5,6 +5,9 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Rectangle;
 import java.util.Collection;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import chabernac.space.buffer.DrawingRectangle;
 import chabernac.space.buffer.DrawingRectangleContainer;
@@ -52,6 +55,8 @@ public class Graphics3D{
   private boolean isSingleFullRepaint = true;
 
   private Graphics3D2D myGraphics3D2D = null;
+  
+  private ExecutorService myService = Executors.newFixedThreadPool( 2 );
 
   public Graphics3D(Frustrum aFrustrum, Point3D anEyePoint, Camera aCamera, World aWorld, Graphics3D2D aBuffer){
     myFrustrum = aFrustrum;
@@ -129,10 +134,11 @@ public class Graphics3D{
     }
   }
 
-  public void drawShape(Shape aShape, Graphics g){
+  public void drawShape(final Shape aShape, Graphics g){
     if(!aShape.visible) return;
+    
     for(int i=0;i<aShape.mySize;i++){
-      if(drawBackFacing || aShape.myPolygons[i].floatSided || !isBackFacing(aShape.myPolygons[i])){
+      if(drawBackFacing || aShape.myPolygons[i].doubleSided || !isBackFacing(aShape.myPolygons[i])){
 
         if(drawPlanes) {
           fillPolygon(aShape.myPolygons[i]);
@@ -194,7 +200,7 @@ public class Graphics3D{
             drawText(theText, theCoordinate, theColor);
           }
         }
-      }
+      } 
     }
   }
 
@@ -253,7 +259,7 @@ public class Graphics3D{
     g.fillPolygon(xPoints, yPoints, aPolygon.myCamSize);
   }
 
-  public void drawWorld(Graphics aG, long aCycle){
+  public void drawWorld(final Graphics aG, long aCycle){
     Rectangle theOrigClip = aG.getClipBounds();
     
     myGraphics3D2D.setBackGroundColor(myBackGroundColor);
@@ -272,8 +278,20 @@ public class Graphics3D{
       theShader.applyShading( myWorld );
     }
 
+    final CountDownLatch theLatch = new CountDownLatch( myWorld.myShapes.length );
     for(int i=myWorld.myShapes.length - 1;i>=0;i--){
-      drawShape(myWorld.myShapes[i], aG);
+      final Shape theShape = myWorld.myShapes[i];
+      myService.execute( new Runnable() {
+        public void run(){
+          drawShape(theShape, aG);
+          theLatch.countDown();
+        }
+      });
+    }
+    
+    try {
+      theLatch.await();
+    } catch ( InterruptedException e ) {
     }
 
     if(drawWorldOrigin) drawWorldAxis();

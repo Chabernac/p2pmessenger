@@ -38,7 +38,7 @@ public class Polygon implements iTranslatable{
   private Texture2 myTexture = null;
   private TextureImage myTextureImage = null;
   private boolean isSphericalTexture;
-  public boolean floatSided = false;
+  public boolean doubleSided = false;
   private String myTextureName = null;
   private boolean isTransparentTexture = true;
   private String myBumpMap = null;

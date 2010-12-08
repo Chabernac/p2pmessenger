@@ -169,7 +169,7 @@ public class ShapeFactory{
 		thePolygon.addVertex(new Vertex(new Point3D(aOrigin.x + aWidth, aOrigin.y - aHeight, aOrigin.z)));
 		thePolygon.addVertex(new Vertex(new Point3D(aOrigin.x, aOrigin.y - aHeight, aOrigin.z)));
 
-		thePolygon.floatSided = true;
+		thePolygon.doubleSided = true;
 		thePolygon.done();
 		theShape.addPolygon(thePolygon);
 		theShape.done();

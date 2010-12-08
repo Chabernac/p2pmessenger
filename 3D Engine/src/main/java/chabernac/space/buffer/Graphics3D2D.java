@@ -320,10 +320,12 @@ public class Graphics3D2D implements iBufferStrategy {
       theScanLine = aPolygon.intersectHorizontalLine(y);
       //TimeTracker.logTime("Intersecting with horizontal line: " + y);
       if(theScanLine.length == 2 && theScanLine[0] != null && theScanLine[1] != null){
-        Segment theSegment = Segment.getInstance(myWorld, theScanLine[0],theScanLine[1], aPolygon.getTexture() ); 
-        //Segment theSegment = new Segment(theScanLine[0],theScanLine[1], theColor.getRGB(), aPolygon.getTexture() );
+//        synchronized(this){
+//        Segment theSegment = Segment.getInstance(theScanLine[0],theScanLine[1], aPolygon.getTexture() ); 
+        Segment theSegment = new Segment(theScanLine[0],theScanLine[1], aPolygon.getTexture() );
         drawSegment(theSegment, y, anOrigPolygon);
-        Segment.freeInstance(theSegment);
+//        Segment.freeInstance(theSegment);
+//        }
         //TimeTracker.logTime("Drawing segment");;
       }
       Point2D.freeInstance(theScanLine[0].getPoint());
