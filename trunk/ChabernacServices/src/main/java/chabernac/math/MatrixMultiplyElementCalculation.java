@@ -17,7 +17,7 @@ public class MatrixMultiplyElementCalculation implements Calculation {
   public Matrix myResultMatrix;
   public int myRow;
   public int myColumn;
-  public double myResult;
+  public float myResult;
   public CountDownLatch myLatch;
   
   public MatrixMultiplyElementCalculation( Matrix aMatrix1, Matrix aMatrix2, Matrix aResultMatrix, int aRow, int aColumn, CountDownLatch aLatch ) {

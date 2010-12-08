@@ -5,10 +5,10 @@ import junit.framework.TestCase;
 public class MatrixTest extends TestCase{
   public void testMultiply(){
     Matrix theMatrix = new Matrix(2,3);
-    theMatrix.setSource(new double[]{1,2,3,4,5,6});
+    theMatrix.setSource(new float[]{1,2,3,4,5,6});
     
     Matrix theOtherMatrix = new Matrix(3,2);
-    theOtherMatrix.setSource(new double[]{7,8,9,10,11,12});
+    theOtherMatrix.setSource(new float[]{7,8,9,10,11,12});
     
     Matrix theNewMatrix = theMatrix.multiply(  theOtherMatrix);
     
@@ -20,10 +20,10 @@ public class MatrixTest extends TestCase{
     assertEquals(154F, theNewMatrix.getValueAt(1, 1));
     
     theMatrix = new Matrix(1,3);
-    theMatrix.setSource(new double[]{1,2,3});
+    theMatrix.setSource(new float[]{1,2,3});
     
     theOtherMatrix = new Matrix(3,2);
-    theOtherMatrix.setSource(new double[]{7,8,9,10,11,12});
+    theOtherMatrix.setSource(new float[]{7,8,9,10,11,12});
     
     theNewMatrix = theMatrix.multiply(  theOtherMatrix);
     
@@ -35,10 +35,10 @@ public class MatrixTest extends TestCase{
   
   public void testMultiply2(){
     Matrix theMatrix = new Matrix(2,3);
-    theMatrix.setSource(new double[]{1,2,3,4,5,6});
+    theMatrix.setSource(new float[]{1,2,3,4,5,6});
     
     Matrix theOtherMatrix = new Matrix(3,2);
-    theOtherMatrix.setSource(new double[]{7,8,9,10,11,12});
+    theOtherMatrix.setSource(new float[]{7,8,9,10,11,12});
     
     Matrix theNewMatrix = theMatrix.multiply2(  theOtherMatrix);
     
@@ -50,10 +50,10 @@ public class MatrixTest extends TestCase{
     assertEquals(154F, theNewMatrix.getValueAt(1, 1));
     
     theMatrix = new Matrix(1,3);
-    theMatrix.setSource(new double[]{1,2,3});
+    theMatrix.setSource(new float[]{1,2,3});
     
     theOtherMatrix = new Matrix(3,2);
-    theOtherMatrix.setSource(new double[]{7,8,9,10,11,12});
+    theOtherMatrix.setSource(new float[]{7,8,9,10,11,12});
     
     theNewMatrix = theMatrix.multiply2(  theOtherMatrix);
     
@@ -63,7 +63,7 @@ public class MatrixTest extends TestCase{
     assertEquals(64F, theNewMatrix.getValueAt(0, 1));
   }
   
-  private double testMatrixMultiplyPerformance(Matrix aMatrix1, Matrix aMatrix2){
+  private float testMatrixMultiplyPerformance(Matrix aMatrix1, Matrix aMatrix2){
     aMatrix1.setValueAt( 0, 0, 1 );
     aMatrix1.setValueAt( 1, 0, 2 );
     aMatrix1.setValueAt( 0, 1, 3 );
@@ -91,7 +91,7 @@ public class MatrixTest extends TestCase{
     return times / (theEndTime - theStartTime);
   }
   
-  private double testMatrixMultiplyPerformance2(Matrix aMatrix1, Matrix aMatrix2){
+  private float testMatrixMultiplyPerformance2(Matrix aMatrix1, Matrix aMatrix2){
     aMatrix1.setValueAt( 0, 0, 1 );
     aMatrix1.setValueAt( 1, 0, 2 );
     aMatrix1.setValueAt( 0, 1, 3 );
@@ -119,7 +119,7 @@ public class MatrixTest extends TestCase{
     return times / (theEndTime - theStartTime);
   }
   
-  private double testMatrixMultiplyPerformance(Matrix2 aMatrix1, Matrix2 aMatrix2){
+  private float testMatrixMultiplyPerformance(Matrix2 aMatrix1, Matrix2 aMatrix2){
     aMatrix1.setValueAt( 0, 0, 1 );
     aMatrix1.setValueAt( 1, 0, 2 );
     aMatrix1.setValueAt( 0, 1, 3 );
