@@ -13,8 +13,6 @@ import chabernac.space.geom.Point3D;
 import chabernac.space.geom.Rotation;
 import chabernac.space.geom.Shape;
 import chabernac.space.shading.AmbientShading;
-import chabernac.space.shading.BumpShader;
-import chabernac.space.shading.PhongShader;
 import chabernac.space.shading.TextureShader;
 import chabernac.space.shading.iPixelShader;
 import chabernac.space.shading.iVertexShader;
@@ -175,7 +173,7 @@ public class AXACube extends AbstractWorld implements iSynchronizedEvent{
     myPanel3D.getGraphics3D().setDrawCamZ(false);
     //myPanel3D.getGraphics3D().setBackGroundColor(new Color(100,100,200));
     myPanel3D.getGraphics3D().setBackGroundColor(new Color(0,0,0));
-    myPanel3D.getGraphics3D().setShowDrawingAreas( false );
+    myPanel3D.getGraphics3D().setShowDrawingAreas( true );
     myPanel3D.getGraphics3D().setUseClipping( true);
     myPanel3D.getGraphics3D().getGraphics3D2D().setUsePartialClearing( true);
     myPanel3D.getGraphics3D().setVertexShaders( getVertexShaders() );
@@ -206,8 +204,8 @@ public class AXACube extends AbstractWorld implements iSynchronizedEvent{
   protected iPixelShader[] getPixelShaders(){
     return new iPixelShader[]{
                               new TextureShader( ), 
-                              new BumpShader( myWorld ),
-                              new PhongShader( myWorld  )
+//                              new BumpShader( myWorld ),
+//                              new PhongShader( myWorld  )
                               };
   }
   
@@ -217,7 +215,7 @@ public class AXACube extends AbstractWorld implements iSynchronizedEvent{
    */
   protected iVertexShader[] getVertexShaders(){
     return new iVertexShader[]{
-                               new AmbientShading( 0 )
+                               new AmbientShading( 0.5F )
                                };
   }
   

@@ -4,6 +4,7 @@
  */
 package chabernac.space.buffer;
 
+import chabernac.space.geom.GVector;
 import chabernac.space.geom.Point3D;
 import chabernac.space.texture.Texture2;
 
@@ -39,6 +40,8 @@ public class Pixel {
   
   public Point3D camPoint = null;
   
+  public GVector normal = null;
+  
   public Pixel(){
     
   }
@@ -68,6 +71,13 @@ public class Pixel {
       camPoint = texture.getSystem().getTransformator().inverseTransform(new Point3D(u, v, (float)0.0));      
     }
     return camPoint;
+  }
+  
+  public GVector getNormal(){
+    if(normal == null){
+      normal = texture.getNormalVector(uInt, vInt);
+    }
+    return normal;
   }
 }
 

@@ -109,6 +109,7 @@ public class Segment {
     l += lRico;
     myPixel.light = l;
     myPixel.camPoint = null;
+    myPixel.normal = null;
 
     if(isTexture){
       if(isAffine){
