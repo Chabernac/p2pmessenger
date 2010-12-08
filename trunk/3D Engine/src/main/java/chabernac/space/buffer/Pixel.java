@@ -37,7 +37,7 @@ public class Pixel {
   
   public Texture2 texture;
   
-  public Point3D myCamPoint = null;
+  public Point3D camPoint = null;
   
   public Pixel(){
     
@@ -64,10 +64,10 @@ public class Pixel {
   }
   
   public Point3D getCamPoint(){
-    if(myCamPoint == null){
-      myCamPoint = texture.getSystem().getTransformator().inverseTransform(new Point3D(u, v, 0.0D));      
+    if(camPoint == null){
+      camPoint = texture.getSystem().getTransformator().inverseTransform(new Point3D(u, v, 0.0D));      
     }
-    return myCamPoint;
+    return camPoint;
   }
 }
 
