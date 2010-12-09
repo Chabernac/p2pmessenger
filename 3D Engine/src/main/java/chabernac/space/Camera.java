@@ -8,6 +8,7 @@ package chabernac.space;
 
 import chabernac.math.Matrix;
 import chabernac.math.MatrixException;
+import chabernac.math.MatrixOperations;
 import chabernac.space.geom.GVector;
 import chabernac.space.geom.Point3D;
 import chabernac.space.geom.Rotation;

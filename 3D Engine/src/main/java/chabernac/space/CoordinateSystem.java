@@ -6,6 +6,7 @@
  */
 package chabernac.space;
 
+import chabernac.math.MatrixOperations;
 import chabernac.space.geom.GVector;
 import chabernac.space.geom.Line3D;
 import chabernac.space.geom.Plane;

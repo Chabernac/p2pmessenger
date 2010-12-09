@@ -1,6 +1,7 @@
 package chabernac.space;
 
 import chabernac.math.Matrix;
+import chabernac.math.MatrixOperations;
 import chabernac.space.geom.GVector;
 import chabernac.space.geom.Point3D;
 import chabernac.space.geom.Rotation;
@@ -35,12 +36,14 @@ public class Transformation implements iTransformator{
   }
   
   public Point3D transform(Point3D aPoint){
-    return MatrixOperations.buildPoint3d((MatrixOperations.buildMatrix(aPoint).multiply(myTransformationMatrix)));
+    return aPoint.multiply( myTransformationMatrix );
+//    return MatrixOperations.buildPoint3d((MatrixOperations.buildMatrix(aPoint).multiply(myTransformationMatrix)));
   }
   
   public Point3D inverseTransform(Point3D aPoint){
     calculateInverseTransformation();
-    return MatrixOperations.buildPoint3d((MatrixOperations.buildMatrix(aPoint).multiply(myInvTransformationMatrix)));
+    return aPoint.multiply( myInvTransformationMatrix );
+//    return MatrixOperations.buildPoint3d((MatrixOperations.buildMatrix(aPoint).multiply(myInvTransformationMatrix)));
   }
   
   /**
@@ -50,14 +53,16 @@ public class Transformation implements iTransformator{
    */
   public GVector transform(GVector aVector){
     calculateOriginTransform();
-    Point3D thePoint = MatrixOperations.buildPoint3d((MatrixOperations.buildMatrix(aVector).multiply(myTransformationMatrix)));
-    return new GVector(myOriginTransform, thePoint);
+//    Point3D thePoint = MatrixOperations.buildPoint3d((MatrixOperations.buildMatrix(aVector).multiply(myTransformationMatrix)));
+//    return new GVector(myOriginTransform, thePoint);
+    return new GVector(myOriginTransform, new Point3D( aVector ).multiply( myTransformationMatrix ));
   }
   
   public GVector inverseTransform(GVector aVector){
     calculateInverseOriginTtansform();
-    Point3D thePoint = MatrixOperations.buildPoint3d(MatrixOperations.buildMatrix(aVector).multiply(myInvTransformationMatrix));
-    return new GVector(myInvOriginTransform, thePoint);
+//    Point3D thePoint = MatrixOperations.buildPoint3d(MatrixOperations.buildMatrix(aVector).multiply(myInvTransformationMatrix));
+//    return new GVector(myOriginTransform, thePoint);
+    return new GVector(myInvOriginTransform, new Point3D( aVector ).multiply( myInvTransformationMatrix));
   }
   
   public Vertex transform(Vertex aVertex){

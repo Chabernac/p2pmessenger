@@ -1,6 +1,7 @@
 package chabernac.space;
 
 import chabernac.math.Matrix;
+import chabernac.math.MatrixOperations;
 import chabernac.space.geom.Line3D;
 import chabernac.space.geom.Rotation;
 

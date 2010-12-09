@@ -7,7 +7,7 @@ package chabernac.worlds;
 import java.awt.Color;
 import java.awt.Dimension;
 
-import chabernac.space.MatrixOperations;
+import chabernac.math.MatrixOperations;
 import chabernac.space.ShapeFactory;
 import chabernac.space.Transformation;
 import chabernac.space.World;

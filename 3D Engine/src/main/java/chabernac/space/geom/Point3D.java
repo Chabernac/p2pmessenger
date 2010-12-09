@@ -1,5 +1,8 @@
 package chabernac.space.geom;
 
+import chabernac.math.Matrix;
+import chabernac.math.MatrixException;
+
 
 public class Point3D{
   public float x;
@@ -97,5 +100,29 @@ public class Point3D{
 	  if(y != aPoint.y) return false;
 	  if(z != aPoint.z) return false;
 	  return true;
+  }
+  
+  /**
+   * 
+   * origanally we did the following for transforming a point with a matrix transformation:
+   * 
+   * MatrixOperations.buildPoint3d((MatrixOperations.buildMatrix(aPoint).multiply(myTransformationMatrix)));
+   * 
+   * but we can do this a lot more optimized:
+   * 
+   * @param aMatrix
+   * @return
+   */
+  public Point3D multiply(Matrix aMatrix){
+    if(aMatrix.getRows() != 4 || aMatrix.getColumns() != 4){
+      throw new MatrixException("Can only multiply with a 4 x 4 matrix ");
+    }
+
+    float[] theSource = aMatrix.getSource();
+    float theX = x * theSource[0] + y * theSource[4] + z * theSource[8] + theSource[12];
+    float theY = x * theSource[1] + y * theSource[5] + z * theSource[9] + theSource[13];
+    float theZ = x * theSource[2] + y * theSource[6] + z * theSource[10] + theSource[14];
+    
+    return new Point3D( theX,theY,theZ );
   }
 }
