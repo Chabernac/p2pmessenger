@@ -126,7 +126,7 @@ public class AXACube extends AbstractWorld implements iSynchronizedEvent{
 //    theShape.myPolygons[0].setTexture("axa", false);
 //    theShape.myPolygons[0].setTexture("guy", false, false);
 //    theShape.myPolygons[1].setTexture("leslie", false, false);
-    myWorld.addShape(theShape);
+//    myWorld.addShape(theShape);
 //    theMouseTranslationManager.addTranslatable(theShape);
 //    myRotationManager.addTranslatable(theShape);
     
