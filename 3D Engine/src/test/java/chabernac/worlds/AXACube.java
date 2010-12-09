@@ -2,6 +2,9 @@ package chabernac.worlds;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Window;
+
+import javax.swing.JFrame;
 
 import chabernac.control.iSynchronizedEvent;
 import chabernac.space.LightSource;
@@ -123,7 +126,7 @@ public class AXACube extends AbstractWorld implements iSynchronizedEvent{
 //    theShape.myPolygons[0].setTexture("axa", false);
 //    theShape.myPolygons[0].setTexture("guy", false, false);
 //    theShape.myPolygons[1].setTexture("leslie", false, false);
-//    myWorld.addShape(theShape);
+    myWorld.addShape(theShape);
 //    theMouseTranslationManager.addTranslatable(theShape);
 //    myRotationManager.addTranslatable(theShape);
     
@@ -191,7 +194,11 @@ public class AXACube extends AbstractWorld implements iSynchronizedEvent{
   }
   
   public static void main(String args[]){
-    new AXACube();
+    AXACube theCube = new AXACube();
+    theCube.setVisible( false );
+    theCube.setState( JFrame.MAXIMIZED_BOTH );
+    theCube.setState( JFrame.ICONIFIED );
+    theCube.setVisible( true );
   }
 
   @Override
@@ -222,7 +229,7 @@ public class AXACube extends AbstractWorld implements iSynchronizedEvent{
   }
   
   protected int getFPS(){
-    return 50;
+    return 500;
   }
   
 

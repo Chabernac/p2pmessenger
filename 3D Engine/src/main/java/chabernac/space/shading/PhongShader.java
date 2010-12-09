@@ -59,7 +59,7 @@ public class PhongShader implements iPixelShader {
     
     float theSpecularLightning = 0;
     
-    for(LightSource theLightSource : myWorld.getLightSources()){
+    for(LightSource theLightSource : myWorld.lightSources){
       GVector theVectorTowarsLightSource = new GVector( theCamPoint, theLightSource.getCamLocation()).norm();
       
       GVector theMoyenVector = theVectorTowarsLightSource.addition( theVectorTowardsCamera ).multip( (float)0.5 ); 

@@ -31,7 +31,7 @@ public class CoordinateSystemTest extends TestCase {
     
     Point3D thePoint = new Point3D( 5, 6, 7 );
     
-    int times = 20000000;
+    int times = 40000000;
 
     long t1 = System.currentTimeMillis();
     for(int i=0;i<times;i++){

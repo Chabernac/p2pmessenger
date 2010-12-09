@@ -1,7 +1,5 @@
 package chabernac.space.shading;
 
-import java.util.ArrayList;
-
 import chabernac.space.LightSource;
 import chabernac.space.Vertex;
 import chabernac.space.World;
@@ -18,10 +16,8 @@ public class FlatShading implements iVertexShader{
 
 
   public void applyShading(World aWorld) {
-    LightSource theCurrentLight = null;
     Shape theCurrentShape = null;
     Polygon theCurrentPolygon = null;
-    ArrayList<LightSource> theLightSources = aWorld.getLightSources();
     float illuminatingFactor = 0;
 
 
@@ -31,8 +27,7 @@ public class FlatShading implements iVertexShader{
         theCurrentPolygon = theCurrentShape.myPolygons[k];
         if(theCurrentPolygon.c.length > 0 && theCurrentPolygon.visible)	{
           illuminatingFactor = myAmbient;
-          for(int i=0;i<theLightSources.size();i++){
-            theCurrentLight = theLightSources.get(i);
+          for(LightSource theCurrentLight : aWorld.lightSources){
             illuminatingFactor += calculateIlluminatingFactor(theCurrentLight, theCurrentPolygon);
             applyIlluminatingFactor(illuminatingFactor, theCurrentPolygon);
           }

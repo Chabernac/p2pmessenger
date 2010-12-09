@@ -6,8 +6,6 @@
  */
 package chabernac.space.shading;
 
-import java.util.ArrayList;
-
 import chabernac.space.LightSource;
 import chabernac.space.Vertex;
 import chabernac.space.World;
@@ -23,12 +21,9 @@ public class GouroudShading implements iVertexShader {
 	}
 
 	public void applyShading(World aWorld) {
-		LightSource theCurrentLight = null;
 		Shape theCurrentShape = null;
 		Polygon theCurrentPolygon = null;
 		Vertex theCurrentVertex = null;
-		ArrayList<LightSource> theLightSources = aWorld.getLightSources();
-		
 		
 		for(int j=0;j<aWorld.myShapes.length;j++){
 			theCurrentShape = aWorld.myShapes[j];
@@ -39,8 +34,7 @@ public class GouroudShading implements iVertexShader {
 						for(int l=0;l<theCurrentPolygon.myCamSize;l++){
 							theCurrentVertex = theCurrentPolygon.c[l];
 							theCurrentVertex.lightIntensity = myAmbient;
-							for(int i=0;i<theLightSources.size();i++){
-								theCurrentLight = theLightSources.get(i);
+							for(LightSource theCurrentLight : aWorld.lightSources){
 								theCurrentVertex.lightIntensity += calculateIlluminatingFactor(theCurrentLight, theCurrentVertex);
 							}
 						}
