@@ -56,6 +56,9 @@ public class Graphics3D{
   private Graphics3D2D myGraphics3D2D = null;
 
   private ExecutorService myService = Executors.newFixedThreadPool( 2 );
+  
+  private long t = -1;
+  private long cycle = -1;
 
   public Graphics3D(Frustrum aFrustrum, Point3D anEyePoint, Camera aCamera, World aWorld, Graphics3D2D aBuffer){
     myFrustrum = aFrustrum;
@@ -294,6 +297,12 @@ public class Graphics3D{
       }  
     } else {
       aG.drawImage(myGraphics3D2D.getImage(), 0,0, null);
+      //calculate the frame rate
+      if(t != -1){
+        System.out.println(1000 * (aCycle - cycle) / (System.currentTimeMillis() - t) + " fps");
+      }
+      t = System.currentTimeMillis();
+      cycle = aCycle;
     }
 
     aG.setClip( theOrigClip );
@@ -303,8 +312,8 @@ public class Graphics3D{
     }
 
     if(drawLightSources){
-      for(int i=0;i<myWorld.getLightSources().size();i++){
-        drawLightSource( (LightSource)(myWorld.getLightSources().get(i)), aG );
+      for(LightSource theLightSource : myWorld.lightSources){
+        drawLightSource( theLightSource, aG );
       }
     }
 

@@ -1,7 +1,6 @@
 package chabernac.space;
 
 import java.awt.Color;
-import java.util.Iterator;
 
 import chabernac.math.MatrixException;
 import chabernac.space.geom.GVector;
@@ -36,7 +35,7 @@ public class LightSource implements iTranslatable{
     GVector theDirectionToPixel = new GVector(aPixel, getCamLocation());
     float distance = theDirectionToPixel.length();
     theDirectionToPixel.normalize();
-    float lightningFactor = (theDirectionToPixel.dotProdukt(aNormalVector) * getIntensity()) / distance;
+    float lightningFactor = (theDirectionToPixel.dotProdukt(aNormalVector)  * getIntensity()) / distance;
     if(lightningFactor < 0.0){
       lightningFactor = (float)0.0;
     }
@@ -46,8 +45,8 @@ public class LightSource implements iTranslatable{
   public static float calculateLight(World aWorld, Point3D aPixel, GVector aNormalVector)
   {
     float light = 0;
-    for(Iterator i = aWorld.getLightSources().iterator(); i.hasNext();){
-      light += ((LightSource)i.next()).calculateLight(aPixel, aNormalVector);
+    for(LightSource theLightSource : aWorld.lightSources){
+      light += theLightSource.calculateLight(aPixel, aNormalVector);
     }
 
     return light;

@@ -1,6 +1,5 @@
 package chabernac.space;
 
-import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -11,12 +10,16 @@ import chabernac.utils.ArrayTools;
 import chabernac.utils.sort.FastArrayQSortAlgorithm;
 
 public class World{
-  public Shape[] myShapes = new Shape[0];
-  public PointShape[] myPointShapes = new PointShape[0];
   private int myCurrentShape = 0;
+  public Shape[] myShapes = new Shape[0];
+  
   private int myCurrentPointShape = 0;
+  public PointShape[] myPointShapes = new PointShape[0];
+  
+  private int myCurrentLightSource = 0;
+  public LightSource[] lightSources = new LightSource[0];
+  
   private FastArrayQSortAlgorithm theSortAlgorithm = null;
-  private ArrayList<LightSource> lightSources = new ArrayList<LightSource>();
   private TranslateManagerContainer myTranslateManagerContainer = new TranslateManagerContainer();
 
   private ExecutorService myService = Executors.newFixedThreadPool( Runtime.getRuntime().availableProcessors() );
@@ -160,15 +163,8 @@ public class World{
   }
 
   public void addLightSource(LightSource aLightSource){
-    lightSources.add(aLightSource);
-  }
-
-  public void removeLightSource(LightSource aLightSource){
-    lightSources.remove(aLightSource);
-  }
-
-  public ArrayList<LightSource> getLightSources(){
-    return lightSources;
+    if(myCurrentLightSource == lightSources.length) lightSources = (LightSource[])ArrayTools.growArray( lightSources, 1 );
+    lightSources[myCurrentLightSource++] = aLightSource;
   }
 
   public TranslateManagerContainer getTranslateManagerContainer(){
