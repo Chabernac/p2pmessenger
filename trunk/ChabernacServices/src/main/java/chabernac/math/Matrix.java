@@ -6,7 +6,9 @@ public class Matrix{
   private int myColumns;
 
   public Matrix(int aRows, int aColumns){
-    this(aRows, aColumns, new float[aRows * aColumns]);
+    myRows = aRows;
+    myColumns = aColumns;
+    myMatrix = new float[aRows * aColumns];
   }
   public Matrix(int aRows, int aColumns, float[] aMatrix){
     myRows = aRows;
@@ -109,7 +111,7 @@ public class Matrix{
       for(int theMultiplyRow=0;theMultiplyRow<myRows;theMultiplyRow++){
         theValue = 0;
         for(int thePosition=0;thePosition<myColumns;thePosition++){
-          theValue += myMatrix[theMultiplyRow * myColumns + thePosition] * aMatrix.getValueAt(thePosition, theMultiplyColumn);
+          theValue += myMatrix[theMultiplyRow * myColumns + thePosition] * aMatrix.myMatrix[thePosition * theColumns + theMultiplyColumn];
         }
         theMatrix.myMatrix[theMultiplyRow * theColumns + theMultiplyColumn] = theValue;
 //        theMatrix.setValueAt(theMultiplyRow,theMultiplyColumn, theValue);
