@@ -22,7 +22,25 @@ public class CoordinateSystemTest extends TestCase {
     theSystem = new CoordinateSystem(new Point3D(0,0,0), new GVector(0,1,0), new GVector(-1,0,0));
     assertEquals( new Point3D(0,-1,0), theSystem.getTransformator().transform( new Point3D(1,0,0) ));
     assertEquals( new Point3D(1,0,0), theSystem.getTransformator().transform( new Point3D(0,1,0) ));
+  }
+  
+  public void testPerformance(){
     
+    CoordinateSystem theSystem = new CoordinateSystem(new Point3D(1,1,1), new GVector(1,0,0), new GVector(0,1,0));
+    Transformation theTransform = theSystem.getTransformator();
+    
+    Point3D thePoint = new Point3D( 5, 6, 7 );
+    
+    int times = 20000000;
+
+    long t1 = System.currentTimeMillis();
+    for(int i=0;i<times;i++){
+      Point3D theP = theTransform.transform( thePoint );
+      theTransform.inverseTransform( theP );
+    }
+    long t2 = System.currentTimeMillis();
+    
+    System.out.println(times  * 2 / (t2-t1)  + " transformation / msecond");
     
   }
 }

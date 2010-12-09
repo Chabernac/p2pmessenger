@@ -2,6 +2,7 @@ package chabernac.space;
 
 import java.awt.Color;
 
+import chabernac.math.MatrixOperations;
 import chabernac.space.geom.GVector;
 import chabernac.space.geom.Point3D;
 import chabernac.space.geom.PolarPoint3D;

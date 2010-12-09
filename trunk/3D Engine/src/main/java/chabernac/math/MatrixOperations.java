@@ -4,10 +4,9 @@
  * To change the template for this generated file go to
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
-package chabernac.space;
+package chabernac.math;
 
-import chabernac.math.Matrix;
-import chabernac.math.MatrixException;
+import chabernac.space.CoordinateSystem;
 import chabernac.space.geom.GVector;
 import chabernac.space.geom.Point3D;
 import chabernac.space.geom.Rotation;
@@ -122,8 +121,7 @@ public class MatrixOperations {
 	}
 	
 	public static Point3D buildPoint3d(Matrix aMatrix){
-		float[] theSource = aMatrix.getSource();
-		return new Point3D(theSource[0], theSource[1], theSource[2]);
+		return new Point3D(aMatrix.myMatrix[0], aMatrix.myMatrix[1], aMatrix.myMatrix[2]);
 	}
 	
 	public static Matrix buildMatrix(GVector aVector){

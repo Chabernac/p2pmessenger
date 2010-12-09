@@ -1,5 +1,8 @@
 package chabernac.space.geom;
 
+import chabernac.math.Matrix;
+import chabernac.math.MatrixException;
+
 
 public class GVector{
   public float x,y,z;
@@ -121,5 +124,18 @@ public class GVector{
       return true;
     }
     return false;
+  }
+  
+  public GVector multiply(Matrix aMatrix){
+    if(aMatrix.getRows() != 4 || aMatrix.getColumns() != 4){
+      throw new MatrixException("Can only multiply with a 4 x 4 matrix ");
+    }
+
+    float[] theSource = aMatrix.getSource();
+    float theX = x * theSource[0] + y * theSource[4] + z * theSource[8] + theSource[12];
+    float theY = x * theSource[1] + y * theSource[5] + z * theSource[9] + theSource[13];
+    float theZ = x * theSource[2] + y * theSource[6] + z * theSource[10] + theSource[14];
+    
+    return new GVector( theX,theY,theZ );
   }
 }

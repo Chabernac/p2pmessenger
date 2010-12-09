@@ -1,6 +1,7 @@
 
 package chabernac.space;
 
+import chabernac.math.MatrixOperations;
 import chabernac.space.geom.GVector;
 import chabernac.space.geom.Rotation;
 

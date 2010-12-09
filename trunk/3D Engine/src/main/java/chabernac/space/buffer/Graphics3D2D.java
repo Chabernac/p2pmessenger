@@ -119,20 +119,25 @@ public class Graphics3D2D implements iBufferStrategy {
   public Collection<DrawingRectangleContainer> getDrawingRectangles(){
     return myDrawingAreas.values();
   }
+  
+  private void defineDrawingRect(Segment aSegment, int y, Object anObject){
+    if(!myDrawingAreas.containsKey( anObject )){
+      myDrawingAreas.put( anObject, new DrawingRectangleContainer() );
+    }
+
+    DrawingRectangleContainer theRectContainer = myDrawingAreas.get(anObject);
+    DrawingRectangle theRect = theRectContainer.getDrawingRect();
+
+    if(theRect.minY == -1 || y < theRect.minY)  theRect.minY = y;
+    if(theRect.maxY == -1 || y > theRect.maxY)  theRect.maxY = y;
+    if(theRect.minX == -1 || aSegment.getXStart() < theRect.minX)  theRect.minX = aSegment.getXStart();
+    if(theRect.maxX == -1 || aSegment.getXEnd() > theRect.maxX)  theRect.maxX = aSegment.getXEnd();
+    
+  }
 
   protected void drawSegment(Segment aSegment, int y, Object anObject){
     if(isUsePartialClearing){
-      if(!myDrawingAreas.containsKey( anObject )){
-        myDrawingAreas.put( anObject, new DrawingRectangleContainer() );
-      }
-
-      DrawingRectangleContainer theRectContainer = myDrawingAreas.get(anObject);
-      DrawingRectangle theRect = theRectContainer.getDrawingRect();
-
-      if(theRect.minY == -1 || y < theRect.minY)  theRect.minY = y;
-      if(theRect.maxY == -1 || y > theRect.maxY)  theRect.maxY = y;
-      if(theRect.minX == -1 || aSegment.getXStart() < theRect.minX)  theRect.minX = aSegment.getXStart();
-      if(theRect.maxX == -1 || aSegment.getXEnd() > theRect.maxX)  theRect.maxX = aSegment.getXEnd();
+      defineDrawingRect(aSegment, y, anObject );
     }
 
     Pixel thePixel = aSegment.getPixel();

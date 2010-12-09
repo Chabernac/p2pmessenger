@@ -5,7 +5,6 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Rectangle;
 import java.util.Collection;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -55,7 +54,7 @@ public class Graphics3D{
   private boolean isSingleFullRepaint = true;
 
   private Graphics3D2D myGraphics3D2D = null;
-  
+
   private ExecutorService myService = Executors.newFixedThreadPool( 2 );
 
   public Graphics3D(Frustrum aFrustrum, Point3D anEyePoint, Camera aCamera, World aWorld, Graphics3D2D aBuffer){
@@ -136,18 +135,18 @@ public class Graphics3D{
 
   public void drawShape(final Shape aShape, Graphics g){
     if(!aShape.visible) return;
-    
+
     for(int i=0;i<aShape.mySize;i++){
       if(drawBackFacing || aShape.myPolygons[i].doubleSided || !isBackFacing(aShape.myPolygons[i])){
 
         if(drawPlanes) {
           fillPolygon(aShape.myPolygons[i]);
         }
-        
+
         if(isDrawBumpVectors){
           drawBumpMap(aShape.myPolygons[i].getTexture());
         }
-        
+
         if(drawRibs){
           g.setColor(Color.black);
           //Draw the outlines of the polygons
@@ -211,7 +210,7 @@ public class Graphics3D{
       //hier
       thePolygon.addVertex(new Vertex2D(GeomFunctions.cam2Screen(aPolygon.c[i].myPoint, myEyePoint),  aPolygon.c[i].myTextureCoordinate, aPolygon.c[i].myPoint.z, aPolygon.c[i].lightIntensity));
     }
-//    thePolygon.setColor(aPolygon.getColor());
+    //    thePolygon.setColor(aPolygon.getColor());
     //aPolygon.getTexture().cam2screen(myEyePoint);
     thePolygon.setTexture(aPolygon.getTexture());
 
@@ -230,13 +229,13 @@ public class Graphics3D{
     if(!aPolygon.visible) return;
     if(aPolygon.myCamSize < 2) return;
     myGraphics3D2D.drawPolygon(convertPolygon(aPolygon), aPolygon);
-    
+
   }
-  
+
   public void drawBumpMap(Texture2 aTexture){
     if(aTexture.getBumpMap() == null) return;
     TextureImage theImage = aTexture.getBumpMap().getImage();
-    
+
     for(int x=0;x<theImage.width;x+=10){
       for(int y=0;y<theImage.height;y+=10){
         GVector theVector = aTexture.getBumpMap().getNormalAt(x, y).multip(30);
@@ -261,7 +260,7 @@ public class Graphics3D{
 
   public void drawWorld(final Graphics aG, long aCycle){
     Rectangle theOrigClip = aG.getClipBounds();
-    
+
     myGraphics3D2D.setBackGroundColor(myBackGroundColor);
 
     myGraphics3D2D.clear();
@@ -270,7 +269,7 @@ public class Graphics3D{
 
     myWorld.world2Cam(myCamera);
 
-//    myWorld.sort();
+    //    myWorld.sort();
 
     myWorld.clip2Frustrum(myFrustrum);
 
@@ -278,25 +277,14 @@ public class Graphics3D{
       theShader.applyShading( myWorld );
     }
 
-//    final CountDownLatch theLatch = new CountDownLatch( myWorld.myShapes.length );
     for(int i=myWorld.myShapes.length - 1;i>=0;i--){
-      final Shape theShape = myWorld.myShapes[i];
-//      myService.execute( new Runnable() {
-//        public void run(){
-          drawShape(theShape, aG);
-//          theLatch.countDown();
-//        }
-//      });
+      drawShape(myWorld.myShapes[i], aG);
     }
-    
-//    try {
-//      theLatch.await();
-//    } catch ( InterruptedException e ) {
-//    }
+
 
     if(drawWorldOrigin) drawWorldAxis();
 
-    if(!isSingleFullRepaint && isUseClipping ){
+    if(!isSingleFullRepaint && isUseClipping && !(aCycle >> 8 << 8 == aCycle)){
       Image theImage = myGraphics3D2D.getImage();
       Collection<DrawingRectangleContainer> theDrawingAreas = myGraphics3D2D.getDrawingRectangles();
       for(DrawingRectangleContainer theRect : theDrawingAreas){
@@ -307,9 +295,9 @@ public class Graphics3D{
     } else {
       aG.drawImage(myGraphics3D2D.getImage(), 0,0, null);
     }
-    
+
     aG.setClip( theOrigClip );
-    
+
     for(int i=myWorld.myPointShapes.length - 1;i>=0;i--){
       drawPointShape(myWorld.myPointShapes[i], aG);
     }
@@ -321,7 +309,7 @@ public class Graphics3D{
     }
 
     if(isShowDrawingAreas) showDrawingAreas(aG);
-    
+
 
     myGraphics3D2D.cycleDone();
 
@@ -330,9 +318,9 @@ public class Graphics3D{
 
   private void showDrawingAreas(Graphics aG){
     for(DrawingRectangleContainer theRectContainer : myGraphics3D2D.getDrawingRectangles()){
-//      aG.setColor( Color.red );
-//      DrawingRectangle theClaeringRect = theRectContainer.getClearingRect();
-//      aG.drawRect( theClaeringRect.getX(), theClaeringRect.getY(), theClaeringRect.getWidth(), theClaeringRect.getHeight());
+      //      aG.setColor( Color.red );
+      //      DrawingRectangle theClaeringRect = theRectContainer.getClearingRect();
+      //      aG.drawRect( theClaeringRect.getX(), theClaeringRect.getY(), theClaeringRect.getWidth(), theClaeringRect.getHeight());
 
       aG.setColor( Color.blue);
       DrawingRectangle theDrawingRect = theRectContainer.getDrawingRect();
@@ -396,7 +384,7 @@ public class Graphics3D{
       else if(theShader == VertextShader.GOUROUD) myVertexShaders[i++] = new GouroudShading( (float)0.3 );
     }
   }
-  
+
   public void setVertexShaders(iVertexShader[] aVertexShaders){
     myVertexShaders = aVertexShaders;
   }
