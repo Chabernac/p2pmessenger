@@ -56,7 +56,7 @@ public class Graphics3D{
   private Graphics3D2D myGraphics3D2D = null;
 
   private ExecutorService myService = Executors.newFixedThreadPool( 2 );
-  
+
   private long t = -1;
   private long cycle = -1;
 
@@ -262,8 +262,6 @@ public class Graphics3D{
   }
 
   public void drawWorld(final Graphics aG, long aCycle){
-    Rectangle theOrigClip = aG.getClipBounds();
-
     myGraphics3D2D.setBackGroundColor(myBackGroundColor);
 
     myGraphics3D2D.clear();
@@ -284,8 +282,30 @@ public class Graphics3D{
       drawShape(myWorld.myShapes[i], aG);
     }
 
-
     if(drawWorldOrigin) drawWorldAxis();
+
+    drawImage(aG, aCycle);
+    
+    for(int i=myWorld.myPointShapes.length - 1;i>=0;i--){
+      drawPointShape(myWorld.myPointShapes[i], aG);
+    }
+
+    if(drawLightSources){
+      for(LightSource theLightSource : myWorld.lightSources){
+        drawLightSource( theLightSource, aG );
+      }
+    }
+
+    if(isShowDrawingAreas) showDrawingAreas(aG);
+
+
+    myGraphics3D2D.cycleDone();
+
+    isSingleFullRepaint = false;
+  }
+  
+  private void drawImage(Graphics aG, long aCycle){
+    Rectangle theOrigClip = aG.getClipBounds();
 
     if(!isSingleFullRepaint && isUseClipping && !(aCycle >> 8 << 8 == aCycle)){
       Image theImage = myGraphics3D2D.getImage();
@@ -304,25 +324,7 @@ public class Graphics3D{
       t = System.currentTimeMillis();
       cycle = aCycle;
     }
-
     aG.setClip( theOrigClip );
-
-    for(int i=myWorld.myPointShapes.length - 1;i>=0;i--){
-      drawPointShape(myWorld.myPointShapes[i], aG);
-    }
-
-    if(drawLightSources){
-      for(LightSource theLightSource : myWorld.lightSources){
-        drawLightSource( theLightSource, aG );
-      }
-    }
-
-    if(isShowDrawingAreas) showDrawingAreas(aG);
-
-
-    myGraphics3D2D.cycleDone();
-
-    isSingleFullRepaint = false;
   }
 
   private void showDrawingAreas(Graphics aG){
