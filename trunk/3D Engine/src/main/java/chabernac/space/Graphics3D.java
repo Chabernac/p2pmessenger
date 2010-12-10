@@ -57,9 +57,8 @@ public class Graphics3D{
 
   private ExecutorService myService = Executors.newFixedThreadPool( 2 );
 
-  private long t = -1;
-  private long cycle = -1;
-
+  private long myCycle = -1;
+  
   public Graphics3D(Frustrum aFrustrum, Point3D anEyePoint, Camera aCamera, World aWorld, Graphics3D2D aBuffer){
     myFrustrum = aFrustrum;
     myEyePoint = anEyePoint;
@@ -136,7 +135,7 @@ public class Graphics3D{
     }
   }
 
-  public void drawShape(final Shape aShape, Graphics g){
+  public void drawShape(Shape aShape, Graphics g){
     if(!aShape.visible) return;
 
     for(int i=0;i<aShape.mySize;i++){
@@ -261,7 +260,9 @@ public class Graphics3D{
     g.fillPolygon(xPoints, yPoints, aPolygon.myCamSize);
   }
 
-  public void drawWorld(final Graphics aG, long aCycle){
+  public void drawWorld(Graphics aG, long aCycle){
+    myCycle = aCycle;
+    
     myGraphics3D2D.setBackGroundColor(myBackGroundColor);
 
     myGraphics3D2D.clear();
@@ -269,15 +270,14 @@ public class Graphics3D{
     myWorld.getTranslateManagerContainer().doTranslation();
 
     myWorld.world2Cam(myCamera);
-
+    
     //    myWorld.sort();
-
     myWorld.clip2Frustrum(myFrustrum);
-
+    
     for(iVertexShader theShader : myVertexShaders){
       theShader.applyShading( myWorld );
     }
-
+    
     for(int i=myWorld.myShapes.length - 1;i>=0;i--){
       drawShape(myWorld.myShapes[i], aG);
     }
@@ -298,10 +298,10 @@ public class Graphics3D{
 
     if(isShowDrawingAreas) showDrawingAreas(aG);
 
-
     myGraphics3D2D.cycleDone();
 
     isSingleFullRepaint = false;
+    
   }
   
   private void drawImage(Graphics aG, long aCycle){
@@ -318,11 +318,6 @@ public class Graphics3D{
     } else {
       aG.drawImage(myGraphics3D2D.getImage(), 0,0, null);
       //calculate the frame rate
-      if(t != -1){
-        System.out.println(1000 * (aCycle - cycle) / (System.currentTimeMillis() - t) + " fps");
-      }
-      t = System.currentTimeMillis();
-      cycle = aCycle;
     }
     aG.setClip( theOrigClip );
   }
@@ -522,6 +517,14 @@ public class Graphics3D{
 
   public void setSingleFullRepaint(boolean anIsSingleFullRepaint) {
     isSingleFullRepaint = anIsSingleFullRepaint;
+  }
+
+  public long getCycle() {
+    return myCycle;
+  }
+
+  public void setCycle( long aCycle ) {
+    myCycle = aCycle;
   }
 }
 
