@@ -30,7 +30,7 @@ public class AXACube extends AbstractWorld implements iSynchronizedEvent{
   protected void buildWorld(World aWorld){
 //    myManager.addSyncronizedEvent(this);
     
-    aWorld.addLightSource(new LightSource(new Point3D(0,0,-300), 500));
+    aWorld.addLightSource(new LightSource(new Point3D(0,0,-200), 1000));
 //    aWorld.addLightSource(new LightSource(new Point3D(200,0,0), 1500));
     
     MouseTranslationManager theMouseTranslationManager = new MouseTranslationManager(myPanel3D.getGraphics3D(), 100, 10);
@@ -109,7 +109,7 @@ public class AXACube extends AbstractWorld implements iSynchronizedEvent{
     Shape theShape = ShapeFactory.makeCube(new Point3D(5,0,400), 94,94,94);
     theShape.setColor(new Color(0,0,255,100));
     //theShape.setTexture(new TextureImage(ImageFactory.createImage("AXA", new Font("Arial", Font.BOLD, 40), 100, 100, Color.BLUE, Color.WHITE, true)));
-    theShape.setTexture("axa","axa", false, false);
+    theShape.setTexture("axa","guy", false, false);
 //    theShape.setTexture("leslie", false, false);
 //    theShape.myPolygons[0].setTexture("axa", false);
 //    theShape.myPolygons[0].setTexture("guy", false, false);
@@ -195,10 +195,10 @@ public class AXACube extends AbstractWorld implements iSynchronizedEvent{
   
   public static void main(String args[]){
     AXACube theCube = new AXACube();
-    theCube.setVisible( false );
-    theCube.setState( JFrame.MAXIMIZED_BOTH );
-    theCube.setState( JFrame.ICONIFIED );
-    theCube.setVisible( true );
+//    theCube.setVisible( false );
+//    theCube.setState( JFrame.MAXIMIZED_BOTH );
+//    theCube.setState( JFrame.ICONIFIED );
+//    stheCube.setVisible( true );
   }
 
   @Override
@@ -224,7 +224,7 @@ public class AXACube extends AbstractWorld implements iSynchronizedEvent{
    */
   protected iVertexShader[] getVertexShaders(){
     return new iVertexShader[]{
-                               new AmbientShading( 0.5F )
+                               new AmbientShading( 0F )
                                };
   }
   
