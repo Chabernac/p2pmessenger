@@ -55,7 +55,7 @@ public class Graphics3D2D implements iBufferStrategy {
     myWorld = aWorld;
     mySize = myWidth * myHeight;
     init();
-    setPixelShaders( new Shader[]{Shader.TEXTURE, Shader.BUMP} );
+    setPixelShaders( new Shader[]{Shader.TEXTURE, Shader.BUMP, Shader.PHONG} );
   }
   private void init(){
     myImage = new BufferedImage(myWidth, myHeight, BufferedImage.TYPE_INT_ARGB);

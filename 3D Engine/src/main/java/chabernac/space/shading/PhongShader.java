@@ -19,7 +19,7 @@ public class PhongShader implements iPixelShader {
  private final float myAmbient = (float)0.4;
  private final float myDiffuse = (float)0.2;
  private final float mySpecular = 100;
- private final float myPower = 200;
+ private final float myPower = 300;
   
   private final Point3D myCamLocation = new Point3D( 0, 0, 0 ); 
   

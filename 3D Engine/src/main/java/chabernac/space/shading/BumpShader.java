@@ -13,6 +13,8 @@ import chabernac.space.geom.Point3D;
 public class BumpShader implements iPixelShader {
   private final World myWorld;
   
+  private float myFactor = 0.5F;
+  
   public BumpShader(World aWorld){
     myWorld = aWorld;
   }
@@ -22,7 +24,7 @@ public class BumpShader implements iPixelShader {
     if(aPixel.texture.getBumpMap() != null){
       GVector theCamNormalVector = aPixel.getNormal();
       Point3D theCamPoint = aPixel.getCamPoint();
-      aPixel.light += LightSource.calculateLight(myWorld, theCamPoint, theCamNormalVector);
+      aPixel.light += myFactor * LightSource.calculateLight(myWorld, theCamPoint, theCamNormalVector);
         
 //      aPixel.light /= 2D;
     }
