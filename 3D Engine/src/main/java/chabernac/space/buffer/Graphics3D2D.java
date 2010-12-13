@@ -48,6 +48,8 @@ public class Graphics3D2D implements iBufferStrategy {
   private boolean isUsePartialClearing = true;
 
   public static enum Shader{TEXTURE, BUMP, DEPTH, PHONG, SPECULAR};
+  
+  private int myLineStep = 1;
 
   public Graphics3D2D(World aWorld, int aWidth, int aHeight){
     myWidth = aWidth;
@@ -318,7 +320,7 @@ public class Graphics3D2D implements iBufferStrategy {
     
     //TimeTracker.logTime("finding min max y");
     Vertex2D[] theScanLine;
-    for(int y = (int)Math.ceil(minmax[0]);y <= minmax[1];y++){
+    for(int y = (int)Math.ceil(minmax[0]);y <= minmax[1];y += myLineStep){
       //TimeTracker.start();
       theScanLine = aPolygon.intersectHorizontalLine(y);
       //TimeTracker.logTime("Intersecting with horizontal line: " + y);
@@ -350,5 +352,11 @@ public class Graphics3D2D implements iBufferStrategy {
   }
   public void setUsePartialClearing( boolean aUsePartialClearing ) {
     isUsePartialClearing = aUsePartialClearing;
+  }
+  public int getLineStep() {
+    return myLineStep;
+  }
+  public void setLineStep( int aLineStep ) {
+    myLineStep = aLineStep;
   }
 }
