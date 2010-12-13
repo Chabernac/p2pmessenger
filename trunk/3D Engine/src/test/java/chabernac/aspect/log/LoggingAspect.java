@@ -50,47 +50,47 @@ public class LoggingAspect {
     }
   } 
 
-  @Around("execution(* chabernac.space.Graphics3D.draw*(..))")
-  public Object log(ProceedingJoinPoint pjp) throws Throwable{
-    return logging(pjp);
-  }
-
-  @Around("execution(* chabernac.space.Graphics3D.fill*(..))")
-  public Object log2(ProceedingJoinPoint pjp) throws Throwable{
-    return logging(pjp);
-  }
+//  @Around("execution(* chabernac.space.Graphics3D.draw*(..))")
+//  public Object log(ProceedingJoinPoint pjp) throws Throwable{
+//    return logging(pjp);
+//  }
+//
+//  @Around("execution(* chabernac.space.Graphics3D.fill*(..))")
+//  public Object log2(ProceedingJoinPoint pjp) throws Throwable{
+//    return logging(pjp);
+//  }
+//  
+//  @Around("execution(* chabernac.space.Graphics3D.convert*(..))")
+//  public Object log3(ProceedingJoinPoint pjp) throws Throwable{
+//    return logging(pjp);
+//  }
+//  
+//  @Around("execution(* chabernac.space.buffer.Graphics3D2D.*(..))")
+//  public Object log4(ProceedingJoinPoint pjp) throws Throwable{
+//    return logging(pjp);
+//  }
+//  
+//  @Around("execution(* chabernac.space.World.*(..))")
+//  public Object log5(ProceedingJoinPoint pjp) throws Throwable{
+//    return logging(pjp);
+//  }
   
-  @Around("execution(* chabernac.space.Graphics3D.convert*(..))")
-  public Object log3(ProceedingJoinPoint pjp) throws Throwable{
-    return logging(pjp);
-  }
-  
-  @Around("execution(* chabernac.space.buffer.Graphics3D2D.*(..))")
-  public Object log4(ProceedingJoinPoint pjp) throws Throwable{
-    return logging(pjp);
-  }
-  
-  @Around("execution(* chabernac.space.World.*(..))")
-  public Object log5(ProceedingJoinPoint pjp) throws Throwable{
-    return logging(pjp);
-  }
-  
-  private Object logging(ProceedingJoinPoint aJP) throws Throwable{
-    if(!isDebug){
-      return aJP.proceed();
-    } else {
-      long t1 = System.nanoTime();
-      Object theObj = aJP.proceed();
-      long t2 = System.nanoTime();
-
-      float theTime = 0F;
-      Signature theSignature = aJP.getSignature();
-      if(myTimings.containsKey(theSignature)){
-        theTime = myTimings.get(theSignature);
-      }
-      theTime += (t2 - t1);
-      myTimings.put(aJP.getSignature(), theTime);
-      return theObj;
-    } 
-  }
+//  private Object logging(ProceedingJoinPoint aJP) throws Throwable{
+//    if(!isDebug){
+//      return aJP.proceed();
+//    } else {
+//      long t1 = System.nanoTime();
+//      Object theObj = aJP.proceed();
+//      long t2 = System.nanoTime();
+//
+//      float theTime = 0F;
+//      Signature theSignature = aJP.getSignature();
+//      if(myTimings.containsKey(theSignature)){
+//        theTime = myTimings.get(theSignature);
+//      }
+//      theTime += (t2 - t1);
+//      myTimings.put(aJP.getSignature(), theTime);
+//      return theObj;
+//    } 
+//  }
 }
