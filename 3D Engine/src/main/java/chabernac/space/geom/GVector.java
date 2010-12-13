@@ -67,6 +67,8 @@ public class GVector{
   public GVector norm(){
     float length = length();
     return new GVector(x / length, y / length, z / length);
+//    float theInvApprLength = FastMath.invSqrt( dotProdukt( this ) );
+//    return new GVector(x * theInvApprLength, y * theInvApprLength, z * theInvApprLength);
   }
 
   public void invert(){
@@ -90,7 +92,7 @@ public class GVector{
   public float length(){
     return (float)Math.sqrt(dotProdukt(this));
   }
-
+  
   public void multiply(float afloat){
     x *= afloat;
     y *= afloat;

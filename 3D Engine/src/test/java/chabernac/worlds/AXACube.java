@@ -198,7 +198,7 @@ public class AXACube extends AbstractWorld implements iSynchronizedEvent{
 //    theCube.setVisible( false );
 //    theCube.setState( JFrame.MAXIMIZED_BOTH );
 //    theCube.setState( JFrame.ICONIFIED );
-//    stheCube.setVisible( true );
+    theCube.setVisible( false );
   }
 
   @Override
@@ -229,7 +229,7 @@ public class AXACube extends AbstractWorld implements iSynchronizedEvent{
   }
   
   protected int getFPS(){
-    return 500;
+    return 1000;
   }
   
 

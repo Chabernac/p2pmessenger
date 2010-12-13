@@ -57,8 +57,6 @@ public class Graphics3D{
 
   private ExecutorService myService = Executors.newFixedThreadPool( 2 );
 
-  private long myCycle = -1;
-  
   public Graphics3D(Frustrum aFrustrum, Point3D anEyePoint, Camera aCamera, World aWorld, Graphics3D2D aBuffer){
     myFrustrum = aFrustrum;
     myEyePoint = anEyePoint;
@@ -261,8 +259,6 @@ public class Graphics3D{
   }
 
   public void drawWorld(Graphics aG, long aCycle){
-    myCycle = aCycle;
-    
     myGraphics3D2D.setBackGroundColor(myBackGroundColor);
 
     myGraphics3D2D.clear();
@@ -301,7 +297,6 @@ public class Graphics3D{
     myGraphics3D2D.cycleDone();
 
     isSingleFullRepaint = false;
-    
   }
   
   private void drawImage(Graphics aG, long aCycle){
@@ -517,14 +512,6 @@ public class Graphics3D{
 
   public void setSingleFullRepaint(boolean anIsSingleFullRepaint) {
     isSingleFullRepaint = anIsSingleFullRepaint;
-  }
-
-  public long getCycle() {
-    return myCycle;
-  }
-
-  public void setCycle( long aCycle ) {
-    myCycle = aCycle;
   }
 }
 
