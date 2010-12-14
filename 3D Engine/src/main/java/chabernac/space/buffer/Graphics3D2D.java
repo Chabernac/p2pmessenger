@@ -49,7 +49,13 @@ public class Graphics3D2D implements iBufferStrategy {
 
   public static enum Shader{TEXTURE, BUMP, DEPTH, PHONG, SPECULAR};
   
-  private int myLineStep = 1;
+  private iPixelSetter myPixelSetter = new SinglePixelSetter();
+
+  private int myYStep = 1;
+  private int myXStep = 1;
+  private float xMax, yMax;
+  
+  private int[] myPixels;
 
   public Graphics3D2D(World aWorld, int aWidth, int aHeight){
     myWidth = aWidth;
@@ -62,9 +68,26 @@ public class Graphics3D2D implements iBufferStrategy {
   private void init(){
     myImage = new BufferedImage(myWidth, myHeight, BufferedImage.TYPE_INT_ARGB);
     myGraphics = myImage.getGraphics();
+    DataBufferInt db = (DataBufferInt) myImage.getRaster().getDataBuffer();
+    myPixels = db.getData();
     //we should be able to specify the depth buffering technique
     myDepthBuffer = new ZBuffer( myWidth, myHeight );
+    definePixelSetter();
     clearFull();
+  }
+  
+  public void setDimensions(int aWidth, int aHeight){
+    myWidth = aWidth;
+    myHeight = aHeight;
+    init();
+  }
+  
+  private void definePixelSetter(){
+    if(myXStep == 1 && myYStep == 1){
+      myPixelSetter = new SinglePixelSetter();
+    } else {
+      myPixelSetter = new MultiPixelSetter( myXStep, myYStep );
+    }
   }
 
   public void setPixelShaders(Shader[] aShaderList){
@@ -121,7 +144,7 @@ public class Graphics3D2D implements iBufferStrategy {
   public Collection<DrawingRectangleContainer> getDrawingRectangles(){
     return myDrawingAreas.values();
   }
-  
+
   private void defineDrawingRect(Segment aSegment, int y, Object anObject){
     if(!myDrawingAreas.containsKey( anObject )){
       myDrawingAreas.put( anObject, new DrawingRectangleContainer() );
@@ -134,7 +157,7 @@ public class Graphics3D2D implements iBufferStrategy {
     if(theRect.maxY == -1 || y > theRect.maxY)  theRect.maxY = y;
     if(theRect.minX == -1 || aSegment.getXStart() < theRect.minX)  theRect.minX = aSegment.getXStart();
     if(theRect.maxX == -1 || aSegment.getXEnd() > theRect.maxX)  theRect.maxX = aSegment.getXEnd();
-    
+
   }
 
   protected void drawSegment(Segment aSegment, int y, Object anObject){
@@ -147,7 +170,7 @@ public class Graphics3D2D implements iBufferStrategy {
     while(aSegment.hasNext()){
       aSegment.next();
 
-      setPixelAt( thePixel.x, y, thePixel.invZ, thePixel);
+      myPixelSetter.setPixelAt( thePixel.x, y, thePixel.invZ, thePixel);
     } 
   }
 
@@ -155,7 +178,7 @@ public class Graphics3D2D implements iBufferStrategy {
     if(aRect.minX == -1) return;
     for(int x = aRect.minX;x<=aRect.maxX;x++){
       for(int y = aRect.minY;y<=aRect.maxY;y++){
-        setPixelAt( x, y, myBackGroundColor);
+        myPixels[y * myWidth + x] = myBackGroundColor;
       }
     }
   }
@@ -174,19 +197,6 @@ public class Graphics3D2D implements iBufferStrategy {
     }
   }
 
-  public void setPixelAt(int x, int y, float anInverseDepth, Pixel aPixel){
-    if(myDepthBuffer.isDrawPixel( x, y, anInverseDepth )){
-
-      for(iPixelShader theShader : myPixelShaders){
-        theShader.calculatePixel( aPixel );
-      }
-
-      aPixel.applyLightning();
-
-      setPixelAt(x, y, aPixel.color);
-    }
-  }
-
   protected void setPixelAt(int x, int y, int aColor){
 
     //TODO we sometimes paint pixels at the border giving out of bounds exceptions
@@ -196,12 +206,12 @@ public class Graphics3D2D implements iBufferStrategy {
     if(x < 0) return;
     if(y < 0) return;
 
-    myImage.setRGB( x, y, aColor );
+    myPixels[y * myWidth + x] = aColor;
   }
 
 
   protected int getPixelAt(int x, int y){
-    return myImage.getRGB( x, y );
+    return myPixels[y * myWidth + x];
   }
 
   public int getBackGroundColor() {
@@ -315,22 +325,24 @@ public class Graphics3D2D implements iBufferStrategy {
 
   public void drawPolygon(Polygon2D aPolygon, Polygon anOrigPolygon) {
     //TimeTracker.start();
-    
+
     float[] minmax = BufferTools.findMinMaxY(aPolygon);
-    
+    yMax = minmax[1];
+
     //TimeTracker.logTime("finding min max y");
     Vertex2D[] theScanLine;
-    for(int y = (int)Math.ceil(minmax[0]);y <= minmax[1];y += myLineStep){
+    for(int y = (int)Math.ceil(minmax[0]);y <= minmax[1];y += myYStep){
       //TimeTracker.start();
       theScanLine = aPolygon.intersectHorizontalLine(y);
       //TimeTracker.logTime("Intersecting with horizontal line: " + y);
       if(theScanLine.length == 2 && theScanLine[0] != null && theScanLine[1] != null){
-//        synchronized(this){
-        Segment theSegment = Segment.getInstance(theScanLine[0],theScanLine[1], aPolygon.getTexture() ); 
-//        Segment theSegment = new Segment(theScanLine[0],theScanLine[1], aPolygon.getTexture() );
+        //        synchronized(this){
+        Segment theSegment = Segment.getInstance(theScanLine[0],theScanLine[1], aPolygon.getTexture(), myXStep ); 
+        //        Segment theSegment = new Segment(theScanLine[0],theScanLine[1], aPolygon.getTexture() );
+        xMax = theScanLine[1].getPoint().x;
         drawSegment(theSegment, y, anOrigPolygon);
         Segment.freeInstance(theSegment);
-//        }
+        //        }
         //TimeTracker.logTime("Drawing segment");;
       }
       Point2D.freeInstance(theScanLine[0].getPoint());
@@ -353,10 +365,75 @@ public class Graphics3D2D implements iBufferStrategy {
   public void setUsePartialClearing( boolean aUsePartialClearing ) {
     isUsePartialClearing = aUsePartialClearing;
   }
-  public int getLineStep() {
-    return myLineStep;
+  
+  
+
+  public int getYStep() {
+    return myYStep;
   }
-  public void setLineStep( int aLineStep ) {
-    myLineStep = aLineStep;
+  public void setYStep( int aYStep ) {
+    myYStep = aYStep;
+    definePixelSetter();
   }
+  public int getXStep() {
+    return myXStep;
+  }
+  public void setXStep( int aXStep ) {
+    myXStep = aXStep;
+    definePixelSetter();
+  }
+
+
+
+  private interface iPixelSetter{
+    public void setPixelAt(int x, int y, float anInverseDepth, Pixel aPixel);
+  }
+
+  private class SinglePixelSetter implements iPixelSetter{
+    @Override
+    public void setPixelAt( int x, int y, float anInverseDepth, Pixel aPixel ) {
+      if(myDepthBuffer.isDrawPixel( x, y, anInverseDepth )){
+
+        for(iPixelShader theShader : myPixelShaders){
+          theShader.calculatePixel( aPixel );
+        }
+
+        aPixel.applyLightning();
+
+        Graphics3D2D.this.setPixelAt( x, y, aPixel.color);
+      }      
+    }
+  }
+  
+  private class MultiPixelSetter implements iPixelSetter{
+    private final int xStep;
+    private final int yStep;
+    
+    public MultiPixelSetter( int aXStep, int aYStep ) {
+      super();
+      xStep = aXStep;
+      yStep = aYStep;
+    }
+
+    @Override
+    public void setPixelAt( int x, int y, float anInverseDepth, Pixel aPixel ) {
+      if(myDepthBuffer.isDrawPixel( x, y, anInverseDepth )){
+
+        for(iPixelShader theShader : myPixelShaders){
+          theShader.calculatePixel( aPixel );
+        }
+
+        aPixel.applyLightning();
+
+        for(int dx=0;dx<xStep;dx++){
+          for(int dy=0;dy<yStep;dy++){
+            //TODO we're sometimes drawing too much, find a way to not draw more then the polygon's borders
+            Graphics3D2D.this.setPixelAt( x + dx, y + dy, aPixel.color);
+          }
+        }
+      }      
+    }
+  }
+
+
 }

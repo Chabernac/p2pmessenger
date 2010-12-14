@@ -2,7 +2,6 @@ package chabernac.worlds;
 
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Window;
 
 import javax.swing.JFrame;
 
@@ -17,6 +16,7 @@ import chabernac.space.geom.Rotation;
 import chabernac.space.geom.Shape;
 import chabernac.space.shading.AmbientShading;
 import chabernac.space.shading.BumpShader;
+import chabernac.space.shading.GouroudShading;
 import chabernac.space.shading.PhongShader;
 import chabernac.space.shading.TextureShader;
 import chabernac.space.shading.iPixelShader;
@@ -118,7 +118,7 @@ public class AXACube extends AbstractWorld implements iSynchronizedEvent{
     theMouseTranslationManager.addTranslatable(theShape);
     myRotationManager.addTranslatable(theShape);
     
-    theShape = ShapeFactory.makeCube(new Point3D(300,100,200), 340,340,340);
+    theShape = ShapeFactory.makeCube(new Point3D(300,100,200), 3400,3400,3400);
 //    theShape.setColor(new Color(0,0,255,100));
     //theShape.setTexture(new TextureImage(ImageFactory.createImage("AXA", new Font("Arial", Font.BOLD, 40), 100, 100, Color.BLUE, Color.WHITE, true)));
     theShape.setTexture("metal006","metal006", false, false);
@@ -203,7 +203,7 @@ public class AXACube extends AbstractWorld implements iSynchronizedEvent{
 
   @Override
   protected Dimension getPanelSize() {
-    return new Dimension( 400, 400 );
+    return new Dimension( 800, 600);
   }
   
   /**
@@ -213,8 +213,8 @@ public class AXACube extends AbstractWorld implements iSynchronizedEvent{
   protected iPixelShader[] getPixelShaders(){
     return new iPixelShader[]{
                               new TextureShader( ), 
-                              new BumpShader( myWorld ),
-                              new PhongShader( myWorld  )
+//                              new BumpShader( myWorld ),
+//                              new PhongShader( myWorld  )
                               };
   }
   
@@ -224,12 +224,13 @@ public class AXACube extends AbstractWorld implements iSynchronizedEvent{
    */
   protected iVertexShader[] getVertexShaders(){
     return new iVertexShader[]{
-                               new AmbientShading( 0F )
+//                               new AmbientShading( 0F )
+                               new GouroudShading( 0.5F )
                                };
   }
   
   protected int getFPS(){
-    return 1000;
+    return 100;
   }
   
 
