@@ -3,7 +3,6 @@ package chabernac.space;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.RenderingHints;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.MouseEvent;
@@ -149,7 +148,7 @@ public class Panel3D extends JPanel implements  iSynchronizedEvent, MouseListene
 	  Point3D theEyePoint = new Point3D(getWidth()/2,getHeight()/2,(getWidth() + getHeight())/2);
 	  myGraphics.setEyePoint(theEyePoint);
 	  myGraphics.setFrustrum(new ScreenFrustrum(theEyePoint, new Dimension(getWidth(),getHeight())));
-	  myGraphics.setGraphics3D2D( new Graphics3D2D(myWorld, getWidth(), getHeight()));
+	  myGraphics.getGraphics3D2D().setDimensions( getWidth(), getHeight() );
 	  myGraphics.setSingleFullRepaint(true);
   }
 

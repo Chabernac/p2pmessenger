@@ -2,7 +2,6 @@ package chabernac.space.buffer;
 
 import org.apache.log4j.Logger;
 
-import chabernac.space.World;
 import chabernac.space.geom.Point2D;
 import chabernac.space.geom.Vector2D;
 import chabernac.space.geom.Vertex2D;
@@ -17,6 +16,7 @@ public class Segment {
 
   private Texture2 texture = null;
   private int xStart, xEnd;
+  private int xStep = 1;
   private float invzStart, invzEnd, lStart, lEnd, l = 0;
   private float zdiff, xDiff, invzRico, udiff, vdiff, urico, vrico, lRico = 0;
 //  private int c = 0;
@@ -104,17 +104,17 @@ public class Segment {
   }
 
   public void next(){
-    myPixel.x++;
-    myPixel.invZ += invzRico;
-    l += lRico;
+    myPixel.x += xStep;
+    myPixel.invZ += xStep * invzRico;
+    l += xStep * lRico;
     myPixel.light = l;
     myPixel.camPoint = null;
     myPixel.normal = null;
 
     if(isTexture){
       if(isAffine){
-        myPixel.u += urico;
-        myPixel.v += vrico;
+        myPixel.u += xStep * urico;
+        myPixel.v += xStep * vrico;
       } else {
         myPixel.z = 1 / myPixel.invZ;
         myPixel.u = getU(myPixel.z);
@@ -162,7 +162,7 @@ public class Segment {
     this.texture = texture;
   }
 
-  public static Segment getInstance(Vertex2D aStartVertex, Vertex2D anEndVertex, Texture2 aTexture){
+  public static Segment getInstance(Vertex2D aStartVertex, Vertex2D anEndVertex, Texture2 aTexture, int anXStep){
     Segment result;
     if (countFree == 0) {
       result = new Segment();
@@ -174,6 +174,7 @@ public class Segment {
     result.texture = aTexture;
     result.isTexture = aTexture != null;
     result.myPixel.texture = aTexture;
+    result.xStep = anXStep;
 
     result.calculateRicos();
     result.repositionStartEnd();
