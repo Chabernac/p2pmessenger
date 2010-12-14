@@ -8,8 +8,6 @@ package chabernac.space.texture;
 
 import java.io.IOException;
 
-import org.apache.log4j.Logger;
-
 import chabernac.space.Camera;
 import chabernac.space.CoordinateSystem;
 import chabernac.space.TranslateException;
@@ -24,29 +22,36 @@ import chabernac.space.geom.Vector2D;
 
 public class Texture2 implements iTranslatable{
 
-  private static Logger LOGGER = Logger.getLogger(Texture2.class);
+//  private static Logger LOGGER = Logger.getLogger(Texture2.class);
 
-  private TextureImage myImage = null;
-  private CoordinateSystem mySystem = null;
+  private final TextureImage myImage;
+  private final CoordinateSystem mySystem;
   private CoordinateSystem myCamSystem = null;
   private boolean isSpherical = false;
   private float mySphereRadius = 200;
   private BumpMap myBumpMap = null;
-  private int myColor;
+  private final int myColor;
+  private final iColorGetter myColorGetter;
 
   public Texture2(Point3D anOrigin, GVector anXUnit, GVector anYUnit, TextureImage anImage){
     myImage = anImage;
     mySystem = new CoordinateSystem(anOrigin, anXUnit, anYUnit);
+    myColorGetter = new TextureColorGetter();
+    myColor = -1;
   }
 
   public Texture2(Point3D anOrigin, GVector anXUnit, GVector anYUnit, String aTexture, boolean isTransparent) throws IOException{
     myImage = TextureFactory.getTexture(aTexture, isTransparent);
     mySystem = new CoordinateSystem(anOrigin, anXUnit, anYUnit);
+    myColorGetter = new TextureColorGetter();
+    myColor = -1; 
   }
   
   public Texture2(Point3D anOrigin, GVector anXUnit, GVector anYUnit, int aColor) throws IOException{
     mySystem = new CoordinateSystem(anOrigin, anXUnit, anYUnit);
     myColor = aColor;
+    myColorGetter = new BackGroundColorGetter();
+    myImage = null;
   }
 
 
@@ -86,8 +91,7 @@ public class Texture2 implements iTranslatable{
   }
 
   public int getColor(int x, int y){
-    if(myImage == null) return myColor;
-    return myImage.getColorAt(x, y);
+    return myColorGetter.getColorAt( x, y );
   }
 
   public int getColor(Point2D aPoint){
@@ -152,5 +156,21 @@ public class Texture2 implements iTranslatable{
 
   public CoordinateSystem getCamSystem() {
     return myCamSystem;
+  }
+  
+  private interface iColorGetter{
+    public int getColorAt(int x, int y); 
+  }
+  
+  private class BackGroundColorGetter implements iColorGetter{
+    public int getColorAt(int x, int y){
+      return myColor;
+    }
+  }
+  
+  private class TextureColorGetter implements iColorGetter{
+    public int getColorAt(int x, int y){
+      return myImage.getColorAt(x, y); 
+    }
   }
 }
