@@ -118,7 +118,7 @@ public class AXACube extends AbstractWorld implements iSynchronizedEvent{
     theMouseTranslationManager.addTranslatable(theShape);
     myRotationManager.addTranslatable(theShape);
     
-    theShape = ShapeFactory.makeCube(new Point3D(300,100,200), 3400,3400,3400);
+    theShape = ShapeFactory.makeCube(new Point3D(-800,-800,500), 3400,3400,3400);
 //    theShape.setColor(new Color(0,0,255,100));
     //theShape.setTexture(new TextureImage(ImageFactory.createImage("AXA", new Font("Arial", Font.BOLD, 40), 100, 100, Color.BLUE, Color.WHITE, true)));
     theShape.setTexture("metal006","metal006", false, false);
@@ -195,7 +195,7 @@ public class AXACube extends AbstractWorld implements iSynchronizedEvent{
   
   public static void main(String args[]){
     AXACube theCube = new AXACube();
-//    theCube.setVisible( false );
+    theCube.setVisible( false );
 //    theCube.setState( JFrame.MAXIMIZED_BOTH );
 //    theCube.setState( JFrame.ICONIFIED );
 //    theCube.setVisible( false );
@@ -203,7 +203,7 @@ public class AXACube extends AbstractWorld implements iSynchronizedEvent{
 
   @Override
   protected Dimension getPanelSize() {
-    return new Dimension( 800, 600);
+    return new Dimension( 1024, 800);
   }
   
   /**
@@ -230,7 +230,7 @@ public class AXACube extends AbstractWorld implements iSynchronizedEvent{
   }
   
   protected int getFPS(){
-    return 100;
+    return 1000;
   }
   
 
