@@ -6,6 +6,8 @@
  */
 package chabernac.space;
 
+import java.io.Serializable;
+
 import chabernac.math.Matrix;
 import chabernac.math.MatrixException;
 import chabernac.math.MatrixOperations;
@@ -19,8 +21,9 @@ import chabernac.space.geom.Rotation;
  * To change the template for this generated type comment go to
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
-public class Camera implements iTranslatable, iTransformator{
-	private Matrix myTranslationMatrix = null;
+public class Camera implements iTranslatable, iTransformator, Serializable{
+  private static final long serialVersionUID = -5512630842154013982L;
+  private Matrix myTranslationMatrix = null;
 	private Matrix myRotationMatrix = null;
 	private Matrix myScalingMatrix = null;
 	private Matrix myMatrix = null;

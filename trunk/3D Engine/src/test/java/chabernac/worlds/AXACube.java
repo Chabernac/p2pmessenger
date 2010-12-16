@@ -36,9 +36,9 @@ public class AXACube extends AbstractWorld implements iSynchronizedEvent{
     MouseTranslationManager theMouseTranslationManager = new MouseTranslationManager(myPanel3D.getGraphics3D(), 100, 10);
     myRotationManager = new RotationManager(new Rotation((float)Math.PI / 500,(float)Math.PI / 400,(float)Math.PI / 360));
     RotationManager theRotationManager = new RotationManager(new Rotation(0,0,(float)Math.PI / 180));
-    myWorld.getTranslateManagerContainer().addTranslateManager(theMouseTranslationManager);
-    myWorld.getTranslateManagerContainer().addTranslateManager(myRotationManager);
-    myWorld.getTranslateManagerContainer().addTranslateManager(theRotationManager);
+//    myWorld.getTranslateManagerContainer().addTranslateManager(theMouseTranslationManager);
+//    myWorld.getTranslateManagerContainer().addTranslateManager(myRotationManager);
+//    myWorld.getTranslateManagerContainer().addTranslateManager(theRotationManager);
     
     
 //    Shape theSphere = ShapeFactory.makeSphere(new Point3D(100,100,4800), 2000,10);
@@ -126,7 +126,7 @@ public class AXACube extends AbstractWorld implements iSynchronizedEvent{
 //    theShape.myPolygons[0].setTexture("axa", false);
 //    theShape.myPolygons[0].setTexture("guy", false, false);
 //    theShape.myPolygons[1].setTexture("leslie", false, false);
-    myWorld.addShape(theShape);
+//    myWorld.addShape(theShape);
 //    theMouseTranslationManager.addTranslatable(theShape);
 //    myRotationManager.addTranslatable(theShape);
     
@@ -185,17 +185,23 @@ public class AXACube extends AbstractWorld implements iSynchronizedEvent{
     
   }
   
-  public void executeEvent(long anCounter) {
+  public boolean executeEvent(long anCounter) {
     if(anCounter >> 6 << 6 == anCounter){
       Rotation theRotation = myRotationManager.getRotation();
       Rotation theNewRotation = new Rotation(theRotation.getPitch(), theRotation.getYaw(), theRotation.getRoll());
       myRotationManager.setRotation(theNewRotation);
+      return true;
     }
+    return false;
+  }
+  
+  public boolean isRecordable(){
+    return false;
   }
   
   public static void main(String args[]){
     AXACube theCube = new AXACube();
-    theCube.setVisible( false );
+//    theCube.setVisible( false );
 //    theCube.setState( JFrame.MAXIMIZED_BOTH );
 //    theCube.setState( JFrame.ICONIFIED );
 //    theCube.setVisible( false );
@@ -203,11 +209,10 @@ public class AXACube extends AbstractWorld implements iSynchronizedEvent{
 
   @Override
   protected Dimension getPanelSize() {
-    return new Dimension( 1024, 800);
+    return new Dimension( 200, 200);
   }
   
   /**
-   * override if you want to define other pixel shaders
    * @return
    */
   protected iPixelShader[] getPixelShaders(){
@@ -230,7 +235,7 @@ public class AXACube extends AbstractWorld implements iSynchronizedEvent{
   }
   
   protected int getFPS(){
-    return 1000;
+    return 50;
   }
   
 
