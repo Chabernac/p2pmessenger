@@ -120,7 +120,7 @@ public class Panel3D extends JPanel implements  iSynchronizedEvent, MouseListene
   public void paint(Graphics g){
   }
 
-  public void executeEvent(long anCounter) {
+  public boolean executeEvent(long anCounter) {
     try{
       Graphics g = getGraphics();
       if(g != null){
@@ -136,6 +136,11 @@ public class Panel3D extends JPanel implements  iSynchronizedEvent, MouseListene
     }catch(Exception e){
       LOGGER.error("Error occured while drawing world",e);
     }
+    return true;
+  }
+  
+  public boolean isRecordable(){
+    return false;
   }
 
   public void componentHidden(ComponentEvent anE) {

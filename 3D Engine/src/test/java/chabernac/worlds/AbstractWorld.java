@@ -20,12 +20,15 @@ import chabernac.control.SynchronizedEventManager;
 import chabernac.space.Camera;
 import chabernac.space.Command3dFactory;
 import chabernac.space.Panel3D;
+import chabernac.space.PlayRecording;
+import chabernac.space.ToggleRecordingCommand;
 import chabernac.space.World;
 import chabernac.space.shading.BumpShader;
 import chabernac.space.shading.GouroudShading;
 import chabernac.space.shading.TextureShader;
 import chabernac.space.shading.iPixelShader;
 import chabernac.space.shading.iVertexShader;
+import chabernac.utils.RecordingRestorer;
 
 public abstract class AbstractWorld extends JFrame {
   private static final long serialVersionUID = -8099358160922769319L;
@@ -103,6 +106,7 @@ public abstract class AbstractWorld extends JFrame {
   
   private final void setupRendering(){
     myManager = new SynchronizedEventManager(getFPS());
+    myManager.setRestorer( new RecordingRestorer( myCamera ) );
     myManager.addSyncronizedEvent(myPanel3D);
     myManager.startManager();
   }
@@ -133,6 +137,9 @@ public abstract class AbstractWorld extends JFrame {
 
     myKeyMapContainer.addKeyMap(new KeyMap(KeyEvent.VK_NUMPAD7, Command3dFactory.rollLeft(myManager, myCamera, (float)Math.PI/144),2));
     myKeyMapContainer.addKeyMap(new KeyMap(KeyEvent.VK_NUMPAD9, Command3dFactory.rollRight(myManager, myCamera, (float)Math.PI/144),2));
+    
+    myKeyMapContainer.addKeyMap(new KeyMap(KeyEvent.VK_R, new ToggleRecordingCommand( myManager ),1));
+    myKeyMapContainer.addKeyMap(new KeyMap(KeyEvent.VK_P, new PlayRecording( myManager ),1));
     
     myPanel3D.addKeyListener(new KeyCommandListener(myKeyMapContainer));
     myPanel3D.setFocusable(true);

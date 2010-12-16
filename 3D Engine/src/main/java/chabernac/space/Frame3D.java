@@ -171,9 +171,14 @@ public class Frame3D extends JFrame implements iSynchronizedEvent{
 }
    */
 
-  public void executeEvent(long aCounter) {
+  public boolean executeEvent(long aCounter) {
     myGraphics.drawWorld(myG, aCounter);
+    return true;
     //myStrategy.show();
+  }
+  
+  public boolean isRecordable(){
+    return false;
   }
 
   public Graphics3D getGraphics3D(){

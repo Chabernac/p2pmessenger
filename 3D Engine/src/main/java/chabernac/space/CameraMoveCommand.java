@@ -19,6 +19,8 @@ import chabernac.math.MatrixException;
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
 public class CameraMoveCommand extends SynchronizedKeyCommand {
+  private static final long serialVersionUID = 4060593289179636809L;
+
   private static Logger LOGGER = Logger.getLogger(CameraMoveCommand.class);
   
 	private Camera myTargetCamera = null;
@@ -54,5 +56,8 @@ public class CameraMoveCommand extends SynchronizedKeyCommand {
 			LOGGER.error("Error in keyDown", e);
 		}
 	}
-
+	
+	public void setCamera(Camera aCamera){
+	  myTargetCamera = aCamera;
+	}
 }
