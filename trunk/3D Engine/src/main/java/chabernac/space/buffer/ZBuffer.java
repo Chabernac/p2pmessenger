@@ -44,17 +44,19 @@ public class ZBuffer implements iDepthBuffer{
   }
   
   public boolean isDrawPixel(int x, int y, float anInverseDepth){
-    int i = y * myWidth + x; 
-
-    if( i < 0 || i >= mySize || anInverseDepth < 0 || anInverseDepth > 1){
+    return isDrawPixel( y * myWidth + x, anInverseDepth );
+  }
+  
+  public boolean isDrawPixel(int aPixelIndex, float anInverseDepth){
+    if( aPixelIndex < 0 || aPixelIndex >= mySize || anInverseDepth < 0 || anInverseDepth > 1){
       return false;
     }
    
     float cycleDepth = cycle + anInverseDepth;
     
-    if(cycleDepth > myZBuffer[i]){
+    if(cycleDepth > myZBuffer[aPixelIndex]){
       //this pixel will be drawn only at this point we should calculate the color and apply pixel shading
-      myZBuffer[i] = cycleDepth;
+      myZBuffer[aPixelIndex] = cycleDepth;
       return true;
     }
     

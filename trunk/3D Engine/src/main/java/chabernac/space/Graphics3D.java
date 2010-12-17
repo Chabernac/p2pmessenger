@@ -99,9 +99,9 @@ public class Graphics3D{
 
     Point3D theOrigin = aSystem.getOrigin();
 
-    GVector theCamXVector = myCamera.world2Cam(aSystem.getXUnit().multip(enLargement));
-    GVector theCamYVector = myCamera.world2Cam(aSystem.getYUnit().multip(enLargement));
-    GVector theCamZVector = myCamera.world2Cam(aSystem.getZUnit().multip(enLargement));
+    GVector theCamXVector = aSystem.getXUnit().multip(enLargement);
+    GVector theCamYVector = aSystem.getYUnit().multip(enLargement);
+    GVector theCamZVector = aSystem.getZUnit().multip(enLargement);
 
     Point3D theXEndPoint = theOrigin.addition(theCamXVector);
     Point3D theYEndPoint = theOrigin.addition(theCamYVector);

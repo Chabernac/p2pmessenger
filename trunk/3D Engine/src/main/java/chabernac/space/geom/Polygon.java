@@ -102,8 +102,22 @@ public class Polygon implements iTranslatable{
       GVector theXVector = new GVector(w[0].myPoint, w[1].myPoint);
       //now we multiply the x vector with the plane's normal vector to obtain the y vector in the plane and orthogonal with the x vector
       GVector theYVector = myNormalVector.produkt(theXVector);
+      GVector theInvYVector = myNormalVector.inv().produkt( theXVector );
+      
       theXVector.normalize();
       theYVector.normalize();
+      theInvYVector.normalize();
+      
+      Point3D thePointInPolygon = w[0].myPoint.addition( theYVector );
+      float theDistanceToCenter = distanceToCenter( thePointInPolygon );
+      
+      Point3D thePointInPolygon2 = w[0].myPoint.addition( theInvYVector );
+      float theDistanceToCenter2 = distanceToCenter( thePointInPolygon2 );
+      
+      if(theDistanceToCenter2 < theDistanceToCenter){
+        theYVector = theInvYVector;
+      }
+      
       
       if(myTextureName != null){
         myTexture = new Texture2(w[0].myPoint, theXVector, theYVector, myTextureName, isTransparentTexture );
@@ -126,6 +140,8 @@ public class Polygon implements iTranslatable{
       LOGGER.error("Could not load texture: " + myTextureName, e);
     }
   }
+  
+  
 
   public void optimize(){
     if(myCurrentVertex < mySize){
@@ -188,6 +204,10 @@ public class Polygon implements iTranslatable{
       z += w[i].myPoint.z;
     }
     myCenterPoint = new Point3D(x / mySize, y / mySize, z / mySize);
+  }
+  
+  public float distanceToCenter(Point3D aPoint){
+    return new GVector( myCenterPoint, aPoint ).length();
   }
 
   public void world2Cam(Camera aCamera) throws PolygonException, MatrixException{

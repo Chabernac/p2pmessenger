@@ -42,6 +42,8 @@ public class Pixel {
   
   public GVector normal = null;
   
+  public int index;
+  
   public Pixel(){
     
   }

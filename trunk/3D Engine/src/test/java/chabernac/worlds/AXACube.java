@@ -3,8 +3,6 @@ package chabernac.worlds;
 import java.awt.Color;
 import java.awt.Dimension;
 
-import javax.swing.JFrame;
-
 import chabernac.control.iSynchronizedEvent;
 import chabernac.space.LightSource;
 import chabernac.space.MouseTranslationManager;
@@ -14,10 +12,7 @@ import chabernac.space.World;
 import chabernac.space.geom.Point3D;
 import chabernac.space.geom.Rotation;
 import chabernac.space.geom.Shape;
-import chabernac.space.shading.AmbientShading;
-import chabernac.space.shading.BumpShader;
 import chabernac.space.shading.GouroudShading;
-import chabernac.space.shading.PhongShader;
 import chabernac.space.shading.TextureShader;
 import chabernac.space.shading.iPixelShader;
 import chabernac.space.shading.iVertexShader;
@@ -126,7 +121,7 @@ public class AXACube extends AbstractWorld implements iSynchronizedEvent{
 //    theShape.myPolygons[0].setTexture("axa", false);
 //    theShape.myPolygons[0].setTexture("guy", false, false);
 //    theShape.myPolygons[1].setTexture("leslie", false, false);
-//    myWorld.addShape(theShape);
+    myWorld.addShape(theShape);
 //    theMouseTranslationManager.addTranslatable(theShape);
 //    myRotationManager.addTranslatable(theShape);
     
@@ -171,7 +166,7 @@ public class AXACube extends AbstractWorld implements iSynchronizedEvent{
     myPanel3D.getGraphics3D().setDrawBackFacing(false);
     myPanel3D.getGraphics3D().setDrawPlanes(true);
     myPanel3D.getGraphics3D().setDrawLightSources( false );
-    myPanel3D.getGraphics3D().setDrawTextureNormals( false );
+    myPanel3D.getGraphics3D().setDrawTextureNormals( true );
     myPanel3D.getGraphics3D().setDrawBumpVectors(false);
     myPanel3D.getGraphics3D().setDrawVertexNormals( false);
     myPanel3D.getGraphics3D().setDrawTextureCoordinates(false);
@@ -179,8 +174,8 @@ public class AXACube extends AbstractWorld implements iSynchronizedEvent{
     //myPanel3D.getGraphics3D().setBackGroundColor(new Color(100,100,200));
     myPanel3D.getGraphics3D().setBackGroundColor(new Color(0,0,0));
     myPanel3D.getGraphics3D().setShowDrawingAreas( false );
-    myPanel3D.getGraphics3D().setUseClipping( true);
-    myPanel3D.getGraphics3D().getGraphics3D2D().setUsePartialClearing( true);
+    myPanel3D.getGraphics3D().setUseClipping( false );
+    myPanel3D.getGraphics3D().getGraphics3D2D().setUsePartialClearing( false);
     myPanel3D.getGraphics3D().setVertexShaders( getVertexShaders() );
     
   }
