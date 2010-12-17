@@ -30,10 +30,12 @@ public class TextureImage{
   }
 
   public int getColorAt(int x, int y){
-//    System.out.println(x + "," + y);
-    while(x < 0) x += width;
+    if(x < 0 || y <0){
+      return 0;
+    }
+//    while(x < 0) x += width;
     while(x >= width) x -= width;
-    while(y < 0) y += height;
+//    while(y < 0) y += height;
     while(y >= height) y -= height;
 
     return colors[y * width + x];

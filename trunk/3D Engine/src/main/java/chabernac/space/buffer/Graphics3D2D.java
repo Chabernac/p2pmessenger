@@ -111,14 +111,9 @@ public class Graphics3D2D implements iBufferStrategy {
   }
 
   public void clearFull(){
-    DrawingRectangleContainer theContainer = new DrawingRectangleContainer();
-    theContainer.getClearingRect().minX = 0;
-    theContainer.getClearingRect().maxX = myWidth - 1;
-    theContainer.getClearingRect().minY = 0;
-    theContainer.getClearingRect().maxY = myHeight - 1;
-    myDrawingAreas.clear();
-    myDrawingAreas.put( new Integer(myBackGroundColor), theContainer );
-    clear(theContainer.getClearingRect());
+    for(int i=0;i<myPixels.length;i++){
+      myPixels[i] = myBackGroundColor;
+    }
   }
 
   public final void clear(){

@@ -22,11 +22,17 @@ public class BumpMap {
     int i=0;
     for(int y=0;y<myImage.height;y++){
       for(int x=0;x<myImage.width;x++){
-        GVector theXVector = new GVector(1,0, getDepth(myImage.getColorAt(x+1, y)) - getDepth(myImage.getColorAt(x-1, y))); 
-        GVector theYVector = new GVector(0,1, getDepth(myImage.getColorAt(x, y + 1)) - getDepth(myImage.getColorAt(x, y - 1)));
+        GVector theXVector = new GVector(1,0, getDepth(x+1, y) - getDepth(x-1, y)); 
+        GVector theYVector = new GVector(0,1, getDepth(x, y + 1) - getDepth(x, y - 1));
         myVectorMap[i++] = theXVector.produkt(theYVector);
       }
     }
+  }
+  
+  private float getDepth(int x, int y) {
+    if(x < 0) return 0;
+    if(y < 0) return 0;
+    return getDepth( myImage.getColorAt( x, y ) );
   }
 
   private float getDepth(int aColor) {

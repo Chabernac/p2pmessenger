@@ -24,13 +24,13 @@ public class Texture2 implements iTranslatable{
 
 //  private static Logger LOGGER = Logger.getLogger(Texture2.class);
 
-  private final TextureImage myImage;
+  public final TextureImage myImage;
   private final CoordinateSystem mySystem;
   private CoordinateSystem myCamSystem = null;
   private boolean isSpherical = false;
   private float mySphereRadius = 200;
   private BumpMap myBumpMap = null;
-  private final int myColor;
+  public final int myColor;
   private final iColorGetter myColorGetter;
 
   public Texture2(Point3D anOrigin, GVector anXUnit, GVector anYUnit, TextureImage anImage){

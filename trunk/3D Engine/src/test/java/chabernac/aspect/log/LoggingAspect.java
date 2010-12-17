@@ -26,9 +26,11 @@ public class LoggingAspect {
 
   private Map<Signature, Float> myTimings = new HashMap<Signature, Float>();
   
+  private final int CYCLESHIFT = 7;
+  
   @Around("execution(public * chabernac.space.Graphics3D.drawWorld*(..)) && args(aG, aCycle)")
   public void calculateFrameRate(ProceedingJoinPoint aJp, Graphics aG, long aCycle) throws Throwable{
-    isDebug = (aCycle >> 8 << 8 == aCycle);
+    isDebug = (aCycle >> CYCLESHIFT << CYCLESHIFT == aCycle);
 
     if(isDebug){
       myTimings.clear();
