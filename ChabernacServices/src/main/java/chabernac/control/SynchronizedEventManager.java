@@ -6,6 +6,11 @@
  */
 package chabernac.control;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -29,6 +34,13 @@ public class SynchronizedEventManager implements Runnable{
   private long myCycleTime = 0;
   private TimeUnit myTimeUnit = null;
   private double myFPS;
+  
+  private boolean isRecording = false;
+  private Recording myRecording = null;
+  
+  private Recording myPlayRecording = null;
+  
+  private iRecordingRestorer myRestorer = null;
 
   private ScheduledExecutorService myService = Executors.newScheduledThreadPool( PROCESSORS );
 
@@ -79,12 +91,79 @@ public class SynchronizedEventManager implements Runnable{
 
   public void run(){
     try{
+      myCounter++;
+      
       for(iSynchronizedEvent theEvent : new ArrayList<iSynchronizedEvent>(myList) ){
-        theEvent.executeEvent(myCounter++);
+        boolean isExecuted = theEvent.executeEvent(myCounter); 
+        if(isRecording && isExecuted){
+          myRecording.add(myCounter, theEvent);
+        }
       }
+      
+      if(myPlayRecording != null){
+        myPlayRecording.play( myCounter );
+        if(myPlayRecording.size() == 0){
+          myPlayRecording = null;
+        }
+      }
+      
     }catch(Throwable e){
       LOGGER.error( "Error occured while cycling", e );
     }
   }
+  
+  public void playRecording(Recording aRecording){
+    myPlayRecording = aRecording;
+  }
 
+  public boolean isRecording() {
+    return isRecording;
+  }
+
+  public void setRecording( boolean aRecording ) {
+    isRecording = aRecording;
+    if(myRecording == null){
+      newRecording();
+    }
+  }
+  
+  public void newRecording(){
+    myRecording = new Recording( myCounter );
+  }
+
+  public void saveRecording(OutputStream anOutputStream) throws IOException{
+    ObjectOutputStream theOut = null;
+    try{
+      theOut = new ObjectOutputStream(anOutputStream);
+      theOut.writeObject( myRecording );
+    } finally {
+      if(theOut != null){
+        theOut.flush();
+        theOut.close();
+      }
+    }
+  }
+  
+  public void loadRecording(InputStream anInputStream) throws Exception{
+    ObjectInputStream theInput = null;
+    try{
+      theInput = new ObjectInputStream(anInputStream);
+      Recording theRecording = (Recording)theInput.readObject();
+      if(myRestorer != null) myRestorer.restoreRecording( theRecording );
+      theRecording.setOffsset( myCounter );
+      playRecording( theRecording );
+    } finally {
+      if(theInput != null){
+        theInput.close();
+      }
+    }
+  }
+
+  public iRecordingRestorer getRestorer() {
+    return myRestorer;
+  }
+
+  public void setRestorer( iRecordingRestorer aRestorer ) {
+    myRestorer = aRestorer;
+  }
 }

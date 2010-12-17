@@ -3,6 +3,9 @@ package chabernac.control;
 public abstract class KeyCommand{
   private String myDescription = null;
   
+  public KeyCommand(){
+  }
+  
   public KeyCommand(String aDescription){
     myDescription = aDescription;
   }
