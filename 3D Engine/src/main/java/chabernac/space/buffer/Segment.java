@@ -17,6 +17,8 @@ public class Segment {
   private Texture2 texture = null;
   private int xStart, xEnd;
   private int xStep = 1;
+  private int index;
+  
   private float invzStart, invzEnd, lStart, lEnd, l = 0;
   private float zdiff, xDiff, invzRico, udiff, vdiff, urico, vrico, lRico = 0;
 //  private int c = 0;
@@ -93,7 +95,9 @@ public class Segment {
 
     myPixel.x = xStart;
     myPixel.invZ = invzStart;
+    myPixel.index = index;
     l = lStart;
+    
     
     myPixel.u = start.getTexturePoint().x;
     myPixel.v = start.getTexturePoint().y;
@@ -106,6 +110,7 @@ public class Segment {
   public void next(){
     myPixel.x += xStep;
     myPixel.invZ += xStep * invzRico;
+    myPixel.index += xStep;
     l += xStep * lRico;
     myPixel.light = l;
     myPixel.camPoint = null;
@@ -162,7 +167,7 @@ public class Segment {
     this.texture = texture;
   }
 
-  public static Segment getInstance(Vertex2D aStartVertex, Vertex2D anEndVertex, Texture2 aTexture, int anXStep){
+  public static Segment getInstance(Vertex2D aStartVertex, Vertex2D anEndVertex, int aPixelIndex, Texture2 aTexture, int anXStep){
     Segment result;
     if (countFree == 0) {
       result = new Segment();
@@ -175,6 +180,7 @@ public class Segment {
     result.isTexture = aTexture != null;
     result.myPixel.texture = aTexture;
     result.xStep = anXStep;
+    result.index = aPixelIndex;
 
     result.calculateRicos();
     result.repositionStartEnd();

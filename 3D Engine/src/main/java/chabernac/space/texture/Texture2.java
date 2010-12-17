@@ -95,8 +95,7 @@ public class Texture2 implements iTranslatable{
   }
 
   public int getColor(Point2D aPoint){
-    if(myImage == null) return myColor;
-    return myImage.getColorAt((int)Math.floor(aPoint.x), (int)Math.floor(aPoint.y));
+    return myColorGetter.getColorAt( (int)Math.floor(aPoint.x), (int)Math.floor(aPoint.y));
   }
 
   public CoordinateSystem getSystem() {

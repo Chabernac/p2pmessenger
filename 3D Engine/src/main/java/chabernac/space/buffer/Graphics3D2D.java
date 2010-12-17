@@ -170,7 +170,7 @@ public class Graphics3D2D implements iBufferStrategy {
     while(aSegment.hasNext()){
       aSegment.next();
 
-      myPixelSetter.setPixelAt( thePixel.x, y, thePixel.invZ, thePixel);
+      myPixelSetter.setPixel(thePixel);
     } 
   }
 
@@ -208,8 +208,7 @@ public class Graphics3D2D implements iBufferStrategy {
 
     myPixels[y * myWidth + x] = aColor;
   }
-
-
+  
   protected int getPixelAt(int x, int y){
     return myPixels[y * myWidth + x];
   }
@@ -337,7 +336,7 @@ public class Graphics3D2D implements iBufferStrategy {
       //TimeTracker.logTime("Intersecting with horizontal line: " + y);
       if(theScanLine.length == 2 && theScanLine[0] != null && theScanLine[1] != null){
         //        synchronized(this){
-        Segment theSegment = Segment.getInstance(theScanLine[0],theScanLine[1], aPolygon.getTexture(), myXStep ); 
+        Segment theSegment = Segment.getInstance(theScanLine[0],theScanLine[1], (y * myWidth + (int)Math.floor(theScanLine[0].getPoint().x)), aPolygon.getTexture(), myXStep ); 
         //        Segment theSegment = new Segment(theScanLine[0],theScanLine[1], aPolygon.getTexture() );
         xMax = theScanLine[1].getPoint().x;
         drawSegment(theSegment, y, anOrigPolygon);
@@ -386,13 +385,12 @@ public class Graphics3D2D implements iBufferStrategy {
 
 
   private interface iPixelSetter{
-    public void setPixelAt(int x, int y, float anInverseDepth, Pixel aPixel);
+    public void setPixel(Pixel aPixel);
   }
 
   private class SinglePixelSetter implements iPixelSetter{
-    @Override
-    public void setPixelAt( int x, int y, float anInverseDepth, Pixel aPixel ) {
-      if(myDepthBuffer.isDrawPixel( x, y, anInverseDepth )){
+    public void setPixel(Pixel aPixel){
+      if(myDepthBuffer.isDrawPixel( aPixel.index, aPixel.invZ)){
 
         for(iPixelShader theShader : myPixelShaders){
           theShader.calculatePixel( aPixel );
@@ -400,7 +398,7 @@ public class Graphics3D2D implements iBufferStrategy {
 
         aPixel.applyLightning();
 
-        Graphics3D2D.this.setPixelAt( x, y, aPixel.color);
+        myPixels[aPixel.index] = aPixel.color;
       }      
     }
   }
@@ -415,9 +413,8 @@ public class Graphics3D2D implements iBufferStrategy {
       yStep = aYStep;
     }
 
-    @Override
-    public void setPixelAt( int x, int y, float anInverseDepth, Pixel aPixel ) {
-      if(myDepthBuffer.isDrawPixel( x, y, anInverseDepth )){
+    public void setPixel(Pixel aPixel){
+      if(myDepthBuffer.isDrawPixel( aPixel.index, aPixel.invZ )){
 
         for(iPixelShader theShader : myPixelShaders){
           theShader.calculatePixel( aPixel );
@@ -425,10 +422,11 @@ public class Graphics3D2D implements iBufferStrategy {
 
         aPixel.applyLightning();
 
-        for(int dx=0;dx<xStep;dx++){
-          for(int dy=0;dy<yStep;dy++){
+        for(int dy=0;dy<yStep;dy++){
+          int theIndex = aPixel.index + myWidth * dy;
+          for(int dx=0;dx<xStep;dx++){
             //TODO we're sometimes drawing too much, find a way to not draw more then the polygon's borders
-            Graphics3D2D.this.setPixelAt( x + dx, y + dy, aPixel.color);
+            myPixels[theIndex + dx] = aPixel.color;
           }
         }
       }      
