@@ -166,7 +166,7 @@ public class AXACube extends AbstractWorld implements iSynchronizedEvent{
     myPanel3D.getGraphics3D().setDrawBackFacing(false);
     myPanel3D.getGraphics3D().setDrawPlanes(true);
     myPanel3D.getGraphics3D().setDrawLightSources( false );
-    myPanel3D.getGraphics3D().setDrawTextureNormals( true );
+    myPanel3D.getGraphics3D().setDrawTextureNormals( false );
     myPanel3D.getGraphics3D().setDrawBumpVectors(false);
     myPanel3D.getGraphics3D().setDrawVertexNormals( false);
     myPanel3D.getGraphics3D().setDrawTextureCoordinates(false);
@@ -174,8 +174,8 @@ public class AXACube extends AbstractWorld implements iSynchronizedEvent{
     //myPanel3D.getGraphics3D().setBackGroundColor(new Color(100,100,200));
     myPanel3D.getGraphics3D().setBackGroundColor(new Color(0,0,0));
     myPanel3D.getGraphics3D().setShowDrawingAreas( false );
-    myPanel3D.getGraphics3D().setUseClipping( false );
-    myPanel3D.getGraphics3D().getGraphics3D2D().setUsePartialClearing( false);
+    myPanel3D.getGraphics3D().setUseClipping( true );
+    myPanel3D.getGraphics3D().getGraphics3D2D().setUsePartialClearing( true );
     myPanel3D.getGraphics3D().setVertexShaders( getVertexShaders() );
     
   }
@@ -196,7 +196,7 @@ public class AXACube extends AbstractWorld implements iSynchronizedEvent{
   
   public static void main(String args[]){
     AXACube theCube = new AXACube();
-//    theCube.setVisible( false );
+    theCube.setVisible( false );
 //    theCube.setState( JFrame.MAXIMIZED_BOTH );
 //    theCube.setState( JFrame.ICONIFIED );
 //    theCube.setVisible( false );
@@ -204,7 +204,7 @@ public class AXACube extends AbstractWorld implements iSynchronizedEvent{
 
   @Override
   protected Dimension getPanelSize() {
-    return new Dimension( 200, 200);
+    return new Dimension( 800, 600);
   }
   
   /**
@@ -230,7 +230,7 @@ public class AXACube extends AbstractWorld implements iSynchronizedEvent{
   }
   
   protected int getFPS(){
-    return 50;
+    return 1000;
   }
   
 
