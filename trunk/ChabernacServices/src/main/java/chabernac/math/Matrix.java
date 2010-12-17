@@ -1,6 +1,9 @@
 package chabernac.math;
 
-public class Matrix{
+import java.io.Serializable;
+
+public class Matrix implements Serializable{
+  private static final long serialVersionUID = 8415445334636280385L;
   protected float[] myMatrix = null;
   private int myRows;
   private int myColumns;

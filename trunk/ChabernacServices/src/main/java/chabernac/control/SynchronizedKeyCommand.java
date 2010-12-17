@@ -2,8 +2,8 @@ package chabernac.control;
 
 
 public abstract class SynchronizedKeyCommand extends KeyCommand implements iSynchronizedEvent{
-  
-  private SynchronizedEventManager myManager = null;
+  private static final long serialVersionUID = 5840724308828111117L;
+  private transient SynchronizedEventManager myManager = null;
   private int myTimerInterval;
   private int myEventsAfterRelease = 0;
   private int myEvent = 0;
@@ -37,10 +37,16 @@ public abstract class SynchronizedKeyCommand extends KeyCommand implements iSync
   public int getEventsAfterRelease(){ return myEventsAfterRelease; }
   public int getEventNrAfterRelease(){ return myEvent; }
   
-  public void executeEvent(long aCounter){
+  public boolean executeEvent(long aCounter){
 	  if(aCounter % myTimerInterval == 0){
 		  keyDown();
+		  return true;
 	  }
+	  return false;
+  }
+  
+  public boolean isRecordable(){
+    return true;
   }
  
 
