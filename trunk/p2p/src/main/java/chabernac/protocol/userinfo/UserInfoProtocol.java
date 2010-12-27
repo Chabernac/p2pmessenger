@@ -56,6 +56,8 @@ public class UserInfoProtocol extends Protocol {
   private final UserInfo myPersonalUserInfo = new UserInfo();
 
   private iObjectStringConverter< UserInfo > myConverter = new Base64ObjectStringConverter< UserInfo >();
+  
+  private ExecutorService myEventHandlerService = Executors.newSingleThreadExecutor();
 
 
   public UserInfoProtocol ( iUserInfoProvider aProvider ) throws UserInfoException{
@@ -182,10 +184,17 @@ public class UserInfoProtocol extends Protocol {
     return ProtocolContainer.Response.UNKNOWN_COMMAND.name();
   }
 
-  private void notifyUserInfoChanged(UserInfo aUserInfo){
-    for(iUserInfoListener theListener : myListeners){
-      theListener.userInfoChanged( aUserInfo, Collections.unmodifiableMap( myUserInfo ));
-    }
+  /**
+   * execute on a separate thread to make sure it does not stuck the protocol server
+   */
+  private void notifyUserInfoChanged(final UserInfo aUserInfo){
+    myEventHandlerService.execute(new Runnable(){
+      public void run(){
+        for(iUserInfoListener theListener : myListeners){
+          theListener.userInfoChanged( aUserInfo, Collections.unmodifiableMap( myUserInfo ));
+        }
+      }
+    });
   }
 
   @Override
