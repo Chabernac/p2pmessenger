@@ -31,6 +31,7 @@ public class MultiPeerMessageProtocol extends Protocol{
   private ExecutorService mySendService = Executors.newFixedThreadPool( 10 );
   private iObjectStringConverter< MultiPeerMessage > myObjectStringConverter = new Base64ObjectStringConverter< MultiPeerMessage >();
   private List<iMultiPeerMessageListener> myMessageListeners = new ArrayList< iMultiPeerMessageListener >();
+  private ExecutorService myEventHandlerService = Executors.newSingleThreadExecutor();
 
   public MultiPeerMessageProtocol (  ) {
     super( ID );
@@ -45,13 +46,26 @@ public class MultiPeerMessageProtocol extends Protocol{
   public String handleCommand( long aSessionId, String anInput ) {
     try {
       MultiPeerMessage theMessage = myObjectStringConverter.getObject( anInput );
-      for(iMultiPeerMessageListener theListener : myMessageListeners){
-        theListener.messageReceived( theMessage );
-      }
+      notifyListeners(theMessage);
       return STATUS_MESSAGE.DELIVERED.name();
     } catch ( IOException e ) {
       return STATUS_MESSAGE.FAILED.name();
     }
+  }
+  
+  /**
+   * we use a seperate thread to notify the listeners
+   * just to make sure some code in the listeners does not get the protocol server stuck
+   * @param aMessage
+   */
+  private void notifyListeners(final MultiPeerMessage aMessage){
+    myEventHandlerService.execute(new Runnable(){
+      public void run(){
+        for(iMultiPeerMessageListener theListener : myMessageListeners){
+          theListener.messageReceived( aMessage );
+        }  
+      }
+    });
   }
 
   public void addMultiPeerMessageListener(iMultiPeerMessageListener aMultiPeerMessageListener){
