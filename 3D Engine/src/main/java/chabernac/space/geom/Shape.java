@@ -2,6 +2,8 @@ package chabernac.space.geom;
 
 //import chabernac.utils.Debug;
 import java.awt.Color;
+import java.util.ArrayList;
+import java.util.List;
 
 import chabernac.math.MatrixException;
 import chabernac.space.Camera;
@@ -65,7 +67,7 @@ public class Shape implements Comparable, iTranslatable{
 
   private void calculateTextureCoordinates() {
     for(int i=0;i<mySize;i++){
-      myPolygons[i].calculateTexturePoints();
+      myPolygons[i].createTexture();
     }
   }
 
@@ -96,8 +98,8 @@ public class Shape implements Comparable, iTranslatable{
       myPolygons[i].calculateNormalVector(myCenterPoint, isRoom);
     }
   }
-  
-  
+
+
 
   private void calculateVertexNormals(){
     Polygon thePolygon = null;
@@ -187,7 +189,7 @@ public class Shape implements Comparable, iTranslatable{
   public void setTexture(String aTexture){
     setTexture(aTexture, true, false);
   }
-  
+
   public void setTexture(TextureImage aTextureImage, boolean isSpherical){
     for(int i=0;i<myPolygons.length;i++){
       myPolygons[i].setTexture(aTextureImage, isSpherical);
@@ -195,19 +197,19 @@ public class Shape implements Comparable, iTranslatable{
   }
 
   public void setTexture(String aTexture, boolean isTransparent, boolean isSpherical){
-	System.out.println("Setting texture on all polygons");
+    System.out.println("Setting texture on all polygons");
     for(int i=0;i<myPolygons.length;i++){
       myPolygons[i].setTexture(aTexture, isTransparent, isSpherical);
     }
     System.out.println("Setting texture on all polygons done");
   }
-  
+
   public void setTexture(String aTexture, String aBumpMap, boolean isTransparent, boolean isSpherical){
-      System.out.println("Setting texture on all polygons");
-      for(int i = 0; i < myPolygons.length; i++){
-          myPolygons[i].setTexture(aTexture, aBumpMap, isTransparent, isSpherical);
-      }
-      System.out.println("Setting texture on all polygons done");
+    System.out.println("Setting texture on all polygons");
+    for(int i = 0; i < myPolygons.length; i++){
+      myPolygons[i].setTexture(aTexture, aBumpMap, isTransparent, isSpherical);
+    }
+    System.out.println("Setting texture on all polygons done");
   }
 
   public Point3D getCenterPoint(){
@@ -227,6 +229,33 @@ public class Shape implements Comparable, iTranslatable{
   public void setRoom(boolean anIsRoom) {
     isRoom = anIsRoom;
   }
-  
-  
+
+  public void setDoubleSided(boolean isDoubleSided) {
+    for(Polygon thePolygon : myPolygons){
+      thePolygon.doubleSided = isDoubleSided;
+    }
+  }
+
+
+  public void triangulate(){
+    boolean isTriangulateFurther = true;
+
+    while(isTriangulateFurther){
+      List<Polygon> thePolygons = new ArrayList<Polygon>();
+      for(Polygon thePolygon : myPolygons){
+        thePolygons.addAll(thePolygon.triangulate());
+      }
+
+      isTriangulateFurther = thePolygons.size() > myPolygons.length;
+
+      if(isTriangulateFurther){
+        myPolygons = thePolygons.toArray(new Polygon[]{});
+        mySize = myPolygons.length;
+      }
+    }
+
+
+    calculateVertexNormals();
+    calculateNormalVectors();
+  }
 }
