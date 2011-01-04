@@ -8,8 +8,11 @@ import chabernac.space.geom.Point3D;
 import chabernac.space.geom.PolarPoint3D;
 import chabernac.space.geom.Polygon;
 import chabernac.space.geom.Shape;
+import chabernac.space.texture.Texture2;
 
 public class ShapeFactory{
+  
+  public static final float TRIANGLE_FACTORY = (float)(1 / Math.sqrt(2));
 
 	public static Shape makeCube(Point3D anOrigPoint, float aWidth, float aHeight, float aDepth) throws PolygonException{
 		Shape theShape = new Shape(8);
@@ -165,6 +168,8 @@ public class ShapeFactory{
 		Shape theShape = new Shape(1);
 		Polygon thePolygon = new Polygon(4);
 
+//		addRectangleToShape(theShape, aOrigin, aWidth, aHeight, 50, aTexture);
+		
 		thePolygon.addVertex(new Vertex(aOrigin));
 		thePolygon.addVertex(new Vertex(new Point3D(aOrigin.x + aWidth, aOrigin.y, aOrigin.z)));
 		thePolygon.addVertex(new Vertex(new Point3D(aOrigin.x + aWidth, aOrigin.y - aHeight, aOrigin.z)));
@@ -176,6 +181,39 @@ public class ShapeFactory{
 		theShape.done();
 		return theShape;
 	}
+	
+	public static void addRectangleToShape(Shape aShape, Point3D aPoint, int aWidth, int aHeight, int aTriangleLenght, Texture2 aTexture){
+	  int theNrOfHorizontalTriangles = Math.round(aWidth / aTriangleLenght); 
+	  int theTriangleWidth = aWidth / theNrOfHorizontalTriangles;
+//	  int theTriangleHeight = (int)(theTriangleWidth * TRIANGLE_FACTORY);
+	  int theNrOfVerticalTriangles = Math.round(aHeight / aTriangleLenght);
+	  int theTriangleHeight = aHeight / theNrOfVerticalTriangles;
+	  
+	  
+	  Point3D[][] thePoints = new Point3D[theNrOfHorizontalTriangles + 1][theNrOfVerticalTriangles + 1];
+	  for(int y=0;y<=theNrOfVerticalTriangles;y++){
+	    for(int x=0;x<=theNrOfHorizontalTriangles;x++){
+	      int theX = (int)(aPoint.x + x * theTriangleWidth);
+	      int theY = (int)(aPoint.y + y * theTriangleHeight);
+	      thePoints[x][y] = new Point3D(theX, theY, aPoint.z);
+	    }
+	  }
+	  
+	   for(int y=0;y<theNrOfVerticalTriangles;y++){
+	      for(int x=0;x<theNrOfHorizontalTriangles;x++){
+	       Polygon thePolyGon = new Polygon(4);
+	       thePolyGon.addVertex(new Vertex(thePoints[x][y]));
+	       thePolyGon.addVertex(new Vertex(thePoints[x+1][y]));
+	       thePolyGon.addVertex(new Vertex(thePoints[x+1][y+1]));
+	       thePolyGon.addVertex(new Vertex(thePoints[x][y+1]));
+	       thePolyGon.setTexture(aTexture);
+
+	       thePolyGon.done();
+	       aShape.addPolygon(thePolyGon);
+	      }
+	   }     
+	}
+	
 
 	public static void main(String args[]){
 		ShapeFactory.makeSphere(new Point3D(100,100,100), 5, 5);

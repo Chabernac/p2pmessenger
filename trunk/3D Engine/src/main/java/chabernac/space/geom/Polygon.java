@@ -3,6 +3,8 @@ package chabernac.space.geom;
 //import chabernac.utils.Debug;
 import java.awt.Color;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 
@@ -20,7 +22,9 @@ import chabernac.utils.ArrayTools;
 
 public class Polygon implements iTranslatable{
   private static Logger LOGGER = Logger.getLogger(Polygon.class);
-  
+
+  private static final int TRIANGULATION_THRESHOLD = 200;
+
   private int mySize;
   public int myCamSize;
   public Vertex w[];
@@ -42,13 +46,14 @@ public class Polygon implements iTranslatable{
   private String myTextureName = null;
   private boolean isTransparentTexture = true;
   private String myBumpMap = null;
-  
-  public Polygon(Vertex[] worldVertexes){
-    mySize = worldVertexes.length;
-    initialize();
-    w = worldVertexes;
-    done();
 
+  public Polygon(Vertex... worldVertexes){
+    initialize();
+    mySize = worldVertexes.length;
+    myCurrentVertex = mySize;
+    w = worldVertexes;
+    c = new Vertex[mySize * 2];
+    done();
   }
 
   public Polygon(int aSize){
@@ -93,55 +98,62 @@ public class Polygon implements iTranslatable{
     if(myTextureName != null) {
       calculateTexturePoints();
     }
-    */
+     */
   }
-  
-  public void calculateTexturePoints(){
+
+  public void createTexture(){
     try {
-      //we take the x vector of the texture parallel to the first 2 points of the polygon
-      GVector theXVector = new GVector(w[0].myPoint, w[1].myPoint);
-      //now we multiply the x vector with the plane's normal vector to obtain the y vector in the plane and orthogonal with the x vector
-      GVector theYVector = myNormalVector.produkt(theXVector);
-      GVector theInvYVector = myNormalVector.inv().produkt( theXVector );
-      
-      theXVector.normalize();
-      theYVector.normalize();
-      theInvYVector.normalize();
-      
-      Point3D thePointInPolygon = w[0].myPoint.addition( theYVector );
-      float theDistanceToCenter = distanceToCenter( thePointInPolygon );
-      
-      Point3D thePointInPolygon2 = w[0].myPoint.addition( theInvYVector );
-      float theDistanceToCenter2 = distanceToCenter( thePointInPolygon2 );
-      
-      if(theDistanceToCenter2 < theDistanceToCenter){
-        theYVector = theInvYVector;
+      if(myTexture == null){
+        //we take the x vector of the texture parallel to the first 2 points of the polygon
+        GVector theXVector = new GVector(w[0].myPoint, w[1].myPoint);
+        //now we multiply the x vector with the plane's normal vector to obtain the y vector in the plane and orthogonal with the x vector
+        GVector theYVector = myNormalVector.produkt(theXVector);
+        GVector theInvYVector = myNormalVector.inv().produkt( theXVector );
+
+        theXVector.normalize();
+        theYVector.normalize();
+        theInvYVector.normalize();
+
+        Point3D thePointInPolygon = w[0].myPoint.addition( theYVector );
+        float theDistanceToCenter = distanceToCenter( thePointInPolygon );
+
+        Point3D thePointInPolygon2 = w[0].myPoint.addition( theInvYVector );
+        float theDistanceToCenter2 = distanceToCenter( thePointInPolygon2 );
+
+        if(theDistanceToCenter2 < theDistanceToCenter){
+          theYVector = theInvYVector;
+        }
+
+
+        if(myTextureName != null){
+          myTexture = new Texture2(w[0].myPoint, theXVector, theYVector, myTextureName, isTransparentTexture );
+        } else if(myTextureImage != null){
+          myTexture = new Texture2(w[0].myPoint, theXVector, theYVector, myTextureImage);
+        } else {
+          //there is not texture image, but still we create a texture and say that is always have to return the color of the polygon
+          //this way we can still use the texture object for calculating camera and real world points for points on the screen
+          myTexture = new Texture2(w[0].myPoint, theXVector, theYVector, color.getRGB() );
+        }
+        if(myBumpMap != null){
+          myTexture.setBumpMap(TextureFactory.getBumpMap(myBumpMap));
+        }
       }
-      
-      
-      if(myTextureName != null){
-        myTexture = new Texture2(w[0].myPoint, theXVector, theYVector, myTextureName, isTransparentTexture );
-      } else if(myTextureImage != null){
-        myTexture = new Texture2(w[0].myPoint, theXVector, theYVector, myTextureImage);
-      } else {
-        //there is not texture image, but still we create a texture and say that is always have to return the color of the polygon
-        //this way we can still use the texture object for calculating camera and real world points for points on the screen
-        myTexture = new Texture2(w[0].myPoint, theXVector, theYVector, color.getRGB() );
-      }
-      if(myBumpMap != null){
-        myTexture.setBumpMap(TextureFactory.getBumpMap(myBumpMap));
-      }
+
       myTexture.setSpherical(isSphericalTexture);
-      
-      for(int i=0;i<w.length;i++){
-        w[i].myTextureCoordinate = myTexture.getTextureCoordinate(w[i]);
-      }
+
+      calculateTexturePoints();
     } catch (IOException e) {
       LOGGER.error("Could not load texture: " + myTextureName, e);
     }
   }
-  
-  
+
+  private void calculateTexturePoints(){
+    for(int i=0;i<w.length;i++){
+      w[i].myTextureCoordinate = myTexture.getTextureCoordinate(w[i]);
+    }
+  }
+
+
 
   public void optimize(){
     if(myCurrentVertex < mySize){
@@ -184,7 +196,7 @@ public class Polygon implements iTranslatable{
    * sphere the polygon is part of.
    */
   public void calculateNormalVector(Point3D aCenterPoint, boolean toWardsPoint) throws PolygonException{
-    if(myCurrentVertex >= 3){
+    if(mySize >= 3){
       if(aCenterPoint != null) myNormalVector = new GVector(w[0].myPoint, w[1].myPoint, w[2].myPoint, aCenterPoint, toWardsPoint);
       //Debug.log(this,"calculatig normal vector with 4 points");
       else myNormalVector = new GVector(w[0].myPoint, w[1].myPoint, w[2].myPoint);
@@ -205,7 +217,7 @@ public class Polygon implements iTranslatable{
     }
     myCenterPoint = new Point3D(x / mySize, y / mySize, z / mySize);
   }
-  
+
   public float distanceToCenter(Point3D aPoint){
     return new GVector( myCenterPoint, aPoint ).length();
   }
@@ -241,8 +253,8 @@ public class Polygon implements iTranslatable{
     else myNormalVector = aCamera.world2Cam(myNormalVector);
     myCenterPoint = aCamera.world2Cam(myCenterPoint);
   }
-  */
-  
+   */
+
   public void translate(iTransformator aTransformator) throws PolygonException, MatrixException{
     if(!isOptimized) optimize();
     int i = 0;
@@ -338,7 +350,7 @@ public class Polygon implements iTranslatable{
 
   public void setColor(Color aColor) {
     color = aColor;
-    calculateTexturePoints();
+    createTexture();
   }
 
   public boolean containsVertex(Vertex aVertex){
@@ -356,26 +368,29 @@ public class Polygon implements iTranslatable{
   public void setTexture(TextureImage aTextureImage,  boolean isSphericalTexture){
     myTextureImage = aTextureImage;
     this.isSphericalTexture = isSphericalTexture;
-    calculateTexturePoints();
+    myTexture = null;
+    createTexture();
   }
-  
+
   public void setTexture(String aTexture){
     setTexture(aTexture, true, false);
   }
-  
+
   public void setTexture(String aTexture, boolean isTransparent, boolean isSphericalTexture){
     myTextureName = aTexture;
     isTransparentTexture = isTransparent;
     this.isSphericalTexture = isSphericalTexture;
-    calculateTexturePoints();
+    myTexture = null;
+    createTexture();
   }
-  
+
   public void setTexture(String aTexture, String aBumpMap, boolean isTransparent, boolean isSphericalTexture){
-      myTextureName = aTexture;
-      myBumpMap = aBumpMap;
-      isTransparentTexture = isTransparent;
-      this.isSphericalTexture = isSphericalTexture;
-      calculateTexturePoints();
+    myTextureName = aTexture;
+    myBumpMap = aBumpMap;
+    isTransparentTexture = isTransparent;
+    this.isSphericalTexture = isSphericalTexture;
+    myTexture = null;
+    createTexture();
   }
 
   public Texture2 getTexture(){
@@ -386,4 +401,50 @@ public class Polygon implements iTranslatable{
     return myCamCenterPoint;
   }
 
+  public void setTexture(Texture2 anTexture) {
+    myTexture = anTexture;
+    calculateTexturePoints();
+  }
+
+  public List<Polygon> triangulate(){
+    List<Polygon> thePolygons = new ArrayList<Polygon>();
+    if(w.length > 3){
+      //this is not a triangle, make new triangles from the points of this polygon
+      for(int i=1;i<w.length-1;i++){
+        thePolygons.add(new Polygon(w[0], w[i], w[i+1]));
+      }
+    } else {
+      //it is a triangle
+      //calculate the longest side of the triangle
+      int theSideIndex = 0;
+      float theSideLength = 0;
+      for(int i=0;i<w.length;i++){
+        GVector theVector = new GVector(w[i].myPoint, w[(i+1) % w.length].myPoint);
+        float theLength = theVector.length();
+        if(theLength > theSideLength){
+          theSideIndex = i;
+          theSideLength = theLength; 
+        }
+      }
+
+      if(theSideLength > TRIANGULATION_THRESHOLD){
+        //only triangulate when the longest side of the triangle is greater then the triangulation threshold
+        //calculate the point half way this side
+        Point3D thePoint = w[theSideIndex].myPoint.addition(w[(theSideIndex+1) % w.length].myPoint).division(2);
+        Vertex theNewVertex = new Vertex(thePoint);
+        thePolygons.add(new Polygon(w[theSideIndex], theNewVertex , w[(theSideIndex + 2) % w.length]));
+        thePolygons.add(new Polygon(theNewVertex, w[(theSideIndex + 1) % w.length], w[(theSideIndex + 2) % w.length]));
+      } else {
+        thePolygons.add(this);
+      }
+    }
+
+    for(Polygon thePolygon : thePolygons){
+      thePolygon.setTexture(myTexture);
+      //      thePolygon.done();
+      thePolygon.doubleSided = doubleSided;
+    }
+
+    return thePolygons;
+  }
 }

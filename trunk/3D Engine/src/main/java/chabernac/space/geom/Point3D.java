@@ -87,6 +87,10 @@ public class Point3D{
     z /= aFactor;
   }
   
+  public Point3D division(float aFactor){
+    return new Point3D(x/aFactor, y/aFactor, z/aFactor);
+  }
+  
   public boolean equals(Object anObject){
     if(anObject instanceof Point3D){
       return equals( (Point3D)anObject);

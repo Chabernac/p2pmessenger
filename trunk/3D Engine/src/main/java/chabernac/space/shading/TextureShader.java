@@ -7,6 +7,7 @@ package chabernac.space.shading;
 import chabernac.space.buffer.Pixel;
 
 public class TextureShader implements iPixelShader {
+  private int width, height;
 
   public TextureShader(){
   }
@@ -15,25 +16,25 @@ public class TextureShader implements iPixelShader {
   public void calculatePixel( Pixel aPixel ) {
     aPixel.uInt = (int)aPixel.u;
     aPixel.vInt = (int)aPixel.v;
-//    aPixel.color = 0xAAAAAAAA;
-    
-//    aPixel.texture
-    
+
     if(aPixel.texture.myImage == null){
       aPixel.color = aPixel.texture.myColor;
     } else {
-//      if(aPixel.uInt < 0 || aPixel.vInt <0){
-//        aPixel.color = 0;
-//      }
-////      while(x < 0) x += width;
-//      while(aPixel.uInt >= aPixel.texture.myImage.width) aPixel.uInt -= aPixel.texture.myImage.width;
-////      while(y < 0) y += height;
-//      while(aPixel.vInt >= aPixel.texture.myImage.height) aPixel.vInt -= aPixel.texture.myImage.height;
-//
-//      aPixel.color = aPixel.texture.myImage.colors[aPixel.vInt * aPixel.texture.myImage.width + aPixel.uInt];
-      aPixel.color = aPixel.texture.getColor( aPixel.uInt, aPixel.vInt );
+      if(aPixel.uInt < 0 || aPixel.vInt <0){
+        aPixel.color = 0;
+      } else {
+        width = aPixel.texture.myImage.width;
+        height = aPixel.texture.myImage.height;
+//        while(aPixel.uInt < 0) aPixel.uInt += width;
+        while(aPixel.uInt >= width) aPixel.uInt -= width;
+//        while(aPixel.vInt < 0) aPixel.vInt += height;
+        while(aPixel.vInt >= height) aPixel.vInt -= height;
+
+        aPixel.color = aPixel.texture.myImage.colors[aPixel.vInt * height + aPixel.uInt];
+      }
     }
-//    aPixel.color = aPixel.texture.myImage.getColorAt( aPixel.uInt, aPixel.vInt );
-    
+//          aPixel.color = aPixel.texture.getColor( aPixel.uInt, aPixel.vInt );
+//        aPixel.color = aPixel.texture.myImage.getColorAt( aPixel.uInt, aPixel.vInt );
+
   }
 }

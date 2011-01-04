@@ -105,6 +105,9 @@ public class AXACube extends AbstractWorld implements iSynchronizedEvent{
     theShape.setColor(new Color(0,0,255,100));
     //theShape.setTexture(new TextureImage(ImageFactory.createImage("AXA", new Font("Arial", Font.BOLD, 40), 100, 100, Color.BLUE, Color.WHITE, true)));
     theShape.setTexture("axa","guy", false, false);
+    theShape.triangulate();
+//    theShape.triangulate();
+//    theShape.triangulate();
 //    theShape.setTexture("leslie", false, false);
 //    theShape.myPolygons[0].setTexture("axa", false);
 //    theShape.myPolygons[0].setTexture("guy", false, false);
@@ -121,7 +124,7 @@ public class AXACube extends AbstractWorld implements iSynchronizedEvent{
 //    theShape.myPolygons[0].setTexture("axa", false);
 //    theShape.myPolygons[0].setTexture("guy", false, false);
 //    theShape.myPolygons[1].setTexture("leslie", false, false);
-    myWorld.addShape(theShape);
+//    myWorld.addShape(theShape);
 //    theMouseTranslationManager.addTranslatable(theShape);
 //    myRotationManager.addTranslatable(theShape);
     
@@ -129,6 +132,17 @@ public class AXACube extends AbstractWorld implements iSynchronizedEvent{
 //    theWindow.setColor(new Color(255,100,100, 200));
 //    myWorld.addShape(theWindow);
 //    
+    
+    try{
+    theShape = ShapeFactory.makeSinglePolygonShape(new Point3D(-1000,1000,500), 3400,3400);
+    theShape.setTexture("metal006");
+    theShape.triangulate();
+    theShape.setDoubleSided(true);
+    
+    myWorld.addShape(theShape);
+    }catch(Exception e){
+      e.printStackTrace();
+    }
     
     
     
@@ -196,7 +210,7 @@ public class AXACube extends AbstractWorld implements iSynchronizedEvent{
   
   public static void main(String args[]){
     AXACube theCube = new AXACube();
-    theCube.setVisible( false );
+//    theCube.setVisible( false );
 //    theCube.setState( JFrame.MAXIMIZED_BOTH );
 //    theCube.setState( JFrame.ICONIFIED );
 //    theCube.setVisible( false );
@@ -230,7 +244,7 @@ public class AXACube extends AbstractWorld implements iSynchronizedEvent{
   }
   
   protected int getFPS(){
-    return 1000;
+    return 50;
   }
   
 
