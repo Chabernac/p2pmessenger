@@ -23,7 +23,7 @@ import chabernac.utils.ArrayTools;
 public class Polygon implements iTranslatable{
   private static Logger LOGGER = Logger.getLogger(Polygon.class);
 
-  private static final int TRIANGULATION_THRESHOLD = 200;
+  private static final int TRIANGULATION_THRESHOLD = 1000;
 
   private int mySize;
   public int myCamSize;
@@ -432,6 +432,7 @@ public class Polygon implements iTranslatable{
         //calculate the point half way this side
         Point3D thePoint = w[theSideIndex].myPoint.addition(w[(theSideIndex+1) % w.length].myPoint).division(2);
         Vertex theNewVertex = new Vertex(thePoint);
+        theNewVertex.normal = w[theSideIndex].normal.addition(w[(theSideIndex+1) % w.length].normal).division(2);
         thePolygons.add(new Polygon(w[theSideIndex], theNewVertex , w[(theSideIndex + 2) % w.length]));
         thePolygons.add(new Polygon(theNewVertex, w[(theSideIndex + 1) % w.length], w[(theSideIndex + 2) % w.length]));
       } else {
