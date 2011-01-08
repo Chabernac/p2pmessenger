@@ -255,7 +255,7 @@ public class Shape implements Comparable, iTranslatable{
     }
 
 
-    calculateVertexNormals();
+//    calculateVertexNormals();
     calculateNormalVectors();
   }
 }
