@@ -20,7 +20,10 @@ import chabernac.space.shading.iVertexShader;
 
 
 public class Panel3D extends JPanel implements  iSynchronizedEvent, MouseListener, ComponentListener{
+  private static final long serialVersionUID = 7762476402438200268L;
   private static final Logger LOGGER = Logger.getLogger(Panel3D.class);
+  private static final float FAR_CLIPPING_PLANE = 10000;
+  private static final float NEAR_CLIPPING_PLANE = 0.001F;
   
   private World myWorld = null;
   private Graphics3D myGraphics = null;
@@ -57,7 +60,7 @@ public class Panel3D extends JPanel implements  iSynchronizedEvent, MouseListene
 
   protected void setupGraphics3d(){
     Point3D theEyePoint = new Point3D(getWidth()/2,getHeight()/2,(getWidth() + getHeight())/2);
-    myGraphics = new Graphics3D(new ScreenFrustrum(theEyePoint, new Dimension(getWidth(),getHeight())),
+    myGraphics = new Graphics3D(new ScreenFrustrum(theEyePoint, new Dimension(getWidth(),getHeight()), NEAR_CLIPPING_PLANE, FAR_CLIPPING_PLANE),
         theEyePoint,
         myCamera,
         myWorld,
@@ -152,7 +155,7 @@ public class Panel3D extends JPanel implements  iSynchronizedEvent, MouseListene
   public void componentResized(ComponentEvent anE) {
 	  Point3D theEyePoint = new Point3D(getWidth()/2,getHeight()/2,(getWidth() + getHeight())/2);
 	  myGraphics.setEyePoint(theEyePoint);
-	  myGraphics.setFrustrum(new ScreenFrustrum(theEyePoint, new Dimension(getWidth(),getHeight())));
+	  myGraphics.setFrustrum(new ScreenFrustrum(theEyePoint, new Dimension(getWidth(),getHeight()), NEAR_CLIPPING_PLANE, FAR_CLIPPING_PLANE));
 	  myGraphics.getGraphics3D2D().setDimensions( getWidth(), getHeight() );
 	  myGraphics.setSingleFullRepaint(true);
   }
