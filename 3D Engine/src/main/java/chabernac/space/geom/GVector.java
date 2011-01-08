@@ -102,6 +102,10 @@ public class GVector{
   public GVector multip(float afloat){
     return new GVector(	x * afloat, y * afloat, z * afloat);
   }
+  
+  public GVector division(float aFloat) {
+    return new GVector(  x / aFloat, y / aFloat, z / aFloat);
+  }
 
   public GVector addition(GVector aVector){
     return new GVector(x + aVector.x, y + aVector.y, z + aVector.z);
