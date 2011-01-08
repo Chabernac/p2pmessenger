@@ -18,9 +18,7 @@ public class GeomFunctions{
     //int x = (int)(anEyePoint.x + anEyePoint.z *  aPoint.x / Math.sqrt((Math.pow(aPoint.x,2) + Math.pow((anEyePoint.z + aPoint.z),2))));
     //int y = (int)(anEyePoint.y - anEyePoint.z *  aPoint.y / Math.sqrt((Math.pow(aPoint.y,2) + Math.pow((anEyePoint.z + aPoint.z),2))));
 
-
     return new Point2D(x,y);
-
   }
 
   public static float intersectRayPlaneDistance(Point3D aRayOrigin, GVector aRayVector, GVector aPlaneVector, Point3D aPointOnPlane){
