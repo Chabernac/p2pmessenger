@@ -99,7 +99,7 @@ public class Frame3D extends JFrame implements iSynchronizedEvent{
 
   private void setupGraphics3d(){
     Point3D theEyePoint = new Point3D(getWidth()/2,getHeight()/2,(getWidth() + getHeight())/2);
-    myGraphics = new Graphics3D(new ScreenFrustrum(theEyePoint, new Dimension(getWidth() - 1,getHeight() - 1)),
+    myGraphics = new Graphics3D(new ScreenFrustrum(theEyePoint, new Dimension(getWidth() - 1,getHeight() - 1), 0.001F, 5000),
                                 theEyePoint,
                                 myCamera,
                                 myWorld,
