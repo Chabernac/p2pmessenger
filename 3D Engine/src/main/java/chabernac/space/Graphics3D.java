@@ -33,7 +33,7 @@ public class Graphics3D{
 
   private iVertexShader[] myVertexShaders = null;
   private Point3D myEyePoint = null;
-  private Frustrum myFrustrum = null;
+  private ScreenFrustrum myFrustrum = null;
   private Camera myCamera = null;
   private World myWorld= null;
   private int myBackGroundColor = Color.black.getRGB();
@@ -57,7 +57,7 @@ public class Graphics3D{
 
   private ExecutorService myService = Executors.newFixedThreadPool( 2 );
 
-  public Graphics3D(Frustrum aFrustrum, Point3D anEyePoint, Camera aCamera, World aWorld, Graphics3D2D aBuffer){
+  public Graphics3D(ScreenFrustrum aFrustrum, Point3D anEyePoint, Camera aCamera, World aWorld, Graphics3D2D aBuffer){
     myFrustrum = aFrustrum;
     myEyePoint = anEyePoint;
     myCamera = aCamera;
@@ -208,7 +208,7 @@ public class Graphics3D{
     Polygon2D thePolygon = new Polygon2D(aPolygon.myCamSize);
     for(int i=0;i<aPolygon.myCamSize;i++){
       //hier
-      thePolygon.addVertex(new Vertex2D(GeomFunctions.cam2Screen(aPolygon.c[i].myPoint, myEyePoint),  aPolygon.c[i].myTextureCoordinate, aPolygon.c[i].myPoint.z, aPolygon.c[i].lightIntensity));
+            thePolygon.addVertex(new Vertex2D(GeomFunctions.cam2Screen(aPolygon.c[i].myPoint, myEyePoint),  aPolygon.c[i].myTextureCoordinate, aPolygon.c[i].myPoint.z, aPolygon.c[i].lightIntensity));
     }
     //    thePolygon.setColor(aPolygon.getColor());
     //aPolygon.getTexture().cam2screen(myEyePoint);
@@ -430,7 +430,7 @@ public class Graphics3D{
     return myFrustrum;
   }
 
-  public void setFrustrum(Frustrum aFrustrum){
+  public void setFrustrum(ScreenFrustrum aFrustrum){
     myFrustrum = aFrustrum;
   }
 
