@@ -17,6 +17,11 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 
+/**
+ * This class detects if a new local ip address has been added or removed
+ * and warn the listeners of it  
+ *
+ */
 public class LocalIPCollecter {
   private static Logger LOGGER = Logger.getLogger(LocalIPCollecter.class);
   

@@ -6,23 +6,30 @@ package chabernac.protocol.routing;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import chabernac.io.SocketProxy;
 import chabernac.io.iSocketPool;
 import chabernac.p2p.settings.P2PSettings;
+import chabernac.tools.LocalIPCollecter;
 import chabernac.tools.NetTools;
 import chabernac.tools.SimpleNetworkInterface;
+import chabernac.tools.iIPListener;
 
 public class SocketPeer extends AbstractPeer implements Serializable {
+  private static Logger LOGGER = Logger.getLogger( SocketPeer.class );
+
   private static final long serialVersionUID = 7852961137229337616L;
   private List<SimpleNetworkInterface> myHost = null;
   private int myPort;
-  
+
   public SocketPeer (){
     super(null);
   }
@@ -31,6 +38,29 @@ public class SocketPeer extends AbstractPeer implements Serializable {
     super(aPeerId);
     myPort = aPort;
     detectLocalInterfaces();
+    addLocalIpListener();
+  }
+
+  private void addLocalIpListener(){
+    new LocalIPCollecter( null, 1000 * 60 * 5 ).addIPListener( new iIPListener(){
+      @Override
+      public void newIPBound( InetAddress anAddress ) {
+        try{
+          detectLocalInterfaces();
+        }catch(NoAvailableNetworkAdapterException e){
+          LOGGER.error( "There is no local ip currently available" );
+        }
+      }
+
+      @Override
+      public void IPRemoved( InetAddress anAddress ) {
+        try{
+          detectLocalInterfaces();
+        }catch(NoAvailableNetworkAdapterException e){
+          LOGGER.error( "There is no local ip currently available" );
+        }
+      }
+    });
   }
 
   public SocketPeer(String aPeerId,  int aPort, List<SimpleNetworkInterface> aHosts){
@@ -55,7 +85,7 @@ public class SocketPeer extends AbstractPeer implements Serializable {
   public SocketPeer ( String aPeerId , List< String > anHosts , int aPort ) {
     this(aPeerId, new SimpleNetworkInterface(anHosts), aPort);
   }
-  
+
   public SocketPeer ( String aPeerId , String anHosts , int aPort ) {
     this(aPeerId, new SimpleNetworkInterface(anHosts, null), aPort);
   }
@@ -83,7 +113,7 @@ public class SocketPeer extends AbstractPeer implements Serializable {
   public void setPort( int anPort ) {
     myPort = anPort;
   }
-  
+
   protected String sendMessage(String aMessage, int aTimeoutInSeconds) throws IOException{
     if(myPeerSender == null) throw new IOException("Could not send message to peer '" + getPeerId() + " because no message sender was defined");
     return myPeerSender.send(aMessage, this, aTimeoutInSeconds);
@@ -108,12 +138,12 @@ public class SocketPeer extends AbstractPeer implements Serializable {
           return theSocket;
         }
       }catch(Exception e){
-//        LOGGER.error("Could not open connection to peer: " + myHost + ":" + myPort, e);
+        //        LOGGER.error("Could not open connection to peer: " + myHost + ":" + myPort, e);
       }
     }
     return null;
   }
-  
+
   public String toString(){
     StringBuilder theBuilder = new StringBuilder();
     theBuilder.append( getPeerId() );
@@ -132,10 +162,10 @@ public class SocketPeer extends AbstractPeer implements Serializable {
     theBuilder.append(")");
     return theBuilder.toString();
   }
-  
+
   public boolean isSameEndPointAs(AbstractPeer aPeer){
     if(!(aPeer instanceof SocketPeer)) return false;
-    
+
     SocketPeer thePeer = (SocketPeer)aPeer;
     List<SimpleNetworkInterface> theHosts = thePeer.getHosts();
     boolean isSameHost = false;
@@ -156,6 +186,6 @@ public class SocketPeer extends AbstractPeer implements Serializable {
 
   @Override
   public String getEndPointRepresentation() {
-   return myHost + ":" + myPort;
+    return myHost + ":" + myPort;
   }
 }
