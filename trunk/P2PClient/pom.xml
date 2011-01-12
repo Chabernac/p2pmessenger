@@ -115,5 +115,12 @@
 			<version>2.1.1e</version>
 			<scope>compile</scope>
 		</dependency>
+		<dependency>
+			<groupId>chabernac</groupId>
+			<artifactId>easteregg</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
 	</dependencies>
 </project>
