@@ -10,8 +10,14 @@ import java.awt.PopupMenu;
 import java.awt.SystemTray;
 import java.awt.TrayIcon;
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import javax.imageio.ImageIO;
+
+import org.apache.log4j.Logger;
 
 import chabernac.io.ClassPathResource;
 import chabernac.p2pclient.gui.ChatFrame;
@@ -21,6 +27,7 @@ import chabernac.protocol.facade.P2PFacade;
 import chabernac.protocol.facade.P2PFacadeException;
 
 public class SystemTrayMenu extends PopupMenu {
+  private static final Logger LOGGER = Logger.getLogger(SystemTray.class);
   private static final long serialVersionUID = 3911652810490182171L;
   private final ChatFrame myChatFrame;
 
@@ -49,6 +56,34 @@ public class SystemTrayMenu extends PopupMenu {
       TrayIcon theIcon = new TrayIcon(ImageIO.read( new ClassPathResource("images/message.png").getInputStream()), "P2PClient", theMenu);
       theTray.add( theIcon );
       theMenu.build( aFacade, theIcon);
+      Executors.newScheduledThreadPool( 1 ).scheduleAtFixedRate( new TrayIconPersister( theIcon ), 30, 30, TimeUnit.SECONDS);
+    }
+  }
+
+  private static class TrayIconPersister implements Runnable{
+    private final TrayIcon myIcon;
+
+
+    public TrayIconPersister( TrayIcon aIcon ) {
+      super();
+      myIcon = aIcon;
+    }
+
+
+    public void run(){
+
+      //very ugly way of forcing the system to redisplay the tray icon after a 
+      try {
+        Field theField = TrayIcon.class.getDeclaredField( "peer" );
+        theField.setAccessible( true );
+        theField.set( myIcon, null );
+        
+        Method theMethod = TrayIcon.class.getDeclaredMethod( "addNotify", new Class[]{} );
+        theMethod.setAccessible( true );
+        theMethod.invoke( myIcon, new Object[]{} );
+      } catch ( Throwable e ) {
+        LOGGER.error( "Could not restore system tray icon", e );
+      }
     }
   }
 }
