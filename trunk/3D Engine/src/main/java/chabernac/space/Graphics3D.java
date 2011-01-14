@@ -207,8 +207,7 @@ public class Graphics3D{
 
     Polygon2D thePolygon = new Polygon2D(aPolygon.myCamSize);
     for(int i=0;i<aPolygon.myCamSize;i++){
-      //hier
-            thePolygon.addVertex(new Vertex2D(GeomFunctions.cam2Screen(aPolygon.c[i].myPoint, myEyePoint),  aPolygon.c[i].myTextureCoordinate, aPolygon.c[i].myPoint.z, aPolygon.c[i].lightIntensity));
+            thePolygon.addVertex(new Vertex2D(GeomFunctions.cam2Screen(aPolygon.c[i].myPoint, myEyePoint),  aPolygon.c[i].myTextureCoordinate, myFrustrum.calculateRelativeDepth(aPolygon.c[i].myPoint.z), aPolygon.c[i].lightIntensity));
     }
     //    thePolygon.setColor(aPolygon.getColor());
     //aPolygon.getTexture().cam2screen(myEyePoint);

@@ -10,6 +10,7 @@ public class Vertex2D {
 	private Point2D myTexturePoint = null;
 	private float myDepth, myInverseDepth;
 	private float myLightning;
+	private Point2D myPerspectiveCorrectTexturePoint = null;
 	
   private Vertex2D(){
     
@@ -25,6 +26,7 @@ public class Vertex2D {
 		myDepth = aDepth;
 		myInverseDepth = (float)1 / myDepth;
 		myLightning = aLightning;
+		myPerspectiveCorrectTexturePoint = new Point2D( aTexturePoint.x / aDepth, aTexturePoint.y / aDepth );
 	}
 	
 	public Point2D getPoint(){
@@ -46,7 +48,11 @@ public class Vertex2D {
 	public float getLightning(){
 		return myLightning;
 	}
-  
+	
+  public Point2D getPerspectiveCorrectTexturePoint() {
+    return myPerspectiveCorrectTexturePoint;
+  }
+
   public static Vertex2D getInstance(Point2D aPoint, Point2D aTexturePoint, float aDepth, float aLightning){
     Vertex2D result;
     if (countFree == 0) {
@@ -60,6 +66,7 @@ public class Vertex2D {
     result.myDepth = aDepth;
     result.myInverseDepth = 1 / aDepth;
     result.myLightning = aLightning;
+    result.myPerspectiveCorrectTexturePoint = new Point2D( aTexturePoint.x / aDepth, aTexturePoint.y / aDepth );
     return result;
   }
 
@@ -67,6 +74,10 @@ public class Vertex2D {
     if (countFree < POOL_SIZE) {
       STACK[countFree++] = aVertex;
     }
+  }
+  
+  public String toString(){
+    return myPoint.toString();
   }
 
 }

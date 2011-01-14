@@ -65,6 +65,7 @@ public class Graphics3D2D implements iBufferStrategy {
     init();
     setPixelShaders( new Shader[]{Shader.TEXTURE, Shader.BUMP, Shader.PHONG} );
   }
+  
   private void init(){
     myImage = new BufferedImage(myWidth, myHeight, BufferedImage.TYPE_INT_ARGB);
     myGraphics = myImage.getGraphics();
@@ -150,8 +151,8 @@ public class Graphics3D2D implements iBufferStrategy {
 
     if(theRect.minY == -1 || y < theRect.minY)  theRect.minY = y;
     if(theRect.maxY == -1 || y > theRect.maxY)  theRect.maxY = y;
-    if(theRect.minX == -1 || aSegment.getXStart() < theRect.minX)  theRect.minX = aSegment.getXStart();
-    if(theRect.maxX == -1 || aSegment.getXEnd() > theRect.maxX)  theRect.maxX = aSegment.getXEnd();
+//    if(theRect.minX == -1 || aSegment.getXStart() < theRect.minX)  theRect.minX = aSegment.getXStart();
+//    if(theRect.maxX == -1 || aSegment.getXEnd() > theRect.maxX)  theRect.maxX = aSegment.getXEnd();
 
   }
 
@@ -385,7 +386,8 @@ public class Graphics3D2D implements iBufferStrategy {
 
   private class SinglePixelSetter implements iPixelSetter{
     public void setPixel(Pixel aPixel){
-      if(myDepthBuffer.isDrawPixel( aPixel.index, aPixel.invZ)){
+//      if(myDepthBuffer.isDrawPixel( aPixel.index, aPixel.invZ)){
+      if(true){
 
         for(iPixelShader theShader : myPixelShaders){
           theShader.calculatePixel( aPixel );

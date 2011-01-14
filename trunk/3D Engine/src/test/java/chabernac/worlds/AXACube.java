@@ -134,7 +134,7 @@ public class AXACube extends AbstractWorld implements iSynchronizedEvent{
 //    
     
     try{
-    theShape = ShapeFactory.makeSinglePolygonShape(new Point3D(-1000,1000,500), 3400,3400);
+    theShape = ShapeFactory.makeSinglePolygonShape(new Point3D(-1000,1000,500), 1000,1000);
     theShape.setTexture("metal006");
     theShape.triangulate();
     theShape.setDoubleSided(true);
@@ -188,8 +188,8 @@ public class AXACube extends AbstractWorld implements iSynchronizedEvent{
     //myPanel3D.getGraphics3D().setBackGroundColor(new Color(100,100,200));
     myPanel3D.getGraphics3D().setBackGroundColor(new Color(0,0,0));
     myPanel3D.getGraphics3D().setShowDrawingAreas( false );
-    myPanel3D.getGraphics3D().setUseClipping( true );
-    myPanel3D.getGraphics3D().getGraphics3D2D().setUsePartialClearing( true );
+    myPanel3D.getGraphics3D().setUseClipping( false );
+    myPanel3D.getGraphics3D().getGraphics3D2D().setUsePartialClearing( false );
     myPanel3D.getGraphics3D().setVertexShaders( getVertexShaders() );
     
   }
