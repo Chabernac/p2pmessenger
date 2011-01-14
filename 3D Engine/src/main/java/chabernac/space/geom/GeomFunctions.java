@@ -1,8 +1,5 @@
 package chabernac.space.geom;
 
-
-//import chabernac.utils.Debug;
-
 public class GeomFunctions{
 
   public static final int PLANE_BACKSIDE = 0;
@@ -13,6 +10,7 @@ public class GeomFunctions{
   public static Point2D cam2Screen(Point3D aPoint, Point3D anEyePoint){
     float x = (anEyePoint.x + aPoint.x * anEyePoint.z / (anEyePoint.z + aPoint.z));
     float y = (anEyePoint.y - aPoint.y * anEyePoint.z / (anEyePoint.z + aPoint.z));
+    
     //int x = (int)(anEyePoint.x + anEyePoint.z * Math.atan(aPoint.x / (anEyePoint.z + aPoint.z)));
     //int y = (int)(anEyePoint.y - anEyePoint.z * Math.atan(aPoint.y / (anEyePoint.z + aPoint.z)));
     //int x = (int)(anEyePoint.x + anEyePoint.z *  aPoint.x / Math.sqrt((Math.pow(aPoint.x,2) + Math.pow((anEyePoint.z + aPoint.z),2))));

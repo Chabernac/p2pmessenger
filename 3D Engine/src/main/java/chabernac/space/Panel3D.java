@@ -22,8 +22,8 @@ import chabernac.space.shading.iVertexShader;
 public class Panel3D extends JPanel implements  iSynchronizedEvent, MouseListener, ComponentListener{
   private static final long serialVersionUID = 7762476402438200268L;
   private static final Logger LOGGER = Logger.getLogger(Panel3D.class);
-  private static final float FAR_CLIPPING_PLANE = 10000;
-  private static final float NEAR_CLIPPING_PLANE = 0.001F;
+  private static final float FAR_CLIPPING_PLANE = 10000F;
+  private static final float NEAR_CLIPPING_PLANE = 1F;
   
   private World myWorld = null;
   private Graphics3D myGraphics = null;
