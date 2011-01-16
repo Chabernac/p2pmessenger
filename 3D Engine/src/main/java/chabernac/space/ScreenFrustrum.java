@@ -56,8 +56,9 @@ public class ScreenFrustrum extends Frustrum{
   public void setScreenDimension(Dimension aScreenDimension){ myScreenDimension = aScreenDimension; }
   
   public float calculateRelativeDepth(float aDepth){
-    return aDepth;
+//    return aDepth;
 //    return 1 / aDepth;
 //    return 1000 * (1 / aDepth - myInverseNearDepth) / myDivisionConstant;
+    return 1F / (aDepth + myEyePoint.z );
   }
 }

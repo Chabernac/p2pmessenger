@@ -386,9 +386,7 @@ public class Graphics3D2D implements iBufferStrategy {
 
   private class SinglePixelSetter implements iPixelSetter{
     public void setPixel(Pixel aPixel){
-//      if(myDepthBuffer.isDrawPixel( aPixel.index, aPixel.invZ)){
-      if(true){
-
+      if(myDepthBuffer.isDrawPixel( aPixel.index, aPixel.invZ)){
         for(iPixelShader theShader : myPixelShaders){
           theShader.calculatePixel( aPixel );
         }

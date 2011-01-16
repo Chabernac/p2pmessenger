@@ -23,7 +23,7 @@ public class Panel3D extends JPanel implements  iSynchronizedEvent, MouseListene
   private static final long serialVersionUID = 7762476402438200268L;
   private static final Logger LOGGER = Logger.getLogger(Panel3D.class);
   private static final float FAR_CLIPPING_PLANE = 10000F;
-  private static final float NEAR_CLIPPING_PLANE = 1F;
+  private static final float NEAR_CLIPPING_PLANE = 0.1F;
   
   private World myWorld = null;
   private Graphics3D myGraphics = null;

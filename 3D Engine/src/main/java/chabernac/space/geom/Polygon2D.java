@@ -59,7 +59,7 @@ public class Polygon2D {
         float u = Su / Sz;
         float v = Sv / Sz;
         
-        theVertexes[current++] = new Vertex2D( thePoint, new Point2D(u,v), 1 / Sz, li);
+        theVertexes[current++] = new Vertex2D( thePoint, new Point2D(u,v), Sz, li);
       }
     }
     

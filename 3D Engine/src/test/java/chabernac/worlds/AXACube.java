@@ -134,9 +134,9 @@ public class AXACube extends AbstractWorld implements iSynchronizedEvent{
 //    
     
     try{
-    theShape = ShapeFactory.makeSinglePolygonShape(new Point3D(-1000,1000,500), 1000,1000);
+    theShape = ShapeFactory.makeSinglePolygonShape(new Point3D(-1000,1000,500), 3000,3000);
     theShape.setTexture("metal006");
-    theShape.triangulate();
+//    theShape.triangulate();
     theShape.setDoubleSided(true);
     
     myWorld.addShape(theShape);
