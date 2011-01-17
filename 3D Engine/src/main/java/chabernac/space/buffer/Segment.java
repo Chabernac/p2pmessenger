@@ -57,7 +57,7 @@ public class Segment {
     myPixel.invZ += dz;
     
     //TODO we accually do not need this try to remove it
-    myPixel.z = 1 / myPixel.invZ;
+//    myPixel.z = 1 / myPixel.invZ;
     
     //we do not use the x...
     myPixel.x++;
