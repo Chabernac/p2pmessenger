@@ -31,7 +31,7 @@ public class Pixel {
   public float invZ;
   
   //the depth in camera space
-  public float z;
+//  public float z;
 
   //the lightning of the pixel initialized at the background light
   public float light;
