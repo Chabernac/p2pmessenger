@@ -2,11 +2,12 @@ package chabernac.space.buffer;
 
 import org.apache.log4j.Logger;
 
-import chabernac.space.geom.Point2D;
-import chabernac.space.geom.Vector2D;
 import chabernac.space.geom.Vertex2D;
 import chabernac.space.texture.Texture2;
-
+/**
+ * currently calculating real u and v values for every 'step' pixels does result in a performance gain
+ * we'll probably need to optimize other bottlenecks first 
+ */
 public class Segment {
   private static final int POOL_SIZE = 10;
   private static final Segment[] STACK = new Segment[POOL_SIZE];
@@ -24,27 +25,57 @@ public class Segment {
   private float dv;
   private float dx;
   private float dl;
-  
+
   private float perspectiveCorrectedU;
   private float perspectiveCorrectedV;
-  
+
+  private byte affineStep = 1;
+  private byte counter = 0;
+
+
+  private float myPerspectiveCorrectedUInStepPixels;
+  private float myPerspectiveCorrectedVInStepPixels;
+  private float myInverseZInStepPixels;
+
+  private float myUInStepPixels;
+  private float myVInStepPixels;
+
+  //delte affine u
+  private float dau;
+  //delta affine v
+  private float dav;
+  //delta affin z;
+  private float daz;
+
+
   public Segment(){
   }
 
   private void repositionStartEnd(){
+    counter = 0;
+
     dx = end.getPoint().x - start.getPoint().x; 
-    
+
     dz = (end.getInverseDepth() - start.getInverseDepth()) / dx;
     du = (end.getPerspectiveCorrectTexturePoint().x - start.getPerspectiveCorrectTexturePoint().x) / dx;
     dv = (end.getPerspectiveCorrectTexturePoint().y - start.getPerspectiveCorrectTexturePoint().y) / dx;
     dl = (end.getLightning() - start.getLightning()) / dx; 
-    
+
     myPixel.x = (int)start.getPoint().x;
-    myPixel.invZ = start.getInverseDepth();
+    myInverseZInStepPixels = start.getInverseDepth();
     myPixel.light = start.getLightning();
-    
-    perspectiveCorrectedU = start.getPerspectiveCorrectTexturePoint().x;
-    perspectiveCorrectedV = start.getPerspectiveCorrectTexturePoint().y;
+
+    myPerspectiveCorrectedUInStepPixels = start.getPerspectiveCorrectTexturePoint().x;
+    myPerspectiveCorrectedVInStepPixels = start.getPerspectiveCorrectTexturePoint().y;
+
+    myUInStepPixels = myPerspectiveCorrectedUInStepPixels / myInverseZInStepPixels;
+    myVInStepPixels = myPerspectiveCorrectedVInStepPixels / myInverseZInStepPixels;
+
+    if(affineStep == 1){
+      myPixel.invZ = start.getInverseDepth();
+      perspectiveCorrectedU = start.getPerspectiveCorrectTexturePoint().x;
+      perspectiveCorrectedV = start.getPerspectiveCorrectTexturePoint().y;
+    }
   }
 
   public boolean hasNext(){
@@ -52,22 +83,55 @@ public class Segment {
   }
 
   public void next(){
-    perspectiveCorrectedU += du;
-    perspectiveCorrectedV += dv;
-    myPixel.invZ += dz;
-    
-    //TODO we accually do not need this try to remove it
-//    myPixel.z = 1 / myPixel.invZ;
-    
-    //we do not use the x...
+    if(affineStep == 1){
+      //just the basic routine if we calculate the real u for each pixel
+      myPixel.u = perspectiveCorrectedU / myPixel.invZ;
+      myPixel.v = perspectiveCorrectedV / myPixel.invZ;
+
+      perspectiveCorrectedU += du;
+      perspectiveCorrectedV += dv;
+      myPixel.invZ += dz;
+    } else {
+      if(counter == 0){
+        myPixel.u = myUInStepPixels;
+        myPixel.v = myVInStepPixels;
+        myPixel.invZ = myInverseZInStepPixels;
+        calculateAffineStep();
+      } else {
+        myPixel.u += dau;
+        myPixel.v += dav;
+        myPixel.invZ += daz;
+      }
+    }
+
+
     myPixel.x++;
     myPixel.index++;
     myPixel.light += dl;
-    
-    myPixel.u = perspectiveCorrectedU / myPixel.invZ;
-    myPixel.v = perspectiveCorrectedV / myPixel.invZ;
+
+
+    if(++counter >= affineStep){
+      //reset counter
+      counter = 0;
+    }
   }
-  
+
+  private void calculateAffineStep(){
+    perspectiveCorrectedU = myPerspectiveCorrectedUInStepPixels;
+    perspectiveCorrectedV = myPerspectiveCorrectedVInStepPixels;
+
+    myPerspectiveCorrectedUInStepPixels = perspectiveCorrectedU + affineStep * du;
+    myPerspectiveCorrectedVInStepPixels = perspectiveCorrectedV + affineStep * dv;
+    myInverseZInStepPixels = myPixel.invZ + affineStep * dz;
+
+    myUInStepPixels = myPerspectiveCorrectedUInStepPixels / myInverseZInStepPixels;
+    myVInStepPixels = myPerspectiveCorrectedVInStepPixels / myInverseZInStepPixels;
+
+    dau = (myUInStepPixels - myPixel.u) / affineStep;
+    dav = (myVInStepPixels - myPixel.v) / affineStep;
+    daz = (myInverseZInStepPixels - myPixel.invZ) / affineStep;
+  }
+
 
   public Texture2 getTexture() {
     return texture;
@@ -88,7 +152,7 @@ public class Segment {
     result.texture = aTexture;
     result.myPixel.texture = aTexture;
     result.myPixel.index = aPixelIndex;
-    
+
     result.repositionStartEnd();
 
     return result;
