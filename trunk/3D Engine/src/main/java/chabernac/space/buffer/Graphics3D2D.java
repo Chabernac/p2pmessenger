@@ -24,7 +24,7 @@ import chabernac.space.geom.Polygon2D;
 import chabernac.space.geom.Vertex2D;
 import chabernac.space.geom.VertexLine2D;
 import chabernac.space.shading.BumpShader;
-import chabernac.space.shading.DepthShading;
+import chabernac.space.shading.DepthShader;
 import chabernac.space.shading.PhongShader;
 import chabernac.space.shading.SpecularShader;
 import chabernac.space.shading.TextureShader;
@@ -97,7 +97,7 @@ public class Graphics3D2D implements iBufferStrategy {
     for(Shader theShader : aShaderList){
       if(theShader == Shader.TEXTURE) myPixelShaders[i++] = new TextureShader( ); 
       else if(theShader == Shader.BUMP) myPixelShaders[i++] = new BumpShader( myWorld );
-      else if(theShader == Shader.DEPTH) myPixelShaders[i++] = new DepthShading( 5000 );
+      else if(theShader == Shader.DEPTH) myPixelShaders[i++] = new DepthShader( 5000 );
       else if(theShader == Shader.PHONG) myPixelShaders[i++] = new PhongShader( myWorld );
       else if(theShader == Shader.SPECULAR) myPixelShaders[i++] = new SpecularShader( myWorld );
     }
