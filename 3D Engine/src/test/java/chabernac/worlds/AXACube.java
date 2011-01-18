@@ -12,6 +12,7 @@ import chabernac.space.World;
 import chabernac.space.geom.Point3D;
 import chabernac.space.geom.Rotation;
 import chabernac.space.geom.Shape;
+import chabernac.space.shading.DepthShader;
 import chabernac.space.shading.GouroudShading;
 import chabernac.space.shading.TextureShader;
 import chabernac.space.shading.iPixelShader;
@@ -229,6 +230,7 @@ public class AXACube extends AbstractWorld implements iSynchronizedEvent{
                               new TextureShader( ), 
 //                              new BumpShader( myWorld ),
 //                              new PhongShader( myWorld  )
+                              new DepthShader(5000)
                               };
   }
   
