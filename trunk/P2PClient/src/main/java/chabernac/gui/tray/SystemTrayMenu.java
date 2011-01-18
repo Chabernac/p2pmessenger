@@ -57,6 +57,23 @@ public class SystemTrayMenu extends PopupMenu {
       Executors.newScheduledThreadPool( 1 ).scheduleAtFixedRate( new TrayIconPersister( theIcon ), 10, 10, TimeUnit.MINUTES);
     }
   }
+  
+  public static boolean refreshIcon(){
+    if(SystemTray.isSupported()){
+      SystemTray theTray = SystemTray.getSystemTray();
+      if(theTray.getTrayIcons().length > 0){
+        TrayIcon theIcon = theTray.getTrayIcons()[0];
+        theTray.remove( theIcon );
+        try {
+          theTray.add( theIcon );
+          return true;
+        } catch ( AWTException e ) {
+          return false;
+        }
+      }
+    }
+    return false;
+  }
 
   private static class TrayIconPersister implements Runnable{
     private final TrayIcon myIcon;
@@ -85,14 +102,7 @@ public class SystemTrayMenu extends PopupMenu {
       //      }
 
       //also not the best way since the task tray flashes when reputting thte icon this way.
-      SystemTray theTray = SystemTray.getSystemTray();
-
-      try{
-        theTray.remove( myIcon );
-        theTray.add(myIcon);
-      }catch(AWTException e){
-
-      }
+      refreshIcon();
     }
   }
 }

@@ -180,6 +180,7 @@ public class ApplicationLauncher {
       if("activate".equalsIgnoreCase(  anInput )){
         try {
           showChatFrame();
+          SystemTrayMenu.refreshIcon();
           return "ok";
         } catch ( P2PFacadeException e ) {
           LOGGER.error( "Coul not activate", e );
