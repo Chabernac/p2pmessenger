@@ -10,8 +10,6 @@ import java.awt.PopupMenu;
 import java.awt.SystemTray;
 import java.awt.TrayIcon;
 import java.io.IOException;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
@@ -56,7 +54,7 @@ public class SystemTrayMenu extends PopupMenu {
       TrayIcon theIcon = new TrayIcon(ImageIO.read( new ClassPathResource("images/message.png").getInputStream()), "P2PClient", theMenu);
       theTray.add( theIcon );
       theMenu.build( aFacade, theIcon);
-      Executors.newScheduledThreadPool( 1 ).scheduleAtFixedRate( new TrayIconPersister( theIcon ), 30, 30, TimeUnit.SECONDS);
+      Executors.newScheduledThreadPool( 1 ).scheduleAtFixedRate( new TrayIconPersister( theIcon ), 10, 10, TimeUnit.MINUTES);
     }
   }
 
@@ -72,17 +70,28 @@ public class SystemTrayMenu extends PopupMenu {
 
     public void run(){
 
-      //very ugly way of forcing the system to redisplay the tray icon after a 
-      try {
-        Field theField = TrayIcon.class.getDeclaredField( "peer" );
-        theField.setAccessible( true );
-        theField.set( myIcon, null );
-        
-        Method theMethod = TrayIcon.class.getDeclaredMethod( "addNotify", new Class[]{} );
-        theMethod.setAccessible( true );
-        theMethod.invoke( myIcon, new Object[]{} );
-      } catch ( Throwable e ) {
-        LOGGER.error( "Could not restore system tray icon", e );
+      //very ugly way of forcing the system to redisplay the tray icon after an explorer crash
+      //currently seems to cause the application to crash after a certain period
+      //      try {
+      //        Field theField = TrayIcon.class.getDeclaredField( "peer" );
+      //        theField.setAccessible( true );
+      //        theField.set( myIcon, null );
+      //        
+      //        Method theMethod = TrayIcon.class.getDeclaredMethod( "addNotify", new Class[]{} );
+      //        theMethod.setAccessible( true );
+      //        theMethod.invoke( myIcon, new Object[]{} );
+      //      } catch ( Throwable e ) {
+      //        LOGGER.error( "Could not restore system tray icon", e );
+      //      }
+
+      //also not the best way since the task tray flashes when reputting thte icon this way.
+      SystemTray theTray = SystemTray.getSystemTray();
+
+      try{
+        theTray.remove( myIcon );
+        theTray.add(myIcon);
+      }catch(AWTException e){
+
       }
     }
   }
