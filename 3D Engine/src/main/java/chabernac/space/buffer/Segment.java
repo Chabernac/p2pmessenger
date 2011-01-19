@@ -25,6 +25,8 @@ public class Segment {
   private float dv;
   private float dx;
   private float dl;
+  
+  private float light;
 
   private float perspectiveCorrectedU;
   private float perspectiveCorrectedV;
@@ -63,7 +65,7 @@ public class Segment {
 
     myPixel.x = (int)start.getPoint().x;
     myInverseZInStepPixels = start.getInverseDepth();
-    myPixel.light = start.getLightning();
+    light = start.getLightning();
 
     myPerspectiveCorrectedUInStepPixels = start.getPerspectiveCorrectTexturePoint().x;
     myPerspectiveCorrectedVInStepPixels = start.getPerspectiveCorrectTexturePoint().y;
@@ -107,8 +109,12 @@ public class Segment {
 
     myPixel.x++;
     myPixel.index++;
-    myPixel.light += dl;
+    light += dl;
+    
+    myPixel.light = light;
 
+    myPixel.normal = null;
+    myPixel.camPoint = null;
 
     if(++counter >= affineStep){
       //reset counter

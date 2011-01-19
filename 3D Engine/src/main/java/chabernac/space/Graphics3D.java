@@ -74,8 +74,8 @@ public class Graphics3D{
   public void drawLine(Point3D aStartPoint, Point3D anEndPoint, int aColor){
     Point2D theStartPoint = GeomFunctions.cam2Screen(aStartPoint, myEyePoint);
     Point2D theEndPoint = GeomFunctions.cam2Screen(anEndPoint, myEyePoint);
-    Vertex2D theStartVertex = new Vertex2D(theStartPoint, aStartPoint.z, 1);
-    Vertex2D theEndVertex = new Vertex2D(theEndPoint, anEndPoint.z, 1);
+    Vertex2D theStartVertex = new Vertex2D(theStartPoint, myFrustrum.calculateRelativeDepth(aStartPoint.z), 1);
+    Vertex2D theEndVertex = new Vertex2D(theEndPoint, myFrustrum.calculateRelativeDepth(anEndPoint.z), 1);
     myGraphics3D2D.drawLine(new VertexLine2D( theStartVertex, theEndVertex, aColor));
 
     /*
