@@ -8,7 +8,7 @@ public class Vertex2D {
   
 	private Point2D myPoint = null;
 	private Point2D myTexturePoint = null;
-	private float myDepth, myInverseDepth;
+	private float myInverseDepth;
 	private float myLightning;
 	private Point2D myPerspectiveCorrectTexturePoint = null;
 	
@@ -16,15 +16,15 @@ public class Vertex2D {
     
   }
   
-	public Vertex2D(Point2D aPoint, float aDepth, float aLightning){
-		this(aPoint, null, aDepth, aLightning);
+	public Vertex2D(Point2D aPoint, float anInverseDepth, float aLightning){
+	  myPoint = aPoint;
+    myInverseDepth = anInverseDepth;
+    myLightning = aLightning;
 	}
 	
 	public Vertex2D(Point2D aPoint, Point2D aTexturePoint, float aDepth, float aLightning){
 		myPoint = aPoint;
 		myTexturePoint = aTexturePoint;
-//		myDepth = aDepth;
-//		myInverseDepth = (float)1 / myDepth;
 		myInverseDepth = aDepth;
 		myLightning = aLightning;
 		myPerspectiveCorrectTexturePoint = new Point2D( aTexturePoint.x * myInverseDepth, aTexturePoint.y * myInverseDepth);
@@ -36,10 +36,6 @@ public class Vertex2D {
 	
 	public Point2D getTexturePoint(){
 		return myTexturePoint;
-	}
-	
-	public float getDepth(){
-		return myDepth;
 	}
 	
 	public float getInverseDepth(){

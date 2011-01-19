@@ -59,6 +59,6 @@ public class ScreenFrustrum extends Frustrum{
 //    return aDepth;
 //    return 1 / aDepth;
 //    return 1000 * (1 / aDepth - myInverseNearDepth) / myDivisionConstant;
-    return 1F / (aDepth + myEyePoint.z );
+    return  1F / (aDepth + myEyePoint.z );
   }
 }

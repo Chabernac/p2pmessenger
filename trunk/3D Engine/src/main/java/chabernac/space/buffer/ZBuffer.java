@@ -9,7 +9,7 @@ package chabernac.space.buffer;
 
 public class ZBuffer implements iDepthBuffer{
 //  private static Logger LOGGER = Logger.getLogger(ZBuffer.class);
-  private float myZBuffer[];
+  private double myZBuffer[];
 //  private int myAlphaBuffer[];
   private float myTransparencyBuffer[];
   
@@ -25,7 +25,7 @@ public class ZBuffer implements iDepthBuffer{
     myWidth = aWidth;
 //    myHeight = aHeight;
     mySize = aWidth * aHeight;
-    myZBuffer = new float[mySize];
+    myZBuffer = new double[mySize];
 //    myAlphaBuffer = new int[mySize];
     myTransparencyBuffer = new float[mySize];
     clearBuffer();
@@ -52,13 +52,16 @@ public class ZBuffer implements iDepthBuffer{
       return false;
     }
    
-    float cycleDepth = cycle + anInverseDepth;
+    double cycleDepth = cycle + (double)anInverseDepth;
     
     if(cycleDepth > myZBuffer[aPixelIndex]){
       //this pixel will be drawn only at this point we should calculate the color and apply pixel shading
       myZBuffer[aPixelIndex] = cycleDepth;
       return true;
     }
+//    else {
+//      System.out.println("pixel[" + aPixelIndex + "]  must not be drawn because " + cycleDepth + " < " + myZBuffer[aPixelIndex]);
+//    }
     
     return false;
 

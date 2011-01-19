@@ -36,9 +36,9 @@ public class LightSource implements iTranslatable{
     float distance = theDirectionToPixel.length();
     theDirectionToPixel.normalize();
     float lightningFactor = (theDirectionToPixel.dotProdukt(aNormalVector)  * getIntensity()) / distance;
-    if(lightningFactor < 0.0){
-      lightningFactor = (float)0.0;
-    }
+//    if(lightningFactor < 0.0){
+//      lightningFactor = (float)0.0;
+//    }
     return lightningFactor;
   }
 
