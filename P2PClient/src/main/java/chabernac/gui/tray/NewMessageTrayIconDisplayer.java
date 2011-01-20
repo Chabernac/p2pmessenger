@@ -6,11 +6,15 @@ package chabernac.gui.tray;
 
 import java.awt.Image;
 import java.awt.SystemTray;
+import java.awt.TrayIcon;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
@@ -29,12 +33,17 @@ import chabernac.protocol.message.iMultiPeerMessageListener;
 public class NewMessageTrayIconDisplayer {
   private final ChatMediator myMediator;
   private Image myNewMessageImage = null;
+  private Image myNewMessageImage2 = null;
+  private ScheduledExecutorService myService = null;
+  
+  private Object LOCK = new Object();
 
   public NewMessageTrayIconDisplayer ( ChatMediator anMediator ) throws P2PFacadeException, IOException {
     super();
     myMediator = anMediator;
     myMediator.getP2PFacade().addMessageListener( new MyMessageListener() );
     myNewMessageImage = ImageIO.read( new ClassPathResource("images/message_new.png").getInputStream());
+    myNewMessageImage2 = ImageIO.read( new ClassPathResource("images/message_open.png").getInputStream());
     MyListener theListener = new MyListener();
     SystemTray.getSystemTray().getTrayIcons()[0].addActionListener( theListener );
     SystemTray.getSystemTray().getTrayIcons()[0].addMouseListener( theListener );
@@ -47,13 +56,27 @@ public class NewMessageTrayIconDisplayer {
     public void messageReceived( MultiPeerMessage aMessage ) {
       if(ApplicationPreferences.getInstance().hasEnumProperty( Settings.ReceiveEnveloppe.NO_POPUP ) && !((JFrame)myMediator.getTitleProvider()).hasFocus()){
         SystemTray.getSystemTray().getTrayIcons()[0].setImage( myNewMessageImage );
+        
+        synchronized(LOCK){
+          if(myService == null){
+            myService = Executors.newScheduledThreadPool( 1 );
+            myService.scheduleAtFixedRate( new ImageSwitcher(), 3, 3, TimeUnit.SECONDS );
+          }
+        }
       }
     }
   }
   
   private void resetImage(){
+    synchronized(LOCK){
+      if(myService != null) {
+        myService.shutdownNow();
+        myService  = null;
+      }
+    }
     //just trigger the ReceiveEnveloppe property, it will cause the other menu items to evaluate and reset the tray icon to the correct one
     ApplicationPreferences.getInstance().notifyListeners( (Enum)null );
+    
   }
   
   
@@ -71,6 +94,20 @@ public class NewMessageTrayIconDisplayer {
     @Override
     public void eventFired(FocusGainedEvent anEvent) {
       resetImage();
+    }
+  }
+  
+  public class ImageSwitcher implements Runnable {
+
+    @Override
+    public void run() {
+      TrayIcon theTrayIcon = SystemTray.getSystemTray().getTrayIcons()[0];
+      theTrayIcon.setImage( myNewMessageImage2 );
+      try {
+        Thread.sleep( 1000 );
+      } catch ( InterruptedException e ) {
+      }
+      theTrayIcon.setImage( myNewMessageImage );
     }
   }
 }
