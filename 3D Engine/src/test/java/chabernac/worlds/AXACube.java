@@ -12,8 +12,8 @@ import chabernac.space.World;
 import chabernac.space.geom.Point3D;
 import chabernac.space.geom.Rotation;
 import chabernac.space.geom.Shape;
-import chabernac.space.shading.BumpShader;
 import chabernac.space.shading.GouroudShading;
+import chabernac.space.shading.PhongShader;
 import chabernac.space.shading.TextureShader;
 import chabernac.space.shading.iPixelShader;
 import chabernac.space.shading.iVertexShader;
@@ -31,17 +31,17 @@ public class AXACube extends AbstractWorld implements iSynchronizedEvent{
     
     MouseTranslationManager theMouseTranslationManager = new MouseTranslationManager(myPanel3D.getGraphics3D(), 100, 10);
     myRotationManager = new RotationManager(new Rotation((float)Math.PI / 500,(float)Math.PI / 400,(float)Math.PI / 360));
-    RotationManager theRotationManager = new RotationManager(new Rotation(0,0,(float)Math.PI / 180));
+    RotationManager theRotationManager = new RotationManager(new Rotation(0,0,(float)Math.PI / 360));
 //    myWorld.getTranslateManagerContainer().addTranslateManager(theMouseTranslationManager);
 //    myWorld.getTranslateManagerContainer().addTranslateManager(myRotationManager);
     myWorld.getTranslateManagerContainer().addTranslateManager(theRotationManager);
     
     
-    Shape theSphere = ShapeFactory.makeSphere(new Point3D(100,100,4800), 2000,40);
+    Shape theSphere = ShapeFactory.makeSphere(new Point3D(100,100,4800), 1000,40);
     theSphere.setColor(Color.blue);
 //    theSphere.setTexture("gengrid", false, true);
-//    theSphere.setTexture("EarthMap_2500x1250", "EarthMap_2500x1250", false, true);
-    theSphere.setTexture("Whole_world_-_land_and_oceans", false, true);
+    theSphere.setTexture("Earth-Color4096", false, true);
+//    theSphere.setTexture("Whole_world_-_land_and_oceans", false, true);
 //    theSphere.setTexture("Threadplate0069_1_S", false, true);
 //    theSphere.setTexture("S_S_Board12", false, true);
 //    theSphere.setTexture("guy");
@@ -62,17 +62,18 @@ public class AXACube extends AbstractWorld implements iSynchronizedEvent{
     
     
     
-//    Shape theCosmos = ShapeFactory.makeSphere(new Point3D(0,0,0), 100000,40);
+    Shape theCosmos = ShapeFactory.makeSphere(new Point3D(0,0,0), 100000,40);
 //    theCosmos.setColor(Color.blue);
-//    theCosmos.setRoom(true);
-    //theCosmos.setTexture("StarsMap_2500x1250", false, true);
+    theCosmos.setRoom(true);
+//    theCosmos.setTexture("StarsMap_2500x1250", false, true);
+    theCosmos.setTexture("stars", false, true);
 //    theCosmos.setTexture("star_map_small", false, true);
     
     //theCosmos.setTexture("Threadplate0069_1_S", false, true);
     
 //    theCosmos.setTexture("EarthMap_2500x1250", false, true);
-//    theCosmos.done();
-    //myWorld.addShape(theCosmos);
+    theCosmos.done();
+    myWorld.addShape(theCosmos);
     
     
     
@@ -115,7 +116,7 @@ public class AXACube extends AbstractWorld implements iSynchronizedEvent{
 //    theShape.myPolygons[0].setTexture("axa", false);
 //    theShape.myPolygons[0].setTexture("guy", false, false);
 //    theShape.myPolygons[1].setTexture("leslie", false, false);
-    myWorld.addShape(theShape);
+//    myWorld.addShape(theShape);
     theMouseTranslationManager.addTranslatable(theShape);
     myRotationManager.addTranslatable(theShape);
     
@@ -183,7 +184,7 @@ public class AXACube extends AbstractWorld implements iSynchronizedEvent{
     myPanel3D.getGraphics3D().setDrawBackFacing(false);
     myPanel3D.getGraphics3D().setDrawPlanes(true);
     myPanel3D.getGraphics3D().setDrawLightSources( false );
-    myPanel3D.getGraphics3D().setDrawTextureNormals( false);
+    myPanel3D.getGraphics3D().setDrawTextureNormals( false );
     myPanel3D.getGraphics3D().setDrawBumpVectors(false);
     myPanel3D.getGraphics3D().setDrawVertexNormals( false);
     myPanel3D.getGraphics3D().setDrawTextureCoordinates(false );
