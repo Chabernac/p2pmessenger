@@ -128,7 +128,7 @@ public class ApplicationLauncher {
     .setChannel(anInterPreter.getKeyValue("channel", "default"))
     .setFileHandler( new FileHandlerDialogDispatcher() )
     .setInfoObject( "pom.info", new POMInfo() )
-    .setInfoObject( "version", "v2011.01.12" )
+    .setInfoObject( "version", "v2011.01.20" )
     .setSocketReuse( false )
     .start( 10 );
   }
