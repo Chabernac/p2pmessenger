@@ -4,6 +4,7 @@
  */
 package chabernac.p2pclient.gui;
 
+import java.awt.Color;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +13,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 
 import org.apache.log4j.Logger;
@@ -58,6 +60,7 @@ public class ChatMediator {
   private ExecutorService myFileTransferResponse = Executors.newFixedThreadPool( 5 );
   
   private final ActionFactory myActionFactory;
+  private final String POPUP_BLOCKED_MESSAGE = "Let op: popups zijn geblokkeerd!";
 
   public ChatMediator ( P2PFacade anFacade ) throws P2PFacadeException {
     super();
@@ -306,6 +309,18 @@ public class ChatMediator {
     }
     myTitleProvider.setTitle( theTitle );
   }
+  
+  public void setPopupMessage(){
+    if(myMessageProvider instanceof JComponent){
+      if(ApplicationPreferences.getInstance().hasEnumProperty( Settings.ReceiveEnveloppe.NO_POPUP )){
+        myMessageProvider.setMessage( POPUP_BLOCKED_MESSAGE );
+      } else {
+        if(myMessageProvider.getMessage().equalsIgnoreCase( POPUP_BLOCKED_MESSAGE )){
+          myMessageProvider.clear();
+        }
+      }
+    }
+  }
 
   private class MySelectionChangedListener implements iSelectionChangedListener {
 
@@ -326,6 +341,7 @@ public class ChatMediator {
       LOGGER.error("Could not change status", e);
     }
     setTitle();
+    setPopupMessage();
   }
 
   public isShowDialogProvider getIsShowDialogProvider() {

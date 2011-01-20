@@ -108,6 +108,7 @@ public class ChatFrame extends SavedFrame implements iTitleProvider, isShowDialo
     myMediator.setIsShowDialogProvider( this );
     myMediator.setChatFrame( this );
     myMediator.setTitle();
+    myMediator.setPopupMessage();
     
     mySplitPane.setTopComponent(new JScrollPane(myMessageField, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER));
     mySplitPane.setBottomComponent(theReceivedField);
