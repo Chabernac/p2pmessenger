@@ -20,7 +20,7 @@ public class ApplicationObjectWriter {
     theHeavyApplication.addJar("mail.jar");
     theHeavyApplication.addJar("activation.jar");
     theHeavyApplication.setDebugEnabled(false);
-    IOOperator.saveObject(theHeavyApplication, new File("applications/heavy.bin"));
+    IOOperator.saveObject(theHeavyApplication, new File("src/main/resources/applications/heavy.bin"));
     
     Application theLightApplication = new Application();
     theLightApplication.setName("Light");
@@ -32,7 +32,7 @@ public class ApplicationObjectWriter {
     theLightApplication.addJar("framework.jar");
     theLightApplication.addParameter("service", "false");
     theLightApplication.setDebugEnabled(false);
-    IOOperator.saveObject(theLightApplication, new File("applications/light.bin"));
+    IOOperator.saveObject(theLightApplication, new File("src/main/resources/applications/light.bin"));
     
     Application theServiceApplication = new Application();
     theServiceApplication.setName("Service");
@@ -44,10 +44,10 @@ public class ApplicationObjectWriter {
     theServiceApplication.addJar("framework.jar");
     theServiceApplication.addParameter("service", "true");
     theServiceApplication.setDebugEnabled(false);
-    IOOperator.saveObject(theServiceApplication, new File("applications/service.bin"));
+    IOOperator.saveObject(theServiceApplication, new File("src/main/resources/applications/service.bin"));
     
     Version theVersion = new Version("4.1.35");
-    IOOperator.saveObject(theVersion, new File("applications/version.bin"));
+    IOOperator.saveObject(theVersion, new File("src/main/resources/applications/version.bin"));
     
   }
 }

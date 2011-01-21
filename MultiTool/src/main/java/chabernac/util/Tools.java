@@ -1,13 +1,10 @@
 package chabernac.util;
 
-import java.awt.Color;
 import java.awt.Dialog;
 import java.awt.EventQueue;
 import java.awt.Frame;
 import java.awt.Window;
-import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -15,7 +12,6 @@ import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.ServerSocket;
 import java.net.SocketException;
-import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -23,13 +19,11 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
+import javax.activation.DataSource;
 import javax.swing.SwingUtilities;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
-
-import chabernac.chat.Message;
-import chabernac.chat.UserList;
 
 public class Tools {
   private static Logger logger = Logger.getLogger(Tools.class);
@@ -72,24 +66,6 @@ public class Tools {
     
   }
 
-  public static String getEnvelop(UserList aUserList, Message aMessage){
-    String from = aUserList.getShortName(aMessage.getFrom());
-
-    ArrayList to = aMessage.getTo();
-    String envelop = "[" + from;
-    envelop += "-->";
-    if(!aMessage.isHiddenTo()){
-      for(int i=0;i<to.size();i++){
-        envelop += aUserList.getShortName( (String)to.get(i) );
-        if(i < to.size() - 1) envelop += ",";
-      }
-    } else {
-      envelop += "verborgen";
-    }
-    envelop += "]";
-    return envelop;
-  }
-
   public static int findUnusedLocalPort() throws IOException{
     ServerSocket theSocket  = null;
     try {
@@ -111,9 +87,9 @@ public class Tools {
     }
   }
 
-  public static void initLog4j(File aFile) throws FileNotFoundException, IOException{
+  public static void initLog4j(DataSource aDataSource) throws FileNotFoundException, IOException{
     Properties theProps = new Properties();
-    theProps.load(new FileInputStream(aFile));
+    theProps.load(aDataSource.getInputStream());
     PropertyConfigurator.configure(theProps);
   }
 
