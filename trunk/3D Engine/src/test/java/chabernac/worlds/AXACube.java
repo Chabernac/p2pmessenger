@@ -31,16 +31,16 @@ public class AXACube extends AbstractWorld implements iSynchronizedEvent{
     
     MouseTranslationManager theMouseTranslationManager = new MouseTranslationManager(myPanel3D.getGraphics3D(), 100, 10);
     myRotationManager = new RotationManager(new Rotation((float)Math.PI / 500,(float)Math.PI / 400,(float)Math.PI / 360));
-    RotationManager theRotationManager = new RotationManager(new Rotation(0,0,(float)Math.PI / 360));
+    RotationManager theRotationManager = new RotationManager(new Rotation(0,0,-(float)Math.PI / 180));
 //    myWorld.getTranslateManagerContainer().addTranslateManager(theMouseTranslationManager);
 //    myWorld.getTranslateManagerContainer().addTranslateManager(myRotationManager);
     myWorld.getTranslateManagerContainer().addTranslateManager(theRotationManager);
     
     
-    Shape theSphere = ShapeFactory.makeSphere(new Point3D(100,100,4800), 1000,40);
-    theSphere.setColor(Color.blue);
+    Shape theEarth = ShapeFactory.makeSphere(new Point3D(100,100,6000), 1000,40);
+    theEarth.setColor(Color.blue);
 //    theSphere.setTexture("gengrid", false, true);
-    theSphere.setTexture("Earth-Color4096", false, true);
+    theEarth.setTexture("Earth-Color4096", false, true);
 //    theSphere.setTexture("Whole_world_-_land_and_oceans", false, true);
 //    theSphere.setTexture("Threadplate0069_1_S", false, true);
 //    theSphere.setTexture("S_S_Board12", false, true);
@@ -56,9 +56,9 @@ public class AXACube extends AbstractWorld implements iSynchronizedEvent{
     //theSphere.setTexture(new TextureImage(ImageFactory.createImage("Guy", new Font("Arial", Font.BOLD, 20), 100, 100, Color.BLUE, Color.WHITE, true)));
 //    theSphere.done();
     //theSphere.myPolygons[20].setTexture("guy", false);
-    myWorld.addShape(theSphere);
+    myWorld.addShape(theEarth);
     //theMouseTranslationManager.addTranslatable(theSphere);
-    theRotationManager.addTranslatable(theSphere);
+    theRotationManager.addTranslatable(theEarth);
     
     
     
@@ -74,6 +74,17 @@ public class AXACube extends AbstractWorld implements iSynchronizedEvent{
 //    theCosmos.setTexture("EarthMap_2500x1250", false, true);
     theCosmos.done();
     myWorld.addShape(theCosmos);
+    
+    Shape theMoon = ShapeFactory.makeSphere(new Point3D(3600,100,6000), 200, 40);
+    theMoon.setTexture("MoonMap2_2500x1250", false, true);
+    theMoon.done();
+    myWorld.addShape(theMoon);
+    
+    RotationManager theMoonRotationManager = new RotationManager(new Rotation(0,0,-(float)Math.PI / 180));
+    theMoonRotationManager.setRotationCenter(theEarth);
+    theMoonRotationManager.addTranslatable(theMoon);
+    myWorld.getTranslateManagerContainer().addTranslateManager(theMoonRotationManager);
+    theRotationManager.addTranslatable(theMoon);
     
     
     
