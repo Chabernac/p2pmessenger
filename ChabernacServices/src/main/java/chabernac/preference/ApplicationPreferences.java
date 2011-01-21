@@ -70,7 +70,7 @@ public class ApplicationPreferences extends Properties{
 		return anEnum.toString().equals(getProperty(anEnum.getClass().getName()));
 	}
 
-	public void addApplicationPreferenceListener(iApplicationPreferenceListener aListener){
+	public synchronized void addApplicationPreferenceListener(iApplicationPreferenceListener aListener){
 		myListeners.add(aListener);
 	}
 
