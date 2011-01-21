@@ -19,11 +19,9 @@ import org.apache.log4j.Logger;
 
 import chabernac.application.ApplicationRefBase;
 import chabernac.application.RefBase;
-import chabernac.chat.gui.heavy.HeavyChatMediator;
 import chabernac.event.ApplicationEventDispatcher;
 import chabernac.gui.SavedFrame;
 import chabernac.gui.StatusBar;
-import chabernac.messengerservice.MessengerClientService;
 import chabernac.task.Task;
 import chabernac.task.TaskException;
 import chabernac.task.command.DefaultActivityCommand;
@@ -60,8 +58,6 @@ public class MainFrame extends SavedFrame{
 		myTabbedPane.add("Activities", new MainPanel());
 		myTabbedPane.add("Todo", new ToDoPanel());
 		myTabbedPane.add("Periods", new PeriodOverviewPanel());
-		myChatPanel = new HeavyChatMediator((MessengerClientService)ApplicationRefBase.getObject(ApplicationRefBase.MESSENGERSERVICE), this).getChatPanel();
-		myTabbedPane.add("Who", myChatPanel);
 		
 		getContentPane().add(myTabbedPane, theCons);
     

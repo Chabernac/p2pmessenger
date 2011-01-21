@@ -7,55 +7,14 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.rmi.Naming;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.StringTokenizer;
 
-import chabernac.distributionservice.iDistributionService;
 import chabernac.log.Logger;
-import chabernac.messengerservice.MessengerUser;
-import chabernac.messengerservice.iMessengerService;
 
 public class Updater {
 
   public static void main(String[] args) {
     Logger.setDebug(true);
-    String theServerServiceURL = "rmi://" + args[0] + ":" + args[1] + "/MessengerService";
-    try{
-      iMessengerService theMessengerService = (iMessengerService)Naming.lookup(theServerServiceURL);
-      HashMap theClients = theMessengerService.getAllUsers();
-      
-      Logger.log(Updater.class, "Number of clients found: " + theClients.size());
-      
-      String theCurrentVersion = getVersion();
-      String theHighestVersion = theCurrentVersion;
-      MessengerUser theHighestVersionUser = null;
-
-      for(Iterator i=theClients.values().iterator();i.hasNext();){
-        MessengerUser theUser = (MessengerUser)i.next();
-        String theRemoteVersion = theUser.getVersion();
-
-        if(compareVersion(theRemoteVersion, theHighestVersion) > 0){
-          theHighestVersion = theRemoteVersion;
-          theHighestVersionUser = theUser;
-        }
-      }
-      
-      if(compareVersion(theHighestVersion, theCurrentVersion) > 0 && theHighestVersionUser != null){
-          //Sleep for 10 seconds, the other application might still be starting up....
-          Thread.sleep(10000);
-          String theDistributionService = "rmi://"  + theHighestVersionUser.getHost() + ":" + theHighestVersionUser.getRmiPort() + "/DistributionService";
-          Logger.log(Updater.class, "Trying to contact distribution service at: " + theDistributionService);
-          iDistributionService theService = (iDistributionService)Naming.lookup(theDistributionService);
-          theService.getDistributionCommand().execute();
-          writeVersion(theHighestVersion);
-      }
-      
-    }catch(Exception e){
-      Logger.log(Updater.class, "An error occured while updating", e);
-    }
-    
     //start the application even if the download has failed.
     
     iApplication theApp = getApplication(args[2]);
