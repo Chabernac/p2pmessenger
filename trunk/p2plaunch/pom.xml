@@ -32,12 +32,7 @@
 						<argument>javaw</argument>
 						<argument>-classpath</argument>
 						<classpath />
-						<argument>chabernac.gui.ApplicationLauncher</argument>
-						<argument>visible=false</argument>
-						<argument>persist=true</argument>
-						<argument>channel=p2pclient</argument>
-						<argument>http.proxyHost=iproxy.axa.be</argument>
-						<argument>http.proxyPort=8080</argument>
+						<argument>chabernac.task.launch.ApplicationLauncher</argument>
 					</arguments>
 				</configuration>
 			</plugin>
@@ -134,7 +129,7 @@
 		</dependency>
 		<dependency>
 			<groupId>chabernac</groupId>
-			<artifactId>P2PClient</artifactId>
+			<artifactId>multitool</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 			<type>jar</type>
 			<scope>compile</scope>
