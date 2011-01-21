@@ -53,7 +53,7 @@ public class EasterEgg3d extends DefaultEasterEggPaintable {
     ((Component)myWindow).addMouseMotionListener(theMouseTranslationManager);
     ((Component)myWindow).addMouseWheelListener(theMouseTranslationManager);
 
-    myRotationManager = new RotationManager(new Rotation(Math.PI / 180,Math.PI / 120,Math.PI / 80));
+    myRotationManager = new RotationManager(new Rotation((float)(Math.PI / 180),(float)(Math.PI / 120),(float)(Math.PI / 80)));
     //  TranslateManager theManager2 = new RotationManager(new Rotation(Math.PI / 180,Math.PI / 60,Math.PI / 40));
     //  TranslateManager theManager3 = new PathTranslateManager(new Point3D[]{new Point3D(-300,100,100), new Point3D(-300,-200,200), new Point3D(300,-200,100)}, 10);
 
@@ -108,7 +108,7 @@ public class EasterEgg3d extends DefaultEasterEggPaintable {
 
   private void initGraphics(Rectangle aBounds){
     myEyePoint = new Point3D(aBounds.width/2,aBounds.height/2,(aBounds.width + aBounds.height)/2);
-    myGraphics = new Graphics3D(new ScreenFrustrum(myEyePoint, new Dimension(aBounds.width, aBounds.height)),
+    myGraphics = new Graphics3D(new ScreenFrustrum(myEyePoint, new Dimension(aBounds.width, aBounds.height), 0.1F, 2000),
                                 myEyePoint,
                                 myCamera,
                                 myWorld,
