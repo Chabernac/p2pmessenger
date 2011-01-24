@@ -19,6 +19,8 @@ import java.util.concurrent.TimeUnit;
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 
+import org.apache.log4j.Logger;
+
 import chabernac.events.EventDispatcher;
 import chabernac.events.iEventListener;
 import chabernac.gui.event.FocusGainedEvent;
@@ -31,6 +33,8 @@ import chabernac.protocol.message.MultiPeerMessage;
 import chabernac.protocol.message.iMultiPeerMessageListener;
 
 public class NewMessageTrayIconDisplayer {
+  private static final Logger LOGGER = Logger.getLogger(NewMessageTrayIconDisplayer.class);
+  
   private final ChatMediator myMediator;
   private Image myNewMessageImage = null;
   private Image myNewMessageImage2 = null;
@@ -57,10 +61,16 @@ public class NewMessageTrayIconDisplayer {
       if(ApplicationPreferences.getInstance().hasEnumProperty( Settings.ReceiveEnveloppe.NO_POPUP ) && !((JFrame)myMediator.getTitleProvider()).hasFocus()){
         SystemTray.getSystemTray().getTrayIcons()[0].setImage( myNewMessageImage );
         
+        try{
+          SystemTray.getSystemTray().getTrayIcons()[0].displayMessage( "Nieuw bericht", "Je hebt een bericht ontvangen van " + myMediator.getP2PFacade().getUserInfo().get( aMessage.getSource() ).getName(), TrayIcon.MessageType.WARNING);
+        }catch(Exception e){
+          LOGGER.error("Could not set display message", e);
+        }
+        
         synchronized(LOCK){
           if(myService == null){
             myService = Executors.newScheduledThreadPool( 1 );
-            myService.scheduleAtFixedRate( new ImageSwitcher(), 3, 3, TimeUnit.SECONDS );
+            myService.scheduleAtFixedRate( new ImageSwitcher(), 2, 2, TimeUnit.SECONDS );
           }
         }
       }
@@ -104,7 +114,7 @@ public class NewMessageTrayIconDisplayer {
       TrayIcon theTrayIcon = SystemTray.getSystemTray().getTrayIcons()[0];
       theTrayIcon.setImage( myNewMessageImage2 );
       try {
-        Thread.sleep( 1000 );
+        Thread.sleep( 500 );
       } catch ( InterruptedException e ) {
       }
       theTrayIcon.setImage( myNewMessageImage );
