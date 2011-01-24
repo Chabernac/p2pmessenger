@@ -18,5 +18,6 @@ public class ReceiveMenu extends Menu {
     add(new ReceiveClosedMenuItem(aMediator));
     add(new ReceiveAsMessageIndicatesMenuItem(aMediator));
     add(new NoPopupMenuItem(aMediator));
+    add(new InfoPanelMenuItem( aMediator ));
   }
 }

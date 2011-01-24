@@ -360,7 +360,10 @@ public class ChatMediator {
 
     @Override
     public void messageReceived( MultiPeerMessage aMessage ) {
-      if(!checkEasterEgg(aMessage) && !ApplicationPreferences.getInstance().hasEnumProperty( Settings.ReceiveEnveloppe.NO_POPUP ) && myIsShowDialogProvider.isShowDialog()){
+      if(!checkEasterEgg(aMessage) && 
+          !ApplicationPreferences.getInstance().hasEnumProperty( Settings.ReceiveEnveloppe.NO_POPUP ) && 
+          !ApplicationPreferences.getInstance().hasEnumProperty( Settings.ReceiveEnveloppe.INFO_PANEL) &&
+          myIsShowDialogProvider.isShowDialog()){
         myMessageDialog.showMessage( aMessage );
       }
     }
