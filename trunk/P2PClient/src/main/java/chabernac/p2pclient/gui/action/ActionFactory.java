@@ -33,7 +33,8 @@ public class ActionFactory {
                       EXIT_WITHOUT_ASKING,
                       SHOW_FRAME,
                       TOGGLE_SHOW_FRAME,
-                      SHOW_ABOUT
+                      SHOW_ABOUT, 
+                      INFO_PANEL
                         };
 
   public ActionFactory(ChatMediator anMediator) {
@@ -55,6 +56,7 @@ public class ActionFactory {
     if(anAction == Action.REDO) return new RedoCommand();
     if(anAction == Action.RECEIVE_CLOSED) return new ReceiveClosedCommand();
     if(anAction == Action.RECEIVE_AS_MESSAGE_INDICATES) return new ReceiveAsMessageIndicatesCommand();
+    if(anAction == Action.INFO_PANEL) return new ReceiveInfoPanelCommand();
     if(anAction == Action.NO_POPUP) return new NoPopupCommand();
     if(anAction == Action.TOGGLE_POPUP) return new TogglePopupCommand();
     if(anAction == Action.STATUS_AWAY) return new ChangeStatusCommand(myMediator.getP2PFacade(), UserInfo.Status.ONLINE);
