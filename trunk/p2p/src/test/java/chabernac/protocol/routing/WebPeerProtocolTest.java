@@ -124,5 +124,11 @@ public class WebPeerProtocolTest extends AbstractProtocolTest {
     public List<Message> getMessages(){
       return myMessages;
     }
+
+    @Override
+    public void messageUpdated( Message aMessage ) {
+      // TODO Auto-generated method stub
+      
+    }
   }
 }

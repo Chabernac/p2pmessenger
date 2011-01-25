@@ -379,6 +379,12 @@ public class MessageProtocolTest extends AbstractProtocolTest {
     public int getCounter(){
       return myCounter.get();
     }
+
+    @Override
+    public void messageUpdated( Message aMessage ) {
+      // TODO Auto-generated method stub
+      
+    }
   }
 
   public class MessageCollector implements iMessageListener{
@@ -391,6 +397,12 @@ public class MessageProtocolTest extends AbstractProtocolTest {
 
     public List<Message> getMessages(){
       return myMessages;
+    }
+
+    @Override
+    public void messageUpdated( Message aMessage ) {
+      // TODO Auto-generated method stub
+      
     }
   }
 

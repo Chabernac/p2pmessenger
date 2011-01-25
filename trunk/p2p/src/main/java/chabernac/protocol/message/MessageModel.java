@@ -98,13 +98,23 @@ public class MessageModel implements TableModel {
   public void setValueAt( Object aValue, int anRowIndex, int anColumnIndex ) {
   }
   
+  private void fireTableModelEvent(){
+    for(TableModelListener theListener : myListeners){
+      theListener.tableChanged( new TableModelEvent(MessageModel.this) );
+    }
+    
+  }
+  
   private class MessageListener implements iMessageListener {
 
     @Override
     public void messageReceived( Message aMessage ) {
-      for(TableModelListener theListener : myListeners){
-        theListener.tableChanged( new TableModelEvent(MessageModel.this) );
-      }
+      fireTableModelEvent();
+    }
+
+    @Override
+    public void messageUpdated( Message aMessage ) {
+      fireTableModelEvent();
     }
 
   }
