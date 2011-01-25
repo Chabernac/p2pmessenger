@@ -78,37 +78,38 @@ public class MessageProtocol extends Protocol {
         return Response.UNCRECOGNIZED_MESSAGE.name();
       }
 
-
       return  handleMessage( aSessionId, theMessage );
     }
-
+    
     public String handleMessage(long aSessionId, Message aMessage){
-      if(myProcessingMessages.contains(aMessage.getMessageId())){
-        return Response.MESSAGE_LOOP_DETECTED.name();
-      } 
-
       MessageAndResponse theHistoryItem = new MessageAndResponse( aMessage );
       if(isKeepHistory){
         myHistory.add(theHistoryItem);
         for(iMessageListener theListener : myHistoryListeners) theListener.messageReceived( aMessage );
       }
+      
+      String theResult = handleMessageInternal( aSessionId, aMessage );
+      
+      if(isKeepHistory){
+        theHistoryItem.setResponse( theResult );
+        for(iMessageListener theListener : myHistoryListeners) theListener.messageUpdated( aMessage );
+      }
+      
+      return theResult;
+    }
 
+    public String handleMessageInternal(long aSessionId, Message aMessage){
       checkMessage(aMessage);
 
       AbstractPeer theDestination = aMessage.getDestination();
       try {
         myProcessingMessages.add(aMessage.getMessageId());
         if(theDestination.getPeerId().equals( getRoutingTable().getLocalPeerId() )){
-          String theResult = handleMessageForUs(aSessionId, aMessage);
-          if(isKeepHistory) theHistoryItem.setResponse( theResult );
-          return theResult;
+          return handleMessageForUs(aSessionId, aMessage);
         } else {
           //the message is not intented for us, it needs to be sended further.
           //only send the message further if the time to live (TTL) is not yet 0.
-          String theResult = forwardMessage(aMessage);
-          //TODO the history thing is poluting our code, we should do it with an aspect
-          if(isKeepHistory) theHistoryItem.setResponse( theResult );
-          return theResult;
+          return forwardMessage(aMessage);
         }
       } catch ( UnknownPeerException e ) {
         LOGGER.error( "Unknown peer", e );

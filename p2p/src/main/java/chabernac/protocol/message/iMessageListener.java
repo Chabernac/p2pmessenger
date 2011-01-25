@@ -6,4 +6,5 @@ package chabernac.protocol.message;
 
 public interface iMessageListener {
   public void messageReceived(Message aMessage);
+  public void messageUpdated( Message aMessage );
 }
