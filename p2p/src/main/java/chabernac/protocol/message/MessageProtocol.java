@@ -99,6 +99,10 @@ public class MessageProtocol extends Protocol {
     }
 
     public String handleMessageInternal(long aSessionId, Message aMessage){
+      if(myProcessingMessages.contains(aMessage.getMessageId())){
+        return Response.MESSAGE_LOOP_DETECTED.name();
+      } 
+      
       checkMessage(aMessage);
 
       AbstractPeer theDestination = aMessage.getDestination();
