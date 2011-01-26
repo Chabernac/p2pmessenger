@@ -38,6 +38,7 @@ import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.RoutingTableEntry;
 import chabernac.protocol.userinfo.UserInfoException;
 import chabernac.protocol.userinfo.iUserInfoProvider;
+import chabernac.tools.SaveMessagesToFile;
 import chabernac.utils.ArgsInterPreter;
 import chabernac.utils.ServiceTools;
 
@@ -88,6 +89,19 @@ public class ApplicationLauncher {
     
     new NewMessageTrayIconDisplayer(myChatFrame.getMediator());
     new NewMessageInfoPanelDisplayer(myChatFrame.getMediator());
+    
+    initSaveMessages();
+  }
+  
+  private static void initSaveMessages(){
+    String theLocation = ApplicationPreferences.getInstance().getProperty( "message.backup.file" );
+    if(theLocation != null){
+      try{
+        new SaveMessagesToFile(new File(theLocation), myFacade);
+      } catch(Exception e){
+        LOGGER.error("Could not init save messages to file", e);
+      }
+    }
   }
 
   private static void initDefaultSettigns() {
