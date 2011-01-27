@@ -27,6 +27,7 @@ import org.apache.log4j.PropertyConfigurator;
 
 import chabernac.protocol.facade.P2PFacade;
 import chabernac.protocol.facade.P2PFacadeException;
+import chabernac.protocol.message.Message;
 import chabernac.protocol.message.MultiPeerMessage;
 import chabernac.protocol.userinfo.UserInfo;
 
@@ -197,6 +198,16 @@ public class Tools {
       envelop += getShortNameForUser( i.next(), aP2Facade );
       if(i.hasNext()) envelop += ",";
     }
+    envelop += "]";
+    return envelop;
+  }
+  
+  
+  public static String getEnvelop(P2PFacade aP2Facade, Message aMessage) throws P2PFacadeException{
+    String envelop = "[";
+    envelop += getShortNameForUser(aMessage.getSource().getPeerId(), aP2Facade);
+    envelop += "-->";
+    envelop += getShortNameForUser( aMessage.getDestination().getPeerId(), aP2Facade );
     envelop += "]";
     return envelop;
   }
