@@ -23,6 +23,7 @@ import chabernac.protocol.message.MessageArchive;
 import chabernac.protocol.message.MultiPeerMessage;
 import chabernac.protocol.pipe.Pipe;
 import chabernac.protocol.userinfo.UserInfo;
+import chabernac.protocol.userinfo.UserInfo.Status;
 import chabernac.testingutils.DeliveryReportCollector;
 import chabernac.testingutils.EchoPipeListener;
 import chabernac.testingutils.FileHandler;
@@ -484,6 +485,43 @@ public class P2PFacadeTest extends TestCase {
       assertTrue( theFacade2.getInfoMap().containsKey( theFacade2.getPeerId() ));
       assertEquals( "test2running", theFacade2.getInfoMap().get( theFacade2.getPeerId() ).get( "test" ));
       
+    } finally {
+      if(theFacade1 != null) theFacade1.stop();
+      if(theFacade2 != null) theFacade2.stop();
+    }
+  }
+  
+  public void testChangeUserInfoRemotely() throws P2PFacadeException, InterruptedException{
+    P2PFacade theFacade1 = new P2PFacade()
+    .setExchangeDelay( 300 )
+    .setPersist( false )
+    .setInfoObject( "test", "test1" )
+    .start( 20 );
+
+    P2PFacade theFacade2 = new P2PFacade()
+    .setExchangeDelay( 300 )
+    .setInfoObject( "test", "test2" )
+    .setPersist( false )
+    .start( 20 );
+
+    Thread.sleep( 2000 );
+
+    try{
+      theFacade2.changeRemoteUserStatus( theFacade1.getPersonalInfo().getId(), Status.AWAY );
+      Thread.sleep( 1000 );
+      assertEquals( Status.AWAY, theFacade1.getPersonalInfo().getStatus() );
+      
+      theFacade2.changeRemoteUserStatus( theFacade1.getPersonalInfo().getId(), Status.BUSY);
+      Thread.sleep( 1000 );
+      assertEquals( Status.BUSY, theFacade1.getPersonalInfo().getStatus() );
+      
+      theFacade2.changeRemoteUserStatus( theFacade1.getPersonalInfo().getId(), Status.ONLINE);
+      Thread.sleep( 1000 );
+      assertEquals( Status.ONLINE, theFacade1.getPersonalInfo().getStatus() );
+      
+      theFacade2.changeRemoteUserStatus( theFacade1.getPersonalInfo().getId(), Status.OFFLINE);
+      Thread.sleep( 1000 );
+      assertEquals( Status.OFFLINE, theFacade1.getPersonalInfo().getStatus() );
     } finally {
       if(theFacade1 != null) theFacade1.stop();
       if(theFacade2 != null) theFacade2.stop();

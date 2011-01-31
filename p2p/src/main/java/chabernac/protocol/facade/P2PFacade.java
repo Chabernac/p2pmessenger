@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
@@ -49,6 +50,7 @@ import chabernac.protocol.userinfo.UserInfo;
 import chabernac.protocol.userinfo.UserInfoProtocol;
 import chabernac.protocol.userinfo.iUserInfoListener;
 import chabernac.protocol.userinfo.iUserInfoProvider;
+import chabernac.protocol.userinfo.UserInfo.Status;
 import chabernac.protocol.version.Version;
 import chabernac.protocol.version.VersionProtocol;
 import chabernac.tools.PropertyMap;
@@ -549,18 +551,42 @@ public class P2PFacade {
       throw new P2PFacadeException("Could not show routing frame", e);
     }
   }
+  
+  public void changeRemoteUserStatus(String aUserId, Status aStatus) throws P2PFacadeException{
+    if(!isStarted()) throw new P2PFacadeException("Can not execute this action when the server is not started");
+    
+    try{
+      ((UserInfoProtocol)myContainer.getProtocol( UserInfoProtocol.ID )).changeStatus( aUserId, aStatus );
+    }catch(Exception e){
+      throw new P2PFacadeException("Could not remotely change user info status", e);
+    }
+  }
 
   public boolean isStarted(){
     if(myProtocolServer == null) return false;
     return myProtocolServer.isStarted();
   }
-
+  
+  public void forceProtocolStart(String aProtocolId) throws P2PFacadeException{
+    if(!isStarted()) throw new P2PFacadeException("Can not execute this action when the server is not started");
+    try {
+      myContainer.getProtocol( aProtocolId, true );
+    } catch ( Exception e ) {
+      throw new P2PFacadeException("Could not force start protocol '" + aProtocolId + "'", e);
+    }
+    
+  }
+  
   public P2PFacade start(int aNumberOfThreads) throws P2PFacadeException{
+    return start(aNumberOfThreads, null);
+  }
+
+  public P2PFacade start(int aNumberOfThreads, Set<String> aSupportedProtocols) throws P2PFacadeException{
     if(isStarted()) return this;
 
     try{
       ProtocolFactory theFactory = new ProtocolFactory(myProperties);
-      myContainer = new ProtocolContainer(theFactory);
+      myContainer = new ProtocolContainer(theFactory, aSupportedProtocols);
       myProtocolServer = new ProtocolServer(myContainer, RoutingProtocol.START_PORT, aNumberOfThreads, true);
       
       if(!myProtocolServer.start()) throw new P2PFacadeException("Unable to start protocol server");
@@ -572,22 +598,21 @@ public class P2PFacade {
 
       //retrieve the user info protocol
       //this way it is instantiated and listens for routing table changes and retrieves user info of the changed peers
-      myContainer.getProtocol( UserInfoProtocol.ID );
+      if(aSupportedProtocols == null || aSupportedProtocols.contains( UserInfoProtocol.ID )) myContainer.getProtocol( UserInfoProtocol.ID );
       
       //retrieve the version protocol so that is starts exchanging versions
       //retrieve the user info protocol
       //this way it is instantiated and listens for routing table changes and retrieves user info of the changed peers
-      myContainer.getProtocol( VersionProtocol.ID );
+      if(aSupportedProtocols == null || aSupportedProtocols.contains( VersionProtocol.ID)) myContainer.getProtocol( VersionProtocol.ID );
       
-      myContainer.getProtocol( WebPeerProtocol.ID );
+      if(aSupportedProtocols == null || aSupportedProtocols.contains( WebPeerProtocol.ID)) myContainer.getProtocol( WebPeerProtocol.ID );
       
-      myContainer.getProtocol( InfoExchangeProtocol.ID );
+      if(aSupportedProtocols == null || aSupportedProtocols.contains( InfoExchangeProtocol.ID)) myContainer.getProtocol( InfoExchangeProtocol.ID );
       
       iSocketPool theSocketPool = P2PSettings.getInstance().getSocketPool();
       if(theSocketPool instanceof CachingSocketPool){
         ((CachingSocketPool)theSocketPool).setCleanUpTimeInSeconds( 30 );
       }
-
       
       return this;
     }catch(Exception e){

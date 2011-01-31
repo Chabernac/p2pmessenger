@@ -39,7 +39,7 @@ public class UserInfoProtocol extends Protocol {
 
   public static final String ID = "UIP";
 
-  public static enum Command { GET, PUT };
+  public static enum Command { GET, PUT, STATUS };
   public static enum Response{ OK, NOK };
 
   private Map<String, UserInfo> myUserInfo = Collections.synchronizedMap( new HashMap< String, UserInfo >());
@@ -56,7 +56,7 @@ public class UserInfoProtocol extends Protocol {
   private final UserInfo myPersonalUserInfo = new UserInfo();
 
   private iObjectStringConverter< UserInfo > myConverter = new Base64ObjectStringConverter< UserInfo >();
-  
+
   private ExecutorService myEventHandlerService = Executors.newSingleThreadExecutor();
 
 
@@ -167,6 +167,7 @@ public class UserInfoProtocol extends Protocol {
         return Response.NOK.name();
       }
     }
+
     if(anInput.startsWith( Command.PUT.name() ) ){
       String[] theParts = anInput.split( ";" );
       String thePeerId = theParts[1];
@@ -179,6 +180,12 @@ public class UserInfoProtocol extends Protocol {
         LOGGER.error("Could not get user info from input", e);
         return Response.NOK.name();
       }
+    }
+
+    if(anInput.startsWith( Command.STATUS.name() ) ){
+      String[] theInput = anInput.split(";");
+      myPersonalUserInfo.setStatus( Status.valueOf( theInput[1] ) );
+      return Response.OK.name();
     }
 
     return ProtocolContainer.Response.UNKNOWN_COMMAND.name();
@@ -208,6 +215,9 @@ public class UserInfoProtocol extends Protocol {
 
   public UserInfo getUserInfoForPeer(String aPeerId) throws UserInfoException{
     try{
+      AbstractPeer thePeer = getRoutingTable().getEntryForPeer( aPeerId ).getPeer();
+      if(!thePeer.isProtocolSupported( ID )) throw new UserInfoException("The user info protocol is not supported by peer '" + thePeer.getPeerId() + "'");
+
       LOGGER.debug("Trying to retrieve user info for peer: '" + aPeerId + "'");
       Message theMessage = new Message(  );
       theMessage.setDestination( getRoutingTable().getEntryForPeer( aPeerId ).getPeer());
@@ -237,6 +247,27 @@ public class UserInfoProtocol extends Protocol {
       throw new UserInfoException("Could not send user info to peer '" + aPeerId + "'", e);
     }
   }
+
+  public void changeStatus(String aUserId, Status aStatus) throws UserInfoException{
+    for(String thePeerId : getUserInfo().keySet()){
+      try{
+        UserInfo theUser = getUserInfo().get(thePeerId);
+        if(theUser.getId().equalsIgnoreCase( aUserId )){
+          Message theMessage = new Message();
+          theMessage.setDestination( getRoutingTable().getEntryForPeer( thePeerId ).getPeer() );
+          theMessage.setProtocolMessage( true );
+          theMessage.setMessage( createMessage( Command.STATUS + ";" + aStatus.name() ));
+          String theResult = ((MessageProtocol)findProtocolContainer().getProtocol( MessageProtocol.ID )).sendMessage( theMessage );
+          if(!theResult.equalsIgnoreCase( Response.OK.name() )){
+            throw new UserInfoException("Invalid result received when changing status '" + theResult + "'");
+          }
+        }
+      }catch(Exception e){
+        throw new UserInfoException("Could not change status of user: '" + aUserId + "' to status '" + aStatus.name() + "'");
+      }
+    }
+  }
+
 
   public Map<String, UserInfo> getUserInfo(){
     return Collections.unmodifiableMap( myUserInfo );
@@ -323,7 +354,7 @@ public class UserInfoProtocol extends Protocol {
       if(myUserInfo.containsKey( anEntry.getPeer().getPeerId() )){
         UserInfo theInfo = myUserInfo.get( anEntry.getPeer().getPeerId() );
         theInfo.setStatus( Status.OFFLINE );
-//        myUserInfo.remove( anEntry.getPeer().getPeerId() );
+        //        myUserInfo.remove( anEntry.getPeer().getPeerId() );
         notifyUserInfoChanged(theInfo);
       }
     }
