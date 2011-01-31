@@ -31,6 +31,7 @@ import chabernac.io.ClassPathResource;
 import chabernac.object.Iterable;
 import chabernac.object.ListConvertor;
 import chabernac.object.ObjectPool;
+import chabernac.p2pstatusconnector.P2PStatusConnector;
 import chabernac.preference.ApplicationPreferences;
 import chabernac.task.TaskObjectIdConvertor;
 import chabernac.task.TaskTools;
@@ -119,11 +120,11 @@ public class ApplicationLauncher implements iEventListener, iApplication{
 
 			ApplicationEventDispatcher.addListener(this, new Class[]{ApplicationCloseEvent.class});
 
-			if(ServiceTools.getRegistryRunKey( "Sheduler" ) == null){
-			  ServiceTools.addRun2Startup( new File("tasksheduler.cmd") );
-			}
+ 	    addToStartup();
 //			chabernac.utils.Tools.addRun2Registry("Sheduler", new File("heavy.cmd"));
 
+			new P2PStatusConnector( System.getProperty( "user.name" ) );
+			
 			theMainFrame.setVisible(true);
 
 			//Logger.log(ApplicationLauncher.class, "Active threads: " + Thread.activeCount());
@@ -133,6 +134,14 @@ public class ApplicationLauncher implements iEventListener, iApplication{
 			JOptionPane.showMessageDialog(null, "Er is een fout opgetreden tijdens het starten: " + e);
 			System.exit(-1);
 		}
+	}
+	
+	private void addToStartup(){
+	  try {
+      ServiceTools.addRun2Startup( new File("tasksheduler.cmd") );
+    } catch ( IOException e ) {
+      logger.error("Unable to add tasksheduler.cmd to startup");
+    }	  
 	}
 
 	/*

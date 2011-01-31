@@ -10,7 +10,9 @@ import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.apache.log4j.Logger;
 
+import chabernac.event.ApplicationEventDispatcher;
 import chabernac.object.Iterable;
+import chabernac.task.event.TaskStartedEvent;
 import chabernac.util.TreeIterator;
 
 public class Task extends DefaultMutableTreeNode implements Comparable, Iterable{
@@ -248,6 +250,7 @@ public class Task extends DefaultMutableTreeNode implements Comparable, Iterable
       currentPeriod = new Period();
       currentPeriod.setTask(this);
       addPeriod(currentPeriod);
+      ApplicationEventDispatcher.fireEvent( new TaskStartedEvent( this ) );
     }
   }
   
