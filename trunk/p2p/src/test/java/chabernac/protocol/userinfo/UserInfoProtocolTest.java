@@ -346,6 +346,46 @@ public class UserInfoProtocolTest extends AbstractProtocolTest {
     public List<UserInfo> getChangedUserInfo(){
       return myChangedUserInfo;
     }
-    
+  }
+  
+  public void testChangeStatusRemotely() throws ProtocolException, UserInfoException, InterruptedException{
+      ProtocolContainer theProtocol1 = getProtocolContainer( -1, false, "1" );
+      ProtocolServer theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT, 5);
+      RoutingProtocol theRoutingProtocol1 = (RoutingProtocol)theProtocol1.getProtocol( RoutingProtocol.ID );
+
+      ProtocolContainer theProtocol2 = getProtocolContainer( -1, false, "2" );
+      ProtocolServer theServer2 = new ProtocolServer(theProtocol2, RoutingProtocol.START_PORT + 1, 5);
+      RoutingProtocol theRoutingProtocol2 = (RoutingProtocol)theProtocol2.getProtocol( RoutingProtocol.ID );
+      
+      try{
+        UserInfoProtocol theUserInfoProtocol2 = (UserInfoProtocol)theProtocol2.getProtocol( UserInfoProtocol.ID );
+        UserInfoProtocol theUserInfoProtocol1 = (UserInfoProtocol)theProtocol1.getProtocol( UserInfoProtocol.ID );
+        
+        assertTrue( theServer1.start() );
+        assertTrue( theServer2.start() );
+        
+        Thread.sleep(SLEEP_AFTER_SCAN);
+        
+        theRoutingProtocol1.scanLocalSystem();
+        theRoutingProtocol2.scanLocalSystem();
+        
+        Thread.sleep( SLEEP_AFTER_SCAN );
+        
+        theUserInfoProtocol1.changeStatus( theUserInfoProtocol2.getPersonalInfo().getId(), Status.AWAY );
+        Thread.sleep( 1000 );
+        assertEquals( Status.AWAY, theUserInfoProtocol2.getPersonalInfo().getStatus() );
+        
+        theUserInfoProtocol1.changeStatus( theUserInfoProtocol2.getPersonalInfo().getId(), Status.BUSY );
+        Thread.sleep( 1000 );
+        assertEquals( Status.BUSY, theUserInfoProtocol2.getPersonalInfo().getStatus() );
+        
+        theUserInfoProtocol1.changeStatus( theUserInfoProtocol2.getPersonalInfo().getId(), Status.ONLINE );
+        Thread.sleep( 1000 );
+        assertEquals( Status.ONLINE, theUserInfoProtocol2.getPersonalInfo().getStatus() );
+
+       } finally {
+        theServer1.stop();
+        theServer2.stop();
+      }
   }
 }
