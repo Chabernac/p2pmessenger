@@ -214,6 +214,14 @@ public class MessageProtocol extends Protocol {
       if(!aMessage.getSource().isOnSameChannel(aMessage.getDestination())){
         throw new MessageException("Can not send message to peer on another channel");
       }
+      
+      if(aMessage.isProtocolMessage()){
+        //inspect if the protocol inside the message is supported by the other peer
+        String theProtocol = aMessage.getMessage().substring( 0, 3 );
+        if(!aMessage.getDestination().isProtocolSupported(  theProtocol )){
+          throw new MessageException( "The protocol inside this message is '" + theProtocol + "' is not supported by this client" );
+        }
+      }
 
       if(aMessage.containsIndicator( MessageIndicator.TO_BE_ENCRYPTED)){
         try{

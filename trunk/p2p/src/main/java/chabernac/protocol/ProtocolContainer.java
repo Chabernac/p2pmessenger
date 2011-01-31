@@ -137,7 +137,15 @@ public class ProtocolContainer implements IProtocol {
   }
 
   public synchronized IProtocol getProtocol(String anId) throws ProtocolException{
-    if(mySupportedProtocols != null && 
+    return getProtocol( anId, false );
+  }
+  
+  public synchronized IProtocol getProtocol(String anId, boolean isIgnoreSupportedProtocols) throws ProtocolException{
+    if(myProtocolMap.containsKey( anId )){
+      return myProtocolMap.get( anId );
+    }
+    
+    if(!isIgnoreSupportedProtocols && mySupportedProtocols != null && 
         mySupportedProtocols.size() > 0 &&
         !mySupportedProtocols.contains( anId )){
       throw new ProtocolException("The protocol with id '" + anId + "' is not supported on this peer");
@@ -150,6 +158,7 @@ public class ProtocolContainer implements IProtocol {
         theProtocol.setServerInfo( myServerInfo );
       }
     }
+    
     IProtocol theProtocol = myProtocolMap.get( anId );
 
     return theProtocol;
