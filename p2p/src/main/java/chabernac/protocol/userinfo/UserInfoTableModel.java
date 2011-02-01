@@ -35,18 +35,19 @@ public class UserInfoTableModel implements TableModel {
 
   @Override
   public int getColumnCount() {
-    return 7;
+    return 8;
   }
 
   @Override
   public String getColumnName( int anColumnIndex ) {
     if(anColumnIndex == 0) return "Peer Id";
     if(anColumnIndex == 1) return "Status";
-    if(anColumnIndex == 2) return "Id";
-    if(anColumnIndex == 3) return "Name";
-    if(anColumnIndex == 4) return "Email";
-    if(anColumnIndex == 5) return "Telnr";
-    if(anColumnIndex == 6) return "Location";
+    if(anColumnIndex == 2) return "Status message";
+    if(anColumnIndex == 3) return "Id";
+    if(anColumnIndex == 4) return "Name";
+    if(anColumnIndex == 5) return "Email";
+    if(anColumnIndex == 6) return "Telnr";
+    if(anColumnIndex == 7) return "Location";
     return ""; 
   }
 
@@ -64,11 +65,12 @@ public class UserInfoTableModel implements TableModel {
 
     if(anColumnIndex == 0) return thePeerId;
     if(anColumnIndex == 1) return theUserInfo.getStatus().name();
-    if(anColumnIndex == 2) return theUserInfo.getId();
-    if(anColumnIndex == 3) return theUserInfo.getName();
-    if(anColumnIndex == 4) return theUserInfo.getEMail();
-    if(anColumnIndex == 5) return theUserInfo.getTelNr();
-    if(anColumnIndex == 6) return theUserInfo.getLocation();
+    if(anColumnIndex == 1) return theUserInfo.getStatusMessage();
+    if(anColumnIndex == 3) return theUserInfo.getId();
+    if(anColumnIndex == 4) return theUserInfo.getName();
+    if(anColumnIndex == 5) return theUserInfo.getEMail();
+    if(anColumnIndex == 6) return theUserInfo.getTelNr();
+    if(anColumnIndex == 7) return theUserInfo.getLocation();
     return "";
   }
 
