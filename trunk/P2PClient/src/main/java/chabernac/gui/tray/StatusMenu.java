@@ -9,7 +9,7 @@ import java.io.IOException;
 
 import chabernac.p2pclient.gui.ChatMediator;
 import chabernac.protocol.facade.P2PFacadeException;
-import chabernac.protocol.userinfo.UserInfo;
+import chabernac.protocol.userinfo.UserInfo.Status;
 
 public class StatusMenu extends Menu {
   
@@ -17,9 +17,9 @@ public class StatusMenu extends Menu {
   public StatusMenu(ChatMediator aMediator) throws IOException, P2PFacadeException{
     super("Status");
     
-    add(new ChangeStatusMenuItem(aMediator, UserInfo.Status.ONLINE));
-    add(new ChangeStatusMenuItem(aMediator, UserInfo.Status.AWAY));
-    add(new ChangeStatusMenuItem(aMediator, UserInfo.Status.BUSY));
-    add(new ChangeStatusMenuItem(aMediator, UserInfo.Status.OFFLINE));
+    add(new ChangeStatusMenuItem(aMediator, Status.ONLINE));
+    add(new ChangeStatusMenuItem(aMediator, Status.AWAY));
+    add(new ChangeStatusMenuItem(aMediator, Status.BUSY));
+    add(new ChangeStatusMenuItem(aMediator, Status.OFFLINE));
   }
 }
