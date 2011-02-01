@@ -7,9 +7,8 @@ package chabernac.protocol.userinfo;
 import java.util.Observable;
 import java.util.Observer;
 
-import chabernac.protocol.userinfo.UserInfo.Status;
-
 import junit.framework.TestCase;
+import chabernac.protocol.userinfo.UserInfo.Status;
 
 public class UserInfoTest extends TestCase {
 

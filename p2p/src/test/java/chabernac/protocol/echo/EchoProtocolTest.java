@@ -1,11 +1,8 @@
 package chabernac.protocol.echo;
-import java.util.Properties;
-
+import junit.framework.TestCase;
 import chabernac.protocol.ProtocolContainer;
 import chabernac.protocol.ProtocolFactory;
-import chabernac.protocol.echo.EchoProtocol;
 import chabernac.tools.PropertyMap;
-import junit.framework.TestCase;
 
 /**
  * Copyright (c) 2010 Axa Holding Belgium, SA. All rights reserved.

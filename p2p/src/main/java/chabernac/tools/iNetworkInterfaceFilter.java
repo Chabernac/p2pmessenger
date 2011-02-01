@@ -4,7 +4,6 @@
  */
 package chabernac.tools;
 
-import java.net.InetAddress;
 import java.net.NetworkInterface;
 
 public interface iNetworkInterfaceFilter {

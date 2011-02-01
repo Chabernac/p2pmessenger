@@ -3,13 +3,12 @@ package chabernac.tools;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 
-import org.apache.commons.codec.binary.Base64;
-
 import junit.framework.TestCase;
+
+import org.apache.commons.codec.binary.Base64;
 
 public class TempTest extends TestCase {
   public void testURLEncode() throws IOException, ClassNotFoundException{

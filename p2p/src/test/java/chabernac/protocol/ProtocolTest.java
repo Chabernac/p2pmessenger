@@ -1,7 +1,5 @@
 package chabernac.protocol;
 
-import java.util.Properties;
-
 import junit.framework.TestCase;
 import chabernac.protocol.ping.PingProtocol;
 import chabernac.tools.PropertyMap;

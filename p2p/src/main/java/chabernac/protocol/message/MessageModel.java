@@ -13,7 +13,6 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
 
-import chabernac.protocol.ProtocolFactory;
 import chabernac.tools.StringTools;
 
 public class MessageModel implements TableModel {
