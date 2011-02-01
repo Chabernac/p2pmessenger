@@ -26,6 +26,8 @@ import chabernac.protocol.userinfo.UserInfoProtocol;
 import chabernac.protocol.userinfo.UserInfo.Status;
 import chabernac.task.Task;
 import chabernac.task.TaskTools;
+import chabernac.task.event.ApplicationCloseEvent;
+import chabernac.task.event.ApplicationSaveEvent;
 import chabernac.task.event.PeriodChangedEvent;
 import chabernac.task.event.TaskRemovedEvent;
 import chabernac.task.event.TaskStartedEvent;
@@ -56,13 +58,14 @@ public class P2PStatusConnector implements iEventListener {
 
     myP2PFacade = new P2PFacade()
     .setChannel( "p2pclient" )
+    .setPersist( true )
     .start( 10, theProtocols );
 
     myP2PFacade.forceProtocolStart( UserInfoProtocol.ID );
   }
 
   private void addListeners(){
-    ApplicationEventDispatcher.addListener( this, new Class[]{TaskStartedEvent.class, TaskRemovedEvent.class, PeriodChangedEvent.class} );
+    ApplicationEventDispatcher.addListener( this, new Class[]{TaskStartedEvent.class, TaskRemovedEvent.class, PeriodChangedEvent.class, ApplicationSaveEvent.class} );
   }
 
   private void loadStatusMapping() throws IOException{
@@ -83,10 +86,15 @@ public class P2PStatusConnector implements iEventListener {
 
   @Override
   public void eventFired( Event anEvent) {
-    try{
-      myP2PFacade.changeRemoteUserStatus( myLocalUserId, getStatusForEvent(anEvent) );
-    }catch(P2PFacadeException e){
-      LOGGER.error( "Unable to change status of user '" + myLocalUserId + "' remotely");
+    if(anEvent instanceof ApplicationSaveEvent){
+      myP2PFacade.stop();
+
+    } else {
+      try{
+        myP2PFacade.changeRemoteUserStatus( myLocalUserId, getStatusForEvent(anEvent) );
+      }catch(P2PFacadeException e){
+        LOGGER.error( "Unable to change status of user '" + myLocalUserId + "' remotely");
+      }
     }
   }
 
