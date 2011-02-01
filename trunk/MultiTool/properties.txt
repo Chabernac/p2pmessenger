@@ -1,5 +1,5 @@
 #Properties for Activity Logger
-#Fri Jan 21 15:00:50 CET 2011
+#Tue Feb 01 11:51:54 CET 2011
 user.userid=dgch804
 frame.light.location.y=300
 frame.light.location.x=300
@@ -8,7 +8,7 @@ End.width=250
 todo.Behoort\ tot.width=336
 todo.Taak.width=336
 frame.light.size.width=500
-frame.heavy.size.height=678
+frame.heavy.size.height=636
 filter.start=21-01-2011
 tree.showfinished=Y
 frame.light.size.height=263
@@ -18,7 +18,7 @@ Activity.width=251
 Start.width=251
 todo.Gewerkt.width=335
 filter.end=
-frame.heavy.location.y=0
-frame.heavy.location.x=0
+frame.heavy.location.y=3
 user.firstname=Guy
+frame.heavy.location.x=17
 Duration.width=250
