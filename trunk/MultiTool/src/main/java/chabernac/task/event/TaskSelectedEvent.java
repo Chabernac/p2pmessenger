@@ -1,18 +1,10 @@
 package chabernac.task.event;
 
-import chabernac.event.Event;
 import chabernac.task.Task;
 
-public class TaskSelectedEvent extends Event {
-  private Task myTask = null;
+public class TaskSelectedEvent extends TaskEvent {
 
   public TaskSelectedEvent(Task aTask) {
-    super("Task selected: " + aTask.getFullName() );
-    myTask = aTask;
+    super(aTask, "Task selected: " + aTask.getFullName() );
   }
-  
-  public Task getTask(){
-    return myTask;
-  }
-
 }
