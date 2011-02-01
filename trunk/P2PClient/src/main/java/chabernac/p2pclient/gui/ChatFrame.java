@@ -107,7 +107,7 @@ public class ChatFrame extends SavedFrame implements iTitleProvider, isShowDialo
     myMediator.setTitleProvider( this );
     myMediator.setIsShowDialogProvider( this );
     myMediator.setChatFrame( this );
-    myMediator.setTitle();
+//    myMediator.setTitle();
     myMediator.setPopupMessage();
     
     mySplitPane.setTopComponent(new JScrollPane(myMessageField, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER));
@@ -134,6 +134,11 @@ public class ChatFrame extends SavedFrame implements iTitleProvider, isShowDialo
     String theTitle = ApplicationPreferences.getInstance().getProperty("frame.light.title","Chatterke");
     try{
       theTitle += " [" + myP2PFacade.getPersonalInfo().getStatus().name();
+      
+      if(myP2PFacade.getPersonalInfo().getStatusMessage() != null && !myP2PFacade.getPersonalInfo().getStatusMessage().equals( "" )){
+        theTitle += " " + myP2PFacade.getPersonalInfo().getStatusMessage();
+      }
+      
       if(ApplicationPreferences.getInstance().hasEnumProperty( Settings.ReceiveEnveloppe.NO_POPUP )){
         theTitle += " - popup geblokkeerd";
       } else if(ApplicationPreferences.getInstance().hasEnumProperty( Settings.ReceiveEnveloppe.CLOSED )){
