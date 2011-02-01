@@ -521,6 +521,26 @@ public class P2PFacadeTest extends TestCase {
       theFacade2.changeRemoteUserStatus( theFacade1.getPersonalInfo().getId(), Status.OFFLINE);
       Thread.sleep( 1000 );
       assertEquals( Status.OFFLINE, theFacade1.getPersonalInfo().getStatus() );
+      
+      theFacade2.changeRemoteUserStatus( theFacade1.getPersonalInfo().getId(), Status.AWAY, "a" );
+      Thread.sleep( 1000 );
+      assertEquals( Status.AWAY, theFacade1.getPersonalInfo().getStatus() );
+      assertEquals( "a", theFacade1.getPersonalInfo().getStatusMessage() );
+      
+      theFacade2.changeRemoteUserStatus( theFacade1.getPersonalInfo().getId(), Status.BUSY, "b");
+      Thread.sleep( 1000 );
+      assertEquals( Status.BUSY, theFacade1.getPersonalInfo().getStatus() );
+      assertEquals( "b", theFacade1.getPersonalInfo().getStatusMessage() );
+      
+      theFacade2.changeRemoteUserStatus( theFacade1.getPersonalInfo().getId(), Status.ONLINE, "c");
+      Thread.sleep( 1000 );
+      assertEquals( Status.ONLINE, theFacade1.getPersonalInfo().getStatus() );
+      assertEquals( "c", theFacade1.getPersonalInfo().getStatusMessage() );
+      
+      theFacade2.changeRemoteUserStatus( theFacade1.getPersonalInfo().getId(), Status.OFFLINE, "d");
+      Thread.sleep( 1000 );
+      assertEquals( Status.OFFLINE, theFacade1.getPersonalInfo().getStatus() );
+      assertEquals( "d", theFacade1.getPersonalInfo().getStatusMessage() );
     } finally {
       if(theFacade1 != null) theFacade1.stop();
       if(theFacade2 != null) theFacade2.stop();
