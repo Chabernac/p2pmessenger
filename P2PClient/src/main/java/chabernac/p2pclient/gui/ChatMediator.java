@@ -7,7 +7,6 @@ package chabernac.p2pclient.gui;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -32,7 +31,6 @@ import chabernac.protocol.message.MessageIndicator;
 import chabernac.protocol.message.MultiPeerMessage;
 import chabernac.protocol.message.iMultiPeerMessageListener;
 import chabernac.protocol.userinfo.UserInfo.Status;
-import chabernac.tools.Tools;
 
 public class ChatMediator {
   private static Logger LOGGER = Logger.getLogger(ChatMediator.class);
@@ -92,7 +90,7 @@ public class ChatMediator {
   }
   public void setUserSelectionProvider( iUserSelectionProvider anUserSelectionProvider ) {
     myUserSelectionProvider = anUserSelectionProvider;
-    myUserSelectionProvider.addSelectionChangedListener( new MySelectionChangedListener() );
+//    myUserSelectionProvider.addSelectionChangedListener( new MySelectionChangedListener() );
   }
   
   public iChatFrame getChatFrame() {
@@ -183,7 +181,7 @@ public class ChatMediator {
     } else {
       clearAll();
     }
-    setTitle();
+//    setTitle();
   }
 
   public void restoreMessageAtIndex(int anIndex){
@@ -286,28 +284,31 @@ public class ChatMediator {
     myTitleProvider = anTitleProvider;
   }
 
-  public void setTitle(){
-    if(true) return;
-    Set<String> theUsers = myUserSelectionProvider.getSelectedUsers();
-    String theTitle = ApplicationPreferences.getInstance().getProperty("frame.light.title","Chatterke");
-    try{
-      theTitle += " [" + myP2PFacade.getPersonalInfo().getStatus().name();
-      if(ApplicationPreferences.getInstance().hasEnumProperty( Settings.ReceiveEnveloppe.NO_POPUP )){
-        theTitle += " - popup geblokkeerd";
-      } else if(ApplicationPreferences.getInstance().hasEnumProperty( Settings.ReceiveEnveloppe.CLOSED )){
-        theTitle += " - ontvang gesloten";
-      }
-      theTitle += "]";
-      if(theUsers.size() == 1){
-        theTitle += " - sc " + Tools.getShortNameForUser( myP2PFacade.getUserInfo().get( theUsers.iterator().next() )); 
-      } else if(theUsers.size() > 1){
-        theTitle += " - mc ";
-      }
-    }catch(P2PFacadeException e){
-      LOGGER.error( "Could not set title", e );
-    }
-    myTitleProvider.setTitle( theTitle );
-  }
+//  public void setTitle(){
+//    if(true) return;
+//    Set<String> theUsers = myUserSelectionProvider.getSelectedUsers();
+//    String theTitle = ApplicationPreferences.getInstance().getProperty("frame.light.title","Chatterke");
+//    try{
+//      theTitle += " [" + myP2PFacade.getPersonalInfo().getStatus().name();
+//      if(myP2PFacade.getPersonalInfo().getStatusMessage() != null && !myP2PFacade.getPersonalInfo().getStatusMessage().equals( "" )){
+//        theTitle += " " + myP2PFacade.getPersonalInfo().getStatusMessage();
+//      }
+//      if(ApplicationPreferences.getInstance().hasEnumProperty( Settings.ReceiveEnveloppe.NO_POPUP )){
+//        theTitle += " - popup geblokkeerd";
+//      } else if(ApplicationPreferences.getInstance().hasEnumProperty( Settings.ReceiveEnveloppe.CLOSED )){
+//        theTitle += " - ontvang gesloten";
+//      }
+//      theTitle += "]";
+//      if(theUsers.size() == 1){
+//        theTitle += " - sc " + Tools.getShortNameForUser( myP2PFacade.getUserInfo().get( theUsers.iterator().next() )); 
+//      } else if(theUsers.size() > 1){
+//        theTitle += " - mc ";
+//      }
+//    }catch(P2PFacadeException e){
+//      LOGGER.error( "Could not set title", e );
+//    }
+//    myTitleProvider.setTitle( theTitle );
+//  }
   
   public void setPopupMessage(){
     if(myMessageProvider instanceof JComponent){
@@ -321,13 +322,13 @@ public class ChatMediator {
     }
   }
 
-  private class MySelectionChangedListener implements iSelectionChangedListener {
-
-    @Override
-    public void selectionChanged() {
-      setTitle();
-    }
-  }
+//  private class MySelectionChangedListener implements iSelectionChangedListener {
+//
+//    @Override
+//    public void selectionChanged() {
+//      setTitle();
+//    }
+//  }
 
   private void checkReceiveStatus( ) {
     try{
@@ -339,7 +340,7 @@ public class ChatMediator {
     }catch(P2PFacadeException e){
       LOGGER.error("Could not change status", e);
     }
-    setTitle();
+//    setTitle();
     setPopupMessage();
   }
 
