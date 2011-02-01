@@ -2,7 +2,7 @@ package chabernac.p2pclient.gui.action;
 
 import chabernac.command.Command;
 import chabernac.p2pclient.gui.ChatMediator;
-import chabernac.protocol.userinfo.UserInfo;
+import chabernac.protocol.userinfo.UserInfo.Status;
 
 public class ActionFactory {
   private final ChatMediator myMediator;
@@ -59,10 +59,10 @@ public class ActionFactory {
     if(anAction == Action.INFO_PANEL) return new ReceiveInfoPanelCommand();
     if(anAction == Action.NO_POPUP) return new NoPopupCommand();
     if(anAction == Action.TOGGLE_POPUP) return new TogglePopupCommand();
-    if(anAction == Action.STATUS_AWAY) return new ChangeStatusCommand(myMediator.getP2PFacade(), UserInfo.Status.ONLINE);
-    if(anAction == Action.STATUS_BUSSY) return new ChangeStatusCommand(myMediator.getP2PFacade(), UserInfo.Status.BUSY);
-    if(anAction == Action.STATUS_OFFLINE) return new ChangeStatusCommand(myMediator.getP2PFacade(), UserInfo.Status.OFFLINE);
-    if(anAction == Action.STATUS_ONLINE) return new ChangeStatusCommand(myMediator.getP2PFacade(), UserInfo.Status.ONLINE);
+    if(anAction == Action.STATUS_AWAY) return new ChangeStatusCommand(myMediator.getP2PFacade(), Status.ONLINE);
+    if(anAction == Action.STATUS_BUSSY) return new ChangeStatusCommand(myMediator.getP2PFacade(), Status.BUSY);
+    if(anAction == Action.STATUS_OFFLINE) return new ChangeStatusCommand(myMediator.getP2PFacade(), Status.OFFLINE);
+    if(anAction == Action.STATUS_ONLINE) return new ChangeStatusCommand(myMediator.getP2PFacade(), Status.ONLINE);
     if(anAction == Action.EXIT) return new ExitCommand(myMediator, false);
     if(anAction == Action.EXIT_WITHOUT_ASKING) return new ExitCommand(myMediator, true);
     if(anAction == Action.SHOW_FRAME) return new ShowFrameCommand();
