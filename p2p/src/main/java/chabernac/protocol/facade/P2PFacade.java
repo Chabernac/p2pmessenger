@@ -553,10 +553,14 @@ public class P2PFacade {
   }
   
   public void changeRemoteUserStatus(String aUserId, Status aStatus) throws P2PFacadeException{
+    changeRemoteUserStatus( aUserId, aStatus, null );
+  }
+  
+  public void changeRemoteUserStatus(String aUserId, Status aStatus, String aStatusDescription) throws P2PFacadeException{
     if(!isStarted()) throw new P2PFacadeException("Can not execute this action when the server is not started");
     
     try{
-      ((UserInfoProtocol)myContainer.getProtocol( UserInfoProtocol.ID )).changeStatus( aUserId, aStatus );
+      ((UserInfoProtocol)myContainer.getProtocol( UserInfoProtocol.ID )).changeStatus( aUserId, aStatus, aStatusDescription );
     }catch(Exception e){
       throw new P2PFacadeException("Could not remotely change user info status", e);
     }
