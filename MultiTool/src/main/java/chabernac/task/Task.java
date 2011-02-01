@@ -12,6 +12,7 @@ import org.apache.log4j.Logger;
 
 import chabernac.event.ApplicationEventDispatcher;
 import chabernac.object.Iterable;
+import chabernac.task.event.TaskRemovedEvent;
 import chabernac.task.event.TaskStartedEvent;
 import chabernac.util.TreeIterator;
 
@@ -229,6 +230,7 @@ public class Task extends DefaultMutableTreeNode implements Comparable, Iterable
   public void removeSubTask(Task aTask) throws TaskException{
     if(periods.size() > 0) throw new TaskException("Can not remove subtask because time has already been reported on this task");
     remove(aTask);
+    ApplicationEventDispatcher.fireEvent( new TaskRemovedEvent( this ) );
   }
   public boolean isCompleted(){
     return completed;

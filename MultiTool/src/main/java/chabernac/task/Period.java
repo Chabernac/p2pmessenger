@@ -5,6 +5,9 @@ import java.io.Serializable;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
+import chabernac.event.ApplicationEventDispatcher;
+import chabernac.task.event.PeriodChangedEvent;
+
 public class Period implements Comparable, Serializable{
   private static final long serialVersionUID = -5802645805801029937L;
   private long startTime = -1;
@@ -21,18 +24,21 @@ public class Period implements Comparable, Serializable{
   }
   public void setEndTime(long endTime) {
     this.endTime = endTime;
+    ApplicationEventDispatcher.fireEvent( new PeriodChangedEvent(this) );
   }
   public long getStartTime() {
     return startTime;
   }
   public void setStartTime(long startTime) {
     this.startTime = startTime;
+    ApplicationEventDispatcher.fireEvent( new PeriodChangedEvent(this) );
   }
   public Task getTask() {
     return task;
   }
   public void setTask(Task task) {
     this.task = task;
+    ApplicationEventDispatcher.fireEvent( new PeriodChangedEvent(this) );
   }
   public long getTime(){
     long theEndTime = endTime;
