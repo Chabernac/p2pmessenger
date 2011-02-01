@@ -26,7 +26,6 @@ import chabernac.protocol.userinfo.UserInfoProtocol;
 import chabernac.protocol.userinfo.UserInfo.Status;
 import chabernac.task.Task;
 import chabernac.task.TaskTools;
-import chabernac.task.event.ApplicationCloseEvent;
 import chabernac.task.event.ApplicationSaveEvent;
 import chabernac.task.event.PeriodChangedEvent;
 import chabernac.task.event.TaskRemovedEvent;
@@ -91,7 +90,8 @@ public class P2PStatusConnector implements iEventListener {
 
     } else {
       try{
-        myP2PFacade.changeRemoteUserStatus( myLocalUserId, getStatusForEvent(anEvent) );
+        Task theRunningTask = TaskTools.getRunningTask();
+        myP2PFacade.changeRemoteUserStatus( myLocalUserId, getStatusForEvent(anEvent), theRunningTask != null ? theRunningTask.getDescription() : null );
       }catch(P2PFacadeException e){
         LOGGER.error( "Unable to change status of user '" + myLocalUserId + "' remotely");
       }
