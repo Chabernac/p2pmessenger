@@ -13,7 +13,6 @@ import java.io.File;
 
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
-import javax.swing.JFormattedTextField;
 import javax.swing.JProgressBar;
 
 public class FileHandlerDialog extends JDialog implements iFileHandler{

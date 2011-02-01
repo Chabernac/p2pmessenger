@@ -6,6 +6,7 @@ package chabernac.protocol.userinfo;
 
 import chabernac.protocol.userinfo.UserInfo.Status;
 
+
 public class DefaultUserInfoProvider implements iUserInfoProvider {
   private boolean isFirstTime = true;
   private String myEmail = "";

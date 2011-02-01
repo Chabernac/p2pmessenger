@@ -185,6 +185,9 @@ public class UserInfoProtocol extends Protocol {
     if(anInput.startsWith( Command.STATUS.name() ) ){
       String[] theInput = anInput.split(";");
       myPersonalUserInfo.setStatus( Status.valueOf( theInput[1] ) );
+      if(theInput.length >= 3){
+        myPersonalUserInfo.setStatusMessage( theInput[2] );
+      }
       return Response.OK.name();
     }
 
@@ -249,6 +252,10 @@ public class UserInfoProtocol extends Protocol {
   }
 
   public void changeStatus(String aUserId, Status aStatus) throws UserInfoException{
+    changeStatus( aUserId, aStatus, null);
+  }
+  
+  public void changeStatus(String aUserId, Status aStatus, String aStatusMessage) throws UserInfoException{
     for(String thePeerId : getUserInfo().keySet()){
       try{
         UserInfo theUser = getUserInfo().get(thePeerId);
@@ -256,14 +263,16 @@ public class UserInfoProtocol extends Protocol {
           Message theMessage = new Message();
           theMessage.setDestination( getRoutingTable().getEntryForPeer( thePeerId ).getPeer() );
           theMessage.setProtocolMessage( true );
-          theMessage.setMessage( createMessage( Command.STATUS + ";" + aStatus.name() ));
+          String theStatusMessage = Command.STATUS + ";" + aStatus.name();
+          if(aStatusMessage != null && !"".equals( aStatusMessage )) theStatusMessage += ";" + aStatusMessage;
+          theMessage.setMessage( createMessage( theStatusMessage ));
           String theResult = ((MessageProtocol)findProtocolContainer().getProtocol( MessageProtocol.ID )).sendMessage( theMessage );
           if(!theResult.equalsIgnoreCase( Response.OK.name() )){
             throw new UserInfoException("Invalid result received when changing status '" + theResult + "'");
           }
         }
       }catch(Exception e){
-        throw new UserInfoException("Could not change status of user: '" + aUserId + "' to status '" + aStatus.name() + "'");
+        throw new UserInfoException("Could not change status of user: '" + aUserId + "' to status '" + aStatus.name() + "'", e);
       }
     }
   }

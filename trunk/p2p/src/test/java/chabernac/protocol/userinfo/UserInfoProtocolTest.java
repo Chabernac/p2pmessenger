@@ -255,7 +255,7 @@ public class UserInfoProtocolTest extends AbstractProtocolTest {
       assertNotNull( theUserInfo );
       assertNotNull( theUserInfo.getId() );
       assertTrue( theUserInfo.getId().length() > 0 );
-      assertEquals( UserInfo.Status.OFFLINE, theUserInfo.getStatus() );
+      assertEquals( Status.OFFLINE, theUserInfo.getStatus() );
       
       RoutingTableEntry theEntryForPeer2 = theRoutingTable1.getEntryForPeer( theRoutingTable2.getLocalPeerId() );
       theRoutingTable1.removeRoutingTableEntry( theEntryForPeer2 );
@@ -265,7 +265,7 @@ public class UserInfoProtocolTest extends AbstractProtocolTest {
       theUserInfo = theUserInfoProtocol.getUserInfo().get(theRoutingTable2.getLocalPeerId());
       
       assertNotNull( theUserInfo );
-      assertEquals( UserInfo.Status.OFFLINE, theUserInfo.getStatus() );
+      assertEquals( Status.OFFLINE, theUserInfo.getStatus() );
     } finally {
       theServer1.stop();
       theServer2.stop();
@@ -303,7 +303,7 @@ public class UserInfoProtocolTest extends AbstractProtocolTest {
       
       UserInfo theUserInfo = theUserInfoProtocol2.getUserInfo().get( theRoutingTable1.getLocalPeerId() ); 
       assertNotNull( theUserInfo );
-      assertEquals( UserInfo.Status.ONLINE, theUserInfo.getStatus() );
+      assertEquals( Status.ONLINE, theUserInfo.getStatus() );
       
       theServer1.kill();
       
@@ -315,7 +315,7 @@ public class UserInfoProtocolTest extends AbstractProtocolTest {
       
       theUserInfo = theUserInfoProtocol2.getUserInfo().get( theRoutingTable1.getLocalPeerId() ); 
       assertNotNull( theUserInfo );
-      assertEquals( UserInfo.Status.OFFLINE, theUserInfo.getStatus() );
+      assertEquals( Status.OFFLINE, theUserInfo.getStatus() );
       
       theServer1.start();
       
@@ -326,7 +326,7 @@ public class UserInfoProtocolTest extends AbstractProtocolTest {
       Thread.sleep(SLEEP_AFTER_SCAN);
       theUserInfo = theUserInfoProtocol2.getUserInfo().get( theRoutingTable1.getLocalPeerId() ); 
       assertNotNull( theUserInfo );
-      assertEquals( UserInfo.Status.ONLINE, theUserInfo.getStatus() );
+      assertEquals( Status.ONLINE, theUserInfo.getStatus() );
       
     } finally {
       theServer1.stop();
@@ -382,6 +382,21 @@ public class UserInfoProtocolTest extends AbstractProtocolTest {
         theUserInfoProtocol1.changeStatus( theUserInfoProtocol2.getPersonalInfo().getId(), Status.ONLINE );
         Thread.sleep( 1000 );
         assertEquals( Status.ONLINE, theUserInfoProtocol2.getPersonalInfo().getStatus() );
+        
+        theUserInfoProtocol1.changeStatus( theUserInfoProtocol2.getPersonalInfo().getId(), Status.AWAY, "1" );
+        Thread.sleep( 1000 );
+        assertEquals( Status.AWAY, theUserInfoProtocol2.getPersonalInfo().getStatus() );
+        assertEquals( "1",  theUserInfoProtocol2.getPersonalInfo().getStatusMessage() );
+        
+        theUserInfoProtocol1.changeStatus( theUserInfoProtocol2.getPersonalInfo().getId(), Status.BUSY, "2" );
+        Thread.sleep( 1000 );
+        assertEquals( Status.BUSY, theUserInfoProtocol2.getPersonalInfo().getStatus() );
+        assertEquals( "2",  theUserInfoProtocol2.getPersonalInfo().getStatusMessage() );
+        
+        theUserInfoProtocol1.changeStatus( theUserInfoProtocol2.getPersonalInfo().getId(), Status.ONLINE, "3" );
+        Thread.sleep( 1000 );
+        assertEquals( Status.ONLINE, theUserInfoProtocol2.getPersonalInfo().getStatus() );
+        assertEquals( "3",  theUserInfoProtocol2.getPersonalInfo().getStatusMessage() );
 
        } finally {
         theServer1.stop();

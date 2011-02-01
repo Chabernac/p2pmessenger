@@ -218,7 +218,7 @@ public class ProtocolServer implements Runnable{
           theWriter.println( theResult );
           theWriter.flush();
         }
-      }catch(IOException e){
+      }catch(Throwable e){
         LOGGER.error( "Io exception occured in protocol server", e );
       } finally {
         try{

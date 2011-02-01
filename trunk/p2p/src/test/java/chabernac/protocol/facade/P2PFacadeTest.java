@@ -17,7 +17,6 @@ import junit.framework.TestCase;
 import org.apache.log4j.BasicConfigurator;
 
 import chabernac.io.SocketProxy;
-import chabernac.protocol.AlreadyRunningException;
 import chabernac.protocol.message.DeliveryReport;
 import chabernac.protocol.message.MessageArchive;
 import chabernac.protocol.message.MultiPeerMessage;
