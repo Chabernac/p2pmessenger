@@ -173,7 +173,7 @@ public class ApplicationLauncher implements iEventListener, iApplication{
 	  }).start();
 	  new Timer(Integer.parseInt(thePreferences.getProperty("backup.mail.timeout", "14400000")), new ActionListener(){
       public void actionPerformed(ActionEvent evt){
-        sendBackupMail();
+        createIpFileBackup();
       }
 	  }).start();
 		
@@ -191,7 +191,7 @@ public class ApplicationLauncher implements iEventListener, iApplication{
 		ApplicationPreferences.save();
 	}
 
-	private void sendBackupMail(){
+	private void createIpFileBackup(){
 	  BackupFile theBackupFile = new BackupFile();
 	  theBackupFile.setBackupLocation( new File("c:\\temp") );
 	  theBackupFile.setFile( ipFile );
@@ -221,8 +221,7 @@ public class ApplicationLauncher implements iEventListener, iApplication{
 				stop = true;
 				theDialog.setMessage("Saving...");
 				save();
-				sendBackupMail();
-				theDialog.setMessage("Stopping messenger...");
+				createIpFileBackup();
 				theDialog.setMessage("Exiting...");
 				theDialog.setVisible(false);
 			} catch (Exception e) {
