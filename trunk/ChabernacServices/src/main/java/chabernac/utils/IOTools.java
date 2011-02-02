@@ -8,9 +8,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.io.Serializable;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.Hashtable;
 import java.util.Properties;
 
@@ -93,21 +92,26 @@ public class IOTools {
 	public static void copyFile(File in, File out) throws IOException {
 		FileInputStream fis  = new FileInputStream(in);
 		FileOutputStream fos = new FileOutputStream(out);
-		try {
-			byte[] buf = new byte[1024];
-			int i = 0;
-			while ((i = fis.read(buf)) != -1) {
-				fos.write(buf, 0, i);
-			}
-		} finally {
-			if (fis != null) {
-				fis.close();
-			}
-			if (fos != null) {
-				fos.flush();
-				fos.close();
-			}
-		}
+		
+		copyStream( fis, fos );
+	}
+	
+	public static void copyStream(InputStream anInput, OutputStream anOutput) throws IOException{
+	  try {
+      byte[] buf = new byte[1024];
+      int i = 0;
+      while ((i = anInput.read(buf)) != -1) {
+        anOutput.write(buf, 0, i);
+      }
+    } finally {
+      if (anInput != null) {
+        anOutput.close();
+      }
+      if (anOutput != null) {
+        anOutput.flush();
+        anOutput.close();
+      }
+    }
 	}
 
 	public static byte[] readInputStream(InputStream aStream) throws IOException{

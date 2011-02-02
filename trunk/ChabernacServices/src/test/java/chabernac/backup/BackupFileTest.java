@@ -11,8 +11,8 @@ import junit.framework.TestCase;
 
 public class BackupFileTest extends TestCase {
   public void testBackup() throws IOException{
-    File theFileToBackup = new File("c:\\data\\a.txt");
-    assertTrue( theFileToBackup.createNewFile() );
+    File theFileToBackup = new File("i:\\ip.bin");
+//    assertTrue( theFileToBackup.createNewFile() );
     
     try{
       BackupFile theBackup = new BackupFile();
@@ -20,7 +20,7 @@ public class BackupFileTest extends TestCase {
       theBackup.setFile( theFileToBackup );
       theBackup.run();
     } finally {
-      theFileToBackup.delete();
+//      theFileToBackup.delete();
     }
     
   }
