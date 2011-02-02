@@ -65,7 +65,7 @@ public class UserInfoTableModel implements TableModel {
 
     if(anColumnIndex == 0) return thePeerId;
     if(anColumnIndex == 1) return theUserInfo.getStatus().name();
-    if(anColumnIndex == 1) return theUserInfo.getStatusMessage();
+    if(anColumnIndex == 2) return theUserInfo.getStatusMessage();
     if(anColumnIndex == 3) return theUserInfo.getId();
     if(anColumnIndex == 4) return theUserInfo.getName();
     if(anColumnIndex == 5) return theUserInfo.getEMail();

@@ -126,6 +126,8 @@ public class UserInfoProtocol extends Protocol {
   }
 
   public void announceMe(){
+    if(myPersonalUserInfo.isEmpty()) return;
+    
     try{
       RoutingTable theTable = getRoutingTable();
       AbstractPeer theLocalPeer = theTable.getEntryForLocalPeer().getPeer();
