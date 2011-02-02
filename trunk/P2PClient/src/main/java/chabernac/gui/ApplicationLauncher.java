@@ -55,44 +55,49 @@ public class ApplicationLauncher {
    * @throws AWTException 
    * @throws IOException 
    */
-  public static void main( String[] args ) throws P2PFacadeException, UserInfoException, IOException, AWTException {
-    ArgsInterPreter theInterPretser = new ArgsInterPreter(args);
+  public static void main( String[] args ) {
+    try{
+      ArgsInterPreter theInterPretser = new ArgsInterPreter(args);
 
-    initProxy(theInterPretser);
-    
-    initLocale(theInterPretser);
-    
-    initDefaultSettigns();
+      initProxy(theInterPretser);
 
-    if("true".equals(theInterPretser.getKeyValue("checklock", "true"))){
-      if(!checkLockAndActivate()) return;
+      initLocale(theInterPretser);
+
+      initDefaultSettigns();
+
+      if("true".equals(theInterPretser.getKeyValue("checklock", "true"))){
+        if(!checkLockAndActivate()) return;
+      }
+
+      BasicConfigurator.configure();
+
+      addRun2Startup();
+
+      SocketProxy.setTraceEnabled( true );
+
+      startTimers();
+
+      startFacade(theInterPretser);
+
+      addActivationListener();
+
+      myChatFrame = new ChatFrame(myFacade);
+      if("true".equals(theInterPretser.getKeyValue( "visible" ))){
+        showChatFrame();
+      }
+
+      SystemTrayMenu.buildSystemTray( myChatFrame, myFacade );
+
+      new NewMessageTrayIconDisplayer(myChatFrame.getMediator());
+      new NewMessageInfoPanelDisplayer(myChatFrame.getMediator());
+
+      initSaveMessages();
+    }catch(Exception e){
+      LOGGER.error("An error occured during boot process", e);
+      System.exit(-1);
     }
-
-    BasicConfigurator.configure();
-
-    addRun2Startup();
-
-    SocketProxy.setTraceEnabled( true );
-
-    startTimers();
-
-    startFacade(theInterPretser);
-
-    addActivationListener();
-
-    myChatFrame = new ChatFrame(myFacade);
-    if("true".equals(theInterPretser.getKeyValue( "visible" ))){
-      showChatFrame();
-    }
-
-    SystemTrayMenu.buildSystemTray( myChatFrame, myFacade );
-    
-    new NewMessageTrayIconDisplayer(myChatFrame.getMediator());
-    new NewMessageInfoPanelDisplayer(myChatFrame.getMediator());
-    
-    initSaveMessages();
   }
-  
+
   private static void initSaveMessages(){
     String theLocation = ApplicationPreferences.getInstance().getProperty( "message.backup.file" );
     if(theLocation != null){
@@ -116,7 +121,7 @@ public class ApplicationLauncher {
       System.getProperties().put("http.proxyPort", anInterpreter.getKeyValue( "http.proxyPort" ));
     }
   }
-  
+
   private static void initLocale(ArgsInterPreter anInterpreter){
     Locale.setDefault( new Locale(anInterpreter.getKeyValue( "locale", "nl" )));
   }
@@ -144,9 +149,9 @@ public class ApplicationLauncher {
     .setChannel(anInterPreter.getKeyValue("channel", "default"))
     .setFileHandler( new FileHandlerDialogDispatcher() )
     .setInfoObject( "pom.info", new POMInfo() )
-    .setInfoObject( "version", "v2011.02.01" )
+    .setInfoObject( "version", "v2011.02.02" )
     .setSocketReuse( false )
-    .start( 10 );
+    .start( 256 );
   }
 
   private static void addRun2Startup(){
