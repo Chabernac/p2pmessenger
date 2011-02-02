@@ -96,4 +96,12 @@ public class UserInfo extends Observable implements Serializable{
   public String getStatusMessage(){
     return getProperty( Property.STATUS_MESSAGE );
   }
+  
+  public boolean isEmpty(){
+    return myProperties.isEmpty();
+  }
+  
+  public void clear(){
+    myProperties.clear();
+  }
 }
