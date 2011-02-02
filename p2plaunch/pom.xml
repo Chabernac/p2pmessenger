@@ -30,6 +30,8 @@
 						<argument>></argument>
 						<argument>run.cmd</argument>
 						<argument>javaw</argument>
+						<argument>-Xdebug</argument>
+						<argument>-Xrunjdwp:transport=dt_socket,address=8790,server=y,suspend=y</argument>
 						<argument>-classpath</argument>
 						<classpath />
 						<argument>chabernac.gui.ApplicationLauncher</argument>
