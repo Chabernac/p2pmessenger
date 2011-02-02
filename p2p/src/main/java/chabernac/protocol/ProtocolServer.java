@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.log4j.Logger;
@@ -115,7 +114,7 @@ public class ProtocolServer implements Runnable{
       myServerInfo.setServerPort( myServerSocket.getLocalPort() );
       myProtocol.setServerInfo( myServerInfo );
 
-      myClientHandlerService = Executors.newFixedThreadPool( myNumberOfThreads );
+      myClientHandlerService = new DynamicSizeExecutor( 10, 256 );
 
       LOGGER.debug( "Starting protocol server at port '" + myPort + "'" );
       
