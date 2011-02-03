@@ -19,6 +19,7 @@ import org.apache.log4j.Logger;
 
 import chabernac.io.Base64ObjectStringConverter;
 import chabernac.io.iObjectStringConverter;
+import chabernac.protocol.DynamicSizeExecutor;
 import chabernac.protocol.IProtocol;
 import chabernac.protocol.Protocol;
 import chabernac.protocol.ProtocolException;
@@ -51,7 +52,7 @@ public class InfoExchangeProtocol<T extends Observable & Serializable> extends P
   private Map<String, T> myInfoMap = Collections.synchronizedMap( new HashMap< String, T > ());
   private Set<iInfoListener<T>> myInfoListeners = new HashSet< iInfoListener< T >>();
 
-  private ExecutorService myService = Executors.newFixedThreadPool( 5 );
+  private ExecutorService myService = DynamicSizeExecutor.getSmallInstance();
 
   private enum Command{PUT};
   private enum Response{OK, NOK, UNKNOWN_COMMAND};

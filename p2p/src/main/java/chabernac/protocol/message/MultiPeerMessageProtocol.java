@@ -14,6 +14,7 @@ import org.apache.log4j.Logger;
 
 import chabernac.io.Base64ObjectStringConverter;
 import chabernac.io.iObjectStringConverter;
+import chabernac.protocol.DynamicSizeExecutor;
 import chabernac.protocol.Protocol;
 import chabernac.protocol.ProtocolException;
 import chabernac.protocol.message.DeliveryReport.Status;
@@ -28,7 +29,7 @@ public class MultiPeerMessageProtocol extends Protocol{
   private static enum STATUS_MESSAGE { FAILED, DELIVERED }
 
   private List< iDeliverReportListener > myDeliverReportListeners = new ArrayList< iDeliverReportListener >();
-  private ExecutorService mySendService = Executors.newFixedThreadPool( 10 );
+  private ExecutorService mySendService = DynamicSizeExecutor.getSmallInstance();
   private iObjectStringConverter< MultiPeerMessage > myObjectStringConverter = new Base64ObjectStringConverter< MultiPeerMessage >();
   private List<iMultiPeerMessageListener> myMessageListeners = new ArrayList< iMultiPeerMessageListener >();
   private ExecutorService myEventHandlerService = Executors.newSingleThreadExecutor();

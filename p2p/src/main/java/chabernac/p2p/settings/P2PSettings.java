@@ -10,6 +10,15 @@ import chabernac.protocol.routing.PeerSender;
 import chabernac.protocol.routing.iPeerSender;
 
 public class P2PSettings {
+  private iPeerSender myPeerSender = new PeerSender();
+  private iSocketPool mySocketPool = new BasicSocketPool();
+  
+  
+  public P2PSettings(){
+    mySocketPool = new BasicSocketPool();
+    ((BasicSocketPool)mySocketPool).setSocketReuse( false );
+  }
+  
   private static final class INSTANCE_HOLDER{
     private static final P2PSettings INSTANCE = new P2PSettings();
   }
@@ -17,9 +26,6 @@ public class P2PSettings {
   public static P2PSettings getInstance(){
     return INSTANCE_HOLDER.INSTANCE;
   }
-  
-  private iPeerSender myPeerSender = new PeerSender();
-  private iSocketPool mySocketPool = new BasicSocketPool();
   
   public iPeerSender getPeerSender() {
     return myPeerSender;

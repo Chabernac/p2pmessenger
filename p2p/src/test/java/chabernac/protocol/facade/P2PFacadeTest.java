@@ -55,6 +55,9 @@ public class P2PFacadeTest extends TestCase {
     System.out.println("testP2PSendMessage Peer id: " + theFacade2.getPeerId());
 
     Thread.sleep( 2000 );
+    
+    assertTrue( theFacade1.getRoutingTable().containsEntryForPeer( theFacade2.getPeerId() ) );
+    assertTrue( theFacade2.getRoutingTable().containsEntryForPeer( theFacade1.getPeerId() ) );
 
     try{
       MessageCollector theMessageCollector = new MessageCollector();
@@ -65,7 +68,7 @@ public class P2PFacadeTest extends TestCase {
 
       assertNotNull(  theFacade1.sendEncryptedMessage( theMessage, Executors.newFixedThreadPool( 1 ) ).get() );
 
-      Thread.sleep( 2000 );
+      Thread.sleep( 3000 );
 
       assertEquals( 2, theDeliveryReportCollector.getDeliveryReports().size() );
       assertEquals( DeliveryReport.Status.IN_PROGRESS, theDeliveryReportCollector.getDeliveryReports().get( 0 ).getDeliveryStatus());
