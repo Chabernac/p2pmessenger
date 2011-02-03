@@ -7,14 +7,15 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+
+import chabernac.protocol.DynamicSizeExecutor;
 
 public class WhoIsRunning implements Runnable{
   private final iWhoIsRunningListener myListener;
   private final String myHost;
   private final int myPortFrom;
   private final int myPortTo;
-  private final ExecutorService myService = Executors.newFixedThreadPool(30);
+  private final ExecutorService myService = DynamicSizeExecutor.getMediumInstance();
 
   public WhoIsRunning(iWhoIsRunningListener anListener, String aHost, int aPortFrom, int aPortTo) {
     super();

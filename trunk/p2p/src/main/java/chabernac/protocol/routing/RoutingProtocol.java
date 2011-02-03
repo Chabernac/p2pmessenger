@@ -34,10 +34,12 @@ import org.apache.log4j.Logger;
 import org.doomdark.uuid.UUIDGenerator;
 
 import chabernac.io.Base64ObjectStringConverter;
+import chabernac.io.CachingSocketPool;
 import chabernac.io.ClassPathResource;
 import chabernac.io.iObjectPersister;
 import chabernac.io.iObjectStringConverter;
 import chabernac.protocol.AlreadyRunningException;
+import chabernac.protocol.DynamicSizeExecutor;
 import chabernac.protocol.Protocol;
 import chabernac.protocol.ProtocolException;
 import chabernac.protocol.ServerInfo;
@@ -103,7 +105,7 @@ public class RoutingProtocol extends Protocol {
 
   private String myLocalPeerId = null;
 
-  private ExecutorService myUDPPacketHandlerService = Executors.newFixedThreadPool( 5 );
+  private ExecutorService myUDPPacketHandlerService = DynamicSizeExecutor.getSmallInstance();
   private ExecutorService myScannerService = Executors.newCachedThreadPool( );
 
   private MulticastSocket myServerMulticastSocket = null;
@@ -212,7 +214,7 @@ public class RoutingProtocol extends Protocol {
 
     if(myServerInfo != null && myServerInfo.getServerType() == Type.SOCKET){
       if(myExchangeDelay > 0 ) scheduleRoutingTableExchange();
-      myChangeService = Executors.newFixedThreadPool( 5 );
+      myChangeService = DynamicSizeExecutor.getSmallInstance();
 
       myRoutingTable.addRoutingTableListener( new RoutingTableListener() );
       startUDPListener();

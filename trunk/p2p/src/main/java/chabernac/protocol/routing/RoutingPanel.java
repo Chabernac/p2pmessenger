@@ -10,7 +10,6 @@ import java.awt.Component;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -23,12 +22,13 @@ import javax.swing.JTextArea;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.TableCellRenderer;
 
+import chabernac.protocol.DynamicSizeExecutor;
 import chabernac.protocol.ProtocolException;
 
 public class RoutingPanel extends JPanel {
   private static final long serialVersionUID = 8719080293187156681L;
   private RoutingProtocol myRoutingProtocol = null;
-  private ExecutorService myExecutorService = Executors.newFixedThreadPool( 10 );
+  private ExecutorService myExecutorService = DynamicSizeExecutor.getTinyInstance();
   private JTextArea myInfoArea = new JTextArea();
   private RoutingTableModel myModel = null;
   

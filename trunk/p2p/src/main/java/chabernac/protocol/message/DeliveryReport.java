@@ -32,4 +32,8 @@ public class DeliveryReport {
   public MultiPeerMessage getMultiPeerMessage() {
     return myMultiPeerMessage;
   }
+  
+  public String toString(){
+    return myDeliveryStatus.name() + " " + myMultiPeerMessage.toString();
+  }
 }

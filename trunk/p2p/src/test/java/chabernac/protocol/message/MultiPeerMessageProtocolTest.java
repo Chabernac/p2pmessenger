@@ -13,6 +13,7 @@ import chabernac.protocol.AbstractProtocolTest;
 import chabernac.protocol.ProtocolContainer;
 import chabernac.protocol.ProtocolException;
 import chabernac.protocol.ProtocolServer;
+import chabernac.protocol.message.DeliveryReport.Status;
 import chabernac.protocol.routing.RoutingProtocol;
 
 public class MultiPeerMessageProtocolTest extends AbstractProtocolTest {
@@ -73,8 +74,16 @@ public class MultiPeerMessageProtocolTest extends AbstractProtocolTest {
       //TODO why do we have to wait 5 seconds, what's causing the timeout?
       
       assertEquals( 4, theDeliveryReportCollector.getDeliveryReports().size() );
-      assertEquals( DeliveryReport.Status.DELIVERED, theDeliveryReportCollector.getDeliveryReports().get( 2 ).getDeliveryStatus());
-      assertEquals( DeliveryReport.Status.DELIVERED, theDeliveryReportCollector.getDeliveryReports().get( 3 ).getDeliveryStatus());
+      
+      //there should be 2 reports with status in progress, and 2 with status delivered
+      int theDelivered = 0;
+      int theInProgress = 0;
+      for(DeliveryReport theReport : theDeliveryReportCollector.getDeliveryReports()){
+        if(theReport.getDeliveryStatus() == Status.DELIVERED) theDelivered++;
+        if(theReport.getDeliveryStatus() == Status.IN_PROGRESS) theInProgress++;
+      }
+      assertEquals( 2, theDelivered );
+      assertEquals( 2, theInProgress);
       assertEquals( 1, theMessageCollector2.getMessages().size());
       assertEquals( 1, theMessageCollector3.getMessages().size());
       

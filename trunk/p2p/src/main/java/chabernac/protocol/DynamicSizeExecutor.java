@@ -88,4 +88,20 @@ public class DynamicSizeExecutor implements ExecutorService{
   public <T> Future<T> submit( Runnable aTask, T aResult ) {
     return myExecutor.submit( aTask, aResult );
   }
+  
+  public static DynamicSizeExecutor getTinyInstance(){
+    return new DynamicSizeExecutor( 0, 5 );
+  }
+  
+  public static DynamicSizeExecutor getSmallInstance(){
+    return new DynamicSizeExecutor( 1, 20 );
+  }
+  
+  public static DynamicSizeExecutor getMediumInstance(){
+    return new DynamicSizeExecutor( 10, 256 );
+  }
+  
+  public static DynamicSizeExecutor getLargeInstance(){
+    return new DynamicSizeExecutor( 20, 1024 );
+  }
 }
