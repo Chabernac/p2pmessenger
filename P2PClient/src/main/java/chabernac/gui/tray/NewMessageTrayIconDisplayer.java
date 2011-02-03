@@ -61,12 +61,6 @@ public class NewMessageTrayIconDisplayer {
       if(ApplicationPreferences.getInstance().hasEnumProperty( Settings.ReceiveEnveloppe.NO_POPUP ) && !((JFrame)myMediator.getTitleProvider()).hasFocus()){
         SystemTray.getSystemTray().getTrayIcons()[0].setImage( myNewMessageImage );
         
-        try{
-          SystemTray.getSystemTray().getTrayIcons()[0].displayMessage( "Nieuw bericht", "Je hebt een bericht ontvangen van " + myMediator.getP2PFacade().getUserInfo().get( aMessage.getSource() ).getName(), TrayIcon.MessageType.WARNING);
-        }catch(Exception e){
-          LOGGER.error("Could not set display message", e);
-        }
-        
         synchronized(LOCK){
           if(myService == null){
             myService = Executors.newScheduledThreadPool( 1 );
