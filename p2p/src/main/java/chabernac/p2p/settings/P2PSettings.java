@@ -16,7 +16,7 @@ public class P2PSettings {
   
   public P2PSettings(){
     mySocketPool = new BasicSocketPool();
-    ((BasicSocketPool)mySocketPool).setSocketReuse( false );
+    ((BasicSocketPool)mySocketPool).setSocketReuse( true );
   }
   
   private static final class INSTANCE_HOLDER{
