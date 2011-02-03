@@ -224,7 +224,7 @@ public class MessageProtocolTest extends AbstractProtocolTest {
       MessageCollector theListener = new MessageCollector();
       theMessageProtocol2.addMessageListener( theListener );
 
-      ExecutorService theservice = Executors.newFixedThreadPool( 10 );
+      ExecutorService theservice = Executors.newFixedThreadPool( 20 );
 
       int times = 1000;
       final CountDownLatch theLatch = new CountDownLatch(times);
