@@ -5,6 +5,8 @@
 package chabernac.io;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
@@ -12,6 +14,8 @@ import javax.swing.table.TableModel;
 public class SocketPoolModel implements TableModel {
   private final iSocketPool mySocketPool;
   private SimpleDateFormat myFormat = new SimpleDateFormat("HH:mm:ss");
+
+  private List<SocketProxy> myAccumulatedList = new ArrayList<SocketProxy>();
 
   public SocketPoolModel ( iSocketPool anSocketPool ) {
     super();
@@ -44,23 +48,16 @@ public class SocketPoolModel implements TableModel {
 
   @Override
   public int getRowCount() {
-    return mySocketPool.getCheckedInPool().size() + mySocketPool.getCheckedOutPool().size() + mySocketPool.getConnectingPool().size();
+    myAccumulatedList.clear();
+    myAccumulatedList.addAll( mySocketPool.getCheckedInPool() );
+    myAccumulatedList.addAll( mySocketPool.getCheckedOutPool() );
+    myAccumulatedList.addAll( mySocketPool.getConnectingPool() );
+    return myAccumulatedList.size();
   }
 
-  public Object getSocketProxyAtRow(int anRowIndex){
-    Object theSocket;
-    try{
-      if(anRowIndex < mySocketPool.getCheckedInPool().size()){
-        theSocket = mySocketPool.getCheckedInPool().get( anRowIndex );
-      } else if(anRowIndex < mySocketPool.getCheckedInPool().size() + mySocketPool.getCheckedOutPool().size()){
-        theSocket = mySocketPool.getCheckedOutPool().get(anRowIndex - mySocketPool.getCheckedInPool().size());
-      } else {
-        theSocket = mySocketPool.getConnectingPool().get(anRowIndex - mySocketPool.getCheckedInPool().size() - mySocketPool.getCheckedOutPool().size());
-      }
-    }catch(Exception e){
-      return null;
-    }
-    return theSocket;
+  public SocketProxy getSocketProxyAtRow(int anRowIndex){
+    if(anRowIndex >= myAccumulatedList.size()) return null;
+    return myAccumulatedList.get(anRowIndex);
   }
 
   public String getPool(Object aProxy){
@@ -72,34 +69,25 @@ public class SocketPoolModel implements TableModel {
 
   @Override
   public Object getValueAt( int anRowIndex, int anColumnIndex ) {
-    Object theSocket = getSocketProxyAtRow(anRowIndex);
+    SocketProxy theSocket = getSocketProxyAtRow(anRowIndex);
     if(theSocket == null) return "NO SOCKET";
     String thePool = getPool(theSocket);
 
-    if(theSocket instanceof SocketProxy){
-      SocketProxy theSocketProxy = (SocketProxy)theSocket;
-      if(anColumnIndex == 0) return theSocketProxy.getSocketAddress();
-      if(anColumnIndex == 1) {
-        if(theSocketProxy.isConnected()) {
-          return theSocketProxy.getLocalSocketAddress();
-        }
-        return "NOT CONNECTED";
+    SocketProxy theSocketProxy = (SocketProxy)theSocket;
+    if(anColumnIndex == 0) return theSocketProxy.getSocketAddress();
+    if(anColumnIndex == 1) {
+      if(theSocketProxy.isConnected()) {
+        return theSocketProxy.getLocalSocketAddress();
       }
-      if(anColumnIndex == 2) return thePool;
+      return "NOT CONNECTED";
+    }
+    if(anColumnIndex == 2) return thePool;
 
-      if(anColumnIndex == 3) {
-        if(theSocketProxy.getConnectTime() != null){
-          return myFormat.format( theSocketProxy.getConnectTime() );
-        }
-        return "";
+    if(anColumnIndex == 3) {
+      if(theSocketProxy.getConnectTime() != null){
+        return myFormat.format( theSocketProxy.getConnectTime() );
       }
-    } else if(theSocket instanceof SocketProxy){
-      SocketProxy theS = (SocketProxy)theSocket;
-      if(anColumnIndex == 0) return theS.getRemoteSocketAddress();
-      if(anColumnIndex == 1) return theS.getLocalAddress();
-      if(anColumnIndex == 2) return thePool;
-
-      if(anColumnIndex == 3) return "UNKNOWN";
+      return "";
     }
     return null;
   }

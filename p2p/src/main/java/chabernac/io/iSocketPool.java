@@ -7,6 +7,7 @@ package chabernac.io;
 import java.io.IOException;
 import java.net.SocketAddress;
 import java.util.List;
+import java.util.Observer;
 
 public interface iSocketPool{
   public SocketProxy checkOut(SocketAddress anAddress) throws IOException;
@@ -19,4 +20,7 @@ public interface iSocketPool{
   public List<SocketProxy> getCheckedInPool();
   public List<SocketProxy> getCheckedOutPool();
   public List<SocketProxy> getConnectingPool();
+  
+  public void addObserver(Observer anObserver);
+  public void deleteObserver(Observer anObserver);
 }

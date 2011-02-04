@@ -8,15 +8,18 @@ import java.io.IOException;
 import java.net.SocketAddress;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Observable;
+import java.util.Observer;
 
-public class BasicSocketPool extends Observable implements iSocketPool{
+import chabernac.utils.ObservableList;
+
+public class BasicSocketPool implements iSocketPool{
 //  private static Logger LOGGER = Logger.getLogger(BasicSocketPool.class);
-  private List<SocketProxy> myCheckedOutPool = new ArrayList< SocketProxy >() ;
-  private List<SocketProxy> myConnectingPool = new ArrayList< SocketProxy >() ;
-  private List<SocketProxy> myCheckedInPool = new ArrayList< SocketProxy >() ;
+  private ObservableList<SocketProxy> myCheckedOutPool = new ObservableList<SocketProxy>( new ArrayList< SocketProxy >() ) ;
+  private ObservableList<SocketProxy> myConnectingPool = new ObservableList<SocketProxy>( new ArrayList< SocketProxy >() );
+  private ObservableList<SocketProxy> myCheckedInPool = new ObservableList<SocketProxy>( new ArrayList< SocketProxy >() );
 
   private Object LOCK = new Object();
 
@@ -39,6 +42,8 @@ public class BasicSocketPool extends Observable implements iSocketPool{
         } else {
           myCheckedInPool.remove( theProxy );
           myCheckedOutPool.add( theProxy );
+          //this is a socket that will be shortly used so update the connect time
+          theProxy.setConnectTime( new Date() );
           return theProxy;
         }
       }
@@ -48,7 +53,6 @@ public class BasicSocketPool extends Observable implements iSocketPool{
 
     synchronized(LOCK){
       myConnectingPool.add( theSocket );
-      notifyAllObs();
     }
 
     try{
@@ -56,7 +60,6 @@ public class BasicSocketPool extends Observable implements iSocketPool{
     }catch(IOException e){
       synchronized(LOCK){
         myConnectingPool.remove( theSocket );
-        notifyAllObs();
       }
       throw e;
     }
@@ -64,7 +67,6 @@ public class BasicSocketPool extends Observable implements iSocketPool{
     synchronized(LOCK){
       myConnectingPool.remove( theSocket );
       myCheckedOutPool.add(theSocket);
-      notifyAllObs();
     }
 
     return theSocket;
@@ -107,7 +109,6 @@ public class BasicSocketPool extends Observable implements iSocketPool{
         } else {
           myCheckedInPool.add( aSocket );
         }
-        notifyAllObs();
       }
     }
   }
@@ -120,7 +121,6 @@ public class BasicSocketPool extends Observable implements iSocketPool{
     synchronized(LOCK){
       myCheckedOutPool.remove( aSocket );
       myCheckedInPool.remove(aSocket);
-      notifyAllObs();
     }
   }
 
@@ -138,7 +138,6 @@ public class BasicSocketPool extends Observable implements iSocketPool{
     clean(myCheckedInPool);
     clean(myCheckedOutPool);
     clean(myConnectingPool);
-    notifyAllObs();
   }
 
   @Override
@@ -169,11 +168,6 @@ public class BasicSocketPool extends Observable implements iSocketPool{
     return Collections.unmodifiableList( myConnectingPool );
   }
 
-  private void notifyAllObs(){
-    setChanged();
-    notifyObservers();
-  }
-
   public int getMaxAllowSocketsPerSocketAddress() {
     return myMaxAllowSocketsPerSocketAddress;
   }
@@ -188,5 +182,17 @@ public class BasicSocketPool extends Observable implements iSocketPool{
 
   public void setSocketReuse( boolean aSocketReuse ) {
     isSocketReuse = aSocketReuse;
+  }
+  
+  public void addObserver(Observer anObserver){
+    myCheckedInPool.addObserver( anObserver );
+    myCheckedOutPool.addObserver( anObserver );
+    myConnectingPool.addObserver( anObserver );
+  }
+  
+  public void deleteObserver(Observer anObserver){
+    myCheckedInPool.deleteObserver( anObserver );
+    myCheckedOutPool.deleteObserver( anObserver );
+    myConnectingPool.deleteObserver( anObserver );
   }
 }
