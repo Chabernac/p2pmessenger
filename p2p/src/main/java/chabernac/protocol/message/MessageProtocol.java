@@ -8,7 +8,9 @@ import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import org.apache.log4j.Logger;
@@ -43,7 +45,8 @@ public class MessageProtocol extends Protocol {
     UNCRECOGNIZED_MESSAGE, 
     COULD_NOT_DECRYPT, 
     TTL_EXPIRED, 
-    MESSAGE_LOOP_DETECTED};
+    MESSAGE_LOOP_DETECTED,
+    MESSAGE_ALREADY_RECEIVED};
 
     private boolean isKeepHistory = false;
 
@@ -55,6 +58,8 @@ public class MessageProtocol extends Protocol {
     private iObjectStringConverter< Message > myMessageConverter = new Base64ObjectStringConverter< Message >();
 
     private List<UUID> myProcessingMessages = Collections.synchronizedList(new ArrayList<UUID>());
+    
+    private Set<UUID> myProcessedMessages = Collections.synchronizedSet(new HashSet<UUID>());
 
     public MessageProtocol ( ) {
       super( ID );
@@ -104,10 +109,15 @@ public class MessageProtocol extends Protocol {
       } 
       
       checkMessage(aMessage);
+      
+      if(myProcessedMessages.contains(aMessage.getMessageId())){
+        return Response.MESSAGE_ALREADY_RECEIVED.name();
+      }
 
       AbstractPeer theDestination = aMessage.getDestination();
       try {
         myProcessingMessages.add(aMessage.getMessageId());
+        myProcessedMessages.add(aMessage.getMessageId());
         if(theDestination.getPeerId().equals( getRoutingTable().getLocalPeerId() )){
           return handleMessageForUs(aSessionId, aMessage);
         } else {

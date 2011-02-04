@@ -16,9 +16,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import chabernac.io.BasicSocketPool;
 import chabernac.io.SocketProxy;
-import chabernac.io.iSocketPool;
 import chabernac.p2p.settings.P2PSettings;
 import chabernac.protocol.routing.PeerMessage.State;
 
@@ -35,7 +33,7 @@ public class PeerSender implements iPeerSender {
       notifyListeners(theMessage);
     }
 
-    int theRetries = getNrOfRetries();
+    int theRetries = 3;
 
     while(theRetries-- > 0){
       SocketProxy theSocket = aPeer.createSocket( aPeer.getPort() );
@@ -55,6 +53,9 @@ public class PeerSender implements iPeerSender {
         theReader = new BufferedReader(new InputStreamReader(theSocket.getInputStream()));
         theWriter.println(aMessage);
         theWriter.flush();
+        //stop the socketcloser at this point, otherwise it might close the socket during the next statements
+        //and cause the message to be resent while it has already been delivered
+        theService.shutdownNow();
         changeState(theMessage, State.SEND);
         String theReturnMessage = theReader.readLine();
         //TODO why do we sometimes have null replies when using BasicSocketPool
@@ -79,16 +80,6 @@ public class PeerSender implements iPeerSender {
     throw new IOException("Could not send message");
   }
   
-  private int getNrOfRetries(){
-    iSocketPool theSocketPool = P2PSettings.getInstance().getSocketPool();
-    if(theSocketPool instanceof BasicSocketPool){
-      if(((BasicSocketPool)theSocketPool).isSocketReuse()){
-        return 3;
-      }
-    }
-    return 1;
-  }
-
   private void changeState(PeerMessage aMessage, PeerMessage.State aState){
     aMessage.setState(aState);
     notifyListeners(aMessage);
