@@ -52,14 +52,13 @@ public class SocketPoolPanel extends JPanel implements Observer {
   }
   
   private void addListeners(){
-    if(P2PSettings.getInstance().getSocketPool() instanceof Observable){
-      ((Observable)P2PSettings.getInstance().getSocketPool()).addObserver( this );
-    }
+    P2PSettings.getInstance().getSocketPool().addObserver( this );
   }
 
   @Override
   public void update( Observable anO, Object anArg ) {
     myTable.tableChanged( new TableModelEvent(myTable.getModel()) );
+    repaint();
   }
   
   private class ColorRenderer extends JLabel implements TableCellRenderer{

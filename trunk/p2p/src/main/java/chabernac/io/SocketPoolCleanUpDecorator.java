@@ -7,6 +7,7 @@ package chabernac.io;
 import java.io.IOException;
 import java.net.SocketAddress;
 import java.util.List;
+import java.util.Observer;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -27,7 +28,7 @@ public class SocketPoolCleanUpDecorator implements iSocketPool {
       public void run(){
         cleanUpOlderThan( System.currentTimeMillis() - aTimeUnit.toMillis( aTimeout ) );
       }
-    }, aTimeout, aTimeout, aTimeUnit);
+    }, 0, aTimeout, aTimeUnit);
   }
 
   public SocketProxy checkOut( SocketAddress anAddress ) throws IOException {
@@ -61,6 +62,12 @@ public class SocketPoolCleanUpDecorator implements iSocketPool {
   public List< SocketProxy > getConnectingPool() {
     return mySocketPool.getConnectingPool();
   }
-  
-  
+
+  public void addObserver( Observer anObserver ) {
+    mySocketPool.addObserver( anObserver );
+  }
+
+  public void deleteObserver( Observer anObserver ) {
+    mySocketPool.deleteObserver( anObserver );
+  }
 }
