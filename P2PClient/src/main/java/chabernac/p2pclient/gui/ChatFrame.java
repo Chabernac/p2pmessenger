@@ -186,6 +186,7 @@ public class ChatFrame extends SavedFrame implements iTitleProvider, isShowDialo
       public void run(){
         setVisible( true );
         setState( Frame.NORMAL );
+        toFront();
         requestFocus();  
       }
     });
