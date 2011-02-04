@@ -15,7 +15,7 @@ public class OnTopMenuItem extends MenuItem implements ActionListener {
   private final ChatFrame myChatFrame;
   
   public OnTopMenuItem(ChatFrame aChatFrame){
-    super("Always on top");
+    super("Altijd op de voorgrond");
     myChatFrame = aChatFrame;
     addActionListener( this );
   }
@@ -24,10 +24,10 @@ public class OnTopMenuItem extends MenuItem implements ActionListener {
     if(myChatFrame != null){
       if(myChatFrame.isAlwaysOnTop()){
         myChatFrame.setAlwaysOnTop( false);
-        setLabel( "Always on top" );
+        setLabel( "Altijd op de voorgrond" );
       } else {
         myChatFrame.setAlwaysOnTop( true );
-        setLabel( "Not always on top" );
+        setLabel( "Niet op de voorgrond" );
       }
     }
   }

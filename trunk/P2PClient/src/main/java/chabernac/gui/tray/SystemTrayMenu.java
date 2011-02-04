@@ -42,7 +42,7 @@ public class SystemTrayMenu extends PopupMenu {
     //    add(new SendMenu());
     add(new ReceiveMenu(myChatFrame.getMediator()));
     add(new StatusMenu(myChatFrame.getMediator()));
-    add(new SearchPeersMenuItem(myChatFrame.getMediator()));
+//    add(new SearchPeersMenuItem(myChatFrame.getMediator()));
     add( new ExitMenuItem(myChatFrame.getMediator()) );
 
   }
