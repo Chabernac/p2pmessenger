@@ -16,6 +16,7 @@ import javax.swing.table.TableModel;
 public class RoutingTableModel implements TableModel {
   private RoutingTable myRoutingTable = null;
   private List< TableModelListener > myTableModelListeners = new ArrayList< TableModelListener >();
+  private List<RoutingTableEntry> myLocalCopy;
   
   private static final SimpleDateFormat FORMAT = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
   
@@ -55,11 +56,12 @@ public class RoutingTableModel implements TableModel {
 
   @Override
   public int getRowCount() {
-    return myRoutingTable.getEntries().size();
+    myLocalCopy = new ArrayList<RoutingTableEntry>(myRoutingTable.getEntries());
+    return myLocalCopy.size();
   }
   
   public RoutingTableEntry getRoutingTableEntryAtRow(int aRow){
-    return  myRoutingTable.getEntries().get(aRow);
+    return  myLocalCopy.get(aRow);
   }
 
   @Override
