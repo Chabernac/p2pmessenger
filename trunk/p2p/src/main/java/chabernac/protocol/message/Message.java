@@ -49,6 +49,7 @@ public class Message implements Serializable{
   public void setDestination( AbstractPeer anDestination ) {
     if(isLocked) throw new ConcurrentModificationException("Can not modify message when it is locked");
     myDestination = anDestination;
+    myMessageId = UUID.randomUUID();
   }
   public String getMessage() {
     return myMessage;
@@ -56,6 +57,7 @@ public class Message implements Serializable{
   public void setMessage( String anMessage ) {
     if(isLocked) throw new ConcurrentModificationException("Can not modify message when it is locked");
     myMessage = anMessage;
+    myMessageId = UUID.randomUUID();
   }
   public byte[] getBytes() {
     return myBytes;
@@ -63,6 +65,7 @@ public class Message implements Serializable{
   public void setBytes( byte[] anBytes ) {
     if(isLocked) throw new ConcurrentModificationException("Can not modify message when it is locked");
     myBytes = anBytes;
+    myMessageId = UUID.randomUUID();
   }
   public void addMessageIndicator(MessageIndicator anIndicator){
     if(isLocked) throw new ConcurrentModificationException("Can not modify message when it is locked");
@@ -70,6 +73,7 @@ public class Message implements Serializable{
       myIndicators = new ArrayList< MessageIndicator >();
     }
     myIndicators.add( anIndicator );
+    myMessageId = UUID.randomUUID();
   }
   
   public void removeMessageIndicator(MessageIndicator anIndicator){
@@ -77,6 +81,7 @@ public class Message implements Serializable{
     if(myIndicators != null){
       myIndicators.remove( anIndicator );
     }
+    myMessageId = UUID.randomUUID();
   }
   
   public boolean containsIndicator(MessageIndicator anIndicator){
@@ -92,11 +97,13 @@ public class Message implements Serializable{
       if(myHeaders == null) myHeaders = new HashMap< String, String >();
     }
     myHeaders.put( aHeader, aContent );
+    myMessageId = UUID.randomUUID();
   }
   
   public void removeHeader(String aHeader){
     if(isLocked) throw new ConcurrentModificationException("Can not modify message when it is locked");
     myHeaders.remove( aHeader );
+    myMessageId = UUID.randomUUID();
   }
   
   public String getHeader(String aHeader){
@@ -109,6 +116,7 @@ public class Message implements Serializable{
   public void setHeaders( Map< String, String > anHeaders ) {
     if(isLocked) throw new ConcurrentModificationException("Can not modify message when it is locked");
     myHeaders = anHeaders;
+    myMessageId = UUID.randomUUID();
   }
   public boolean isProtocolMessage() {
     return isProtocolMessage;
@@ -116,6 +124,7 @@ public class Message implements Serializable{
   public void setProtocolMessage( boolean anProtocolMessage ) {
     if(isLocked) throw new ConcurrentModificationException("Can not modify message when it is locked");
     isProtocolMessage = anProtocolMessage;
+    myMessageId = UUID.randomUUID();
   }
   public List< MessageIndicator > getIndicators() {
     return Collections.unmodifiableList( myIndicators );
@@ -123,6 +132,7 @@ public class Message implements Serializable{
   public void setIndicators( List< MessageIndicator > anIndicators ) {
     if(isLocked) throw new ConcurrentModificationException("Can not modify message when it is locked");
     myIndicators = anIndicators;
+    myMessageId = UUID.randomUUID();
   }
   public int getTTL() {
     return myTTL;
@@ -130,6 +140,7 @@ public class Message implements Serializable{
   public void setTTL( int anTtl ) {
     if(isLocked) throw new ConcurrentModificationException("Can not modify message when it is locked");
     myTTL = anTtl;
+    myMessageId = UUID.randomUUID();
   }
   
   public void decreaseTTL(){
@@ -154,6 +165,7 @@ public class Message implements Serializable{
   public void setCreationTime( long anCreationTime ) {
     if(isLocked) throw new ConcurrentModificationException("Can not modify message when it is locked");
     myCreationTime = anCreationTime;
+    myMessageId = UUID.randomUUID();
   }
   
   public void resetTTL(){
