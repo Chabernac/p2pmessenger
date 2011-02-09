@@ -117,7 +117,7 @@ public class MultiPeerMessageProtocol extends Protocol{
           theMessage.setIndicators( new ArrayList< MessageIndicator >(theMultiPeerMessage.getIndicators()) );
           theMessage.setMessage( createMessage( myObjectStringConverter.toString( theMultiPeerMessage ) ) );
           theMessage.setDestination( getRoutingTable().getEntryForPeer( theDestination ).getPeer() );
-          mySendService.execute( new MessageSender(theMultiPeerMessage, theMessage) );
+          sendMessage( theMultiPeerMessage, theMessage );
         }catch(Exception e){
           if(theMessage.getDestination() == null) theMessage.setDestination(new DummyPeer(theDestination) );
           sendDeliveryReport( new DeliveryReport(theMultiPeerMessage, Status.FAILED, theMessage));
@@ -128,6 +128,10 @@ public class MultiPeerMessageProtocol extends Protocol{
     } catch ( ProtocolException e1 ) {
       throw new MessageException("Could not send MultiPeerMessage", e1);
     }
+  }
+  
+  void sendMessage(MultiPeerMessage aMultiPeerMessage, Message aMessage){
+    mySendService.execute( new MessageSender(aMultiPeerMessage, aMessage) );
   }
 
   @Override
