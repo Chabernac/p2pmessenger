@@ -55,7 +55,7 @@ public class PeerSender implements iPeerSender {
         theWriter.flush();
         //stop the socketcloser at this point, otherwise it might close the socket during the next statements
         //and cause the message to be resent while it has already been delivered
-        theService.shutdownNow();
+//        theService.shutdownNow();
         changeState(theMessage, State.SEND);
         String theReturnMessage = theReader.readLine();
         //TODO why do we sometimes have null replies when using BasicSocketPool
