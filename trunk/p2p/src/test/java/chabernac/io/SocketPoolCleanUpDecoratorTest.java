@@ -28,7 +28,7 @@ public class SocketPoolCleanUpDecoratorTest extends TestCase {
       assertEquals( 0, theDecorator.getCheckedOutPool().size() );
       assertEquals( 1, theDecorator.getCheckedInPool().size() );
 
-      Thread.sleep( 8000 );
+      Thread.sleep( 10000 );
       assertEquals( 0, theDecorator.getCheckedOutPool().size() );
       assertEquals( 0, theDecorator.getCheckedInPool().size() );
     }finally {
