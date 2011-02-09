@@ -30,6 +30,7 @@ import chabernac.protocol.filetransfer.iFileHandler;
 import chabernac.protocol.infoexchange.InfoExchangeProtocol;
 import chabernac.protocol.infoexchange.InfoObject;
 import chabernac.protocol.infoexchange.iInfoListener;
+import chabernac.protocol.message.FailedMessageResender;
 import chabernac.protocol.message.MessageArchive;
 import chabernac.protocol.message.MessageIndicator;
 import chabernac.protocol.message.MultiPeerMessage;
@@ -85,6 +86,8 @@ public class P2PFacade {
   private PropertyMap myProperties = new PropertyMap();
   private MessageArchive myMessageArchive = null;
   private boolean myIsKeepHistory = false;
+  private FailedMessageResender myMessageResender = null;
+  private boolean isActivateMessageResender = false;
 
   /**
    * set the exchange delay.
@@ -505,6 +508,10 @@ public class P2PFacade {
     }catch(Exception e){
       throw new P2PFacadeException("An error occured while setting protocol deleegate", e);
     }
+  }
+  
+  public void setMessageResenderActivated(boolean isActivated){
+    
   }
 
 
