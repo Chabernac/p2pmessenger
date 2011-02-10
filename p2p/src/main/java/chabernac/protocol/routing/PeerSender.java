@@ -57,6 +57,12 @@ public class PeerSender implements iPeerSender {
         //and cause the message to be resent while it has already been delivered
 //        theService.shutdownNow();
         changeState(theMessage, State.SEND);
+        
+        //if we get here we have successfully created a socket and successfully send a message to the peer
+        //it might be that the socket closer still times out because the other peer does not want to respond
+        //in that case we should not retry because the same effect will probably result and retrying
+        //causes the p2p network to be flouded with sockets
+        theRetries = 0;
         String theReturnMessage = theReader.readLine();
         //TODO why do we sometimes have null replies when using BasicSocketPool
         if(theReturnMessage == null || "".equals( theReturnMessage )) throw new IOException("empty result, socket corrupt?");
