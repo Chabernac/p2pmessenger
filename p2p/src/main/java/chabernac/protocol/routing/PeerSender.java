@@ -16,11 +16,14 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.log4j.Logger;
+
 import chabernac.io.SocketProxy;
 import chabernac.p2p.settings.P2PSettings;
 import chabernac.protocol.routing.PeerMessage.State;
 
 public class PeerSender implements iPeerSender {
+  private static Logger LOGGER = Logger.getLogger(PeerSender.class);
   private boolean isKeepHistory = false;
   private List<PeerMessage> myHistory = new ArrayList<PeerMessage>();
   private List<iSocketPeerSenderListener> myPeerSenderListeners = new ArrayList<iSocketPeerSenderListener>();
@@ -51,6 +54,7 @@ public class PeerSender implements iPeerSender {
         if(aTimeoutInSeconds > 0) theService.schedule( new SocketCloser(theSocket), aTimeoutInSeconds, TimeUnit.SECONDS );
         theWriter = new PrintWriter(new OutputStreamWriter(theSocket.getOutputStream()));
         theReader = new BufferedReader(new InputStreamReader(theSocket.getInputStream()));
+//        LOGGER.debug( "Sending message: '" + aMessage + "'" );
         theWriter.println(aMessage);
         theWriter.flush();
         //stop the socketcloser at this point, otherwise it might close the socket during the next statements
@@ -61,11 +65,18 @@ public class PeerSender implements iPeerSender {
         //if we get here we have successfully created a socket and successfully send a message to the peer
         //it might be that the socket closer still times out because the other peer does not want to respond
         //in that case we should not retry because the same effect will probably result and retrying
-        //causes the p2p network to be flouded with sockets
+        //causes the p2p network to be flooded with sockets
+//        theRetries = 0;
+        int theOldRetries = theRetries;
         theRetries = 0;
         String theReturnMessage = theReader.readLine();
+        theRetries = theOldRetries;
+//        LOGGER.debug( "Message received: '" + theReturnMessage + "'" );
         //TODO why do we sometimes have null replies when using BasicSocketPool
-        if(theReturnMessage == null || "".equals( theReturnMessage )) throw new IOException("empty result, socket corrupt?");
+        if(theReturnMessage == null || "".equals( theReturnMessage )) {
+//          theRetries = 1;
+          throw new IOException("empty result, socket corrupt?");
+        }
         theMessage.setResult(theReturnMessage);
         notifyListeners(theMessage);
 
