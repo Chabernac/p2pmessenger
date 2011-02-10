@@ -21,6 +21,7 @@ import chabernac.protocol.message.DeliveryReport;
 import chabernac.protocol.message.MessageArchive;
 import chabernac.protocol.message.MultiPeerMessage;
 import chabernac.protocol.pipe.Pipe;
+import chabernac.protocol.routing.UnknownPeerException;
 import chabernac.protocol.userinfo.UserInfo;
 import chabernac.protocol.userinfo.UserInfo.Status;
 import chabernac.testingutils.DeliveryReportCollector;
@@ -42,7 +43,7 @@ public class P2PFacadeTest extends TestCase {
     .start( 20 );
 
     Thread.sleep(1000);
-    
+
     DeliveryReportCollector theDeliveryReportCollector = new DeliveryReportCollector();
     theFacade1.addDeliveryReportListener( theDeliveryReportCollector );
 
@@ -55,7 +56,7 @@ public class P2PFacadeTest extends TestCase {
     System.out.println("testP2PSendMessage Peer id: " + theFacade2.getPeerId());
 
     Thread.sleep( 2000 );
-    
+
     assertTrue( theFacade1.getRoutingTable().containsEntryForPeer( theFacade2.getPeerId() ) );
     assertTrue( theFacade2.getRoutingTable().containsEntryForPeer( theFacade1.getPeerId() ) );
 
@@ -365,9 +366,9 @@ public class P2PFacadeTest extends TestCase {
 
       fail("Whe must not get here, an exception should have occured");
     }catch(P2PFacadeException e){
-      
+
       //TODO find a way to set AlreadyRunningException as cause
-//      assertTrue(e.getCause() instanceof AlreadyRunningException);
+      //      assertTrue(e.getCause() instanceof AlreadyRunningException);
     } finally {
       if(theFacade1 != null) theFacade1.stop();
       if(theFacade2 != null) theFacade2.stop();
@@ -437,7 +438,7 @@ public class P2PFacadeTest extends TestCase {
       if(theFacade4 != null) theFacade4.stop();
     }
   }
-  
+
   public void testSetInfoObject() throws P2PFacadeException, InterruptedException{
 
     P2PFacade theFacade1 = new P2PFacade()
@@ -457,42 +458,42 @@ public class P2PFacadeTest extends TestCase {
     try{
       assertTrue( theFacade1.getInfoMap().containsKey( theFacade1.getPeerId() ));
       assertEquals( "test1", theFacade1.getInfoMap().get( theFacade1.getPeerId() ).get( "test" ));
-      
+
       assertTrue( theFacade1.getInfoMap().containsKey( theFacade2.getPeerId() ));
       assertEquals( "test2", theFacade1.getInfoMap().get( theFacade2.getPeerId() ).get( "test" ));
-      
+
       assertTrue( theFacade2.getInfoMap().containsKey( theFacade1.getPeerId() ));
       assertEquals( "test1", theFacade2.getInfoMap().get( theFacade1.getPeerId() ).get( "test" ));
-      
+
       assertTrue( theFacade2.getInfoMap().containsKey( theFacade2.getPeerId() ));
       assertEquals( "test2", theFacade2.getInfoMap().get( theFacade2.getPeerId() ).get( "test" ));
-      
+
       //now modify when running
       theFacade1.setInfoObject( "test", "test1running" );
       theFacade2.setInfoObject( "test", "test2running" );
-      
+
       //give some time to synchronize
-      
+
       Thread.sleep( 2000 );
-      
+
       assertTrue( theFacade1.getInfoMap().containsKey( theFacade1.getPeerId() ));
       assertEquals( "test1running", theFacade1.getInfoMap().get( theFacade1.getPeerId() ).get( "test" ));
-      
+
       assertTrue( theFacade1.getInfoMap().containsKey( theFacade2.getPeerId() ));
       assertEquals( "test2running", theFacade1.getInfoMap().get( theFacade2.getPeerId() ).get( "test" ));
-      
+
       assertTrue( theFacade2.getInfoMap().containsKey( theFacade1.getPeerId() ));
       assertEquals( "test1running", theFacade2.getInfoMap().get( theFacade1.getPeerId() ).get( "test" ));
-      
+
       assertTrue( theFacade2.getInfoMap().containsKey( theFacade2.getPeerId() ));
       assertEquals( "test2running", theFacade2.getInfoMap().get( theFacade2.getPeerId() ).get( "test" ));
-      
+
     } finally {
       if(theFacade1 != null) theFacade1.stop();
       if(theFacade2 != null) theFacade2.stop();
     }
   }
-  
+
   public void testChangeUserInfoRemotely() throws P2PFacadeException, InterruptedException{
     P2PFacade theFacade1 = new P2PFacade()
     .setExchangeDelay( 300 )
@@ -512,38 +513,111 @@ public class P2PFacadeTest extends TestCase {
       theFacade2.changeRemoteUserStatus( theFacade1.getPersonalInfo().getId(), Status.AWAY );
       Thread.sleep( 1000 );
       assertEquals( Status.AWAY, theFacade1.getPersonalInfo().getStatus() );
-      
+
       theFacade2.changeRemoteUserStatus( theFacade1.getPersonalInfo().getId(), Status.BUSY);
       Thread.sleep( 1000 );
       assertEquals( Status.BUSY, theFacade1.getPersonalInfo().getStatus() );
-      
+
       theFacade2.changeRemoteUserStatus( theFacade1.getPersonalInfo().getId(), Status.ONLINE);
       Thread.sleep( 1000 );
       assertEquals( Status.ONLINE, theFacade1.getPersonalInfo().getStatus() );
-      
+
       theFacade2.changeRemoteUserStatus( theFacade1.getPersonalInfo().getId(), Status.OFFLINE);
       Thread.sleep( 1000 );
       assertEquals( Status.OFFLINE, theFacade1.getPersonalInfo().getStatus() );
-      
+
       theFacade2.changeRemoteUserStatus( theFacade1.getPersonalInfo().getId(), Status.AWAY, "a" );
       Thread.sleep( 1000 );
       assertEquals( Status.AWAY, theFacade1.getPersonalInfo().getStatus() );
       assertEquals( "a", theFacade1.getPersonalInfo().getStatusMessage() );
-      
+
       theFacade2.changeRemoteUserStatus( theFacade1.getPersonalInfo().getId(), Status.BUSY, "b");
       Thread.sleep( 1000 );
       assertEquals( Status.BUSY, theFacade1.getPersonalInfo().getStatus() );
       assertEquals( "b", theFacade1.getPersonalInfo().getStatusMessage() );
-      
+
       theFacade2.changeRemoteUserStatus( theFacade1.getPersonalInfo().getId(), Status.ONLINE, "c");
       Thread.sleep( 1000 );
       assertEquals( Status.ONLINE, theFacade1.getPersonalInfo().getStatus() );
       assertEquals( "c", theFacade1.getPersonalInfo().getStatusMessage() );
-      
+
       theFacade2.changeRemoteUserStatus( theFacade1.getPersonalInfo().getId(), Status.OFFLINE, "d");
       Thread.sleep( 1000 );
       assertEquals( Status.OFFLINE, theFacade1.getPersonalInfo().getStatus() );
       assertEquals( "d", theFacade1.getPersonalInfo().getStatusMessage() );
+    } finally {
+      if(theFacade1 != null) theFacade1.stop();
+      if(theFacade2 != null) theFacade2.stop();
+    }
+  }
+
+  public void testMessageResender() throws P2PFacadeException, InterruptedException, UnknownPeerException, ExecutionException{
+    P2PFacade theFacade1 = new P2PFacade()
+    .setExchangeDelay( 300 )
+    .setPersist( false )
+    .setInfoObject( "test", "test1" )
+    .setMessageResenderActivated( true )
+    .start( 20 );
+
+    P2PFacade theFacade2 = new P2PFacade()
+    .setExchangeDelay( 300 )
+    .setInfoObject( "test", "test2" )
+    .setPersist( false )
+    .setMessageResenderActivated( true )
+    .start( 20 );
+
+    String thePeerId2 = theFacade2.getPeerId();
+    
+    MessageCollector theCollector = new MessageCollector();
+    theFacade2.addMessageListener( theCollector );
+    
+    DeliveryReportCollector theDeliveryReportCollector = new DeliveryReportCollector();
+    theFacade1.addDeliveryReportListener( theDeliveryReportCollector );
+
+    Thread.sleep( 2000 );
+    
+    assertNotNull( theFacade1.getFailedMessageResender() );
+    assertNotNull( theFacade2.getFailedMessageResender() );
+
+    assertTrue( theFacade1.getRoutingTable().containsEntryForPeer( theFacade2.getPeerId() ));
+    assertTrue( theFacade2.getRoutingTable().containsEntryForPeer( theFacade1.getPeerId() ));
+    
+    try{
+      theFacade2.stop();
+      
+      Thread.sleep( 3000 );
+      
+      assertFalse( theFacade1.getRoutingTable().getEntryForPeer( thePeerId2 ).isReachable() );
+      
+      MultiPeerMessage theMessage = MultiPeerMessage.createMessage( "test" )
+      .addDestination( thePeerId2 );
+      
+      assertTrue( theFacade1.sendMessage( theMessage, Executors.newFixedThreadPool( 1 ) ).get() );
+      
+      //give the system some time to detect that the peer is unreachble and collect the message int the message resender
+      Thread.sleep( 3000 );
+      
+      assertEquals( 0, theCollector.getMessages().size() );
+      assertEquals( 1, theFacade1.getFailedMessageResender().getNrOfMessagesWaitingForResend() );
+      
+      theFacade2 = new P2PFacade()
+      .setExchangeDelay( 300 )
+      .setInfoObject( "test", "test2" )
+      .setPersist( false )
+      .setPeerId( thePeerId2 )
+      .setMessageResenderActivated( true )
+      .start( 20 );
+      
+      theFacade2.addMessageListener( theCollector );
+      
+      Thread.sleep( 3000 );
+      
+      //the message resender should be informed that peer 2 has come online and try to resend the message
+      
+      assertEquals( 1, theCollector.getMessages().size() );
+      assertEquals( 0, theFacade1.getFailedMessageResender().getNrOfMessagesWaitingForResend() );
+      
+      
     } finally {
       if(theFacade1 != null) theFacade1.stop();
       if(theFacade2 != null) theFacade2.stop();

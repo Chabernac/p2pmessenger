@@ -110,14 +110,9 @@ public class MessageProtocol extends Protocol {
       
       checkMessage(aMessage);
       
-      if(myProcessedMessages.contains(aMessage.getMessageId())){
-        return Response.MESSAGE_ALREADY_RECEIVED.name();
-      }
-
       AbstractPeer theDestination = aMessage.getDestination();
       try {
         myProcessingMessages.add(aMessage.getMessageId());
-        myProcessedMessages.add(aMessage.getMessageId());
         if(theDestination.getPeerId().equals( getRoutingTable().getLocalPeerId() )){
           return handleMessageForUs(aSessionId, aMessage);
         } else {
@@ -162,6 +157,12 @@ public class MessageProtocol extends Protocol {
     }
 
     private String handleMessageForUs(long aSessionId, Message aMessage) throws EncryptionException{
+      if(myProcessedMessages.contains(aMessage.getMessageId())){
+        return Response.MESSAGE_ALREADY_RECEIVED.name();
+      }
+      
+      myProcessedMessages.add(aMessage.getMessageId());
+      
       checkEnctryption(aMessage);
       if(aMessage.isProtocolMessage()){
         //reoffer the content of the message to the handle method
