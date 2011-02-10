@@ -138,6 +138,8 @@ public class ChatMediator {
         LOGGER.error( "Could not execute command" );
       }
       return true;
+    } else if(checkEasterEgg( myMessageProvider.getMessage() )){
+      return true;
     }
     else if(myMessageProvider.getMessage().equalsIgnoreCase( "exit" )){
       CommandSession.getInstance().execute(myActionFactory.getCommand(Action.EXIT_WITHOUT_ASKING));
@@ -360,7 +362,7 @@ public class ChatMediator {
 
     @Override
     public void messageReceived( MultiPeerMessage aMessage ) {
-      if(!checkEasterEgg(aMessage) && 
+      if(!checkEasterEgg(aMessage.getMessage()) && 
           !ApplicationPreferences.getInstance().hasEnumProperty( Settings.ReceiveEnveloppe.NO_POPUP ) && 
           !ApplicationPreferences.getInstance().hasEnumProperty( Settings.ReceiveEnveloppe.INFO_PANEL) &&
           myIsShowDialogProvider.isShowDialog()){
@@ -369,9 +371,9 @@ public class ChatMediator {
     }
   }
   
-  private boolean checkEasterEgg(MultiPeerMessage aMessage){
-    if(aMessage.getMessage().startsWith( "easteregg" ) && myChatFrame instanceof JFrame){
-      iEasterEgg theEgg = EasterEggFactory.createEasterEgg( (JFrame)myChatFrame, aMessage.getMessage().substring( aMessage.getMessage().indexOf( " " ) ));
+  private boolean checkEasterEgg(String aMessage){
+    if(aMessage.startsWith( "easteregg" ) && myChatFrame instanceof JFrame){
+      iEasterEgg theEgg = EasterEggFactory.createEasterEgg( (JFrame)myChatFrame, aMessage.substring( aMessage.indexOf( " " ) ));
       theEgg.start();
       return true;
     }
