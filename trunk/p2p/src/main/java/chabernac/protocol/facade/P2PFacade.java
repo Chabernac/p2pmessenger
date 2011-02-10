@@ -15,6 +15,8 @@ import java.util.concurrent.Future;
 
 import javax.activation.DataSource;
 
+import org.omg.CosNaming.IstringHelper;
+
 import chabernac.io.BasicSocketPool;
 import chabernac.io.CachingSocketPool;
 import chabernac.io.iSocketPool;
@@ -511,7 +513,11 @@ public class P2PFacade {
   }
   
   public void setMessageResenderActivated(boolean isActivated){
+    isActivateMessageResender = isActivated;
     
+    if(isStarted()){
+      
+    }
   }
 
 

@@ -34,7 +34,6 @@ import org.apache.log4j.Logger;
 import org.doomdark.uuid.UUIDGenerator;
 
 import chabernac.io.Base64ObjectStringConverter;
-import chabernac.io.CachingSocketPool;
 import chabernac.io.ClassPathResource;
 import chabernac.io.iObjectPersister;
 import chabernac.io.iObjectStringConverter;

@@ -13,10 +13,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Observer;
 
+import org.apache.log4j.Logger;
+
 import chabernac.utils.ObservableList;
 
 public class BasicSocketPool implements iSocketPool{
-//  private static Logger LOGGER = Logger.getLogger(BasicSocketPool.class);
+  private static Logger LOGGER = Logger.getLogger(BasicSocketPool.class);
   private ObservableList<SocketProxy> myCheckedOutPool = new ObservableList<SocketProxy>( new ArrayList< SocketProxy >() ) ;
   private ObservableList<SocketProxy> myConnectingPool = new ObservableList<SocketProxy>( new ArrayList< SocketProxy >() );
   private ObservableList<SocketProxy> myCheckedInPool = new ObservableList<SocketProxy>( new ArrayList< SocketProxy >() );
@@ -146,6 +148,7 @@ public class BasicSocketPool implements iSocketPool{
       for(Iterator< SocketProxy > i = myCheckedInPool.iterator();i.hasNext();){
         SocketProxy theProxy = i.next();
         if(theProxy.getConnectTime().getTime() < aTimestamp){
+          LOGGER.debug( "Cleaning up socket '"  + theProxy + "'");
           theProxy.close();
           i.remove();
         }
