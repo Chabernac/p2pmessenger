@@ -80,6 +80,10 @@ public class FailedMessageResender {
       }
     }
   }
+  
+  public int getNrOfMessagesWaitingForResend(){
+    return myDeliveryReports.size();
+  }
 
   public class MyDeliveryReportListener implements iDeliverReportListener {
 

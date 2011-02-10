@@ -114,7 +114,7 @@ public class P2PFacade {
     myProperties.setProperty("routingprotocol.stopwhenalreadyrunning", Boolean.toString( isStopWhenAlreadyRunning));
     return this;
   }
-  
+
   public P2PFacade setPersist(boolean isPersist) throws P2PFacadeException{
     if(isStarted()) throw new P2PFacadeException("Can not set this property when the server has already been started");
     myProperties.setProperty("routingprotocol.persist", Boolean.toString( isPersist ));
@@ -132,7 +132,7 @@ public class P2PFacade {
     myProperties.setProperty("routingprotocol.supernodes", aDataSource);
     return this;
   }
-  
+
   public P2PFacade setChannel(String aChannel) throws P2PFacadeException{
     if(isStarted()) throw new P2PFacadeException("Can not set this property when the server has already been started");
     myProperties.setProperty("routingprotocol.channel", aChannel);
@@ -305,7 +305,7 @@ public class P2PFacade {
       throw new P2PFacadeException("An error occured while adding pipe listener", e);
     }
   }
-  
+
   public void removePipeListener(IPipeListener aPipeListener) throws P2PFacadeException{
     if(!isStarted()) throw new P2PFacadeException("Can not execute this action when the server is not started");
 
@@ -325,7 +325,7 @@ public class P2PFacade {
       throw new P2PFacadeException("An error occured while adding user info listener", e);
     }
   }
-  
+
   public void removeUserInfoListener( iUserInfoListener aUserInfoListener) throws P2PFacadeException {
     if(!isStarted()) throw new P2PFacadeException("Can not execute this action when the server is not started");
 
@@ -405,35 +405,35 @@ public class P2PFacade {
       throw new P2PFacadeException("An error occured while creationg message archive", e);
     }
   }
-  
+
   public Map< String, Version > getVersions() throws P2PFacadeException{
     if(!isStarted()) throw new P2PFacadeException("Can not execute this action when the server is not started");
 
     try{
-        return Collections.unmodifiableMap( ((VersionProtocol)myContainer.getProtocol( VersionProtocol.ID )).getVersions() );
+      return Collections.unmodifiableMap( ((VersionProtocol)myContainer.getProtocol( VersionProtocol.ID )).getVersions() );
     }catch(Exception e){
       throw new P2PFacadeException("An error occured while creationg message archive", e);
     }
   }
-  
+
   public Version getLocalVersion() throws P2PFacadeException{
     if(!isStarted()) throw new P2PFacadeException("Can not execute this action when the server is not started");
 
     try{
-        return  ((VersionProtocol)myContainer.getProtocol( VersionProtocol.ID )).getLocalVersion();
+      return  ((VersionProtocol)myContainer.getProtocol( VersionProtocol.ID )).getLocalVersion();
     }catch(Exception e){
       throw new P2PFacadeException("An error occured while creationg message archive", e);
     }
   }
- 
-  
+
+
   public P2PFacade setVersion( Version aVersion ) throws P2PFacadeException {
     if(isStarted()) throw new P2PFacadeException("Can not execute this action when the server is started");
-    
+
     myProperties.setProperty("chabernac.protocol.version", aVersion);
     return this;
   }
-  
+
   public InfoObject getInfoObject() throws P2PFacadeException{
     if(!isStarted()) {
       if(!myProperties.containsKey( "chabernac.protocol.infoexchange.InfoObject" )){
@@ -448,12 +448,12 @@ public class P2PFacade {
       }
     }
   }
-  
+
   public P2PFacade setInfoObject(String aKey, Serializable anObject) throws P2PFacadeException{
     getInfoObject().put( aKey, anObject );
     return this;
   }
-  
+
   public Map<String, InfoObject> getInfoMap() throws P2PFacadeException{
     if(!isStarted()) throw new P2PFacadeException("Can not execute this action when the server is started");
     try{
@@ -462,30 +462,30 @@ public class P2PFacade {
       throw new P2PFacadeException("An error occured while getting info object", e);
     }
   }
-  
+
   public void addInfoListener(iInfoListener< InfoObject > aListener) throws P2PFacadeException{
     if(!isStarted()) throw new P2PFacadeException("Can not execute this action when the server is not started");
-    
+
     try{
       ((InfoExchangeProtocol< InfoObject >)myContainer.getProtocol( InfoExchangeProtocol.ID )).addInfoListener( aListener );
     }catch(Exception e){
       throw new P2PFacadeException("An error occured while getting info object", e);
     }
   }
-  
+
   public void removeInfoListener(iInfoListener< InfoObject > aListener) throws P2PFacadeException{
     if(!isStarted()) throw new P2PFacadeException("Can not execute this action when the server is not started");
-    
+
     try{
       ((InfoExchangeProtocol< InfoObject >)myContainer.getProtocol( InfoExchangeProtocol.ID )).removeInfoListener( aListener );
     }catch(Exception e){
       throw new P2PFacadeException("An error occured while getting info object", e);
     }
   }
-  
+
   public P2PFacade setApplicationProtocolDelegate(iProtocolDelegate aProtolDelegate) throws P2PFacadeException{
     if(!isStarted()) throw new P2PFacadeException("Can not execute this action when the server is not started");
-    
+
     try{
       ((ApplicationProtocol)myContainer.getProtocol( ApplicationProtocol.ID )).setDelegate( aProtolDelegate );
     }catch(Exception e){
@@ -493,7 +493,7 @@ public class P2PFacade {
     }
     return this;
   }
-  
+
   public P2PFacade setSocketReuse(boolean isSocketReuse){
     iSocketPool theSocketPool = P2PSettings.getInstance().getSocketPool();
     if(theSocketPool instanceof BasicSocketPool){
@@ -501,25 +501,40 @@ public class P2PFacade {
     }
     return this;
   }
-  
+
   public String sendApplicationMessage(String aPeerId, String aMessage) throws P2PFacadeException{
     if(!isStarted()) throw new P2PFacadeException("Can not execute this action when the server is not started");
-    
+
     try{
       return ((ApplicationProtocol)myContainer.getProtocol( ApplicationProtocol.ID )).sendMessage( aPeerId, aMessage );
     }catch(Exception e){
       throw new P2PFacadeException("An error occured while setting protocol deleegate", e);
     }
   }
-  
-  public void setMessageResenderActivated(boolean isActivated){
-    isActivateMessageResender = isActivated;
-    
-    if(isStarted()){
-      
-    }
-  }
 
+  public P2PFacade setMessageResenderActivated(boolean isActivated) throws P2PFacadeException{
+    isActivateMessageResender = isActivated;
+
+    if(isStarted()){
+      if(isActivated && myMessageResender == null){
+        try {
+          myMessageResender = new FailedMessageResender( myContainer );
+          myMessageResender.start();
+        } catch ( ProtocolException e ) {
+          throw new P2PFacadeException("Unable to activate message resender", e);
+        }
+      } else if(!isActivated && myMessageResender != null){
+        myMessageResender.stop();
+        myMessageResender = null;
+      }
+    }
+    
+    return this;
+  }
+  
+  public FailedMessageResender getFailedMessageResender(){
+    return myMessageResender;
+  }
 
   public void showRoutingTable() throws P2PFacadeException{
     if(!isStarted()) throw new P2PFacadeException("Can not execute this action when the server is not started");
@@ -531,7 +546,7 @@ public class P2PFacade {
       throw new P2PFacadeException("Could not show routing frame", e);
     }
   }
-  
+
   P2PFacade setKeepRoutingTableHistory(boolean isKeepHistory) throws P2PFacadeException{
     if(!isStarted()){
       myIsKeepHistory = isKeepHistory;
@@ -544,7 +559,7 @@ public class P2PFacade {
     }
     return this;
   }
-  
+
   RoutingTable getRoutingTable() throws P2PFacadeException{
     if(!isStarted()) throw new P2PFacadeException("Can not execute this action when the server is not started");
 
@@ -554,24 +569,24 @@ public class P2PFacade {
       throw new P2PFacadeException("Could not show routing frame", e);
     }
   }
-  
+
   public void scanSuperNodes() throws P2PFacadeException{
     if(!isStarted()) throw new P2PFacadeException("Can not execute this action when the server is not started");
-    
+
     try{
       ((RoutingProtocol)myContainer.getProtocol( RoutingProtocol.ID )).scanSuperNodes();
     }catch(Exception e){
       throw new P2PFacadeException("Could not show routing frame", e);
     }
   }
-  
+
   public void changeRemoteUserStatus(String aUserId, Status aStatus) throws P2PFacadeException{
     changeRemoteUserStatus( aUserId, aStatus, null );
   }
-  
+
   public void changeRemoteUserStatus(String aUserId, Status aStatus, String aStatusDescription) throws P2PFacadeException{
     if(!isStarted()) throw new P2PFacadeException("Can not execute this action when the server is not started");
-    
+
     try{
       ((UserInfoProtocol)myContainer.getProtocol( UserInfoProtocol.ID )).changeStatus( aUserId, aStatus, aStatusDescription );
     }catch(Exception e){
@@ -583,7 +598,7 @@ public class P2PFacade {
     if(myProtocolServer == null) return false;
     return myProtocolServer.isStarted();
   }
-  
+
   public void forceProtocolStart(String aProtocolId) throws P2PFacadeException{
     if(!isStarted()) throw new P2PFacadeException("Can not execute this action when the server is not started");
     try {
@@ -591,9 +606,9 @@ public class P2PFacade {
     } catch ( Exception e ) {
       throw new P2PFacadeException("Could not force start protocol '" + aProtocolId + "'", e);
     }
-    
+
   }
-  
+
   public P2PFacade start(int aNumberOfThreads) throws P2PFacadeException{
     return start(aNumberOfThreads, null);
   }
@@ -605,7 +620,7 @@ public class P2PFacade {
       ProtocolFactory theFactory = new ProtocolFactory(myProperties);
       myContainer = new ProtocolContainer(theFactory, aSupportedProtocols);
       myProtocolServer = new ProtocolServer(myContainer, RoutingProtocol.START_PORT, aNumberOfThreads, true);
-      
+
       if(!myProtocolServer.start()) throw new P2PFacadeException("Unable to start protocol server");
 
       //we retrieve the routing protcol
@@ -616,21 +631,26 @@ public class P2PFacade {
       //retrieve the user info protocol
       //this way it is instantiated and listens for routing table changes and retrieves user info of the changed peers
       if(aSupportedProtocols == null || aSupportedProtocols.contains( UserInfoProtocol.ID )) myContainer.getProtocol( UserInfoProtocol.ID );
-      
+
       //retrieve the version protocol so that is starts exchanging versions
       //retrieve the user info protocol
       //this way it is instantiated and listens for routing table changes and retrieves user info of the changed peers
       if(aSupportedProtocols == null || aSupportedProtocols.contains( VersionProtocol.ID)) myContainer.getProtocol( VersionProtocol.ID );
-      
+
       if(aSupportedProtocols == null || aSupportedProtocols.contains( WebPeerProtocol.ID)) myContainer.getProtocol( WebPeerProtocol.ID );
-      
+
       if(aSupportedProtocols == null || aSupportedProtocols.contains( InfoExchangeProtocol.ID)) myContainer.getProtocol( InfoExchangeProtocol.ID );
-      
+
       iSocketPool theSocketPool = P2PSettings.getInstance().getSocketPool();
       if(theSocketPool instanceof CachingSocketPool){
         ((CachingSocketPool)theSocketPool).setCleanUpTimeInSeconds( 30 );
       }
       
+      if(isActivateMessageResender){
+        myMessageResender = new FailedMessageResender( myContainer );
+        myMessageResender.start();
+      }
+
       return this;
     }catch(Exception e){
       if(myProtocolServer != null){
