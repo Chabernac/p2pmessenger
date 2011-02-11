@@ -4,10 +4,14 @@ import java.awt.Cursor;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.io.File;
 
 import javax.swing.text.BadLocationException;
 
 import org.apache.log4j.Logger;
+
+import chabernac.command.CommandSession;
+import chabernac.documentationtool.command.OpenArtifactCommand;
 
 public class LinkListener implements MouseListener, MouseMotionListener {
   private final static Logger LOGGER = Logger.getLogger(LinkListener.class);
@@ -31,12 +35,11 @@ public class LinkListener implements MouseListener, MouseMotionListener {
     if(myLinkHelper.isWithinLink(thePostion)){
       try {
         String theLink = myLinkHelper.getLinkAt(thePostion);
-        System.out.println(theLink);
+        CommandSession.getInstance().execute( new OpenArtifactCommand( myMediator, new File(theLink) ));
       } catch (BadLocationException e) {
         LOGGER.error("Bad location", e);
       }
     }
-   
   }
   
   @Override

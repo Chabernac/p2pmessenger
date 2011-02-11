@@ -49,8 +49,8 @@ public class LinkHelper {
         if(theText.charAt(i) == ']') return false;
         else if(theText.charAt(i) == '[') return true;
       }
-    }catch(BadLocationException e){
-      LOGGER.error("Bad location", e);
+    }catch(Exception e){
+//      LOGGER.error("Bad location", e);
       return false;
     }
 
