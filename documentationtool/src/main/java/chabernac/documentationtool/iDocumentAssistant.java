@@ -2,6 +2,8 @@ package chabernac.documentationtool;
 
 import javax.swing.text.Document;
 
+import chabernac.documentationtool.document.Artifact;
+
 
 public interface iDocumentAssistant {
   /**
@@ -10,5 +12,5 @@ public interface iDocumentAssistant {
    * at the cursor position
    * @param aDocument
    */
-  public void assist(Document aDocument, int aCusorPosition);
+  public void assist(Artifact<Document> aArtifact, int aCusorPosition);
 }
