@@ -15,6 +15,7 @@ import java.util.concurrent.Executors;
 import junit.framework.TestCase;
 
 import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Logger;
 
 import chabernac.io.SocketProxy;
 import chabernac.protocol.message.DeliveryReport;
@@ -31,12 +32,15 @@ import chabernac.testingutils.MessageCollector;
 import chabernac.testingutils.UserInfoProvider;
 
 public class P2PFacadeTest extends TestCase {
+  private static Logger LOGGER = Logger.getLogger(P2PFacadeTest.class);
+  
   static{
     BasicConfigurator.resetConfiguration();
     BasicConfigurator.configure();
   }
 
   public void testP2PSendMessage() throws P2PFacadeException, InterruptedException, ExecutionException{
+    LOGGER.debug("Executing test " + new Exception().getStackTrace()[0].getMethodName());
     P2PFacade theFacade1 = new P2PFacade()
     .setExchangeDelay( 300 )
     .setPersist( false )
@@ -82,6 +86,7 @@ public class P2PFacadeTest extends TestCase {
   }
 
   public void testSendMessageWhenServerNotStarted() throws P2PFacadeException{
+    LOGGER.debug("Executing test " + new Exception().getStackTrace()[0].getMethodName());
     P2PFacade theFacade1 = new P2PFacade()
     .setExchangeDelay( 300 )
     .setPersist( false );
@@ -105,6 +110,7 @@ public class P2PFacadeTest extends TestCase {
   }
 
   public void testFailMessage() throws P2PFacadeException, InterruptedException, ExecutionException{
+    LOGGER.debug("Executing test " + new Exception().getStackTrace()[0].getMethodName());
     P2PFacade theFacade1 = new P2PFacade()
     .setExchangeDelay( 300 )
     .setPersist( false )
@@ -132,6 +138,7 @@ public class P2PFacadeTest extends TestCase {
   }
 
   public void testSendFile() throws InterruptedException, P2PFacadeException, IOException, ExecutionException{
+    LOGGER.debug("Executing test " + new Exception().getStackTrace()[0].getMethodName());
     SocketProxy.setTraceEnabled( true );
     P2PFacade theFacade1 = new P2PFacade()
     .setExchangeDelay( 300 )
@@ -186,6 +193,7 @@ public class P2PFacadeTest extends TestCase {
   }
 
   public void testPipe() throws P2PFacadeException, InterruptedException, IOException{
+    LOGGER.debug("Executing test " + new Exception().getStackTrace()[0].getMethodName());
     SocketProxy.setTraceEnabled( true );
 
     P2PFacade theFacade1 = new P2PFacade()
@@ -237,6 +245,7 @@ public class P2PFacadeTest extends TestCase {
   }
 
   public void testUserInfo() throws P2PFacadeException, InterruptedException{
+    LOGGER.debug("Executing test " + new Exception().getStackTrace()[0].getMethodName());
     P2PFacade theFacade1 = new P2PFacade()
     .setExchangeDelay( 300 )
     .setPersist( false )
@@ -284,6 +293,7 @@ public class P2PFacadeTest extends TestCase {
   }
 
   public void testMessageArchive() throws P2PFacadeException, InterruptedException, ExecutionException{
+    LOGGER.debug("Executing test " + new Exception().getStackTrace()[0].getMethodName());
     P2PFacade theFacade1 = new P2PFacade()
     .setExchangeDelay( 300 )
     .setPersist( false )
@@ -344,6 +354,7 @@ public class P2PFacadeTest extends TestCase {
   }
 
   public void testStopWhenAlreadyRunning() throws P2PFacadeException, InterruptedException, ExecutionException{
+    LOGGER.debug("Executing test " + new Exception().getStackTrace()[0].getMethodName());
     P2PFacade theFacade1 = null;
     P2PFacade theFacade2 = null;
     try{
@@ -376,6 +387,7 @@ public class P2PFacadeTest extends TestCase {
   }
 
   public void testChannel() throws P2PFacadeException, InterruptedException{
+    LOGGER.debug("Executing test " + new Exception().getStackTrace()[0].getMethodName());
     P2PFacade theFacade1 = null;
     P2PFacade theFacade2 = null;
     P2PFacade theFacade3 = null;
@@ -440,7 +452,7 @@ public class P2PFacadeTest extends TestCase {
   }
 
   public void testSetInfoObject() throws P2PFacadeException, InterruptedException{
-
+    LOGGER.debug("Executing test " + new Exception().getStackTrace()[0].getMethodName());
     P2PFacade theFacade1 = new P2PFacade()
     .setExchangeDelay( 300 )
     .setPersist( false )
@@ -494,64 +506,10 @@ public class P2PFacadeTest extends TestCase {
     }
   }
 
-  public void testChangeUserInfoRemotely() throws P2PFacadeException, InterruptedException{
-    P2PFacade theFacade1 = new P2PFacade()
-    .setExchangeDelay( 300 )
-    .setPersist( false )
-    .setInfoObject( "test", "test1" )
-    .start( 20 );
 
-    P2PFacade theFacade2 = new P2PFacade()
-    .setExchangeDelay( 300 )
-    .setInfoObject( "test", "test2" )
-    .setPersist( false )
-    .start( 20 );
-
-    Thread.sleep( 2000 );
-
-    try{
-      theFacade2.changeRemoteUserStatus( theFacade1.getPersonalInfo().getId(), Status.AWAY );
-      Thread.sleep( 1000 );
-      assertEquals( Status.AWAY, theFacade1.getPersonalInfo().getStatus() );
-
-      theFacade2.changeRemoteUserStatus( theFacade1.getPersonalInfo().getId(), Status.BUSY);
-      Thread.sleep( 1000 );
-      assertEquals( Status.BUSY, theFacade1.getPersonalInfo().getStatus() );
-
-      theFacade2.changeRemoteUserStatus( theFacade1.getPersonalInfo().getId(), Status.ONLINE);
-      Thread.sleep( 1000 );
-      assertEquals( Status.ONLINE, theFacade1.getPersonalInfo().getStatus() );
-
-      theFacade2.changeRemoteUserStatus( theFacade1.getPersonalInfo().getId(), Status.OFFLINE);
-      Thread.sleep( 1000 );
-      assertEquals( Status.OFFLINE, theFacade1.getPersonalInfo().getStatus() );
-
-      theFacade2.changeRemoteUserStatus( theFacade1.getPersonalInfo().getId(), Status.AWAY, "a" );
-      Thread.sleep( 1000 );
-      assertEquals( Status.AWAY, theFacade1.getPersonalInfo().getStatus() );
-      assertEquals( "a", theFacade1.getPersonalInfo().getStatusMessage() );
-
-      theFacade2.changeRemoteUserStatus( theFacade1.getPersonalInfo().getId(), Status.BUSY, "b");
-      Thread.sleep( 1000 );
-      assertEquals( Status.BUSY, theFacade1.getPersonalInfo().getStatus() );
-      assertEquals( "b", theFacade1.getPersonalInfo().getStatusMessage() );
-
-      theFacade2.changeRemoteUserStatus( theFacade1.getPersonalInfo().getId(), Status.ONLINE, "c");
-      Thread.sleep( 1000 );
-      assertEquals( Status.ONLINE, theFacade1.getPersonalInfo().getStatus() );
-      assertEquals( "c", theFacade1.getPersonalInfo().getStatusMessage() );
-
-      theFacade2.changeRemoteUserStatus( theFacade1.getPersonalInfo().getId(), Status.OFFLINE, "d");
-      Thread.sleep( 1000 );
-      assertEquals( Status.OFFLINE, theFacade1.getPersonalInfo().getStatus() );
-      assertEquals( "d", theFacade1.getPersonalInfo().getStatusMessage() );
-    } finally {
-      if(theFacade1 != null) theFacade1.stop();
-      if(theFacade2 != null) theFacade2.stop();
-    }
-  }
 
   public void testMessageResender() throws P2PFacadeException, InterruptedException, UnknownPeerException, ExecutionException{
+    LOGGER.debug("Executing test " + new Exception().getStackTrace()[0].getMethodName());
     P2PFacade theFacade1 = new P2PFacade()
     .setExchangeDelay( 300 )
     .setPersist( false )
@@ -618,6 +576,64 @@ public class P2PFacadeTest extends TestCase {
       assertEquals( 0, theFacade1.getFailedMessageResender().getNrOfMessagesWaitingForResend() );
       
       
+    } finally {
+      if(theFacade1 != null) theFacade1.stop();
+      if(theFacade2 != null) theFacade2.stop();
+    }
+  }
+  
+  public void testChangeUserInfoRemotely() throws P2PFacadeException, InterruptedException{
+    LOGGER.debug("Executing test " + new Exception().getStackTrace()[0].getMethodName());
+    P2PFacade theFacade1 = new P2PFacade()
+    .setExchangeDelay( 300 )
+    .setPersist( false )
+    .setInfoObject( "test", "test1" )
+    .start( 20 );
+
+    P2PFacade theFacade2 = new P2PFacade()
+    .setExchangeDelay( 300 )
+    .setInfoObject( "test", "test2" )
+    .setPersist( false )
+    .start( 20 );
+
+    Thread.sleep( 2000 );
+
+    try{
+      theFacade2.changeRemoteUserStatus( theFacade1.getPersonalInfo().getId(), Status.AWAY );
+      Thread.sleep( 1000 );
+      assertEquals( Status.AWAY, theFacade1.getPersonalInfo().getStatus() );
+
+      theFacade2.changeRemoteUserStatus( theFacade1.getPersonalInfo().getId(), Status.BUSY);
+      Thread.sleep( 1000 );
+      assertEquals( Status.BUSY, theFacade1.getPersonalInfo().getStatus() );
+
+      theFacade2.changeRemoteUserStatus( theFacade1.getPersonalInfo().getId(), Status.ONLINE);
+      Thread.sleep( 1000 );
+      assertEquals( Status.ONLINE, theFacade1.getPersonalInfo().getStatus() );
+
+      theFacade2.changeRemoteUserStatus( theFacade1.getPersonalInfo().getId(), Status.OFFLINE);
+      Thread.sleep( 1000 );
+      assertEquals( Status.OFFLINE, theFacade1.getPersonalInfo().getStatus() );
+
+      theFacade2.changeRemoteUserStatus( theFacade1.getPersonalInfo().getId(), Status.AWAY, "a" );
+      Thread.sleep( 1000 );
+      assertEquals( Status.AWAY, theFacade1.getPersonalInfo().getStatus() );
+      assertEquals( "a", theFacade1.getPersonalInfo().getStatusMessage() );
+
+      theFacade2.changeRemoteUserStatus( theFacade1.getPersonalInfo().getId(), Status.BUSY, "b");
+      Thread.sleep( 1000 );
+      assertEquals( Status.BUSY, theFacade1.getPersonalInfo().getStatus() );
+      assertEquals( "b", theFacade1.getPersonalInfo().getStatusMessage() );
+
+      theFacade2.changeRemoteUserStatus( theFacade1.getPersonalInfo().getId(), Status.ONLINE, "c");
+      Thread.sleep( 1000 );
+      assertEquals( Status.ONLINE, theFacade1.getPersonalInfo().getStatus() );
+      assertEquals( "c", theFacade1.getPersonalInfo().getStatusMessage() );
+
+      theFacade2.changeRemoteUserStatus( theFacade1.getPersonalInfo().getId(), Status.OFFLINE, "d");
+      Thread.sleep( 1000 );
+      assertEquals( Status.OFFLINE, theFacade1.getPersonalInfo().getStatus() );
+      assertEquals( "d", theFacade1.getPersonalInfo().getStatusMessage() );
     } finally {
       if(theFacade1 != null) theFacade1.stop();
       if(theFacade2 != null) theFacade2.stop();

@@ -72,6 +72,7 @@ public class ProtocolServer implements Runnable{
     try {
       if(myServerSocket != null){
         myServerSocket.close();
+        LOGGER.debug("Server socket at port " + myServerSocket.getLocalPort() + " closed");
       }
     } catch ( IOException e ) {
     }
@@ -116,7 +117,7 @@ public class ProtocolServer implements Runnable{
 
       myClientHandlerService = new DynamicSizeExecutor( 10, 256 );
 
-      LOGGER.debug( "Starting protocol server at port '" + myPort + "'" );
+      LOGGER.debug( "Starting protocol server at port '" + myServerSocket.getLocalPort() + "'" );
       
       synchronized ( LOCK ) {
         isStarted = true;
