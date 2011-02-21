@@ -81,7 +81,7 @@ public class SearchPanel extends JPanel {
     @Override
     public void actionPerformed( ActionEvent aE ) {
       try {
-        mySearchProvider.next(mySearchArea.getText(), false);
+        mySearchProvider.next(mySearchArea.getText().trim(), false);
       } catch ( SearchProviderException e ) {
       } 
     }
@@ -95,7 +95,7 @@ public class SearchPanel extends JPanel {
     @Override
     public void actionPerformed( ActionEvent aE ) {
       try {
-        mySearchProvider.previous(mySearchArea.getText(), myRegularExpression.isSelected());
+        mySearchProvider.previous(mySearchArea.getText().trim(), myRegularExpression.isSelected());
       } catch ( SearchProviderException e ) {
       }
     }
