@@ -13,6 +13,7 @@ import javax.swing.tree.TreePath;
 import chabernac.application.ApplicationRefBase;
 import chabernac.command.AbstractCommand;
 import chabernac.task.Task;
+import chabernac.task.TaskTools;
 import chabernac.task.gui.TaskTreeModel;
 
 public abstract class ActivityCommand extends AbstractCommand {
@@ -56,21 +57,7 @@ public abstract class ActivityCommand extends AbstractCommand {
   }
   
   public void goToTask(Task aTask){
-    if(aTask == null) return;
-    Task theCurrentTask = aTask;
-    ArrayList theList = new ArrayList();
-    while(theCurrentTask != null){
-      theList.add(theCurrentTask);
-      theCurrentTask = theCurrentTask.getParentTask();
-    }
-    
-    Object[] theTreePath = new Object[theList.size()];
-    for(int i=1;i<=theList.size();i++){
-      theTreePath[i - 1] = theList.get(theList.size() - i);
-    }
-    
-    TreePath theTree = new TreePath(theTreePath);
-    myTree.setSelectionPath(theTree);
+    TaskTools.selectTask( aTask );
   }
   
   protected abstract void executeCommand();

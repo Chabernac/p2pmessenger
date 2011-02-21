@@ -63,6 +63,7 @@ public class MainPanel extends JPanel{
     aPanel.add(new CommandButton(CommandFactory.getCommand("current")));
     aPanel.add(new CommandButton(CommandFactory.getCommand("mostimportant")));
     aPanel.add(new CommandButton(CommandFactory.getCommand("todo")));
+    aPanel.add(new CommandButton(CommandFactory.getCommand("search")));
   }
   
   private class MyTreeModelListener implements TreeModelListener{

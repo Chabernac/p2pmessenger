@@ -52,6 +52,8 @@ public class CommandFactory {
         myCommands.put("showfinished", new ToggleShowFinishedActivityCommand());
       } else if(aCommand.equalsIgnoreCase("todo")){
         myCommands.put("todo", new AddToToDoCommand());
+      } else if(aCommand.equalsIgnoreCase("search")){
+        myCommands.put("search", new SearchCommand() );
       }
     }
     return (AbstractCommand)myCommands.get(aCommand);
