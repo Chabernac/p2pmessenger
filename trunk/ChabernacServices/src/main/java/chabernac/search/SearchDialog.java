@@ -34,7 +34,5 @@ public class SearchDialog extends JDialog {
     setSize( 350, 100 );
     
     setResizable( false );
-    
-    setVisible( true );
   }
 }
