@@ -629,6 +629,7 @@ public class RoutingProtocol extends Protocol {
       try{
         FileInputStream theInputStream = new FileInputStream(theFile);
         myRoutingTable = myRoutingTablePersister.loadObject( theInputStream );
+        myRoutingTable.removeEntriesOlderThan( 60, TimeUnit.DAYS );
         theInputStream.close();
         return;
       }catch(Exception e){

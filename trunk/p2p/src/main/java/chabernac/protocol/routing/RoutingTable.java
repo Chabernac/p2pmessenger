@@ -14,6 +14,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import javax.jdo.annotations.PersistenceCapable;
 
@@ -326,10 +327,22 @@ public class RoutingTable implements Iterable< RoutingTableEntry >, Serializable
     myRoutingTableListeners.clear();
   }
 
-  public void removeAllButLocalPeer(){
+  public synchronized void removeAllButLocalPeer(){
     for(Iterator< RoutingTableEntry > i = myRoutingTable.values().iterator();i.hasNext();){
       RoutingTableEntry theEntry = i.next();
       if(!theEntry.getPeer().getPeerId().equalsIgnoreCase( myLocalPeerId )){
+        i.remove();
+      }
+    }
+  }
+  
+  public synchronized void removeEntriesOlderThan(int aNumber, TimeUnit aTimeUnit){
+    long theOldestTime = System.currentTimeMillis() - aTimeUnit.toMillis( aNumber );
+    
+    for(Iterator< RoutingTableEntry > i = myRoutingTable.values().iterator();i.hasNext();){
+      RoutingTableEntry theEntry = i.next();
+      System.out.println(theEntry.getPeer().getPeerId() + " " + theEntry.getLastOnlineTime() + " <? " + theOldestTime);
+      if(theEntry.getLastOnlineTime() < theOldestTime){
         i.remove();
       }
     }
