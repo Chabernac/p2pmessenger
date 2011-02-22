@@ -17,8 +17,11 @@ import java.awt.event.KeyEvent;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
@@ -82,6 +85,8 @@ public class NewMessageDialog5 extends JDialog implements iMessageDialog{
   private boolean isFirstTime = true;
 
   private List< Future > myPendingMessages = Collections.synchronizedList( new ArrayList< Future >());
+  
+  private Set<UUID> myUnlockedConversations = Collections.synchronizedSet( new HashSet<UUID>() );
   
   private NewMessageDialog5(ChatMediator aMediator){
     myMediator = aMediator;
@@ -211,8 +216,9 @@ public class NewMessageDialog5 extends JDialog implements iMessageDialog{
 
             myBorder.setTitle(theUserList);
             //myText.setToolTipText(theUserList);
-            if(ApplicationPreferences.getInstance().hasEnumProperty(Settings.ReceiveEnveloppe.CLOSED) || 
-                aMessage.containsIndicator( MessageIndicator.CLOSED_ENVELOPPE )){
+            if((ApplicationPreferences.getInstance().hasEnumProperty(Settings.ReceiveEnveloppe.CLOSED) || 
+                aMessage.containsIndicator( MessageIndicator.CLOSED_ENVELOPPE )) && 
+                !myUnlockedConversations.contains( aMessage.getConversationId() )){
               myText.setText( "Typ 'o' om te openen'" );
             } else {
               myText.setText(aMessage.getMessage());
@@ -420,6 +426,7 @@ public class NewMessageDialog5 extends JDialog implements iMessageDialog{
     public void actionPerformed(ActionEvent e) {
       SwingUtilities.invokeLater( new Runnable(){
         public void run(){
+          myUnlockedConversations.add( myMessage.getConversationId() );
           myText.setText( myMessage.getMessage() );
         }
       });
