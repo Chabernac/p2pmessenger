@@ -54,4 +54,21 @@ public class MultiPeerMessageTest extends TestCase {
     assertEquals( "hopla", theMessage.getMessage() );
     
   }
+  
+  public void testConversationId(){
+    MultiPeerMessage theMessage = MultiPeerMessage.createMessage( "1", "test" )
+    .addDestination( "d" )
+    .setSource( "s" );
+    
+    MultiPeerMessage theReplyMessage = theMessage.reply();
+    
+    assertEquals( theMessage.getConversationId(), theReplyMessage.getConversationId() );
+    assertNotSame( theMessage.getUniqueId(), theReplyMessage.getUniqueId() );
+    
+    MultiPeerMessage theReplyAllMessage = theMessage.replyAll();
+    
+    assertEquals( theMessage.getConversationId(), theReplyAllMessage.getConversationId() );
+    assertNotSame( theMessage.getUniqueId(), theReplyAllMessage.getUniqueId() );
+  }
+  
 }
