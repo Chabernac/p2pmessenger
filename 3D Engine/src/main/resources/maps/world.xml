@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<engine>
+	<camera>
+		<location x='100' y='100' z='0' />
+		<rotation roll='' pitch='' yaw='' />
+		<scaling value='' />
+	</camera>
+	
+	<rendering>
+		<pixelshaders>
+		</pixelshaders>
+	</rendering>
+	
+	<world>
+		<lightsources>
+			<lightsource>
+				<location x='100' y='100' z='100' />
+				<intensity value='100' />
+				<color red='255' green='255' blue='255' />
+			</lightsource>
+		</lightsources>
+
+		<shapes>
+			<cube>
+				<location x='0' y='100' z='300' />
+				<dimensions width='200' height='200' depth='200'/>
+				<texture path='metal006'/>
+			</cube>
+			
+			<cube>
+				<location x='200' y='100' z='300' />
+				<dimensions width='200' height='200' depth='200'/>
+				<texture path='guy'/>
+			</cube>
+			
+			<shape>
+				<polygons>
+					<polygon>
+						<vertexes>
+							<vertex x='0' y='0' z='200' />
+							<vertex x='200' y='0' z='200' />
+							<vertex x='200' y='200' z='200' />
+							<vertex x='0' y='200' z='200' />
+						</vertexes>
+
+						<texture path='metal006'/>
+					</polygon>
+				</polygons>
+			</shape>
+			
+			<!-- <shape path='/shapes/bridge.xml'/>  -->
+		</shapes>
+	</world>
+</engine>
