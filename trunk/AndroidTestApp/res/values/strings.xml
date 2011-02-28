@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hello">Olé Hello World, HelloAndroid!</string>
+    <string name="app_name">AndroidTestApp</string>
+    <string name="scrollbar_1_text">Scrollbar 1</string>
+    <string name="scrollbar_2_text">Scrollbar 2</string>
+    <string name="scrollbar_3_text">Scrollbar 3</string>
+</resources>
