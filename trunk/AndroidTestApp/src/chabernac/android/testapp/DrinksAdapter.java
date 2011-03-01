@@ -11,16 +11,20 @@ import java.util.List;
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.View.OnClickListener;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 
-public class DrinksAdapter extends BaseAdapter {
+public class DrinksAdapter extends BaseAdapter implements OnClickListener {
   private Context mContext;
-  private List<Integer> myImages = new ArrayList<Integer>();
+  private List<Drink> myDrinks = new ArrayList<Drink>();
+  private DrinkList myDrinkList;
 
-  public DrinksAdapter(Context c, String aDrinks) {
+  public DrinksAdapter(Context c, String aDrinks, DrinkList aDrinkList) {
       mContext = c;
+      myDrinkList = aDrinkList;
       loadImages(aDrinks);
   }
   
@@ -29,7 +33,7 @@ public class DrinksAdapter extends BaseAdapter {
     for(Field theField : theFields){
       if(theField.getName().startsWith(aDrinks)){
         try {
-          myImages.add((Integer)theField.get(R.drawable.class));
+          myDrinks.add(new Drink( theField.getName().substring( aDrinks.length() + 1 ), (Integer)theField.get(R.drawable.class)));
         } catch (Exception e) {
         }
       }
@@ -37,32 +41,64 @@ public class DrinksAdapter extends BaseAdapter {
   }
 
   public int getCount() {
-      return myImages.size();
+      return myDrinks.size();
   }
 
   public Object getItem(int position) {
       return null;
   }
-
+  
   public long getItemId(int position) {
       return 0;
   }
 
   // create a new ImageView for each item referenced by the Adapter
   public View getView(int position, View convertView, ViewGroup parent) {
-      ImageView imageView;
-      if (convertView == null) {  // if it's not recycled, initialize some attributes
-          imageView = new ImageView(mContext);
-          imageView.setLayoutParams(new GridView.LayoutParams(70, 70));
-          imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-          imageView.setPadding(2, 2, 2, 2);
-      } else {
-          imageView = (ImageView) convertView;
-      }
-
-      imageView.setImageResource(myImages.get(position));
-      return imageView;
+   DrinkView theDrinkView = getDrinkView( (DrinkView)convertView, position);
+   
+   int theNrOfDrinks = myDrinkList.getDrinkOrder( theDrinkView.getDrink() ); 
+   
+   if( theNrOfDrinks > 0){
+     theDrinkView.setContentDescription( Integer.toString(theNrOfDrinks) );
+   }
+   
+   return theDrinkView;
+  }
+  
+  private DrinkView getDrinkView(DrinkView aDrinkView, int aPosition){
+    if(aDrinkView != null) return aDrinkView;
+    
+    return new DrinkView(mContext, myDrinks.get(aPosition));
   }
 
+  @Override
+  public void onClick( View aView ) {
+    // TODO Auto-generated method stub
+    
+  }
+  
+  private class DrinkView extends ImageButton implements OnClickListener{
+    private final Drink myDrink;
+
+    public DrinkView( Context aContext, Drink aDrink ) {
+      super( aContext );
+      myDrink = aDrink;
+      setLayoutParams(new GridView.LayoutParams(70, 70));
+      setScaleType(ImageView.ScaleType.CENTER_CROP);
+      setPadding(1, 1, 1, 1);
+      setClickable( true );
+      setOnClickListener( this );
+      setImageResource( aDrink.getImageResource() );
+    }
+
+    @Override
+    public void onClick( View aView ) {
+      myDrinkList.addDrink( myDrink );
+    }
+    
+    public Drink getDrink(){
+      return myDrink;
+    }
+  }
 }
 
