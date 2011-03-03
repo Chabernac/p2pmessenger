@@ -15,16 +15,22 @@
 	android:layout_width="fill_parent" android:layout_height="fill_parent"
 	android:orientation="vertical">
 	<LinearLayout android:id="@+id/LinearLayout03"
-		android:layout_width="wrap_content" android:layout_height="wrap_content">
+		android:layout_width="fill_parent" android:layout_height="wrap_content"
+		android:background="#0066FF">
+
 		<Button android:id="@+id/ListButton" android:layout_width="wrap_content"
-			android:layout_height="wrap_content" android:text="List"></Button>
+			android:layout_height="wrap_content" android:width="10px" android:height="10px"
+			android:background="@drawable/listbutton" android:padding="4px"/>
+
+		
 	</LinearLayout>
 
 	<LinearLayout android:id="@+id/LinearLayout02"
-		android:layout_width="wrap_content" android:layout_height="fill_parent">
+		android:layout_width="wrap_content" android:layout_height="fill_parent"
+		android:background="#FFFFFF">
 		<ViewFlipper android:id="@+id/ViewFlipper01"
 			android:layout_width="wrap_content" android:layout_height="fill_parent">
-			
+
 			<LinearLayout android:id="@+id/OverviewPanel"
 				android:layout_width="fill_parent" android:layout_height="fill_parent"
 				android:orientation="vertical">
@@ -38,7 +44,7 @@
 					android:columnWidth="70dp" android:numColumns="4"
 					android:verticalSpacing="2dp" android:horizontalSpacing="2dp"
 					android:stretchMode="columnWidth" android:gravity="center"
-					android:background="#000000" />
+					android:textColor="#000000" />
 			</LinearLayout>
 
 
@@ -54,8 +60,7 @@
 					android:layout_width="fill_parent" android:layout_height="fill_parent"
 					android:columnWidth="70dp" android:numColumns="auto_fit"
 					android:verticalSpacing="2dp" android:horizontalSpacing="2dp"
-					android:stretchMode="columnWidth" android:gravity="center"
-					android:background="#000000" />
+					android:stretchMode="columnWidth" android:gravity="center" />
 			</LinearLayout>
 
 
@@ -67,28 +72,26 @@
 					android:layout_width="fill_parent" android:layout_height="wrap_content"
 					android:text="Hot drinks" />
 
-				<GridView xmlns:android="http://schemas.android.com/apk/res/android"
-					android:id="@+id/hotdrinks" android:layout_width="fill_parent"
+				<GridView android:id="@+id/hotdrinks" android:layout_width="fill_parent"
 					android:layout_height="fill_parent" android:columnWidth="90dp"
 					android:numColumns="auto_fit" android:verticalSpacing="2dp"
 					android:horizontalSpacing="2dp" android:stretchMode="columnWidth"
-					android:gravity="center" android:background="#000000" />
+					android:gravity="center" />
 			</LinearLayout>
 
 			<LinearLayout android:id="@+id/LinearLayout04"
 				android:layout_width="fill_parent" android:layout_height="fill_parent"
 				android:orientation="vertical">
 
-				<TextView android:id="@+id/TextView3"
-					android:layout_width="fill_parent" android:layout_height="wrap_content"
-					android:text="Alcoholic drinks" />
+				<TextView android:id="@+id/TextView3" android:layout_width="fill_parent"
+					android:layout_height="wrap_content" android:text="Alcoholic drinks" />
 
 				<GridView xmlns:android="http://schemas.android.com/apk/res/android"
 					android:id="@+id/alcoholicdrinks" android:layout_width="fill_parent"
 					android:layout_height="fill_parent" android:columnWidth="90dp"
 					android:numColumns="auto_fit" android:verticalSpacing="2dp"
 					android:horizontalSpacing="2dp" android:stretchMode="columnWidth"
-					android:gravity="center" android:background="#000000" />
+					android:gravity="center" />
 			</LinearLayout>
 
 
