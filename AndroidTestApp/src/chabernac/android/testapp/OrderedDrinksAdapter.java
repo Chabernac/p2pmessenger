@@ -4,8 +4,10 @@
  */
 package chabernac.android.testapp;
 
+import android.R.color;
 import android.content.Context;
 import android.database.DataSetObserver;
+import android.graphics.Color;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.View.OnClickListener;
@@ -48,6 +50,7 @@ public class OrderedDrinksAdapter extends BaseAdapter{
 
     if(isName || isNr){
       TextView theTextView = new TextView(myContext);
+      theTextView.setTextColor(Color.BLACK);
 
       if(isNr){
         theTextView.setText( Integer.toString(myDrinkList.getDrinkOrder( theDrink )) );
