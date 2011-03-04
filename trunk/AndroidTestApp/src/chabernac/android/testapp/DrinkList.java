@@ -51,5 +51,13 @@ public class DrinkList extends DataSetObservable{
    public Drink getDrinkAt(int anIndex){
      return new ArrayList<Drink>(myList.keySet()).get( anIndex );
    }
+   
+   public String toString(){
+     String s = "";
+     for(Drink theDrink : myList.keySet()){
+       s += getDrinkOrder( theDrink ) + " x " + theDrink.getName() + "\r\n"; 
+     }
+     return s;
+   }
 
 }
