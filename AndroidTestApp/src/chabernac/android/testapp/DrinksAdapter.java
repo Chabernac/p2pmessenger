@@ -89,6 +89,7 @@ public class DrinksAdapter extends BaseAdapter implements OnClickListener {
       setClickable( true );
       setOnClickListener( this );
       setImageResource( aDrink.getImageResource() );
+      setContentDescription( Integer.toString(myDrinkList.getDrinkOrder( myDrink )) );
     }
 
     @Override

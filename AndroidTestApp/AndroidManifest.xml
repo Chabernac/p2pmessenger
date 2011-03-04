@@ -1,18 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-      package="chabernac.android.testapp"
-      android:versionCode="1"
-      android:versionName="1.0">
+	package="chabernac.android.testapp" android:versionCode="1"
+	android:versionName="1.0">
 
 
-    <application android:icon="@drawable/icon" android:label="@string/app_name" android:debuggable="true">
-        <activity android:name=".HelloAndroid"
-                  android:label="@string/app_name">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
+	<application android:icon="@drawable/icon" android:label="@string/app_name"
+		android:debuggable="true">
+		<activity android:name=".HelloAndroid" android:label="@string/app_name">
+			<intent-filter>
+				<action android:name="android.intent.action.MAIN" />
+				<category android:name="android.intent.category.LAUNCHER" />
+			</intent-filter>
+		</activity>
+
+		<receiver android:enabled="true" android:label="MailReceiver"
+			android:exported="true" android:name="chabernac.android.testapp.MailReceiver">
+			<intent-filter>
+                <action android:name="android.intent.action.ACTION_VIEW" />
             </intent-filter>
-        </activity>
+			
+		</receiver>
 
-    </application>
+	</application>
 </manifest>
