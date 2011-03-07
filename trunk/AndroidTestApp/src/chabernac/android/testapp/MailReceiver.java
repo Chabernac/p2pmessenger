@@ -13,6 +13,7 @@ public class MailReceiver extends BroadcastReceiver {
   @Override
   public void onReceive( Context aContext, Intent aIntent ) {
       System.out.println("receive: " + aIntent.toString());
+      System.out.println(aIntent.getExtras().get("EXTRA_TEXT"));
   }
 
 }

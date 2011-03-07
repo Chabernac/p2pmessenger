@@ -6,12 +6,12 @@
 
 	<application android:icon="@drawable/icon" android:label="@string/app_name"
 		android:debuggable="true">
-		<activity android:name=".HelloAndroid" android:label="@string/app_name">
+		<activity android:name="OrderDrinkActivity" android:label="@string/app_name">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN" />
 				<category android:name="android.intent.category.LAUNCHER" />
 			</intent-filter>
-		</activity>
+		</activity><!--
 
 		<receiver android:enabled="true" android:label="MailReceiver"
 			android:exported="true" android:name="chabernac.android.testapp.MailReceiver">
@@ -20,6 +20,14 @@
             </intent-filter>
 			
 		</receiver>
+		
+		--><receiver android:enabled="true" android:exported="true" android:name="chabernac.android.testapp.MailReceiver">
+                        <intent-filter android:label="Notifications">
+                
+                                <action android:name="android.intent.action.NOTIFICATION_UPDATE"></action>
+                                                
+                        </intent-filter>
+                </receiver>
 
 	</application>
 </manifest>
