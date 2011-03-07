@@ -2,9 +2,8 @@
  * Copyright (c) 2011 Axa Holding Belgium, SA. All rights reserved.
  * This software is the confidential and proprietary information of the AXA Group.
  */
-package chabernac.android.testapp;
+package chabernac.android.drinklist;
 
-import android.R.color;
 import android.content.Context;
 import android.database.DataSetObserver;
 import android.graphics.Color;
@@ -44,7 +43,7 @@ public class OrderedDrinksAdapter extends BaseAdapter{
     boolean isName = position % 4 == 0;
     boolean isNr = position % 4 == 1;
     boolean isLess = position % 4 == 2;
-    boolean isMore = position % 4 == 3;
+//    boolean isMore = position % 4 == 3;
 
     Drink theDrink = myDrinkList.getDrinkAt( theItem );
 

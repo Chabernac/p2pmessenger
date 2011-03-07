@@ -94,6 +94,21 @@
 					android:horizontalSpacing="2dp" android:stretchMode="columnWidth"
 					android:gravity="center" />
 			</LinearLayout>
+			
+			<LinearLayout android:id="@+id/bierkes"
+				android:layout_width="fill_parent" android:layout_height="fill_parent"
+				android:orientation="vertical">
+
+				<TextView android:id="@+id/TextView5" android:layout_width="fill_parent"
+					android:layout_height="wrap_content" android:text="Bierkes" />
+
+				<GridView xmlns:android="http://schemas.android.com/apk/res/android"
+					android:id="@+id/bierkesgrid" android:layout_width="fill_parent"
+					android:layout_height="fill_parent" android:columnWidth="90dp"
+					android:numColumns="auto_fit" android:verticalSpacing="2dp"
+					android:horizontalSpacing="2dp" android:stretchMode="columnWidth"
+					android:gravity="center" />
+			</LinearLayout>
 
 
 		</ViewFlipper>

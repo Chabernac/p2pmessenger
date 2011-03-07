@@ -1,4 +1,4 @@
-package chabernac.android.testapp;
+package chabernac.android.drinklist;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -45,6 +45,9 @@ public class OrderDrinkActivity extends Activity implements OnClickListener {
 
     GridView theGridView4 = (GridView)findViewById( R.id.ordereddrinks);
     theGridView4.setAdapter( new OrderedDrinksAdapter( this, myDrinkList ) );
+    
+    GridView theGridView5 = (GridView)findViewById( R.id.bierkesgrid);
+    theGridView5.setAdapter( new DrinksAdapter( this, "bierkes", myDrinkList ) );
 
     setTitle("Buttler");
     MailReceiver theReceiver = new MailReceiver();
