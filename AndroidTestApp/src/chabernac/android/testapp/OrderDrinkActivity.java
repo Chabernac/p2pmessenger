@@ -11,7 +11,7 @@ import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ViewFlipper;
 
-public class HelloAndroid extends Activity implements OnClickListener {
+public class OrderDrinkActivity extends Activity implements OnClickListener {
   private final int MIN_X = 20;
 
   private Button next;
@@ -20,8 +20,9 @@ public class HelloAndroid extends Activity implements OnClickListener {
   private DrinkList myDrinkList = new DrinkList();
   private float myX = 0;
   private float myY = 0;
-  
-  
+  private int myLastViewId = -1;
+
+
 
   /** Called when the activity is first created. */
   @Override
@@ -29,28 +30,28 @@ public class HelloAndroid extends Activity implements OnClickListener {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.main);
     myViewFlipper = (ViewFlipper) findViewById(R.id.ViewFlipper01);
-    
+
     ((Button) findViewById(R.id.ListButton)).setOnClickListener( new HomeListener() );
     ((Button) findViewById(R.id.SendButton)).setOnClickListener( new SendListener() );
 
-    GridView theGridView = (GridView)findViewById( R.id.colddrinks );
+    GridView theGridView = (GridView)findViewById( R.id.colddrinksgrid );
     theGridView.setAdapter( new DrinksAdapter( this, "colddrinks", myDrinkList ) );
 
-    GridView theGridView2 = (GridView)findViewById( R.id.hotdrinks );
+    GridView theGridView2 = (GridView)findViewById( R.id.hotdrinksgrid );
     theGridView2.setAdapter( new DrinksAdapter( this, "hotdrinks", myDrinkList ) );
-    
-    GridView theGridView3 = (GridView)findViewById( R.id.alcoholicdrinks);
+
+    GridView theGridView3 = (GridView)findViewById( R.id.alcoholicdrinksgrid);
     theGridView3.setAdapter( new DrinksAdapter( this, "alcoholicdrinks", myDrinkList ) );
-    
+
     GridView theGridView4 = (GridView)findViewById( R.id.ordereddrinks);
     theGridView4.setAdapter( new OrderedDrinksAdapter( this, myDrinkList ) );
 
     setTitle("Buttler");
     MailReceiver theReceiver = new MailReceiver();
-    
+
     IntentFilter theFilter = new IntentFilter(Intent.ACTION_VIEW);
     registerReceiver(theReceiver , theFilter );
-    
+
   }
 
   @Override
@@ -63,11 +64,11 @@ public class HelloAndroid extends Activity implements OnClickListener {
       myViewFlipper.showPrevious();
     }
   }
-  
+
   private void testHorizontalSwipe(MotionEvent anEvent){
     float theXDif = anEvent.getX() - myX;
     float theYDif = anEvent.getY() - myY;
-    
+
     if(Math.abs(theXDif) >= MIN_X && Math.abs(theXDif) > 2 * Math.abs(theYDif)){
       if(theXDif > 0){
         myViewFlipper.showNext();
@@ -76,18 +77,23 @@ public class HelloAndroid extends Activity implements OnClickListener {
         myViewFlipper.showPrevious();
         if(myViewFlipper.getCurrentView().getId() == R.id.OverviewPanel ) myViewFlipper.showPrevious();
       }
+      myLastViewId = myViewFlipper.getDisplayedChild();
     }
   }
-  
+
   private void testVerticalSwipe(MotionEvent anEvent){
     float theXDif = anEvent.getX() - myX;
     float theYDif = anEvent.getY() - myY;
-    
+
     if(Math.abs(theYDif) >= MIN_X && Math.abs(theYDif) > 2 * Math.abs(theXDif)){
-      myViewFlipper.setDisplayedChild( R.id.OverviewPanel );
+      if(myViewFlipper.getCurrentView().getId() == R.id.OverviewPanel){
+        myViewFlipper.setDisplayedChild(myLastViewId);
+      } else {
+        myViewFlipper.setDisplayedChild( 0 );
+      }
     }
   }
-  
+
   @Override
   public boolean dispatchTouchEvent(MotionEvent anEvent) {
     // TODO Auto-generated method stub
@@ -108,7 +114,7 @@ public class HelloAndroid extends Activity implements OnClickListener {
       myViewFlipper.setDisplayedChild( R.id.OverviewPanel );
     }
   }
-  
+
   private class SendListener implements OnClickListener {
     @Override
     public void onClick( View aView ) {
@@ -116,7 +122,7 @@ public class HelloAndroid extends Activity implements OnClickListener {
       emailIntent.setType("plain/text");
       emailIntent.putExtra(android.content.Intent.EXTRA_EMAIL,  new String[]{"guy.chauliac@gmail.com"});
       emailIntent.putExtra(android.content.Intent.EXTRA_PHONE_NUMBER,  new String[]{"0032486331565"});
-//      emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "drink order");
+      //      emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "drink order");
       emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, myDrinkList.toString());
       startActivity(Intent.createChooser(emailIntent, "Send mail..."));
     }
