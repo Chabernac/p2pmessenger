@@ -2,7 +2,7 @@
  * Copyright (c) 2011 Axa Holding Belgium, SA. All rights reserved.
  * This software is the confidential and proprietary information of the AXA Group.
  */
-package chabernac.android.testapp;
+package chabernac.android.drinklist;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -84,8 +84,8 @@ public class DrinksAdapter extends BaseAdapter implements OnClickListener {
       super( aContext );
       myDrink = aDrink;
       setLayoutParams(new GridView.LayoutParams(70, 70));
-      setScaleType(ImageView.ScaleType.CENTER_CROP);
-      setPadding(1, 1, 1, 1);
+      setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+      setPadding(0, 0, 0, 0);
       setClickable( true );
       setOnClickListener( this );
       setImageResource( aDrink.getImageResource() );

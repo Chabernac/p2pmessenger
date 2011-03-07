@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-	package="chabernac.android.testapp" android:versionCode="1"
+	package="chabernac.android.drinklist" android:versionCode="1"
 	android:versionName="1.0">
 
 
 	<application android:icon="@drawable/icon" android:label="@string/app_name"
 		android:debuggable="true">
-		<activity android:name="OrderDrinkActivity" android:label="@string/app_name">
+		<activity android:name="chabernac.android.drinklist.OrderDrinkActivity" android:label="@string/app_name">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN" />
 				<category android:name="android.intent.category.LAUNCHER" />
@@ -14,14 +14,16 @@
 		</activity><!--
 
 		<receiver android:enabled="true" android:label="MailReceiver"
-			android:exported="true" android:name="chabernac.android.testapp.MailReceiver">
+			android:exported="true" android:name="chabernac.android.drinklist.MailReceiver">
 			<intent-filter>
                 <action android:name="android.intent.action.ACTION_VIEW" />
             </intent-filter>
 			
 		</receiver>
 		
-		--><receiver android:enabled="true" android:exported="true" android:name="chabernac.android.testapp.MailReceiver">
+		-->
+		
+		<receiver android:enabled="true" android:exported="true" android:name="chabernac.android.drinklist.MailReceiverceiver">
                         <intent-filter android:label="Notifications">
                 
                                 <action android:name="android.intent.action.NOTIFICATION_UPDATE"></action>
