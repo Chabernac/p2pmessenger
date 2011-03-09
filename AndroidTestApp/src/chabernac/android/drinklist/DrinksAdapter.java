@@ -140,10 +140,13 @@ public class DrinksAdapter extends BaseAdapter implements OnClickListener {
     @Override
     protected void onDraw( Canvas aCanvas ) {
       super.onDraw( aCanvas );
+      Paint thePaint = new Paint();
+      thePaint.setColor( Color.GRAY );
+//      aCanvas.drawText( myDrink.getName(), 0, myDrink.getName().length(), 8f, getHeight() - 10, thePaint);
+      
+//      thePaint.setColor( Color.BLUE );
       if(myDrinkList.getDrinkOrder( myDrink ) > 0){
         String theNumberOfDrinks = Integer.toString(myDrinkList.getDrinkOrder( myDrink ));
-        Paint thePaint = new Paint();
-        thePaint.setColor( Color.GRAY );
         aCanvas.drawText( theNumberOfDrinks, 0, theNumberOfDrinks.length(), getWidth() - 20, getHeight() - 10, thePaint);
       }
     }
@@ -156,10 +159,6 @@ public class DrinksAdapter extends BaseAdapter implements OnClickListener {
         aMenu.add( theSubSelection );
       }
     }
-
-
-
-
   }
 }
 
