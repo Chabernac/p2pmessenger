@@ -15,7 +15,7 @@ public class Drink {
 
   public Drink( String aName, int aImageResource ) {
     super();
-    myName = aName;
+    myName = aName.replace( '_', ' ' );
     myImageResource = aImageResource;
   }
   public String getName() {

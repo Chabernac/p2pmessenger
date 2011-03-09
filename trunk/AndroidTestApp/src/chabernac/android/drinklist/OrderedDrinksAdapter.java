@@ -4,7 +4,8 @@
  */
 package chabernac.android.drinklist;
 
-import android.content.Context;
+import chabernac.android.tools.Tools;
+import android.app.Activity;
 import android.database.DataSetObserver;
 import android.graphics.Color;
 import android.view.View;
@@ -16,9 +17,9 @@ import android.widget.TextView;
 
 public class OrderedDrinksAdapter extends BaseAdapter{
   private final DrinkList myDrinkList;
-  private final Context myContext;
+  private final Activity myContext;
 
-  public OrderedDrinksAdapter( Context aContext, DrinkList aDrinkList ) {
+  public OrderedDrinksAdapter( Activity aContext, DrinkList aDrinkList ) {
     myContext = aContext;
     myDrinkList = aDrinkList;
     myDrinkList.registerObserver( new DrinkListObserver() );
@@ -54,7 +55,7 @@ public class OrderedDrinksAdapter extends BaseAdapter{
       if(isNr){
         theTextView.setText( Integer.toString( theDrink.getNumberOfDrinks() ));
       } else {
-        theTextView.setText( theDrink.getName() );
+        theTextView.setText( Tools.translate( myContext, theDrink.getName() ));
       }
 
       System.out.println("Adding text at " + position);

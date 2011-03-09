@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Drink List</string>
+    <string name="besteldedranken">Ordered drinks</string>
+    <string name="koudedranken">Cold drinks</string>
+    <string name="warmedranken">Hot drinks</string>
+    <string name="alcoholischedranken">Alcoholic drinks</string>
+    <string name="bierkes">Beers</string>
+    
+    <string name="pintje">beer</string>
+    <string name="koffie">coffee</string>
+    
+</resources>
