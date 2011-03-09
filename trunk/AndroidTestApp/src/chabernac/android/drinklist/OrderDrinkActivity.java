@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -22,6 +23,8 @@ public class OrderDrinkActivity extends Activity implements OnClickListener {
   private float myY = 0;
   private int myLastViewId = -1;
 
+  private Drink myDrink;
+
 
 
   /** Called when the activity is first created. */
@@ -33,6 +36,7 @@ public class OrderDrinkActivity extends Activity implements OnClickListener {
 
     ((Button) findViewById(R.id.ListButton)).setOnClickListener( new HomeListener() );
     ((Button) findViewById(R.id.SendButton)).setOnClickListener( new SendListener() );
+    ((Button) findViewById(R.id.ClearButton)).setOnClickListener( new ClearListener() );
 
     GridView theGridView = (GridView)findViewById( R.id.colddrinksgrid );
     theGridView.setAdapter( new DrinksAdapter( this, "colddrinks", myDrinkList ) );
@@ -45,7 +49,7 @@ public class OrderDrinkActivity extends Activity implements OnClickListener {
 
     GridView theGridView4 = (GridView)findViewById( R.id.ordereddrinks);
     theGridView4.setAdapter( new OrderedDrinksAdapter( this, myDrinkList ) );
-    
+
     GridView theGridView5 = (GridView)findViewById( R.id.bierkesgrid);
     theGridView5.setAdapter( new DrinksAdapter( this, "bierkes", myDrinkList ) );
 
@@ -55,6 +59,15 @@ public class OrderDrinkActivity extends Activity implements OnClickListener {
     IntentFilter theFilter = new IntentFilter(Intent.ACTION_VIEW);
     registerReceiver(theReceiver , theFilter );
 
+  }
+  
+  public void setCurrentDrink(Drink aDrink){
+    myDrink = aDrink;
+  }
+  
+  public boolean onContextItemSelected(MenuItem item){
+    myDrinkList.addDrink( new DrinkOrder( myDrink, item.toString() ) );
+    return true;
   }
 
   @Override
@@ -107,7 +120,6 @@ public class OrderDrinkActivity extends Activity implements OnClickListener {
       testHorizontalSwipe( anEvent );
       testVerticalSwipe( anEvent );
     }
-    System.out.println(anEvent);
     return super.dispatchTouchEvent(anEvent);
   }
 
@@ -128,6 +140,13 @@ public class OrderDrinkActivity extends Activity implements OnClickListener {
       //      emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "drink order");
       emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, myDrinkList.toString());
       startActivity(Intent.createChooser(emailIntent, "Send mail..."));
+    }
+  }
+  
+  private class ClearListener implements OnClickListener {
+    @Override
+    public void onClick( View aView ) {
+      myDrinkList.clear();
     }
   }
 }
