@@ -6,58 +6,64 @@ package chabernac.android.drinklist;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.List;
 
 import android.database.DataSetObservable;
 
 public class DrinkList extends DataSetObservable{
-   private LinkedHashMap<Drink, Integer> myList = new LinkedHashMap<Drink, Integer>();
+   private List<DrinkOrder> myOrders = new ArrayList<DrinkOrder>();
    
-   public void addDrink(Drink aDrink){
-     if(!myList.containsKey( aDrink )){
-       myList.put(aDrink, new Integer( 1 ));
+   public void addDrink(DrinkOrder aDrinkOrder){
+     if(!myOrders.contains( aDrinkOrder )){
+       myOrders.add(aDrinkOrder);
      } else {
-       myList.put(aDrink, myList.get( aDrink ) + 1);
-     }
-     notifyChanged();
-     System.out.println("Drink added '" + aDrink.getName() + "'");
-   }
-   
-   public void removeDrink(Drink aDrink){
-     if(!myList.containsKey( aDrink )) return;
-     
-     if(myList.containsKey( aDrink )){
-       myList.put(aDrink, myList.get( aDrink ) - 1);
-     }
-     
-     if(myList.get( aDrink ) <= 0){
-       myList.remove(aDrink);
+       myOrders.get(myOrders.indexOf( aDrinkOrder )).increment( 1 );
      }
      
      notifyChanged();
-     System.out.println("Drink removed '" + aDrink.getName() + "'");
+     System.out.println("Drink added '" + aDrinkOrder.getDrink().getName() + "'");
    }
    
-   public Map<Drink, Integer> getList(){
-     return Collections.unmodifiableMap( myList );
+   public void removeDrink(DrinkOrder aDrinkOrder){
+     if(!myOrders.contains( aDrinkOrder )) return;
+     
+     DrinkOrder theOrder = myOrders.get(myOrders.indexOf( aDrinkOrder )); 
+     theOrder.decrease( 1 );
+     if(theOrder.getNumberOfDrinks() == 0) myOrders.remove( theOrder );
+     
+     notifyChanged();
+     System.out.println("Drink removed '" + aDrinkOrder.getDrink().getName() + "'");
+   }
+   
+   public List<DrinkOrder> getList(){
+     return Collections.unmodifiableList( myOrders );
    }
    
    public int getDrinkOrder(Drink aDrink){
-     if(!myList.containsKey( aDrink )) return 0;
-     return myList.get(aDrink);
+     int theCounter = 0;
+     for(DrinkOrder theDrinkOrder : myOrders){
+       if(theDrinkOrder.getDrink().equals( aDrink )){
+         theCounter += theDrinkOrder.getNumberOfDrinks();
+       }
+     }
+     return theCounter;
    }
    
-   public Drink getDrinkAt(int anIndex){
-     return new ArrayList<Drink>(myList.keySet()).get( anIndex );
+   public DrinkOrder getDrinkAt(int anIndex){
+     return myOrders.get(anIndex);
    }
    
    public String toString(){
      String s = "";
-     for(Drink theDrink : myList.keySet()){
-       s += getDrinkOrder( theDrink ) + " x " + theDrink.getName() + "\r\n"; 
+     for(DrinkOrder theDrink : myOrders){
+       s += theDrink.getNumberOfDrinks() + " x " + theDrink.getDrink().getName() + "\r\n"; 
      }
      return s;
    }
+
+  public void clear() {
+    myOrders.clear();
+    notifyChanged();
+  }
 
 }

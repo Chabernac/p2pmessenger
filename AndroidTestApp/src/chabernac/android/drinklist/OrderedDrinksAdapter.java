@@ -45,14 +45,14 @@ public class OrderedDrinksAdapter extends BaseAdapter{
     boolean isLess = position % 4 == 2;
 //    boolean isMore = position % 4 == 3;
 
-    Drink theDrink = myDrinkList.getDrinkAt( theItem );
+    DrinkOrder theDrink = myDrinkList.getDrinkAt( theItem );
 
     if(isName || isNr){
       TextView theTextView = new TextView(myContext);
       theTextView.setTextColor(Color.BLACK);
 
       if(isNr){
-        theTextView.setText( Integer.toString(myDrinkList.getDrinkOrder( theDrink )) );
+        theTextView.setText( Integer.toString( theDrink.getNumberOfDrinks() ));
       } else {
         theTextView.setText( theDrink.getName() );
       }
@@ -76,9 +76,9 @@ public class OrderedDrinksAdapter extends BaseAdapter{
   }
 
   private class RemoveDrinkListener implements OnClickListener{
-    private final Drink myDrink;
+    private final DrinkOrder myDrink;
 
-    public RemoveDrinkListener(Drink aDrink){
+    public RemoveDrinkListener(DrinkOrder aDrink){
       myDrink = aDrink;
     }
 
@@ -89,9 +89,9 @@ public class OrderedDrinksAdapter extends BaseAdapter{
   }
 
   private class AddDrinkListener implements OnClickListener{
-    private final Drink myDrink;
+    private final DrinkOrder myDrink;
 
-    public AddDrinkListener(Drink aDrink){
+    public AddDrinkListener(DrinkOrder aDrink){
       myDrink = aDrink;
     }
 

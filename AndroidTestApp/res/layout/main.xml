@@ -1,15 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-	<!--
-		<android.gesture.GestureOverlayView
-		xmlns:android="http://schemas.android.com/apk/res/android"
-		android:id="@+id/gestures" android:layout_width="fill_parent"
-		android:layout_height="fill_parent"
-
-		android:gestureStrokeType="multiple"
-		android:eventsInterceptionEnabled="true"
-		android:orientation="vertical">
-	-->
 <LinearLayout android:id="@+id/LinearLayout01"
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_width="fill_parent" android:layout_height="fill_parent"
@@ -19,11 +9,15 @@
 		android:background="#0066FF">
 
 		<Button android:id="@+id/ListButton" android:layout_width="wrap_content"
-			android:layout_height="wrap_content" android:text="List"/>
-			
+			android:layout_height="wrap_content" android:text="List" />
+
 		<Button android:id="@+id/SendButton" android:layout_width="wrap_content"
-			android:layout_height="wrap_content" android:text="Send"/>
-		
+			android:layout_height="wrap_content" android:text="Send" />
+
+		<Button android:id="@+id/ClearButton" android:layout_width="wrap_content"
+			android:layout_height="wrap_content" android:text="Clear" />
+
+
 	</LinearLayout>
 
 	<LinearLayout android:id="@+id/LinearLayout02"
@@ -73,11 +67,11 @@
 					android:layout_width="fill_parent" android:layout_height="wrap_content"
 					android:text="Hot drinks" />
 
-				<GridView android:id="@+id/hotdrinksgrid" android:layout_width="fill_parent"
-					android:layout_height="fill_parent" android:columnWidth="90dp"
-					android:numColumns="auto_fit" android:verticalSpacing="2dp"
-					android:horizontalSpacing="2dp" android:stretchMode="columnWidth"
-					android:gravity="center" />
+				<GridView android:id="@+id/hotdrinksgrid"
+					android:layout_width="fill_parent" android:layout_height="fill_parent"
+					android:columnWidth="90dp" android:numColumns="auto_fit"
+					android:verticalSpacing="2dp" android:horizontalSpacing="2dp"
+					android:stretchMode="columnWidth" android:gravity="center" />
 			</LinearLayout>
 
 			<LinearLayout android:id="@+id/alcoholicdrinks"
@@ -94,7 +88,7 @@
 					android:horizontalSpacing="2dp" android:stretchMode="columnWidth"
 					android:gravity="center" />
 			</LinearLayout>
-			
+
 			<LinearLayout android:id="@+id/bierkes"
 				android:layout_width="fill_parent" android:layout_height="fill_parent"
 				android:orientation="vertical">
