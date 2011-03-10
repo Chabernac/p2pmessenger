@@ -22,9 +22,9 @@
 			
 		</receiver>
 		
-		-->
+		--><!--
 		
-		<receiver android:enabled="true" android:exported="true" android:name="chabernac.android.drinklist.MailReceiverceiver">
+		<receiver android:enabled="true" android:exported="true" android:name="chabernac.android.drinklist.MailReceiver">
                         <intent-filter android:label="Notifications">
                 
                                 <action android:name="android.intent.action.NOTIFICATION_UPDATE"></action>
@@ -32,5 +32,5 @@
                         </intent-filter>
                 </receiver>
 
-	</application>
+	--></application>
 </manifest>
