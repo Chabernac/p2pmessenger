@@ -65,5 +65,9 @@ public class DrinkList extends DataSetObservable{
     myOrders.clear();
     notifyChanged();
   }
+  
+  public int size(){
+    return myOrders.size();
+  }
 
 }

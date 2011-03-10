@@ -14,7 +14,6 @@ import android.widget.AbsListView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.TableLayout;
 import android.widget.TextView;
 import chabernac.android.tools.Tools;
 
@@ -47,29 +46,44 @@ public class OrderedDrinksAdapter extends BaseAdapter{
     theLinerLayout.setOrientation( LinearLayout.HORIZONTAL );
     AbsListView.LayoutParams theParams = new AbsListView.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
     theLinerLayout.setLayoutParams( theParams );
-    theLinerLayout.setBackgroundColor( Color.YELLOW );
     
     DrinkOrder theDrink = myDrinkList.getDrinkAt( position );
     
+    LinearLayout.LayoutParams theLParams; 
+    
     TextView theTextView = new TextView(myContext);
     theTextView.setTextColor(Color.BLACK);
-    theTextView.setText( Integer.toString( theDrink.getNumberOfDrinks() ));
+    theTextView.setText( Tools.translate( myContext, theDrink.getName() ));
+    theLParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+    theLParams.weight = 2;
+    theTextView.setLayoutParams( theLParams );
     theLinerLayout.addView( theTextView );
-    
     
     theTextView = new TextView(myContext);
     theTextView.setTextColor(Color.BLACK);
-    theTextView.setText( Tools.translate( myContext, theDrink.getName() ));
+    theTextView.setText( Integer.toString( theDrink.getNumberOfDrinks() ));
+    theLParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+    theLParams.width = 20;
+    theTextView.setLayoutParams( theLParams );
     theLinerLayout.addView( theTextView );
+
     
     Button theButton = new Button( myContext );
     theButton.setBackgroundDrawable( myContext.getResources().getDrawable( R.drawable.plus ) );
     theButton.setOnClickListener( new RemoveDrinkListener( theDrink ));
+    theButton.setPadding( 1, 1, 1, 1 );
+    theLParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+    theLParams.setMargins( 6, 2, 6, 2 );
+    theButton.setLayoutParams( theLParams );
     theLinerLayout.addView( theButton);
     
     theButton = new Button( myContext );
     theButton.setBackgroundDrawable( myContext.getResources().getDrawable( R.drawable.plus ) );
-    theButton.setOnClickListener( new RemoveDrinkListener( theDrink ));
+    theButton.setOnClickListener( new AddDrinkListener( theDrink ));
+    theButton.setPadding( 1, 1, 1, 1 );
+    theLParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+    theLParams.setMargins( 6, 2, 6, 2 );
+    theButton.setLayoutParams( theLParams );
     theLinerLayout.addView( theButton);
     
     return theLinerLayout;
