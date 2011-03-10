@@ -69,11 +69,11 @@ public class OrderedDrinksAdapter extends BaseAdapter{
 
     
     Button theButton = new Button( myContext );
-    theButton.setBackgroundDrawable( myContext.getResources().getDrawable( R.drawable.plus ) );
+    theButton.setBackgroundDrawable( myContext.getResources().getDrawable( R.drawable.min ) );
     theButton.setOnClickListener( new RemoveDrinkListener( theDrink ));
     theButton.setPadding( 1, 1, 1, 1 );
     theLParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-    theLParams.setMargins( 6, 2, 6, 2 );
+    theLParams.setMargins( 6, 1, 6, 1 );
     theButton.setLayoutParams( theLParams );
     theLinerLayout.addView( theButton);
     
@@ -82,7 +82,7 @@ public class OrderedDrinksAdapter extends BaseAdapter{
     theButton.setOnClickListener( new AddDrinkListener( theDrink ));
     theButton.setPadding( 1, 1, 1, 1 );
     theLParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-    theLParams.setMargins( 6, 2, 6, 2 );
+    theLParams.setMargins( 6, 1, 6, 1 );
     theButton.setLayoutParams( theLParams );
     theLinerLayout.addView( theButton);
     
