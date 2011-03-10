@@ -10,12 +10,11 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.GridView;
-import android.widget.ListView;
-import android.widget.TableLayout;
 import android.widget.ViewFlipper;
 
 public class OrderDrinkActivity extends Activity implements OnClickListener {
   private final int MIN_X = 20;
+  private final long MAX_VERTICAL_DURATION = 300;
 
   private Button next;
   private Button previous;
@@ -100,6 +99,11 @@ public class OrderDrinkActivity extends Activity implements OnClickListener {
   }
 
   private void testVerticalSwipe(MotionEvent anEvent){
+    long theDuration = anEvent.getEventTime() - anEvent.getDownTime();
+    
+    //only process the action if the event duration was short
+    //otherwise the user probably wants to scroll instead of jumping to another screen
+    if(theDuration > MAX_VERTICAL_DURATION) return;
     float theXDif = anEvent.getX() - myX;
     float theYDif = anEvent.getY() - myY;
 
@@ -114,7 +118,6 @@ public class OrderDrinkActivity extends Activity implements OnClickListener {
 
   @Override
   public boolean dispatchTouchEvent(MotionEvent anEvent) {
-    // TODO Auto-generated method stub
     if(anEvent.getAction() == MotionEvent.ACTION_DOWN){
       myX = anEvent.getX();
       myY = anEvent.getY();
