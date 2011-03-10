@@ -15,7 +15,6 @@ public class Tools {
       Field theField = R.string.class.getField( aString );
       return anActivity.getResources().getString( theField.getInt( R.string.class ) );
     } catch ( Exception e ) {
-      e.printStackTrace();
       return aString;
     }
   }
