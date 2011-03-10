@@ -6,7 +6,7 @@
 
 
 	<application android:icon="@drawable/icon" android:label="@string/app_name"
-		android:debuggable="true" android:theme="@style/bluestyle">
+		android:debuggable="true">
 		<activity android:name="chabernac.android.drinklist.OrderDrinkActivity" android:label="@string/app_name">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN" />
