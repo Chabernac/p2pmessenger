@@ -25,6 +25,7 @@ public class DrinkListQuickActionWindow extends QuickActionWindow{
     super(aView);
     myOrder = aDrinkOrder;
     myDrinkList = aDrinkList;
+    onCreate();
   }
 
   @Override
