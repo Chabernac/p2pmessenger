@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="wrap_content" android:layout_height="wrap_content"
+	android:background="@android:drawable/alert_light_frame">
+
+	<TableRow>
+		<TextView android:id="@+id/info" android:layout_span="3"
+			android:text="test" android:layout_gravity="center_horizontal" />
+	</TableRow>
+
+
+	<TableRow>
+		<Button android:layout_height="wrap_content"
+			android:layout_weight="1" android:id="@+id/removealldrinks"
+			android:text="Delete" android:minWidth="80dp" android:minHeight="40dp" />
+		<Button android:layout_height="wrap_content"
+			android:layout_weight="1" android:id="@+id/addrink" android:text="+"
+			android:minWidth="60dp" android:minHeight="40dp" />
+		<Button android:layout_height="wrap_content"
+			android:layout_weight="1" android:id="@+id/removedrink" android:text="-"
+			android:minWidth="60dp" android:minHeight="40dp" />
+	</TableRow>
+
+</TableLayout>
