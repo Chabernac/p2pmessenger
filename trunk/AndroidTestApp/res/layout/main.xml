@@ -4,21 +4,58 @@
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_width="fill_parent" android:layout_height="fill_parent"
 	android:orientation="vertical">
-	<LinearLayout android:id="@+id/LinearLayout03"
-		android:layout_width="fill_parent" android:layout_height="wrap_content"
-		android:background="#0066FF">
-
-		<Button android:id="@+id/ListButton" android:layout_width="wrap_content"
-			android:layout_height="wrap_content" android:text="List" />
-
-		<Button android:id="@+id/SendButton" android:layout_width="wrap_content"
-			android:layout_height="wrap_content" android:text="Send" />
-
-		<Button android:id="@+id/ClearButton" android:layout_width="wrap_content"
-			android:layout_height="wrap_content" android:text="Clear" />
 
 
-	</LinearLayout>
+	<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+		android:orientation="horizontal" android:layout_width="fill_parent"
+		android:layout_height="50dip" android:background="#0066ff">
+
+		<TextView android:id="@+id/home" android:layout_width="wrap_content"
+			android:layout_centerVertical="true" android:textColor="@color/homebutton"
+			android:textSize="7pt" android:textStyle="bold"
+			android:layout_height="wrap_content" android:text="@string/app_name"
+			android:padding="8dp" />
+
+		<ImageView android:layout_width="1px" android:src="#ffffffff"
+			android:layout_height="wrap_content" android:text="test" android:id="@+id/bordertwo"
+			android:layout_toLeftOf="@+id/share" android:layout_marginRight="12dip"
+			android:layout_alignParentBottom="true"
+			android:layout_alignParentTop="true" />
+
+		<ImageView android:layout_width="25dip" android:src="@drawable/sharebutton"
+			android:layout_height="25dip" android:layout_marginRight="12dip"
+			android:layout_centerVertical="true" android:id="@+id/share"
+			android:layout_toLeftOf="@+id/borderone" android:scaleType="fitXY" />
+
+		<ImageView android:layout_width="wrap_content" android:src="#ffffffff"
+			android:layout_height="wrap_content" android:id="@+id/borderone"
+			android:layout_alignParentTop="true" android:layout_marginRight="12dip"
+			android:layout_alignParentBottom="true" android:layout_alignBottom="@+id/clear"
+			android:text="test3" android:layout_toLeftOf="@+id/clear" />
+
+		<ImageView android:src="@drawable/ic_menu_delete"
+			android:text="test4" android:layout_width="25dip"
+			android:layout_alignParentRight="true" android:layout_centerVertical="true"
+			android:id="@+id/clear" android:layout_marginRight="12dip"
+			android:layout_height="25dip" android:scaleType="fitXY" />
+	</RelativeLayout>
+
+	<!--
+		<LinearLayout android:id="@+id/LinearLayout03"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content" android:background="#0066FF">
+
+		<Button android:id="@+id/ListButton"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content" android:text="List" /> <Button
+		android:id="@+id/SendButton" android:layout_width="wrap_content"
+		android:layout_height="wrap_content" android:text="Send" /> <Button
+		android:id="@+id/ClearButton" android:layout_width="wrap_content"
+		android:layout_height="wrap_content" android:text="Clear" />
+
+
+		</LinearLayout>
+	-->
 
 	<LinearLayout android:id="@+id/LinearLayout02"
 		android:layout_width="wrap_content" android:layout_height="fill_parent"
@@ -36,8 +73,7 @@
 
 				<GridView android:id="@+id/ordereddrinks"
 					android:layout_width="fill_parent" android:layout_height="fill_parent"
-					android:numColumns="1"
-					android:textColor="#000000" />
+					android:numColumns="1" android:textColor="#000000" />
 			</LinearLayout>
 
 
