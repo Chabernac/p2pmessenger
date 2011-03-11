@@ -34,7 +34,7 @@ public class SystemTrayMenu extends PopupMenu {
   }
 
   private void build ( P2PFacade aFacade, TrayIcon anIcon ) throws HeadlessException, IOException, P2PFacadeException {
-    anIcon.addActionListener(new CommandActionListener(myChatFrame.getMediator().getActionFactory(), Action.TOGGLE_SHOW_FRAME));
+    anIcon.addActionListener(new CommandActionListener(myChatFrame.getMediator().getActionFactory(), Action.SHOW_FRAME));
 
     add( new OpenMenuItem(myChatFrame.getMediator()) );
     add( new OnTopMenuItem(myChatFrame) );
