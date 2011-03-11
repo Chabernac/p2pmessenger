@@ -7,19 +7,22 @@ package chabernac.android.drinklist;
 import android.app.Activity;
 import android.database.DataSetObserver;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.View.OnClickListener;
 import android.widget.AbsListView;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import chabernac.android.quickaction.DrinkListQuickActionWindow;
+import chabernac.android.quickaction.QuickActionWindow;
 import chabernac.android.tools.Tools;
 
 public class OrderedDrinksAdapter extends BaseAdapter{
   private final DrinkList myDrinkList;
   private final Activity myContext;
+  private final int FONT_SIZE = 18;
 
   public OrderedDrinksAdapter( Activity aContext, DrinkList aDrinkList ) {
     myContext = aContext;
@@ -47,12 +50,14 @@ public class OrderedDrinksAdapter extends BaseAdapter{
     AbsListView.LayoutParams theParams = new AbsListView.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
     theLinerLayout.setLayoutParams( theParams );
     
-    DrinkOrder theDrink = myDrinkList.getDrinkAt( position );
+    final DrinkOrder theDrink = myDrinkList.getDrinkAt( position );
     
     LinearLayout.LayoutParams theLParams; 
     
     TextView theTextView = new TextView(myContext);
     theTextView.setTextColor(Color.BLACK);
+    theTextView.setTypeface( Typeface.SERIF, Typeface.NORMAL );
+    theTextView.setTextSize( FONT_SIZE );
     theTextView.setText( Tools.translate( myContext, theDrink.getName() ));
     theLParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
     theLParams.weight = 2;
@@ -61,6 +66,8 @@ public class OrderedDrinksAdapter extends BaseAdapter{
     
     theTextView = new TextView(myContext);
     theTextView.setTextColor(Color.BLACK);
+    theTextView.setTypeface( Typeface.SERIF, Typeface.NORMAL );
+    theTextView.setTextSize( FONT_SIZE );
     theTextView.setText( Integer.toString( theDrink.getNumberOfDrinks() ));
     theLParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
     theLParams.width = 20;
@@ -68,23 +75,32 @@ public class OrderedDrinksAdapter extends BaseAdapter{
     theLinerLayout.addView( theTextView );
 
     
-    Button theButton = new Button( myContext );
-    theButton.setBackgroundDrawable( myContext.getResources().getDrawable( R.drawable.min ) );
-    theButton.setOnClickListener( new RemoveDrinkListener( theDrink ));
-    theButton.setPadding( 1, 1, 1, 1 );
-    theLParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-    theLParams.setMargins( 6, 1, 6, 1 );
-    theButton.setLayoutParams( theLParams );
-    theLinerLayout.addView( theButton);
+//    Button theButton = new Button( myContext );
+//    theButton.setBackgroundDrawable( myContext.getResources().getDrawable( R.drawable.min ) );
+//    theButton.setOnClickListener( new RemoveDrinkListener( theDrink ));
+//    theButton.setPadding( 1, 1, 1, 1 );
+//    theLParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+//    theLParams.setMargins( 6, 1, 6, 1 );
+//    theButton.setLayoutParams( theLParams );
+//    theLinerLayout.addView( theButton);
+//    
+//    theButton = new Button( myContext );
+//    theButton.setBackgroundDrawable( myContext.getResources().getDrawable( R.drawable.plus ) );
+//    theButton.setOnClickListener( new AddDrinkListener( theDrink ));
+//    theButton.setPadding( 1, 1, 1, 1 );
+//    theLParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+//    theLParams.setMargins( 6, 1, 6, 1 );
+//    theButton.setLayoutParams( theLParams );
+//    theLinerLayout.addView( theButton);
     
-    theButton = new Button( myContext );
-    theButton.setBackgroundDrawable( myContext.getResources().getDrawable( R.drawable.plus ) );
-    theButton.setOnClickListener( new AddDrinkListener( theDrink ));
-    theButton.setPadding( 1, 1, 1, 1 );
-    theLParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-    theLParams.setMargins( 6, 1, 6, 1 );
-    theButton.setLayoutParams( theLParams );
-    theLinerLayout.addView( theButton);
+    theLinerLayout.setOnClickListener( new OnClickListener() {
+      
+      @Override
+      public void onClick( View aView ) {
+        DrinkListQuickActionWindow dw = new DrinkListQuickActionWindow(aView, theDrink, myDrinkList);
+        dw.showLikePopDownMenu();
+      }
+    });
     
     return theLinerLayout;
   }

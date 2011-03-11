@@ -24,6 +24,11 @@ public class DrinkList extends DataSetObservable{
      System.out.println("Drink added '" + aDrinkOrder.getDrink().getName() + "'");
    }
    
+   public void removeAll(DrinkOrder aDrinkOrder){
+     myOrders.remove( aDrinkOrder );
+     notifyChanged();
+   }
+   
    public void removeDrink(DrinkOrder aDrinkOrder){
      if(!myOrders.contains( aDrinkOrder )) return;
      
@@ -32,7 +37,6 @@ public class DrinkList extends DataSetObservable{
      if(theOrder.getNumberOfDrinks() == 0) myOrders.remove( theOrder );
      
      notifyChanged();
-     System.out.println("Drink removed '" + aDrinkOrder.getDrink().getName() + "'");
    }
    
    public List<DrinkOrder> getList(){

@@ -147,7 +147,7 @@ public class DrinksAdapter extends BaseAdapter implements OnClickListener {
 //      thePaint.setColor( Color.BLUE );
       if(myDrinkList.getDrinkOrder( myDrink ) > 0){
         String theNumberOfDrinks = Integer.toString(myDrinkList.getDrinkOrder( myDrink ));
-        aCanvas.drawText( theNumberOfDrinks, 0, theNumberOfDrinks.length(), getWidth() - 20, getHeight() - 10, thePaint);
+        aCanvas.drawText( theNumberOfDrinks, 0, theNumberOfDrinks.length(), 10, 15, thePaint);
       }
     }
 
