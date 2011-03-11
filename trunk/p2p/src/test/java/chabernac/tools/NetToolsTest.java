@@ -16,4 +16,15 @@ public class NetToolsTest extends TestCase{
       System.out.println(theHost);
     }
   }
+  
+  public void testNetToolsPerformanceTest() throws SocketException{
+    long t1 = System.currentTimeMillis();
+    int times = 500;
+    for(int i=0;i<times;i++){
+      NetTools.getLocalExposedInterfaces();
+    }
+    float theSeconds = (System.currentTimeMillis() - t1) / 1000F;
+    float theTimesPerSecond = ((float)times) / theSeconds;
+    assertTrue( theTimesPerSecond > 50 );
+  }
 }

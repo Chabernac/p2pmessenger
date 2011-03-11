@@ -90,7 +90,7 @@ public class SocketPeer extends AbstractPeer implements Serializable {
     this(aPeerId, new SimpleNetworkInterface(anHosts, null), aPort);
   }
 
-  public void detectLocalInterfaces() throws NoAvailableNetworkAdapterException{
+  public synchronized void detectLocalInterfaces() throws NoAvailableNetworkAdapterException{
     try {
       myHost = NetTools.getLocalExposedInterfaces();
     } catch ( SocketException e ) {
