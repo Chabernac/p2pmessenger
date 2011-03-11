@@ -10,11 +10,13 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.GridView;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.ViewFlipper;
 
 public class OrderDrinkActivity extends Activity implements OnClickListener {
   private final int MIN_X = 20;
-  private final long MAX_VERTICAL_DURATION = 300;
+  private final long MAX_VERTICAL_DURATION = 200;
 
   private Button next;
   private Button previous;
@@ -35,9 +37,9 @@ public class OrderDrinkActivity extends Activity implements OnClickListener {
     setContentView(R.layout.main);
     myViewFlipper = (ViewFlipper) findViewById(R.id.ViewFlipper01);
 
-    ((Button) findViewById(R.id.ListButton)).setOnClickListener( new HomeListener() );
-    ((Button) findViewById(R.id.SendButton)).setOnClickListener( new SendListener() );
-    ((Button) findViewById(R.id.ClearButton)).setOnClickListener( new ClearListener() );
+    ((TextView) findViewById(R.id.home)).setOnClickListener( new HomeListener() );
+    ((ImageView) findViewById(R.id.share)).setOnClickListener( new SendListener() );
+    ((ImageView) findViewById(R.id.clear)).setOnClickListener( new ClearListener() );
 
     GridView theGridView = (GridView)findViewById( R.id.colddrinksgrid );
     theGridView.setAdapter( new DrinksAdapter( this, "koudedranken", myDrinkList ) );

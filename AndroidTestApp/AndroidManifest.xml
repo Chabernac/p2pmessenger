@@ -3,10 +3,9 @@
 	package="chabernac.android.drinklist" android:versionCode="1"
 	android:installLocation="preferExternal"
 	android:versionName="1.0">
-
-
+	
 	<application android:icon="@drawable/icon" android:label="@string/app_name"
-		android:debuggable="true">
+		android:debuggable="true" android:theme="@android:style/Theme.NoTitleBar">
 		<activity android:name="chabernac.android.drinklist.OrderDrinkActivity" android:label="@string/app_name">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN" />
