@@ -49,9 +49,7 @@ public class QuickActionWindow {
           });
 
           this.windowManager = (WindowManager) this.anchor.getContext().getSystemService(Context.WINDOW_SERVICE);
-          onCreate();
   }
-
   /**
    * Anything you want to have happen when created. Probably should create a view and setup the event listeners on
    * child views.
