@@ -7,6 +7,7 @@ package chabernac.tools;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Formatter;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
@@ -64,9 +65,9 @@ public class SimpleNetworkInterface implements Serializable{
     theBuilder.append( myMACAddress );
     
     theBuilder.append ( ": ");
-    for(String theIp : myIp){
-      theBuilder.append ( theIp );
-      theBuilder.append ( ", ");
+    for(Iterator<String> i = myIp.iterator();i.hasNext();){
+      theBuilder.append ( i.next() );
+      if(i.hasNext()) theBuilder.append ( ", ");
     }
     return theBuilder.toString();
   }

@@ -268,9 +268,29 @@ public class RoutingProtocol extends Protocol {
       return myLocalPeerId;
     }
   }
+  
+  /**
+   * refresh the local entry to make sure the right ip/mac adres is exposed to other peers
+   * when the peer has fysically moved from one network to another, the SocketPeer instance 
+   * might contain a wrong ip/mac adres, if this ip/mac is distributed trough the system
+   * it leads to system wide failures because the peer is not reachable, tough it can reach
+   * other peers for itself causing to continously distrube the wrong ip/mac
+   */
+  private void refreshLocalEntry(){
+    try{
+      AbstractPeer thePeer = getRoutingTable().getEntryForLocalPeer().getPeer();
+      if(thePeer instanceof SocketPeer){
+        ((SocketPeer)thePeer).detectLocalInterfaces();
+      }
+    }catch(Exception e){
+      LOGGER.error("Unable to refresh local peer entry");
+    }
+  }
 
   @Override
   public String handleCommand( long aSessionId, String anInput ) {
+    refreshLocalEntry();
+    
     int theFirstIndexOfSpace = anInput.indexOf( " " );
     if(theFirstIndexOfSpace == -1) theFirstIndexOfSpace = anInput.length();
     String theCommandString = anInput.substring( 0,  theFirstIndexOfSpace);
@@ -500,6 +520,8 @@ public class RoutingProtocol extends Protocol {
    * this method will send a request to all the peers in the routing table
    */
   public void exchangeRoutingTable(){
+    refreshLocalEntry();
+    
     if(myRoutingProtocolMonitor != null) myRoutingProtocolMonitor.exchangingRoutingTables();
     LOGGER.debug("Exchanging routing table for peer: " + myRoutingTable.getLocalPeerId());
 
@@ -568,6 +590,8 @@ public class RoutingProtocol extends Protocol {
     }catch(Exception e){
       LOGGER.error("Could not get entry for local peer", e);
     }
+    
+    refreshLocalEntry();
 
     for(RoutingTableEntry theEntry : myRoutingTable.getEntries()){
       AbstractPeer thePeer = theEntry.getPeer();
@@ -764,6 +788,8 @@ public class RoutingProtocol extends Protocol {
   }
 
   public void sendUDPAnnouncement(){
+    refreshLocalEntry();
+    
     if(myRoutingProtocolMonitor != null) myRoutingProtocolMonitor.sendingUDPAnnouncement();
     try{
       ByteArrayOutputStream theByteArrayOutputStream = new ByteArrayOutputStream();
