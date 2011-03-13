@@ -71,9 +71,10 @@
 					android:layout_width="fill_parent" android:layout_height="wrap_content"
 					android:text="@string/besteldedranken" />
 
-				<GridView android:id="@+id/ordereddrinks"
+				<ListView android:id="@+id/ordereddrinks"
 					android:layout_width="fill_parent" android:layout_height="fill_parent"
-					android:numColumns="1" android:textColor="#000000" />
+					android:numColumns="1" android:textColor="#000000" 
+					android:divider="#AAAAAA" android:dividerHeight="1dp"/>
 			</LinearLayout>
 
 
