@@ -11,6 +11,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
 
@@ -50,7 +51,7 @@ public class OrderDrinkActivity extends Activity implements OnClickListener {
     GridView theGridView3 = (GridView)findViewById( R.id.alcoholicdrinksgrid);
     theGridView3.setAdapter( new DrinksAdapter( this, "alcoholischedranken", myDrinkList ) );
 
-    GridView theGridView4 = (GridView)findViewById( R.id.ordereddrinks);
+    ListView theGridView4 = (ListView)findViewById( R.id.ordereddrinks);
     theGridView4.setAdapter( new OrderedDrinksAdapter( this, myDrinkList ) );
 
     GridView theGridView5 = (GridView)findViewById( R.id.bierkesgrid);

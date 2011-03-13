@@ -16,13 +16,12 @@ import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import chabernac.android.quickaction.DrinkListQuickActionWindow;
-import chabernac.android.quickaction.QuickActionWindow;
 import chabernac.android.tools.Tools;
 
 public class OrderedDrinksAdapter extends BaseAdapter{
   private final DrinkList myDrinkList;
   private final Activity myContext;
-  private final int FONT_SIZE = 18;
+  private final int FONT_SIZE = 20;
 
   public OrderedDrinksAdapter( Activity aContext, DrinkList aDrinkList ) {
     myContext = aContext;
