@@ -9,7 +9,10 @@
     
     <string name="pintje">pintje</string>
     <string name="koffie">koffie</string>
-    <string name="menu_list">List</string>
-    <string name="totaal">Totaal (indicatief)</string>
+    <string name="totaal">Totaal € (indicatief)</string>
+    
+    <string name="menu_list">Dranken lijst</string>
+    <string name="menu_clear">Dranken lijst leeg maken</string>
+    <string name="menu_share">Dranken lijst versturen</string>
     
 </resources>

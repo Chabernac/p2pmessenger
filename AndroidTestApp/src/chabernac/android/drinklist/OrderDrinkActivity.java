@@ -8,6 +8,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.DataSetObserver;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -103,6 +105,13 @@ public class OrderDrinkActivity extends Activity implements OnClickListener {
     myDrinkList.addDrink( new DrinkOrder( myDrink, item.toString() ) );
     return true;
   }
+  
+  @Override
+  public boolean onCreateOptionsMenu(Menu menu) {
+      MenuInflater inflater = getMenuInflater();
+      inflater.inflate(R.menu.menu, menu);
+      return true;
+  }
 
   @Override
   public void onClick(View v) {
@@ -160,7 +169,7 @@ public class OrderDrinkActivity extends Activity implements OnClickListener {
     }
     return super.dispatchTouchEvent(anEvent);
   }
-
+  
   private class HomeListener implements OnClickListener {
     @Override
     public void onClick( View aView ) {
@@ -190,7 +199,7 @@ public class OrderDrinkActivity extends Activity implements OnClickListener {
   
   public class TotalObserver extends DataSetObserver {
     public void onChanged(){
-      myTotalLayout.setText( FORMAT.format((float)myDrinkList.getTotal(myPriceProvider) /100F));
+      myTotalLayout.setText( FORMAT.format(myDrinkList.getTotal(myPriceProvider) ));
     }
   }
 

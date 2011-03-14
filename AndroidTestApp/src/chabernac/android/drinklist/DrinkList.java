@@ -74,8 +74,8 @@ public class DrinkList extends DataSetObservable{
     return myOrders.size();
   }
 
-  public long getTotal(iPriceProvider aPriceProvider) {
-    long theTotal = 0;
+  public float getTotal(iPriceProvider aPriceProvider) {
+    float theTotal = 0;
     for(DrinkOrder theOrder : myOrders){
       theTotal += aPriceProvider.getPrice( theOrder.getDrink() ) * theOrder.getNumberOfDrinks();
     }

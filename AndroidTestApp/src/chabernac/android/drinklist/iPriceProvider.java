@@ -5,5 +5,5 @@
 package chabernac.android.drinklist;
 
 public interface iPriceProvider {
-  public long getPrice(Drink aDrink);
+  public float getPrice(Drink aDrink);
 }

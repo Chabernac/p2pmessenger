@@ -15,10 +15,9 @@ public class PriceProvider implements iPriceProvider {
   }
 
   @Override
-  public long getPrice( Drink aDrink ) {
-    if(myPrices.containsKey(  aDrink.getName() )) return Long.parseLong(myPrices.getProperty( aDrink.getName())) * 100 ;
-    if(myPrices.containsKey( aDrink.getDrinkType() )) return Long.parseLong(myPrices.getProperty( aDrink.getDrinkType())) * 100;
-    return 150;
+  public float getPrice( Drink aDrink ) {
+    if(myPrices.containsKey(  aDrink.getName() )) return Float.parseFloat( myPrices.getProperty(aDrink.getName()) );
+    if(myPrices.containsKey( aDrink.getDrinkType() )) return Float.parseFloat( myPrices.getProperty(aDrink.getDrinkType()) );
+    return 1.50f;
   }
-
 }
