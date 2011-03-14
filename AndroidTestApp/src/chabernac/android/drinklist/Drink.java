@@ -9,17 +9,23 @@ import java.util.Collections;
 import java.util.List;
 
 public class Drink {
+  private final String myDrinkType;
   private final String myName;
   private final int myImageResource;
   private List<String> myDrinkOptions = new ArrayList<String>();
 
-  public Drink( String aName, int aImageResource ) {
+  public Drink( String aDrinkType, String aName, int aImageResource ) {
     super();
+    myDrinkType = aDrinkType;
     myName = aName.replace( '_', ' ' );
     myImageResource = aImageResource;
   }
   public String getName() {
     return myName;
+  }
+  
+  public String getDrinkType() {
+    return myDrinkType;
   }
   public int getImageResource() {
     return myImageResource;

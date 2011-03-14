@@ -10,5 +10,6 @@
     <string name="pintje">pintje</string>
     <string name="koffie">koffie</string>
     <string name="menu_list">List</string>
+    <string name="totaal">Totaal (indicatief)</string>
     
 </resources>

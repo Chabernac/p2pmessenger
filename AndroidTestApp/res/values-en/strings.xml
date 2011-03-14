@@ -9,5 +9,6 @@
     
     <string name="pintje">beer</string>
     <string name="koffie">coffee</string>
+    <string name="totaal">Total</string>
     
 </resources>

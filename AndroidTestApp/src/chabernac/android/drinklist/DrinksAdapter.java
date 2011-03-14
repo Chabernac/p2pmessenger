@@ -40,7 +40,7 @@ public class DrinksAdapter extends BaseAdapter implements OnClickListener {
     for(Field theField : theFields){
       if(theField.getName().startsWith(aDrinks)){
         try {
-          Drink theDrink  = new Drink( theField.getName().substring( aDrinks.length() + 1 ), (Integer)theField.get(R.drawable.class));
+          Drink theDrink  = new Drink( aDrinks, theField.getName().substring( aDrinks.length() + 1 ), (Integer)theField.get(R.drawable.class));
           loadOptions(theDrink);
           myDrinks.add( theDrink );
         } catch (Exception e) {
