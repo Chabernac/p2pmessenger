@@ -49,7 +49,7 @@ public class OrderedDrinksAdapter extends BaseAdapter{
     AbsListView.LayoutParams theParams = new AbsListView.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
     theLinerLayout.setLayoutParams( theParams );
     
-    final DrinkOrder theDrink = myDrinkList.getDrinkAt( position );
+    DrinkOrder theDrink = myDrinkList.getDrinkAt( position );
     
     LinearLayout.LayoutParams theLParams; 
     
@@ -92,16 +92,23 @@ public class OrderedDrinksAdapter extends BaseAdapter{
 //    theButton.setLayoutParams( theLParams );
 //    theLinerLayout.addView( theButton);
     
-    theLinerLayout.setOnClickListener( new OnClickListener() {
-      
-      @Override
-      public void onClick( View aView ) {
-        DrinkListQuickActionWindow dw = new DrinkListQuickActionWindow(aView, theDrink, myDrinkList);
-        dw.showLikePopDownMenu();
-      }
-    });
-    
+    SelectDrinkOrderAction theListener = new SelectDrinkOrderAction(theDrink);
+    theLinerLayout.setOnClickListener( theListener );
     return theLinerLayout;
+  }
+  
+  private class SelectDrinkOrderAction implements OnClickListener{
+    private final DrinkOrder myDrinkOrder;
+    
+    public SelectDrinkOrderAction(DrinkOrder aDrinkOrder){
+      myDrinkOrder = aDrinkOrder;
+    }
+    
+    @Override
+    public void onClick( View aView ) {
+      DrinkListQuickActionWindow dw = new DrinkListQuickActionWindow(aView, myDrinkOrder, myDrinkList);
+      dw.showLikePopDownMenu();
+    }
   }
 
   private class RemoveDrinkListener implements OnClickListener{

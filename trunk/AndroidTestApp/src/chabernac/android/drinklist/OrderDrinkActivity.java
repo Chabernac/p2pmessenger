@@ -1,8 +1,12 @@
 package chabernac.android.drinklist;
 
+import java.text.NumberFormat;
+import java.util.Properties;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.database.DataSetObserver;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -10,14 +14,20 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.GridView;
-import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
 
 public class OrderDrinkActivity extends Activity implements OnClickListener {
-  private final int MIN_X = 20;
-  private final long MAX_VERTICAL_DURATION = 200;
+  private static final int MIN_X = 20;
+  private static final long MAX_VERTICAL_DURATION = 200;
+  private static final NumberFormat FORMAT = NumberFormat.getInstance();
+  
+  static{
+    FORMAT.setMinimumFractionDigits( 2 );
+    FORMAT.setMaximumFractionDigits( 2 );
+  }
 
   private Button next;
   private Button previous;
@@ -28,6 +38,8 @@ public class OrderDrinkActivity extends Activity implements OnClickListener {
   private int myLastViewId = -1;
 
   private Drink myDrink;
+  private TextView myTotalLayout;
+  private iPriceProvider myPriceProvider;
 
 
 
@@ -35,12 +47,15 @@ public class OrderDrinkActivity extends Activity implements OnClickListener {
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    init();
+    
     setContentView(R.layout.main);
     myViewFlipper = (ViewFlipper) findViewById(R.id.ViewFlipper01);
 
-    ((TextView) findViewById(R.id.home)).setOnClickListener( new HomeListener() );
-    ((ImageView) findViewById(R.id.share)).setOnClickListener( new SendListener() );
-    ((ImageView) findViewById(R.id.clear)).setOnClickListener( new ClearListener() );
+    ((RelativeLayout) findViewById(R.id.home)).setOnClickListener( new HomeListener() );
+    ((RelativeLayout) findViewById(R.id.share)).setOnClickListener( new SendListener() );
+    ((RelativeLayout) findViewById(R.id.clear)).setOnClickListener( new ClearListener() );
+    myTotalLayout = (TextView)findViewById( R.id.bottomtotal );
 
     GridView theGridView = (GridView)findViewById( R.id.colddrinksgrid );
     theGridView.setAdapter( new DrinksAdapter( this, "koudedranken", myDrinkList ) );
@@ -62,7 +77,22 @@ public class OrderDrinkActivity extends Activity implements OnClickListener {
 
     IntentFilter theFilter = new IntentFilter(Intent.ACTION_VIEW);
     registerReceiver(theReceiver , theFilter );
-
+    
+    addDrinkListener();
+  }
+  
+  private void init(){
+    Properties thePrices = new Properties();
+    try{
+      thePrices.load( getResources().getAssets().open( "defaultprices.txt" ) );
+      myPriceProvider = new PriceProvider( thePrices );
+    }catch(Exception e){
+      e.printStackTrace();
+    }
+  }
+  
+  private void addDrinkListener(){
+    myDrinkList.registerObserver( new TotalObserver() );
   }
   
   public void setCurrentDrink(Drink aDrink){
@@ -157,4 +187,11 @@ public class OrderDrinkActivity extends Activity implements OnClickListener {
       myDrinkList.clear();
     }
   }
+  
+  public class TotalObserver extends DataSetObserver {
+    public void onChanged(){
+      myTotalLayout.setText( FORMAT.format((float)myDrinkList.getTotal(myPriceProvider) /100F));
+    }
+  }
+
 }
