@@ -180,7 +180,7 @@
 			android:layout_alignParentLeft="true" />
 
 		<TextView android:id="@+id/bottomtotal" android:layout_width="fill_parent"
-			android:layout_height="wrap_content" android:text="12.00 €"
+			android:layout_height="wrap_content" android:text=""
 			android:layout_alignParentRight="true" android:gravity="right" />
 
 	</RelativeLayout>
