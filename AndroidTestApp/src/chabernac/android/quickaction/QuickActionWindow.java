@@ -193,5 +193,13 @@ public class QuickActionWindow {
   public void dismiss() {
           this.window.dismiss();
   }
+  
+  public int getWidth(){
+    return root.getWidth();
+  }
+  
+  public int getHeight(){
+    return root.getHeight();
+  }
 }
 

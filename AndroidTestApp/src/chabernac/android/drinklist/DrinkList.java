@@ -4,14 +4,20 @@
  */
 package chabernac.android.drinklist;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import android.database.DataSetObservable;
 
-public class DrinkList extends DataSetObservable{
-   private List<DrinkOrder> myOrders = new ArrayList<DrinkOrder>();
+public class DrinkList extends DataSetObservable implements Serializable{
+  private static final long serialVersionUID = 8330707881295412881L;
+  private List<DrinkOrder> myOrders = new ArrayList<DrinkOrder>();
+  
+  public DrinkList(){
+    
+  }
    
    public void addDrink(DrinkOrder aDrinkOrder){
      if(!myOrders.contains( aDrinkOrder )){
