@@ -4,7 +4,6 @@
  */
 package chabernac.android.drinklist;
 
-import android.app.Activity;
 import android.database.DataSetObserver;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -20,10 +19,10 @@ import chabernac.android.tools.Tools;
 
 public class OrderedDrinksAdapter extends BaseAdapter{
   private final DrinkList myDrinkList;
-  private final Activity myContext;
+  private final OrderDrinkActivity myContext;
   private final int FONT_SIZE = 20;
-
-  public OrderedDrinksAdapter( Activity aContext, DrinkList aDrinkList ) {
+  
+  public OrderedDrinksAdapter( OrderDrinkActivity aContext, DrinkList aDrinkList ) {
     myContext = aContext;
     myDrinkList = aDrinkList;
     myDrinkList.registerObserver( new DrinkListObserver() );
@@ -48,11 +47,11 @@ public class OrderedDrinksAdapter extends BaseAdapter{
     theLinerLayout.setOrientation( LinearLayout.HORIZONTAL );
     AbsListView.LayoutParams theParams = new AbsListView.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
     theLinerLayout.setLayoutParams( theParams );
-    
+
     DrinkOrder theDrink = myDrinkList.getDrinkAt( position );
-    
+
     LinearLayout.LayoutParams theLParams; 
-    
+
     TextView theTextView = new TextView(myContext);
     theTextView.setTextColor(Color.BLACK);
     theTextView.setTypeface( Typeface.SERIF, Typeface.NORMAL );
@@ -62,7 +61,7 @@ public class OrderedDrinksAdapter extends BaseAdapter{
     theLParams.weight = 2;
     theTextView.setLayoutParams( theLParams );
     theLinerLayout.addView( theTextView );
-    
+
     theTextView = new TextView(myContext);
     theTextView.setTextColor(Color.BLACK);
     theTextView.setTypeface( Typeface.SERIF, Typeface.NORMAL );
@@ -73,77 +72,31 @@ public class OrderedDrinksAdapter extends BaseAdapter{
     theTextView.setLayoutParams( theLParams );
     theLinerLayout.addView( theTextView );
 
-    
-//    Button theButton = new Button( myContext );
-//    theButton.setBackgroundDrawable( myContext.getResources().getDrawable( R.drawable.min ) );
-//    theButton.setOnClickListener( new RemoveDrinkListener( theDrink ));
-//    theButton.setPadding( 1, 1, 1, 1 );
-//    theLParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-//    theLParams.setMargins( 6, 1, 6, 1 );
-//    theButton.setLayoutParams( theLParams );
-//    theLinerLayout.addView( theButton);
-//    
-//    theButton = new Button( myContext );
-//    theButton.setBackgroundDrawable( myContext.getResources().getDrawable( R.drawable.plus ) );
-//    theButton.setOnClickListener( new AddDrinkListener( theDrink ));
-//    theButton.setPadding( 1, 1, 1, 1 );
-//    theLParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-//    theLParams.setMargins( 6, 1, 6, 1 );
-//    theButton.setLayoutParams( theLParams );
-//    theLinerLayout.addView( theButton);
-    
     SelectDrinkOrderAction theListener = new SelectDrinkOrderAction(theDrink);
     theLinerLayout.setOnClickListener( theListener );
     return theLinerLayout;
   }
-  
+
   private class SelectDrinkOrderAction implements OnClickListener{
     private final DrinkOrder myDrinkOrder;
-    
+
     public SelectDrinkOrderAction(DrinkOrder aDrinkOrder){
       myDrinkOrder = aDrinkOrder;
     }
-    
-    @Override
-    public void onClick( View aView ) {
-      DrinkListQuickActionWindow dw = new DrinkListQuickActionWindow(aView, myDrinkOrder, myDrinkList);
-      dw.showLikePopDownMenu();
-    }
-  }
-
-  private class RemoveDrinkListener implements OnClickListener{
-    private final DrinkOrder myDrink;
-
-    public RemoveDrinkListener(DrinkOrder aDrink){
-      myDrink = aDrink;
-    }
 
     @Override
     public void onClick( View aView ) {
-      myDrinkList.removeDrink( myDrink );
+      if(myContext.isDrinkListPanel()) {
+        DrinkListQuickActionWindow theCurrentPopupWindow = new DrinkListQuickActionWindow(aView, myDrinkOrder, myDrinkList);
+        theCurrentPopupWindow.showLikeQuickAction(0, 0);
+      }
     }
   }
 
-  private class AddDrinkListener implements OnClickListener{
-    private final DrinkOrder myDrink;
-
-    public AddDrinkListener(DrinkOrder aDrink){
-      myDrink = aDrink;
-    }
-
-    @Override
-    public void onClick( View aView ) {
-      myDrinkList.addDrink( myDrink );
-    }
-  }
-  
   public class DrinkListObserver extends DataSetObserver {
     public void onChanged(){
-     notifyDataSetChanged();
+      notifyDataSetChanged();
     }
 
   }
-
-
-
 }

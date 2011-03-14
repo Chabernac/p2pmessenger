@@ -14,14 +14,13 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
 
-public class OrderDrinkActivity extends Activity implements OnClickListener {
+public class OrderDrinkActivity extends Activity{
   private static final int MIN_X = 20;
   private static final long MAX_VERTICAL_DURATION = 200;
   private static final NumberFormat FORMAT = NumberFormat.getInstance();
@@ -31,8 +30,6 @@ public class OrderDrinkActivity extends Activity implements OnClickListener {
     FORMAT.setMaximumFractionDigits( 2 );
   }
 
-  private Button next;
-  private Button previous;
   private ViewFlipper myViewFlipper;
   private DrinkList myDrinkList = new DrinkList();
   private float myX = 0;
@@ -42,7 +39,8 @@ public class OrderDrinkActivity extends Activity implements OnClickListener {
   private Drink myDrink;
   private TextView myTotalLayout;
   private iPriceProvider myPriceProvider;
-
+  
+  private OrderedDrinksAdapter myOrderedDrinksAdapter = null;
 
 
   /** Called when the activity is first created. */
@@ -69,21 +67,16 @@ public class OrderDrinkActivity extends Activity implements OnClickListener {
     theGridView3.setAdapter( new DrinksAdapter( this, "alcoholischedranken", myDrinkList ) );
 
     ListView theGridView4 = (ListView)findViewById( R.id.ordereddrinks);
-    theGridView4.setAdapter( new OrderedDrinksAdapter( this, myDrinkList ) );
+    theGridView4.setAdapter( myOrderedDrinksAdapter );
 
     GridView theGridView5 = (GridView)findViewById( R.id.bierkesgrid);
     theGridView5.setAdapter( new DrinksAdapter( this, "bierkes", myDrinkList ) );
 
-    setTitle(R.string.app_name);
-    MailReceiver theReceiver = new MailReceiver();
-
-    IntentFilter theFilter = new IntentFilter(Intent.ACTION_VIEW);
-    registerReceiver(theReceiver , theFilter );
-    
     addDrinkListener();
   }
   
   private void init(){
+    myOrderedDrinksAdapter = new OrderedDrinksAdapter(this, myDrinkList);
     Properties thePrices = new Properties();
     try{
       thePrices.load( getResources().getAssets().open( "defaultprices.txt" ) );
@@ -113,17 +106,6 @@ public class OrderDrinkActivity extends Activity implements OnClickListener {
       return true;
   }
 
-  @Override
-  public void onClick(View v) {
-    // TODO Auto-generated method stub
-    if (v == next) {
-      myViewFlipper.showNext();
-    }
-    if (v == previous) {
-      myViewFlipper.showPrevious();
-    }
-  }
-
   private void testHorizontalSwipe(MotionEvent anEvent){
     float theXDif = anEvent.getX() - myX;
     float theYDif = anEvent.getY() - myY;
@@ -131,13 +113,17 @@ public class OrderDrinkActivity extends Activity implements OnClickListener {
     if(Math.abs(theXDif) >= MIN_X && Math.abs(theXDif) > 2 * Math.abs(theYDif)){
       if(theXDif > 0){
         myViewFlipper.showPrevious();
-        if(myViewFlipper.getCurrentView().getId() == R.id.OverviewPanel ) myViewFlipper.showPrevious();
+//        if(myViewFlipper.getCurrentView().getId() == R.id.OverviewPanel ) myViewFlipper.showPrevious();
       } else {
         myViewFlipper.showNext();
-        if(myViewFlipper.getCurrentView().getId() == R.id.OverviewPanel ) myViewFlipper.showNext();
+//        if(myViewFlipper.getCurrentView().getId() == R.id.OverviewPanel ) myViewFlipper.showNext();
       }
       myLastViewId = myViewFlipper.getDisplayedChild();
     }
+  }
+  
+  public boolean isDrinkListPanel(){
+    return myViewFlipper.getCurrentView().getId() == R.id.OverviewPanel;
   }
 
   private void testVerticalSwipe(MotionEvent anEvent){
@@ -202,5 +188,15 @@ public class OrderDrinkActivity extends Activity implements OnClickListener {
       myTotalLayout.setText( FORMAT.format(myDrinkList.getTotal(myPriceProvider) ));
     }
   }
+  
+  public void onSaveInstanceState(Bundle savedInstanceState){
+   savedInstanceState.putSerializable("drinklist", myDrinkList); 
+  }
+  
+  public void onRestoreInstanceState(Bundle savedInstanceState){
+    myDrinkList = (DrinkList)savedInstanceState.getSerializable("drinklist");
+    myDrinkList.notifyChanged();
+  }
+
 
 }
