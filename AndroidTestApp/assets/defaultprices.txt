@@ -1,0 +1,9 @@
+warmedranken=2
+koudedranken=1.5
+bierkes=3
+alcoholischedranken=2
+
+pintje=1.5
+koudedranken_cola=1.5
+koudedranken_icetea=1.5
+alcoholischedranken_beer=1.5
