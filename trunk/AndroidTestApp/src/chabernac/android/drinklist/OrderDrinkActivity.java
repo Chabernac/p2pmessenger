@@ -5,7 +5,6 @@ import java.util.Properties;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.database.DataSetObserver;
 import android.os.Bundle;
 import android.view.Menu;
@@ -24,7 +23,7 @@ public class OrderDrinkActivity extends Activity{
   private static final int MIN_X = 20;
   private static final long MAX_VERTICAL_DURATION = 200;
   private static final NumberFormat FORMAT = NumberFormat.getInstance();
-  
+
   static{
     FORMAT.setMinimumFractionDigits( 2 );
     FORMAT.setMaximumFractionDigits( 2 );
@@ -39,7 +38,7 @@ public class OrderDrinkActivity extends Activity{
   private Drink myDrink;
   private TextView myTotalLayout;
   private iPriceProvider myPriceProvider;
-  
+
   private OrderedDrinksAdapter myOrderedDrinksAdapter = null;
 
 
@@ -48,7 +47,7 @@ public class OrderDrinkActivity extends Activity{
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     init();
-    
+
     setContentView(R.layout.main);
     myViewFlipper = (ViewFlipper) findViewById(R.id.ViewFlipper01);
 
@@ -74,7 +73,7 @@ public class OrderDrinkActivity extends Activity{
 
     addDrinkListener();
   }
-  
+
   private void init(){
     myOrderedDrinksAdapter = new OrderedDrinksAdapter(this, myDrinkList);
     Properties thePrices = new Properties();
@@ -85,25 +84,25 @@ public class OrderDrinkActivity extends Activity{
       e.printStackTrace();
     }
   }
-  
+
   private void addDrinkListener(){
     myDrinkList.registerObserver( new TotalObserver() );
   }
-  
+
   public void setCurrentDrink(Drink aDrink){
     myDrink = aDrink;
   }
-  
+
   public boolean onContextItemSelected(MenuItem item){
     myDrinkList.addDrink( new DrinkOrder( myDrink, item.toString() ) );
     return true;
   }
-  
+
   @Override
   public boolean onCreateOptionsMenu(Menu menu) {
-      MenuInflater inflater = getMenuInflater();
-      inflater.inflate(R.menu.menu, menu);
-      return true;
+    MenuInflater inflater = getMenuInflater();
+    inflater.inflate(R.menu.menu, menu);
+    return true;
   }
 
   private void testHorizontalSwipe(MotionEvent anEvent){
@@ -113,22 +112,22 @@ public class OrderDrinkActivity extends Activity{
     if(Math.abs(theXDif) >= MIN_X && Math.abs(theXDif) > 2 * Math.abs(theYDif)){
       if(theXDif > 0){
         myViewFlipper.showPrevious();
-//        if(myViewFlipper.getCurrentView().getId() == R.id.OverviewPanel ) myViewFlipper.showPrevious();
+        //        if(myViewFlipper.getCurrentView().getId() == R.id.OverviewPanel ) myViewFlipper.showPrevious();
       } else {
         myViewFlipper.showNext();
-//        if(myViewFlipper.getCurrentView().getId() == R.id.OverviewPanel ) myViewFlipper.showNext();
+        //        if(myViewFlipper.getCurrentView().getId() == R.id.OverviewPanel ) myViewFlipper.showNext();
       }
       myLastViewId = myViewFlipper.getDisplayedChild();
     }
   }
-  
+
   public boolean isDrinkListPanel(){
     return myViewFlipper.getCurrentView().getId() == R.id.OverviewPanel;
   }
 
   private void testVerticalSwipe(MotionEvent anEvent){
     long theDuration = anEvent.getEventTime() - anEvent.getDownTime();
-    
+
     //only process the action if the event duration was short
     //otherwise the user probably wants to scroll instead of jumping to another screen
     if(theDuration > MAX_VERTICAL_DURATION) return;
@@ -155,7 +154,7 @@ public class OrderDrinkActivity extends Activity{
     }
     return super.dispatchTouchEvent(anEvent);
   }
-  
+
   private class HomeListener implements OnClickListener {
     @Override
     public void onClick( View aView ) {
@@ -175,27 +174,49 @@ public class OrderDrinkActivity extends Activity{
       startActivity(Intent.createChooser(emailIntent, "Send mail..."));
     }
   }
-  
+
   private class ClearListener implements OnClickListener {
     @Override
     public void onClick( View aView ) {
       myDrinkList.clear();
     }
   }
-  
+
   public class TotalObserver extends DataSetObserver {
     public void onChanged(){
       myTotalLayout.setText( FORMAT.format(myDrinkList.getTotal(myPriceProvider) ));
     }
   }
-  
+
   public void onSaveInstanceState(Bundle savedInstanceState){
-   savedInstanceState.putSerializable("drinklist", myDrinkList); 
+    Bundle theBundle = new Bundle();
+
+    for(DrinkOrder theOrder : myDrinkList.getList()){
+      theBundle.putInt( theOrder.getName(), theOrder.getNumberOfDrinks());
+    }
+
+    savedInstanceState.putBundle( "drinklist", theBundle );
+
+    savedInstanceState.putInt( "currentview",  myViewFlipper.getDisplayedChild() );
   }
-  
+
   public void onRestoreInstanceState(Bundle savedInstanceState){
-    myDrinkList = (DrinkList)savedInstanceState.getSerializable("drinklist");
+    DrinkFactory theFactory = new DrinkFactory( this );
+    Bundle theDrinkList = savedInstanceState.getBundle( "drinklist" );
+
+    for(String theKey : theDrinkList.keySet()){
+      try{
+        DrinkOrder theOrder = new DrinkOrder( theFactory.getDrink( theKey ) );
+        theOrder.setNumberOfDrinks( theDrinkList.getInt( theKey ));
+        myDrinkList.setDrinkOrder( theOrder );
+      }catch(Exception e){
+        e.printStackTrace();
+      }
+    }
+
     myDrinkList.notifyChanged();
+
+    myViewFlipper.setDisplayedChild( savedInstanceState.getInt( "currentview" ) );
   }
 
 
