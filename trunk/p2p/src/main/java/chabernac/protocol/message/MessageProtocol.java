@@ -257,6 +257,8 @@ public class MessageProtocol extends Protocol {
     private String inspectResult(String aResult) throws MessageException{
       if(aResult.startsWith( Response.DELIVERED.name() )){
         return aResult.substring( Response.DELIVERED.name().length() );
+      } else if(aResult.startsWith(Response.MESSAGE_ALREADY_RECEIVED.name())){
+        throw new MessageAlreadyDeliveredException("This message was already delivered to this peer");
       }
       throw new MessageException("Message could not be delivered return code: '" + aResult + "'", Response.valueOf(aResult.split(" ")[0]));  
     }

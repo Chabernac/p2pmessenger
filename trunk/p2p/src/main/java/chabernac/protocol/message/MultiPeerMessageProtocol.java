@@ -158,6 +158,8 @@ public class MultiPeerMessageProtocol extends Protocol{
         } else {
           sendDeliveryReport( new DeliveryReport(myMultiPeerMessage, Status.FAILED, myMessage) );
         }
+      } catch(MessageAlreadyDeliveredException e){
+        sendDeliveryReport( new DeliveryReport(myMultiPeerMessage, Status.DELIVERED, myMessage) );
       } catch ( Throwable e ) {
         LOGGER.error( "Could not send message to peer '" + myMessage.getDestination().getPeerId() + "'", e );
         sendDeliveryReport( new DeliveryReport(myMultiPeerMessage, Status.FAILED, myMessage) );
