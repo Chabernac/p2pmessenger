@@ -4,11 +4,14 @@
  */
 package chabernac.android.drinklist;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class Drink {
+public class Drink implements Serializable{
+  private static final long serialVersionUID = 5947263785389663866L;
+  
   private final String myDrinkType;
   private final String myName;
   private final int myImageResource;

@@ -4,9 +4,6 @@
  */
 package chabernac.android.drinklist;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,10 +25,12 @@ public class DrinksAdapter extends BaseAdapter implements OnClickListener {
   private List<Drink> myDrinks = new ArrayList<Drink>();
   private DrinkList myDrinkList;
   private OrderDrinkActivity myActivity;
+  private DrinkFactory myDrinkFactory;
 
   public DrinksAdapter(OrderDrinkActivity anActivity, String aDrinks, DrinkList aDrinkList) {
     myDrinkList = aDrinkList;
     myActivity = anActivity;
+    myDrinkFactory = new DrinkFactory( anActivity );
     loadImages(aDrinks);
   }
 
@@ -40,9 +39,7 @@ public class DrinksAdapter extends BaseAdapter implements OnClickListener {
     for(Field theField : theFields){
       if(theField.getName().startsWith(aDrinks)){
         try {
-          Drink theDrink  = new Drink( aDrinks, theField.getName().substring( aDrinks.length() + 1 ), (Integer)theField.get(R.drawable.class));
-          loadOptions(theDrink);
-          myDrinks.add( theDrink );
+          myDrinks.add( myDrinkFactory.getDrink( aDrinks, theField.getName().substring( aDrinks.length() + 1 )) );
         } catch (Exception e) {
           e.printStackTrace();
         }
@@ -50,25 +47,6 @@ public class DrinksAdapter extends BaseAdapter implements OnClickListener {
     }
   }
   
-  private void loadOptions(Drink aDrink){
-    BufferedReader theReader =  null;
-    try {
-      theReader = new BufferedReader( new InputStreamReader( myActivity.getAssets().open( aDrink.getName() + ".txt" ) ));
-      String theLine = null;
-      while((theLine = theReader.readLine()) != null){
-        aDrink.addDrinkOption( theLine );
-      }
-    } catch ( IOException e ) {
-    } finally {
-      try {
-        if(theReader != null){
-          theReader.close();
-        }
-      } catch ( IOException e ) {
-      }
-    }
-  }
-
   public int getCount() {
     return myDrinks.size();
   }

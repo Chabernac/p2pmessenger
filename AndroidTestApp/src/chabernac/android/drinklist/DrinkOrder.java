@@ -4,15 +4,21 @@
  */
 package chabernac.android.drinklist;
 
-public class DrinkOrder {
+import java.io.Serializable;
+
+public class DrinkOrder implements Comparable<DrinkOrder>, Serializable{
+  private static final long serialVersionUID = 3635698949483331927L;
+  
   private final Drink myDrink;
   private final String myOption;
   private int myNumberOfDrinks = 1;
   private final String myName;
+  private final String myFullName;
   
   public DrinkOrder( Drink aDrink ){
     myDrink = aDrink;
     myName = myDrink.getName();
+    myFullName = myDrink.getDrinkType() + " " + myDrink.getName();
     myOption = null;
   }
   
@@ -20,6 +26,7 @@ public class DrinkOrder {
     myDrink = aDrink;
     myOption = aOption;
     myName = myDrink.getName() + " " + myOption;
+    myFullName = myDrink.getDrinkType() + " " + myDrink.getName() + " " + myOption;
   }
 
   public int getNumberOfDrinks() {
@@ -61,5 +68,14 @@ public class DrinkOrder {
 
   public String getName() {
     return myName;
+  }
+  
+  public String getFullName(){
+    return myFullName;
+  }
+
+  @Override
+  public int compareTo( DrinkOrder aDrinkOrder ) {
+    return getFullName().compareTo( aDrinkOrder.getFullName() );
   }
 }
