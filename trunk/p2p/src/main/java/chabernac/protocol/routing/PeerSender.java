@@ -27,6 +27,9 @@ public class PeerSender implements iPeerSender {
   private boolean isKeepHistory = false;
   private List<PeerMessage> myHistory = new ArrayList<PeerMessage>();
   private List<iSocketPeerSenderListener> myPeerSenderListeners = new ArrayList<iSocketPeerSenderListener>();
+  private long myBytesSend = 0;
+  private long myBytesReceived = 0;
+  private long myInitTime = System.currentTimeMillis(); 
   
   @Override
   public String send(String aMessage, SocketPeer aPeer, int aTimeoutInSeconds) throws IOException {
@@ -57,6 +60,7 @@ public class PeerSender implements iPeerSender {
 //        LOGGER.debug( "Sending message: '" + aMessage + "'" );
         theWriter.println(aMessage);
         theWriter.flush();
+        myBytesSend += aMessage.length();
         //stop the socketcloser at this point, otherwise it might close the socket during the next statements
         //and cause the message to be resent while it has already been delivered
 //        theService.shutdownNow();
@@ -70,6 +74,7 @@ public class PeerSender implements iPeerSender {
         int theOldRetries = theRetries;
         theRetries = 0;
         String theReturnMessage = theReader.readLine();
+        myBytesReceived += theReturnMessage.length();
         theRetries = theOldRetries;
 //        LOGGER.debug( "Message received: '" + theReturnMessage + "'" );
         //TODO why do we sometimes have null replies when using BasicSocketPool
@@ -153,6 +158,21 @@ public class PeerSender implements iPeerSender {
       }
     }
   }
+  
+  
+
+  public long getBytesSend() {
+    return myBytesSend;
+  }
+
+  public long getBytesReceived() {
+    return myBytesReceived;
+  }
+
+  public long getInitTime() {
+    return myInitTime;
+  }
+
 
   public void addPeerSenderListener(iSocketPeerSenderListener aListener){
     myPeerSenderListeners.add(aListener);
