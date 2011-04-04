@@ -39,9 +39,11 @@ public class PeerSender implements iPeerSender {
       notifyListeners(theMessage);
     }
 
-    int theRetries = 3;
+    
+    RetryDecider theRetryDecider = new RetryDecider(3);
 
-    while(theRetries-- > 0){
+    while(theRetryDecider.retry()){
+      theRetryDecider.clear();
       SocketProxy theSocket = aPeer.createSocket( aPeer.getPort() );
 
       if(theSocket == null) {
@@ -49,12 +51,14 @@ public class PeerSender implements iPeerSender {
         throw new IOException("Could not open socket to peer: " + aPeer.getPeerId() + " " + aPeer.getHosts() + ":" + aPeer.getPort());
       }
 
+      theRetryDecider.socketCreated();
+      
       ScheduledExecutorService theService = Executors.newScheduledThreadPool( 1 );
 
       BufferedReader theReader = null;
       PrintWriter theWriter = null;
       try{
-        if(aTimeoutInSeconds > 0) theService.schedule( new SocketCloser(theSocket), aTimeoutInSeconds, TimeUnit.SECONDS );
+        if(aTimeoutInSeconds > 0) theService.schedule( new SocketCloser(theSocket, theRetryDecider), aTimeoutInSeconds, TimeUnit.SECONDS );
         theWriter = new PrintWriter(new OutputStreamWriter(theSocket.getOutputStream()));
         theReader = new BufferedReader(new InputStreamReader(theSocket.getInputStream()));
 //        LOGGER.debug( "Sending message: '" + aMessage + "'" );
@@ -71,17 +75,16 @@ public class PeerSender implements iPeerSender {
         //in that case we should not retry because the same effect will probably result and retrying
         //causes the p2p network to be flooded with sockets
 //        theRetries = 0;
-        int theOldRetries = theRetries;
-        theRetries = 0;
+        
+        theRetryDecider.messageSend();
         String theReturnMessage = theReader.readLine();
-        myBytesReceived += theReturnMessage.length();
-        theRetries = theOldRetries;
 //        LOGGER.debug( "Message received: '" + theReturnMessage + "'" );
         //TODO why do we sometimes have null replies when using BasicSocketPool
         if(theReturnMessage == null || "".equals( theReturnMessage )) {
 //          theRetries = 1;
           throw new IOException("empty result, socket corrupt?");
         }
+        myBytesReceived += theReturnMessage.length();
         theMessage.setResult(theReturnMessage);
         notifyListeners(theMessage);
 
@@ -89,7 +92,7 @@ public class PeerSender implements iPeerSender {
       }catch(IOException e){
         //for some reason the socket was corrupt just close the socket and retry untill retry counter is zero
         P2PSettings.getInstance().getSocketPool().close( theSocket );
-        if(theRetries <= 0) {
+        if(!theRetryDecider.hasRetry()) {
           theMessage.setState(State.NOK);
           notifyListeners(theMessage);
           throw e;
@@ -132,13 +135,16 @@ public class PeerSender implements iPeerSender {
 
   private class SocketCloser implements Runnable{
     private final SocketProxy mySocket;
+    private final RetryDecider myRetryDecider;
 
-    public SocketCloser ( SocketProxy anSocket ) {
+    public SocketCloser ( SocketProxy anSocket, RetryDecider aRetryDecier ) {
       super();
       mySocket = anSocket;
+      myRetryDecider = aRetryDecier;
     }
 
     public void run(){
+      myRetryDecider.timeoutOccured();
       P2PSettings.getInstance().getSocketPool().close(  mySocket );
     }
   }
@@ -226,6 +232,51 @@ public class PeerSender implements iPeerSender {
           theWriter.close();
         }catch(IOException e){}
       }
+    }
+  }
+  
+  private class RetryDecider{
+    private int myRetries = 3;
+    private boolean isSocketCreated = false;
+    private boolean isTimeoutOccured = false;
+    private boolean isMessageSend = false;
+    
+    public RetryDecider(int aRetries){
+      myRetries = aRetries;
+    }
+    
+    public boolean retry(){
+      boolean isHasRetry = hasRetry();
+      myRetries--;
+      return isHasRetry;
+    }
+    
+    public boolean hasRetry(){
+      if(isSocketCreated && isMessageSend && isTimeoutOccured) return false;
+      return myRetries > 0;
+
+    }
+    
+    public void timeoutOccured(){
+      isTimeoutOccured = true;
+    }
+    
+    public void socketCreated(){
+      isSocketCreated = true;
+    }
+    
+    public void messageSend(){
+      isMessageSend = true;
+    }
+    
+    public void exceptionOccured(Exception anException){
+      
+    }
+    
+    public void clear(){
+      isSocketCreated = false;
+      isMessageSend = false;
+      isTimeoutOccured = false;
     }
   }
 }
