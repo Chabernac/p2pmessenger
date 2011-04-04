@@ -235,13 +235,13 @@ public class NewMessageDialog5 extends JDialog implements iMessageDialog{
             requestFocus(false);
             myText.requestFocus();
             requestFocusInWindow(false);
-            if(myRobot != null && isFirstTime){
-              Point thePoint = getLocationOnScreen();
-              myRobot.mouseMove( thePoint.x + getWidth() - 50, thePoint.y + 30 );
-              myRobot.mousePress( InputEvent.BUTTON1_MASK);
-              myRobot.mouseRelease( InputEvent.BUTTON1_MASK);
-//              isFirstTime = false;
-            }
+//            if(myRobot != null && isFirstTime){
+//              Point thePoint = getLocationOnScreen();
+//              myRobot.mouseMove( thePoint.x + getWidth() - 50, thePoint.y + 30 );
+//              myRobot.mousePress( InputEvent.BUTTON1_MASK);
+//              myRobot.mouseRelease( InputEvent.BUTTON1_MASK);
+////              isFirstTime = false;
+//            }
           }catch(P2PFacadeException e){
             logger.error( "Error occured while setting message", e );
           }
