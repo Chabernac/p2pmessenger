@@ -19,6 +19,7 @@ import org.apache.log4j.Logger;
 import chabernac.command.CommandSession;
 import chabernac.easteregg.EasterEggFactory;
 import chabernac.easteregg.iEasterEgg;
+import chabernac.gui.tray.SystemTrayMenu;
 import chabernac.p2pclient.gui.action.ActionFactory;
 import chabernac.p2pclient.gui.action.ActionFactory.Action;
 import chabernac.p2pclient.settings.Settings;
@@ -44,6 +45,7 @@ public class ChatMediator {
   private isShowDialogProvider myIsShowDialogProvider = null;
   private iMessageDialog myMessageDialog = null;
   private iChatFrame myChatFrame = null;
+  private SystemTrayMenu mySystemTrayMenu = null;
 
   private ExecutorService myExecutorService = Executors.newFixedThreadPool( 5 );
 
@@ -99,6 +101,14 @@ public class ChatMediator {
 
   public void setChatFrame( iChatFrame myFrameProvider ) {
     this.myChatFrame = myFrameProvider;
+  }
+  
+  public SystemTrayMenu getSystemTrayMenu() {
+    return mySystemTrayMenu;
+  }
+
+  public void setSystemTrayMenu( SystemTrayMenu aSystemTrayMenu ) {
+    mySystemTrayMenu = aSystemTrayMenu;
   }
 
   public synchronized Future< MultiPeerMessage > send(){
