@@ -7,6 +7,7 @@ package chabernac.gui;
 import java.awt.AWTException;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -25,8 +26,11 @@ import chabernac.ldapuserinfoprovider.BackupUserInfoProviderDecorator;
 import chabernac.lock.FileLock;
 import chabernac.lock.iLock;
 import chabernac.p2pclient.gui.ChatFrame;
+import chabernac.p2pclient.gui.ChatMediator;
+import chabernac.p2pclient.plugin.iP2pClientPlugin;
 import chabernac.p2pclient.settings.Settings.ReceiveEnveloppe;
 import chabernac.p2pclient.settings.Settings.SendEnveloppe;
+import chabernac.plugin.PluginRegistry;
 import chabernac.preference.ApplicationPreferences;
 import chabernac.protocol.iProtocolDelegate;
 import chabernac.protocol.facade.P2PFacade;
@@ -46,6 +50,8 @@ public class ApplicationLauncher {
   private static Logger LOGGER = Logger.getLogger(ApplicationLauncher.class);
   private static ScheduledExecutorService SERVICE = Executors.newScheduledThreadPool( 1 );
   private static ChatFrame myChatFrame = null;
+  private static ChatMediator myMediator = null;
+  
   private static P2PFacade myFacade = null;
 
   /**
@@ -81,20 +87,32 @@ public class ApplicationLauncher {
 
       addActivationListener();
 
-      myChatFrame = new ChatFrame(myFacade);
+      myMediator = new ChatMediator( myFacade );
+      myChatFrame = new ChatFrame(myMediator);
+      
       if("true".equals(theInterPretser.getKeyValue( "visible" ))){
         showChatFrame();
       }
 
-      SystemTrayMenu.buildSystemTray( myChatFrame, myFacade );
+      SystemTrayMenu theMenu = SystemTrayMenu.buildSystemTray( myChatFrame, myFacade );
+      myMediator.setSystemTrayMenu( theMenu );
 
       new NewMessageTrayIconDisplayer(myChatFrame.getMediator());
       new NewMessageInfoPanelDisplayer(myChatFrame.getMediator());
 
       initSaveMessages();
+      
+      loadPlugins();
     }catch(Exception e){
       LOGGER.error("An error occured during boot process", e);
       System.exit(-1);
+    }
+  }
+  
+  private static void loadPlugins(){
+    List<iP2pClientPlugin> thePlugins = PluginRegistry.getInstance().getInstancesOf( iP2pClientPlugin.class );
+    for(iP2pClientPlugin thePlugin : thePlugins){
+      thePlugin.init( myMediator );
     }
   }
 
@@ -132,7 +150,7 @@ public class ApplicationLauncher {
 
   public static synchronized void showChatFrame() throws P2PFacadeException{
     if(myChatFrame == null){
-      myChatFrame = new ChatFrame(myFacade);
+      myChatFrame = new ChatFrame(myMediator);
     }
     myChatFrame.showFrame();
   }

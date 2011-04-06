@@ -43,14 +43,12 @@ public class ChatFrame extends SavedFrame implements iTitleProvider, isShowDialo
   private static final long serialVersionUID = 8845601746540726343L;
   private static Logger logger = Logger.getLogger(ChatFrame.class);
   private ChatMediator myMediator = null;
-  private P2PFacade myP2PFacade = null;
   private JSplitPane mySplitPane = null;
   private MessageField myMessageField = null;
   
-  public ChatFrame(P2PFacade aFacade) throws P2PFacadeException{
+  public ChatFrame(ChatMediator aMediator) throws P2PFacadeException{
     super(ApplicationPreferences.getInstance().getProperty("frame.light.title","Chatterke"), new Rectangle(300,300,500,250));
-    myP2PFacade = aFacade;
-    init();
+    myMediator = aMediator;
     loadIcon();
     buildGUI();
     addListeners();
@@ -81,10 +79,6 @@ public class ChatFrame extends SavedFrame implements iTitleProvider, isShowDialo
         logger.error("Could not load icon from location: " + theIconLocation, e);
       }
     }
-  }
-  
-  private void init() throws P2PFacadeException{
-    myMediator = new ChatMediator(myP2PFacade);
   }
   
   public ChatMediator getMediator(){
@@ -133,10 +127,10 @@ public class ChatFrame extends SavedFrame implements iTitleProvider, isShowDialo
     Set<String> theUsers = myMediator.getUserSelectionProvider().getSelectedUsers();
     String theTitle = ApplicationPreferences.getInstance().getProperty("frame.light.title","Chatterke");
     try{
-      theTitle += " [" + myP2PFacade.getPersonalInfo().getStatus().name();
+      theTitle += " [" + myMediator.getP2PFacade().getPersonalInfo().getStatus().name();
       
-      if(myP2PFacade.getPersonalInfo().getStatusMessage() != null && !myP2PFacade.getPersonalInfo().getStatusMessage().equals( "" )){
-        theTitle += " " + myP2PFacade.getPersonalInfo().getStatusMessage();
+      if(myMediator.getP2PFacade().getPersonalInfo().getStatusMessage() != null && !myMediator.getP2PFacade().getPersonalInfo().getStatusMessage().equals( "" )){
+        theTitle += " " + myMediator.getP2PFacade().getPersonalInfo().getStatusMessage();
       }
       
       if(ApplicationPreferences.getInstance().hasEnumProperty( Settings.ReceiveEnveloppe.NO_POPUP )){
@@ -146,7 +140,7 @@ public class ChatFrame extends SavedFrame implements iTitleProvider, isShowDialo
       }
       theTitle += "]";
       if(theUsers.size() == 1){
-        theTitle += " - sc " + Tools.getShortNameForUser( myP2PFacade.getUserInfo().get( theUsers.iterator().next() )); 
+        theTitle += " - sc " + Tools.getShortNameForUser( myMediator.getP2PFacade().getUserInfo().get( theUsers.iterator().next() )); 
       } else if(theUsers.size() > 1){
         theTitle += " - mc ";
       }

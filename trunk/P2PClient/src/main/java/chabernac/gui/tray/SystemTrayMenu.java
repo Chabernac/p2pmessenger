@@ -44,10 +44,9 @@ public class SystemTrayMenu extends PopupMenu {
     add(new StatusMenu(myChatFrame.getMediator()));
 //    add(new SearchPeersMenuItem(myChatFrame.getMediator()));
     add( new ExitMenuItem(myChatFrame.getMediator()) );
-
   }
 
-  public static void buildSystemTray(ChatFrame aChatFrame, P2PFacade aFacade) throws IOException, AWTException, HeadlessException, P2PFacadeException{
+  public static SystemTrayMenu buildSystemTray(ChatFrame aChatFrame, P2PFacade aFacade) throws IOException, AWTException, HeadlessException, P2PFacadeException{
     if(SystemTray.isSupported()){
       SystemTray theTray = SystemTray.getSystemTray();
       SystemTrayMenu theMenu = new SystemTrayMenu(aChatFrame);
@@ -55,7 +54,9 @@ public class SystemTrayMenu extends PopupMenu {
       theTray.add( theIcon );
       theMenu.build( aFacade, theIcon);
       Executors.newScheduledThreadPool( 1 ).scheduleAtFixedRate( new TrayIconPersister( theIcon ), 10, 10, TimeUnit.MINUTES);
+      return theMenu;
     }
+    return null;
   }
   
   public static boolean refreshIcon(){
