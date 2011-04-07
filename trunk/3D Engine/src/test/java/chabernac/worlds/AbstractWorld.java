@@ -38,9 +38,17 @@ public abstract class AbstractWorld extends JFrame {
   protected Panel3D myPanel3D = null;
   protected KeyMapContainer myKeyMapContainer = null;
   protected SynchronizedEventManager myManager = null;
+  private Dimension myDimension;
 
+  
+  public AbstractWorld(Dimension aDimensions){
+    this(aDimensions, null, null);
+  }
 
-  public AbstractWorld(){
+  public AbstractWorld(Dimension aDimension, World aWorld, Camera aCamera){
+    myWorld = aWorld;
+    myCamera = aCamera;
+    myDimension = aDimension;
     init();
     buildGUI();
     buildWorld(myWorld);
@@ -51,10 +59,10 @@ public abstract class AbstractWorld extends JFrame {
   private final void init(){
     BasicConfigurator.configure();
     setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    setSize(getPanelSize());
+    setSize(myDimension);
     setVisible(true);
-    myWorld = new World();
-    myCamera = new Camera();
+    if(myWorld == null) myWorld = new World();
+    if(myCamera == null) myCamera = new Camera();
   }
   
   private final void buildGUI(){
@@ -146,6 +154,5 @@ public abstract class AbstractWorld extends JFrame {
     myPanel3D.requestFocus();
   }
   
-  protected abstract Dimension getPanelSize();
   protected abstract void buildWorld(World aWorld);
 }
