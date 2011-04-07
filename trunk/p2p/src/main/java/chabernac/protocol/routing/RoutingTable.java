@@ -103,7 +103,8 @@ public class RoutingTable implements Iterable< RoutingTableEntry >, Serializable
     }
 
     if(!anEntry.getPeer().isValidEndPoint()){
-      throw new IllegalArgumentException("Can not add a peer with an invalid end point");
+      LOGGER.error("Can not add a peer with an invalid end point '" + anEntry.getPeer().toString() + "'");
+//      throw new IllegalArgumentException("Can not add a peer with an invalid end point");
     }
     
 //    removeEntriesOlderThanAndOnTheSameSocketAs(anEntry);
