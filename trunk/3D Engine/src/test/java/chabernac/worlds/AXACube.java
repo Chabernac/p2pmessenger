@@ -13,7 +13,6 @@ import chabernac.space.geom.Point3D;
 import chabernac.space.geom.Rotation;
 import chabernac.space.geom.Shape;
 import chabernac.space.shading.GouroudShading;
-import chabernac.space.shading.PhongShader;
 import chabernac.space.shading.TextureShader;
 import chabernac.space.shading.iPixelShader;
 import chabernac.space.shading.iVertexShader;
@@ -23,6 +22,10 @@ public class AXACube extends AbstractWorld implements iSynchronizedEvent{
    
   private RotationManager myRotationManager = null;
   
+  public AXACube(){
+    super(new Dimension( 800, 600 ));
+  }
+  
   protected void buildWorld(World aWorld){
 //    myManager.addSyncronizedEvent(this);
     
@@ -31,7 +34,7 @@ public class AXACube extends AbstractWorld implements iSynchronizedEvent{
     
     MouseTranslationManager theMouseTranslationManager = new MouseTranslationManager(myPanel3D.getGraphics3D(), 100, 10);
     myRotationManager = new RotationManager(new Rotation((float)Math.PI / 500,(float)Math.PI / 400,(float)Math.PI / 360));
-    RotationManager theRotationManager = new RotationManager(new Rotation(0,0,-(float)Math.PI / 180));
+    RotationManager theRotationManager = new RotationManager(new Rotation(0,0,(float)Math.PI / 360));
 //    myWorld.getTranslateManagerContainer().addTranslateManager(theMouseTranslationManager);
 //    myWorld.getTranslateManagerContainer().addTranslateManager(myRotationManager);
     myWorld.getTranslateManagerContainer().addTranslateManager(theRotationManager);
@@ -229,11 +232,6 @@ public class AXACube extends AbstractWorld implements iSynchronizedEvent{
 //    theCube.setState( JFrame.MAXIMIZED_BOTH );
 //    theCube.setState( JFrame.ICONIFIED );
 //    theCube.setVisible( false );
-  }
-
-  @Override
-  protected Dimension getPanelSize() {
-    return new Dimension( 800, 600);
   }
   
   /**
