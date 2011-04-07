@@ -13,7 +13,7 @@ import chabernac.task.Task;
 import chabernac.task.TaskTools;
 
 public class SearchTaskProvider extends AbstractSearchProvider<Task>{
-  private final Task myRootTask;
+  private Task myRootTask;
   private Task myCurrentTask;
 
   public SearchTaskProvider( Task aRootTask) {
@@ -114,5 +114,11 @@ public class SearchTaskProvider extends AbstractSearchProvider<Task>{
     return aString.toUpperCase().contains( aSearchTerm.toUpperCase() );
   }
 
+  public Task getRootTask() {
+    return myRootTask;
+  }
 
+  public void setRootTask( Task aRootTask ) {
+    myRootTask = aRootTask;
+  }
 }
