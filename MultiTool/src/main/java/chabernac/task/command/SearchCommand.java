@@ -11,10 +11,17 @@ import chabernac.search.SearchDialog;
 import chabernac.task.utils.SearchTaskProvider;
 
 public class SearchCommand extends ActivityCommand{
+  private final SearchTaskProvider mySearchTaskProvider = new SearchTaskProvider( getSelectedTask());
+  private final SearchDialog mySearchDialog  = new SearchDialog( (JFrame)ApplicationRefBase.getObject( ApplicationRefBase.MAINFRAME ), mySearchTaskProvider, false);
+  
+  public SearchCommand(){
+  }
+  
 
   @Override
   protected void executeCommand() {
-    new SearchDialog( (JFrame)ApplicationRefBase.getObject( ApplicationRefBase.MAINFRAME ), new SearchTaskProvider( getSelectedTask()), false );
+    mySearchTaskProvider.setRootTask( getRootTask() );
+    mySearchDialog.setVisible( true );
   }
 
   @Override
