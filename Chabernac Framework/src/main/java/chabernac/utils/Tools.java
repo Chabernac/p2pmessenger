@@ -25,14 +25,13 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
 
-import sun.misc.BASE64Encoder;
 import chabernac.queue.QueueInterface;
 
 public class Tools
@@ -115,31 +114,31 @@ public class Tools
     Debug.log(Tools.class,runtime.freeMemory() + " memory free of "  + runtime.totalMemory()  + " total memory");
   }
 
-  public static int byteValue(byte aByte, byte start, byte offset)
-  {
-
-    byte value = 0;
-    for(byte i=0;i<=offset;i++)
-    {
-      value = (byte)(value | (byte)(aByte & (byte)Math.pow((byte)2,start + i)));
-    }
-    Debug.log(Tools.class,"Startbit: " + start + " offset: " + offset  + " value: " + (byte)(value / (byte)Math.pow((byte)2,start)) + " byte: " + aByte);
-    int result = (int)value;
-    if(result < 0){result = result + 256;}
-    return result / (int)Math.pow(2,start);
-    //return (byte)(value / (byte)Math.pow((byte)2,start));
-
-
-    /*
-		int value = 0;
-		for(byte i=0;i<=offset;i++)
-		{
-			value = (value | (aByte & Math.pow(2,start + i)));
-			Debug.log(Tools.class,"Startbit: " + start + " offset: " + offset  + " value: " + value + " byte: " + aByte);
-		}
-		return (value / Math.pow(2,start));
-     */
-  }
+//  public static int byteValue(byte aByte, byte start, byte offset)
+//  {
+//
+//    byte value = 0;
+//    for(byte i=0;i<=offset;i++)
+//    {
+//      value = (byte)(value | (byte)(aByte & (byte)FastMath.pow((byte)2,start + i)));
+//    }
+//    Debug.log(Tools.class,"Startbit: " + start + " offset: " + offset  + " value: " + (byte)(value / (byte)FastMath.pow((byte)2,start)) + " byte: " + aByte);
+//    int result = (int)value;
+//    if(result < 0){result = result + 256;}
+//    return result / (int)FastMath.pow(2,start);
+//    //return (byte)(value / (byte)Math.pow((byte)2,start));
+//
+//
+//    /*
+//		int value = 0;
+//		for(byte i=0;i<=offset;i++)
+//		{
+//			value = (value | (aByte & Math.pow(2,start + i)));
+//			Debug.log(Tools.class,"Startbit: " + start + " offset: " + offset  + " value: " + value + " byte: " + aByte);
+//		}
+//		return (value / Math.pow(2,start));
+//     */
+//  }
 
   public static void printBytes(byte[] theBytes)
   {
@@ -416,9 +415,8 @@ public class Tools
 
   public static String b64_sha1(String aMessage)
   {
-    BASE64Encoder theEncoder = new BASE64Encoder();
     try{
-      return theEncoder.encode(encrypt(aMessage.getBytes(), "SHA-1"));
+      return Base64.encodeBase64String( encrypt(aMessage.getBytes(), "SHA-1"));
     }catch(NoSuchAlgorithmException e){
       return "";
     }
