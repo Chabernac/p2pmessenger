@@ -19,6 +19,10 @@ import chabernac.space.geom.Shape;
 public class CrossingPlanes extends AbstractWorld{
 
   private static final long serialVersionUID = -6073586440715690547L;
+  
+  public CrossingPlanes(){
+    super(new Dimension(300,300));
+  }
 
   @Override
   protected void buildWorld( World aWorld ) {
@@ -52,11 +56,6 @@ public class CrossingPlanes extends AbstractWorld{
     aWorld.addShape( thePlane1);
     aWorld.addShape( thePlane2);
     aWorld.addShape( thePlane3);
-  }
-
-  @Override
-  protected Dimension getPanelSize() {
-    return new Dimension( 300, 300 );
   }
   
   public static void main(String[] args){
