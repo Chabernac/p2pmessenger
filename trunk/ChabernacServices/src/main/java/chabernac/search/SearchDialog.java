@@ -13,6 +13,7 @@ public class SearchDialog extends JDialog {
   private static final long serialVersionUID = -5330892007311302470L;
   @SuppressWarnings( "unchecked" )
   private final AbstractSearchProvider mySearchProvider;
+  private SearchPanel mySearchPanel;
   
   @SuppressWarnings( "unchecked" )
   public SearchDialog(JFrame aParent, AbstractSearchProvider aSearchProvider, boolean isModal){
@@ -29,10 +30,16 @@ public class SearchDialog extends JDialog {
     
     setLayout( new BorderLayout() );
     
-    add(new SearchPanel( mySearchProvider ), BorderLayout.CENTER);
+    mySearchPanel = new SearchPanel( mySearchProvider ); 
+    add(mySearchPanel, BorderLayout.CENTER);
     
     setSize( 350, 100 );
     
     setResizable( false );
+  }
+  
+  public void setVisible(boolean isVisible){
+    super.setVisible( isVisible );
+    mySearchPanel.requestFocus();
   }
 }

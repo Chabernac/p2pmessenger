@@ -67,6 +67,11 @@ public class SearchPanel extends JPanel {
     add(myRegularExpression, theCons);
   }
   
+  public void requestFocus(){
+    super.requestFocus();
+    mySearchArea.requestFocus();
+  }
+  
   private JButton buildButton(AbstractAction anAction){
     JButton theButton = new JButton(anAction);
     theButton.setPreferredSize( new Dimension(100, getPreferredSize().height) );
