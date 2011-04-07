@@ -22,6 +22,40 @@
 		</lightsources>
 
 		<shapes>
+		
+			<cube>
+				<location x='-500' y='0' z='300' />
+				<dimensions width='1000' height='400' depth='20'/>
+				<texture path='brick'/>
+			</cube>
+			
+			<cube>
+				<location x='500' y='0' z='300' />
+				<dimensions width='20' height='400' depth='1000'/>
+				<texture path='brick'/>
+			</cube>
+			
+			<cube>
+				<location x='-500' y='0' z='1300' />
+				<dimensions width='1000' height='400' depth='20'/>
+				<texture path='brick'/>
+			</cube>
+			
+			<cube>
+				<location x='-500' y='0' z='300' />
+				<dimensions width='20' height='400' depth='1000'/>
+				<texture path='brick'/>
+			</cube>
+			
+			<cube>
+				<location x='-500' y='0' z='300' />
+				<dimensions width='1000' height='20' depth='1000'/>
+				<texture path='wood'/>
+			</cube>
+			
+			
+		
+		<!-- 
 			<cube>
 				<location x='0' y='100' z='300' />
 				<dimensions width='200' height='200' depth='200'/>
@@ -45,9 +79,12 @@
 						</vertexes>
 
 						<texture path='metal006'/>
+						
+						<faceaway x='0' y='0' z='300'/>
 					</polygon>
 				</polygons>
 			</shape>
+			 -->
 			
 			<!-- <shape path='/shapes/bridge.xml'/>  -->
 		</shapes>

@@ -74,6 +74,9 @@ public class XMLWordParser extends DefaultHandler{
       myCube = new Cube();
     } else if(qName.equalsIgnoreCase( "dimensions" )){
       extractDimensions(attributes);
+    } else if(qName.equalsIgnoreCase( "faceaway" )){
+      extractLocation(attributes);
+      myPolygon.calculateNormalVector( myLocation, false );
     }
     
     
