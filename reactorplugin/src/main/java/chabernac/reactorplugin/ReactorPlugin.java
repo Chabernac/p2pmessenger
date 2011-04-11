@@ -4,7 +4,6 @@
  */
 package chabernac.reactorplugin;
 
-import java.awt.Menu;
 import java.awt.MenuItem;
 
 import chabernac.gui.tray.SystemTrayMenu;
@@ -19,10 +18,8 @@ public class ReactorPlugin implements iP2pClientPlugin{
   @Override
   public void init( ChatMediator aFacade ) {
     SystemTrayMenu theMenu = aFacade.getSystemTrayMenu();
-    Menu thePlugins = new Menu("Plugins");
-    theMenu.add( thePlugins );
-    thePlugins.add( new MenuItem("Reactor") );
-    theMenu.add( thePlugins );
+    
+    theMenu.getPluginMenu().add( new MenuItem("Reactor") );
   }
 
   @Override
