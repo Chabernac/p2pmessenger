@@ -61,6 +61,8 @@ public class RoutingProtocol extends Protocol {
   public static String ID = "ROU";
 
   private static Logger LOGGER = Logger.getLogger( RoutingProtocol.class );
+  
+  private boolean isInitialized = false;
 
   static{
     if(TestTools.isInUnitTest()){
@@ -78,7 +80,7 @@ public class RoutingProtocol extends Protocol {
   public static final String MULTICAST_ADDRESS = "234.5.54.9";
 
   public static enum Command { REQUEST_TABLE, WHO_ARE_YOU, ANNOUNCEMENT_WITH_REPLY, ANNOUNCEMENT };
-  public static enum Response { OK, NOK, UNKNOWN_COMMAND };
+  public static enum Response { OK, NOK, UNKNOWN_COMMAND, NOT_INITIALIZED };
 
   private RoutingTable myRoutingTable = null;
 
@@ -163,7 +165,7 @@ public class RoutingProtocol extends Protocol {
       try {
         AbstractPeer theLocalPeer = myRoutingTable.getEntryForLocalPeer().getPeer();
         //only do the check if the our port is not the same as the port from the routing table
-        //if it is than we would check if we our running ourselfs, which is at this point stupid
+        //if it is than we would check if we are running ourselfs, which is at this point stupid
         if(theLocalPeer instanceof SocketPeer && 
             myServerInfo != null && 
             myServerInfo.getServerPort() != ((SocketPeer)theLocalPeer).getPort() && 
@@ -219,6 +221,8 @@ public class RoutingProtocol extends Protocol {
       startUDPListener();
       saveRoutingTable();
     }
+    
+    isInitialized = true;
   }
 
   /**
@@ -289,6 +293,10 @@ public class RoutingProtocol extends Protocol {
 
   @Override
   public String handleCommand( long aSessionId, String anInput ) {
+    if(!isInitialized){
+      return Response.NOT_INITIALIZED.name();
+    }
+    
     refreshLocalEntry();
     
     int theFirstIndexOfSpace = anInput.indexOf( " " );
@@ -684,6 +692,7 @@ public class RoutingProtocol extends Protocol {
 
   @Override
   public void stop() {
+    isInitialized = false;
     //remove all listeners from the routing table
     myRoutingTable.removeAllRoutingTableListeners();
 
