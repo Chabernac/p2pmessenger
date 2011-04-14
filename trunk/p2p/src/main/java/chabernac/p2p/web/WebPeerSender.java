@@ -7,6 +7,7 @@ import java.util.UUID;
 import chabernac.comet.CometEvent;
 import chabernac.comet.EndPoint;
 import chabernac.protocol.routing.AbstractPeer;
+import chabernac.protocol.routing.IndirectReachablePeer;
 import chabernac.protocol.routing.SocketPeer;
 import chabernac.protocol.routing.WebPeer;
 import chabernac.protocol.routing.iPeerSender;
@@ -41,6 +42,12 @@ public class WebPeerSender implements iPeerSender {
     } catch ( Exception e ) {
       throw new IOException("An exception occured while sending message to endpoint", e );
     }  
+  }
+
+  @Override
+  public String send(String aMessage, IndirectReachablePeer aIndirectReachablePeer, int aTimeoutInSeconds) {
+    // TODO Auto-generated method stub
+    return null;
   }
 
 
