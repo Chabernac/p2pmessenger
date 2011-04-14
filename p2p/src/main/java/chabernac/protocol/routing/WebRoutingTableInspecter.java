@@ -44,15 +44,22 @@ public class WebRoutingTableInspecter implements iRoutingTableInspector {
     
     for(RoutingTableEntry theEntry : theTable.getEntries()){
       if(theEntry.getPeer() instanceof SocketPeer){
-        String theExposedIp = myPeerExternalIpLink.get( theEntry.getPeer().getPeerId() );
+        SocketPeer thePeer = (SocketPeer)theEntry.getPeer();
+        String theExposedIp = myPeerExternalIpLink.get( thePeer.getPeerId() );
         
         if(theExposedIp.equals( theIPRequestor )){
           theTable.addRoutingTableEntry(  theEntry );
         } else {
-          RoutingTableEntry theNewEntry = new RoutingTableEntry( anHost, anHopDistance, anGateway, aLastOnlineTime );
+          IndirectReachablePeer theNewPeer = new IndirectReachablePeer(thePeer.getPeerId());
+          RoutingTableEntry theNewEntry = new RoutingTableEntry( theNewPeer, theEntry.getHopDistance(), theEntry.getGateway(), theEntry.getLastOnlineTime());
+          theTable.addRoutingTableEntry(theNewEntry);
         }
+      } else {
+        theTable.addRoutingTableEntry(theEntry);
       }
     }
+    
+    return theTable;
   }
 
 }

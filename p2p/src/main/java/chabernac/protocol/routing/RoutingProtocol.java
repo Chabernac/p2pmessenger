@@ -125,6 +125,8 @@ public class RoutingProtocol extends Protocol {
   private final iObjectStringConverter< AbstractPeer> myPeerConverter = new Base64ObjectStringConverter< AbstractPeer >();
 
   private final iPeerSender myPeerSender;
+  
+  private iRoutingTableInspector myRoutingTableInspector = null;
 
   /**
    * 
@@ -307,7 +309,7 @@ public class RoutingProtocol extends Protocol {
     try{
       if(theCommand == Command.REQUEST_TABLE){
         //another peer has send a request for the routing protocol send it
-        return myRoutingTableConverter.toString( myRoutingTable );
+        return myRoutingTableConverter.toString( inspectRoutingTable(aSessionId, myRoutingTable ));
       } else if(theCommand == Command.WHO_ARE_YOU){
         //another peer requested my peer id, send it to him, this is also used
         //to check if I'm still alive and kicking
@@ -330,7 +332,7 @@ public class RoutingProtocol extends Protocol {
 //        verifyNeighbours();
 
 //        return myRoutingTableConverter.toString( myRoutingTable.copyWithoutUnreachablePeers() );
-        return myRoutingTableConverter.toString(myRoutingTable);
+        return myRoutingTableConverter.toString(inspectRoutingTable(aSessionId, myRoutingTable));
       } else if(theCommand == Command.ANNOUNCEMENT){
         String[] theAttributes = anInput.substring( theFirstIndexOfSpace + 1 ).split(";");
 
@@ -353,6 +355,11 @@ public class RoutingProtocol extends Protocol {
       return Response.NOK.name();
     }
     return Response.UNKNOWN_COMMAND.name();
+  }
+  
+  private RoutingTable inspectRoutingTable(long aSessionId, RoutingTable aRoutingTable){
+    if(myRoutingTableInspector == null) return aRoutingTable;
+    else return myRoutingTableInspector.inspectRoutingTable(Long.toString(aSessionId), aRoutingTable);
   }
 
 //  private void verifyNeighbours(){
@@ -859,5 +866,13 @@ public class RoutingProtocol extends Protocol {
   
   public iPeerSender getPeerSender() {
     return myPeerSender;
+  }
+
+  public iRoutingTableInspector getRoutingTableInspector() {
+    return myRoutingTableInspector;
+  }
+
+  public void setRoutingTableInspector(iRoutingTableInspector anRoutingTableInspector) {
+    myRoutingTableInspector = anRoutingTableInspector;
   }
 }

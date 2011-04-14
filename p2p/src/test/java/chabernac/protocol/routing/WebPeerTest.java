@@ -98,6 +98,12 @@ public class WebPeerTest extends TestCase {
     public String send( String aMessage, WebPeer aPeer, int aTimeout ) throws IOException {
       return null;
     }
+
+    @Override
+    public String send(String aMessage,
+        IndirectReachablePeer aIndirectReachablePeer, int aTimeoutInSeconds) {
+      return null;
+    }
     
   }
 }
