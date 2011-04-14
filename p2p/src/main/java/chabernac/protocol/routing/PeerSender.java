@@ -279,4 +279,12 @@ public class PeerSender implements iPeerSender {
       isTimeoutOccured = false;
     }
   }
+
+
+
+  @Override
+  public String send( String aMessage, IndirectReachablePeer aIndirectReachablePeer, int aTimeoutInSeconds ) {
+    // TODO Auto-generated method stub
+    return null;
+  }
 }
