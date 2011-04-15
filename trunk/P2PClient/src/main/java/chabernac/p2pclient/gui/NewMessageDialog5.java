@@ -406,7 +406,10 @@ public class NewMessageDialog5 extends JDialog implements iMessageDialog{
     public void actionPerformed(ActionEvent e) {
       MultiPeerMessage theReplyMessage = myMessage.replyAll();
       myMediator.getUserSelectionProvider().setSelectedUsers( theReplyMessage.getDestinations() );
-      myMediator.getMessageProvider().setMessage( myReplyText.getText() );
+      myMediator.saveConcept();
+      if(!"".equals(myReplyText.getText())){
+        myMediator.getMessageProvider().setMessage( myReplyText.getText() );
+      }
       try {
         ApplicationLauncher.showChatFrame();
       } catch ( P2PFacadeException e1 ) {

@@ -6,6 +6,7 @@ package chabernac.gui.tray;
 
 import java.awt.AWTException;
 import java.awt.HeadlessException;
+import java.awt.Menu;
 import java.awt.PopupMenu;
 import java.awt.SystemTray;
 import java.awt.TrayIcon;
@@ -28,6 +29,7 @@ public class SystemTrayMenu extends PopupMenu {
   private static final Logger LOGGER = Logger.getLogger(SystemTray.class);
   private static final long serialVersionUID = 3911652810490182171L;
   private final ChatFrame myChatFrame;
+  private Menu myPluginMenu;
 
   private SystemTrayMenu(ChatFrame aChatFrame){
     myChatFrame = aChatFrame;
@@ -44,6 +46,13 @@ public class SystemTrayMenu extends PopupMenu {
     add(new StatusMenu(myChatFrame.getMediator()));
 //    add(new SearchPeersMenuItem(myChatFrame.getMediator()));
     add( new ExitMenuItem(myChatFrame.getMediator()) );
+  }
+  
+  public Menu getPluginMenu(){
+    if(myPluginMenu == null){
+      myPluginMenu = new Menu("Plugins");
+    }
+    return myPluginMenu;
   }
 
   public static SystemTrayMenu buildSystemTray(ChatFrame aChatFrame, P2PFacade aFacade) throws IOException, AWTException, HeadlessException, P2PFacadeException{
