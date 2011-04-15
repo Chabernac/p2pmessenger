@@ -104,6 +104,6 @@ public class ProtocolServlet extends HttpServlet {
   }
   
   public Map<String, String> getPeerIpMap(){
-    return (Map<String, String>)getServletContext().getAttribute( "SessionData" );
+    return (Map<String, String>)getServletContext().getAttribute( "PeerIpMap" );
   }
 }

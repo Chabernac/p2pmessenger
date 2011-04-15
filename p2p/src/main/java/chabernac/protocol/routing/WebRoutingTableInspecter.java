@@ -42,7 +42,7 @@ public class WebRoutingTableInspecter implements iRoutingTableInspector {
     
     RoutingTable theTable = new RoutingTable( aRoutingTable.getLocalPeerId() );
     
-    for(RoutingTableEntry theEntry : theTable.getEntries()){
+    for(RoutingTableEntry theEntry : aRoutingTable.getEntries()){
       if(theEntry.getPeer() instanceof SocketPeer){
         SocketPeer thePeer = (SocketPeer)theEntry.getPeer();
         String theExposedIp = myPeerExternalIpLink.get( thePeer.getPeerId() );
