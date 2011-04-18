@@ -5,7 +5,7 @@
 package chabernac.protocol;
 
 public interface IProtocol {
-  public abstract String handleCommand(long aSessionId, String anInput);
+  public abstract String handleCommand(String aSessionId, String anInput);
   public String getId();
   public void setMasterProtocol(IProtocol aProtocol);
   public void stop();

@@ -40,7 +40,7 @@ public class ApplicationProtocolTest extends AbstractProtocolTest {
     private List< String > myInput = new ArrayList< String >();
 
     @Override
-    public String handleCommand( long aSessionId, String anInput ) {
+    public String handleCommand( String aSessionId, String anInput ) {
       myInput.add( anInput );
       return "OK";
     }

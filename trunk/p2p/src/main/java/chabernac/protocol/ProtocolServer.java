@@ -15,6 +15,7 @@ import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -202,8 +203,6 @@ public class ProtocolServer implements Runnable{
     }
 
     public void doRun(){
-      long theSessionId = myRandom.nextLong();
-
       BufferedReader theReader = null;
       PrintWriter theWriter = null;
       try{
@@ -213,7 +212,7 @@ public class ProtocolServer implements Runnable{
         String theLine = null;
         while( (theLine = theReader.readLine()) != null){
 //          LOGGER.debug("Line received: '" + theLine + "'");
-          String  theResult = myProtocol.handleCommand( theSessionId, theLine );
+          String  theResult = myProtocol.handleCommand( UUID.randomUUID().toString(), theLine );
 //          LOGGER.debug("Sending result: '" + theResult + "'");
           theWriter.println( theResult );
           theWriter.flush();

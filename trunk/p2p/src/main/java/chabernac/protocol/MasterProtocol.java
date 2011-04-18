@@ -18,7 +18,7 @@ public class MasterProtocol extends Protocol {
   }
 
   @Override
-  public String handleCommand( long aSessionId, String anInput ) {
+  public String handleCommand( String aSessionId, String anInput ) {
     String theCommand = new String(anInput);
     if(Command.PROTOCOLS.name().equalsIgnoreCase( theCommand )){
 //      return getProtocolsString();

@@ -78,7 +78,7 @@ public class VersionProtocol extends Protocol {
   }
 
   @Override
-  public String handleCommand( long aSessionId, String anInput ) {
+  public String handleCommand( String aSessionId, String anInput ) {
     if(anInput.equalsIgnoreCase( Command.VERSION.name() )){
       return Response.OK.name() + myVersion.toString();
     }

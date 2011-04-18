@@ -43,7 +43,7 @@ public class ProtocolContainer implements IProtocol {
   }
 
   @Override
-  public String handleCommand( long aSessionId, String anInput ) {
+  public String handleCommand( String aSessionId, String anInput ) {
     ProtocolMessageEntry theEntry = new ProtocolMessageEntry(anInput, Status.INPROGRESS);
     if(isKeepHistory) myMessageHistory.add( theEntry );
     notifyListeners();

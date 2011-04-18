@@ -55,7 +55,7 @@ public class ProcessProtocol extends Protocol{
   }
 
   @Override
-  public String handleCommand( long aSessionId, String anInput ) {
+  public String handleCommand( String aSessionId, String anInput ) {
     try{
       if(anInput.startsWith( Input.FULL_STACK_TRACE.name() )){
         String theJStackCMD = "jstack -l";

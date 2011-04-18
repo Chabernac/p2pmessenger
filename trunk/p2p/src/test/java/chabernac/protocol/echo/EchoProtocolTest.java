@@ -12,13 +12,13 @@ import chabernac.tools.PropertyMap;
 public class EchoProtocolTest extends TestCase {
     public void testEchoProtocol(){
       EchoProtocol theProtocol = new EchoProtocol();
-      assertEquals( "test", theProtocol.handleCommand( 0, "test" ));
+      assertEquals( "test", theProtocol.handleCommand( "0", "test" ));
     }
     
     public void testEchoProtocolInContainer(){
       ProtocolContainer theContainer = new ProtocolContainer(new ProtocolFactory(new PropertyMap()));
       
-      assertEquals( "test", theContainer.handleCommand( 0, "ECOtest" ));
+      assertEquals( "test", theContainer.handleCommand( "0", "ECOtest" ));
     }
     
 }

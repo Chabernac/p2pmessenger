@@ -157,7 +157,7 @@ public class UserInfoProtocol extends Protocol {
   }
 
   @Override
-  public String handleCommand( long aSessionId, String anInput ) {
+  public String handleCommand( String aSessionId, String anInput ) {
     if(Command.GET.name().equalsIgnoreCase( anInput )){
       try {
         return myConverter.toString( getPersonalInfo() );

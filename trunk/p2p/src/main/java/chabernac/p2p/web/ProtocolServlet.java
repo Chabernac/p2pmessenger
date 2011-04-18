@@ -82,12 +82,16 @@ public class ProtocolServlet extends HttpServlet {
 
     getPeerIpMap().put(thePeerId, aRequest.getRemoteAddr());
     getSessionData().putProperty(theSession, "requestor.ip", aRequest.getRemoteAddr());
+    
+    LOGGER.debug( "Received message from peer '" + thePeerId + "' in session '" + theSession + "': " + theInput + "'" );
+    //TODO remove when logging correctly enabled on server
+    System.out.println("Received message from peer '" + thePeerId + "' in session '" + theSession + "': " + theInput + "'" );
 
     try {
       if(theInput == null || "".equals( theInput ) || theSession == null || "".equals( theSession )){
         aResponse.getWriter().println( ((RoutingProtocol)getProtocolContainer().getProtocol( RoutingProtocol.ID )).getLocalPeerId() );
       } else {
-        String theResult = getProtocolContainer().handleCommand( Long.parseLong( theSession ), theInput );
+        String theResult = getProtocolContainer().handleCommand(theSession , theInput );
         aResponse.getWriter().println(theResult);
       }
     } catch ( Exception e ) {

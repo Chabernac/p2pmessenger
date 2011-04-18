@@ -22,7 +22,7 @@ public class PingProtocol extends Protocol {
   }
 
   @Override
-  public String handleCommand( long aSessionId, String anInput ) {
+  public String handleCommand( String aSessionId, String anInput ) {
     String theCommand = new String(anInput);
     if(Command.PING.name().equalsIgnoreCase( theCommand )){
       return Response.PONG.name();

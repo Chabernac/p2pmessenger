@@ -29,7 +29,7 @@ public class ApplicationProtocol extends Protocol {
   }
 
   @Override
-  public String handleCommand( long aSessionId, String anInput ) {
+  public String handleCommand( String aSessionId, String anInput ) {
     if(myDelegate != null){
       return myDelegate.handleCommand( aSessionId, anInput );
     }

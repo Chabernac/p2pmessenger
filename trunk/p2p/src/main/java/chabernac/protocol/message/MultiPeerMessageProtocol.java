@@ -44,7 +44,7 @@ public class MultiPeerMessageProtocol extends Protocol{
   }
 
   @Override
-  public String handleCommand( long aSessionId, String anInput ) {
+  public String handleCommand( String aSessionId, String anInput ) {
     try {
       MultiPeerMessage theMessage = myObjectStringConverter.getObject( anInput );
       notifyListeners(theMessage);

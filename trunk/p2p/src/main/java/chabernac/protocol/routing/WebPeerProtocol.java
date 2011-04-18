@@ -3,6 +3,7 @@ package chabernac.protocol.routing;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -72,7 +73,7 @@ public class WebPeerProtocol extends Protocol{
   }
 
   @Override
-  public String handleCommand(long aSessionId, String anInput) {
+  public String handleCommand(String aSessionId, String anInput) {
     if(anInput.startsWith(Input.EVENT.name())){
       String theProtocolPart = anInput.substring(Input.EVENT.name().length() + 1);
       return getProtocolContainer().handleCommand(aSessionId, theProtocolPart);
@@ -129,7 +130,7 @@ public class WebPeerProtocol extends Protocol{
         while(!stop){
           CometEvent theEvent = myWebPeer.waitForEvent(getRoutingTable().getLocalPeerId());
           if(!theEvent.getInput().equals( CometServlet.Responses.NO_DATA.name() )){
-            String theResult = handleCommand(-1, Input.EVENT.name() + " " + theEvent.getInput());
+            String theResult = handleCommand(UUID.randomUUID().toString(), Input.EVENT.name() + " " + theEvent.getInput());
             theEvent.setOutput( theResult );
           } else {
             LOGGER.debug("Comet servlet timed out, waiting for new request...");
