@@ -216,7 +216,7 @@ public class ApplicationLauncher {
 
   private static class ActivationProtocolDelegate implements iProtocolDelegate {
     @Override
-    public String handleCommand( long aSessionId, String anInput ) {
+    public String handleCommand( String aSessionId, String anInput ) {
       if("activate".equalsIgnoreCase(  anInput )){
         try {
           showChatFrame();
