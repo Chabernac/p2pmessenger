@@ -30,7 +30,8 @@ public class PeerSender implements iPeerSender {
   private List<iSocketPeerSenderListener> myPeerSenderListeners = new ArrayList<iSocketPeerSenderListener>();
   private long myBytesSend = 0;
   private long myBytesReceived = 0;
-  private long myInitTime = System.currentTimeMillis(); 
+  private long myInitTime = System.currentTimeMillis();
+  private String myPeerId;
   
   @Override
   public String send(String aMessage, SocketPeer aPeer, int aTimeoutInSeconds) throws IOException {
@@ -190,7 +191,7 @@ public class PeerSender implements iPeerSender {
   }
 
   @Override
-  public String send(String aMessage, AbstractPeer aSource, WebPeer aPeer, int aTimeout)throws IOException {
+  public String send(String aMessage, WebPeer aPeer, int aTimeout)throws IOException {
     PeerMessage theMessage = new PeerMessage(aMessage, aPeer);
     if(isKeepHistory) {
       myHistory.add(theMessage);
@@ -211,7 +212,7 @@ public class PeerSender implements iPeerSender {
       theWriter.write(UUID.randomUUID().toString());
       theWriter.write("&peerid=");
       //TODO not correct we need to send along from who the message is coming not peer id of the destination
-      theWriter.write( aPeer.getPeerId() );
+      theWriter.write( myPeerId );
       theWriter.write("&input=");
       theWriter.write(URLEncoder.encode(aMessage, "UTF-8"));
       theWriter.flush();
@@ -293,5 +294,13 @@ public class PeerSender implements iPeerSender {
   public String send( String aMessage, IndirectReachablePeer aIndirectReachablePeer, int aTimeoutInSeconds ) {
     // TODO Auto-generated method stub
     return null;
+  }
+
+  public String getPeerId() {
+    return myPeerId;
+  }
+
+  public void setPeerId(String anPeerId) {
+    myPeerId = anPeerId;
   }
 }

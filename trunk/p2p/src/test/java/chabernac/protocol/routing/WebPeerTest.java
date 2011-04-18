@@ -7,6 +7,7 @@ package chabernac.protocol.routing;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -116,6 +117,12 @@ public class WebPeerTest extends TestCase {
     public String send(String aMessage,
         IndirectReachablePeer aIndirectReachablePeer, int aTimeoutInSeconds) {
       return null;
+    }
+
+    @Override
+    public void setPeerId(String aPeerId) {
+      // TODO Auto-generated method stub
+      
     }
     
   }

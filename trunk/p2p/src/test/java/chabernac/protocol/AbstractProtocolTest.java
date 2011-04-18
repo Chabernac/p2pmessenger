@@ -4,6 +4,8 @@
  */
 package chabernac.protocol;
 
+import java.util.UUID;
+
 import javax.activation.DataSource;
 
 import junit.framework.TestCase;
