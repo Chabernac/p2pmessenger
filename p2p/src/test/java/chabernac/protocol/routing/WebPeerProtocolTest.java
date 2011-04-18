@@ -28,7 +28,7 @@ public class WebPeerProtocolTest extends AbstractProtocolTest {
     BasicConfigurator.configure();
   }
 
-  public void testWebPeerProtocol() throws Exception{
+  public void testWebPeerProtocol() throws Exception {
     ProtocolContainer theProtocol1 = getProtocolContainer( -1, false, "1" );
     ProtocolServer theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT, 5);
     RoutingProtocol theRoutingProtocol1 = (RoutingProtocol)theProtocol1.getProtocol( RoutingProtocol.ID );
