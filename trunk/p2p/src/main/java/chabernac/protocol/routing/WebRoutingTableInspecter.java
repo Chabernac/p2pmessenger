@@ -36,19 +36,19 @@ public class WebRoutingTableInspecter implements iRoutingTableInspector {
     
     String theIPRequestor = mySessionData.getProperty( aSessionId, "requestor.ip" );
     
+    if(theIPRequestor == null || "".equals( theIPRequestor )) return aRoutingTable;
+    
     //now lets create a new routing table and replace all the peers with dummy peers which have not the same ip
     //the ip of the requestor is the exposed ip.  All requests coming from the same domain will have the same external ip
-    
-    
     RoutingTable theTable = new RoutingTable( aRoutingTable.getLocalPeerId() );
     
     for(RoutingTableEntry theEntry : aRoutingTable.getEntries()){
       if(theEntry.getPeer() instanceof SocketPeer){
         SocketPeer thePeer = (SocketPeer)theEntry.getPeer();
-        String theExposedIp = myPeerExternalIpLink.get( thePeer.getPeerId() );
         
-        if(theExposedIp.equals( theIPRequestor )){
-          theTable.addRoutingTableEntry(  theEntry );
+        String theExposedIp = myPeerExternalIpLink.get( thePeer.getPeerId() );
+        if(theExposedIp == null || "".equals(theExposedIp) || theExposedIp.equals( theIPRequestor )){
+          theTable.addRoutingTableEntry( theEntry );
         } else {
           IndirectReachablePeer theNewPeer = new IndirectReachablePeer(thePeer.getPeerId());
           RoutingTableEntry theNewEntry = new RoutingTableEntry( theNewPeer, theEntry.getHopDistance(), theEntry.getGateway(), theEntry.getLastOnlineTime());
