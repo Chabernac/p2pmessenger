@@ -12,9 +12,10 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import junit.framework.TestCase;
+
 import org.apache.log4j.BasicConfigurator;
 
-import junit.framework.TestCase;
 import chabernac.io.iObjectPersister;
 import chabernac.tools.SimpleNetworkInterface;
 
@@ -26,10 +27,11 @@ public class RoutingTablePersisterTest extends TestCase {
   }
   
   
-  public void testPersistRoutingTable() throws IOException{
+  public void testPersistRoutingTable() throws IOException, UnknownPeerException{
     RoutingTable theTable = new RoutingTable("1");
     
     SocketPeer thePeer1 = new SocketPeer("1");
+    thePeer1.setTemporaryPeer( false );
     List<SimpleNetworkInterface> theList = new ArrayList< SimpleNetworkInterface >();
     theList.add( new SimpleNetworkInterface("x20d1148") );
     theList.add( new SimpleNetworkInterface("localhost") );
@@ -37,6 +39,7 @@ public class RoutingTablePersisterTest extends TestCase {
     thePeer1.setHosts( theList );
     
     SocketPeer thePeer2 = new SocketPeer("2");
+    thePeer2.setTemporaryPeer( false );
     List<SimpleNetworkInterface> theList2 = new ArrayList< SimpleNetworkInterface >();
     theList2.add( new SimpleNetworkInterface("x20d1149") );
     theList2.add( new SimpleNetworkInterface("localhost") );
@@ -44,6 +47,7 @@ public class RoutingTablePersisterTest extends TestCase {
     thePeer2.setHosts( theList2 );
     
     SocketPeer thePeer3 = new SocketPeer("3");
+    thePeer3.setTemporaryPeer( true );
     List<SimpleNetworkInterface> theList3 = new ArrayList< SimpleNetworkInterface >();
     theList3.add( new SimpleNetworkInterface("x20d1150") );
     theList3.add( new SimpleNetworkInterface("localhost") );
@@ -51,6 +55,7 @@ public class RoutingTablePersisterTest extends TestCase {
     thePeer3.setHosts( theList3 );
     
     WebPeer thePeer4 = new WebPeer("4", new URL("http://localhost:8080/"));
+    thePeer4.setTemporaryPeer( false );
     
     theTable.addRoutingTableEntry( new RoutingTableEntry(thePeer1, 0, thePeer1, System.currentTimeMillis()) );
     theTable.addRoutingTableEntry( new RoutingTableEntry(thePeer2, 1, thePeer2, System.currentTimeMillis()) );
@@ -68,7 +73,7 @@ public class RoutingTablePersisterTest extends TestCase {
     FileInputStream theInputStream = new FileInputStream(theFile);
     RoutingTable theTable2 = thePersister.loadObject( theInputStream );
     
-    assertEquals( theTable.getEntries().size(), theTable2.getEntries().size() );
+    assertEquals( 3, theTable2.getEntries().size() );
     assertEquals( theTable.getLocalPeerId(), theTable2.getLocalPeerId() );
                  
     List<RoutingTableEntry> theEntries1 = theTable.getEntries();
@@ -76,8 +81,13 @@ public class RoutingTablePersisterTest extends TestCase {
     
     for(int i=0;i<theEntries1.size();i++){
       RoutingTableEntry theEntry = theEntries1.get( i );
-      RoutingTableEntry theEntry2 = theEntries2.get( i );
-      assertEquals( theEntry, theEntry2 );
+      //only if the peer is not temporary it should be present in the new table
+      if(theEntry.getPeer().isTemporaryPeer()){
+        assertFalse( theTable2.containsEntryForPeer( theEntry.getPeer().getPeerId() ) );
+      } else {
+        RoutingTableEntry theEntry2 = theTable2.getEntryForPeer( theEntry.getPeer().getPeerId() );
+        assertEquals( theEntry, theEntry2 );
+      }
     }
     
     theInputStream.close();
