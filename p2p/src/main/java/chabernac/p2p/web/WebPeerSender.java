@@ -50,5 +50,11 @@ public class WebPeerSender implements iPeerSender {
     return null;
   }
 
+  @Override
+  public void setPeerId(String aPeerId) {
+    // TODO Auto-generated method stub
+    
+  }
+
 
 }

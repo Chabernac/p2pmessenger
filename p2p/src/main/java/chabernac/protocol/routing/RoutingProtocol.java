@@ -37,6 +37,7 @@ import chabernac.io.Base64ObjectStringConverter;
 import chabernac.io.ClassPathResource;
 import chabernac.io.iObjectPersister;
 import chabernac.io.iObjectStringConverter;
+import chabernac.p2p.settings.P2PSettings;
 import chabernac.protocol.AlreadyRunningException;
 import chabernac.protocol.DynamicSizeExecutor;
 import chabernac.protocol.Protocol;
@@ -214,6 +215,7 @@ public class RoutingProtocol extends Protocol {
       //this is because the peer id will not be stored if persist is set to false and thus the peer id will not be reused in the future
       //by doing this we will avoid all peers to keep track of peer id's which will never occure again
       theLocalPeer.setTemporaryPeer( !isPersistRoutingTable );
+      myPeerSender.setPeerId(theLocalPeer.getPeerId());
 
       RoutingTableEntry theLocalRoutingTableEntry = new RoutingTableEntry(theLocalPeer, 0, theLocalPeer, System.currentTimeMillis());
       myRoutingTable.addRoutingTableEntry( theLocalRoutingTableEntry );
