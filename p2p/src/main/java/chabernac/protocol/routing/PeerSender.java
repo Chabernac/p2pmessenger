@@ -12,6 +12,7 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -206,7 +207,12 @@ public class PeerSender implements iPeerSender {
       theConnection.setDoOutput(true);
       if(aTimeout > 0) theService.schedule( new StreamCloser(theConnection.getOutputStream()), aTimeout, TimeUnit.SECONDS );
       theWriter = new OutputStreamWriter(theConnection.getOutputStream());
-      theWriter.write("session=-1&input=" + URLEncoder.encode(aMessage, "UTF-8"));
+      theWriter.write("session=");
+      theWriter.write(UUID.randomUUID().toString());
+      theWriter.write("&peerid=");
+      theWriter.write( aPeer.getPeerId() );
+      theWriter.write("&input=");
+      theWriter.write(URLEncoder.encode(aMessage, "UTF-8"));
       theWriter.flush();
 
       changeState(theMessage, State.SEND);
