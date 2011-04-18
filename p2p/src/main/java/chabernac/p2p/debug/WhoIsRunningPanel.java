@@ -1,4 +1,4 @@
-package chabernac.protocol.routing;
+package chabernac.p2p.debug;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -12,6 +12,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.TableCellRenderer;
+
+import chabernac.protocol.routing.RoutingProtocol;
 
 public class WhoIsRunningPanel extends JPanel {
   private final int myScanIntervalTimeoutInSeconds;

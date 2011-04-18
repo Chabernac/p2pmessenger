@@ -1,4 +1,4 @@
-package chabernac.protocol.routing;
+package chabernac.p2p.debug;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -8,6 +8,10 @@ import java.util.List;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
+
+import chabernac.protocol.routing.PeerMessage;
+import chabernac.protocol.routing.PeerSender;
+import chabernac.protocol.routing.iSocketPeerSenderListener;
 
 public class PeerMessageTableModel implements TableModel, iSocketPeerSenderListener {
   private final PeerSender mySocketPeerSender;

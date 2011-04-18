@@ -14,6 +14,7 @@ public abstract class AbstractPeer implements Serializable{
   private String myChannel;
   protected transient iPeerSender myPeerSender = null;
   private Set<String> mySupportedProtocols = new HashSet< String >();
+  private boolean isTemporaryPeer = true;
   
   public AbstractPeer(String anPeerId) {
     super();
@@ -91,5 +92,13 @@ public abstract class AbstractPeer implements Serializable{
   
   public Set<String> getSupportedProtocols(){
     return Collections.unmodifiableSet( mySupportedProtocols );
+  }
+
+  public boolean isTemporaryPeer() {
+    return isTemporaryPeer;
+  }
+
+  public void setTemporaryPeer( boolean aTemporaryPeer ) {
+    isTemporaryPeer = aTemporaryPeer;
   }
 }

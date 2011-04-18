@@ -13,6 +13,8 @@ public class SessionData {
   private Map<String, Properties> mySessionData = Collections.synchronizedMap( new HashMap<String, Properties>());
   
   public void putProperty(String aSession, String aKey, String aValue){
+    if(aSession == null || aKey == null || aValue == null) return;
+    
     if(!mySessionData.containsKey( aSession )){
       mySessionData.put( aSession, new Properties() );
     }

@@ -2,7 +2,7 @@
  * Copyright (c) 2010 Axa Holding Belgium, SA. All rights reserved.
  * This software is the confidential and proprietary information of the AXA Group.
  */
-package chabernac.protocol.routing;
+package chabernac.p2p.debug;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -12,6 +12,11 @@ import java.util.List;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
+
+import chabernac.protocol.routing.IRoutingTableListener;
+import chabernac.protocol.routing.RoutingTable;
+import chabernac.protocol.routing.RoutingTableEntry;
+import chabernac.protocol.routing.RoutingTableEntryHistory;
 
 public class RoutingTableHistoryModel implements TableModel {
   private final RoutingTable myRoutingTable;

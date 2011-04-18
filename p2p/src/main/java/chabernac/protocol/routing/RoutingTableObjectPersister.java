@@ -25,9 +25,17 @@ public class RoutingTableObjectPersister implements iObjectPersister< RoutingTab
   }
 
   @Override
-  public void persistObject( RoutingTable anObject, OutputStream anOutputStream ) throws IOException {
+  public void persistObject( RoutingTable aRoutingTable, OutputStream anOutputStream ) throws IOException {
+    RoutingTable theTableToPersist = new RoutingTable( aRoutingTable.getLocalPeerId() );
+    
+    for(RoutingTableEntry theEntry : aRoutingTable.getEntries()){
+      if(!theEntry.getPeer().isTemporaryPeer()){
+        theTableToPersist.addRoutingTableEntry(theEntry);
+      }
+    }
+    
     ObjectOutputStream theObjectOutputStream = new ObjectOutputStream(anOutputStream);
-    theObjectOutputStream.writeObject( anObject );
+    theObjectOutputStream.writeObject( theTableToPersist );
   }
   
 

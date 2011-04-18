@@ -55,13 +55,13 @@ public class RoutingTable implements Iterable< RoutingTableEntry >, Serializable
   }
 
   /**
-   * this method is for test purposes only
+   * user this method for test purposes only
    * with this method you can insert all kind of entries
    * no check is done
    * 
    * @param anEntry
    */
-  synchronized void addEntry(RoutingTableEntry anEntry){
+  public synchronized void addEntry(RoutingTableEntry anEntry){
     myRoutingTable.put(anEntry.getPeer().getPeerId(), anEntry);
   }
   

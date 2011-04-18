@@ -2,7 +2,7 @@
  * Copyright (c) 2010 Axa Holding Belgium, SA. All rights reserved.
  * This software is the confidential and proprietary information of the AXA Group.
  */
-package chabernac.protocol.routing;
+package chabernac.p2p.debug;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -23,6 +23,10 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ToolTipManager;
 import javax.swing.table.TableCellRenderer;
+
+import chabernac.protocol.routing.RoutingTable;
+import chabernac.protocol.routing.RoutingTableEntry;
+import chabernac.protocol.routing.RoutingTableEntryHistory;
 
 public class RoutingTableEntryHistoryDialog extends JDialog {
 
