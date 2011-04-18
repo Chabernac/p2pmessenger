@@ -92,6 +92,9 @@ public class ProtocolServlet extends HttpServlet {
       }
     } catch ( Exception e ) {
       LOGGER.error( "could not send response message ", e );
+    } finally {
+      //remove the session data
+      getSessionData().clearSessionData( theSession );
     }
   }
 
