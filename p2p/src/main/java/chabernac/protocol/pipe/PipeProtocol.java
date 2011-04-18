@@ -67,7 +67,7 @@ public class PipeProtocol extends Protocol {
   }
 
   @Override
-  public String handleCommand( long aSessionId, String anInput ) {
+  public String handleCommand( String aSessionId, String anInput ) {
     if( anInput.startsWith( Command.OPEN_SOCKET.name() ) ){
       String[] theAttributes = anInput.substring( Command.OPEN_SOCKET.name().length() + 1 ).trim().split( ";" );
 

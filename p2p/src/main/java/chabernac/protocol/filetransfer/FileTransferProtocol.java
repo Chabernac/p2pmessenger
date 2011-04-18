@@ -53,7 +53,7 @@ public class FileTransferProtocol extends Protocol {
   }
 
   @Override
-  public String handleCommand(long aSessionId, String anInput) {
+  public String handleCommand(String aSessionId, String anInput) {
     if(anInput.startsWith( Command.FILE.name() )){
       //just get the pipe protocol to make sure it is there and to add the listener to it
       try{

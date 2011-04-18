@@ -12,6 +12,7 @@ import java.util.concurrent.Executors;
 
 import junit.framework.TestCase;
 
+import org.apache.log4j.BasicConfigurator;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.ServletHolder;
@@ -23,6 +24,10 @@ import chabernac.protocol.echo.EchoProtocol;
 import chabernac.protocol.userinfo.UserInfoProtocol;
 
 public class WebPeerTest extends TestCase {
+  static{
+    BasicConfigurator.configure();
+  }
+  
   public void testWebPeer() throws Exception{
     Server theServer = new Server(9090);
     ExecutorService theService = Executors.newCachedThreadPool();

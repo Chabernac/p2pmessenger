@@ -73,7 +73,7 @@ public class InfoExchangeProtocol<T extends Observable & Serializable> extends P
   }
 
   @Override
-  public String handleCommand( long aSessionId, String anInput ) {
+  public String handleCommand( String aSessionId, String anInput ) {
     try{
       if(anInput.startsWith( Command.PUT.name() )){
         String theParts[] = anInput.substring( Command.PUT.name().length() ).trim().split( " " );

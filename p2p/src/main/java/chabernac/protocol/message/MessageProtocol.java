@@ -75,7 +75,7 @@ public class MessageProtocol extends Protocol {
     }
 
     @Override
-    public String handleCommand( long aSessionId, String anInput ) {
+    public String handleCommand( String aSessionId, String anInput ) {
       Message theMessage;
       try {
         theMessage = myMessageConverter.getObject( anInput );
@@ -86,7 +86,7 @@ public class MessageProtocol extends Protocol {
       return  handleMessage( aSessionId, theMessage );
     }
     
-    public String handleMessage(long aSessionId, Message aMessage){
+    public String handleMessage(String aSessionId, Message aMessage){
       MessageAndResponse theHistoryItem = new MessageAndResponse( aMessage );
       if(isKeepHistory){
         myHistory.add(theHistoryItem);
@@ -103,7 +103,7 @@ public class MessageProtocol extends Protocol {
       return theResult;
     }
 
-    public String handleMessageInternal(long aSessionId, Message aMessage){
+    public String handleMessageInternal(String aSessionId, Message aMessage){
       if(myProcessingMessages.contains(aMessage.getMessageId())){
         return Response.MESSAGE_LOOP_DETECTED.name();
       } 
@@ -156,7 +156,7 @@ public class MessageProtocol extends Protocol {
       }
     }
 
-    private String handleMessageForUs(long aSessionId, Message aMessage) throws EncryptionException{
+    private String handleMessageForUs(String aSessionId, Message aMessage) throws EncryptionException{
       if(myProcessedMessages.contains(aMessage.getMessageId())){
         return Response.MESSAGE_ALREADY_RECEIVED.name();
       }
@@ -250,7 +250,7 @@ public class MessageProtocol extends Protocol {
 
     public String sendMessage(Message aMessage) throws MessageException{
         inspectMessage(aMessage);
-        String theResult = handleMessage( 0, aMessage );
+        String theResult = handleMessage( UUID.randomUUID().toString(), aMessage );
         return inspectResult(theResult);
     }
 

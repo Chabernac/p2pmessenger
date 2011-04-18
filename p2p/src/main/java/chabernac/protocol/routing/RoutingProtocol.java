@@ -298,7 +298,7 @@ public class RoutingProtocol extends Protocol {
   }
 
   @Override
-  public String handleCommand( long aSessionId, String anInput ) {
+  public String handleCommand( String aSessionId, String anInput ) {
     if(!isInitialized){
       return Response.NOT_INITIALIZED.name();
     }
@@ -361,9 +361,9 @@ public class RoutingProtocol extends Protocol {
     return Response.UNKNOWN_COMMAND.name();
   }
   
-  private RoutingTable inspectRoutingTable(long aSessionId, RoutingTable aRoutingTable){
+  private RoutingTable inspectRoutingTable(String aSessionId, RoutingTable aRoutingTable){
     if(myRoutingTableInspector == null) return aRoutingTable;
-    else return myRoutingTableInspector.inspectRoutingTable(Long.toString(aSessionId), aRoutingTable);
+    else return myRoutingTableInspector.inspectRoutingTable(aSessionId, aRoutingTable);
   }
 
 //  private void verifyNeighbours(){

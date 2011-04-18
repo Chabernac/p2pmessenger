@@ -19,7 +19,7 @@ public class EchoProtocol extends Protocol {
   }
 
   @Override
-  public String handleCommand( long aSessionId, String anInput ) {
+  public String handleCommand( String aSessionId, String anInput ) {
     return anInput;
   }
 

@@ -22,12 +22,12 @@ public class MasterProtocolTest extends TestCase {
   public void testMasterProtocol() throws ProtocolException{
     ProtocolContainer theMasterProtocol = new ProtocolContainer(new ProtocolFactory(new PropertyMap()));
     
-    assertEquals( PingProtocol.Response.PONG.name(), new String(theMasterProtocol.handleCommand( 0, PingProtocol.ID + "ping") ));
-    assertEquals( PingProtocol.Response.UNKNOWN_COMMAND.name(), new String(theMasterProtocol.handleCommand( 0, PingProtocol.ID + "somtehing") ));
+    assertEquals( PingProtocol.Response.PONG.name(), new String(theMasterProtocol.handleCommand( "0", PingProtocol.ID + "ping") ));
+    assertEquals( PingProtocol.Response.UNKNOWN_COMMAND.name(), new String(theMasterProtocol.handleCommand( "0", PingProtocol.ID + "somtehing") ));
     
 //    assertEquals( "Master protocol" , theMasterProtocol.getDescription());
    
-    String theResult = new String(theMasterProtocol.handleCommand( 0, ListProtocol.ID + "protocols" ));
+    String theResult = new String(theMasterProtocol.handleCommand( "0", ListProtocol.ID + "protocols" ));
     assertEquals( "LTP;PPG;MAS;", theResult );
   }
 }

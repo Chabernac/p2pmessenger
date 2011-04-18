@@ -67,7 +67,7 @@ public class EncryptionProtocol extends Protocol {
   }
 
   @Override
-  public String handleCommand( long aSessionId, String anInput ) {
+  public String handleCommand( String aSessionId, String anInput ) {
     if(anInput.startsWith( Command.GENERATE_SECRET_KEY.name() )){
       try{
         String[] theParams = anInput.split( " " );
