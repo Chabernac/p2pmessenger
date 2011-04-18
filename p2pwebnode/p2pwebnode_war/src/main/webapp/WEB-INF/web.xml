@@ -4,6 +4,7 @@
 
 <web-app>
 	<display-name>Archetype Created Web Application</display-name>
+	
 	<servlet>
 		<servlet-name>CometServlet</servlet-name>
 		<display-name>CometServlet</display-name>
@@ -11,22 +12,24 @@
 		<servlet-class>chabernac.comet.CometServlet</servlet-class>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
+	
 	<servlet>
 		<servlet-name>ProtocolServlet</servlet-name>
 		<display-name>ProtocolServlet</display-name>
 		<description></description>
 		<servlet-class>chabernac.p2p.web.ProtocolServlet</servlet-class>
-		<load-on-startup>2</load-on-startup>
 		<init-param>
 			<param-name>serverurl</param-name>
-			<param-value>http://x22p0212:8080/p2p/</param-value>
+			<param-value>http://x22p0212:8080/</param-value>
 		</init-param>
-
+		<load-on-startup>2</load-on-startup>
 	</servlet>
+	
 	<servlet-mapping>
 		<servlet-name>CometServlet</servlet-name>
 		<url-pattern>/comet</url-pattern>
 	</servlet-mapping>
+	
 	<servlet-mapping>
 		<servlet-name>ProtocolServlet</servlet-name>
 		<url-pattern>/protocol</url-pattern>
