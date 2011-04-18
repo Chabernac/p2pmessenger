@@ -210,6 +210,10 @@ public class RoutingProtocol extends Protocol {
       }
 
       theLocalPeer.setChannel(myChannel);
+      //if persistance is set to false then this peer is a temporary peer.
+      //this is because the peer id will not be stored if persist is set to false and thus the peer id will not be reused in the future
+      //by doing this we will avoid all peers to keep track of peer id's which will never occure again
+      theLocalPeer.setTemporaryPeer( !isPersistRoutingTable );
 
       RoutingTableEntry theLocalRoutingTableEntry = new RoutingTableEntry(theLocalPeer, 0, theLocalPeer, System.currentTimeMillis());
       myRoutingTable.addRoutingTableEntry( theLocalRoutingTableEntry );

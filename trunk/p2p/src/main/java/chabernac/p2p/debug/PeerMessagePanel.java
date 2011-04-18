@@ -1,4 +1,4 @@
-package chabernac.protocol.routing;
+package chabernac.p2p.debug;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -18,6 +18,10 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.TableCellRenderer;
 
+import chabernac.protocol.routing.PeerMessage;
+import chabernac.protocol.routing.PeerSender;
+import chabernac.protocol.routing.iPeerSender;
+import chabernac.protocol.routing.iSocketPeerSenderListener;
 import chabernac.protocol.routing.PeerMessage.State;
 
 public class PeerMessagePanel extends JPanel {

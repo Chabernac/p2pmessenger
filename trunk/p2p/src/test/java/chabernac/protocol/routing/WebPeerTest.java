@@ -14,9 +14,11 @@ import junit.framework.TestCase;
 
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.servlet.Context;
+import org.mortbay.jetty.servlet.ServletHolder;
 
 import chabernac.comet.CometEvent;
 import chabernac.comet.EndPoint;
+import chabernac.p2p.web.ProtocolServlet;
 import chabernac.protocol.echo.EchoProtocol;
 import chabernac.protocol.userinfo.UserInfoProtocol;
 
@@ -28,7 +30,13 @@ public class WebPeerTest extends TestCase {
     try{
       Context root = new Context(theServer,"/p2p",Context.SESSIONS);
       root.addServlet(Class.forName("chabernac.comet.CometServlet"), "/comet");
-      root.addServlet(Class.forName("chabernac.p2p.web.ProtocolServlet"), "/protocol");
+//      root.addServlet(Class.forName("chabernac.p2p.web.ProtocolServlet"), "/protocol");
+      
+      ProtocolServlet theProtocolServlet = new ProtocolServlet();
+      ServletHolder theProtocolHolder = new ServletHolder(theProtocolServlet);
+      theProtocolHolder.setInitOrder(2);
+      root.addServlet(theProtocolHolder, "/protocol");
+      theProtocolHolder.setInitParameter( "serverurl", "http://localhost:9090/p2p" );
       
       theServer.start();
 

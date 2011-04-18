@@ -1,4 +1,4 @@
-package chabernac.protocol.routing;
+package chabernac.p2p.debug;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -9,6 +9,9 @@ import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 
 import chabernac.protocol.DynamicSizeExecutor;
+import chabernac.protocol.routing.RoutingProtocol;
+import chabernac.protocol.routing.iWhoIsRunningListener;
+import chabernac.protocol.routing.RoutingProtocol.Command;
 
 public class WhoIsRunning implements Runnable{
   private final iWhoIsRunningListener myListener;

@@ -2,7 +2,7 @@
  * Copyright (c) 2010 Axa Holding Belgium, SA. All rights reserved.
  * This software is the confidential and proprietary information of the AXA Group.
  */
-package chabernac.protocol.routing;
+package chabernac.p2p.debug;
 
 import java.awt.BorderLayout;
 import java.awt.event.WindowAdapter;
@@ -35,6 +35,11 @@ import chabernac.protocol.message.MessagePanel;
 import chabernac.protocol.message.MessageProtocol;
 import chabernac.protocol.message.MultiPeerMessageProtocol;
 import chabernac.protocol.pominfoexchange.POMInfo;
+import chabernac.protocol.routing.PeerSender;
+import chabernac.protocol.routing.RoutingProtocol;
+import chabernac.protocol.routing.RoutingTable;
+import chabernac.protocol.routing.RoutingTableEntry;
+import chabernac.protocol.routing.WebPeer;
 import chabernac.protocol.userinfo.UserInfoPanel;
 import chabernac.protocol.userinfo.UserInfoProtocol;
 import chabernac.tools.PropertyMap;

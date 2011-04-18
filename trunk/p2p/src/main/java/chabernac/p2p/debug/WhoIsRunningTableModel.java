@@ -1,4 +1,4 @@
-package chabernac.protocol.routing;
+package chabernac.p2p.debug;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -10,7 +10,9 @@ import javax.swing.table.TableModel;
 
 import chabernac.io.Base64ObjectStringConverter;
 import chabernac.io.iObjectStringConverter;
-import chabernac.protocol.routing.WhoIsRunningTableModel.Entry.State;
+import chabernac.p2p.debug.WhoIsRunningTableModel.Entry.State;
+import chabernac.protocol.routing.AbstractPeer;
+import chabernac.protocol.routing.iWhoIsRunningListener;
 
 public class WhoIsRunningTableModel implements iWhoIsRunningListener, TableModel {
   private final int myPortFrom;
