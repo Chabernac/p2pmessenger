@@ -190,7 +190,7 @@ public class PeerSender implements iPeerSender {
   }
 
   @Override
-  public String send(String aMessage, WebPeer aPeer, int aTimeout)throws IOException {
+  public String send(String aMessage, AbstractPeer aSource, WebPeer aPeer, int aTimeout)throws IOException {
     PeerMessage theMessage = new PeerMessage(aMessage, aPeer);
     if(isKeepHistory) {
       myHistory.add(theMessage);
@@ -210,6 +210,7 @@ public class PeerSender implements iPeerSender {
       theWriter.write("session=");
       theWriter.write(UUID.randomUUID().toString());
       theWriter.write("&peerid=");
+      //TODO not correct we need to send along from who the message is coming not peer id of the destination
       theWriter.write( aPeer.getPeerId() );
       theWriter.write("&input=");
       theWriter.write(URLEncoder.encode(aMessage, "UTF-8"));
