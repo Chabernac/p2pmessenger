@@ -17,8 +17,8 @@ public class PluginRegistryTest extends TestCase {
   }
   
   public void testAutomaticPluginLoading(){
-    assertEquals( 1, PluginRegistry.getInstance().getInstancesOf( iTestInterface1.class ).size());
-    assertEquals( 1, PluginRegistry.getInstance().getInstancesOf( iTestInterface2.class ).size());
+    assertEquals( 1, PluginRegistry.getInstance().getPlugins( iTestInterface1.class ).size());
+    assertEquals( 1, PluginRegistry.getInstance().getPlugins( iTestInterface2.class ).size());
   }
   
   public void testPluginRegistry() throws InterruptedException{

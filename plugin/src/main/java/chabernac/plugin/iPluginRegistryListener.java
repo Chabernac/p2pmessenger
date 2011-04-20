@@ -5,6 +5,6 @@
 package chabernac.plugin;
 
 public interface iPluginRegistryListener {
-  public void pluginRegistred(Object aPlugin);
-  public void pluginRemoved(Object aPlugin);
+  public void pluginRegistred(iPlugin aPlugin);
+  public void pluginRemoved(iPlugin aPlugin);
 }
