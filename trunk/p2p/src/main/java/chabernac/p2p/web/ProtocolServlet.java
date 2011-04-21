@@ -44,7 +44,7 @@ public class ProtocolServlet extends HttpServlet {
 
       if(getServletContext().getAttribute( "ProtocolContainer") == null){
         PropertyMap thePropertyMap = new PropertyMap();
-        thePropertyMap.setProperty("routingprotocol.exchangedelay", "-1");
+        thePropertyMap.setProperty("routingprotocol.exchangedelay", "60");
         thePropertyMap.setProperty("routingprotocol.persist", "false");
         thePropertyMap.setProperty("routingprotocol.peersender", new WebPeerSender((Map<String, EndPoint>)getServletContext().getAttribute( "EndPoints" )));
 
@@ -88,8 +88,11 @@ public class ProtocolServlet extends HttpServlet {
     System.out.println("Received message from peer '" + thePeerId + "' in session '" + theSession + "': " + theInput + "'" );
 
     try {
-      if(theInput == null || "".equals( theInput ) || theSession == null || "".equals( theSession )){
+      if("exchange".equalsIgnoreCase( theInput ) ){
+        ((RoutingProtocol)getProtocolContainer().getProtocol( RoutingProtocol.ID )).exchangeRoutingTable();
+      }else if(theInput == null || "".equals( theInput ) || theSession == null || "".equals( theSession )){
         aResponse.getWriter().println( ((RoutingProtocol)getProtocolContainer().getProtocol( RoutingProtocol.ID )).getLocalPeerId() );
+        aResponse.getWriter().println( ((RoutingProtocol)getProtocolContainer().getProtocol( RoutingProtocol.ID )).getRoutingTable() );
       } else {
         String theResult = getProtocolContainer().handleCommand(theSession , theInput );
         aResponse.getWriter().println(theResult);

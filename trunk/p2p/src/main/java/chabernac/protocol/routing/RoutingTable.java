@@ -51,6 +51,8 @@ public class RoutingTable implements Iterable< RoutingTableEntry >, Serializable
 
     myRoutingTable.remove(anEntry.getPeer().getPeerId());
     
+    checkIntegrityForEntry( anEntry.derivedEntry( RoutingTableEntry.MAX_HOP_DISTANCE ) );
+    
     notifyListenersOfRoutingTableEntryRemoval( anEntry );
   }
 
@@ -385,5 +387,13 @@ public class RoutingTable implements Iterable< RoutingTableEntry >, Serializable
       }
     }
     return theRoutingTable;
+  }
+  
+  public String toString(){
+    String theS = "";
+    for(RoutingTableEntry theEntry : myRoutingTable.values()){
+      theS += theEntry.toString() + "\r\n";
+    }
+    return theS;
   }
 }
