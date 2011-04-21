@@ -43,6 +43,4 @@ public class P2PSettings {
   public void setSocketPool( iSocketPool aSocketPool ) {
     mySocketPool = aSocketPool;
   }
-  
-  
 }

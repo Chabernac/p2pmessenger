@@ -33,6 +33,14 @@ public class PeerSender implements iPeerSender {
   private long myInitTime = System.currentTimeMillis();
   private String myPeerId;
   
+  public PeerSender(){
+    
+  }
+  
+  public PeerSender(String aSendingPeer){
+    myPeerId = aSendingPeer;
+  }
+  
   @Override
   public String send(String aMessage, SocketPeer aPeer, int aTimeoutInSeconds) throws IOException {
     PeerMessage theMessage = new PeerMessage(aMessage, aPeer);
@@ -41,7 +49,6 @@ public class PeerSender implements iPeerSender {
       notifyListeners(theMessage);
     }
 
-    
     RetryDecider theRetryDecider = new RetryDecider(3);
 
     while(theRetryDecider.retry()){
@@ -191,7 +198,9 @@ public class PeerSender implements iPeerSender {
   }
 
   @Override
-  public String send(String aMessage, WebPeer aPeer, int aTimeout)throws IOException {
+  public String send(String aMessage, WebPeer aPeer, int aTimeout) throws IOException {
+    if(myPeerId == null) throw new IOException("When sending to a web peer we need to have a sender peer id, maybe you forgot to call iPeerSender.setPeerId(String aPeerId) with the peer id of the sending peer...");
+    
     PeerMessage theMessage = new PeerMessage(aMessage, aPeer);
     if(isKeepHistory) {
       myHistory.add(theMessage);
@@ -211,7 +220,6 @@ public class PeerSender implements iPeerSender {
       theWriter.write("session=");
       theWriter.write(UUID.randomUUID().toString());
       theWriter.write("&peerid=");
-      //TODO not correct we need to send along from who the message is coming not peer id of the destination
       theWriter.write( myPeerId );
       theWriter.write("&input=");
       theWriter.write(URLEncoder.encode(aMessage, "UTF-8"));

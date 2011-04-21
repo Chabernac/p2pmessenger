@@ -69,7 +69,7 @@ public class WebPeerTest extends TestCase {
       theEndPoint.setEvent( theServerToClientEvent );
       assertEquals( "output", theServerToClientEvent.getOutput( 2000 ));
       
-      theWebPeer.setPeerSender(new PeerSender());
+      theWebPeer.setPeerSender(new PeerSender("2"));
       assertEquals("123", theWebPeer.send("ECO123"));
     }finally{
       theServer.stop();
