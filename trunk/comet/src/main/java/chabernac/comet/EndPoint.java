@@ -5,7 +5,13 @@
 package chabernac.comet;
 
 import java.util.concurrent.ArrayBlockingQueue;
+
 import java.util.concurrent.BlockingQueue;
+
+/**
+ * The endpoint represents a client which has send a request to the server  
+ *
+ */
 
 public class EndPoint {
   private final String myId;
