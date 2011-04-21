@@ -30,6 +30,7 @@ import chabernac.p2pclient.gui.ChatMediator;
 import chabernac.p2pclient.plugin.iP2pClientPlugin;
 import chabernac.p2pclient.settings.Settings.ReceiveEnveloppe;
 import chabernac.p2pclient.settings.Settings.SendEnveloppe;
+import chabernac.plugin.PluginActivator;
 import chabernac.plugin.PluginRegistry;
 import chabernac.preference.ApplicationPreferences;
 import chabernac.protocol.iProtocolDelegate;
@@ -110,7 +111,8 @@ public class ApplicationLauncher {
   }
   
   private static void loadPlugins(){
-    List<iP2pClientPlugin> thePlugins = PluginRegistry.getInstance().getInstancesOf( iP2pClientPlugin.class );
+    PluginActivator.loadAll( true );
+    List<iP2pClientPlugin> thePlugins = PluginRegistry.getInstance().getPlugins( iP2pClientPlugin.class );
     for(iP2pClientPlugin thePlugin : thePlugins){
       thePlugin.init( myMediator );
     }
