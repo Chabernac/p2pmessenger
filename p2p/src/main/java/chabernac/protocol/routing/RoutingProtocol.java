@@ -37,7 +37,6 @@ import chabernac.io.Base64ObjectStringConverter;
 import chabernac.io.ClassPathResource;
 import chabernac.io.iObjectPersister;
 import chabernac.io.iObjectStringConverter;
-import chabernac.p2p.settings.P2PSettings;
 import chabernac.protocol.AlreadyRunningException;
 import chabernac.protocol.DynamicSizeExecutor;
 import chabernac.protocol.Protocol;
@@ -62,7 +61,7 @@ public class RoutingProtocol extends Protocol {
   public static String ID = "ROU";
 
   private static Logger LOGGER = Logger.getLogger( RoutingProtocol.class );
-  
+
   private boolean isInitialized = false;
 
   static{
@@ -126,7 +125,7 @@ public class RoutingProtocol extends Protocol {
   private final iObjectStringConverter< AbstractPeer> myPeerConverter = new Base64ObjectStringConverter< AbstractPeer >();
 
   private final iPeerSender myPeerSender;
-  
+
   private iRoutingTableInspector myRoutingTableInspector = null;
 
   /**
@@ -221,15 +220,17 @@ public class RoutingProtocol extends Protocol {
       myRoutingTable.addRoutingTableEntry( theLocalRoutingTableEntry );
     }
 
-    if(myServerInfo != null && myServerInfo.getServerType() == Type.SOCKET){
+    if(myServerInfo != null ){
       if(myExchangeDelay > 0 ) scheduleRoutingTableExchange();
-      myChangeService = DynamicSizeExecutor.getSmallInstance();
-
-      myRoutingTable.addRoutingTableListener( new RoutingTableListener() );
-      startUDPListener();
-      saveRoutingTable();
+      
+      if(myServerInfo.getServerType() == Type.SOCKET){
+        myChangeService = DynamicSizeExecutor.getSmallInstance();
+        myRoutingTable.addRoutingTableListener( new RoutingTableListener() );
+        startUDPListener();
+        saveRoutingTable();
+      }
     }
-    
+
     isInitialized = true;
   }
 
@@ -249,12 +250,16 @@ public class RoutingProtocol extends Protocol {
 
   private void scheduleRoutingTableExchange(){
     mySheduledService = Executors.newScheduledThreadPool( 1 );
-    mySheduledService.scheduleWithFixedDelay( new ScanLocalSystem(), 1, myExchangeDelay, TimeUnit.SECONDS);
+    
     mySheduledService.scheduleWithFixedDelay( new ExchangeRoutingTable(), 2, myExchangeDelay, TimeUnit.SECONDS);
-    mySheduledService.scheduleWithFixedDelay( new SendUDPAnnouncement(), 4, myExchangeDelay, TimeUnit.SECONDS);
-    mySheduledService.scheduleWithFixedDelay( new ScanFixedIpList(), 10, myExchangeDelay, TimeUnit.SECONDS);
-    mySheduledService.scheduleWithFixedDelay( new ScanRemoteSystem(), 20 , 4 * myExchangeDelay, TimeUnit.SECONDS);
-    mySheduledService.scheduleWithFixedDelay( new DetectRemoteSystem(), 100, 10 * myExchangeDelay, TimeUnit.SECONDS);
+    
+    if(myServerInfo.getServerType() == Type.SOCKET){
+      mySheduledService.scheduleWithFixedDelay( new ScanLocalSystem(), 1, myExchangeDelay, TimeUnit.SECONDS);
+      mySheduledService.scheduleWithFixedDelay( new SendUDPAnnouncement(), 4, myExchangeDelay, TimeUnit.SECONDS);
+      mySheduledService.scheduleWithFixedDelay( new ScanFixedIpList(), 10, myExchangeDelay, TimeUnit.SECONDS);
+      mySheduledService.scheduleWithFixedDelay( new ScanRemoteSystem(), 20 , 4 * myExchangeDelay, TimeUnit.SECONDS);
+      mySheduledService.scheduleWithFixedDelay( new DetectRemoteSystem(), 100, 10 * myExchangeDelay, TimeUnit.SECONDS);
+    }
   }
 
   @Override
@@ -280,7 +285,7 @@ public class RoutingProtocol extends Protocol {
       return myLocalPeerId;
     }
   }
-  
+
   /**
    * refresh the local entry to make sure the right ip/mac adres is exposed to other peers
    * when the peer has fysically moved from one network to another, the SocketPeer instance 
@@ -304,9 +309,9 @@ public class RoutingProtocol extends Protocol {
     if(!isInitialized){
       return Response.NOT_INITIALIZED.name();
     }
-    
+
     refreshLocalEntry();
-    
+
     int theFirstIndexOfSpace = anInput.indexOf( " " );
     if(theFirstIndexOfSpace == -1) theFirstIndexOfSpace = anInput.length();
     String theCommandString = anInput.substring( 0,  theFirstIndexOfSpace);
@@ -335,9 +340,9 @@ public class RoutingProtocol extends Protocol {
 
         //before sending our routing table, let's verify if we can still reach our neighbours
         //this is just to avoid exchanging wrong information
-//        verifyNeighbours();
+        //        verifyNeighbours();
 
-//        return myRoutingTableConverter.toString( myRoutingTable.copyWithoutUnreachablePeers() );
+        //        return myRoutingTableConverter.toString( myRoutingTable.copyWithoutUnreachablePeers() );
         return myRoutingTableConverter.toString(inspectRoutingTable(aSessionId, myRoutingTable));
       } else if(theCommand == Command.ANNOUNCEMENT){
         String[] theAttributes = anInput.substring( theFirstIndexOfSpace + 1 ).split(";");
@@ -362,23 +367,23 @@ public class RoutingProtocol extends Protocol {
     }
     return Response.UNKNOWN_COMMAND.name();
   }
-  
+
   private RoutingTable inspectRoutingTable(String aSessionId, RoutingTable aRoutingTable){
     if(myRoutingTableInspector == null) return aRoutingTable;
     else return myRoutingTableInspector.inspectRoutingTable(aSessionId, aRoutingTable);
   }
 
-//  private void verifyNeighbours(){
-//    for(RoutingTableEntry theEntry : myRoutingTable.getEntries()){
-//      if(theEntry.getHopDistance() == 1){
-//        //verify if we can reach this peer
-//        if(!contactPeer( theEntry.getPeer(), myUnreachablePeers)){
-//          RoutingTableEntry theNewEntry = theEntry.derivedEntry( RoutingTableEntry.MAX_HOP_DISTANCE );
-//          myRoutingTable.addRoutingTableEntry( theNewEntry );
-//        }
-//      }
-//    }
-//  }
+  //  private void verifyNeighbours(){
+  //    for(RoutingTableEntry theEntry : myRoutingTable.getEntries()){
+  //      if(theEntry.getHopDistance() == 1){
+  //        //verify if we can reach this peer
+  //        if(!contactPeer( theEntry.getPeer(), myUnreachablePeers)){
+  //          RoutingTableEntry theNewEntry = theEntry.derivedEntry( RoutingTableEntry.MAX_HOP_DISTANCE );
+  //          myRoutingTable.addRoutingTableEntry( theNewEntry );
+  //        }
+  //      }
+  //    }
+  //  }
 
   public RoutingTable getRoutingTable(){
     return myRoutingTable;
@@ -416,7 +421,7 @@ public class RoutingProtocol extends Protocol {
       //TODO remove extensive logging
       //      try {
       //        if(aPeer.getPort() == RoutingProtocol.START_PORT && aPeer.getHosts().get( 0 ).equalsIgnoreCase( InetAddress.getLocalHost().getHostAddress() )){
-//      LOGGER.error( "Error occured while contacting peer '" + aPeer.getPeerId() + "' " + aPeer.getHosts() + ": " + aPeer.getPort() );
+      //      LOGGER.error( "Error occured while contacting peer '" + aPeer.getPeerId() + "' " + aPeer.getHosts() + ": " + aPeer.getPort() );
       //        }
       //      } catch ( UnknownHostException e1 ) {
       //        e1.printStackTrace();
@@ -527,7 +532,7 @@ public class RoutingProtocol extends Protocol {
       LOGGER.error("An error occured while scanning super nodes", e);
     }
   }
-  
+
   private boolean hostHasActivePeer(String anIp){
     for(RoutingTableEntry theEntry : getRoutingTable()){
       if(theEntry.getPeer().getEndPointRepresentation().contains( anIp ) && theEntry.isResponding()){
@@ -542,7 +547,7 @@ public class RoutingProtocol extends Protocol {
    */
   public void exchangeRoutingTable(){
     refreshLocalEntry();
-    
+
     if(myRoutingProtocolMonitor != null) myRoutingProtocolMonitor.exchangingRoutingTables();
     LOGGER.debug("Exchanging routing table for peer: " + myRoutingTable.getLocalPeerId());
 
@@ -611,7 +616,7 @@ public class RoutingProtocol extends Protocol {
     }catch(Exception e){
       LOGGER.error("Could not get entry for local peer", e);
     }
-    
+
     refreshLocalEntry();
 
     for(RoutingTableEntry theEntry : myRoutingTable.getEntries()){
@@ -811,7 +816,7 @@ public class RoutingProtocol extends Protocol {
 
   public void sendUDPAnnouncement(){
     refreshLocalEntry();
-    
+
     if(myRoutingProtocolMonitor != null) myRoutingProtocolMonitor.sendingUDPAnnouncement();
     try{
       ByteArrayOutputStream theByteArrayOutputStream = new ByteArrayOutputStream();
@@ -869,7 +874,7 @@ public class RoutingProtocol extends Protocol {
     myServerInfo = aServerInfo;
     start();
   }
-  
+
   public iPeerSender getPeerSender() {
     return myPeerSender;
   }

@@ -112,7 +112,8 @@ public class UserInfoProtocol extends Protocol {
       for(RoutingTableEntry theEntry : theTable){
         if(theEntry.isReachable()){
           AbstractPeer thePeer = theEntry.getPeer();
-          if(thePeer.isOnSameChannel(theLocalPeer) 
+          if( thePeer.isProtocolSupported( UserInfoProtocol.ID ) 
+              && thePeer.isOnSameChannel(theLocalPeer) 
               && (!myUserInfo.containsKey( thePeer.getPeerId() ) 
                   || myUserInfo.get(thePeer.getPeerId()).getStatus() == Status.OFFLINE)){
             myRetrievalService.execute( new UserInfoRetriever(thePeer.getPeerId()) );
@@ -343,7 +344,7 @@ public class UserInfoProtocol extends Protocol {
     public void routingTableEntryChanged( RoutingTableEntry anEntry ) {
       try{
         if(!myUserInfo.containsKey( anEntry.getPeer().getPeerId() ) || myUserInfo.get(anEntry.getPeer().getPeerId()).getStatus() == Status.OFFLINE){
-          if(anEntry.isReachable() && anEntry.getPeer().isOnSameChannel(getRoutingTable().getEntryForLocalPeer().getPeer())){
+          if(anEntry.getPeer().isProtocolSupported( UserInfoProtocol.ID ) && anEntry.isReachable() && anEntry.getPeer().isOnSameChannel(getRoutingTable().getEntryForLocalPeer().getPeer())){
             myRetrievalService.execute( new UserInfoRetriever(anEntry.getPeer().getPeerId()) );
           }
         } else {

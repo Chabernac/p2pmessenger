@@ -172,4 +172,32 @@ public class RoutingTableTest extends TestCase {
     theRoutingTable.removeEntriesOlderThan( 0, TimeUnit.DAYS );
     assertEquals( 0, theRoutingTable.getEntries().size() );
   }
+  
+  public void testGatewayRemoved() throws UnknownPeerException{
+    RoutingTable theRoutingTable = new RoutingTable( "1" );
+    
+    DummyPeer thePeer1 = new DummyPeer( "1" );
+    DummyPeer thePeer2 = new DummyPeer( "2" );
+    DummyPeer thePeer3 = new DummyPeer( "3" );
+    DummyPeer thePeer4 = new DummyPeer( "4" );
+    
+    //the local peer
+    theRoutingTable.addRoutingTableEntry( new RoutingTableEntry( thePeer1, 0, thePeer1, System.currentTimeMillis() ));
+    //peer 2 is directly reachable
+    theRoutingTable.addRoutingTableEntry( new RoutingTableEntry( thePeer2, 1, thePeer2, System.currentTimeMillis() ));
+    //peer 3 is reachable trough peer 2
+    theRoutingTable.addRoutingTableEntry( new RoutingTableEntry( thePeer3, 2, thePeer2, System.currentTimeMillis() ));
+    //peer 4 is reachable trough peer 3
+    theRoutingTable.addRoutingTableEntry( new RoutingTableEntry( thePeer4, 3, thePeer3, System.currentTimeMillis() ));
+    
+    //now if we remove peer 2 then peer 3 is not reachable any more, this should be represented in the routingtable
+    theRoutingTable.removeRoutingTableEntry( theRoutingTable.getEntryForPeer( "2" ) );
+    
+    //because the entry for peer 2 is remove the entry for peer 3 should have hop distance 6
+    assertEquals( RoutingTableEntry.MAX_HOP_DISTANCE, theRoutingTable.getEntryForPeer( "3" ).getHopDistance());
+    
+    //becasue entry 3 has now hop distance 6 and peer 4 is reachble trough peer 3 peer 4 must get hop distance 6 too
+    assertEquals( RoutingTableEntry.MAX_HOP_DISTANCE, theRoutingTable.getEntryForPeer( "4" ).getHopDistance());
+    
+  }
 }
