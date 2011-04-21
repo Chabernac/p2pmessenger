@@ -39,8 +39,8 @@ public class PluginRegistry {
 	}
 	
 	public synchronized void registerPlugin(final iPlugin aPlugin) throws PluginNotLoadedException{
-		myPlugins.add(new Item(aPlugin));
-		aPlugin.loadPlugin(this);
+	  aPlugin.loadPlugin(this);
+		myPlugins.add(new Item( aPlugin ));
 		
 		myListenerThread.execute( new Runnable(){
       public void run(){
@@ -53,7 +53,7 @@ public class PluginRegistry {
 	
 	public synchronized void removePlugin(final iPlugin aPlugin) throws PluginNotShutDownException{
 	  aPlugin.shutDown( this );
-	  myPlugins.remove( aPlugin );
+	  myPlugins.remove( new Item(aPlugin) );
 	  myListenerThread.execute( new Runnable(){
       public void run(){
         for(iPluginRegistryListener theListener : myListeners) theListener.pluginRemoved(  aPlugin );
@@ -63,9 +63,9 @@ public class PluginRegistry {
 	
   public <T> List<T> getPlugins(Class<T> aClass){
     List<T> theList = new ArrayList<T>();
-    for(Object theObject : myPlugins){
-      if(aClass.isAssignableFrom( theObject.getClass() )){
-        theList.add( (T)theObject );
+    for(Item theObject : myPlugins){
+      if(aClass.isAssignableFrom( theObject.item.getClass() )){
+        theList.add( (T)(theObject.item) );
       }
     }
     return theList;
@@ -83,7 +83,7 @@ public class PluginRegistry {
 	@SuppressWarnings("unchecked")
 	private synchronized <T> T findPlugin(Class<T> aClass){
 		for(Iterator<Item> i=myPlugins.iterator();i.hasNext();){
-			iPlugin thePlugin = ((Item)i.next()).item;
+			iPlugin thePlugin = i.next().item;
 			if(aClass.isAssignableFrom(thePlugin.getClass())){
 				return (T)thePlugin;
 			}
@@ -91,16 +91,15 @@ public class PluginRegistry {
 		return null;
 	}
 	
-	public Set<iPlugin> getPlugins(){
-		Set<iPlugin> thePluginSet = new HashSet<iPlugin>();
-		for(Iterator<Item> i=myPlugins.iterator();i.hasNext();){
-			Item theItem = i.next();
-			thePluginSet.add(theItem.item);
-		}
-		return Collections.unmodifiableSet(thePluginSet);
-	}
+  public Set<iPlugin> getPlugins(){
+    Set<iPlugin> thePluginSet = new HashSet<iPlugin>();
+    for(Iterator<Item> i=myPlugins.iterator();i.hasNext();){
+      Item theItem = i.next();
+      thePluginSet.add(theItem.item);
+    }
+    return Collections.unmodifiableSet(thePluginSet);
+  }
 	
-	@SuppressWarnings("unchecked")
 	public synchronized <T> T waitForPlugin(Class<T> aClass){
 		T thePlugin = null;
 		while((thePlugin = findPlugin(aClass)) == null){
@@ -115,7 +114,7 @@ public class PluginRegistry {
 	
 	public synchronized void removeAllPlugins() throws PluginNotShutDownException{
 	  while(!myPlugins.isEmpty()){
-	    removePlugin( myPlugins.iterator().next().item );
+	    removePlugin( myPlugins.iterator().next().item);
 	  }
 	}
 	

@@ -1,0 +1,1 @@
+plugin.activator=chabernac.plugin.a.Activator chabernac.plugin.b.Activator chabernac.plugin.c.Activator
