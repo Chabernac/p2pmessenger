@@ -101,6 +101,10 @@ public class WebPeerTest extends TestCase {
     }
   }
   
+  public void testReplacePlus(){
+    assertEquals("+", "+".replaceAll("\\+", "{plus}").replaceAll("\\{plus\\}", "\\+"));
+  }
+  
   private class MyPeerSender implements iPeerSender{
 
     @Override

@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLEncoder;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -69,9 +70,20 @@ public class WebPeer extends AbstractPeer {
     theWriter.flush();
     BufferedReader theReader = new BufferedReader(new InputStreamReader(theConnection.getInputStream()));
     String theEvent = theReader.readLine();
-    CometEvent theCometEvent = myObjectStringConverter.getObject( theEvent );
-    myService.execute( new CometEventResponseSender(theCometEvent) );
+    LOGGER.debug("Received comet event line '" + theEvent + "'");
+    CometEvent theCometEvent = getCometStringConverter().getObject( theEvent );
+    getExecutorService().execute( new CometEventResponseSender(theCometEvent) );
     return theCometEvent;
+  }
+  
+  private iObjectStringConverter<CometEvent> getCometStringConverter(){
+    if(myObjectStringConverter == null) myObjectStringConverter = new Base64ObjectStringConverter<CometEvent>();
+    return myObjectStringConverter;
+  }
+  
+  private ExecutorService getExecutorService(){
+    if(myService == null) myService = Executors.newSingleThreadExecutor();
+    return myService;
   }
 
   private boolean sendResponseForCometEvent( CometEvent anEvent ) throws IOException
@@ -81,7 +93,7 @@ public class WebPeer extends AbstractPeer {
       URLConnection theConnection = theCometURL.openConnection();
       theConnection.setDoOutput(true);
       OutputStreamWriter theWriter = new OutputStreamWriter(theConnection.getOutputStream());
-      theWriter.write("id=" + getPeerId() + "&eventid=" + anEvent.getId() + "&eventoutput=" + anEvent.getOutput( 0 ));
+      theWriter.write("id=" + getPeerId() + "&eventid=" + anEvent.getId() + "&eventoutput=" + anEvent.getOutput( 0 ).replaceAll("\\+", "{plus}"));
       theWriter.flush();
       BufferedReader theReader = new BufferedReader(new InputStreamReader(theConnection.getInputStream()));
       String theResult = theReader.readLine();
