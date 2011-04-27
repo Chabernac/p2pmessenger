@@ -13,9 +13,11 @@ import java.io.Serializable;
 import java.util.ConcurrentModificationException;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.log4j.Logger;
 
 public class Base64ObjectStringConverter <T extends Serializable >implements iObjectStringConverter< T > {
 
+  private static Logger LOGGER  = Logger.getLogger(Base64ObjectStringConverter.class);
 
   @Override
   public T getObject( String aString ) throws IOException {
@@ -25,6 +27,7 @@ public class Base64ObjectStringConverter <T extends Serializable >implements iOb
       ObjectInputStream theObjectInputStream = new ObjectInputStream(theInputStream);
       return (T)theObjectInputStream.readObject();
     }catch(Exception e){
+      LOGGER.error("Unable to parse object from line '" + aString + "'");
       throw new IOException("Unable to read object from string", e);
     }  
   }
