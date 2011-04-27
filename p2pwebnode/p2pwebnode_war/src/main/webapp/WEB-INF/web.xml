@@ -20,7 +20,7 @@
 		<servlet-class>chabernac.p2p.web.ProtocolServlet</servlet-class>
 		<init-param>
 			<param-name>serverurl</param-name>
-			<param-value>http://x22p0212:8080/</param-value>
+			<param-value>http://localhost:8080/</param-value>
 		</init-param>
 		<load-on-startup>2</load-on-startup>
 	</servlet>
