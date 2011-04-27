@@ -1,6 +1,7 @@
 package chabernac.p2p.web;
 
 import java.io.IOException;
+import java.net.URLDecoder;
 import java.util.Map;
 import java.util.UUID;
 
@@ -38,7 +39,7 @@ public class WebPeerSender implements iPeerSender {
       UUID theUID = UUID.randomUUID();
       CometEvent theCometEvent = new CometEvent(theUID.toString(), aMessage);
       theEndPoint.setEvent( theCometEvent );
-      return theCometEvent.getOutput(5000);
+      return theCometEvent.getOutput(5000).replaceAll("\\{plus\\}", "+");
     } catch ( Exception e ) {
       throw new IOException("An exception occured while sending message to endpoint", e );
     }  
