@@ -15,31 +15,26 @@
 	</properties>
 
 	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>build-helper-maven-plugin</artifactId>
-				<version>1.1</version>
-				<executions>
-					<execution>
-						<id>add-source</id>
-						<phase>generate-sources</phase>
-						<goals>
-							<goal>add-source</goal>
-						</goals>
-						<configuration>
-							<sources>
-								<source>src/test/a</source>
-								<source>src/test/b</source>
-								<source>src/test/c</source>
-								<source>src/test/main</source>
-							</sources>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
+		<extensions>
+			<extension>
+				<groupId>org.apache.maven.wagon</groupId>
+				<artifactId>wagon-webdav</artifactId>
+				<version>1.0-beta-2</version>
+			</extension>
+		</extensions>
 	</build>
+	
+	<distributionManagement>
+		<repository>
+			<id>googlecode.bzb.repo</id>
+			<url>dav:https://p2pmessenger.googlecode.com/svn/maven-repository/</url>
+		</repository>
+		<snapshotRepository>
+			<id>googlecode.bzb.snapshotrepo</id>
+			<url>dav:https://p2pmessenger.googlecode.com/svn/maven-snapshot-repository/</url>
+			<uniqueVersion>false</uniqueVersion>
+		</snapshotRepository>
+	</distributionManagement>
 
 	<dependencies>
 		<dependency>
