@@ -7,6 +7,7 @@ package chabernac.p2p.web;
 
 import java.net.URL;
 
+import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.servlet.Context;
@@ -19,15 +20,16 @@ public class WebNodeLauncher {
   private static Logger LOGGER = Logger.getLogger(WebNodeLauncher.class);
 
   public static void main(String[] args){
-//    BasicConfigurator.configure();
+    BasicConfigurator.configure();
     ArgsInterPreter theInterpreter = new ArgsInterPreter( args );
     
     if(!theInterpreter.containsKey( "port" )) System.out.println("You must specify a port with port=");
     if(!theInterpreter.containsKey( "url" )) System.out.println("You must specify an url with url=");
+    if(!theInterpreter.containsKey( "persist" )) System.out.println("You must specify the persistance with persistance=[true|false]");
     
     
     try{
-      System.out.println("Attempting to start webnode at port: '" + theInterpreter.getKeyValue( "port" ) + " and published at url '" + theInterpreter.getKeyValue( "url" ));
+      System.out.println("Attempting to start webnode at port: '" + theInterpreter.getKeyValue( "port" ) + " and published at url '" + theInterpreter.getKeyValue( "url" ) + " with persistance " + theInterpreter.getKeyValue("persist"));
       
       URL theURL = new URL(theInterpreter.getKeyValue( "url" ));
       Server theServer = new Server(Integer.parseInt( theInterpreter.getKeyValue( "port" )));
@@ -41,6 +43,7 @@ public class WebNodeLauncher {
       ProtocolServlet theProtocolServlet = new ProtocolServlet();
       ServletHolder theProtocolHolder = new ServletHolder(theProtocolServlet);
       theProtocolHolder.setInitOrder(2);
+      theProtocolHolder.setInitParameter("persist", theInterpreter.getKeyValue("persist"));
       root.addServlet(theProtocolHolder, "/protocol");
       theProtocolHolder.setInitParameter( "serverurl", theURL.toString() );
 

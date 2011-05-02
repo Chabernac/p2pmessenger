@@ -45,7 +45,7 @@ public class ProtocolServlet extends HttpServlet {
       if(getServletContext().getAttribute( "ProtocolContainer") == null){
         PropertyMap thePropertyMap = new PropertyMap();
         thePropertyMap.setProperty("routingprotocol.exchangedelay", "60");
-        thePropertyMap.setProperty("routingprotocol.persist", "false");
+        thePropertyMap.setProperty("routingprotocol.persist", "true".equalsIgnoreCase(getInitParameter("persist")));
         thePropertyMap.setProperty("routingprotocol.peersender", new WebPeerSender((Map<String, EndPoint>)getServletContext().getAttribute( "EndPoints" )));
 
         Set<String> theSupportedProtocols = new HashSet< String >();
