@@ -55,10 +55,6 @@ public class ProtocolServlet extends HttpServlet {
 
         ProtocolContainer theProtocolContainer = new ProtocolContainer(new ProtocolFactory(thePropertyMap), theSupportedProtocols);
 
-        ServerInfo theServerInfo = new ServerInfo(Type.WEB);
-        theServerInfo.setServerURL( getServletConfig().getInitParameter( "serverurl" ));
-        theProtocolContainer.setServerInfo( theServerInfo );
-
         try{
           RoutingProtocol theRoutingProtocol = (RoutingProtocol)theProtocolContainer.getProtocol(RoutingProtocol.ID);
           WebRoutingTableInspecter theInspector = new WebRoutingTableInspecter(getSessionData(), getPeerIpMap());
@@ -68,6 +64,12 @@ public class ProtocolServlet extends HttpServlet {
         }
 
         getServletContext().setAttribute( "ProtocolContainer", theProtocolContainer );
+        
+        ServerInfo theServerInfo = new ServerInfo(Type.WEB);
+        theServerInfo.setServerURL( getServletConfig().getInitParameter( "serverurl" ));
+        theProtocolContainer.setServerInfo( theServerInfo );
+
+        getProtocolContainer().setServerInfo(theServerInfo);
       }
 
     }catch(Exception e){
@@ -82,10 +84,10 @@ public class ProtocolServlet extends HttpServlet {
 
     getPeerIpMap().put(thePeerId, aRequest.getRemoteAddr());
     getSessionData().putProperty(theSession, "requestor.ip", aRequest.getRemoteAddr());
-    
-    LOGGER.debug( "Received message from peer '" + thePeerId + "' in session '" + theSession + "': " + theInput + "'" );
+        
+    LOGGER.debug( "Received message from peer '" + thePeerId + "' in session '" + theSession + "': " + theInput + "'" + " at remote ip '" + aRequest.getRemoteAddr() + "'" );
     //TODO remove when logging correctly enabled on server
-    System.out.println("Received message from peer '" + thePeerId + "' in session '" + theSession + "': " + theInput + "'" );
+//    System.out.println("Received message from peer '" + thePeerId + "' in session '" + theSession + "': " + theInput + "'" );
 
     try {
       if("exchange".equalsIgnoreCase( theInput ) ){

@@ -10,6 +10,7 @@ import java.net.URL;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 import org.mortbay.jetty.Server;
+import org.mortbay.jetty.ajp.Ajp13SocketConnector;
 import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.ServletHolder;
 
@@ -33,6 +34,9 @@ public class WebNodeLauncher {
       
       URL theURL = new URL(theInterpreter.getKeyValue( "url" ));
       Server theServer = new Server(Integer.parseInt( theInterpreter.getKeyValue( "port" )));
+      Ajp13SocketConnector theAJPConnector = new Ajp13SocketConnector();
+      theAJPConnector.setPort(Integer.parseInt(theInterpreter.getKeyValue("ajpport", "8090")));
+      theServer.addConnector(theAJPConnector);
       Context root = new Context(theServer,"/p2p",Context.SESSIONS);
       
       CometServlet theCometServlet = new CometServlet();

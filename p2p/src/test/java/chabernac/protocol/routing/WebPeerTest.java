@@ -7,7 +7,6 @@ package chabernac.protocol.routing;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 

@@ -15,8 +15,6 @@ import java.util.concurrent.Future;
 
 import javax.activation.DataSource;
 
-import org.omg.CosNaming.IstringHelper;
-
 import chabernac.io.BasicSocketPool;
 import chabernac.io.CachingSocketPool;
 import chabernac.io.iSocketPool;
@@ -26,6 +24,7 @@ import chabernac.protocol.ProtocolContainer;
 import chabernac.protocol.ProtocolException;
 import chabernac.protocol.ProtocolFactory;
 import chabernac.protocol.ProtocolServer;
+import chabernac.protocol.iP2PServer;
 import chabernac.protocol.iProtocolDelegate;
 import chabernac.protocol.application.ApplicationProtocol;
 import chabernac.protocol.filetransfer.FileTransferProtocol;
@@ -84,12 +83,13 @@ import chabernac.tools.PropertyMap;
 
 public class P2PFacade {
   private ProtocolContainer myContainer = null;
-  private ProtocolServer myProtocolServer = null;
+  private iP2PServer myProtocolServer = null;
   private PropertyMap myProperties = new PropertyMap();
   private MessageArchive myMessageArchive = null;
   private boolean myIsKeepHistory = false;
   private FailedMessageResender myMessageResender = null;
   private boolean isActivateMessageResender = false;
+  private boolean isWebNode = false;
 
   /**
    * set the exchange delay.
@@ -606,7 +606,15 @@ public class P2PFacade {
     } catch ( Exception e ) {
       throw new P2PFacadeException("Could not force start protocol '" + aProtocolId + "'", e);
     }
+  }
+  
+  public boolean isWebNode() {
+    return isWebNode;
+  }
 
+  public void setWebNode(boolean anIsWebNode) throws P2PFacadeException {
+    if(!isStarted()) throw new P2PFacadeException("Can not set this property whern the server has been started");
+    isWebNode = anIsWebNode;
   }
 
   public P2PFacade start(int aNumberOfThreads) throws P2PFacadeException{

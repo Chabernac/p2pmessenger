@@ -31,15 +31,12 @@ public class PeerSender implements iPeerSender {
   private long myBytesSend = 0;
   private long myBytesReceived = 0;
   private long myInitTime = System.currentTimeMillis();
-  private String myPeerId;
+  private final RoutingTable myRoutingTable;
   
-  public PeerSender(){
-    
+  public PeerSender(RoutingTable aRoutingTable){
+    myRoutingTable = aRoutingTable;
   }
   
-  public PeerSender(String aSendingPeer){
-    myPeerId = aSendingPeer;
-  }
   
   @Override
   public String send(String aMessage, SocketPeer aPeer, int aTimeoutInSeconds) throws IOException {
