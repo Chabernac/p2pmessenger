@@ -26,7 +26,7 @@ import chabernac.tools.NetTools;
 import chabernac.util.concurrent.MonitorrableRunnable;
 import chabernac.util.concurrent.iRunnableListener;
 
-public class ProtocolServer implements Runnable{
+public class ProtocolServer implements Runnable, iP2PServer{
   private static Logger LOGGER = Logger.getLogger(ProtocolServer.class);
 
   private Random myRandom = new Random();
