@@ -1,17 +1,27 @@
 package chabernac.p2p.web;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import junit.framework.TestCase;
 
+import org.apache.log4j.BasicConfigurator;
+import org.mortbay.jetty.servlet.ServletHolder;
 import org.mortbay.jetty.testing.HttpTester;
 import org.mortbay.jetty.testing.ServletTester;
 
-import chabernac.p2p.web.ProtocolServlet;
-
 public class ProtocolServletTest extends TestCase {
+  static{
+    BasicConfigurator.resetConfiguration();
+    BasicConfigurator.configure();
+  }
+  
   public void testP2PServlet() throws Exception{
     final ServletTester theServletTester = new ServletTester();
     theServletTester.setContextPath("/p2p");
-    theServletTester.addServlet(ProtocolServlet.class, "/protocol");
+    Map<String, String> theParams = new HashMap<String, String>();
+    ServletHolder theHandler = theServletTester.addServlet(ProtocolServlet.class, "/protocol");
+    theHandler.setInitParameter( "serverurl", "http://localhost:8080/" );
     theServletTester.start();
     
     HttpTester theRequest = new HttpTester();
