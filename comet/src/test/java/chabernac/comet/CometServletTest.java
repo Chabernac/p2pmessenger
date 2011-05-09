@@ -1,8 +1,8 @@
 package chabernac.comet;
 
-import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import junit.framework.TestCase;
 
@@ -63,10 +63,10 @@ public class CometServletTest extends TestCase {
    
    Thread.sleep(2000);
    
-   Map<String, EndPoint> theEndPoints  = (Map<String, EndPoint>)theServletTester.getContext().getServletContext().getAttribute("EndPoints");
-   assertEquals(1, theEndPoints.size());
+   EndPointContainer theEndPointContainer = (EndPointContainer)theServletTester.getContext().getServletContext().getAttribute("EndPoints");
+   assertEquals(1, theEndPointContainer.size() );
    
-   EndPoint theEndPoint = theEndPoints.get("1");
+   EndPoint theEndPoint = theEndPointContainer.getEndPointFor( "1", 5, TimeUnit.SECONDS);
    assertNotNull(theEndPoint);
    
    CometEvent theCometEvent = new CometEvent("event1", "input"); 

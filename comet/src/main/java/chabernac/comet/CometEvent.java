@@ -14,6 +14,7 @@ public class CometEvent implements Serializable{
   private final String myId;
   private final String myInput;
   private String myOutput;
+  private CometException myOutputException;
   
   public CometEvent(String anId, String anInput) {
     super();
@@ -30,6 +31,7 @@ public class CometEvent implements Serializable{
       } catch (InterruptedException e) {
       }
     }
+    if(myOutputException != null) throw myOutputException;
     if(myOutput == null) throw new CometException("No output available");
     return myOutput;
   }
@@ -37,6 +39,12 @@ public class CometEvent implements Serializable{
     myOutput = anOutput;
     notifyAll();
   }
+  
+  public synchronized void setOutput(CometException anOutput) {
+    myOutputException = anOutput;
+    notifyAll();
+  }
+  
   public String getInput() {
     return myInput;
   }
