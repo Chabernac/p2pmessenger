@@ -11,7 +11,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.ws.Endpoint;
+
+import org.apache.log4j.Logger;
 
 import chabernac.io.Base64ObjectStringConverter;
 import chabernac.io.iObjectStringConverter;
@@ -21,17 +22,17 @@ import chabernac.io.iObjectStringConverter;
  */
 public class CometServlet extends HttpServlet {
   private static final long serialVersionUID = 1L;
-//  private static Logger LOGGER = Logger.getLogger(CometServlet.class);
+  private static Logger LOGGER = Logger.getLogger(CometServlet.class);
 
   public static enum Responses{NO_DATA, OK};
 
-  private Map<String, EndPoint> myEndPoints = Collections.synchronizedMap( new HashMap<String, EndPoint>() );
+  private EndPointContainer myEndPointContainer = new EndPointContainer();
   private Map<String, CometEvent> myCometEvents = Collections.synchronizedMap( new HashMap<String, CometEvent>() );
 
   private iObjectStringConverter<CometEvent> myCometEventConverter =  new Base64ObjectStringConverter<CometEvent>();
 
   public void init(ServletConfig aConfig){
-    aConfig.getServletContext().setAttribute("EndPoints", myEndPoints);
+    aConfig.getServletContext().setAttribute("EndPoints", myEndPointContainer);
   }
 
   /**
@@ -42,18 +43,10 @@ public class CometServlet extends HttpServlet {
       showEndPoints(aResponse);
       return;
     }
-    
+
     String theId = aRequest.getParameter( "id" );
 
     if(theId == null) return;
-
-    synchronized(theId){
-      if(!myEndPoints.containsKey( theId)){
-        myEndPoints.put( theId, new EndPoint(theId));
-      }
-    }
-
-    EndPoint theEndPoint = myEndPoints.get(theId);
 
     try{
       if(aRequest.getParameterMap().containsKey("eventid")){
@@ -66,23 +59,36 @@ public class CometServlet extends HttpServlet {
         }
         aResponse.getWriter().println( Responses.OK.name() );
       } else {
-        //block untill an event for this endpoint (client) is available
-        //the response will be send by the client in a next call in which an event id and event output is given as parameter (see code above)
-        CometEvent theEvent = theEndPoint.getEvent();
-        myCometEvents.put(theEvent.getId(), theEvent);
-        aResponse.getWriter().println( myCometEventConverter.toString(theEvent) );
+        CometEvent theEvent = null;
+        try{
+          //create a new endpoint
+          EndPoint theEndPoint = new EndPoint( theId );
+          //block untill an event for this endpoint (client) is available
+          //the response will be send by the client in a next call in which an event id and event output is given as parameter (see code above)
+
+
+          //publish the end point so that other processes can detecte it and put data for this end point
+          myEndPointContainer.addEndPoint( theEndPoint );
+
+          theEvent = theEndPoint.getEvent();
+          myCometEvents.put(theEvent.getId(), theEvent);
+          aResponse.getWriter().println( myCometEventConverter.toString(theEvent) );
+        }catch(Exception e){
+          LOGGER.error("Could not send comet event to endpoint", e);
+          if(theEvent != null){
+            theEvent.setOutput( new EndPointNotAvailableException("Could not send comet event to endpoint", e) );
+          }
+        }
       }
     } catch ( Exception e ) {
       aResponse.getWriter().println(myCometEventConverter.toString(new CometEvent("-1", Responses.NO_DATA.name())));
     } 
-    
-    //remove the end point
-    myEndPoints.remove( theId );
+
   }
-  
+
   private void showEndPoints(HttpServletResponse aResponse) throws IOException{
     PrintWriter theWriter = aResponse.getWriter();
-    for(EndPoint theEndPoint : myEndPoints.values()){
+    for(EndPoint theEndPoint : myEndPointContainer.getAllEndPoints()){
       theWriter.println(theEndPoint.getId());
     }
   }
@@ -93,9 +99,5 @@ public class CometServlet extends HttpServlet {
    */
   protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     doGet( request, response );
-  }
-
-  public Map<String, EndPoint> getEndPoints(){
-    return myEndPoints;
   }
 }
