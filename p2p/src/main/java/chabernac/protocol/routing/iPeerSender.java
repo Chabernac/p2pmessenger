@@ -3,8 +3,6 @@ package chabernac.protocol.routing;
 import java.io.IOException;
 
 public interface iPeerSender {
-  public String send(String aMessage, SocketPeer aPeer, int aTimeout) throws IOException;
-  public String send(String aMessage, WebPeer aPeer, int aTimeout) throws IOException;
-  public String send( String aMessage, IndirectReachablePeer aIndirectReachablePeer, int aTimeoutInSeconds );
-  public void setPeerId(String aPeerId);
+  public String send(AbstractPeer aPeer, String aMessage) throws IOException;
+  public String send(AbstractPeer aPeer, String aMessage, int aTimeout) throws IOException;
 }

@@ -13,6 +13,7 @@ import org.apache.log4j.Logger;
 
 import chabernac.comet.CometEvent;
 import chabernac.comet.CometException;
+import chabernac.comet.EndPointContainer;
 import chabernac.io.Base64ObjectStringConverter;
 import chabernac.io.iObjectStringConverter;
 
@@ -24,6 +25,7 @@ public class WebPeer extends AbstractPeer {
   private transient iObjectStringConverter< CometEvent > myObjectStringConverter = new Base64ObjectStringConverter< CometEvent >();
 
   private transient ExecutorService myService = Executors.newCachedThreadPool();
+  private transient EndPointContainer myEndPointContainer = null;
 
   public WebPeer(){
     this(null);
@@ -58,6 +60,14 @@ public class WebPeer extends AbstractPeer {
   @Override
   public boolean isValidEndPoint() {
     return myURL != null;
+  }
+  
+  public EndPointContainer getEndPointContainer() {
+    return myEndPointContainer;
+  }
+
+  public void setEndPointContainer( EndPointContainer aEndPointContainer ) {
+    myEndPointContainer = aEndPointContainer;
   }
 
   public CometEvent waitForEvent(String aLocalPeerId) throws IOException{
@@ -100,11 +110,6 @@ public class WebPeer extends AbstractPeer {
     }catch(CometException e){
       throw new IOException("Could not send response for comet event", e);
     }
-  }
-
-  protected String sendMessage(String aMessage, int aTimeoutInSeconds) throws IOException {
-    if(myPeerSender == null) throw new IOException("Could not send message to peer '" + getPeerId() + " because no message sender was defined");
-    return myPeerSender.send(aMessage, this, aTimeoutInSeconds);
   }
   
   public String toString(){

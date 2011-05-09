@@ -90,7 +90,7 @@ public class RoutingFrame extends JFrame {
     getRoutingTable().setKeepHistory(true);
     SocketProxy.setTraceEnabled(true);
     ((MessageProtocol)myProtocolContainer.getProtocol( MessageProtocol.ID )).setKeepHistory( true );
-    ((PeerSender)P2PSettings.getInstance().getPeerSender()).setKeepHistory(true);
+    getPeerSender().getPeerToPeerSender().setKeepHistory(true);
     myProtocolContainer.setKeepHistory( true );
   }
 
@@ -140,6 +140,14 @@ public class RoutingFrame extends JFrame {
       return null;
     }
   }
+  
+  private PeerSender getPeerSender(){
+    try {
+      return (PeerSender)((RoutingProtocol)myProtocolContainer.getProtocol( RoutingProtocol.ID )).getPeerSender();
+    } catch (ProtocolException e) {
+      return null;
+    }
+  }
 
   public class MyWindowListener extends WindowAdapter {
     @Override
@@ -148,8 +156,8 @@ public class RoutingFrame extends JFrame {
       getRoutingTable().clearHistory();
 
       SocketProxy.setTraceEnabled(false);
-      ((PeerSender)P2PSettings.getInstance().getPeerSender()).setKeepHistory(false);
-      ((PeerSender)P2PSettings.getInstance().getPeerSender()).clearHistory();
+      getPeerSender().getPeerToPeerSender().setKeepHistory(false);
+      getPeerSender().getPeerToPeerSender().clearHistory();
 
       try {
         ((MessageProtocol)myProtocolContainer.getProtocol( MessageProtocol.ID )).setKeepHistory( false );

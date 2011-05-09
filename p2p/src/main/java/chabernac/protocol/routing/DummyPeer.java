@@ -1,6 +1,5 @@
 package chabernac.protocol.routing;
 
-import java.io.IOException;
 
 public class DummyPeer extends AbstractPeer {
 
@@ -26,12 +25,6 @@ public class DummyPeer extends AbstractPeer {
   public boolean isValidEndPoint() {
     // TODO Auto-generated method stub
     return false;
-  }
-
-  @Override
-  protected String sendMessage(String aMessage, int aTimeoutInSeconds)
-      throws IOException {
-    throw new IOException("Not supported");
   }
 
 }

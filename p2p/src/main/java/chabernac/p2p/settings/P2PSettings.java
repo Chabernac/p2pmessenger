@@ -13,7 +13,6 @@ import chabernac.protocol.routing.PeerSender;
 import chabernac.protocol.routing.iPeerSender;
 
 public class P2PSettings {
-  private iPeerSender myPeerSender = new PeerSender();
   private iSocketPool mySocketPool = new BasicSocketPool();
   
   
@@ -31,12 +30,6 @@ public class P2PSettings {
     return INSTANCE_HOLDER.INSTANCE;
   }
   
-  public iPeerSender getPeerSender() {
-    return myPeerSender;
-  }
-  public void setPeerSender( iPeerSender aPeerSender ) {
-    myPeerSender = aPeerSender;
-  }
   public iSocketPool getSocketPool() {
     return mySocketPool;
   }

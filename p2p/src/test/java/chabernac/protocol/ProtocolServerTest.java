@@ -16,7 +16,9 @@ import org.apache.log4j.BasicConfigurator;
 
 import chabernac.protocol.ping.PingProtocol;
 import chabernac.protocol.routing.NoAvailableNetworkAdapterException;
+import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.SocketPeer;
+import chabernac.protocol.routing.iPeerSender;
 import chabernac.tools.PropertyMap;
 
 public class ProtocolServerTest extends AbstractProtocolTest {
@@ -51,7 +53,7 @@ public class ProtocolServerTest extends AbstractProtocolTest {
 
   }
 
-  public void testProtocolServerWithPeer() throws UnknownHostException, IOException, NoAvailableNetworkAdapterException{
+  public void testProtocolServerWithPeer() throws UnknownHostException, IOException, NoAvailableNetworkAdapterException, ProtocolException{
     ProtocolContainer theMasterProtocol = new ProtocolContainer(new ProtocolFactory(new PropertyMap()));
 
     int thePort = 12027;
@@ -64,11 +66,15 @@ public class ProtocolServerTest extends AbstractProtocolTest {
       thePeer.detectLocalInterfaces();
       thePeer.setPort( thePort );
 
-      assertEquals( PingProtocol.Response.PONG.name(), thePeer.send( PingProtocol.ID + "ping" ) );
+      assertEquals( PingProtocol.Response.PONG.name(), getPeerSender(theMasterProtocol).send(thePeer, PingProtocol.ID + "ping" ) );
     }finally{
 
       theServer.stop();
     }
+  }
+  
+  private iPeerSender getPeerSender(ProtocolContainer aContainer) throws ProtocolException{
+    return ((RoutingProtocol)aContainer.getProtocol( RoutingProtocol.ID )).getPeerSender(); 
   }
 
   public void testKillOldestSocket() throws UnknownHostException, IOException{

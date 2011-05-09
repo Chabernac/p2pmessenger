@@ -71,8 +71,8 @@ public class WebPeerProtocolTest extends AbstractProtocolTest {
       Thread.sleep( 2000 );
       
       //after the webpeer has been added, entries must be present in the comet servlet endpoints
-      theCometServlet.getEndPoints().containsKey("1");
-      theCometServlet.getEndPoints().containsKey("2");
+      assertTrue( theCometServlet.getEndPointContainer().containsEndPointFor( "1"));
+      assertTrue( theCometServlet.getEndPointContainer().containsEndPointFor( "2"));
       
       RoutingProtocol theWebPeerRoutingProtocol = (RoutingProtocol)theProtocolServlet.getProtocolContainer().getProtocol(RoutingProtocol.ID);
       String theWebPeerId = theWebPeerRoutingProtocol.getRoutingTable().getLocalPeerId();

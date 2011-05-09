@@ -4,7 +4,6 @@
  */
 package chabernac.protocol.routing;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -112,11 +111,6 @@ public class SocketPeer extends AbstractPeer implements Serializable {
   }
   public void setPort( int anPort ) {
     myPort = anPort;
-  }
-
-  protected String sendMessage(String aMessage, int aTimeoutInSeconds) throws IOException{
-    if(myPeerSender == null) throw new IOException("Could not send message to peer '" + getPeerId() + " because no message sender was defined");
-    return myPeerSender.send(aMessage, this, aTimeoutInSeconds);
   }
 
   /**

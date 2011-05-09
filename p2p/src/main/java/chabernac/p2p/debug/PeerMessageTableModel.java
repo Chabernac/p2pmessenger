@@ -22,7 +22,7 @@ public class PeerMessageTableModel implements TableModel, iSocketPeerSenderListe
   public PeerMessageTableModel(PeerSender anSocketPeerSender) {
     super();
     mySocketPeerSender = anSocketPeerSender;
-    mySocketPeerSender.addPeerSenderListener(this);
+    mySocketPeerSender.getPeerToPeerSender().addPeerSenderListener(this);
   }
 
   @Override
@@ -52,11 +52,11 @@ public class PeerMessageTableModel implements TableModel, iSocketPeerSenderListe
 
   @Override
   public int getRowCount() {
-    return mySocketPeerSender.getHistory().size();
+    return mySocketPeerSender.getPeerToPeerSender().getHistory().size();
   }
   
   public PeerMessage getPeerMessageAtRow(int aRow){
-    return mySocketPeerSender.getHistory().get(aRow);
+    return mySocketPeerSender.getPeerToPeerSender().getHistory().get(aRow);
   }
 
   @Override

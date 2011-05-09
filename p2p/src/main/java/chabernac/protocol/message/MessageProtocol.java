@@ -27,6 +27,7 @@ import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.RoutingTable;
 import chabernac.protocol.routing.RoutingTableEntry;
 import chabernac.protocol.routing.UnknownPeerException;
+import chabernac.protocol.routing.iPeerSender;
 
 /**
  * This protocol will accept a message and route it to the correct peer based on the routing table.
@@ -73,6 +74,11 @@ public class MessageProtocol extends Protocol {
     public RoutingTable getRoutingTable() throws ProtocolException{
       return ((RoutingProtocol)findProtocolContainer().getProtocol( RoutingProtocol.ID )).getRoutingTable();
     }
+    
+    public iPeerSender getPeerSender() throws ProtocolException{
+      return ((RoutingProtocol)findProtocolContainer().getProtocol( RoutingProtocol.ID )).getPeerSender();
+    }
+
 
     @Override
     public String handleCommand( String aSessionId, String anInput ) {
@@ -195,7 +201,7 @@ public class MessageProtocol extends Protocol {
           aMessage.setLocked( true );
           String theText = myMessageConverter.toString( aMessage );
           aMessage.setLocked( false );
-          return theGateway.send( createMessage( theText ), aMessage.getMessageTimeoutInSeconds());
+          return getPeerSender().send(theGateway, createMessage( theText ), aMessage.getMessageTimeoutInSeconds());
         } else {
           //TODO we should not come in this situation
           LOGGER.error("Peer with id: '" + theGateway.getPeerId() + "' has same host and port as local peer: '" + theLocalPeer.getPeerId() + "'");

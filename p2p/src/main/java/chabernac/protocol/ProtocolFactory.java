@@ -12,7 +12,6 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.RollingFileAppender;
 import org.apache.log4j.TTCCLayout;
 
-import chabernac.p2p.settings.P2PSettings;
 import chabernac.protocol.application.ApplicationProtocol;
 import chabernac.protocol.echo.EchoProtocol;
 import chabernac.protocol.encryption.EncryptionException;
@@ -29,7 +28,6 @@ import chabernac.protocol.ping.PingProtocol;
 import chabernac.protocol.pipe.PipeProtocol;
 import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.WebPeerProtocol;
-import chabernac.protocol.routing.iPeerSender;
 import chabernac.protocol.stacktrace.ProcessProtocol;
 import chabernac.protocol.userinfo.DefaultUserInfoProvider;
 import chabernac.protocol.userinfo.UserInfoProtocol;
@@ -64,14 +62,12 @@ public class ProtocolFactory implements iProtocolFactory{
       boolean isStopWhenAlreadyRunning = Boolean.parseBoolean(myProtocolProperties.getProperty( "routingprotocol.stopwhenalreadyrunning",  "false").toString());
       String thePeerId = myProtocolProperties.getProperty( "peerid", "" ).toString();
       DataSource theSuperNodesDataSource = (DataSource)myProtocolProperties.getProperty( "routingprotocol.supernodes", null);
-      iPeerSender thePeerSender = (iPeerSender)myProtocolProperties.getProperty("routingprotocol.peersender", P2PSettings.getInstance().getPeerSender());
       return new RoutingProtocol(thePeerId, 
           theExchangeDelay, 
           isPersistRoutingTable, 
           theSuperNodesDataSource, 
           isStopWhenAlreadyRunning, 
-          myProtocolProperties.getProperty( "routingprotocol.channel",  "default").toString(),
-          thePeerSender); 
+          myProtocolProperties.getProperty( "routingprotocol.channel",  "default").toString()); 
     }
     
     if(ApplicationProtocol.ID.equalsIgnoreCase( aProtocolId )) {
