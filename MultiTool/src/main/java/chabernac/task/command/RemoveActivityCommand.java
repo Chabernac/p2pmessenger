@@ -33,7 +33,7 @@ public class RemoveActivityCommand extends ActivityCommand {
   }
   public boolean isEnabled() {
     if(getSelectedTask() == null) return false;
-    if(getSelectedTask().getPeriods().size() > 0) return false;
+    if(getSelectedTask().getAllPeriods().size() > 0) return false;
     return true;
   }
 
