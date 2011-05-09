@@ -124,10 +124,10 @@ public class RoutingProtocol extends Protocol {
   private final iObjectStringConverter< RoutingTableEntry > myRoutingTableEntryConverter = new Base64ObjectStringConverter< RoutingTableEntry >();
   private final iObjectStringConverter< AbstractPeer> myPeerConverter = new Base64ObjectStringConverter< AbstractPeer >();
 
-  private final iPeerSender myPeerSender;
+  private iPeerSender myPeerSender;
 
   private iRoutingTableInspector myRoutingTableInspector = null;
-
+  
   /**
    * 
    * @param aLocalPeerId
@@ -139,13 +139,11 @@ public class RoutingProtocol extends Protocol {
                            boolean isPersistRoutingTable, 
                            DataSource aSuperNodesDataSource, 
                            boolean isStopWhenAlreadyRunning, 
-                           String aChannel,
-                           iPeerSender aPeerSender) throws ProtocolException{
+                           String aChannel) throws ProtocolException{
     super( ID );
     myLocalPeerId = aLocalPeerId;
     myExchangeDelay = anExchangeDelay;
     myChannel = aChannel;
-    myPeerSender = aPeerSender;
     this.isPersistRoutingTable = isPersistRoutingTable;
     this.isStopWhenAlreadyRunning = isStopWhenAlreadyRunning;
 
@@ -214,7 +212,6 @@ public class RoutingProtocol extends Protocol {
       //this is because the peer id will not be stored if persist is set to false and thus the peer id will not be reused in the future
       //by doing this we will avoid all peers to keep track of peer id's which will never occure again
       theLocalPeer.setTemporaryPeer( !isPersistRoutingTable );
-      myPeerSender.setPeerId(theLocalPeer.getPeerId());
 
       RoutingTableEntry theLocalRoutingTableEntry = new RoutingTableEntry(theLocalPeer, 0, theLocalPeer, System.currentTimeMillis());
       myRoutingTable.addRoutingTableEntry( theLocalRoutingTableEntry );
@@ -402,8 +399,7 @@ public class RoutingProtocol extends Protocol {
   boolean contactPeer(AbstractPeer aPeer, List<String> anUnreachablePeers){
     try{
       LOGGER.debug("Sending message to '" + aPeer.getEndPointRepresentation() );
-      aPeer.setPeerSender(myPeerSender);
-      String theResponse = aPeer.send( createMessage( Command.WHO_ARE_YOU.name() ));
+      String theResponse = getPeerSender().send( aPeer, createMessage( Command.WHO_ARE_YOU.name() ));
       AbstractPeer theRemotePeer = myPeerConverter.getObject( theResponse );
 
       if(anUnreachablePeers == null || !anUnreachablePeers.contains( theRemotePeer.getPeerId() )){
@@ -553,7 +549,6 @@ public class RoutingProtocol extends Protocol {
 
     for(RoutingTableEntry theEntry : myRoutingTable.getEntries()){
       AbstractPeer thePeer = theEntry.getPeer();
-      thePeer.setPeerSender(myPeerSender);
 
       //simulate that we can not contact this peer directly, but we can contact it trough a gateway
       //so check if hop distance = 1
@@ -566,7 +561,7 @@ public class RoutingProtocol extends Protocol {
             throw new Exception("Simulate that we can not contact peer: " + thePeer.getPeerId());
           }
           String theCMD = createMessage( Command.ANNOUNCEMENT_WITH_REPLY.name() + " "  + myRoutingTableEntryConverter.toString( myRoutingTable.getEntryForLocalPeer() ));
-          String theTable = thePeer.send( theCMD ) ;
+          String theTable = getPeerSender().send(thePeer, theCMD) ;
           //          String theTable = thePeer.send( createMessage( Command.REQUEST_TABLE.name() ));
           RoutingTable theRemoteTable = myRoutingTableConverter.getObject( theTable );
 
@@ -621,7 +616,6 @@ public class RoutingProtocol extends Protocol {
 
     for(RoutingTableEntry theEntry : myRoutingTable.getEntries()){
       AbstractPeer thePeer = theEntry.getPeer();
-      thePeer.setPeerSender(myPeerSender);
 
       //do not send the entry to our selfs, we already have the entry
       if(!thePeer.getPeerId().equals( myRoutingTable.getLocalPeerId()) &&
@@ -633,7 +627,7 @@ public class RoutingProtocol extends Protocol {
           !myUnreachablePeers.contains(thePeer.getPeerId())){
         try {
           LOGGER.debug("Sending announcement of peer '" + anEntry.getPeer().getPeerId() +  "' from peer '" + myLocalPeerId +  "' to peer '" + thePeer.getPeerId() + "' on '" + thePeer.getEndPointRepresentation() + "'");
-          String theResult = thePeer.send( createMessage( Command.ANNOUNCEMENT.name() + " "  + myRoutingTableEntryConverter.toString( myRoutingTable.getEntryForLocalPeer()) + ";" + myRoutingTableEntryConverter.toString( anEntry ))) ;
+          String theResult = getPeerSender().send( thePeer, createMessage( Command.ANNOUNCEMENT.name() + " "  + myRoutingTableEntryConverter.toString( myRoutingTable.getEntryForLocalPeer()) + ";" + myRoutingTableEntryConverter.toString( anEntry ))) ;
           if(!Response.OK.name().equals( theResult )){
             throw new Exception("Unexpected result code '" + theResult + "'");
           }
@@ -750,8 +744,6 @@ public class RoutingProtocol extends Protocol {
   private class RoutingTableListener implements IRoutingTableListener{
     @Override
     public void routingTableEntryChanged( RoutingTableEntry anEntry ) {
-      //make sure all peers in the routing table have the same peersender
-      anEntry.getPeer().setPeerSender( myPeerSender );
       myChangeService.execute( new SendAnnouncement(anEntry) );
     }
 
@@ -876,6 +868,9 @@ public class RoutingProtocol extends Protocol {
   }
 
   public iPeerSender getPeerSender() {
+    if(myPeerSender == null){
+      myPeerSender = new PeerSender( getRoutingTable() );
+    }
     return myPeerSender;
   }
 

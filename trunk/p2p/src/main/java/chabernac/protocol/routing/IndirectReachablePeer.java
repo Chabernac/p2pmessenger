@@ -4,7 +4,6 @@
  */
 package chabernac.protocol.routing;
 
-import java.io.IOException;
 
 /**
  * Class which represents a peer which can not be reached directly 
@@ -35,10 +34,4 @@ public class IndirectReachablePeer extends AbstractPeer {
   public boolean isValidEndPoint() {
     return true;
   }
-
-  @Override
-  protected String sendMessage( String aMessage, int aTimeoutInSeconds ) throws IOException {
-    throw new IOException("Can not send a message to an indirect reachable peer");
-  }
-
 }

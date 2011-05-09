@@ -16,7 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 
-import chabernac.comet.EndPoint;
+import chabernac.comet.EndPointContainer;
 import chabernac.protocol.ProtocolContainer;
 import chabernac.protocol.ProtocolFactory;
 import chabernac.protocol.ServerInfo;
@@ -25,6 +25,7 @@ import chabernac.protocol.echo.EchoProtocol;
 import chabernac.protocol.message.MessageProtocol;
 import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.SessionData;
+import chabernac.protocol.routing.WebPeer;
 import chabernac.protocol.routing.WebRoutingTableInspecter;
 import chabernac.tools.PropertyMap;
 
@@ -46,7 +47,6 @@ public class ProtocolServlet extends HttpServlet {
         PropertyMap thePropertyMap = new PropertyMap();
         thePropertyMap.setProperty("routingprotocol.exchangedelay", "60");
         thePropertyMap.setProperty("routingprotocol.persist", "true".equalsIgnoreCase(getInitParameter("persist")));
-        thePropertyMap.setProperty("routingprotocol.peersender", new WebPeerSender((Map<String, EndPoint>)getServletContext().getAttribute( "EndPoints" )));
 
         Set<String> theSupportedProtocols = new HashSet< String >();
         theSupportedProtocols.add( RoutingProtocol.ID );
@@ -64,13 +64,15 @@ public class ProtocolServlet extends HttpServlet {
         }
 
         getServletContext().setAttribute( "ProtocolContainer", theProtocolContainer );
-        
-        ServerInfo theServerInfo = new ServerInfo(Type.WEB);
-        theServerInfo.setServerURL( getServletConfig().getInitParameter( "serverurl" ));
-        theProtocolContainer.setServerInfo( theServerInfo );
-
-        getProtocolContainer().setServerInfo(theServerInfo);
       }
+
+      ServerInfo theServerInfo = new ServerInfo(Type.WEB);
+      theServerInfo.setServerURL( getServletConfig().getInitParameter( "serverurl" ));
+
+      getProtocolContainer().setServerInfo(theServerInfo);
+
+      WebPeer theWebPeer = (WebPeer)((RoutingProtocol)getProtocolContainer().getProtocol( RoutingProtocol.ID )).getRoutingTable().getEntryForLocalPeer().getPeer();
+      theWebPeer.setEndPointContainer( (EndPointContainer)getServletContext().getAttribute( "EndPoints" ) );
 
     }catch(Exception e){
       throw new ServletException("Could not init p2p servlet", e);
@@ -84,10 +86,10 @@ public class ProtocolServlet extends HttpServlet {
 
     getPeerIpMap().put(thePeerId, aRequest.getRemoteAddr());
     getSessionData().putProperty(theSession, "requestor.ip", aRequest.getRemoteAddr());
-        
+
     LOGGER.debug( "Received message from peer '" + thePeerId + "' in session '" + theSession + "': " + theInput + "'" + " at remote ip '" + aRequest.getRemoteAddr() + "'" );
     //TODO remove when logging correctly enabled on server
-//    System.out.println("Received message from peer '" + thePeerId + "' in session '" + theSession + "': " + theInput + "'" );
+    //    System.out.println("Received message from peer '" + thePeerId + "' in session '" + theSession + "': " + theInput + "'" );
 
     try {
       if("exchange".equalsIgnoreCase( theInput ) ){

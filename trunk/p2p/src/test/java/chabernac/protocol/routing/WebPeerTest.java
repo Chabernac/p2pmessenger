@@ -20,6 +20,7 @@ import org.mortbay.jetty.servlet.ServletHolder;
 import chabernac.comet.CometEvent;
 import chabernac.comet.EndPoint;
 import chabernac.p2p.web.ProtocolServlet;
+import chabernac.protocol.ProtocolException;
 import chabernac.protocol.echo.EchoProtocol;
 import chabernac.protocol.userinfo.UserInfoProtocol;
 
@@ -68,17 +69,19 @@ public class WebPeerTest extends TestCase {
       theEndPoint.setEvent( theServerToClientEvent );
       assertEquals( "output", theServerToClientEvent.getOutput( 2000 ));
       
-      theWebPeer.setPeerSender(new PeerSender("2"));
-      assertEquals("123", theWebPeer.send("ECO123"));
+      assertEquals("123", getPeerSender( theProtocolServlet ).send( theWebPeer, "ECO123"));
     }finally{
       theServer.stop();
       theService.shutdownNow();
     }
   }
   
+  private iPeerSender getPeerSender(ProtocolServlet aServlet) throws ProtocolException{
+    return ((RoutingProtocol)aServlet.getProtocolContainer().getProtocol( RoutingProtocol.ID )).getPeerSender();
+  }
+  
   public void testSupportedProtocols() throws IOException{
     WebPeer theWebPeer = new WebPeer(  );
-    theWebPeer.setPeerSender( new MyPeerSender() );
     assertTrue( theWebPeer.isProtocolSupported( EchoProtocol.ID ) );
     assertTrue( theWebPeer.isProtocolSupported( UserInfoProtocol.ID ) );
     assertTrue( theWebPeer.isProtocolSupported( RoutingProtocol.ID ) );
@@ -92,9 +95,11 @@ public class WebPeerTest extends TestCase {
     assertFalse( theWebPeer.isProtocolSupported( WebPeerProtocol.ID ) );
     
     
-    theWebPeer.send( "ECO123" );
+    MyPeerSender thePeerSender = new MyPeerSender();
+    
+    thePeerSender.send(theWebPeer, "ECO123" );
     try{
-      theWebPeer.send( "ROU123" );
+      thePeerSender.send(theWebPeer, "ROU123" );
       fail("We should not get here");
     }catch(Exception e){
     }
@@ -104,29 +109,11 @@ public class WebPeerTest extends TestCase {
     assertEquals("+", "+".replaceAll("\\+", "{plus}").replaceAll("\\{plus\\}", "\\+"));
   }
   
-  private class MyPeerSender implements iPeerSender{
+  private class MyPeerSender extends AbstractPeerSender{
 
     @Override
-    public String send( String aMessage, SocketPeer aPeer, int aTimeout ) throws IOException {
+    protected String doSend( AbstractPeer aTo, String aMessage, int aTimeout ) throws IOException {
       return null;
     }
-
-    @Override
-    public String send( String aMessage, WebPeer aPeer, int aTimeout ) throws IOException {
-      return null;
-    }
-
-    @Override
-    public String send(String aMessage,
-        IndirectReachablePeer aIndirectReachablePeer, int aTimeoutInSeconds) {
-      return null;
-    }
-
-    @Override
-    public void setPeerId(String aPeerId) {
-      // TODO Auto-generated method stub
-      
-    }
-    
   }
 }

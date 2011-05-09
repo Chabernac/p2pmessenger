@@ -2,7 +2,6 @@ package chabernac.p2p.web;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -14,8 +13,8 @@ import org.mortbay.jetty.servlet.ServletHolder;
 
 import chabernac.comet.CometEvent;
 import chabernac.comet.CometServlet;
-import chabernac.comet.EndPoint;
-import chabernac.p2p.web.WebPeerSender;
+import chabernac.comet.EndPointContainer;
+import chabernac.p2p.io.WebToPeerSender;
 import chabernac.protocol.routing.SocketPeer;
 import chabernac.protocol.routing.WebPeer;
 
@@ -44,16 +43,17 @@ public class WebPeerSenderTest extends TestCase {
 
       Thread.sleep( 2000 );
 
-      Map<String, EndPoint> theEndPoints =  (Map<String, EndPoint>)root.getServletContext().getAttribute( "EndPoints" );
-      assertNotNull( theEndPoints );
-      assertTrue( theEndPoints.containsKey( "2" ) );
+      EndPointContainer theEndPointContainer =  (EndPointContainer)root.getServletContext().getAttribute( "EndPointContainer" );
+      
+      assertNotNull( theEndPointContainer );
+      assertTrue( theEndPointContainer.containsEndPointFor( "2" ) );
 
+      WebToPeerSender theSender = new WebToPeerSender();
 
-      WebPeerSender theSender = new WebPeerSender(theEndPoints);
       SocketPeer theLocalPeer = new SocketPeer("2");
-      assertEquals("output", theSender.send("event1", theLocalPeer, 2000));
+      assertEquals("output", theSender.sendMessageTo( theWebPeer, theLocalPeer, "event1", 2000));
       WebPeer theWebPeer2 = new WebPeer("2", null);
-      assertEquals("output", theSender.send("event1", theWebPeer2, 2000));
+      assertEquals("output", theSender.sendMessageTo( theWebPeer, theWebPeer2, "event1", 2000));
     }finally{
       theServer.stop();
       theService.shutdownNow();

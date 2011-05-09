@@ -26,6 +26,7 @@ import chabernac.protocol.routing.RoutingTable;
 import chabernac.protocol.routing.RoutingTableEntry;
 import chabernac.protocol.routing.SocketPeer;
 import chabernac.protocol.routing.UnknownPeerException;
+import chabernac.protocol.routing.iPeerSender;
 import chabernac.tools.IOTools;
 import chabernac.tools.NetTools;
 
@@ -65,6 +66,11 @@ public class PipeProtocol extends Protocol {
   public RoutingTable getRoutingTable() throws ProtocolException{
     return ((RoutingProtocol)findProtocolContainer().getProtocol( RoutingProtocol.ID )).getRoutingTable();
   }
+  
+  public iPeerSender getPeerSender() throws ProtocolException{
+    return ((RoutingProtocol)findProtocolContainer().getProtocol( RoutingProtocol.ID )).getPeerSender();
+  }
+
 
   @Override
   public String handleCommand( String aSessionId, String anInput ) {
@@ -168,7 +174,7 @@ public class PipeProtocol extends Protocol {
 
   private SocketProxy openSocketToPeer(SocketPeer aFromPeer, SocketPeer aToPeer, String aPipeDescription) throws IOException, UnknownPeerException, ProtocolException{
     AbstractPeer theGateway = getRoutingTable().getGatewayForPeer(aToPeer);
-    String theResult = theGateway.send( createMessage( Command.OPEN_SOCKET + ";" + aFromPeer.getPeerId()  + ";" + aToPeer.getPeerId() + ";" +  aPipeDescription) );
+    String theResult = getPeerSender().send(theGateway, createMessage( Command.OPEN_SOCKET + ";" + aFromPeer.getPeerId()  + ";" + aToPeer.getPeerId() + ";" +  aPipeDescription) );
 
     if(!theResult.startsWith( Result.SOCKET_OPENED.name() )){
       LOGGER.error("Peer: " + getRoutingTable().getLocalPeerId() + " Socket with peer '" + aToPeer.getPeerId() +  "' could not be openend: " + theResult);

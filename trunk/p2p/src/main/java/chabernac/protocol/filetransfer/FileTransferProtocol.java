@@ -25,6 +25,7 @@ import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.RoutingTable;
 import chabernac.protocol.routing.SocketPeer;
 import chabernac.protocol.routing.UnknownPeerException;
+import chabernac.protocol.routing.iPeerSender;
 import chabernac.tools.IOTools;
 import chabernac.tools.iTransferListener;
 
@@ -120,6 +121,10 @@ public class FileTransferProtocol extends Protocol {
   public RoutingTable getRoutingTable() throws ProtocolException{
     return ((RoutingProtocol)findProtocolContainer().getProtocol( RoutingProtocol.ID )).getRoutingTable();
   }
+  
+  public iPeerSender getPeerSender() throws ProtocolException{
+    return ((RoutingProtocol)findProtocolContainer().getProtocol( RoutingProtocol.ID )).getPeerSender();
+  }
 
   public void sendFile(File aFile, String aPeerid) throws FileTransferException{
     String theResponse = null;
@@ -158,7 +163,7 @@ public class FileTransferProtocol extends Protocol {
         IOTools.copyStream( theInputStream, thePipe.getSocket().getOutputStream());
         thePipeProtocol.closePipe( thePipe );
 
-        theResponse = thePeer.send( createMessage( Command.WAIT_FOR_FILE.name() + " " + theFileId + " " + aFile.length()));
+        theResponse = getPeerSender().send( thePeer, createMessage( Command.WAIT_FOR_FILE.name() + " " + theFileId + " " + aFile.length()));
 
         if(theResponse.equalsIgnoreCase( Response.BAD_FILE_SIZE.name() )){
           throw new FileTransferException("Received file had bad file size");

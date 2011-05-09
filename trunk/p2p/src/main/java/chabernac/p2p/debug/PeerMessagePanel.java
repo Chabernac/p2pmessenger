@@ -6,7 +6,6 @@ import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.text.NumberFormat;
-import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -73,7 +72,8 @@ public class PeerMessagePanel extends JPanel {
   }
 
   private JPanel buildBandWithPanel(){
-    myPeerSender.addPeerSenderListener( new BandWithCalculator() );
+    //TODO implement again
+//    myPeerSender.addPeerSenderListener( new BandWithCalculator() );
     JPanel thePanel = new JPanel(new GridBagLayout());
 
     GridBagConstraints theCons = new GridBagConstraints();

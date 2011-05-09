@@ -4,13 +4,10 @@
  */
 package chabernac.protocol;
 
-import java.util.UUID;
-
 import javax.activation.DataSource;
 
 import junit.framework.TestCase;
 import chabernac.p2p.settings.P2PSettings;
-import chabernac.protocol.routing.PeerSender;
 import chabernac.tools.PropertyMap;
 
 public abstract class AbstractProtocolTest extends TestCase {
@@ -24,7 +21,6 @@ public abstract class AbstractProtocolTest extends TestCase {
     PropertyMap theProperties = new PropertyMap();
     theProperties.setProperty( "routingprotocol.exchangedelay", Long.toString( anExchangeDelay));
     theProperties.setProperty("routingprotocol.persist", Boolean.toString( isPersist));
-    theProperties.setProperty("routingprotocol.peersender", new PeerSender());
     
     if(aPeerId != null) theProperties.setProperty("peerid", aPeerId);
     ProtocolFactory theFactory = new ProtocolFactory(theProperties);
@@ -35,7 +31,6 @@ public abstract class AbstractProtocolTest extends TestCase {
     PropertyMap theProperties = new PropertyMap();
     theProperties.setProperty( "routingprotocol.exchangedelay", Long.toString( anExchangeDelay));
     theProperties.setProperty("routingprotocol.persist", Boolean.toString( isPersist));
-    theProperties.setProperty("routingprotocol.peersender", new PeerSender());
     theProperties.setProperty("routingprotocol.supernodes", aSuperNodesDataSource );
     
     if(aPeerId != null) theProperties.setProperty("peerid", aPeerId);
