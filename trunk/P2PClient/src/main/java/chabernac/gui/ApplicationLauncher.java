@@ -38,7 +38,6 @@ import chabernac.protocol.facade.P2PFacade;
 import chabernac.protocol.facade.P2PFacadeException;
 import chabernac.protocol.filetransfer.FileHandlerDialogDispatcher;
 import chabernac.protocol.pominfoexchange.POMInfo;
-import chabernac.protocol.routing.PeerSender;
 import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.RoutingTableEntry;
 import chabernac.protocol.userinfo.UserInfoException;
@@ -196,9 +195,9 @@ public class ApplicationLauncher {
 
   private static boolean activate(){
     try {
-      RoutingProtocol theRoutingProtocol = new RoutingProtocol(null, -1, true, null, false, "AXA", new PeerSender());
+      RoutingProtocol theRoutingProtocol = new RoutingProtocol(null, -1, true, null, false, "AXA");
       RoutingTableEntry theLocalEntry = theRoutingProtocol.getRoutingTable().getEntryForLocalPeer();
-      return "ok".equals( theLocalEntry.getPeer().send( "APPactivate" ));
+      return "ok".equals( theRoutingProtocol.getPeerSender().send( theLocalEntry.getPeer(), "APPactivate" ));
     } catch ( Exception e ) {
       LOGGER.error("Could not activate", e);
       return false;
