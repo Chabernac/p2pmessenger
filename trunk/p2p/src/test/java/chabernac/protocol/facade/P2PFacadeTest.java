@@ -36,7 +36,7 @@ import chabernac.testingutils.UserInfoProvider;
 
 public class P2PFacadeTest extends TestCase {
   private static Logger LOGGER = Logger.getLogger(P2PFacadeTest.class);
-  
+
   static{
     BasicConfigurator.resetConfiguration();
     BasicConfigurator.configure();
@@ -528,39 +528,39 @@ public class P2PFacadeTest extends TestCase {
     .start( 20 );
 
     String thePeerId2 = theFacade2.getPeerId();
-    
+
     MessageCollector theCollector = new MessageCollector();
     theFacade2.addMessageListener( theCollector );
-    
+
     DeliveryReportCollector theDeliveryReportCollector = new DeliveryReportCollector();
     theFacade1.addDeliveryReportListener( theDeliveryReportCollector );
 
     Thread.sleep( 2000 );
-    
+
     assertNotNull( theFacade1.getFailedMessageResender() );
     assertNotNull( theFacade2.getFailedMessageResender() );
 
     assertTrue( theFacade1.getRoutingTable().containsEntryForPeer( theFacade2.getPeerId() ));
     assertTrue( theFacade2.getRoutingTable().containsEntryForPeer( theFacade1.getPeerId() ));
-    
+
     try{
       theFacade2.stop();
-      
+
       Thread.sleep( 3000 );
-      
+
       assertFalse( theFacade1.getRoutingTable().getEntryForPeer( thePeerId2 ).isReachable() );
-      
+
       MultiPeerMessage theMessage = MultiPeerMessage.createMessage( "test" )
       .addDestination( thePeerId2 );
-      
+
       assertTrue( theFacade1.sendMessage( theMessage, Executors.newFixedThreadPool( 1 ) ).get() );
-      
+
       //give the system some time to detect that the peer is unreachble and collect the message int the message resender
       Thread.sleep( 3000 );
-      
+
       assertEquals( 0, theCollector.getMessages().size() );
       assertEquals( 1, theFacade1.getFailedMessageResender().getNrOfMessagesWaitingForResend() );
-      
+
       theFacade2 = new P2PFacade()
       .setExchangeDelay( 300 )
       .setInfoObject( "test", "test2" )
@@ -568,23 +568,23 @@ public class P2PFacadeTest extends TestCase {
       .setPeerId( thePeerId2 )
       .setMessageResenderActivated( true )
       .start( 20 );
-      
+
       theFacade2.addMessageListener( theCollector );
-      
+
       Thread.sleep( 3000 );
-      
+
       //the message resender should be informed that peer 2 has come online and try to resend the message
-      
+
       assertEquals( 1, theCollector.getMessages().size() );
       assertEquals( 0, theFacade1.getFailedMessageResender().getNrOfMessagesWaitingForResend() );
-      
-      
+
+
     } finally {
       if(theFacade1 != null) theFacade1.stop();
       if(theFacade2 != null) theFacade2.stop();
     }
   }
-  
+
   public void testChangeUserInfoRemotely() throws P2PFacadeException, InterruptedException{
     LOGGER.debug("Executing test " + new Exception().getStackTrace()[0].getMethodName());
     P2PFacade theFacade1 = new P2PFacade()
@@ -642,7 +642,7 @@ public class P2PFacadeTest extends TestCase {
       if(theFacade2 != null) theFacade2.stop();
     }
   }
-  
+
   public void testStressWebToPeer() throws P2PFacadeException, MalformedURLException, InterruptedException{
 
     P2PFacade theWebPeer = new P2PFacade()
@@ -660,27 +660,32 @@ public class P2PFacadeTest extends TestCase {
     .addSuperNode( "http://localhost:8080" )
     .start( 20 );
 
-    
+
     theSocketPeer.scanSuperNodes();
-    
+
     Thread.sleep( 2000 );
-    
+
     try{
       assertTrue( theSocketPeer.getRoutingTable().containsEntryForPeer( theWebPeer.getRoutingTable().getLocalPeerId() ));
       assertTrue( theWebPeer.getRoutingTable().containsEntryForPeer( theSocketPeer.getRoutingTable().getLocalPeerId() ));
-      
+
       MessageCollector theCollector = new MessageCollector();
       theSocketPeer.addMessageListener( theCollector );
-      
+
       ExecutorService theSendService = Executors.newSingleThreadExecutor();
-      MultiPeerMessage theMessage = MultiPeerMessage.createMessage( "test" )
-      .addDestination( theSocketPeer.getPeerId() );
-      theWebPeer.sendMessage( theMessage, theSendService );
-      
+
+      int times = 100;
+
+      for(int i=0;i<times;i++){
+        MultiPeerMessage theMessage = MultiPeerMessage.createMessage( "test" )
+        .addDestination( theSocketPeer.getPeerId() );
+        theWebPeer.sendMessage( theMessage, theSendService );
+      }
+
       Thread.sleep( 1000 );
-      
-      assertEquals( 1, theCollector.getMessages().size() );
-      
+
+      assertEquals( times, theCollector.getMessages().size() );
+
     } finally {
       if(theWebPeer != null) theWebPeer.stop();
       if(theSocketPeer != null) theSocketPeer.stop();
