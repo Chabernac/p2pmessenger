@@ -26,13 +26,11 @@ public class CometServlet extends HttpServlet {
 
   public static enum Responses{NO_DATA, OK};
 
-  private EndPointContainer myEndPointContainer = new EndPointContainer();
-  private Map<String, CometEvent> myCometEvents = Collections.synchronizedMap( new HashMap<String, CometEvent>() );
-
   private iObjectStringConverter<CometEvent> myCometEventConverter =  new Base64ObjectStringConverter<CometEvent>();
 
   public void init(ServletConfig aConfig){
-    aConfig.getServletContext().setAttribute("EndPoints", myEndPointContainer);
+    aConfig.getServletContext().setAttribute("EndPoints", new EndPointContainer());
+    aConfig.getServletContext().setAttribute("CometEvents", Collections.synchronizedMap( new HashMap<String, CometEvent>() ));
   }
 
   /**
@@ -54,8 +52,8 @@ public class CometServlet extends HttpServlet {
         //look up the comet event and store the output in the comet event so that it can be processed
         String theEventId = aRequest.getParameter("eventid");
         String theEventOutput = aRequest.getParameter("eventoutput");
-        if(myCometEvents.containsKey(theEventId)){
-          myCometEvents.get(theEventId).setOutput(theEventOutput);
+        if(getCometEvents().containsKey(theEventId)){
+          getCometEvents().get(theEventId).setOutput(theEventOutput);
         }
         aResponse.getWriter().println( Responses.OK.name() );
       } else {
@@ -68,10 +66,10 @@ public class CometServlet extends HttpServlet {
 
 
           //publish the end point so that other processes can detecte it and put data for this end point
-          myEndPointContainer.addEndPoint( theEndPoint );
+          getEndPointContainer().addEndPoint( theEndPoint );
 
           theEvent = theEndPoint.getEvent();
-          myCometEvents.put(theEvent.getId(), theEvent);
+          getCometEvents().put(theEvent.getId(), theEvent);
           aResponse.getWriter().println( myCometEventConverter.toString(theEvent) );
         }catch(Exception e){
           LOGGER.error("Could not send comet event to endpoint", e);
@@ -88,9 +86,17 @@ public class CometServlet extends HttpServlet {
 
   private void showEndPoints(HttpServletResponse aResponse) throws IOException{
     PrintWriter theWriter = aResponse.getWriter();
-    for(EndPoint theEndPoint : myEndPointContainer.getAllEndPoints()){
+    for(EndPoint theEndPoint : getEndPointContainer().getAllEndPoints()){
       theWriter.println(theEndPoint.getId());
     }
+  }
+  
+  public Map<String, CometEvent> getCometEvents(){
+    return (Map<String, CometEvent>)getServletContext().getAttribute( "CometEvents" );
+  }
+  
+  public EndPointContainer getEndPointContainer(){
+    return (EndPointContainer)getServletContext().getAttribute( "EndPoints" );
   }
 
 

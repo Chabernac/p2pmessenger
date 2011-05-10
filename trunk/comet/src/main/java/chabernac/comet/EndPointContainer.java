@@ -32,6 +32,11 @@ public class EndPointContainer {
     return myEndPoints.get(anId).size();
   }
   
+  public boolean containsEndPointFor(String anId){
+    return getNrOfEndPoints( anId ) > 0;
+  }
+  
+  
   public int size(){
     return myEndPoints.size();
   }
