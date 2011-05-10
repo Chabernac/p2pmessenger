@@ -14,10 +14,10 @@ public class WebToPeerSender {
 
   public String sendMessageTo(WebPeer aSendingPeer, AbstractPeer aPeer, String aMessage, int aTimeoutInSeconds) throws IOException{
     if(aSendingPeer.getEndPointContainer() == null) throw new IOException("No endpoints available in webpeer '" + aSendingPeer.getPeerId() + "'");
-    if(aSendingPeer.getEndPointContainer().getNrOfEndPoints( aPeer.getPeerId() ) == 0) throw new IOException("No end point available for peer '" + aPeer.getPeerId() + "' in webpeer '" + aSendingPeer.getPeerId() + "'");
 
     try{
       EndPoint theEndPoint = aSendingPeer.getEndPointContainer().getEndPointFor( aPeer.getPeerId(), aTimeoutInSeconds, TimeUnit.SECONDS );
+      if(theEndPoint == null) throw new IOException("No end point available for peer '" + aPeer.getPeerId() + "' in webpeer '" + aSendingPeer.getPeerId() + "'");
       UUID theUID = UUID.randomUUID();
       CometEvent theCometEvent = new CometEvent(theUID.toString(), aMessage);
       theEndPoint.setEvent( theCometEvent );

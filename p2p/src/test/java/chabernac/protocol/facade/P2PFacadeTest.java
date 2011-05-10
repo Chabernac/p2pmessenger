@@ -32,6 +32,7 @@ import chabernac.testingutils.DeliveryReportCollector;
 import chabernac.testingutils.EchoPipeListener;
 import chabernac.testingutils.FileHandler;
 import chabernac.testingutils.MessageCollector;
+import chabernac.testingutils.MessagePrinter;
 import chabernac.testingutils.UserInfoProvider;
 
 public class P2PFacadeTest extends TestCase {
@@ -671,18 +672,19 @@ public class P2PFacadeTest extends TestCase {
 
       MessageCollector theCollector = new MessageCollector();
       theSocketPeer.addMessageListener( theCollector );
+      theSocketPeer.addMessageListener(new MessagePrinter());
 
       ExecutorService theSendService = Executors.newSingleThreadExecutor();
 
-      int times = 100;
+      int times = 300;
 
       for(int i=0;i<times;i++){
-        MultiPeerMessage theMessage = MultiPeerMessage.createMessage( "test" )
+        MultiPeerMessage theMessage = MultiPeerMessage.createMessage( "test" + i )
         .addDestination( theSocketPeer.getPeerId() );
         theWebPeer.sendMessage( theMessage, theSendService );
       }
 
-      Thread.sleep( 1000 );
+      Thread.sleep( 5000 );
 
       assertEquals( times, theCollector.getMessages().size() );
 
