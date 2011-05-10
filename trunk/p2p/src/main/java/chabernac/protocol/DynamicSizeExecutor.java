@@ -17,7 +17,7 @@ import java.util.concurrent.TimeoutException;
 
 public class DynamicSizeExecutor implements ExecutorService{
   private final ThreadPoolExecutor myExecutor;
-  private ArrayBlockingQueue<Runnable> myQueue = new ArrayBlockingQueue<Runnable>( 64 );
+  private ArrayBlockingQueue<Runnable> myQueue = new ArrayBlockingQueue<Runnable>( 1024 );
   
   public DynamicSizeExecutor(int aCoreSize, int aMaxPoolSize){
     myExecutor = new ThreadPoolExecutor( aCoreSize, aMaxPoolSize, 10, TimeUnit.SECONDS, myQueue);
