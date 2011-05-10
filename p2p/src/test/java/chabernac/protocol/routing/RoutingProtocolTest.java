@@ -24,7 +24,6 @@ import chabernac.protocol.ProtocolContainer;
 import chabernac.protocol.ProtocolException;
 import chabernac.protocol.ProtocolServer;
 import chabernac.tools.SimpleNetworkInterface;
-import chabernac.tools.SuperNodesDataSource;
 
 public class RoutingProtocolTest extends AbstractProtocolTest {
   private static Logger LOGGER = Logger.getLogger(RoutingProtocolTest.class);
@@ -876,10 +875,10 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
     }
     
     public void testScanSuperNodes() throws Exception{
-      ProtocolContainer theProtocol1 = getProtocolContainer( -1, false, "1", new SuperNodesDataSource("localhost", "http://localhost:9090/") );
+      ProtocolContainer theProtocol1 = getProtocolContainer( -1, false, "1", "localhost", "http://localhost:9090/") ;
       ProtocolServer theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT, 5);
 
-      ProtocolContainer theProtocol2 = getProtocolContainer( -1, false, "2", new SuperNodesDataSource("localhost", "http://localhost:9090/") );
+      ProtocolContainer theProtocol2 = getProtocolContainer( -1, false, "2", "localhost", "http://localhost:9090/") ;
       ProtocolServer theServer2 = new ProtocolServer(theProtocol2, RoutingProtocol.START_PORT + 1, 5 );
       
       RoutingProtocol theRoutingProtocol1 = (RoutingProtocol)theProtocol1.getProtocol( RoutingProtocol.ID );
@@ -918,8 +917,7 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
         theRoutingProtocol2.scanSuperNodes();
         
         Thread.sleep( SLEEP_AFTER_SCAN );
-        //only 2 because the super node scan only scans at the start port and not at start port + 1
-        assertEquals( 2, theRoutingTable1.getEntries().size() );
+        assertEquals( 3, theRoutingTable1.getEntries().size() );
         assertEquals( 3, theRoutingTable2.getEntries().size() );
         
       } finally{
