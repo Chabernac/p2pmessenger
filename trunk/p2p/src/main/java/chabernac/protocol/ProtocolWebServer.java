@@ -37,7 +37,7 @@ public class ProtocolWebServer implements iP2PServer {
 
   @Override
   public boolean isStarted() {
-    return myServer.isStarted();
+    return myServer != null && myServer.isStarted();
   }
 
   @Override
@@ -56,14 +56,14 @@ public class ProtocolWebServer implements iP2PServer {
       }
 
       Context root = new Context(myServer,"/p2p",Context.SESSIONS);
+      root.getServletContext().setAttribute("ProtocolContainer", myProtocolContainer);
 
       CometServlet theCometServlet = new CometServlet();
       ServletHolder theCometHolder = new ServletHolder(theCometServlet);
       theCometHolder.setInitOrder( 1 );
       root.addServlet(theCometHolder, "/comet");
-
+      
       ProtocolServlet theProtocolServlet = new ProtocolServlet();
-      theProtocolServlet.getServletContext().setAttribute("ProtocolContainer", myProtocolContainer);
       ServletHolder theProtocolHolder = new ServletHolder(theProtocolServlet);
       theProtocolHolder.setInitOrder(2);
       root.addServlet(theProtocolHolder, "/protocol");

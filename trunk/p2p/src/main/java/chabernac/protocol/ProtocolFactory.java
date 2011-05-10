@@ -5,8 +5,7 @@
 package chabernac.protocol;
 
 import java.io.IOException;
-
-import javax.activation.DataSource;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.RollingFileAppender;
@@ -61,11 +60,11 @@ public class ProtocolFactory implements iProtocolFactory{
       boolean isPersistRoutingTable = Boolean.parseBoolean(myProtocolProperties.getProperty( "routingprotocol.persist",  "true").toString());
       boolean isStopWhenAlreadyRunning = Boolean.parseBoolean(myProtocolProperties.getProperty( "routingprotocol.stopwhenalreadyrunning",  "false").toString());
       String thePeerId = myProtocolProperties.getProperty( "peerid", "" ).toString();
-      DataSource theSuperNodesDataSource = (DataSource)myProtocolProperties.getProperty( "routingprotocol.supernodes", null);
+      List<String> theSuperNodes = (List<String>)myProtocolProperties.getProperty( "routingprotocol.supernodes", null);
       return new RoutingProtocol(thePeerId, 
           theExchangeDelay, 
           isPersistRoutingTable, 
-          theSuperNodesDataSource, 
+          theSuperNodes, 
           isStopWhenAlreadyRunning, 
           myProtocolProperties.getProperty( "routingprotocol.channel",  "default").toString()); 
     }
