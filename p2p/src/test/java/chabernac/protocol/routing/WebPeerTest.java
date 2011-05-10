@@ -6,9 +6,9 @@ package chabernac.protocol.routing;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import junit.framework.TestCase;
 
@@ -18,7 +18,9 @@ import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.ServletHolder;
 
 import chabernac.comet.CometEvent;
+import chabernac.comet.CometServlet;
 import chabernac.comet.EndPoint;
+import chabernac.comet.EndPointContainer;
 import chabernac.p2p.web.ProtocolServlet;
 import chabernac.protocol.ProtocolException;
 import chabernac.protocol.echo.EchoProtocol;
@@ -35,42 +37,56 @@ public class WebPeerTest extends TestCase {
 
     try{
       Context root = new Context(theServer,"/p2p",Context.SESSIONS);
-      root.addServlet(Class.forName("chabernac.comet.CometServlet"), "/comet");
-//      root.addServlet(Class.forName("chabernac.p2p.web.ProtocolServlet"), "/protocol");
       
+      CometServlet theCometServlet = new CometServlet();
+      ServletHolder theCometServletHolder = new ServletHolder(theCometServlet);
+      theCometServletHolder.setInitOrder(1);
+      root.addServlet(theCometServletHolder, "/comet");
+
       ProtocolServlet theProtocolServlet = new ProtocolServlet();
       ServletHolder theProtocolHolder = new ServletHolder(theProtocolServlet);
       theProtocolHolder.setInitOrder(2);
       root.addServlet(theProtocolHolder, "/protocol");
-      theProtocolHolder.setInitParameter( "serverurl", "http://localhost:9090/p2p" );
+      theProtocolHolder.setInitParameter( "serverurl", "http://localhost:9090" );
       
       theServer.start();
+      
+      Thread.sleep( 2000 );
 
       final WebPeer theWebPeer = new WebPeer("1", new URL("http://localhost:9090"));
       theService.execute( new Runnable(){
         public void run(){
           try {
-            CometEvent theEvent = theWebPeer.waitForEvent("2");
-            theEvent.setOutput( "output" );
+            while(true){
+              System.out.println("wait for event");
+              CometEvent theEvent = theWebPeer.waitForEvent("2");
+              theEvent.setOutput( "output" );
+            }
           } catch ( IOException e ) {
             e.printStackTrace();
           }
         }
       });
+      
+      Thread.sleep( 1000 );
 
-      Thread.sleep( 2000 );
-
-      Map<String, EndPoint> theEndPoints =  (Map<String, EndPoint>)root.getServletContext().getAttribute( "EndPoints" );
+      EndPointContainer theEndPoints =  (EndPointContainer)root.getServletContext().getAttribute( "EndPoints" );
       assertNotNull( theEndPoints );
-      assertTrue( theEndPoints.containsKey( "2" ) );
+      assertTrue( theEndPoints.containsEndPointFor( "2" ) );
 
-      EndPoint theEndPoint = theEndPoints.get("2");
+      EndPoint theEndPoint = theEndPoints.getEndPointFor( "2", 5, TimeUnit.SECONDS);
       CometEvent theServerToClientEvent = new CometEvent("event1", "input");
       theEndPoint.setEvent( theServerToClientEvent );
       assertEquals( "output", theServerToClientEvent.getOutput( 2000 ));
       
-      assertEquals("123", getPeerSender( theProtocolServlet ).send( theWebPeer, "ECO123"));
-    }finally{
+      theEndPoint = theEndPoints.getEndPointFor( "2", 5, TimeUnit.SECONDS);
+      theServerToClientEvent = new CometEvent("event2", "input");
+      theEndPoint.setEvent( theServerToClientEvent );
+      assertEquals( "output", theServerToClientEvent.getOutput( 2000 ));
+
+      
+//      assertEquals("123", getPeerSender( theProtocolServlet ).send( theWebPeer, "ECO123"));
+    } finally {
       theServer.stop();
       theService.shutdownNow();
     }

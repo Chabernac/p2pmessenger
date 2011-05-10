@@ -8,8 +8,11 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import junit.framework.TestCase;
@@ -638,5 +641,50 @@ public class P2PFacadeTest extends TestCase {
       if(theFacade1 != null) theFacade1.stop();
       if(theFacade2 != null) theFacade2.stop();
     }
+  }
+  
+  public void testStressWebToPeer() throws P2PFacadeException, MalformedURLException, InterruptedException{
+
+    P2PFacade theWebPeer = new P2PFacade()
+    .setExchangeDelay( 300 )
+    .setPersist( false )
+    .setWebNode( true) 
+    .setWebPort( 8080 )
+    .setWebURL( new URL("http://localhost:8080") )
+    .start(20);
+
+
+    P2PFacade theSocketPeer = new P2PFacade()
+    .setExchangeDelay( 300 )
+    .setPersist( false )
+    .addSuperNode( "http://localhost:8080" )
+    .start( 20 );
+
+    
+    theSocketPeer.scanSuperNodes();
+    
+    Thread.sleep( 2000 );
+    
+    try{
+      assertTrue( theSocketPeer.getRoutingTable().containsEntryForPeer( theWebPeer.getRoutingTable().getLocalPeerId() ));
+      assertTrue( theWebPeer.getRoutingTable().containsEntryForPeer( theSocketPeer.getRoutingTable().getLocalPeerId() ));
+      
+      MessageCollector theCollector = new MessageCollector();
+      theSocketPeer.addMessageListener( theCollector );
+      
+      ExecutorService theSendService = Executors.newSingleThreadExecutor();
+      MultiPeerMessage theMessage = MultiPeerMessage.createMessage( "test" )
+      .addDestination( theSocketPeer.getPeerId() );
+      theWebPeer.sendMessage( theMessage, theSendService );
+      
+      Thread.sleep( 1000 );
+      
+      assertEquals( 1, theCollector.getMessages().size() );
+      
+    } finally {
+      if(theWebPeer != null) theWebPeer.stop();
+      if(theSocketPeer != null) theSocketPeer.stop();
+    }
+
   }
 }

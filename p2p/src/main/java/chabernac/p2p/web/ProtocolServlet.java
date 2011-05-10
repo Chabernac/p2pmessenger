@@ -34,6 +34,7 @@ public class ProtocolServlet extends HttpServlet {
   private static Logger LOGGER = Logger.getLogger(ProtocolServlet.class);
 
   public void init() throws ServletException{
+    super.init();
     try{
       if(getServletContext().getAttribute("SessionData") == null){
         getServletContext().setAttribute("SessionData", new SessionData());

@@ -6,7 +6,10 @@ package chabernac.protocol.facade;
 
 import java.io.File;
 import java.io.Serializable;
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
@@ -24,6 +27,7 @@ import chabernac.protocol.ProtocolContainer;
 import chabernac.protocol.ProtocolException;
 import chabernac.protocol.ProtocolFactory;
 import chabernac.protocol.ProtocolServer;
+import chabernac.protocol.ProtocolWebServer;
 import chabernac.protocol.iP2PServer;
 import chabernac.protocol.iProtocolDelegate;
 import chabernac.protocol.application.ApplicationProtocol;
@@ -90,6 +94,8 @@ public class P2PFacade {
   private FailedMessageResender myMessageResender = null;
   private boolean isActivateMessageResender = false;
   private boolean isWebNode = false;
+  private int myWebPort = 8080;
+  private URL myWebURL = null;
 
   /**
    * set the exchange delay.
@@ -130,6 +136,15 @@ public class P2PFacade {
   public P2PFacade setSuperNodesDataSource(DataSource aDataSource) throws P2PFacadeException{
     if(isStarted()) throw new P2PFacadeException("Can not set this property when the server has already been started");
     myProperties.setProperty("routingprotocol.supernodes", aDataSource);
+    return this;
+  }
+  
+  public P2PFacade addSuperNode(String aSuperNode) throws P2PFacadeException{
+    if(isStarted()) throw new P2PFacadeException("Can not set this property when the server has already been started");
+    if(!myProperties.containsKey( "routingprotocol.supernodes" )){
+      myProperties.put( "routingprotocol.supernodes", new ArrayList<String>() );
+    }
+    ((List<String>)myProperties.get( "routingprotocol.supernodes" )).add( aSuperNode );
     return this;
   }
 
@@ -612,9 +627,33 @@ public class P2PFacade {
     return isWebNode;
   }
 
-  public void setWebNode(boolean anIsWebNode) throws P2PFacadeException {
-    if(!isStarted()) throw new P2PFacadeException("Can not set this property whern the server has been started");
+  public P2PFacade setWebNode(boolean anIsWebNode) throws P2PFacadeException {
+    if(isStarted()) throw new P2PFacadeException("Can not set this property whern the server has been started");
     isWebNode = anIsWebNode;
+    return this;
+  }
+  
+  public int getWebPort() {
+    return myWebPort;
+  }
+
+  public P2PFacade setWebPort( int aWebPort ) throws P2PFacadeException {
+    if(isStarted()) throw new P2PFacadeException("Can not set this property whern the server has been started");
+    if(!isWebNode)  throw new P2PFacadeException("Can only set this property on a webnode");
+    myWebPort = aWebPort;
+    return this;
+  }
+  
+  public URL getWebURL() {
+    return myWebURL;
+  }
+
+  public P2PFacade setWebURL( URL aWebURL ) throws P2PFacadeException {
+    if(isStarted()) throw new P2PFacadeException("Can not set this property whern the server has been started");
+    if(!isWebNode)  throw new P2PFacadeException("Can only set this property on a webnode");
+
+    myWebURL = aWebURL;
+    return this;
   }
 
   public P2PFacade start(int aNumberOfThreads) throws P2PFacadeException{
@@ -627,7 +666,13 @@ public class P2PFacade {
     try{
       ProtocolFactory theFactory = new ProtocolFactory(myProperties);
       myContainer = new ProtocolContainer(theFactory, aSupportedProtocols);
-      myProtocolServer = new ProtocolServer(myContainer, RoutingProtocol.START_PORT, aNumberOfThreads, true);
+      
+      if(isWebNode){
+        if(myWebURL == null) throw new P2PFacadeException( "Must set a web url before starting" );
+        myProtocolServer = new ProtocolWebServer( myContainer, myWebPort, myWebURL );
+      } else {
+        myProtocolServer = new ProtocolServer(myContainer, RoutingProtocol.START_PORT, aNumberOfThreads, true);
+      }
 
       if(!myProtocolServer.start()) throw new P2PFacadeException("Unable to start protocol server");
 

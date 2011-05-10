@@ -28,8 +28,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
-import javax.activation.DataSource;
-
 import org.apache.log4j.Logger;
 import org.doomdark.uuid.UUIDGenerator;
 
@@ -115,7 +113,7 @@ public class RoutingProtocol extends Protocol {
 
   private boolean isPeerIdInFile = false;
 
-  private DataSource mySuperNodesDataSource = new ClassPathResource("supernodes.txt");
+  private List<String> mySuperNodes = null;
 
   private ServerInfo myServerInfo = null;
   private final String myChannel;
@@ -137,7 +135,7 @@ public class RoutingProtocol extends Protocol {
   public RoutingProtocol ( String aLocalPeerId, 
                            long anExchangeDelay, 
                            boolean isPersistRoutingTable, 
-                           DataSource aSuperNodesDataSource, 
+                           List<String> aSuperNodes, 
                            boolean isStopWhenAlreadyRunning, 
                            String aChannel) throws ProtocolException{
     super( ID );
@@ -153,11 +151,21 @@ public class RoutingProtocol extends Protocol {
       isPeerIdInFile = false;
     }
 
-    if(aSuperNodesDataSource != null){
-      mySuperNodesDataSource = aSuperNodesDataSource;
+    loadSuperNodes();
+    
+    if(aSuperNodes != null){
+      mySuperNodes.addAll( aSuperNodes);
     }
 
     loadRoutingTable();
+  }
+  
+  private void loadSuperNodes(){
+    try {
+      mySuperNodes = IOTools.loadStreamAsList( new ClassPathResource("supernodes.txt").getInputStream() );
+    } catch ( IOException e ) {
+      LOGGER.error("Could not load super nodes", e);
+    }
   }
 
   public void start() throws ProtocolException{
@@ -514,8 +522,7 @@ public class RoutingProtocol extends Protocol {
   public void scanSuperNodes(){
     if(myRoutingProtocolMonitor != null) myRoutingProtocolMonitor.scanningSuperNodes();
     try{
-      List<String> theIps = IOTools.loadStreamAsList( mySuperNodesDataSource.getInputStream() );
-      for(String theIp : theIps){
+      for(String theIp : mySuperNodes){
         if(!hostHasActivePeer( theIp )){
           if(theIp.startsWith("http:")){
             myScannerService.execute( new ScanWebSystem(RoutingProtocol.this, new URL(theIp)));

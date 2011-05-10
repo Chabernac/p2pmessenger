@@ -18,12 +18,10 @@ public class PeerSender extends AbstractPeerSender{
   }
   
   protected String doSend(AbstractPeer aTo, String aMessage, int aTimeoutInSeconds) throws IOException{
-    if(aMessage.length() < 3) throw new IOException("Can not send message which has no protocol");
-    String theProtocol = aMessage.substring( 0, 3 );
-    if(!aTo.isProtocolSupported( theProtocol )) throw new IOException("The protocol '" + theProtocol + "' is not supported by peer '" + aTo.getPeerId() + "'");
-    
     try{
       AbstractPeer theFrom = myRoutingTable.getEntryForLocalPeer().getPeer();
+      
+      if(theFrom.getPeerId() == aTo.getPeerId()) throw new IOException("You are sending a message to you self");
 
       if(theFrom instanceof WebPeer){
         return myWebToPeerSender.sendMessageTo( (WebPeer)theFrom, aTo, aMessage, aTimeoutInSeconds ); 
