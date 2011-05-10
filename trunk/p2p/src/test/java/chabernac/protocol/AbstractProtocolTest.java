@@ -4,7 +4,8 @@
  */
 package chabernac.protocol;
 
-import javax.activation.DataSource;
+import java.util.ArrayList;
+import java.util.List;
 
 import junit.framework.TestCase;
 import chabernac.p2p.settings.P2PSettings;
@@ -27,11 +28,14 @@ public abstract class AbstractProtocolTest extends TestCase {
     return new ProtocolContainer(theFactory);
   }
   
-  public ProtocolContainer getProtocolContainer(long anExchangeDelay, boolean isPersist, String aPeerId, DataSource aSuperNodesDataSource){
+  public ProtocolContainer getProtocolContainer(long anExchangeDelay, boolean isPersist, String aPeerId, String... aSuperNodes){
     PropertyMap theProperties = new PropertyMap();
     theProperties.setProperty( "routingprotocol.exchangedelay", Long.toString( anExchangeDelay));
     theProperties.setProperty("routingprotocol.persist", Boolean.toString( isPersist));
-    theProperties.setProperty("routingprotocol.supernodes", aSuperNodesDataSource );
+    
+    List<String> theSuperNodes = new ArrayList<String>();
+    for(String theSuperNode : aSuperNodes) theSuperNodes.add(theSuperNode);
+    theProperties.setProperty("routingprotocol.supernodes", theSuperNodes );
     
     if(aPeerId != null) theProperties.setProperty("peerid", aPeerId);
     ProtocolFactory theFactory = new ProtocolFactory(theProperties);
