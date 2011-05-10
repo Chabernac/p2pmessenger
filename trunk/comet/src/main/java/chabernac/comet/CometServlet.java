@@ -6,7 +6,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -27,11 +26,6 @@ public class CometServlet extends HttpServlet {
   public static enum Responses{NO_DATA, OK};
 
   private iObjectStringConverter<CometEvent> myCometEventConverter =  new Base64ObjectStringConverter<CometEvent>();
-
-  public void init(ServletConfig aConfig){
-    aConfig.getServletContext().setAttribute("EndPoints", new EndPointContainer());
-    aConfig.getServletContext().setAttribute("CometEvents", Collections.synchronizedMap( new HashMap<String, CometEvent>() ));
-  }
 
   /**
    * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
@@ -64,7 +58,6 @@ public class CometServlet extends HttpServlet {
           //block untill an event for this endpoint (client) is available
           //the response will be send by the client in a next call in which an event id and event output is given as parameter (see code above)
 
-
           //publish the end point so that other processes can detecte it and put data for this end point
           getEndPointContainer().addEndPoint( theEndPoint );
 
@@ -92,10 +85,18 @@ public class CometServlet extends HttpServlet {
   }
   
   public Map<String, CometEvent> getCometEvents(){
+    if(getServletContext().getAttribute( "CometEvents" ) == null){
+      getServletContext().setAttribute( "CometEvents", Collections.synchronizedMap( new HashMap<String, CometEvent>() ) );
+    }
     return (Map<String, CometEvent>)getServletContext().getAttribute( "CometEvents" );
   }
   
+  
+  
   public EndPointContainer getEndPointContainer(){
+    if(getServletContext().getAttribute( "EndPoints" ) == null){
+      getServletContext().setAttribute( "EndPoints", new EndPointContainer() );
+    }
     return (EndPointContainer)getServletContext().getAttribute( "EndPoints" );
   }
 
