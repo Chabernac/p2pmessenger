@@ -20,7 +20,7 @@ public class ScanWebSystem implements Runnable{
   public void run() {
     WebPeer thePeer = new WebPeer(myEndPoint);
     if(myRoutingProtocol.getRoutingProtocolMonitor() != null) myRoutingProtocol.getRoutingProtocolMonitor().scanStarted( thePeer );
-    boolean result = myRoutingProtocol.contactPeer( thePeer, null );
+    boolean result = myRoutingProtocol.contactPeer( thePeer, null, true );
     if(result && myRoutingProtocol.getRoutingProtocolMonitor() != null) myRoutingProtocol.getRoutingProtocolMonitor().peerFoundWithScan( thePeer );
   }
 }

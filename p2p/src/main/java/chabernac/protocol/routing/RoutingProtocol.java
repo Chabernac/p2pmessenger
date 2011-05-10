@@ -245,7 +245,7 @@ public class RoutingProtocol extends Protocol {
    */
   private boolean isAlreadyRunning(AbstractPeer aPeer) {
     LOGGER.debug("Checking if we're already running");
-    return contactPeer(aPeer, myUnreachablePeers);
+    return contactPeer(aPeer, myUnreachablePeers, false);
   }
 
   private void startUDPListener(){
@@ -398,13 +398,13 @@ public class RoutingProtocol extends Protocol {
     if(!myRoutingTable.containsEntryForPeer( aPeer.getPeerId() )){
       myScannerService.execute( new Runnable(){
         public void run(){
-          contactPeer( aPeer, myUnreachablePeers );
+          contactPeer( aPeer, myUnreachablePeers, false );
         }
       });
     }
   }
 
-  boolean contactPeer(AbstractPeer aPeer, List<String> anUnreachablePeers){
+  boolean contactPeer(AbstractPeer aPeer, List<String> anUnreachablePeers, boolean isRequestTableWhenPeerFound){
     try{
       LOGGER.debug("Sending message to '" + aPeer.getEndPointRepresentation() );
       String theResponse = getPeerSender().send( aPeer, createMessage( Command.WHO_ARE_YOU.name() ));
@@ -419,6 +419,9 @@ public class RoutingProtocol extends Protocol {
           theEntry = theEntry.derivedEntry( 0 );
         }
         myRoutingTable.addRoutingTableEntry( theEntry );
+        if(isRequestTableWhenPeerFound){
+          sendAnnouncementWithReply(theEntry);
+        }
         return true;
       }
     }catch(Exception e){
@@ -479,7 +482,7 @@ public class RoutingProtocol extends Protocol {
           try{
             if(!isExcludeLocal || i!=((SocketPeer)myRoutingTable.getEntryForLocalPeer().getPeer()).getPort()){
               LOGGER.debug("Scanning the following host: '" + theHost + "' on port '" + i + "'");
-              isContacted = contactPeer( new SocketPeer("", theHost, i), myUnreachablePeers );
+              isContacted = contactPeer( new SocketPeer("", theHost, i), myUnreachablePeers, true );
             }
           }catch(Exception e){}
         }
@@ -555,58 +558,59 @@ public class RoutingProtocol extends Protocol {
     LOGGER.debug("Exchanging routing table for peer: " + myRoutingTable.getLocalPeerId());
 
     for(RoutingTableEntry theEntry : myRoutingTable.getEntries()){
-      AbstractPeer thePeer = theEntry.getPeer();
-
-      //simulate that we can not contact this peer directly, but we can contact it trough a gateway
-      //so check if hop distance = 1
-
-
-      if(!thePeer.getPeerId().equals(myRoutingTable.getLocalPeerId())){
-        try {
-          if(myUnreachablePeers.contains( thePeer.getPeerId())){
-            //simulate that we cannot contact the peer
-            throw new Exception("Simulate that we can not contact peer: " + thePeer.getPeerId());
-          }
-          String theCMD = createMessage( Command.ANNOUNCEMENT_WITH_REPLY.name() + " "  + myRoutingTableEntryConverter.toString( myRoutingTable.getEntryForLocalPeer() ));
-          String theTable = getPeerSender().send(thePeer, theCMD) ;
-          //          String theTable = thePeer.send( createMessage( Command.REQUEST_TABLE.name() ));
-          RoutingTable theRemoteTable = myRoutingTableConverter.getObject( theTable );
-
-          if(!theRemoteTable.getLocalPeerId().equals( thePeer.getPeerId() )){
-            //if we get here it means that another peer has taken the place of the previous peer,
-            //i.e. it is running on the same host and port
-            //this means that the peer is not reachable any more
-            RoutingTableEntry theOldEntry = theEntry.derivedEntry( RoutingTableEntry.MAX_HOP_DISTANCE );
-            myRoutingTable.removeRoutingTableEntry( theOldEntry );
-          }
-
-          //test that we did not take the place of another peer on the same host and port
-          if(!myLocalPeerId.equals( theRemoteTable.getLocalPeerId() )){
-
-            myRoutingTable.merge( theRemoteTable );
-            //we can connect directly to this peer, so the hop distance is 1
-            //theEntry.setHopDistance( 1 );
-            RoutingTableEntry theEntryOfRemotePeer = myRoutingTable.getEntryForPeer( theRemoteTable.getLocalPeerId() );
-
-            myRoutingTable.addRoutingTableEntry( theEntryOfRemotePeer.derivedEntry( 1 ) );
-          }
-        } catch ( Exception e ) {
-          LOGGER.error( "Could not contact peer '" + thePeer.getPeerId() + "'", e );
-          //update all peers which have this peer as gateway to the max hop distance
-          for(RoutingTableEntry theEntry2 : myRoutingTable.getEntries()){
-            if(theEntry2.getGateway().getPeerId().equals( theEntry.getPeer().getPeerId())){
-              //              theEntry2.setHopDistance( RoutingTableEntry.MAX_HOP_DISTANCE );
-              myRoutingTable.addRoutingTableEntry( theEntry2.derivedEntry( RoutingTableEntry.MAX_HOP_DISTANCE ) );
-            }
-          }
-        }
-      }
+      sendAnnouncementWithReply(theEntry);
     }
+    
     myExchangeCounter.incrementAndGet();
     LOGGER.debug("End exchanging routing table for peer: " + myRoutingTable.getLocalPeerId());
 
     //save the routing table
     if(isPersistRoutingTable) saveRoutingTable();
+  }
+  
+  private void sendAnnouncementWithReply(RoutingTableEntry aRoutingTableEntry){
+    AbstractPeer thePeer = aRoutingTableEntry.getPeer();
+    
+    if(!thePeer.getPeerId().equals(myRoutingTable.getLocalPeerId())){
+      try {
+        if(myUnreachablePeers.contains( thePeer.getPeerId())){
+          //simulate that we cannot contact the peer
+          throw new Exception("Simulate that we can not contact peer: " + thePeer.getPeerId());
+        }
+        String theCMD = createMessage( Command.ANNOUNCEMENT_WITH_REPLY.name() + " "  + myRoutingTableEntryConverter.toString( myRoutingTable.getEntryForLocalPeer() ));
+        String theTable = getPeerSender().send(thePeer, theCMD) ;
+        //          String theTable = thePeer.send( createMessage( Command.REQUEST_TABLE.name() ));
+        RoutingTable theRemoteTable = myRoutingTableConverter.getObject( theTable );
+
+        if(!theRemoteTable.getLocalPeerId().equals( thePeer.getPeerId() )){
+          //if we get here it means that another peer has taken the place of the previous peer,
+          //i.e. it is running on the same host and port
+          //this means that the peer is not reachable any more
+          RoutingTableEntry theOldEntry = aRoutingTableEntry.derivedEntry( RoutingTableEntry.MAX_HOP_DISTANCE );
+          myRoutingTable.removeRoutingTableEntry( theOldEntry );
+        }
+
+        //test that we did not take the place of another peer on the same host and port
+        if(!myLocalPeerId.equals( theRemoteTable.getLocalPeerId() )){
+
+          myRoutingTable.merge( theRemoteTable );
+          //we can connect directly to this peer, so the hop distance is 1
+          //theEntry.setHopDistance( 1 );
+          RoutingTableEntry theEntryOfRemotePeer = myRoutingTable.getEntryForPeer( theRemoteTable.getLocalPeerId() );
+
+          myRoutingTable.addRoutingTableEntry( theEntryOfRemotePeer.derivedEntry( 1 ) );
+        }
+      } catch ( Exception e ) {
+        LOGGER.error( "Could not contact peer '" + thePeer.getPeerId() + "'", e );
+        //update all peers which have this peer as gateway to the max hop distance
+        for(RoutingTableEntry theEntry2 : myRoutingTable.getEntries()){
+          if(theEntry2.getGateway().getPeerId().equals( aRoutingTableEntry.getPeer().getPeerId())){
+            //              theEntry2.setHopDistance( RoutingTableEntry.MAX_HOP_DISTANCE );
+            myRoutingTable.addRoutingTableEntry( theEntry2.derivedEntry( RoutingTableEntry.MAX_HOP_DISTANCE ) );
+          }
+        }
+      }
+    }
   }
 
   private void sendAnnoucement( RoutingTableEntry anEntry ) {

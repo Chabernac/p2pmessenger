@@ -38,8 +38,8 @@ public class WebRoutingTableInspecter implements iRoutingTableInspector {
     
     if(theIPRequestor == null || "".equals( theIPRequestor )) return aRoutingTable;
     
-    //now lets create a new routing table and replace all the peers with dummy peers which have not the same ip
-    //the ip of the requestor is the exposed ip.  All requests coming from the same domain will have the same external ip
+    //Now lets create a new routing table and replace all the peers with dummy peers which have not the same ip as the requestor
+    //The ip of the requestor is the exposed ip.  All requests coming from the same domain will have the same external ip
     RoutingTable theTable = new RoutingTable( aRoutingTable.getLocalPeerId() );
     
     for(RoutingTableEntry theEntry : aRoutingTable.getEntries()){
@@ -47,7 +47,7 @@ public class WebRoutingTableInspecter implements iRoutingTableInspector {
         SocketPeer thePeer = (SocketPeer)theEntry.getPeer();
         
         String theExposedIp = myPeerExternalIpLink.get( thePeer.getPeerId() );
-        if(theExposedIp == null || "".equals(theExposedIp) || theExposedIp.equals( theIPRequestor )){
+        if(theIPRequestor.equals(theExposedIp)){
           theTable.addRoutingTableEntry( theEntry );
         } else {
           IndirectReachablePeer theNewPeer = new IndirectReachablePeer(thePeer.getPeerId());
