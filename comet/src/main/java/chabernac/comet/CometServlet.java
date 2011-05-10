@@ -26,6 +26,11 @@ public class CometServlet extends HttpServlet {
   public static enum Responses{NO_DATA, OK};
 
   private iObjectStringConverter<CometEvent> myCometEventConverter =  new Base64ObjectStringConverter<CometEvent>();
+  
+  public void init() throws ServletException{
+    super.init();
+    getEndPointContainer();
+  }
 
   /**
    * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
