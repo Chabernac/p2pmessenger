@@ -12,8 +12,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import javax.swing.event.TableModelListener;
-
 import chabernac.io.SocketProxy;
 import chabernac.p2p.settings.P2PSettings;
 import chabernac.protocol.routing.PeerMessage;
