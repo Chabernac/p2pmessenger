@@ -7,6 +7,7 @@ import java.util.concurrent.Executors;
 
 import junit.framework.TestCase;
 
+import org.apache.log4j.BasicConfigurator;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.ServletHolder;
@@ -19,6 +20,11 @@ import chabernac.protocol.routing.SocketPeer;
 import chabernac.protocol.routing.WebPeer;
 
 public class WebPeerSenderTest extends TestCase {
+  
+  static{
+    BasicConfigurator.configure();
+  }
+  
   public void testWebPeerSender() throws Exception{
     Server theServer = new Server(9090);
     ExecutorService theService = Executors.newCachedThreadPool();
@@ -43,7 +49,8 @@ public class WebPeerSenderTest extends TestCase {
 
       Thread.sleep( 2000 );
 
-      EndPointContainer theEndPointContainer =  (EndPointContainer)root.getServletContext().getAttribute( "EndPointContainer" );
+      EndPointContainer theEndPointContainer =  (EndPointContainer)root.getServletContext().getAttribute( "EndPoints" );
+      theWebPeer.setEndPointContainer( theEndPointContainer );
       
       assertNotNull( theEndPointContainer );
       assertTrue( theEndPointContainer.containsEndPointFor( "2" ) );

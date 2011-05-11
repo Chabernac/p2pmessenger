@@ -21,7 +21,7 @@ public class PeerSender extends AbstractPeerSender{
     try{
       AbstractPeer theFrom = myRoutingTable.getEntryForLocalPeer().getPeer();
       
-      if(theFrom.getPeerId() == aTo.getPeerId()) throw new IOException("You are sending a message to you self");
+//      if(theFrom.getPeerId() == aTo.getPeerId()) throw new IOException("You are sending a message to you self");
 
       if(theFrom instanceof WebPeer){
         return myWebToPeerSender.sendMessageTo( (WebPeer)theFrom, aTo, aMessage, aTimeoutInSeconds ); 
