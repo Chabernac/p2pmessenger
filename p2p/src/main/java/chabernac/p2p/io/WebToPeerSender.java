@@ -23,7 +23,7 @@ public class WebToPeerSender {
       theEndPoint.setEvent( theCometEvent );
       return theCometEvent.getOutput(5000).replaceAll("\\{plus\\}", "+");
     }catch(Exception e){
-      throw new IOException("Could not send message to peer '" + aPeer.getPeerId() + "' from webpeer '" + aSendingPeer.getPeerId() + "'");
+      throw new IOException("Could not send message to peer '" + aPeer.getPeerId() + "' from webpeer '" + aSendingPeer.getPeerId() + "'", e);
     }
 
   }
