@@ -1,15 +1,11 @@
 package chabernac.utils;
 
-import java.awt.EventQueue;
-import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.ServerSocket;
 import java.net.SocketException;
 import java.util.Enumeration;
-
-import javax.swing.SwingUtilities;
 
 public class NetTools {
   public static int findUnusedLocalPort() throws IOException{
