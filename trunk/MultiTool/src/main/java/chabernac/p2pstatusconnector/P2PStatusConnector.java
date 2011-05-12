@@ -22,6 +22,7 @@ import chabernac.protocol.facade.P2PFacade;
 import chabernac.protocol.facade.P2PFacadeException;
 import chabernac.protocol.message.MessageProtocol;
 import chabernac.protocol.routing.RoutingProtocol;
+import chabernac.protocol.routing.WebPeerProtocol;
 import chabernac.protocol.userinfo.EmptyUserInfoProvider;
 import chabernac.protocol.userinfo.UserInfo;
 import chabernac.protocol.userinfo.UserInfoProtocol;
@@ -54,16 +55,15 @@ public class P2PStatusConnector implements iEventListener, iUserInfoListener {
   }
 
   private void startP2P() throws P2PFacadeException{
-    Set<String> theProtocols = new HashSet<String>();
-    theProtocols.add( RoutingProtocol.ID );
-    theProtocols.add( MessageProtocol.ID );
-
     myP2PFacade = new P2PFacade()
     .setChannel( "p2pclient" )
     .setPersist( true )
     .setSocketReuse( false )
     .setUserInfoProvider( new EmptyUserInfoProvider() )
-    .start( 256, theProtocols );
+    .addSupportedProtocol( RoutingProtocol.ID )
+    .addSupportedProtocol( MessageProtocol.ID )
+    .addSupportedProtocol( WebPeerProtocol.ID )
+    .start( 256 );
 
     myP2PFacade.forceProtocolStart( UserInfoProtocol.ID );
   }
