@@ -17,7 +17,7 @@ public class ProtocolWebServer implements iP2PServer {
   private final ProtocolContainer myProtocolContainer;
   private final URL myURL;
   private final int myPort;
-  private Integer myAJPort = null;
+  private Integer myAJPPort = null;
   private Server myServer = null;
 
   public ProtocolWebServer(ProtocolContainer anProtocolContainer, int aPort, URL anURL) {
@@ -27,12 +27,12 @@ public class ProtocolWebServer implements iP2PServer {
     myURL = anURL;
   }
 
-  public Integer getAJPort() {
-    return myAJPort;
+  public Integer getAJPPort() {
+    return myAJPPort;
   }
 
-  public void setAJPort(Integer anPort) {
-    myAJPort = anPort;
+  public void setAJPPort(Integer anPort) {
+    myAJPPort = anPort;
   }
 
   @Override
@@ -49,9 +49,9 @@ public class ProtocolWebServer implements iP2PServer {
     try{
       myServer = new Server(myPort);
 
-      if(myAJPort != null){
+      if(myAJPPort != null){
         Ajp13SocketConnector theAJPConnector = new Ajp13SocketConnector();
-        theAJPConnector.setPort(myAJPort.intValue());
+        theAJPConnector.setPort(myAJPPort.intValue());
         myServer.addConnector(theAJPConnector);
       }
 

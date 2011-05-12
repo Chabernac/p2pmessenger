@@ -13,10 +13,13 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.log4j.Logger;
+
 import chabernac.protocol.routing.AbstractPeer;
 import chabernac.protocol.routing.WebPeer;
 
 public class PeerToWebSender {
+  private static Logger LOGGER = Logger.getLogger(PeerToWebSender.class);
 
   public String sendMessageTo(AbstractPeer aSendingPeer, WebPeer aWebPeer, String aMessage, int aTimeout) throws IOException{
     URL theCometURL = new URL(aWebPeer.getURL(), "p2p/protocol");
@@ -42,6 +45,7 @@ public class PeerToWebSender {
       String theResponse = theReader.readLine();
       return theResponse;
     }catch(IOException e){
+      LOGGER.error("Could not send message to web peer at endpoint: '" + aWebPeer.getEndPointRepresentation() + "'", e);
       throw e;
     } finally {
       theService.shutdownNow();
