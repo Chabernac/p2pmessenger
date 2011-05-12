@@ -133,12 +133,6 @@ public class P2PFacade {
     return this;
   }
 
-  public P2PFacade setSuperNodesDataSource(DataSource aDataSource) throws P2PFacadeException{
-    if(isStarted()) throw new P2PFacadeException("Can not set this property when the server has already been started");
-    myProperties.setProperty("routingprotocol.supernodes", aDataSource);
-    return this;
-  }
-  
   public P2PFacade addSuperNode(String aSuperNode) throws P2PFacadeException{
     if(isStarted()) throw new P2PFacadeException("Can not set this property when the server has already been started");
     if(!myProperties.containsKey( "routingprotocol.supernodes" )){
