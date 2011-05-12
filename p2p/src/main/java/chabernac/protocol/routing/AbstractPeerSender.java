@@ -45,8 +45,8 @@ public abstract class AbstractPeerSender implements iPeerSender {
       theMessage.setResult( theResponse );
 
       //each char is 2 bytes char is a unicode value
-      myBytesSend += (aMessage.toCharArray().length * 2);
-      myBytesReceived += (theResponse.toCharArray().length * 2);
+      if(aMessage != null) myBytesSend += (aMessage.toCharArray().length * 2);
+      if(theResponse != null) myBytesReceived += (theResponse.toCharArray().length * 2);
       return theResponse;
     }catch(IOException e){
       theMessage.setState( State.NOK );
