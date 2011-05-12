@@ -20,7 +20,7 @@ import javax.swing.table.TableCellRenderer;
 import chabernac.protocol.routing.PeerMessage;
 import chabernac.protocol.routing.PeerSender;
 import chabernac.protocol.routing.iPeerSender;
-import chabernac.protocol.routing.iSocketPeerSenderListener;
+import chabernac.protocol.routing.iPeerSenderListener;
 import chabernac.protocol.routing.PeerMessage.State;
 
 public class PeerMessagePanel extends JPanel {
@@ -72,8 +72,7 @@ public class PeerMessagePanel extends JPanel {
   }
 
   private JPanel buildBandWithPanel(){
-    //TODO implement again
-//    myPeerSender.addPeerSenderListener( new BandWithCalculator() );
+    myPeerSender.addPeerSenderListener( new BandWithCalculator() );
     JPanel thePanel = new JPanel(new GridBagLayout());
 
     GridBagConstraints theCons = new GridBagConstraints();
@@ -168,7 +167,7 @@ public class PeerMessagePanel extends JPanel {
     myBandWithDown.setText( FORMAT.format( theKBPerSecDown ) );  
   }
 
-  public class BandWithCalculator implements iSocketPeerSenderListener {
+  public class BandWithCalculator implements iPeerSenderListener {
 
     @Override
     public void messageStateChanged( PeerMessage aMessage ) {

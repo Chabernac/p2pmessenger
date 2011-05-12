@@ -103,7 +103,6 @@ public class FailedMessageResender {
 
     @Override
     public void routingTableEntryRemoved( RoutingTableEntry anEntry ) {
-      // TODO Auto-generated method stub
     }
   }
   

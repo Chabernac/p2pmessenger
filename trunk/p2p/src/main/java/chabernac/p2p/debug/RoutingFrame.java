@@ -90,7 +90,7 @@ public class RoutingFrame extends JFrame {
     getRoutingTable().setKeepHistory(true);
     SocketProxy.setTraceEnabled(true);
     ((MessageProtocol)myProtocolContainer.getProtocol( MessageProtocol.ID )).setKeepHistory( true );
-    getPeerSender().getPeerToPeerSender().setKeepHistory(true);
+    getPeerSender().setKeepHistory(true);
     myProtocolContainer.setKeepHistory( true );
   }
 
@@ -156,8 +156,8 @@ public class RoutingFrame extends JFrame {
       getRoutingTable().clearHistory();
 
       SocketProxy.setTraceEnabled(false);
-      getPeerSender().getPeerToPeerSender().setKeepHistory(false);
-      getPeerSender().getPeerToPeerSender().clearHistory();
+      getPeerSender().setKeepHistory(false);
+      getPeerSender().clearHistory();
 
       try {
         ((MessageProtocol)myProtocolContainer.getProtocol( MessageProtocol.ID )).setKeepHistory( false );
