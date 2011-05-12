@@ -1,5 +1,5 @@
 package chabernac.protocol.routing;
 
-public interface iSocketPeerSenderListener {
+public interface iPeerSenderListener {
   public void messageStateChanged(PeerMessage aMessage);
 }

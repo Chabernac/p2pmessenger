@@ -11,9 +11,9 @@ import javax.swing.table.TableModel;
 
 import chabernac.protocol.routing.PeerMessage;
 import chabernac.protocol.routing.PeerSender;
-import chabernac.protocol.routing.iSocketPeerSenderListener;
+import chabernac.protocol.routing.iPeerSenderListener;
 
-public class PeerMessageTableModel implements TableModel, iSocketPeerSenderListener {
+public class PeerMessageTableModel implements TableModel, iPeerSenderListener {
   private final PeerSender mySocketPeerSender;
   private static SimpleDateFormat FORMAT  = new SimpleDateFormat("HH:mm:ss"); 
   
@@ -22,7 +22,7 @@ public class PeerMessageTableModel implements TableModel, iSocketPeerSenderListe
   public PeerMessageTableModel(PeerSender anSocketPeerSender) {
     super();
     mySocketPeerSender = anSocketPeerSender;
-    mySocketPeerSender.getPeerToPeerSender().addPeerSenderListener(this);
+    mySocketPeerSender.addPeerSenderListener(this);
   }
 
   @Override
@@ -52,11 +52,11 @@ public class PeerMessageTableModel implements TableModel, iSocketPeerSenderListe
 
   @Override
   public int getRowCount() {
-    return mySocketPeerSender.getPeerToPeerSender().getHistory().size();
+    return mySocketPeerSender.getHistory().size();
   }
   
   public PeerMessage getPeerMessageAtRow(int aRow){
-    return mySocketPeerSender.getPeerToPeerSender().getHistory().get(aRow);
+    return mySocketPeerSender.getHistory().get(aRow);
   }
 
   @Override

@@ -17,18 +17,18 @@ public class PeerSender extends AbstractPeerSender{
     myRoutingTable = aRoutingTable;
   }
   
-  protected String doSend(AbstractPeer aTo, String aMessage, int aTimeoutInSeconds) throws IOException{
+  protected String doSend(PeerMessage aMessage, int aTimeoutInSeconds) throws IOException{
     try{
       AbstractPeer theFrom = myRoutingTable.getEntryForLocalPeer().getPeer();
       
 //      if(theFrom.getPeerId() == aTo.getPeerId()) throw new IOException("You are sending a message to you self");
 
       if(theFrom instanceof WebPeer){
-        return myWebToPeerSender.sendMessageTo( (WebPeer)theFrom, aTo, aMessage, aTimeoutInSeconds ); 
-      } else if(aTo instanceof WebPeer){
-        return myPeerToWebSender.sendMessageTo( theFrom, (WebPeer)aTo, aMessage, aTimeoutInSeconds );
-      } else if(aTo instanceof SocketPeer){
-        return myPeerToPeerSender.sendMessageTo( (SocketPeer)aTo, aMessage, aTimeoutInSeconds );
+        return myWebToPeerSender.sendMessageTo( (WebPeer)theFrom, aMessage.getPeer(), aMessage.getMessage(), aTimeoutInSeconds ); 
+      } else if(aMessage.getPeer() instanceof WebPeer){
+        return myPeerToWebSender.sendMessageTo( theFrom, (WebPeer)aMessage.getPeer(), aMessage.getMessage(), aTimeoutInSeconds );
+      } else if(aMessage.getPeer() instanceof SocketPeer){
+        return myPeerToPeerSender.sendMessageTo(aMessage, (SocketPeer)aMessage.getPeer(), aMessage.getMessage(), aTimeoutInSeconds );
       }
     }catch(Exception e){
       throw new IOException("Could not send message", e);
@@ -46,20 +46,5 @@ public class PeerSender extends AbstractPeerSender{
 
   public PeerToWebSender getPeerToWebSender() {
     return myPeerToWebSender;
-  }
-
-  public long getBytesReceived() {
-    // TODO Auto-generated method stub
-    return 0;
-  }
-
-  public long getBytesSend() {
-    // TODO Auto-generated method stub
-    return 0;
-  }
-
-  public long getInitTime() {
-    // TODO Auto-generated method stub
-    return 0;
   }
 }

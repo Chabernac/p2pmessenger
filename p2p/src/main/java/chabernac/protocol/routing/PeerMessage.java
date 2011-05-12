@@ -10,6 +10,8 @@ public class PeerMessage {
   private long myResponseTime;
   private State myState = State.INIT;
   
+  private iPeerSenderListener myListener;
+  
   public PeerMessage(String anMessage, AbstractPeer anPeer) {
     super();
     myMessage = anMessage;
@@ -30,6 +32,7 @@ public class PeerMessage {
     myResult = anResult;
     myResponseTime = System.currentTimeMillis()- myCreationTimestamp;
     myState = State.OK;
+    notifyListener();
   }
   public long getCreationTimestamp() {
     return myCreationTimestamp;
@@ -41,8 +44,25 @@ public class PeerMessage {
   public State getState() {
     return myState;
   }
+  
+  private void notifyListener(){
+    if(myListener != null){
+      myListener.messageStateChanged( this );
+    }
+  }
 
   public void setState(State anState) {
     myState = anState;
+    notifyListener();
   }
+
+  public iPeerSenderListener getListener() {
+    return myListener;
+  }
+
+  public void setListener( iPeerSenderListener aListener ) {
+    myListener = aListener;
+  }
+  
+  
 }

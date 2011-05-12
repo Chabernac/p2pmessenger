@@ -382,7 +382,6 @@ public class MessageProtocolTest extends AbstractProtocolTest {
 
     @Override
     public void messageUpdated( Message aMessage ) {
-      // TODO Auto-generated method stub
       
     }
   }
@@ -401,7 +400,6 @@ public class MessageProtocolTest extends AbstractProtocolTest {
 
     @Override
     public void messageUpdated( Message aMessage ) {
-      // TODO Auto-generated method stub
       
     }
   }

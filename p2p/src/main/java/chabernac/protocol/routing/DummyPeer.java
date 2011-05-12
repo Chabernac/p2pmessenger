@@ -11,19 +11,16 @@ public class DummyPeer extends AbstractPeer {
 
   @Override
   public String getEndPointRepresentation() {
-    // TODO Auto-generated method stub
     return null;
   }
 
   @Override
   public boolean isSameEndPointAs(AbstractPeer aPeer) {
-    // TODO Auto-generated method stub
     return false;
   }
 
   @Override
   public boolean isValidEndPoint() {
-    // TODO Auto-generated method stub
     return false;
   }
 
