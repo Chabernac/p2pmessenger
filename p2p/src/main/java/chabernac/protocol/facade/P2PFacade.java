@@ -9,6 +9,7 @@ import java.io.Serializable;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -95,6 +96,7 @@ public class P2PFacade {
   private int myWebPort = 8080;
   private Integer myAJPPort = null;
   private URL myWebURL = null;
+  private Set<String> mySupportedProtocols = null;
 
   /**
    * set the exchange delay.
@@ -644,21 +646,25 @@ public class P2PFacade {
     myWebURL = aWebURL;
     return this;
   }
+  
+  public P2PFacade addSupportedProtocol(String aProtocol) throws P2PFacadeException{
+    if(isStarted()) throw new P2PFacadeException("Can not set this property whern the server has been started");
+
+    if(mySupportedProtocols == null) mySupportedProtocols = new HashSet<String>();
+    mySupportedProtocols.add(aProtocol);
+    return this;
+  }
 
   public P2PFacade start() throws P2PFacadeException{
     return start(256);
   }
   
   public P2PFacade start(int aNumberOfThreads) throws P2PFacadeException{
-    return start(aNumberOfThreads, null);
-  }
-
-  public P2PFacade start(int aNumberOfThreads, Set<String> aSupportedProtocols) throws P2PFacadeException{
     if(isStarted()) return this;
 
     try{
       ProtocolFactory theFactory = new ProtocolFactory(myProperties);
-      myContainer = new ProtocolContainer(theFactory, aSupportedProtocols);
+      myContainer = new ProtocolContainer(theFactory, mySupportedProtocols);
       
       if(isWebNode){
         if(myWebURL == null) throw new P2PFacadeException( "Must set a web url before starting" );
@@ -679,16 +685,16 @@ public class P2PFacade {
 
       //retrieve the user info protocol
       //this way it is instantiated and listens for routing table changes and retrieves user info of the changed peers
-      if(aSupportedProtocols == null || aSupportedProtocols.contains( UserInfoProtocol.ID )) myContainer.getProtocol( UserInfoProtocol.ID );
+      if(mySupportedProtocols == null || mySupportedProtocols.contains( UserInfoProtocol.ID )) myContainer.getProtocol( UserInfoProtocol.ID );
 
       //retrieve the version protocol so that is starts exchanging versions
       //retrieve the user info protocol
       //this way it is instantiated and listens for routing table changes and retrieves user info of the changed peers
-      if(aSupportedProtocols == null || aSupportedProtocols.contains( VersionProtocol.ID)) myContainer.getProtocol( VersionProtocol.ID );
+      if(mySupportedProtocols == null || mySupportedProtocols.contains( VersionProtocol.ID)) myContainer.getProtocol( VersionProtocol.ID );
 
-      if(aSupportedProtocols == null || aSupportedProtocols.contains( WebPeerProtocol.ID)) myContainer.getProtocol( WebPeerProtocol.ID );
+      if(mySupportedProtocols == null || mySupportedProtocols.contains( WebPeerProtocol.ID)) myContainer.getProtocol( WebPeerProtocol.ID );
 
-      if(aSupportedProtocols == null || aSupportedProtocols.contains( InfoExchangeProtocol.ID)) myContainer.getProtocol( InfoExchangeProtocol.ID );
+      if(mySupportedProtocols == null || mySupportedProtocols.contains( InfoExchangeProtocol.ID)) myContainer.getProtocol( InfoExchangeProtocol.ID );
 
       iSocketPool theSocketPool = P2PSettings.getInstance().getSocketPool();
       if(theSocketPool instanceof CachingSocketPool){
