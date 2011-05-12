@@ -19,9 +19,12 @@ import java.net.MulticastSocket;
 import java.net.SocketException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -113,7 +116,7 @@ public class RoutingProtocol extends Protocol {
 
   private boolean isPeerIdInFile = false;
 
-  private List<String> mySuperNodes = null;
+  private Set<String> mySuperNodes = null;
 
   private ServerInfo myServerInfo = null;
   private final String myChannel;
@@ -135,7 +138,7 @@ public class RoutingProtocol extends Protocol {
   public RoutingProtocol ( String aLocalPeerId, 
                            long anExchangeDelay, 
                            boolean isPersistRoutingTable, 
-                           List<String> aSuperNodes, 
+                           Collection<String> aSuperNodes, 
                            boolean isStopWhenAlreadyRunning, 
                            String aChannel) throws ProtocolException{
     super( ID );
@@ -162,7 +165,7 @@ public class RoutingProtocol extends Protocol {
   
   private void loadSuperNodes(){
     try {
-      mySuperNodes = IOTools.loadStreamAsList( new ClassPathResource("supernodes.txt").getInputStream() );
+      mySuperNodes = new HashSet<String>( IOTools.loadStreamAsList( new ClassPathResource("supernodes.txt").getInputStream() ));
     } catch ( IOException e ) {
       LOGGER.error("Could not load super nodes", e);
     }

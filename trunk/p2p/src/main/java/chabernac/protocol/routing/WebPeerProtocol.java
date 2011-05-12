@@ -19,10 +19,11 @@ import chabernac.protocol.ProtocolException;
 public class WebPeerProtocol extends Protocol{
   private static Logger LOGGER = Logger.getLogger(WebPeerEventListener.class);
   public static final String ID = "WPP";
-  
+  private static final int MAX_ERRORS = 100;
+
   public static enum Input{EVENT};
   public static enum Response{UNKNOWN_COMMAND};
-  
+
   private Map<WebPeer, WebPeerEventListener> myListeners = Collections.synchronizedMap(new HashMap<WebPeer, WebPeerEventListener>());
   private ExecutorService myWebPeerListenerService = Executors.newCachedThreadPool();
 
@@ -44,7 +45,7 @@ public class WebPeerProtocol extends Protocol{
     }
 
   }
-  
+
   public void setMasterProtocol(IProtocol aProtocol){
     super.setMasterProtocol(aProtocol);
     try {
@@ -54,11 +55,11 @@ public class WebPeerProtocol extends Protocol{
       LOGGER.error("Unable to add listener", e);
     }
   }
-  
+
   private ProtocolContainer getProtocolContainer(){
     return (ProtocolContainer)getMasterProtocol();
   }
-  
+
   public RoutingTable getRoutingTable() throws ProtocolException{
     return ((RoutingProtocol)findProtocolContainer().getProtocol( RoutingProtocol.ID )).getRoutingTable();
   }
@@ -66,7 +67,7 @@ public class WebPeerProtocol extends Protocol{
   private void addListener() throws ProtocolException{
     getRoutingTable().addRoutingTableListener(new RoutingTableListener());
   }
-  
+
   @Override
   public String getDescription() {
     return "Web peer protocol";
@@ -125,19 +126,29 @@ public class WebPeerProtocol extends Protocol{
 
     @Override
     public void run() {
+      int theErrors = 0;
       myListeners.put(myWebPeer, this);
       try{
-        while(!stop){
-          CometEvent theEvent = myWebPeer.waitForEvent(getRoutingTable().getLocalPeerId());
-          if(!theEvent.getInput().equals( CometServlet.Responses.NO_DATA.name() )){
-            String theResult = handleCommand(UUID.randomUUID().toString(), Input.EVENT.name() + " " + theEvent.getInput());
-            theEvent.setOutput( theResult );
-          } else {
-            LOGGER.debug("Comet servlet timed out, waiting for new request...");
+        while(!stop && theErrors < MAX_ERRORS){
+          try{
+            CometEvent theEvent = myWebPeer.waitForEvent(getRoutingTable().getLocalPeerId());
+            if(!theEvent.getInput().equals( CometServlet.Responses.NO_DATA.name() )){
+              String theResult = handleCommand(UUID.randomUUID().toString(), Input.EVENT.name() + " " + theEvent.getInput());
+              theEvent.setOutput( theResult );
+              
+              //a successfull communication has happened, reset the error counter
+            } else {
+              LOGGER.debug("Comet servlet timed out, waiting for new request...");
+            }
+          }catch(Exception e){
+            theErrors++;
+            LOGGER.error("An error occured while waiting for event from webpeer '" + myWebPeer.getPeerId() + "' error counter='" + theErrors + "'", e);
+            try {
+              Thread.sleep( 500 );
+            } catch ( InterruptedException e1 ) {
+            }
           }
         }
-      }catch(Exception e){
-        LOGGER.error("An error occured while waiting for event from webpeer '" + myWebPeer.getPeerId() + "'", e);
       } finally {
         myListeners.remove(myWebPeer);
       }

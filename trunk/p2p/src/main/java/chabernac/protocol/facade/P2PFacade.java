@@ -16,8 +16,6 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
-import javax.activation.DataSource;
-
 import chabernac.io.BasicSocketPool;
 import chabernac.io.CachingSocketPool;
 import chabernac.io.iSocketPool;
@@ -95,6 +93,7 @@ public class P2PFacade {
   private boolean isActivateMessageResender = false;
   private boolean isWebNode = false;
   private int myWebPort = 8080;
+  private Integer myAJPPort = null;
   private URL myWebURL = null;
 
   /**
@@ -638,6 +637,19 @@ public class P2PFacade {
     return this;
   }
   
+  
+  
+  public Integer getAJPPort() {
+    return myAJPPort;
+  }
+
+  public P2PFacade setAJPPort( Integer aAJPPort ) throws P2PFacadeException {
+    if(isStarted()) throw new P2PFacadeException("Can not set this property whern the server has been started");
+    if(!isWebNode)  throw new P2PFacadeException("Can only set this property on a webnode");
+    myAJPPort = aAJPPort;
+    return this;
+  }
+
   public URL getWebURL() {
     return myWebURL;
   }
@@ -650,6 +662,10 @@ public class P2PFacade {
     return this;
   }
 
+  public P2PFacade start() throws P2PFacadeException{
+    return start(256);
+  }
+  
   public P2PFacade start(int aNumberOfThreads) throws P2PFacadeException{
     return start(aNumberOfThreads, null);
   }
@@ -663,7 +679,10 @@ public class P2PFacade {
       
       if(isWebNode){
         if(myWebURL == null) throw new P2PFacadeException( "Must set a web url before starting" );
-        myProtocolServer = new ProtocolWebServer( myContainer, myWebPort, myWebURL );
+        ProtocolWebServer theProtocolWebServer = new ProtocolWebServer( myContainer, myWebPort, myWebURL );
+        theProtocolWebServer.setAJPPort( myAJPPort );
+        myProtocolServer = theProtocolWebServer;
+        
       } else {
         myProtocolServer = new ProtocolServer(myContainer, RoutingProtocol.START_PORT, aNumberOfThreads, true);
       }
