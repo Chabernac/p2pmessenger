@@ -128,7 +128,7 @@ public class RoutingProtocol extends Protocol {
   private iPeerSender myPeerSender;
 
   private iRoutingTableInspector myRoutingTableInspector = null;
-  
+
   /**
    * 
    * @param aLocalPeerId
@@ -155,15 +155,19 @@ public class RoutingProtocol extends Protocol {
     }
 
     loadSuperNodes();
-    
+
     if(aSuperNodes != null){
       mySuperNodes.addAll( aSuperNodes);
     }
 
     loadRoutingTable();
   }
-  
+
   private void loadSuperNodes(){
+    //we do not load the super nodes present in the supernodes file
+    //otherwise our temporary test peers will distribute over the entire production network
+    if(TestTools.isInUnitTest()) return;
+
     try {
       mySuperNodes = new HashSet<String>( IOTools.loadStreamAsList( new ClassPathResource("supernodes.txt").getInputStream() ));
     } catch ( IOException e ) {
@@ -230,7 +234,7 @@ public class RoutingProtocol extends Protocol {
 
     if(myServerInfo != null ){
       if(myExchangeDelay > 0 ) scheduleRoutingTableExchange();
-      
+
       if(myServerInfo.getServerType() == Type.SOCKET){
         myChangeService = DynamicSizeExecutor.getSmallInstance();
         myRoutingTable.addRoutingTableListener( new RoutingTableListener() );
@@ -258,9 +262,9 @@ public class RoutingProtocol extends Protocol {
 
   private void scheduleRoutingTableExchange(){
     mySheduledService = Executors.newScheduledThreadPool( 1 );
-    
+
     mySheduledService.scheduleWithFixedDelay( new ExchangeRoutingTable(), 2, myExchangeDelay, TimeUnit.SECONDS);
-    
+
     if(myServerInfo.getServerType() == Type.SOCKET){
       mySheduledService.scheduleWithFixedDelay( new ScanLocalSystem(), 1, myExchangeDelay, TimeUnit.SECONDS);
       mySheduledService.scheduleWithFixedDelay( new SendUDPAnnouncement(), 4, myExchangeDelay, TimeUnit.SECONDS);
@@ -563,17 +567,17 @@ public class RoutingProtocol extends Protocol {
     for(RoutingTableEntry theEntry : myRoutingTable.getEntries()){
       sendAnnouncementWithReply(theEntry);
     }
-    
+
     myExchangeCounter.incrementAndGet();
     LOGGER.debug("End exchanging routing table for peer: " + myRoutingTable.getLocalPeerId());
 
     //save the routing table
     if(isPersistRoutingTable) saveRoutingTable();
   }
-  
+
   private void sendAnnouncementWithReply(RoutingTableEntry aRoutingTableEntry){
     AbstractPeer thePeer = aRoutingTableEntry.getPeer();
-    
+
     if(!thePeer.getPeerId().equals(myRoutingTable.getLocalPeerId())){
       try {
         if(myUnreachablePeers.contains( thePeer.getPeerId())){
