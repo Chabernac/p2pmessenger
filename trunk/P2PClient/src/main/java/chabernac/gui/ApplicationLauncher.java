@@ -19,7 +19,6 @@ import org.apache.log4j.Logger;
 import chabernac.gui.tray.NewMessageInfoPanelDisplayer;
 import chabernac.gui.tray.NewMessageTrayIconDisplayer;
 import chabernac.gui.tray.SystemTrayMenu;
-import chabernac.io.ClassPathResource;
 import chabernac.io.SocketProxy;
 import chabernac.ldapuserinfoprovider.AXALDAPUserInfoProvider;
 import chabernac.ldapuserinfoprovider.BackupUserInfoProviderDecorator;
@@ -163,12 +162,13 @@ public class ApplicationLauncher {
     .setExchangeDelay( 300 )
     .setPersist( "true".equals(anInterPreter.getKeyValue( "persist" )) )
     .setUserInfoProvider( theUserInfoProvider )
-    .setSuperNodesDataSource( new ClassPathResource("supernodes.txt") )
+    .addSuperNode( "http://x22p0212:8089/" )
+//    .setSuperNodesDataSource( new ClassPathResource("supernodes.txt") )
     .setStopWhenAlreadyRunning( true )
     .setChannel(anInterPreter.getKeyValue("channel", "default"))
     .setFileHandler( new FileHandlerDialogDispatcher() )
     .setInfoObject( "pom.info", new POMInfo() )
-    .setInfoObject( "version", "v2011.03.24" )
+    .setInfoObject( "version", "v2011.05.12" )
     .setSocketReuse( true )
     .setMessageResenderActivated( true )
     .start( 256 );
