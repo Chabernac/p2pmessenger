@@ -116,7 +116,7 @@ public class RoutingProtocol extends Protocol {
 
   private boolean isPeerIdInFile = false;
 
-  private Set<String> mySuperNodes = null;
+  private Set<String> mySuperNodes = new HashSet<String>();
 
   private ServerInfo myServerInfo = null;
   private final String myChannel;
@@ -169,7 +169,7 @@ public class RoutingProtocol extends Protocol {
     if(TestTools.isInUnitTest()) return;
 
     try {
-      mySuperNodes = new HashSet<String>( IOTools.loadStreamAsList( new ClassPathResource("supernodes.txt").getInputStream() ));
+      mySuperNodes.addAll( IOTools.loadStreamAsList( new ClassPathResource("supernodes.txt").getInputStream() ));
     } catch ( IOException e ) {
       LOGGER.error("Could not load super nodes", e);
     }
