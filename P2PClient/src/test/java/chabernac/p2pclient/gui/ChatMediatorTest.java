@@ -15,7 +15,6 @@ import junit.framework.TestCase;
 
 import org.apache.log4j.BasicConfigurator;
 
-import chabernac.io.ClassPathResource;
 import chabernac.ldapuserinfoprovider.AXALDAPUserInfoProvider;
 import chabernac.protocol.facade.P2PFacade;
 import chabernac.protocol.facade.P2PFacadeException;
@@ -30,21 +29,18 @@ public class ChatMediatorTest extends TestCase {
     .setExchangeDelay( 300 )
     .setPersist( false )
     .setUserInfoProvider( new AXALDAPUserInfoProvider() )
-    .setSuperNodesDataSource( new ClassPathResource("supernodes.txt") )
     .start( 5 );
     
     P2PFacade theFacade2 = new P2PFacade()
     .setExchangeDelay( 300 )
     .setPersist( false )
     .setUserInfoProvider( new AXALDAPUserInfoProvider() )
-    .setSuperNodesDataSource( new ClassPathResource("supernodes.txt") )
     .start( 5 );
     
     P2PFacade theFacade3 = new P2PFacade()
     .setExchangeDelay( 300 )
     .setPersist( false )
     .setUserInfoProvider( new AXALDAPUserInfoProvider() )
-    .setSuperNodesDataSource( new ClassPathResource("supernodes.txt") )
     .start( 5 );
     
     Thread.sleep( 2000 );
