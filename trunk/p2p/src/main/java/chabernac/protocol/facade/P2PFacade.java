@@ -616,20 +616,12 @@ public class P2PFacade {
     }
   }
   
-  public boolean isWebNode() {
-    return isWebNode;
-  }
-
   public P2PFacade setWebNode(boolean anIsWebNode) throws P2PFacadeException {
     if(isStarted()) throw new P2PFacadeException("Can not set this property whern the server has been started");
     isWebNode = anIsWebNode;
     return this;
   }
   
-  public int getWebPort() {
-    return myWebPort;
-  }
-
   public P2PFacade setWebPort( int aWebPort ) throws P2PFacadeException {
     if(isStarted()) throw new P2PFacadeException("Can not set this property whern the server has been started");
     if(!isWebNode)  throw new P2PFacadeException("Can only set this property on a webnode");
@@ -638,20 +630,11 @@ public class P2PFacade {
   }
   
   
-  
-  public Integer getAJPPort() {
-    return myAJPPort;
-  }
-
   public P2PFacade setAJPPort( Integer aAJPPort ) throws P2PFacadeException {
     if(isStarted()) throw new P2PFacadeException("Can not set this property whern the server has been started");
     if(!isWebNode)  throw new P2PFacadeException("Can only set this property on a webnode");
     myAJPPort = aAJPPort;
     return this;
-  }
-
-  public URL getWebURL() {
-    return myWebURL;
   }
 
   public P2PFacade setWebURL( URL aWebURL ) throws P2PFacadeException {

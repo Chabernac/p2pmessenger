@@ -9,7 +9,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
+import java.net.Socket;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -25,7 +27,9 @@ import chabernac.protocol.message.DeliveryReport;
 import chabernac.protocol.message.MessageArchive;
 import chabernac.protocol.message.MultiPeerMessage;
 import chabernac.protocol.pipe.Pipe;
+import chabernac.protocol.routing.AbstractPeer;
 import chabernac.protocol.routing.UnknownPeerException;
+import chabernac.protocol.routing.WebPeer;
 import chabernac.protocol.userinfo.UserInfo;
 import chabernac.protocol.userinfo.UserInfo.Status;
 import chabernac.testingutils.DeliveryReportCollector;
@@ -692,6 +696,144 @@ public class P2PFacadeTest extends TestCase {
       if(theWebPeer != null) theWebPeer.stop();
       if(theSocketPeer != null) theSocketPeer.stop();
     }
+  }
+
+  public void testSetWebURL() throws MalformedURLException, P2PFacadeException, UnknownPeerException{
+    P2PFacade theFacade = new P2PFacade()
+    .setWebNode( true )
+    .setWebPort( 8080 )
+    .setPersist( false )
+    .setWebURL( new URL("http://localhost:8080/") )
+    .start();
+
+    try{
+      AbstractPeer thePeer = theFacade.getRoutingTable().getEntryForLocalPeer().getPeer();
+
+      assertTrue( thePeer instanceof WebPeer );
+
+      WebPeer theLocalPeer = (WebPeer)thePeer;
+
+      assertEquals( "http://localhost:8080/", theLocalPeer.getURL().toString() );
+
+      try{
+        theFacade.setWebURL( new URL("http://localhost:8080/") );
+        fail("An exception must have been thrown");
+      }catch(Exception e){
+      }
+    }finally {
+      if(theFacade != null){
+        theFacade.stop();
+      }
+    }
+
+    try{
+      theFacade = new P2PFacade()
+      .setWebNode( false )
+      .setWebURL( new URL("http://localhost:8080/") )
+      .start();
+      fail("An exception must have been thrown");
+    }catch(Exception e){
+    }
+  }
+
+  public void testSetWebPort() throws MalformedURLException, P2PFacadeException{
+    P2PFacade theFacade = new P2PFacade()
+    .setWebNode( true )
+    .setWebPort( 8080 )
+    .setPersist( false )
+    .setWebURL( new URL("http://localhost:8080/") )
+    .start();
+
+    try{
+      theFacade.setWebPort( 9090 );
+      fail("An exception must have been thrown");
+    }catch(Exception e){
+    }
+
+    try{
+      theFacade = new P2PFacade()
+      .setWebNode( false )
+      .setWebPort( 9090 )
+      .start();
+      fail("An exception must have been thrown");
+    }catch(Exception e){
+    }
+
+    if(theFacade != null){
+      theFacade.stop();
+    }
+  }
+  
+  public void testSetAJPPort() throws P2PFacadeException, UnknownHostException, IOException{
+    P2PFacade theFacade = new P2PFacade()
+    .setWebNode( true )
+    .setWebPort( 8080 )
+    .setAJPPort( 9090 )
+    .setPersist( false )
+    .setWebURL( new URL("http://localhost:8080/") )
+    .start();
+
+    
+    //test if the AJP port is effectively open
+    
+    Socket theSocket = new Socket( "localhost", 9090 );
+    assertTrue( theSocket.isBound() );
+    
+    try{
+      theFacade.setAJPPort( 9091 );
+      fail("An exception must have been thrown");
+    }catch(Exception e){
+    }
+
+    try{
+      theFacade = new P2PFacade()
+      .setWebNode( false )
+      .setAJPPort( 9091 )
+      .start();
+      fail("An exception must have been thrown");
+    }catch(Exception e){
+    }
+
+    if(theFacade != null){
+      theFacade.stop();
+    }
+  }
+
+  public void testSetWebNode() throws P2PFacadeException, MalformedURLException, UnknownPeerException{
+    P2PFacade theFacade = new P2PFacade()
+    .setExchangeDelay( 300 )
+    .setPersist( false )
+    .setInfoObject( "test", "test1" )
+    .start( 20 );
+
+    try{
+      theFacade.setWebNode( true );
+      fail("An exception must have been thrown");
+    } catch(Exception e){
+    }finally{
+      if(theFacade != null){
+        theFacade.stop();
+      }
+    }
+
+    theFacade = new P2PFacade()
+    .setWebNode( true )
+    .setWebPort( 8080 )
+    .setPersist( false )
+    .setWebURL( new URL("http://localhost:8080/") )
+    .start();
+
+    try{
+      AbstractPeer thePeer = theFacade.getRoutingTable().getEntryForLocalPeer().getPeer();
+
+      assertTrue( thePeer instanceof WebPeer );
+    } finally {
+      if(theFacade != null){
+        theFacade.stop();
+      }
+    }
 
   }
+
+
 }
