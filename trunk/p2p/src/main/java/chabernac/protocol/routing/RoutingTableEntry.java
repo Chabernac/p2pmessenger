@@ -89,7 +89,7 @@ public class RoutingTableEntry implements Serializable{
   }
 
   public String toString(){
-    return "<PeerEntry peerid='" + myPeer.getPeerId() + "' hopDistance='" + myHopDistance + "' gateway='" + myGateway.getPeerId() + "' creationTime='" + myCreationTime + "'/>";
+    return "<PeerEntry peerid='" + myPeer.getPeerId() + "' endpoint='" + myPeer.getEndPointRepresentation() + "' hopDistance='" + myHopDistance + "' gateway='" + myGateway.getPeerId() + "' creationTime='" + myCreationTime + "'/>";
   }
   
   public boolean equals(Object anObject){

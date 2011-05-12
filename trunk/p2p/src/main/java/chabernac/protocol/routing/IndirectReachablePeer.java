@@ -22,7 +22,7 @@ public class IndirectReachablePeer extends AbstractPeer {
 
   @Override
   public String getEndPointRepresentation() {
-    return null;
+    return "No end point for indirect reachable peer";
   }
 
   @Override

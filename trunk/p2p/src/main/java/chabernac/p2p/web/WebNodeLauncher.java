@@ -11,6 +11,9 @@ import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 
 import chabernac.protocol.facade.P2PFacade;
+import chabernac.protocol.message.MessageProtocol;
+import chabernac.protocol.routing.RoutingProtocol;
+import chabernac.protocol.routing.WebPeerProtocol;
 import chabernac.utils.ArgsInterPreter;
 
 public class WebNodeLauncher {
@@ -29,18 +32,17 @@ public class WebNodeLauncher {
       
       URL theURL = new URL(theInterpreter.getKeyValue( "url" ));
       
-      P2PFacade theFacade = new P2PFacade()
+      new P2PFacade()
       .setWebNode( true )
       .setWebPort( Integer.parseInt( theInterpreter.getKeyValue( "port" )) )
       .setWebURL( theURL )
       .setExchangeDelay( 300 )
-      .setPersist( Boolean.valueOf( theInterpreter.getKeyValue("persist") ));
-      
-      if(theInterpreter.containsKey( "ajpport" )){
-        theFacade.setAJPPort( Integer.parseInt( theInterpreter.getKeyValue( "ajpport" ) ) );
-      }
-      
-      theFacade.start( );
+      .setPersist( Boolean.valueOf( theInterpreter.getKeyValue("persist") ))
+      .setAJPPort( theInterpreter.containsKey( "ajpport" ) ?  Integer.parseInt( theInterpreter.getKeyValue( "ajpport" ) )  : null)
+      .addSupportedProtocol( RoutingProtocol.ID )
+      .addSupportedProtocol( WebPeerProtocol.ID )
+      .addSupportedProtocol( MessageProtocol.ID )
+      .start();
       
       System.out.println("Webnode started!");
     }catch(Throwable e){

@@ -11,7 +11,7 @@ public class DummyPeer extends AbstractPeer {
 
   @Override
   public String getEndPointRepresentation() {
-    return null;
+    return "no end point for dummy peer";
   }
 
   @Override
