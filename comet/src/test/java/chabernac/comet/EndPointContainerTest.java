@@ -13,6 +13,7 @@ import junit.framework.TestCase;
 public class EndPointContainerTest extends TestCase {
   public void testEndPointContainer() throws InterruptedException{
     EndPointContainer theContainer = new EndPointContainer();
+    theContainer.setEndPointsPerId(10);
     
     assertEquals( 0,theContainer.getNrOfEndPoints( "3" ));
     
@@ -20,7 +21,7 @@ public class EndPointContainerTest extends TestCase {
     assertEquals( 1,theContainer.getNrOfEndPoints( "1" ));
     assertEquals( "1",theContainer.getEndPointFor( "1", 5, TimeUnit.SECONDS ).getId());
     
-    theContainer.addEndPoint( new EndPoint( "2" ) );
+    theContainer.addEndPoint( new EndPoint( "2" )  );
     theContainer.addEndPoint( new EndPoint( "2" ) );
     assertEquals( 2,theContainer.getNrOfEndPoints( "2" ));
     assertEquals( "2",theContainer.getEndPointFor( "2", 5, TimeUnit.SECONDS ).getId());

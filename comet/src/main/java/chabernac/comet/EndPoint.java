@@ -17,7 +17,7 @@ public class EndPoint {
   private final String myId;
   private BlockingQueue<CometEvent> myEventQueue = new ArrayBlockingQueue<CometEvent>(1);
   
-  public EndPoint ( String anId ) {
+  public EndPoint ( String anId) {
     super();
     myId = anId;
   }
@@ -25,6 +25,7 @@ public class EndPoint {
   public String getId() {
     return myId;
   }
+  
   
   public void setEvent(CometEvent anEvent) throws CometException{
     try {
