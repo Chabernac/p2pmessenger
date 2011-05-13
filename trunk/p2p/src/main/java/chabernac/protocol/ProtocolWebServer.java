@@ -10,6 +10,8 @@ import org.mortbay.jetty.servlet.ServletHolder;
 
 import chabernac.comet.CometServlet;
 import chabernac.p2p.web.ProtocolServlet;
+import chabernac.protocol.routing.RoutingProtocol;
+import chabernac.protocol.routing.WebRoutingTableInspecter;
 
 public class ProtocolWebServer implements iP2PServer {
   private final static Logger LOGGER = Logger.getLogger(ProtocolWebServer.class);
@@ -69,6 +71,14 @@ public class ProtocolWebServer implements iP2PServer {
       root.addServlet(theProtocolHolder, "/protocol");
 
       theProtocolHolder.setInitParameter( "serverurl", myURL.toString() );
+      
+      try{
+        RoutingProtocol theRoutingProtocol = (RoutingProtocol)myProtocolContainer.getProtocol(RoutingProtocol.ID);
+        WebRoutingTableInspecter theInspector = new WebRoutingTableInspecter(theProtocolServlet.getSessionData(), theProtocolServlet.getPeerIpMap());
+        theRoutingProtocol.setRoutingTableInspector(theInspector);
+      }catch(Exception e){
+        LOGGER.error( "Unable to get routingprotocol", e );
+      }
 
       myServer.start();
 

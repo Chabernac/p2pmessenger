@@ -17,7 +17,7 @@ import chabernac.protocol.ProtocolContainer;
 import chabernac.protocol.ProtocolException;
 
 public class WebPeerProtocol extends Protocol{
-  private static Logger LOGGER = Logger.getLogger(WebPeerEventListener.class);
+  private static Logger LOGGER = Logger.getLogger(WebPeerProtocol.class);
   public static final String ID = "WPP";
   private static final int MAX_ERRORS = 100;
 
@@ -137,6 +137,7 @@ public class WebPeerProtocol extends Protocol{
               theEvent.setOutput( theResult );
               
               //a successfull communication has happened, reset the error counter
+              theErrors = 0;
             } else {
               LOGGER.debug("Comet servlet timed out, waiting for new request...");
             }

@@ -4,6 +4,7 @@
  */
 package chabernac.p2p.web;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -18,6 +19,7 @@ import org.apache.log4j.Logger;
 
 import chabernac.comet.EndPointContainer;
 import chabernac.protocol.ProtocolContainer;
+import chabernac.protocol.ProtocolException;
 import chabernac.protocol.ProtocolFactory;
 import chabernac.protocol.ServerInfo;
 import chabernac.protocol.ServerInfo.Type;
@@ -85,8 +87,6 @@ public class ProtocolServlet extends HttpServlet {
     String theSession = aRequest.getParameter( "session" );
     String thePeerId = aRequest.getParameter("peerid");
 
-    getPeerIpMap().put(thePeerId, aRequest.getRemoteAddr());
-    getSessionData().putProperty(theSession, "requestor.ip", aRequest.getRemoteAddr());
 
     LOGGER.debug( "Received message from peer '" + thePeerId + "' in session '" + theSession + "': " + theInput + "'" + " at remote ip '" + aRequest.getRemoteAddr() + "'" );
     //TODO remove when logging correctly enabled on server
@@ -96,9 +96,11 @@ public class ProtocolServlet extends HttpServlet {
       if("exchange".equalsIgnoreCase( theInput ) ){
         ((RoutingProtocol)getProtocolContainer().getProtocol( RoutingProtocol.ID )).exchangeRoutingTable();
       }else if(theInput == null || "".equals( theInput ) || theSession == null || "".equals( theSession )){
-        aResponse.getWriter().println( ((RoutingProtocol)getProtocolContainer().getProtocol( RoutingProtocol.ID )).getLocalPeerId() );
-        aResponse.getWriter().println( ((RoutingProtocol)getProtocolContainer().getProtocol( RoutingProtocol.ID )).getRoutingTable() );
+        printDebugInfo(aRequest, aResponse);
       } else {
+        getPeerIpMap().put(thePeerId, aRequest.getRemoteAddr());
+        getSessionData().putProperty(theSession, "requestor.ip", aRequest.getRemoteAddr());
+        
         String theResult = getProtocolContainer().handleCommand(theSession , theInput );
         aResponse.getWriter().println(theResult);
       }
@@ -108,6 +110,20 @@ public class ProtocolServlet extends HttpServlet {
       //remove the session data
       getSessionData().clearSessionData( theSession );
     }
+  }
+  
+  private void printDebugInfo(HttpServletRequest aRequest, HttpServletResponse aResponse) throws IOException, ProtocolException{
+    aResponse.getWriter().println("Routing table");
+    aResponse.getWriter().println("");
+    aResponse.getWriter().println( ((RoutingProtocol)getProtocolContainer().getProtocol( RoutingProtocol.ID )).getLocalPeerId() );
+    aResponse.getWriter().println( ((RoutingProtocol)getProtocolContainer().getProtocol( RoutingProtocol.ID )).getRoutingTable() );
+    aResponse.getWriter().println("Peer ip map");
+    aResponse.getWriter().println("");
+    for(String thePeer : getPeerIpMap().keySet()){
+      aResponse.getWriter().println("Peer '" + thePeer + "' has ip '" + getPeerIpMap().get(thePeer) + "'");
+    }
+
+    
   }
 
   public void doPost(HttpServletRequest aRequest, HttpServletResponse aResponse){
