@@ -14,6 +14,13 @@ package chabernac.protocol.routing;
 
 public class IndirectReachablePeer extends AbstractPeer {
   private static final long serialVersionUID = 214472238814548564L;
+  
+  public IndirectReachablePeer(AbstractPeer aPeer){
+    this(aPeer.getPeerId());
+    setChannel(aPeer.getChannel());
+    mySupportedProtocols.clear();
+    mySupportedProtocols.addAll(aPeer.getSupportedProtocols());
+  }
 
   public IndirectReachablePeer( String anPeerId ) {
     super( anPeerId );
@@ -33,5 +40,13 @@ public class IndirectReachablePeer extends AbstractPeer {
   @Override
   public boolean isValidEndPoint() {
     return true;
+  }
+  
+  public String toString(){
+    StringBuilder theBuilder = new StringBuilder();
+    theBuilder.append( getPeerId() );
+    theBuilder.append("@");
+    theBuilder.append(getChannel());
+    return theBuilder.toString();
   }
 }
