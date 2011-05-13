@@ -9,7 +9,7 @@ public abstract class AbstractPeer implements Serializable{
   private static final long serialVersionUID = 4466216283560470711L;
   private String myPeerId;
   private String myChannel;
-  private Set<String> mySupportedProtocols = new HashSet< String >();
+  protected Set<String> mySupportedProtocols = new HashSet< String >();
   private boolean isTemporaryPeer = true;
   
   public AbstractPeer(String anPeerId) {
@@ -21,8 +21,9 @@ public abstract class AbstractPeer implements Serializable{
     return myPeerId;
   }
   
-  public void setPeerId(String anPeerId) {
+  public AbstractPeer setPeerId(String anPeerId) {
     myPeerId = anPeerId;
+    return this;
   }
 
   public abstract boolean isSameEndPointAs(AbstractPeer aPeer);
@@ -31,8 +32,9 @@ public abstract class AbstractPeer implements Serializable{
     return myChannel;
   }
 
-  public void setChannel(String anChannel) {
+  public AbstractPeer setChannel(String anChannel) {
     myChannel = anChannel;
+    return this;
   }
   
   public boolean isOnSameChannel(AbstractPeer anOtherPeer){
@@ -54,8 +56,9 @@ public abstract class AbstractPeer implements Serializable{
     return myPeerId.hashCode();
   }
 
-  public void addSupportedProtocol(String aProtocolId){
+  public AbstractPeer addSupportedProtocol(String aProtocolId){
     mySupportedProtocols.add(aProtocolId);
+    return this;
   }
   
   public boolean isProtocolSupported(String aProtocolId){
@@ -72,7 +75,8 @@ public abstract class AbstractPeer implements Serializable{
     return isTemporaryPeer;
   }
 
-  public void setTemporaryPeer( boolean aTemporaryPeer ) {
+  public AbstractPeer setTemporaryPeer( boolean aTemporaryPeer ) {
     isTemporaryPeer = aTemporaryPeer;
+    return this;
   }
 }

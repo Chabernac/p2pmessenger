@@ -23,7 +23,7 @@ public class WebRoutingTableInspecterTest extends TestCase {
     RoutingTable theRoutingTable = new RoutingTable( "1" );
 
     theRoutingTable.addRoutingTableEntry( new RoutingTableEntry( new WebPeer( "1", new URL("http://localhost:80/p2p") ), 0, new WebPeer( "1", new URL("http://localhost:80/p2p") ), System.currentTimeMillis() ) );
-    theRoutingTable.addRoutingTableEntry( new RoutingTableEntry( new SocketPeer( "2" ), 1, new SocketPeer( "2" ), System.currentTimeMillis() ) );
+    theRoutingTable.addRoutingTableEntry( new RoutingTableEntry( new SocketPeer( "2" ).setChannel("CHANNEL_ZERO").addSupportedProtocol(RoutingProtocol.ID), 1, new SocketPeer( "2" ), System.currentTimeMillis() ) );
     theRoutingTable.addRoutingTableEntry( new RoutingTableEntry( new SocketPeer( "3" ), 1, new SocketPeer( "3" ), System.currentTimeMillis() ) );
     theRoutingTable.addRoutingTableEntry( new RoutingTableEntry( new SocketPeer( "4" ), 1, new SocketPeer( "4" ), System.currentTimeMillis() ) );
     theRoutingTable.addRoutingTableEntry( new RoutingTableEntry( new SocketPeer( "5" ), 2, new SocketPeer( "5" ), System.currentTimeMillis() ) );
@@ -83,6 +83,8 @@ public class WebRoutingTableInspecterTest extends TestCase {
 
     assertTrue(  theNewRoutingTable.getEntryForPeer( "1" ).getPeer() instanceof WebPeer );
     assertTrue(  theNewRoutingTable.getEntryForPeer( "2" ).getPeer() instanceof IndirectReachablePeer);
+    assertEquals( "CHANNEL_ZERO", theNewRoutingTable.getEntryForPeer("2").getPeer().getChannel());
+    assertEquals( 1, theNewRoutingTable.getEntryForPeer("2").getPeer().getSupportedProtocols().size());
     assertTrue(  theNewRoutingTable.getEntryForPeer( "3" ).getPeer() instanceof IndirectReachablePeer);
     assertTrue(  theNewRoutingTable.getEntryForPeer( "4" ).getPeer() instanceof SocketPeer);
     assertTrue(  theNewRoutingTable.getEntryForPeer( "5" ).getPeer() instanceof IndirectReachablePeer);

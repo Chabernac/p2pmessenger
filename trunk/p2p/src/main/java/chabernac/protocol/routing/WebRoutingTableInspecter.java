@@ -6,6 +6,8 @@ package chabernac.protocol.routing;
 
 import java.util.Map;
 
+import org.apache.log4j.Logger;
+
 /**
  * 
  * This class will
@@ -21,6 +23,7 @@ import java.util.Map;
  */
 
 public class WebRoutingTableInspecter implements iRoutingTableInspector {
+  private static Logger LOGGER = Logger.getLogger(WebRoutingTableInspecter.class);
   private final Map<String, String> myPeerExternalIpLink;
   private final SessionData mySessionData;
   
@@ -36,6 +39,8 @@ public class WebRoutingTableInspecter implements iRoutingTableInspector {
     
     String theIPRequestor = mySessionData.getProperty( aSessionId, "requestor.ip" );
     
+    LOGGER.debug("Inspecting routing table in session '" + aSessionId + "' for peer with remote ip '" + theIPRequestor + "'");
+    
     if(theIPRequestor == null || "".equals( theIPRequestor )) return aRoutingTable;
     
     //Now lets create a new routing table and replace all the peers with dummy peers which have not the same ip as the requestor
@@ -47,10 +52,15 @@ public class WebRoutingTableInspecter implements iRoutingTableInspector {
         SocketPeer thePeer = (SocketPeer)theEntry.getPeer();
         
         String theExposedIp = myPeerExternalIpLink.get( thePeer.getPeerId() );
+        
+        LOGGER.debug("Inspecting routing table entry of peer '" + thePeer.getPeerId() + "' which has external ip '" + theExposedIp + "'");
+        
         if(theIPRequestor.equals(theExposedIp)){
+          LOGGER.debug("The ip of the requesting peer '" + theIPRequestor + "' matches the ip of the inspected routing table entry '" + theExposedIp + "' adding the entry unchanged");
           theTable.addRoutingTableEntry( theEntry );
         } else {
-          IndirectReachablePeer theNewPeer = new IndirectReachablePeer(thePeer.getPeerId());
+          LOGGER.debug("The ip of the requesting peer '" + theIPRequestor + "' does not match the ip of the inspected routing table entry '" + theExposedIp + "' adding indirect reachable peer");
+          IndirectReachablePeer theNewPeer = new IndirectReachablePeer(thePeer);
           RoutingTableEntry theNewEntry = new RoutingTableEntry( theNewPeer, theEntry.getHopDistance(), theEntry.getGateway(), theEntry.getLastOnlineTime());
           theTable.addRoutingTableEntry(theNewEntry);
         }

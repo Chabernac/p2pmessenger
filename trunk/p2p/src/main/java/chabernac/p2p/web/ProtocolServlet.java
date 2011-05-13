@@ -58,17 +58,9 @@ public class ProtocolServlet extends HttpServlet {
 
         ProtocolContainer theProtocolContainer = new ProtocolContainer(new ProtocolFactory(thePropertyMap), theSupportedProtocols);
 
-        try{
-          RoutingProtocol theRoutingProtocol = (RoutingProtocol)theProtocolContainer.getProtocol(RoutingProtocol.ID);
-          WebRoutingTableInspecter theInspector = new WebRoutingTableInspecter(getSessionData(), getPeerIpMap());
-          theRoutingProtocol.setRoutingTableInspector(theInspector);
-        }catch(Exception e){
-          LOGGER.error( "Unable to get routingprotocol", e );
-        }
-
         getServletContext().setAttribute( "ProtocolContainer", theProtocolContainer );
       }
-
+      
       ServerInfo theServerInfo = new ServerInfo(Type.WEB);
       theServerInfo.setServerURL( getServletConfig().getInitParameter( "serverurl" ));
 
@@ -76,6 +68,14 @@ public class ProtocolServlet extends HttpServlet {
 
       WebPeer theWebPeer = (WebPeer)((RoutingProtocol)getProtocolContainer().getProtocol( RoutingProtocol.ID )).getRoutingTable().getEntryForLocalPeer().getPeer();
       theWebPeer.setEndPointContainer( (EndPointContainer)getServletContext().getAttribute( "EndPoints" ) );
+      
+      try{
+        RoutingProtocol theRoutingProtocol = (RoutingProtocol)getProtocolContainer().getProtocol(RoutingProtocol.ID);
+        WebRoutingTableInspecter theInspector = new WebRoutingTableInspecter(getSessionData(), getPeerIpMap());
+        theRoutingProtocol.setRoutingTableInspector(theInspector);
+      }catch(Exception e){
+        LOGGER.error( "Unable to get routingprotocol", e );
+      }
 
     }catch(Exception e){
       throw new ServletException("Could not init p2p servlet", e);

@@ -234,7 +234,7 @@ public class P2PFacade {
   private MultiPeerMessage sendEncryptedMessage(MultiPeerMessage aMessage) throws P2PFacadeException{
     if(!isStarted()) throw new P2PFacadeException("Can not execute this action when the server is not started");
     try {
-      aMessage.addMessageIndicator( MessageIndicator.TO_BE_ENCRYPTED );
+      aMessage = aMessage.addMessageIndicator( MessageIndicator.TO_BE_ENCRYPTED );
       return ((MultiPeerMessageProtocol)myContainer.getProtocol( MultiPeerMessageProtocol.ID )).sendMessage( aMessage );
     } catch ( Exception e ) {
       throw new P2PFacadeException("An error occured while sending multi peer message", e);
