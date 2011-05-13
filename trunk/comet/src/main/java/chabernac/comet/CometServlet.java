@@ -5,6 +5,7 @@ import java.io.PrintWriter;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -69,10 +70,15 @@ public class CometServlet extends HttpServlet {
           theEvent = theEndPoint.getEvent();
           getCometEvents().put(theEvent.getId(), theEvent);
           aResponse.getWriter().println( myCometEventConverter.toString(theEvent) );
+          aResponse.getWriter().flush();
         }catch(Exception e){
           LOGGER.error("Could not send comet event to endpoint", e);
           if(theEvent != null){
-            theEvent.setOutput( new EndPointNotAvailableException("Could not send comet event to endpoint", e) );
+            EndPoint theOtherEndPoint = getEndPointContainer().getEndPointFor(theId, 1, TimeUnit.SECONDS);
+            theOtherEndPoint.setEvent(theEvent);
+            if(theOtherEndPoint == null){
+              theEvent.setOutput( new EndPointNotAvailableException("Could not send comet event to endpoint", e) );
+            }
           }
         }
       }

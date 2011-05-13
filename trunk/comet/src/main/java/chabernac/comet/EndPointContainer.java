@@ -10,10 +10,18 @@ import java.util.concurrent.TimeUnit;
 
 
 public class EndPointContainer {
+  private int myEndPointsPerId = 1;
+  
   private Map<String, ArrayBlockingQueue<EndPoint>> myEndPoints = new HashMap<String, ArrayBlockingQueue<EndPoint>>();
 
   public void addEndPoint(EndPoint anEndPoint) throws InterruptedException{
-    getBlockingQueueFor(anEndPoint.getId()).put(anEndPoint);
+    BlockingQueue<EndPoint> theEndPointQueue = getBlockingQueueFor(anEndPoint.getId());
+    //TODO we can not determine at the moment if an endpoint is still valid
+    //so we clear all endpoints and store only the last one, which is most likely the one to be valid
+    while(theEndPointQueue.size() > myEndPointsPerId - 1){
+      theEndPointQueue.poll();
+    }
+    theEndPointQueue.put(anEndPoint);
   }
 
   public EndPoint getEndPointFor(String anId, int aTimeout, TimeUnit aTimeUnit) throws InterruptedException{
@@ -50,4 +58,14 @@ public class EndPointContainer {
     }
     return theEndPoints;
   }
+
+  public int getEndPointsPerId() {
+    return myEndPointsPerId;
+  }
+
+  public void setEndPointsPerId(int anEndPointsPerId) {
+    myEndPointsPerId = anEndPointsPerId;
+  }
+  
+  
 }

@@ -8,7 +8,7 @@ import junit.framework.TestCase;
 
 public class EndPointTest extends TestCase {
   public void testEndPoint() throws CometException{
-    final EndPoint theEndPoint = new EndPoint("1");
+    final EndPoint theEndPoint = new EndPoint("1" );
     
     assertEquals("1", theEndPoint.getId());
     
