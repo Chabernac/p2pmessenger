@@ -30,7 +30,7 @@ public class RoutingTableObjectPersister implements iObjectPersister< RoutingTab
     
     for(RoutingTableEntry theEntry : aRoutingTable.getEntries()){
       if(!theEntry.getPeer().isTemporaryPeer()){
-        theTableToPersist.addRoutingTableEntry(theEntry);
+        theTableToPersist.addEntry(theEntry);
       }
     }
     
