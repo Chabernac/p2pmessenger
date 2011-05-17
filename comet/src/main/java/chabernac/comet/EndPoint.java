@@ -5,7 +5,6 @@
 package chabernac.comet;
 
 import java.util.concurrent.ArrayBlockingQueue;
-
 import java.util.concurrent.BlockingQueue;
 
 /**
@@ -37,9 +36,28 @@ public class EndPoint {
   
   public CometEvent getEvent() throws CometException{
     try {
-      return myEventQueue.take();
+      CometEvent theEvent = myEventQueue.take();
+      if(theEvent instanceof EndPointDestroyedCometEvent){
+        throw new CometException("The end point was destroyed");
+      }
+      return theEvent;
     } catch (InterruptedException e) {
       throw new CometException("No event available", e);
     }
   }
+  
+ public void destroy(){
+   try {
+    myEventQueue.put(new EndPointDestroyedCometEvent());
+  } catch (InterruptedException e) {
+  }
+ }
+ 
+ private class EndPointDestroyedCometEvent extends CometEvent{
+
+  public EndPointDestroyedCometEvent() {
+    super(null, null);
+  }
+   
+ }
 }

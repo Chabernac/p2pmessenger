@@ -1,7 +1,10 @@
 package chabernac.comet;
 
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 import junit.framework.TestCase;
@@ -31,5 +34,21 @@ public class EndPointTest extends TestCase {
       assertNotNull(theEndPoint.getEvent());
     }
     
+  }
+  
+  public void testDestroyEndPoint(){
+    final EndPoint theEndPoint = new EndPoint("A");
+    AtomicInteger theCounter = new AtomicInteger(1);
+    Executors.newScheduledThreadPool(1).schedule(new Runnable(){
+      public void run(){
+        theEndPoint.destroy();
+      }
+    }, 1, TimeUnit.SECONDS);
+    try{
+      theEndPoint.getEvent();
+    }catch(CometException e){
+      theCounter.decrementAndGet();
+    }
+    assertEquals(0, theCounter.intValue());
   }
 }

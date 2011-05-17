@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -21,22 +22,36 @@ import chabernac.io.iObjectStringConverter;
  * Servlet implementation class P2PServlet
  */
 public class CometServlet extends HttpServlet {
-  private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 5572759442854877206L;
+  private static final long MAX_EVENT_TIME = 30 * 1000;
   private static Logger LOGGER = Logger.getLogger(CometServlet.class);
 
   public static enum Responses{NO_DATA, OK};
 
   private iObjectStringConverter<CometEvent> myCometEventConverter =  new Base64ObjectStringConverter<CometEvent>();
-  
+
   public void init() throws ServletException{
     super.init();
     getEndPointContainer();
+  }
+  
+  private void removeOldEvents(){
+    long theCurrentTime = System.currentTimeMillis();
+    for(Iterator<CometEvent> i = getCometEvents().values().iterator();i.hasNext();){
+      CometEvent theEvent = i.next();
+      long theLiveTime = theCurrentTime - theEvent.getCreationTime();
+      if(theLiveTime > MAX_EVENT_TIME){
+        i.remove();
+      }
+    }
   }
 
   /**
    * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
    */
   protected void doGet(HttpServletRequest aRequest, HttpServletResponse aResponse) throws ServletException, IOException {
+    removeOldEvents();
+    
     if(aRequest.getParameter(  "show" ) != null){
       showEndPoints(aResponse);
       return;
@@ -51,11 +66,16 @@ public class CometServlet extends HttpServlet {
         //this is response to a comment event
         //look up the comet event and store the output in the comet event so that it can be processed
         String theEventId = aRequest.getParameter("eventid");
-        String theEventOutput = aRequest.getParameter("eventoutput");
-        if(getCometEvents().containsKey(theEventId)){
-          getCometEvents().get(theEventId).setOutput(theEventOutput);
+        try{
+          String theEventOutput = aRequest.getParameter("eventoutput");
+          if(getCometEvents().containsKey(theEventId)){
+            getCometEvents().get(theEventId).setOutput(theEventOutput);
+          }
+          aResponse.getWriter().println( Responses.OK.name() );
+        }finally{
+          //remove the event from the stack
+          getCometEvents().remove(theEventId);
         }
-        aResponse.getWriter().println( Responses.OK.name() );
       } else {
         CometEvent theEvent = null;
         try{
@@ -94,16 +114,16 @@ public class CometServlet extends HttpServlet {
       theWriter.println(theEndPoint.getId());
     }
   }
-  
+
   public Map<String, CometEvent> getCometEvents(){
     if(getServletContext().getAttribute( "CometEvents" ) == null){
       getServletContext().setAttribute( "CometEvents", Collections.synchronizedMap( new HashMap<String, CometEvent>() ) );
     }
     return (Map<String, CometEvent>)getServletContext().getAttribute( "CometEvents" );
   }
-  
-  
-  
+
+
+
   public EndPointContainer getEndPointContainer(){
     if(getServletContext().getAttribute( "EndPoints" ) == null){
       getServletContext().setAttribute( "EndPoints", new EndPointContainer() );
