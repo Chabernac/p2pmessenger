@@ -58,7 +58,7 @@ public class RoutingTablePersisterTest extends TestCase {
     thePeer4.setTemporaryPeer( false );
     
     theTable.addRoutingTableEntry( new RoutingTableEntry(thePeer1, 0, thePeer1, System.currentTimeMillis()) );
-    theTable.addRoutingTableEntry( new RoutingTableEntry(thePeer2, 1, thePeer2, System.currentTimeMillis()) );
+    theTable.addEntry( new RoutingTableEntry(thePeer2, 6, thePeer1, System.currentTimeMillis()) );
     theTable.addRoutingTableEntry( new RoutingTableEntry(thePeer3, 2, thePeer2, System.currentTimeMillis()) );
     theTable.addRoutingTableEntry( new RoutingTableEntry(thePeer4, 1, thePeer4, System.currentTimeMillis()) );
     
