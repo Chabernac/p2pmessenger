@@ -15,6 +15,7 @@ public class CometEvent implements Serializable{
   private final String myInput;
   private String myOutput;
   private CometException myOutputException;
+  private final long myCreationTime = System.currentTimeMillis();
   
   public CometEvent(String anId, String anInput) {
     super();
@@ -47,5 +48,8 @@ public class CometEvent implements Serializable{
   
   public String getInput() {
     return myInput;
+  }
+  public long getCreationTime() {
+    return myCreationTime;
   }
 }

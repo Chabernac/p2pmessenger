@@ -19,7 +19,7 @@ public class EndPointContainer {
     //TODO we can not determine at the moment if an endpoint is still valid
     //so we clear all endpoints and store only the last one, which is most likely the one to be valid
     while(theEndPointQueue.size() > myEndPointsPerId - 1){
-      theEndPointQueue.poll();
+      theEndPointQueue.poll().destroy();
     }
     theEndPointQueue.put(anEndPoint);
   }
