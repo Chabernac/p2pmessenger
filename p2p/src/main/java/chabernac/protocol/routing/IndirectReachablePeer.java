@@ -18,6 +18,7 @@ public class IndirectReachablePeer extends AbstractPeer {
   public IndirectReachablePeer(AbstractPeer aPeer){
     this(aPeer.getPeerId());
     setChannel(aPeer.getChannel());
+    setTemporaryPeer(aPeer.isTemporaryPeer());
     mySupportedProtocols.clear();
     mySupportedProtocols.addAll(aPeer.getSupportedProtocols());
   }
