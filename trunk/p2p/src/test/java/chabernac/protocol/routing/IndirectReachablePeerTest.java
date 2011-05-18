@@ -8,7 +8,8 @@ public class IndirectReachablePeerTest extends TestCase {
     AbstractPeer thePeer = new SocketPeer("1")
     .setChannel("CHANNEL")
     .addSupportedProtocol(RoutingProtocol.ID)
-    .addSupportedProtocol(WebPeerProtocol.ID);
+    .addSupportedProtocol(WebPeerProtocol.ID)
+    .setTemporaryPeer(true);
     
     IndirectReachablePeer theNewPeer = new IndirectReachablePeer(thePeer);
     
@@ -18,5 +19,6 @@ public class IndirectReachablePeerTest extends TestCase {
     assertTrue(theNewPeer.isProtocolSupported(RoutingProtocol.ID));
     assertTrue(theNewPeer.isProtocolSupported(WebPeerProtocol.ID));
     assertFalse(theNewPeer.isProtocolSupported(EchoProtocol.ID));
+    assertTrue(theNewPeer.isTemporaryPeer());
   }
 }
