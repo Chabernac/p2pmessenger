@@ -23,6 +23,11 @@ public class EndPointContainer {
     }
     theEndPointQueue.put(anEndPoint);
   }
+  
+  public void removeEndPoint(EndPoint anEndPoint){
+    anEndPoint.destroy();
+    myEndPoints.remove(anEndPoint.getId());
+  }
 
   public EndPoint getEndPointFor(String anId, int aTimeout, TimeUnit aTimeUnit) throws InterruptedException{
    return getBlockingQueueFor(anId).poll(aTimeout, aTimeUnit);

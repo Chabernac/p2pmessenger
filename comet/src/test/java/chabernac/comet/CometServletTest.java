@@ -7,6 +7,8 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.Map;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -33,10 +35,15 @@ public class CometServletTest extends TestCase {
 
     final ServletTester theServletTester = new ServletTester();
     theServletTester.setContextPath("/context");
-    theServletTester.addServlet(CometServlet.class, "/servlet/comet");
+    ServletHolder theCometServletHolder = theServletTester.addServlet(CometServlet.class, "/servlet/comet");
     theServletTester.start();
+    Map<String, CometEvent> theCometEvents = ((CometServlet)theCometServletHolder.getServlet()).getCometEvents();
+    
+    
 
 
+    final CountDownLatch theLatch = new CountDownLatch(1);
+    
     final String theRequest=
       "GET /context/servlet/comet?id=1 HTTP/1.1\r\n"+
       "Host: tester\r\n"+
@@ -54,6 +61,7 @@ public class CometServletTest extends TestCase {
           assertEquals("event1", theEvent.getId());
           assertEquals("input", theEvent.getInput());
 
+          theLatch.await();
           HttpTester theNewInput = new HttpTester();
           theNewInput.setMethod("GET");
           theNewInput.setHeader("Host","tester");
@@ -65,9 +73,10 @@ public class CometServletTest extends TestCase {
 
           HttpTester theNewReply = new HttpTester();
           theNewReply.parse( theNewReplyString );
-          assertEquals(200, response.getStatus());
-          theContent = response.getContent();
-          assertEquals( "OK", theContent);
+          assertEquals(200, theNewReply.getStatus());
+          theContent = theNewReply.getContent();
+          System.out.println("Content: '" + theContent + "'");
+          assertTrue( theContent.startsWith("OK"));
 
 
         } catch (Exception e) {
@@ -83,10 +92,16 @@ public class CometServletTest extends TestCase {
 
     EndPoint theEndPoint = theEndPointContainer.getEndPointFor( "1", 5, TimeUnit.SECONDS);
     assertNotNull(theEndPoint);
-
+    
     CometEvent theCometEvent = new CometEvent("event1", "input"); 
     theEndPoint.setEvent(theCometEvent);
-    assertEquals( "output", theCometEvent.getOutput( 2000000 ));
+    Thread.sleep(1000);
+    assertEquals(0, theEndPointContainer.size() );
+    assertTrue(theCometEvents.containsKey("event1"));
+    theLatch.countDown();
+    assertEquals( "output", theCometEvent.getOutput( 5000 ));
+//    Thread.sleep(1000);
+    assertFalse(theCometEvents.containsKey("event1"));
   }
 
   public void testCorruptedEndPoints() throws Exception{
