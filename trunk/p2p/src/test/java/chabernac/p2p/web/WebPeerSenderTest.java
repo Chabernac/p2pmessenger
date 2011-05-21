@@ -41,7 +41,7 @@ public class WebPeerSenderTest extends TestCase {
               CometEvent theEvent = theWebPeer.waitForEvent("2");
               theEvent.setOutput( "output" );
             }
-          } catch ( IOException e ) {
+          } catch ( Exception e ) {
             e.printStackTrace();
           }
         }
