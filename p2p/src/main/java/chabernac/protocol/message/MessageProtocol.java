@@ -140,7 +140,7 @@ public class MessageProtocol extends Protocol {
         return ProtocolContainer.Response.UNKNOWN_PROTOCOL.name();
       } catch ( EncryptionException e ) {
         LOGGER.error("Could not decrypt message", e);
-        return Response.COULD_NOT_DECRYPT.name();
+        return Response.COULD_NOT_DECRYPT.name() + " " + e.getReason().name();
       } finally {
         myProcessingMessages.remove(aMessage.getMessageId());
       }
