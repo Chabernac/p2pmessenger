@@ -29,6 +29,7 @@ public class CometServlet extends HttpServlet {
   public static enum Responses{NO_DATA, OK};
 
   private iObjectStringConverter<CometEvent> myCometEventConverter =  new Base64ObjectStringConverter<CometEvent>();
+  private CometEventExpirationListener myExpirationListener = new CometEventExpirationListener();
 
   public void init() throws ServletException{
     super.init();
@@ -78,9 +79,9 @@ public class CometServlet extends HttpServlet {
         }
       } else {
         CometEvent theEvent = null;
+        //create a new endpoint
+        EndPoint theEndPoint = new EndPoint( theId );
         try{
-          //create a new endpoint
-          EndPoint theEndPoint = new EndPoint( theId );
           //block untill an event for this endpoint (client) is available
           //the response will be send by the client in a next call in which an event id and event output is given as parameter (see code above)
 
@@ -88,6 +89,7 @@ public class CometServlet extends HttpServlet {
           getEndPointContainer().addEndPoint( theEndPoint );
 
           theEvent = theEndPoint.getEvent();
+          theEvent.addExpirationListener(myExpirationListener);
           getCometEvents().put(theEvent.getId(), theEvent);
           aResponse.getWriter().println( myCometEventConverter.toString(theEvent) );
           aResponse.getWriter().flush();
@@ -100,6 +102,8 @@ public class CometServlet extends HttpServlet {
               theEvent.setOutput( new EndPointNotAvailableException("Could not send comet event to endpoint", e) );
             }
           }
+        } finally {
+          getEndPointContainer().removeEndPoint(theEndPoint);
         }
       }
     } catch ( Exception e ) {
@@ -138,4 +142,14 @@ public class CometServlet extends HttpServlet {
   protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     doGet( request, response );
   }
+  
+  private class CometEventExpirationListener implements iCometEventExpirationListener{
+
+    @Override
+    public void cometEventExpired(CometEvent anEvent) {
+      getCometEvents().remove(anEvent.getId());
+    }
+    
+  }
+  
 }

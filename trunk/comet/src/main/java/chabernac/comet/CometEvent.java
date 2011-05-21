@@ -1,6 +1,8 @@
 package chabernac.comet;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * a comet event is an event which is being passed from server to client by using the long polling technique
@@ -16,6 +18,8 @@ public class CometEvent implements Serializable{
   private String myOutput;
   private CometException myOutputException;
   private final long myCreationTime = System.currentTimeMillis();
+  private transient List<iCometEventExpirationListener> myExpirationListeners = new ArrayList<iCometEventExpirationListener>();
+  private boolean isExpired = false;
   
   public CometEvent(String anId, String anInput) {
     super();
@@ -26,22 +30,27 @@ public class CometEvent implements Serializable{
     return myId;
   }
   public synchronized String getOutput(long aTimeout) throws CometException {
+    if(isExpired) throw new CometException("This comet event has already been expired");
     if(myOutput == null){
       try {
         wait(aTimeout);
       } catch (InterruptedException e) {
       }
     }
+    isExpired = true;
+    notifyExpired();
     if(myOutputException != null) throw myOutputException;
     if(myOutput == null) throw new CometException("No output available");
     return myOutput;
   }
-  public synchronized void setOutput(String anOutput) {
+  public synchronized void setOutput(String anOutput) throws CometException {
+    if(isExpired) throw new CometException("This comet event has already been expired");
     myOutput = anOutput;
     notifyAll();
   }
   
-  public synchronized void setOutput(CometException anOutput) {
+  public synchronized void setOutput(CometException anOutput) throws CometException {
+    if(isExpired) throw new CometException("This comet event has already been expired");
     myOutputException = anOutput;
     notifyAll();
   }
@@ -51,5 +60,19 @@ public class CometEvent implements Serializable{
   }
   public long getCreationTime() {
     return myCreationTime;
+  }
+  
+  private void notifyExpired(){
+    for(iCometEventExpirationListener theListener : myExpirationListeners){
+      theListener.cometEventExpired(this);
+    }
+  }
+  
+  public void addExpirationListener(iCometEventExpirationListener aListener){
+    myExpirationListeners.add(aListener);
+  }
+  
+  public boolean isExpired() {
+    return isExpired;
   }
 }
