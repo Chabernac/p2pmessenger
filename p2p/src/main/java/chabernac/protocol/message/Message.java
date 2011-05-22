@@ -109,6 +109,10 @@ public class Message implements Serializable{
   public String getHeader(String aHeader){
     return myHeaders.get(aHeader);
   }
+  
+  public boolean containsHeader(String aHeader){
+    return myHeaders.containsKey(aHeader);
+  }
                           
   public Map< String, String > getHeaders() {
     return myHeaders;
