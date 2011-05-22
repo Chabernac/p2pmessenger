@@ -242,7 +242,7 @@ public class EncryptionProtocol extends Protocol {
     } else {
       try{
         //first check if the public key used was the correct one
-        String theMyPublicKey = convertBytesToString(myKeyPair.getPublic().getEncoded());
+        String theMyPublicKey = convertBytesToString(calculateHash(myKeyPair.getPublic().getEncoded()));
         if(!theMyPublicKey.equals(aMessage.getHeader("PUBLIC_KEY_HASH"))){
           throw new EncryptionException(Reason.ENCRYPTED_USING_BAD_PUBLIC_KEY, "The message was encrypted using a bad or old public key");
         }
@@ -253,10 +253,10 @@ public class EncryptionProtocol extends Protocol {
 
         //now we can use the secret key to decrypt the actual message
         byte[] theDecryptedMessage = decryptUsingSecretKey(theSecretKey, convertStringToBytes(aMessage.getMessage()));
-        String theMessage = convertBytesToString(theDecryptedMessage);
+        String theMessage = new String(theDecryptedMessage);
 
         //calculate the has and check it is them same as the given one
-        String theHash = convertBytesToString(calculateHash(aMessage.getMessage().getBytes()));
+        String theHash = convertBytesToString(calculateHash(theMessage.getBytes()));
 
         if(!theHash.equals(aMessage.getHeader("MESSAGE_HASH"))){
           throw new EncryptionException("Could not decrypt message, given hash and calculated hash do not match");
@@ -267,6 +267,14 @@ public class EncryptionProtocol extends Protocol {
         throw new EncryptionException("Could not decrypt message", e);
       }
     }
+  }
+  
+  void setPublicKeyFor(String aPeer, PublicKey aKey){
+    myPublicKeys.put(aPeer, aKey);
+  }
+  
+  PublicKey getPublicKey(){
+    return myKeyPair.getPublic();
   }
 
   @Override
