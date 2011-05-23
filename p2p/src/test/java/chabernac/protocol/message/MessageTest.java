@@ -4,6 +4,7 @@
  */
 package chabernac.protocol.message;
 
+import chabernac.protocol.routing.DummyPeer;
 import junit.framework.TestCase;
 
 public class MessageTest extends TestCase {
@@ -31,6 +32,29 @@ public class MessageTest extends TestCase {
   }
   
   public void testMessageCopy(){
-    //TODO implement a test for Message.copy();
+    Message theMessage = new Message();
+    theMessage.setSource(new DummyPeer("1"));
+    theMessage.setDestination(new DummyPeer("2"));
+    theMessage.setMessage("test");
+    theMessage.setMessageTimeoutInSeconds(4);
+    theMessage.setProtocolMessage(true);
+    theMessage.setTTL(3);
+    
+    Message theCopy = theMessage.copy();
+    
+    assertEquals("1", theCopy.getSource().getPeerId());
+    assertEquals("2", theCopy.getDestination().getPeerId());
+    assertEquals("test", theCopy.getMessage());
+    assertEquals(4, theCopy.getMessageTimeoutInSeconds());
+    assertEquals(true, theMessage.isProtocolMessage());
+    assertEquals(3, theMessage.getTTL());
+    
+    theMessage.addHeader("HEADER_1", "a header");
+    theMessage.addMessageIndicator(MessageIndicator.ENCRYPTED);
+    
+    theCopy = theMessage.copy();
+    
+    assertEquals("a header", theCopy.getHeader("HEADER_1"));
+    assertTrue(theMessage.containsIndicator(MessageIndicator.ENCRYPTED));
   }
 }
