@@ -31,6 +31,9 @@ public class EndPointContainer {
     anEndPoint.destroy();
     if(myEndPoints.containsKey( anEndPoint.getId() )){
       myEndPoints.get(anEndPoint.getId()).remove( anEndPoint );
+      if(getNrOfEndPoints(anEndPoint.getId()) == 0){
+        myEndPoints.remove(anEndPoint.getId());
+      }
     }
   }
 
