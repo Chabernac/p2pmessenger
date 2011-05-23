@@ -27,13 +27,13 @@ public class EncryptionProtocolTest extends TestCase {
   }
   
   public void testStressEncryption() throws EncryptionException{
-    long t1 = System.currentTimeMillis();
-    int times = 10;
-    for(int i=0;i<times;i++){
     EncryptionProtocol theSendingProtocol = new EncryptionProtocol();
     EncryptionProtocol theReceivingProtocol = new EncryptionProtocol();
-    
     theSendingProtocol.setPublicKeyFor("2", theReceivingProtocol.getPublicKey());
+
+    long t1 = System.currentTimeMillis();
+    int times = 100;
+    for(int i=0;i<times;i++){
     
     Message theMessage = new Message();
     theMessage.setDestination(new DummyPeer("2"));
@@ -53,6 +53,6 @@ public class EncryptionProtocolTest extends TestCase {
     
     System.out.println("Encrypt/decriptions per minute: '" + theTimesMinute + "'");
     
-    assertTrue(theTimesMinute > 100);
+    assertTrue(theTimesMinute > 2000);
   }
 }
