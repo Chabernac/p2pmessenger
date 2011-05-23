@@ -257,6 +257,7 @@ public class EncryptionProtocol extends Protocol {
 
         //now encrypt the message using the secret key
         aMessage.setMessage(convertBytesToString(encryptUsingSecretKey(theSecretKey, aMessage.getMessage().getBytes())));
+        aMessage.addMessageIndicator( MessageIndicator.ENCRYPTED );
       }catch(Exception e){
         LOGGER.error("An error occured while encrypting message", e);
         throw new EncryptionException("Could not encrypt message", e);
@@ -299,6 +300,7 @@ public class EncryptionProtocol extends Protocol {
           throw new EncryptionException("Could not decrypt message, given hash and calculated hash do not match");
         }
         aMessage.setMessage(theMessage);
+        aMessage.removeMessageIndicator( MessageIndicator.ENCRYPTED );
       }catch(Exception e){
         LOGGER.error("An error occured while decrypting message", e);
         throw new EncryptionException("Could not decrypt message", e);

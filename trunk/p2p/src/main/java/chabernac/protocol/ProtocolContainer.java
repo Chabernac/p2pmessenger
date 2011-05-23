@@ -15,9 +15,12 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.log4j.Logger;
+
 import chabernac.protocol.ProtocolMessageEntry.Status;
 
 public class ProtocolContainer implements IProtocol {
+  private static final Logger LOGGER = Logger.getLogger( ProtocolContainer.class );
   public static enum Command {PROTOCOLS};
   public static enum Response {UNKNOWN_COMMAND, UNKNOWN_PROTOCOL, INVALID_PROTOCOL, NOT_SUPPORTED};
 
@@ -63,6 +66,7 @@ public class ProtocolContainer implements IProtocol {
       notifyListeners();
       return theResult;
     } catch ( ProtocolException e ) {
+      LOGGER.error("Unknown protocol'" + anInput + "'");
       theEntry.setStatus( Status.INVALID );
       notifyListeners();
       return Response.UNKNOWN_PROTOCOL.name();
