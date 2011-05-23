@@ -55,7 +55,7 @@ public class EncryptionProtocol extends Protocol {
     generateKeyPair();
   }
 
-  private void generateKeyPair() throws EncryptionException{
+  public void generateKeyPair() throws EncryptionException{
     try{
       KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
 
@@ -65,7 +65,6 @@ public class EncryptionProtocol extends Protocol {
     }catch(Exception e){
       throw new EncryptionException("Could not generate key pair", e);
     }
-
   }
 
   @Override
@@ -107,6 +106,7 @@ public class EncryptionProtocol extends Protocol {
         String thePeerId = theParts[1];
         PublicKey thePublicKey = myPublicKeyConverter.getObject( theParts[2] );
         myPublicKeys.put(thePeerId, thePublicKey);
+        return Response.OK.name();
       }catch(Exception e){
         LOGGER.error("Could not store public key", e);
         return Response.NOK.name();
@@ -219,7 +219,7 @@ public class EncryptionProtocol extends Protocol {
       MessageProtocol theMessageProtocol = (MessageProtocol)findProtocolContainer().getProtocol( MessageProtocol.ID );
       String theResult = theMessageProtocol.sendMessage( theMessage );
       if(!theResult.startsWith( Response.OK.name() )){
-        throw new EncryptionException("Invalid response received on send public key");
+        throw new EncryptionException("Invalid response received on send public key '" + theResult + "'");
       }
     }catch(Exception e){
       LOGGER.error("An error occured while sending public key to peer '" + aPeer.getPeerId() + "'", e);

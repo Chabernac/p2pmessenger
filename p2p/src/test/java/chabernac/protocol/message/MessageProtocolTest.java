@@ -21,6 +21,8 @@ import chabernac.protocol.AbstractProtocolTest;
 import chabernac.protocol.ProtocolContainer;
 import chabernac.protocol.ProtocolException;
 import chabernac.protocol.ProtocolServer;
+import chabernac.protocol.encryption.EncryptionException;
+import chabernac.protocol.encryption.EncryptionProtocol;
 import chabernac.protocol.routing.AbstractPeer;
 import chabernac.protocol.routing.NoAvailableNetworkAdapterException;
 import chabernac.protocol.routing.RoutingProtocol;
@@ -146,6 +148,59 @@ public class MessageProtocolTest extends AbstractProtocolTest {
       theServer2.stop();
     }
 
+  }
+  
+  public void testSendEncryptedMessageAndSenderHasBadPublicKey() throws InterruptedException, ProtocolException, UnknownPeerException, MessageException, EncryptionException{
+    ProtocolContainer theProtocol1 = getProtocolContainer( -1, false, "1" );
+    ProtocolServer theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT, 5);
+
+    ProtocolContainer theProtocol2 = getProtocolContainer( -1, false, "2" );
+    ProtocolServer theServer2 = new ProtocolServer(theProtocol2, RoutingProtocol.START_PORT + 1, 5);
+
+    RoutingProtocol theRoutingProtocol1 = (RoutingProtocol)theProtocol1.getProtocol( RoutingProtocol.ID );
+    RoutingTable theRoutingTable1 = theRoutingProtocol1.getRoutingTable();
+    MessageProtocol theMessageProtocol1 = (MessageProtocol)theProtocol1.getProtocol( MessageProtocol.ID );
+
+    RoutingProtocol theRoutingProtocol2 = (RoutingProtocol)theProtocol2.getProtocol( RoutingProtocol.ID );
+    MessageProtocol theMessageProtocol2 = (MessageProtocol)theProtocol2.getProtocol( MessageProtocol.ID );
+    try{
+      assertTrue( theServer1.start() );
+      assertTrue( theServer2.start() );
+
+      theRoutingProtocol1.scanLocalSystem();
+      theRoutingProtocol2.scanLocalSystem();
+
+      //scanning the local system might take a small time
+      Thread.sleep( SLEEP_AFTER_SCAN );
+      
+      MessageCollector theListener = new MessageCollector();
+      theMessageProtocol2.addMessageListener( theListener );
+      
+      Message theMessage = new Message();
+      theMessage.addMessageIndicator( MessageIndicator.TO_BE_ENCRYPTED );
+      theMessage.setDestination( theRoutingTable1.getEntryForPeer( "2" ).getPeer() );
+      theMessage.setMessage( "test message ");
+      theMessageProtocol1.sendMessage( theMessage );
+      assertEquals( 1, theListener.getMessages().size() );
+      
+      //now regenerate the public private key pair of peer 2,
+      //peer 1 will now have a wrong public key
+      //it should be detected by the system and restored
+      ((EncryptionProtocol)theProtocol2.getProtocol( EncryptionProtocol.ID )).generateKeyPair();
+      
+      theMessage = new Message();
+      theMessage.addMessageIndicator( MessageIndicator.TO_BE_ENCRYPTED );
+      theMessage.setDestination( theRoutingTable1.getEntryForPeer( "2" ).getPeer() );
+      theMessage.setMessage( "test message ");
+      theMessageProtocol1.sendMessage( theMessage );
+      assertEquals( 2, theListener.getMessages().size() );
+      
+      
+      
+    } finally {
+      theServer1.stop();
+      theServer2.stop();
+    }
   }
 
   public void testSendEnctryptedMessage() throws ProtocolException, InterruptedException, MessageException, UnknownPeerException{

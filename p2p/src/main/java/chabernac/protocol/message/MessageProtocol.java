@@ -163,13 +163,14 @@ public class MessageProtocol extends Protocol {
     }
 
     private String handleMessageForUs(String aSessionId, Message aMessage) throws EncryptionException{
+      checkEnctryption(aMessage);
+      
       if(myProcessedMessages.contains(aMessage.getMessageId())){
         return Response.MESSAGE_ALREADY_RECEIVED.name();
       }
       
       myProcessedMessages.add(aMessage.getMessageId());
       
-      checkEnctryption(aMessage);
       if(aMessage.isProtocolMessage()){
         //reoffer the content of the message to the handle method
         //this will cause sub protocols to handle the message if they are present
@@ -255,13 +256,14 @@ public class MessageProtocol extends Protocol {
     }
 
     public String sendMessage(Message aMessage) throws MessageException{
-        inspectMessage(aMessage);
         int theRetries = 0;
         boolean isRetry = true;
         
         String theResult = null;
         while(isRetry){
-          theResult = handleMessage( UUID.randomUUID().toString(), aMessage );
+          Message theMessage = aMessage.copy();
+          inspectMessage(theMessage);
+          theResult = handleMessage( UUID.randomUUID().toString(), theMessage );
           isRetry = isRetryResponse( theResult ) && theRetries++ < 3;
         }
         return inspectResult(theResult);
@@ -272,7 +274,10 @@ public class MessageProtocol extends Protocol {
       //if the encryption protocol was not able to decrypt the message it probably meant that the sender encoded the message with an old
       //public key, by now the encryption protocol will have send the new public key to the sending peer.  The sending peer can now retry
       //sending the encrypted message
-      if(aResponse.startsWith( Response.COULD_NOT_DECRYPT.name() )) return true;
+      if(aResponse.startsWith( Response.COULD_NOT_DECRYPT.name() )) {
+        return true;
+      }
+      
       return false;
     }
 

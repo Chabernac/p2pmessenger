@@ -28,7 +28,9 @@ public class MessageTest extends TestCase {
     }
     assertEquals( 0, theMessage.getTTL() );
     assertTrue( theMessage.isEndOfTTL() );
-    
-   
+  }
+  
+  public void testMessageCopy(){
+    //TODO implement a test for Message.copy();
   }
 }
