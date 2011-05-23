@@ -28,16 +28,19 @@ import org.apache.log4j.Logger;
 import chabernac.io.Base64ObjectStringConverter;
 import chabernac.io.iObjectStringConverter;
 import chabernac.protocol.Protocol;
+import chabernac.protocol.ProtocolException;
 import chabernac.protocol.encryption.EncryptionException.Reason;
 import chabernac.protocol.message.Message;
 import chabernac.protocol.message.MessageIndicator;
 import chabernac.protocol.message.MessageProtocol;
 import chabernac.protocol.routing.AbstractPeer;
+import chabernac.protocol.routing.RoutingProtocol;
+import chabernac.protocol.routing.RoutingTable;
 
 public class EncryptionProtocol extends Protocol {
   private static Logger LOGGER = Logger.getLogger(EncryptionProtocol.class);
   public static final String ID = "ENC";
-  public static enum Command{GENERATE_SECRET_KEY, GET_PUBLIC_KEY};
+  public static enum Command{GENERATE_SECRET_KEY, GET_PUBLIC_KEY, PUT_PUBLIC_KEY};
   public static enum Response{OK, NOK, INVALID_COMMAND};
 
   private iObjectStringConverter<PublicKey> myPublicKeyConverter = new Base64ObjectStringConverter< PublicKey >();
@@ -70,6 +73,10 @@ public class EncryptionProtocol extends Protocol {
     return "Encryption Protocol";
   }
 
+  public RoutingTable getRoutingTable() throws ProtocolException{
+    return ((RoutingProtocol)findProtocolContainer().getProtocol( RoutingProtocol.ID )).getRoutingTable();
+  }
+
   @Override
   public String handleCommand( String aSessionId, String anInput ) {
     if(anInput.startsWith( Command.GENERATE_SECRET_KEY.name() )){
@@ -94,6 +101,16 @@ public class EncryptionProtocol extends Protocol {
         LOGGER.error("Unable to convert public key to string", e);
         return Response.NOK.name();
       }
+    } else if(anInput.startsWith( Command.PUT_PUBLIC_KEY.name() )){
+      try{
+        String[] theParts = anInput.split( " " );
+        String thePeerId = theParts[1];
+        PublicKey thePublicKey = myPublicKeyConverter.getObject( theParts[2] );
+        myPublicKeys.put(thePeerId, thePublicKey);
+      }catch(Exception e){
+        LOGGER.error("Could not store public key", e);
+        return Response.NOK.name();
+      }
     }
     return Response.INVALID_COMMAND.name();
   }
@@ -102,7 +119,7 @@ public class EncryptionProtocol extends Protocol {
     try{
       Message theMessage = new Message();
       theMessage.setDestination( aPeer );
-      theMessage.setMessage( createMessage( Command.GENERATE_SECRET_KEY.name()+ " " + aSession +  " " + myPublicKeyConverter.toString( myKeyPair.getPublic() )) );
+      theMessage.setMessage( createMessage( Command.GENERATE_SECRET_KEY.name() + " " + aSession +  " " + myPublicKeyConverter.toString( myKeyPair.getPublic() )) );
       theMessage.setProtocolMessage( true );
       MessageProtocol theMessageProtocol = (MessageProtocol)findProtocolContainer().getProtocol( MessageProtocol.ID );
       String theResult = theMessageProtocol.sendMessage( theMessage );
@@ -191,6 +208,25 @@ public class EncryptionProtocol extends Protocol {
     }
   }
 
+  private void sendPublicKeyTo(AbstractPeer aPeer) throws EncryptionException{
+    try{
+      Message theMessage = new Message();
+      theMessage.setDestination( aPeer );
+      theMessage.setMessage( createMessage( Command.PUT_PUBLIC_KEY.name() + " " + 
+                                            getRoutingTable().getEntryForLocalPeer().getPeer().getPeerId() + " " + 
+                                            myPublicKeyConverter.toString( myKeyPair.getPublic() )));
+      theMessage.setProtocolMessage( true );
+      MessageProtocol theMessageProtocol = (MessageProtocol)findProtocolContainer().getProtocol( MessageProtocol.ID );
+      String theResult = theMessageProtocol.sendMessage( theMessage );
+      if(!theResult.startsWith( Response.OK.name() )){
+        throw new EncryptionException("Invalid response received on send public key");
+      }
+    }catch(Exception e){
+      LOGGER.error("An error occured while sending public key to peer '" + aPeer.getPeerId() + "'", e);
+      throw new EncryptionException("Could not send public key to peer '" + aPeer.getPeerId() + "'", e);
+    }
+  }
+
   private byte[] calculateHash(byte[] aBytes) throws NoSuchAlgorithmException{
     MessageDigest theDigest = MessageDigest.getInstance("SHA-1");
     theDigest.update(aBytes);
@@ -229,7 +265,7 @@ public class EncryptionProtocol extends Protocol {
   }
 
 
-  public void decrypteMessage(Message aMessage) throws EncryptionException{
+  public void decryptMessage(Message aMessage) throws EncryptionException{
     if(aMessage.getHeader("SECRET_KEY") == null){
       //the message was encrypted using the old way
       String theSession = aMessage.getHeader( "session" );
@@ -244,9 +280,10 @@ public class EncryptionProtocol extends Protocol {
         //first check if the public key used was the correct one
         String theMyPublicKey = convertBytesToString(calculateHash(myKeyPair.getPublic().getEncoded()));
         if(!theMyPublicKey.equals(aMessage.getHeader("PUBLIC_KEY_HASH"))){
+          sendPublicKeyTo(aMessage.getSource());
           throw new EncryptionException(Reason.ENCRYPTED_USING_BAD_PUBLIC_KEY, "The message was encrypted using a bad or old public key");
         }
-        
+
         //obtain the secret key by decrypting it with our own private key
         byte[] theEncryptedSecretKey = convertStringToBytes(aMessage.getHeader("SECRET_KEY"));
         SecretKey theSecretKey = new SecretKeySpec( decrypteUsingPrivateKey(theEncryptedSecretKey, myKeyPair.getPrivate()), "DES");
@@ -268,11 +305,11 @@ public class EncryptionProtocol extends Protocol {
       }
     }
   }
-  
+
   void setPublicKeyFor(String aPeer, PublicKey aKey){
     myPublicKeys.put(aPeer, aKey);
   }
-  
+
   PublicKey getPublicKey(){
     return myKeyPair.getPublic();
   }

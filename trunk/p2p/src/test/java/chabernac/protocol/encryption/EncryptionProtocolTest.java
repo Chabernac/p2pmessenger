@@ -21,7 +21,7 @@ public class EncryptionProtocolTest extends TestCase {
     assertTrue(theMessage.containsHeader("MESSAGE_HASH"));
     assertTrue(theMessage.containsHeader("PUBLIC_KEY_HASH"));
 
-    theReceivingProtocol.decrypteMessage(theMessage);
+    theReceivingProtocol.decryptMessage(theMessage);
     
     assertEquals("The quick brown fox jumps easily over the fat and lazy dog", theMessage.getMessage());
   }
@@ -40,7 +40,7 @@ public class EncryptionProtocolTest extends TestCase {
     theMessage.setMessage("The quick brown fox jumps easily over the fat and lazy dog");
     
     theSendingProtocol.encryptMessage(theMessage);
-    theReceivingProtocol.decrypteMessage(theMessage);
+    theReceivingProtocol.decryptMessage(theMessage);
     
     assertEquals("The quick brown fox jumps easily over the fat and lazy dog", theMessage.getMessage());
     }

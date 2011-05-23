@@ -214,7 +214,7 @@ public class MessageProtocol extends Protocol {
       if(anMessage.containsIndicator( MessageIndicator.ENCRYPTED )){
         try{
           EncryptionProtocol theEncryptionProtocol = ((EncryptionProtocol)findProtocolContainer().getProtocol( EncryptionProtocol.ID ));
-          theEncryptionProtocol.decrypteMessage( anMessage );
+          theEncryptionProtocol.decryptMessage( anMessage );
         }catch(Exception e){
           throw new EncryptionException("Could not decrypt message", e);
         }
@@ -256,8 +256,24 @@ public class MessageProtocol extends Protocol {
 
     public String sendMessage(Message aMessage) throws MessageException{
         inspectMessage(aMessage);
-        String theResult = handleMessage( UUID.randomUUID().toString(), aMessage );
+        int theRetries = 0;
+        boolean isRetry = true;
+        
+        String theResult = null;
+        while(isRetry){
+          theResult = handleMessage( UUID.randomUUID().toString(), aMessage );
+          isRetry = isRetryResponse( theResult ) && theRetries++ < 3;
+        }
         return inspectResult(theResult);
+    }
+        
+    
+    private boolean isRetryResponse(String aResponse){
+      //if the encryption protocol was not able to decrypt the message it probably meant that the sender encoded the message with an old
+      //public key, by now the encryption protocol will have send the new public key to the sending peer.  The sending peer can now retry
+      //sending the encrypted message
+      if(aResponse.startsWith( Response.COULD_NOT_DECRYPT.name() )) return true;
+      return false;
     }
 
     private String inspectResult(String aResult) throws MessageException{
