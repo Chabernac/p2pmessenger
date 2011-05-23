@@ -115,7 +115,7 @@ public class Message implements Serializable{
   }
                           
   public Map< String, String > getHeaders() {
-    return myHeaders;
+    return Collections.unmodifiableMap(myHeaders == null ? new HashMap<String, String>() : myHeaders );
   }
   public void setHeaders( Map< String, String > anHeaders ) {
     if(isLocked) throw new ConcurrentModificationException("Can not modify message when it is locked");
@@ -131,7 +131,7 @@ public class Message implements Serializable{
     myMessageId = UUID.randomUUID();
   }
   public List< MessageIndicator > getIndicators() {
-    return Collections.unmodifiableList( myIndicators );
+    return Collections.unmodifiableList( myIndicators == null ? new ArrayList<MessageIndicator>() : myIndicators );
   }
   public void setIndicators( List< MessageIndicator > anIndicators ) {
     if(isLocked) throw new ConcurrentModificationException("Can not modify message when it is locked");
@@ -187,5 +187,19 @@ public class Message implements Serializable{
   }
   public void setMessageTimeoutInSeconds( int anMessageTimeoutInSeconds ) {
     myMessageTimeoutInSeconds = anMessageTimeoutInSeconds;
+  }
+  
+  public Message copy(){
+    Message theMessage = new Message();
+    theMessage.setSource(getSource());
+    theMessage.setDestination(getDestination());
+    if(getHeaders() != null) theMessage.setHeaders(new HashMap<String, String>(getHeaders()));
+    if(getIndicators() != null) theMessage.setIndicators(new ArrayList<MessageIndicator>(getIndicators()));
+    theMessage.setMessageTimeoutInSeconds(getMessageTimeoutInSeconds());
+    theMessage.setMessage(getMessage());
+    theMessage.setProtocolMessage(isProtocolMessage);
+    theMessage.setTTL(getTTL());
+    theMessage.setBytes(getBytes());
+    return theMessage;
   }
 }
