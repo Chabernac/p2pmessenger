@@ -9,7 +9,6 @@ import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.io.Serializable;
@@ -29,6 +28,8 @@ import javax.swing.InputMap;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.KeyStroke;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import org.apache.log4j.Logger;
 
@@ -60,7 +61,7 @@ public class UserPanel extends GPanel implements iUserSelectionProvider{
   private Map<String, StatusCheckBox> myCheckBoxes = Collections.synchronizedMap( new LinkedHashMap< String, StatusCheckBox >());
   private List< Component > myCheckBoxesList = new ArrayList< Component >();
   private List<iSelectionChangedListener> mySelectionListeners = new ArrayList< iSelectionChangedListener >();
-  private ActionListener myCheckBoxListener = new MyCheckBoxListener();
+  private ChangeListener myCheckBoxListener = new MyCheckBoxListener();
   private Map<String, Set<String>> myGroups = new HashMap< String, Set<String> >();
 
   private iPaintable mySeperator = null;
@@ -108,7 +109,7 @@ public class UserPanel extends GPanel implements iUserSelectionProvider{
 
               if(!myCheckBoxes.containsKey( thePeerId )){
                 StatusCheckBox theCheckBox = new StatusCheckBox(Status.ONLINE);
-                theCheckBox.addActionListener( myCheckBoxListener );
+                theCheckBox.addChangeListener( myCheckBoxListener );
                 int theFontSize = Integer.parseInt(ApplicationPreferences.getInstance().getProperty("userlist.font.size", "12"));
                 theCheckBox.setFontSize( theFontSize );
                 myCheckBoxes.put( thePeerId, theCheckBox );
@@ -441,9 +442,9 @@ public class UserPanel extends GPanel implements iUserSelectionProvider{
     mySelectionListeners.add( aListener );
   }
 
-  private class MyCheckBoxListener implements ActionListener {
+  private class MyCheckBoxListener implements ChangeListener {
     @Override
-    public void actionPerformed( ActionEvent anE ) {
+    public void stateChanged( ChangeEvent aE ) {
       for(iSelectionChangedListener theListener : mySelectionListeners){
         theListener.selectionChanged();
       }
