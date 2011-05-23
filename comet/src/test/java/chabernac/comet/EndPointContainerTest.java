@@ -8,8 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import javax.xml.ws.Endpoint;
-
 import junit.framework.TestCase;
 
 public class EndPointContainerTest extends TestCase {
