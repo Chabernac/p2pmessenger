@@ -20,7 +20,7 @@ public class CometEvent implements Serializable{
   private final long myCreationTime = System.currentTimeMillis();
   private transient List<iCometEventExpirationListener> myExpirationListeners = new ArrayList<iCometEventExpirationListener>();
   private boolean isExpired = false;
-  
+
   public CometEvent(String anId, String anInput) {
     super();
     myId = anId;
@@ -30,8 +30,8 @@ public class CometEvent implements Serializable{
     return myId;
   }
   public synchronized String getOutput(long aTimeout) throws CometException {
-    if(isExpired) throw new CometException("This comet event has already been expired");
     if(myOutput == null){
+      if(isExpired) throw new CometException("This comet event has already been expired");
       try {
         wait(aTimeout);
       } catch (InterruptedException e) {
@@ -48,30 +48,32 @@ public class CometEvent implements Serializable{
     myOutput = anOutput;
     notifyAll();
   }
-  
+
   public synchronized void setOutput(CometException anOutput) throws CometException {
     if(isExpired) throw new CometException("This comet event has already been expired");
     myOutputException = anOutput;
     notifyAll();
   }
-  
+
   public String getInput() {
     return myInput;
   }
   public long getCreationTime() {
     return myCreationTime;
   }
-  
+
   private void notifyExpired(){
-    for(iCometEventExpirationListener theListener : myExpirationListeners){
-      theListener.cometEventExpired(this);
+    if(myExpirationListeners != null){
+      for(iCometEventExpirationListener theListener : myExpirationListeners){
+        theListener.cometEventExpired(this);
+      }
     }
   }
-  
+
   public void addExpirationListener(iCometEventExpirationListener aListener){
     myExpirationListeners.add(aListener);
   }
-  
+
   public boolean isExpired() {
     return isExpired;
   }

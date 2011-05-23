@@ -8,8 +8,11 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.log4j.Logger;
+
 
 public class EndPointContainer {
+  private static Logger LOGGER = Logger.getLogger(EndPointContainer.class);
   private int myEndPointsPerId = 1;
   
   private Map<String, ArrayBlockingQueue<EndPoint>> myEndPoints = new HashMap<String, ArrayBlockingQueue<EndPoint>>();
@@ -26,7 +29,9 @@ public class EndPointContainer {
   
   public void removeEndPoint(EndPoint anEndPoint){
     anEndPoint.destroy();
-    myEndPoints.remove(anEndPoint.getId());
+    if(myEndPoints.containsKey( anEndPoint.getId() )){
+      myEndPoints.get(anEndPoint.getId()).remove( anEndPoint );
+    }
   }
 
   public EndPoint getEndPointFor(String anId, int aTimeout, TimeUnit aTimeUnit) throws InterruptedException{
