@@ -7,8 +7,8 @@ package chabernac.p2p.web;
 
 import java.net.URL;
 
-import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
 
 import chabernac.protocol.facade.P2PFacade;
 import chabernac.protocol.message.MessageProtocol;
@@ -20,7 +20,8 @@ public class WebNodeLauncher {
   private static Logger LOGGER = Logger.getLogger(WebNodeLauncher.class);
 
   public static void main(String[] args){
-    BasicConfigurator.configure();
+    PropertyConfigurator.configure( "log4j.properties" );
+    
     ArgsInterPreter theInterpreter = new ArgsInterPreter( args );
     
     try{
