@@ -36,6 +36,7 @@ import org.doomdark.uuid.UUIDGenerator;
 
 import chabernac.io.Base64ObjectStringConverter;
 import chabernac.io.ClassPathResource;
+import chabernac.io.FileResource;
 import chabernac.io.iObjectPersister;
 import chabernac.io.iObjectStringConverter;
 import chabernac.protocol.AlreadyRunningException;
@@ -170,6 +171,12 @@ public class RoutingProtocol extends Protocol {
 
     try {
       mySuperNodes.addAll( IOTools.loadStreamAsList( new ClassPathResource("supernodes.txt").getInputStream() ));
+    } catch ( IOException e ) {
+      LOGGER.error("Could not load super nodes", e);
+    }
+    
+    try {
+      mySuperNodes.addAll( IOTools.loadStreamAsList( new FileResource("supernodes.txt").getInputStream() ));
     } catch ( IOException e ) {
       LOGGER.error("Could not load super nodes", e);
     }

@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicLong;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -34,6 +35,7 @@ import chabernac.tools.PropertyMap;
 public class ProtocolServlet extends HttpServlet {
   private static final long serialVersionUID = -1872170586728725631L;
   private static Logger LOGGER = Logger.getLogger(ProtocolServlet.class);
+  private AtomicLong myConcurrentRequestCounter = new AtomicLong(0);
 
   public void init() throws ServletException{
     super.init();
@@ -93,6 +95,8 @@ public class ProtocolServlet extends HttpServlet {
     //    System.out.println("Received message from peer '" + thePeerId + "' in session '" + theSession + "': " + theInput + "'" );
 
     try {
+      LOGGER.debug( "Concurrent requests in ProtocolServlet: "  + myConcurrentRequestCounter.incrementAndGet());
+      
       if("exchange".equalsIgnoreCase( theInput ) ){
         ((RoutingProtocol)getProtocolContainer().getProtocol( RoutingProtocol.ID )).exchangeRoutingTable();
       }else if(theInput == null || "".equals( theInput ) || theSession == null || "".equals( theSession )){
@@ -109,6 +113,7 @@ public class ProtocolServlet extends HttpServlet {
     } finally {
       //remove the session data
       getSessionData().clearSessionData( theSession );
+      myConcurrentRequestCounter.decrementAndGet();
     }
   }
   

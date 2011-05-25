@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -31,11 +32,13 @@ public class CometServlet extends HttpServlet {
   private iObjectStringConverter<CometEvent> myCometEventConverter =  new Base64ObjectStringConverter<CometEvent>();
   private CometEventExpirationListener myExpirationListener = new CometEventExpirationListener();
 
+  private AtomicLong myConcurrentRequestCounter = new AtomicLong(0);
+
   public void init() throws ServletException{
     super.init();
     getEndPointContainer();
   }
-  
+
   private void removeOldEvents(){
     long theCurrentTime = System.currentTimeMillis();
     for(Iterator<CometEvent> i = getCometEvents().values().iterator();i.hasNext();){
@@ -51,65 +54,72 @@ public class CometServlet extends HttpServlet {
    * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
    */
   protected void doGet(HttpServletRequest aRequest, HttpServletResponse aResponse) throws ServletException, IOException {
-    removeOldEvents();
-    
-    if(aRequest.getParameter(  "show" ) != null){
-      showEndPoints(aResponse);
-      return;
-    }
-
-    String theId = aRequest.getParameter( "id" );
-
-    if(theId == null) return;
-
     try{
-      if(aRequest.getParameterMap().containsKey("eventid")){
+      LOGGER.debug( "Concurrent requests in CometServlet: "  + myConcurrentRequestCounter.incrementAndGet());
+      removeOldEvents();
+      
+      if(aRequest.getParameter(  "show" ) != null){
+        showEndPoints(aResponse);
+      } else if(aRequest.getParameterMap().containsKey("eventid")){
         //this is response to a comment event
         //look up the comet event and store the output in the comet event so that it can be processed
-        String theEventId = aRequest.getParameter("eventid");
-        try{
-          String theEventOutput = aRequest.getParameter("eventoutput");
-          if(getCometEvents().containsKey(theEventId)){
-            getCometEvents().get(theEventId).setOutput(theEventOutput);
-          }
-          aResponse.getWriter().println( Responses.OK.name() );
-        }finally{
-          //remove the event from the stack
-          getCometEvents().remove(theEventId);
-        }
+        processEventResponse(aRequest, aResponse);
       } else {
-        CometEvent theEvent = null;
-        //create a new endpoint
-        EndPoint theEndPoint = new EndPoint( theId );
-        try{
-          //block untill an event for this endpoint (client) is available
-          //the response will be send by the client in a next call in which an event id and event output is given as parameter (see code above)
-
-          //publish the end point so that other processes can detecte it and put data for this end point
-          getEndPointContainer().addEndPoint( theEndPoint );
-
-          theEvent = theEndPoint.getEvent();
-          theEvent.addExpirationListener(myExpirationListener);
-          getCometEvents().put(theEvent.getId(), theEvent);
-          aResponse.getWriter().println( myCometEventConverter.toString(theEvent) );
-          aResponse.getWriter().flush();
-        }catch(Exception e){
-          LOGGER.error("Could not send comet event to endpoint", e);
-          if(theEvent != null){
-            EndPoint theOtherEndPoint = getEndPointContainer().getEndPointFor(theId, 1, TimeUnit.SECONDS);
-            theOtherEndPoint.setEvent(theEvent);
-            if(theOtherEndPoint == null){
-              theEvent.setOutput( new EndPointNotAvailableException("Could not send comet event to endpoint", e) );
-            }
-          }
-        } finally {
-          getEndPointContainer().removeEndPoint(theEndPoint);
-        }
+        processIncomingEndPoint( aRequest, aResponse );
       }
     } catch ( Exception e ) {
       aResponse.getWriter().println(myCometEventConverter.toString(new CometEvent("-1", Responses.NO_DATA.name())));
-    } 
+    } finally {
+      myConcurrentRequestCounter.decrementAndGet();
+    }
 
+  }
+
+  private void processEventResponse(HttpServletRequest aRequest, HttpServletResponse aResponse) throws CometException, IOException{
+    String theEventId = aRequest.getParameter("eventid");
+    try{
+      String theEventOutput = aRequest.getParameter("eventoutput");
+      if(getCometEvents().containsKey(theEventId)){
+        getCometEvents().get(theEventId).setOutput(theEventOutput);
+      }
+      aResponse.getWriter().println( Responses.OK.name() );
+    }finally{
+      //remove the event from the stack
+      getCometEvents().remove(theEventId);
+    }
+  }
+
+  private void processIncomingEndPoint(HttpServletRequest aRequest, HttpServletResponse aResponse) throws InterruptedException, CometException{
+    String theId = aRequest.getParameter( "id" );
+    if(theId == null) return;
+
+    CometEvent theEvent = null;
+    //create a new endpoint
+    EndPoint theEndPoint = new EndPoint( theId );
+    try{
+      //block untill an event for this endpoint (client) is available
+      //the response will be send by the client in a next call in which an event id and event output is given as parameter (see code above)
+
+      //publish the end point so that other processes can detecte it and put data for this end point
+      getEndPointContainer().addEndPoint( theEndPoint );
+
+      theEvent = theEndPoint.getEvent();
+      theEvent.addExpirationListener(myExpirationListener);
+      getCometEvents().put(theEvent.getId(), theEvent);
+      aResponse.getWriter().println( myCometEventConverter.toString(theEvent) );
+      aResponse.getWriter().flush();
+    }catch(Exception e){
+      LOGGER.error("Could not send comet event to endpoint", e);
+      if(theEvent != null){
+        EndPoint theOtherEndPoint = getEndPointContainer().getEndPointFor(theId, 1, TimeUnit.SECONDS);
+        theOtherEndPoint.setEvent(theEvent);
+        if(theOtherEndPoint == null){
+          theEvent.setOutput( new EndPointNotAvailableException("Could not send comet event to endpoint", e) );
+        }
+      }
+    } finally {
+      getEndPointContainer().removeEndPoint(theEndPoint);
+    }
   }
 
   private void showEndPoints(HttpServletResponse aResponse) throws IOException{
@@ -142,14 +152,14 @@ public class CometServlet extends HttpServlet {
   protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     doGet( request, response );
   }
-  
+
   private class CometEventExpirationListener implements iCometEventExpirationListener{
 
     @Override
     public void cometEventExpired(CometEvent anEvent) {
       getCometEvents().remove(anEvent.getId());
     }
-    
+
   }
-  
+
 }
