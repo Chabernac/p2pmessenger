@@ -6,6 +6,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -33,10 +36,18 @@ public class CometServlet extends HttpServlet {
   private CometEventExpirationListener myExpirationListener = new CometEventExpirationListener();
 
   private AtomicLong myConcurrentRequestCounter = new AtomicLong(0);
+  
+  private static long TIMEOUT_MINUTES = 15;
 
   public void init() throws ServletException{
     super.init();
     getEndPointContainer();
+    
+    Executors.newScheduledThreadPool(1).scheduleAtFixedRate(new Runnable(){
+      public void run(){
+        resetAllEndPoints();
+      }
+    }, TIMEOUT_MINUTES, TIMEOUT_MINUTES, TimeUnit.MINUTES);
   }
 
   private void removeOldEvents(){
@@ -46,6 +57,16 @@ public class CometServlet extends HttpServlet {
       long theLiveTime = theCurrentTime - theEvent.getCreationTime();
       if(theLiveTime > MAX_EVENT_TIME){
         i.remove();
+      }
+    }
+  }
+  
+  private void resetAllEndPoints(){
+    for(EndPoint theEndPoint : getEndPointContainer().getAllEndPoints()){
+      try {
+        theEndPoint.setEvent(new CometEvent(UUID.randomUUID().toString(),  CometServlet.Responses.NO_DATA.name()));
+      } catch (CometException e) {
+        LOGGER.error("Could not reset end point for '" + theEndPoint.getId() + "'");
       }
     }
   }
@@ -115,9 +136,10 @@ public class CometServlet extends HttpServlet {
       LOGGER.error("Could not send comet event to endpoint", e);
       if(theEvent != null){
         EndPoint theOtherEndPoint = getEndPointContainer().getEndPointFor(theId, 1, TimeUnit.SECONDS);
-        theOtherEndPoint.setEvent(theEvent);
         if(theOtherEndPoint == null){
           theEvent.setOutput( new EndPointNotAvailableException("Could not send comet event to endpoint", e) );
+        } else {
+          theOtherEndPoint.setEvent(theEvent);
         }
       }
     } finally {
