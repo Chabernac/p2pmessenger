@@ -55,6 +55,7 @@ public class CometServlet extends HttpServlet {
    */
   protected void doGet(HttpServletRequest aRequest, HttpServletResponse aResponse) throws ServletException, IOException {
     try{
+      LOGGER.debug( "Incrementing counter");
       LOGGER.debug( "Concurrent requests in CometServlet: "  + myConcurrentRequestCounter.incrementAndGet());
       removeOldEvents();
       
@@ -71,6 +72,8 @@ public class CometServlet extends HttpServlet {
       aResponse.getWriter().println(myCometEventConverter.toString(new CometEvent("-1", Responses.NO_DATA.name())));
     } finally {
       myConcurrentRequestCounter.decrementAndGet();
+      LOGGER.debug( "Decrementing counter");
+      LOGGER.debug( "Concurrent requests in CometServlet: "  + myConcurrentRequestCounter.get());
     }
 
   }
