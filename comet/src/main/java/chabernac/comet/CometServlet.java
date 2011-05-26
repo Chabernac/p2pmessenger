@@ -154,7 +154,7 @@ public class CometServlet extends HttpServlet {
 
   private void showEndPoints(HttpServletResponse aResponse) throws IOException{
     PrintWriter theWriter = aResponse.getWriter();
-    for(EndPoint theEndPoint : getEndPointContainer().getAllEndPoints()){
+    for(EndPoint theEndPoint : myPendingEndPoints){
       theWriter.println(theEndPoint.getId());
     }
   }
