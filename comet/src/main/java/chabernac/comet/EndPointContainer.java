@@ -17,7 +17,7 @@ public class EndPointContainer {
   
   private Map<String, ArrayBlockingQueue<EndPoint>> myEndPoints = new HashMap<String, ArrayBlockingQueue<EndPoint>>();
 
-  public void addEndPoint(EndPoint anEndPoint) throws InterruptedException{
+  public synchronized void addEndPoint(EndPoint anEndPoint) throws InterruptedException{
     BlockingQueue<EndPoint> theEndPointQueue = getBlockingQueueFor(anEndPoint.getId());
     //TODO we can not determine at the moment if an endpoint is still valid
     //so we clear all endpoints and store only the last one, which is most likely the one to be valid
@@ -27,7 +27,7 @@ public class EndPointContainer {
     theEndPointQueue.put(anEndPoint);
   }
   
-  public void removeEndPoint(EndPoint anEndPoint){
+  public synchronized void removeEndPoint(EndPoint anEndPoint){
     anEndPoint.destroy();
     if(myEndPoints.containsKey( anEndPoint.getId() )){
       myEndPoints.get(anEndPoint.getId()).remove( anEndPoint );
@@ -37,7 +37,7 @@ public class EndPointContainer {
     }
   }
 
-  public EndPoint getEndPointFor(String anId, int aTimeout, TimeUnit aTimeUnit) throws InterruptedException{
+  public synchronized EndPoint getEndPointFor(String anId, int aTimeout, TimeUnit aTimeUnit) throws InterruptedException{
    return getBlockingQueueFor(anId).poll(aTimeout, aTimeUnit);
   }
   
@@ -48,12 +48,12 @@ public class EndPointContainer {
     return myEndPoints.get(anId);
   }
 
-  public int getNrOfEndPoints(String anId){
+  public synchronized int getNrOfEndPoints(String anId){
     if(!myEndPoints.containsKey(anId)) return 0;
     return myEndPoints.get(anId).size();
   }
   
-  public boolean containsEndPointFor(String anId){
+  public synchronized boolean containsEndPointFor(String anId){
     return getNrOfEndPoints( anId ) > 0;
   }
   

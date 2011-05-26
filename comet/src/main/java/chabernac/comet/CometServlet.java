@@ -2,13 +2,14 @@ package chabernac.comet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -34,6 +35,7 @@ public class CometServlet extends HttpServlet {
 
   private iObjectStringConverter<CometEvent> myCometEventConverter =  new Base64ObjectStringConverter<CometEvent>();
   private CometEventExpirationListener myExpirationListener = new CometEventExpirationListener();
+  private List<EndPoint> myPendingEndPoints = Collections.synchronizedList( new ArrayList<EndPoint>() );
 
   private AtomicLong myConcurrentRequestCounter = new AtomicLong(0);
   
@@ -62,7 +64,7 @@ public class CometServlet extends HttpServlet {
   }
   
   private void resetAllEndPoints(){
-    for(EndPoint theEndPoint : getEndPointContainer().getAllEndPoints()){
+    for(EndPoint theEndPoint : myPendingEndPoints){
       try {
         theEndPoint.setEvent(new CometEvent(UUID.randomUUID().toString(),  CometServlet.Responses.NO_DATA.name()));
       } catch (CometException e) {
@@ -121,6 +123,7 @@ public class CometServlet extends HttpServlet {
     //create a new endpoint
     EndPoint theEndPoint = new EndPoint( theId );
     try{
+      myPendingEndPoints.add( theEndPoint );
       //block untill an event for this endpoint (client) is available
       //the response will be send by the client in a next call in which an event id and event output is given as parameter (see code above)
 
@@ -143,6 +146,8 @@ public class CometServlet extends HttpServlet {
         }
       }
     } finally {
+      //we 're doing something double here, but it seems like the endpoint container does not have references to all pending end points
+      myPendingEndPoints.remove( theEndPoint );
       getEndPointContainer().removeEndPoint(theEndPoint);
     }
   }
