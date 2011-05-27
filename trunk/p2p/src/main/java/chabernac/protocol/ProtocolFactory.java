@@ -47,11 +47,11 @@ public class ProtocolFactory implements iProtocolFactory{
   @Override
   public Protocol createProtocol( String aProtocolId ) throws ProtocolException {
     Protocol theProtocol = createProt( aProtocolId );
-    try {
-      setupLogging( theProtocol );
-    } catch ( Throwable e ) {
-      LOGGER.error( "Could not setup logging for protocol '" + theProtocol.getClass().getName() + "'" );
-    }
+//    try {
+//      setupLogging( theProtocol );
+//    } catch ( Throwable e ) {
+//      LOGGER.error( "Could not setup logging for protocol '" + theProtocol.getClass().getName() + "'" );
+//    }
     return theProtocol;
   }
 
