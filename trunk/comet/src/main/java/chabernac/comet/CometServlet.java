@@ -38,13 +38,13 @@ public class CometServlet extends HttpServlet {
   private List<EndPoint> myPendingEndPoints = Collections.synchronizedList( new ArrayList<EndPoint>() );
 
   private AtomicLong myConcurrentRequestCounter = new AtomicLong(0);
-  
+
   private static long TIMEOUT_MINUTES = 15;
 
   public void init() throws ServletException{
     super.init();
     getEndPointContainer();
-    
+
     Executors.newScheduledThreadPool(1).scheduleAtFixedRate(new Runnable(){
       public void run(){
         resetAllEndPoints();
@@ -62,10 +62,11 @@ public class CometServlet extends HttpServlet {
       }
     }
   }
-  
+
   private void resetAllEndPoints(){
     for(EndPoint theEndPoint : myPendingEndPoints){
       try {
+//        LOGGER.debug("resetting end point '" + theEndPoint.getId() + "'");
         theEndPoint.setEvent(new CometEvent(UUID.randomUUID().toString(),  CometServlet.Responses.NO_DATA.name()));
       } catch (CometException e) {
         LOGGER.error("Could not reset end point for '" + theEndPoint.getId() + "'");
@@ -78,11 +79,12 @@ public class CometServlet extends HttpServlet {
    */
   protected void doGet(HttpServletRequest aRequest, HttpServletResponse aResponse) throws ServletException, IOException {
     try{
-      LOGGER.debug( "Incrementing counter");
-      LOGGER.debug( "Concurrent requests in CometServlet: "  + myConcurrentRequestCounter.incrementAndGet());
+//      LOGGER.debug( "Incrementing counter");
+//      LOGGER.debug( "Concurrent requests in CometServlet: "  + myConcurrentRequestCounter.incrementAndGet());
       removeOldEvents();
-      
-      if(aRequest.getParameter(  "show" ) != null){
+      if(aRequest.getParameter("clean") != null){
+        resetAllEndPoints();
+      } if(aRequest.getParameter(  "show" ) != null){
         showEndPoints(aResponse);
       } else if(aRequest.getParameterMap().containsKey("eventid")){
         //this is response to a comment event
@@ -95,8 +97,8 @@ public class CometServlet extends HttpServlet {
       aResponse.getWriter().println(myCometEventConverter.toString(new CometEvent("-1", Responses.NO_DATA.name())));
     } finally {
       myConcurrentRequestCounter.decrementAndGet();
-      LOGGER.debug( "Decrementing counter");
-      LOGGER.debug( "Concurrent requests in CometServlet: "  + myConcurrentRequestCounter.get());
+//      LOGGER.debug( "Decrementing counter");
+//      LOGGER.debug( "Concurrent requests in CometServlet: "  + myConcurrentRequestCounter.get());
     }
 
   }
