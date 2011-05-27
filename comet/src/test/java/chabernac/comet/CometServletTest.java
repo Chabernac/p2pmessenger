@@ -96,7 +96,7 @@ public class CometServletTest extends TestCase {
     CometEvent theCometEvent = new CometEvent("event1", "input"); 
     theEndPoint.setEvent(theCometEvent);
     Thread.sleep(1000);
-    assertEquals(0, theEndPointContainer.size() );
+    assertEquals(1, theEndPointContainer.size() );
     assertTrue(theCometEvents.containsKey("event1"));
     theLatch.countDown();
     assertEquals( "output", theCometEvent.getOutput( 5000 ));

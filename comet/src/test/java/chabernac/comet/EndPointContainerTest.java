@@ -6,6 +6,7 @@ package chabernac.comet;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import junit.framework.TestCase;
@@ -126,5 +127,22 @@ public class EndPointContainerTest extends TestCase {
     assertTrue( theAllEndPoints.contains( theEndPoint2 ) );
     assertTrue( theAllEndPoints.contains( theEndPoint3 ) );
     assertTrue( theAllEndPoints.contains( theEndPoint4 ) );
+  }
+  
+  public void testAmbigousSituation() throws InterruptedException{
+    final EndPointContainer theContainer = new EndPointContainer();
+    
+    Executors.newScheduledThreadPool(1).schedule(new Runnable(){
+      public void run(){
+        try{
+        theContainer.removeEndPoint(new EndPoint("1"));
+        theContainer.addEndPoint(new EndPoint("1"));
+        }catch(Exception e){
+          
+        }
+      }
+    }, 1 , TimeUnit.SECONDS);
+    
+    assertNotNull(theContainer.getEndPointFor("1", 5, TimeUnit.SECONDS));
   }
 }
