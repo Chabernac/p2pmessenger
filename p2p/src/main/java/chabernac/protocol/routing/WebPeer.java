@@ -4,10 +4,12 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 
@@ -19,6 +21,7 @@ import chabernac.io.iObjectStringConverter;
 
 public class WebPeer extends AbstractPeer {
   private static final long serialVersionUID = -6488979114630311123L;
+  public static final int TIMEOUT_IN_MINUTES = 15;
   private static Logger LOGGER = Logger.getLogger(WebPeer.class);
 
   private final URL myURL;
@@ -72,11 +75,16 @@ public class WebPeer extends AbstractPeer {
 
   public CometEvent waitForEvent(String aLocalPeerId) throws IOException{
     URL theCometURL = new URL(myURL, "p2p/comet");
-    URLConnection theConnection = theCometURL.openConnection();
+    final URLConnection theConnection = theCometURL.openConnection();
     theConnection.setDoOutput(true);
     OutputStreamWriter theWriter = new OutputStreamWriter(theConnection.getOutputStream());
     theWriter.write("id=" + aLocalPeerId);
     theWriter.flush();
+    Executors.newScheduledThreadPool(1).schedule(new Runnable(){
+      public void run(){
+          ((HttpURLConnection)theConnection).disconnect();
+      }
+    }, TIMEOUT_IN_MINUTES, TimeUnit.MINUTES);
     BufferedReader theReader = new BufferedReader(new InputStreamReader(theConnection.getInputStream()));
     String theEvent = theReader.readLine();
     LOGGER.debug("Received comet event line '" + theEvent + "'");

@@ -7,6 +7,8 @@ import org.mortbay.jetty.Server;
 import org.mortbay.jetty.ajp.Ajp13SocketConnector;
 import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.ServletHolder;
+import org.mortbay.thread.QueuedThreadPool;
+import org.mortbay.thread.ThreadPool;
 
 import chabernac.comet.CometServlet;
 import chabernac.p2p.web.ProtocolServlet;
@@ -48,6 +50,7 @@ public class ProtocolWebServer implements iP2PServer {
     
     try{
       myServer = new Server(myPort);
+      myServer.setThreadPool(new QueuedThreadPool(20));
 
       if(myAJPPort != null){
         Ajp13SocketConnector theAJPConnector = new Ajp13SocketConnector();

@@ -1,5 +1,6 @@
 package chabernac.protocol.routing;
 
+import java.net.SocketException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -141,6 +142,8 @@ public class WebPeerProtocol extends Protocol{
             } else {
               LOGGER.debug("Comet servlet timed out, waiting for new request...");
             }
+          }catch(SocketException e){
+            LOGGER.debug("Socket for peer '" + myWebPeer.getPeerId() + "' timed out");
           }catch(Exception e){
             theErrors++;
             LOGGER.error("An error occured while waiting for event from webpeer '" + myWebPeer.getPeerId() + "' error counter='" + theErrors + "'", e);
