@@ -70,16 +70,20 @@ public class RoutingProtocol extends Protocol {
     if(TestTools.isInUnitTest()){
       START_PORT = 12800;
       END_PORT = 12808;
+      MULTICAST_PORT = 14879;
+      MULTICAST_ADDRESS = "234.5.55.9";
     } else {
       START_PORT = 12700;
       END_PORT = 12708;
+      MULTICAST_PORT = 13879;
+      MULTICAST_ADDRESS = "234.5.54.9";
     }
   }
 
   public static int START_PORT;
   public static int END_PORT;
-  public static final int MULTICAST_PORT = 13879;
-  public static final String MULTICAST_ADDRESS = "234.5.54.9";
+  public static int MULTICAST_PORT;
+  public static String MULTICAST_ADDRESS;
 
   public static enum Command { REQUEST_TABLE, WHO_ARE_YOU, ANNOUNCEMENT_WITH_REPLY, ANNOUNCEMENT };
   public static enum Response { OK, NOK, UNKNOWN_COMMAND, NOT_INITIALIZED };
