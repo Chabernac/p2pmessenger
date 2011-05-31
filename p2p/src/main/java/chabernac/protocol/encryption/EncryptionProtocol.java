@@ -4,6 +4,7 @@
  */
 package chabernac.protocol.encryption;
 
+import java.io.File;
 import java.io.IOException;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
@@ -46,7 +47,8 @@ public class EncryptionProtocol extends Protocol {
   private iObjectStringConverter<PublicKey> myPublicKeyConverter = new Base64ObjectStringConverter< PublicKey >();
 
   private Map< String, SecretKey > myGeneratedKeysForSession = Collections.synchronizedMap( new HashMap< String, SecretKey> ());
-  private Map< String, PublicKey > myPublicKeys = Collections.synchronizedMap(new HashMap<String, PublicKey>());
+  
+  private PublicKeyStore myPublicKeys = new PublicKeyStore( new File("publicKeyStore.bin"), true);
 
   private KeyPair myKeyPair = null;
 
@@ -105,7 +107,7 @@ public class EncryptionProtocol extends Protocol {
         String[] theParts = anInput.split( " " );
         String thePeerId = theParts[1];
         PublicKey thePublicKey = myPublicKeyConverter.getObject( theParts[2] );
-        myPublicKeys.put(thePeerId, thePublicKey);
+        myPublicKeys.storeKey( thePeerId, thePublicKey);
         return Response.OK.name();
       }catch(Exception e){
         LOGGER.error("Could not store public key", e);
@@ -190,7 +192,7 @@ public class EncryptionProtocol extends Protocol {
 
   private PublicKey getPublicKeyFor(AbstractPeer aPeer) throws EncryptionException{
     try{
-      if(!myPublicKeys.containsKey(aPeer.getPeerId())){
+      if(!myPublicKeys.containsKeyFor( aPeer.getPeerId())){
         Message theMessage = new Message();
         theMessage.setDestination( aPeer );
         theMessage.setMessage( createMessage( Command.GET_PUBLIC_KEY.name() ));
@@ -198,10 +200,10 @@ public class EncryptionProtocol extends Protocol {
         MessageProtocol theMessageProtocol = (MessageProtocol)findProtocolContainer().getProtocol( MessageProtocol.ID );
         String theResult = theMessageProtocol.sendMessage( theMessage );
         if(theResult.startsWith( Response.OK.name() )){
-          myPublicKeys.put(aPeer.getPeerId(), myPublicKeyConverter.getObject(theResult.split(" ")[1]));
+          myPublicKeys.storeKey( aPeer.getPeerId(), myPublicKeyConverter.getObject(theResult.split(" ")[1]));
         }
       }
-      return myPublicKeys.get(aPeer.getPeerId());
+      return myPublicKeys.getKey( aPeer.getPeerId());
     }catch(Exception e){
       LOGGER.error("An error occured while getting public key for peer '" + aPeer.getPeerId() + "'", e);
       throw new EncryptionException("Could not get public key for peer '" + aPeer.getPeerId() + "'", e);
@@ -309,7 +311,7 @@ public class EncryptionProtocol extends Protocol {
   }
 
   void setPublicKeyFor(String aPeer, PublicKey aKey){
-    myPublicKeys.put(aPeer, aKey);
+    myPublicKeys.storeKey( aPeer, aKey);
   }
 
   PublicKey getPublicKey(){
