@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import chabernac.tools.TestTools;
+
 public abstract class AbstractPeer implements Serializable{
   private static final long serialVersionUID = 4466216283560470711L;
   private String myPeerId;
@@ -12,9 +14,13 @@ public abstract class AbstractPeer implements Serializable{
   protected Set<String> mySupportedProtocols = new HashSet< String >();
   private boolean isTemporaryPeer = true;
   
+  //Maybe this is not so clean but how else to define if a peer was created during a unit test?
+  private final boolean isTestPeer;
+  
   public AbstractPeer(String anPeerId) {
     super();
     myPeerId = anPeerId;
+    isTestPeer = TestTools.isInUnitTest();
   }
   
   public String getPeerId() {
@@ -78,5 +84,9 @@ public abstract class AbstractPeer implements Serializable{
   public AbstractPeer setTemporaryPeer( boolean aTemporaryPeer ) {
     isTemporaryPeer = aTemporaryPeer;
     return this;
+  }
+
+  public boolean isTestPeer() {
+    return isTestPeer;
   }
 }
