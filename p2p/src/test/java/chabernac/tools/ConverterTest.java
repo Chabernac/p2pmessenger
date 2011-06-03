@@ -7,6 +7,8 @@ package chabernac.tools;
 import java.io.IOException;
 import java.net.URL;
 
+import org.apache.log4j.BasicConfigurator;
+
 import junit.framework.TestCase;
 import chabernac.io.Base64ObjectStringConverter;
 import chabernac.io.iObjectStringConverter;
@@ -20,6 +22,10 @@ import chabernac.protocol.routing.WebPeer;
 public class ConverterTest extends TestCase {
   private iObjectStringConverter<RoutingTable> myRoutingTableConverter = new Base64ObjectStringConverter<RoutingTable>();
   private iObjectStringConverter<RoutingTableEntry> myRoutingTableEntryConverter = new Base64ObjectStringConverter<RoutingTableEntry>();
+  
+  static{
+    BasicConfigurator.configure();
+  }
 
   public void testToXML() throws UnknownPeerException, IOException{
     RoutingTable theTable = new RoutingTable("1");
@@ -44,6 +50,8 @@ public class ConverterTest extends TestCase {
     theTable.addRoutingTableEntry( theEntry2 );
     theTable.addRoutingTableEntry( theEntry3 );
     theTable.addRoutingTableEntry( theEntry4 );
+    
+    assertEquals(theLastOnlineTime5, theTable.getEntryForPeer( "5" ).getLastOnlineTime());
 
     long theLastOnlineTime4 = theEntry3.getLastOnlineTime();
     theEntry3 = theEntry3.derivedEntry( RoutingTableEntry.MAX_HOP_DISTANCE );
@@ -72,7 +80,7 @@ public class ConverterTest extends TestCase {
     assertEquals(RoutingTableEntry.MAX_HOP_DISTANCE, theTable2.getEntryForPeer( "4" ).getHopDistance());
     
     assertEquals("5", theTable2.getEntryForPeer( "5" ).getPeer().getPeerId());
-    assertEquals(theLastOnlineTime5, theTable2.getEntryForPeer( "4" ).getLastOnlineTime());
+    assertEquals(theLastOnlineTime5, theTable2.getEntryForPeer( "5" ).getLastOnlineTime());
     assertEquals(1, theTable2.getEntryForPeer( "5" ).getHopDistance());
     assertEquals("peer4", theTable2.getEntryForPeer( "5" ).getPeer().getChannel());
     assertEquals("http://localhost:8080", ((WebPeer)theTable2.getEntryForPeer( "5" ).getPeer()).getURL().toString());

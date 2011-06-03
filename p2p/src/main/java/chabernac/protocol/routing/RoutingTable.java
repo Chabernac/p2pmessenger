@@ -33,6 +33,7 @@ public class RoutingTable implements Iterable< RoutingTableEntry >, Serializable
   private Map<String, RoutingTableEntry> myRoutingTable = new HashMap< String, RoutingTableEntry >();
   private transient Set<IRoutingTableListener> myRoutingTableListeners = null;
   private transient List<RoutingTableEntryHistory> myRoutingTableEntryHistory = null;
+  private transient iPeerInspector myPeerInspector = new TestPeerInspector();
 
   public RoutingTable(String aLocalPeerId){
     myLocalPeerId = aLocalPeerId;
@@ -83,6 +84,10 @@ public class RoutingTable implements Iterable< RoutingTableEntry >, Serializable
     //ignore entries which have as gateway our selfs, this might create loops in the routing table hierarchy
     if(!anEntry.getPeer().getPeerId().equals( myLocalPeerId ) && anEntry.getGateway().getPeerId().equals( myLocalPeerId )){
       return;
+    }
+    
+    if(!isValidPeer(anEntry.getPeer())){
+      
     }
     
     if(anEntry.getHopDistance() == RoutingTableEntry.MAX_HOP_DISTANCE && 
@@ -154,6 +159,11 @@ public class RoutingTable implements Iterable< RoutingTableEntry >, Serializable
     }
   }
   
+  private boolean isValidPeer(AbstractPeer anPeer) {
+    if(myPeerInspector == null) return true;
+    return myPeerInspector.isValidPeer(anPeer);
+  }
+
   private void checkIntegrityForEntry(RoutingTableEntry anEntry){
     if(!anEntry.isReachable()){
       //look for entries which have this peer as gateway.  they will not be reachable as well
@@ -234,7 +244,7 @@ public class RoutingTable implements Iterable< RoutingTableEntry >, Serializable
     for(Iterator< RoutingTableEntry > i = anotherRoutingTable.iterator(); i.hasNext();){
       RoutingTableEntry theEntry = i.next();
       //add all entries except the entry for ourselfs
-      //and except the entries which have our peer id as gateway, otherwise loops may be created in the routint table hierarchy
+      //and except the entries which have our peer id as gateway, otherwise loops may be created in the routing table hierarchy
       if(!theEntry.getPeer().getPeerId().equals( myLocalPeerId )){
         addRoutingTableEntry(theEntry.entryForNextPeer( anotherRoutingTable.getEntryForLocalPeer().getPeer() ) );
       }
@@ -367,6 +377,14 @@ public class RoutingTable implements Iterable< RoutingTableEntry >, Serializable
 
   public void setKeepHistory( boolean anKeepHistory ) {
     isKeepHistory = anKeepHistory;
+  }
+
+  public iPeerInspector getPeerInspector() {
+    return myPeerInspector;
+  }
+
+  public void setPeerInspector(iPeerInspector anPeerInspector) {
+    myPeerInspector = anPeerInspector;
   }
 
   public List< RoutingTableEntryHistory > getHistory() {
