@@ -25,7 +25,7 @@ public class NetToolsTest extends TestCase{
     }
     float theSeconds = (System.currentTimeMillis() - t1) / 1000F;
     float theTimesPerSecond = ((float)times) / theSeconds;
-    int theLimit = 30;
+    int theLimit = 20;
     assertTrue( "Number of local interfaces lookup per second '" + theTimesPerSecond + "' < '" + theLimit + "'", theTimesPerSecond > theLimit );
   }
 }

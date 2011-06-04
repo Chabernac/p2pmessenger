@@ -13,9 +13,11 @@ import java.net.Socket;
 import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import junit.framework.TestCase;
 
@@ -26,6 +28,7 @@ import chabernac.io.SocketProxy;
 import chabernac.protocol.message.DeliveryReport;
 import chabernac.protocol.message.MessageArchive;
 import chabernac.protocol.message.MultiPeerMessage;
+import chabernac.protocol.message.iMultiPeerMessageListener;
 import chabernac.protocol.pipe.Pipe;
 import chabernac.protocol.routing.AbstractPeer;
 import chabernac.protocol.routing.UnknownPeerException;
@@ -674,21 +677,30 @@ public class P2PFacadeTest extends TestCase {
       assertTrue( theSocketPeer.getRoutingTable().containsEntryForPeer( theWebPeer.getRoutingTable().getLocalPeerId() ));
       assertTrue( theWebPeer.getRoutingTable().containsEntryForPeer( theSocketPeer.getRoutingTable().getLocalPeerId() ));
 
+      int times = 300;
+      
+      final CountDownLatch theLatch = new CountDownLatch(times);
+      
       MessageCollector theCollector = new MessageCollector();
       theSocketPeer.addMessageListener( theCollector );
+      theSocketPeer.addMessageListener(new iMultiPeerMessageListener(){
+        @Override
+        public void messageReceived(MultiPeerMessage aMessage) {
+          theLatch.countDown();
+        }
+      });
       theSocketPeer.addMessageListener(new MessagePrinter());
 
       ExecutorService theSendService = Executors.newSingleThreadExecutor();
 
-      int times = 300;
 
       for(int i=0;i<times;i++){
         MultiPeerMessage theMessage = MultiPeerMessage.createMessage( "test" + i )
         .addDestination( theSocketPeer.getPeerId() );
         theWebPeer.sendMessage( theMessage, theSendService );
       }
-
-      Thread.sleep( 5000 );
+      
+      theLatch.await(20, TimeUnit.SECONDS);
 
       assertEquals( times, theCollector.getMessages().size() );
 
