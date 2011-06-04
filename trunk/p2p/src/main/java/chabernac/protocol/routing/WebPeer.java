@@ -87,7 +87,7 @@ public class WebPeer extends AbstractPeer {
     }, TIMEOUT_IN_MINUTES, TimeUnit.MINUTES);
     BufferedReader theReader = new BufferedReader(new InputStreamReader(theConnection.getInputStream()));
     String theEvent = theReader.readLine();
-    LOGGER.debug("Received comet event line '" + theEvent + "'");
+//    LOGGER.debug("Received comet event line '" + theEvent + "'");
     CometEvent theCometEvent = getCometStringConverter().getObject( theEvent );
     getExecutorService().execute( new CometEventResponseSender(theCometEvent) );
     return theCometEvent;
