@@ -55,6 +55,7 @@ public class EncryptionProtocol extends Protocol {
   public EncryptionProtocol ( ) throws EncryptionException {
     super( ID);
     generateKeyPair();
+    loadKeyStore();
   }
 
   public void generateKeyPair() throws EncryptionException{
@@ -67,6 +68,10 @@ public class EncryptionProtocol extends Protocol {
     }catch(Exception e){
       throw new EncryptionException("Could not generate key pair", e);
     }
+  }
+  
+  private void loadKeyStore(){
+    myPublicKeys.load();
   }
 
   @Override

@@ -12,6 +12,15 @@ import java.security.SecureRandom;
 import junit.framework.TestCase;
 
 public class PublicKeyStoreTest extends TestCase {
+  
+  protected void tearDown(){
+    File theStore = new File("store.bin");
+    if(theStore.exists()){
+      theStore.delete();
+    }
+  }
+  
+  
 
   public void testStore() throws EncryptionException, KeyNotFoundException{
     PublicKeyStore theStore = new PublicKeyStore( new File("store.bin"), false );
