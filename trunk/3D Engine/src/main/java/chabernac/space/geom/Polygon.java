@@ -108,21 +108,30 @@ public class Polygon implements iTranslatable{
         GVector theXVector = new GVector(w[0].myPoint, w[1].myPoint);
         //now we multiply the x vector with the plane's normal vector to obtain the y vector in the plane and orthogonal with the x vector
         GVector theYVector = myNormalVector.produkt(theXVector);
-        GVector theInvYVector = myNormalVector.inv().produkt( theXVector );
+        
+        //create a vector from w[0] to center point
+        GVector theValidatorVector = new GVector(w[0].myPoint, myCenterPoint);
+        if(theYVector.dotProdukt(theValidatorVector) < 0){
+          theXVector = new GVector(w[1].myPoint, w[0].myPoint);
+          //now we multiply the x vector with the plane's normal vector to obtain the y vector in the plane and orthogonal with the x vector
+          theYVector = myNormalVector.produkt(theXVector);
+        }
+        
+//        GVector theInvYVector = myNormalVector.inv().produkt( theXVector );
 
         theXVector.normalize();
         theYVector.normalize();
-        theInvYVector.normalize();
+//        theInvYVector.normalize();
 
-        Point3D thePointInPolygon = w[0].myPoint.addition( theYVector );
-        float theDistanceToCenter = distanceToCenter( thePointInPolygon );
-
-        Point3D thePointInPolygon2 = w[0].myPoint.addition( theInvYVector );
-        float theDistanceToCenter2 = distanceToCenter( thePointInPolygon2 );
-
-        if(theDistanceToCenter2 < theDistanceToCenter){
-          theYVector = theInvYVector;
-        }
+//        Point3D thePointInPolygon = w[0].myPoint.addition( theYVector );
+//        float theDistanceToCenter = distanceToCenter( thePointInPolygon );
+//
+//        Point3D thePointInPolygon2 = w[0].myPoint.addition( theInvYVector );
+//        float theDistanceToCenter2 = distanceToCenter( thePointInPolygon2 );
+//
+//        if(theDistanceToCenter2 < theDistanceToCenter){
+//          theYVector = theInvYVector;
+//        }
 
 
         if(myTextureName != null){
@@ -396,8 +405,12 @@ public class Polygon implements iTranslatable{
   public Texture2 getTexture(){
     return myTexture;
   }
+  
+  public Point3D getCenterPoint(){
+    return myCenterPoint;
+  }
 
-  public Point3D getCenterPoint() {
+  public Point3D getCamCenterPoint() {
     return myCamCenterPoint;
   }
 

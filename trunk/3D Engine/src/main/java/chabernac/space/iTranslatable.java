@@ -16,5 +16,5 @@ import chabernac.space.geom.Point3D;
  */
 public interface iTranslatable {
 	public void translate(iTransformator aTransformator) throws TranslateException;
-	public Point3D getCenterPoint();
+	public Point3D getCamCenterPoint();
 }

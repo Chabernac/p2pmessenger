@@ -75,6 +75,10 @@ public class Pixel {
     return camPoint;
   }
   
+  /**
+   * return the normal at this pixel
+   * the normal is returned in camera space 
+   */
   public GVector getNormal(){
     if(normal == null){
       normal = texture.getNormalVector(uInt, vInt);

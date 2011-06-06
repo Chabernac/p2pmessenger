@@ -6,9 +6,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import chabernac.math.MatrixException;
+import chabernac.math.MatrixOperations;
 import chabernac.space.Camera;
 import chabernac.space.Frustrum;
 import chabernac.space.PolygonException;
+import chabernac.space.Transformation;
 import chabernac.space.TranslateException;
 import chabernac.space.Vertex;
 import chabernac.space.iTransformator;
@@ -212,7 +214,7 @@ public class Shape implements Comparable, iTranslatable{
     System.out.println("Setting texture on all polygons done");
   }
 
-  public Point3D getCenterPoint(){
+  public Point3D getCamCenterPoint(){
     return myCenterPoint;
   }
 
@@ -257,5 +259,13 @@ public class Shape implements Comparable, iTranslatable{
 
 //    calculateVertexNormals();
     calculateNormalVectors();
+  }
+  
+  public void explode(float aDistance){
+    for(Polygon thePolygon : myPolygons){
+      GVector theVector = new GVector(myCenterPoint, thePolygon.getCenterPoint()).norm().multip(aDistance);
+      iTransformator theTransform = new Transformation().addTransformation(MatrixOperations.buildTranslationMatrix(theVector));
+      thePolygon.translate(theTransform);
+    }
   }
 }

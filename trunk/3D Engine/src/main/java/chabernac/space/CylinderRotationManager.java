@@ -25,7 +25,7 @@ public class CylinderRotationManager extends TranslateManager {
 	}
 	
 	protected void translate(iTranslatable aTranslatable) {
-		Point3D theCenterPoint = (Point3D)aTranslatable.getCenterPoint().clone();
+		Point3D theCenterPoint = (Point3D)aTranslatable.getCamCenterPoint().clone();
 		aTranslatable.translate(new Camera(theCenterPoint, new Rotation(0,0,0), 1));
 		Cylinder theCylinder = (Cylinder)aTranslatable;
 		GVector theDirection = theCylinder.getDirection();

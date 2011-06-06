@@ -62,7 +62,7 @@ public class LightSource implements iTranslatable{
     myWorldLocation = aTransformator.transform(myWorldLocation);
   }
 
-  public Point3D getCenterPoint(){
+  public Point3D getCamCenterPoint(){
     return myWorldLocation;
   }
 }

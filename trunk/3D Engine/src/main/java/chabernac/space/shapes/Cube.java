@@ -104,7 +104,7 @@ public class Cube extends MoveableShape{
 
     done();
   }
-
+  
   public void nextTranslation(){}
 
 }

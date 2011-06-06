@@ -32,14 +32,14 @@ public class PathTranslateManager extends TranslateManager{
 		
 		Point3D theDestination = myPath[theCurrentDestination];
 		
-		GVector theDirection = theDestination.minus(aTranslatable.getCenterPoint());
+		GVector theDirection = theDestination.minus(aTranslatable.getCamCenterPoint());
 		theDirection.normalize();
 		theDirection.multiply(mySpeed);
 		
 		Camera theTranslationCamera = Camera.makeTranslationCamera(theDirection);
 		aTranslatable.translate(theTranslationCamera);
 		
-		GVector theNewDirection = theDestination.minus(aTranslatable.getCenterPoint());
+		GVector theNewDirection = theDestination.minus(aTranslatable.getCamCenterPoint());
 		
 		if(theDirection.dotProdukt(theNewDirection) < 0){
 			theCurrentDestination = (++theCurrentDestination) % myPath.length;
