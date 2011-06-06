@@ -396,6 +396,49 @@ public class P2PFacadeTest extends TestCase {
       if(theFacade2 != null) theFacade2.stop();
     }
   }
+  
+  public void testStopWhenAlreadyRunning2() throws P2PFacadeException, InterruptedException, ExecutionException{
+    LOGGER.debug("Executing test " + new Exception().getStackTrace()[0].getMethodName());
+    P2PFacade theFacade1 = null;
+    P2PFacade theFacade2 = null;
+    try{
+      theFacade1 = new P2PFacade()
+      .setExchangeDelay( 300 )
+      .setPersist( true )
+      .setStopWhenAlreadyRunning(true)
+      .setPeerId( "1" )
+      .start( 20 );
+
+      theFacade2 = new P2PFacade()
+      .setExchangeDelay( 300 )
+      .setPersist( true )
+      .setStopWhenAlreadyRunning(true)
+      .setPeerId( "2" )
+      .start( 20 );
+      
+      theFacade1.stop();
+      theFacade2.stop();
+      
+      //restart but now in reverse order
+      //the port numbers will be switched but we must not get an already running exception
+      theFacade2 = new P2PFacade()
+      .setExchangeDelay( 300 )
+      .setPersist( true )
+      .setStopWhenAlreadyRunning(true)
+      .setPeerId( "2" )
+      .start( 20 );
+      
+      theFacade1 = new P2PFacade()
+      .setExchangeDelay( 300 )
+      .setPersist( true )
+      .setStopWhenAlreadyRunning(true)
+      .setPeerId( "1" )
+      .start( 20 );
+    } finally {
+      if(theFacade1 != null) theFacade1.stop();
+      if(theFacade2 != null) theFacade2.stop();
+    }
+  }
 
   public void testChannel() throws P2PFacadeException, InterruptedException{
     LOGGER.debug("Executing test " + new Exception().getStackTrace()[0].getMethodName());

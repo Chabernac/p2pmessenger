@@ -178,7 +178,7 @@ public class RoutingProtocol extends Protocol {
     } catch ( IOException e ) {
       LOGGER.error("Could not load super nodes", e);
     }
-    
+
     try {
       mySuperNodes.addAll( IOTools.loadStreamAsList( new FileResource("supernodes.txt").getInputStream() ));
     } catch ( IOException e ) {
@@ -263,7 +263,13 @@ public class RoutingProtocol extends Protocol {
    */
   private boolean isAlreadyRunning(AbstractPeer aPeer) {
     LOGGER.debug("Checking if we're already running");
-    return contactPeer(aPeer, myUnreachablePeers, false);
+    try{
+      String theResponse = getPeerSender().send( aPeer, createMessage( Command.WHO_ARE_YOU.name() ));
+      AbstractPeer theRemotePeer = myPeerConverter.getObject( theResponse );
+      return theRemotePeer.getPeerId().equals( aPeer.getPeerId() );
+    }catch(Exception e){
+      return false;
+    }
   }
 
   private void startUDPListener(){
