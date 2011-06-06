@@ -105,6 +105,7 @@ public class Polygon implements iTranslatable{
     try {
       if(myTexture == null){
         //we take the x vector of the texture parallel to the first 2 points of the polygon
+        Point3D theOrigin = w[0].myPoint;
         GVector theXVector = new GVector(w[0].myPoint, w[1].myPoint);
         //now we multiply the x vector with the plane's normal vector to obtain the y vector in the plane and orthogonal with the x vector
         GVector theYVector = myNormalVector.produkt(theXVector);
@@ -115,6 +116,7 @@ public class Polygon implements iTranslatable{
           theXVector = new GVector(w[1].myPoint, w[0].myPoint);
           //now we multiply the x vector with the plane's normal vector to obtain the y vector in the plane and orthogonal with the x vector
           theYVector = myNormalVector.produkt(theXVector);
+          theOrigin = w[1].myPoint;
         }
         
 //        GVector theInvYVector = myNormalVector.inv().produkt( theXVector );
@@ -135,13 +137,13 @@ public class Polygon implements iTranslatable{
 
 
         if(myTextureName != null){
-          myTexture = new Texture2(w[0].myPoint, theXVector, theYVector, myTextureName, isTransparentTexture );
+          myTexture = new Texture2(theOrigin, theXVector, theYVector, myTextureName, isTransparentTexture );
         } else if(myTextureImage != null){
-          myTexture = new Texture2(w[0].myPoint, theXVector, theYVector, myTextureImage);
+          myTexture = new Texture2(theOrigin, theXVector, theYVector, myTextureImage);
         } else {
           //there is not texture image, but still we create a texture and say that is always have to return the color of the polygon
           //this way we can still use the texture object for calculating camera and real world points for points on the screen
-          myTexture = new Texture2(w[0].myPoint, theXVector, theYVector, color.getRGB() );
+          myTexture = new Texture2(theOrigin, theXVector, theYVector, color.getRGB() );
         }
         if(myBumpMap != null){
           myTexture.setBumpMap(TextureFactory.getBumpMap(myBumpMap));
