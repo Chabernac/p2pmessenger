@@ -25,6 +25,7 @@ import chabernac.space.ToggleRecordingCommand;
 import chabernac.space.World;
 import chabernac.space.shading.BumpShader;
 import chabernac.space.shading.GouroudShading;
+import chabernac.space.shading.PhongShader;
 import chabernac.space.shading.TextureShader;
 import chabernac.space.shading.iPixelShader;
 import chabernac.space.shading.iVertexShader;
@@ -93,7 +94,12 @@ public abstract class AbstractWorld extends JFrame {
    * @return
    */
   protected iPixelShader[] getPixelShaders(){
-    return new iPixelShader[]{new TextureShader( ), new BumpShader( myWorld )};
+    return new iPixelShader[]{
+                              new TextureShader( ), 
+//                              new BumpShader( myWorld ),
+                              new PhongShader( myWorld )
+                              
+                              };
   }
   
   

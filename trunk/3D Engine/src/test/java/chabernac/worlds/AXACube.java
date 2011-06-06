@@ -40,10 +40,10 @@ public class AXACube extends AbstractWorld implements iSynchronizedEvent{
     myWorld.getTranslateManagerContainer().addTranslateManager(theRotationManager);
     
     
-    Shape theEarth = ShapeFactory.makeSphere(new Point3D(100,100,6000), 1000,40);
-    theEarth.setColor(Color.blue);
+//    Shape theEarth = ShapeFactory.makeSphere(new Point3D(100,100,6000), 1000,40);
+//    theEarth.setColor(Color.blue);
 //    theSphere.setTexture("gengrid", false, true);
-    theEarth.setTexture("Earth-Color4096", false, true);
+//    theEarth.setTexture("Earth-Color4096", false, true);
 //    theSphere.setTexture("Whole_world_-_land_and_oceans", false, true);
 //    theSphere.setTexture("Threadplate0069_1_S", false, true);
 //    theSphere.setTexture("S_S_Board12", false, true);
@@ -61,33 +61,33 @@ public class AXACube extends AbstractWorld implements iSynchronizedEvent{
     //theSphere.myPolygons[20].setTexture("guy", false);
 //    myWorld.addShape(theEarth);
     //theMouseTranslationManager.addTranslatable(theSphere);
-    theRotationManager.addTranslatable(theEarth);
+//    theRotationManager.addTranslatable(theEarth);
     
     
     
-    Shape theCosmos = ShapeFactory.makeSphere(new Point3D(0,0,0), 100000,40);
+//    Shape theCosmos = ShapeFactory.makeSphere(new Point3D(0,0,0), 100000,40);
 //    theCosmos.setColor(Color.blue);
-    theCosmos.setRoom(true);
+//    theCosmos.setRoom(true);
 //    theCosmos.setTexture("StarsMap_2500x1250", false, true);
-    theCosmos.setTexture("stars", false, true);
+//    theCosmos.setTexture("stars", false, true);
 //    theCosmos.setTexture("star_map_small", false, true);
     
     //theCosmos.setTexture("Threadplate0069_1_S", false, true);
     
 //    theCosmos.setTexture("EarthMap_2500x1250", false, true);
-    theCosmos.done();
+//    theCosmos.done();
 //    myWorld.addShape(theCosmos);
     
-    Shape theMoon = ShapeFactory.makeSphere(new Point3D(3600,100,6000), 200, 40);
-    theMoon.setTexture("MoonMap2_2500x1250", false, true);
-    theMoon.done();
+//    Shape theMoon = ShapeFactory.makeSphere(new Point3D(3600,100,6000), 200, 40);
+//    theMoon.setTexture("MoonMap2_2500x1250", false, true);
+//    theMoon.done();
 //    myWorld.addShape(theMoon);
     
-    RotationManager theMoonRotationManager = new RotationManager(new Rotation(0,0,-(float)Math.PI / 180));
-    theMoonRotationManager.setRotationCenter(theEarth);
-    theMoonRotationManager.addTranslatable(theMoon);
-    myWorld.getTranslateManagerContainer().addTranslateManager(theMoonRotationManager);
-    theRotationManager.addTranslatable(theMoon);
+//    RotationManager theMoonRotationManager = new RotationManager(new Rotation(0,0,-(float)Math.PI / 180));
+//    theMoonRotationManager.setRotationCenter(theEarth);
+//    theMoonRotationManager.addTranslatable(theMoon);
+//    myWorld.getTranslateManagerContainer().addTranslateManager(theMoonRotationManager);
+//    theRotationManager.addTranslatable(theMoon);
     
     
     
