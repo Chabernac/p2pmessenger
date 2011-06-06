@@ -296,13 +296,19 @@ public class Polygon implements iTranslatable{
       dist2 = aPlane.distanceToPoint(c[ii].myPoint);
       //System.out.println("Distance of point: " + c[ii].myPoint.toString() + " to plane: " + aPlane.toString() + ": " + dist2);
       //System.out.println("Dist1: " + dist1 + " dist2: " + dist2);
-      if(dist1 < 0 && dist2 < 0){}
-      else if(dist1 >= 0 && dist2 >= 0){
+      if(dist1 < 0 && dist2 < 0){
+        //both ends are on the wrong side of the plane, do nothing, the points will be discarded
+      } else if(dist1 >= 0 && dist2 >= 0){
+        //both ends are on the right side of the plane, copy the first point to the temp vertexes array
         theTempVertexes[j++] = c[i];
       } else if(dist1 > 0){
+        //if we get here we know for sure that both ends are on a different side of the plane
+        //since dist1 > 0 we now that the first point is on the right side and the second is on the wrong side
         distratio = dist1/(dist1-dist2);
+        //leave the first point untouched and insert it into the temp vertexes array
         theTempVertexes[j++] = c[i];
         Vector2D theTextureDistance = Texture2.distance(myTexture, c[i].myTextureCoordinate, c[ii].myTextureCoordinate);
+        //insert a new vertex at the point where the line from the first vertex to the second intersects the plane
         theTempVertexes[j] = new Vertex(new Point3D(c[i].myPoint.x + (c[ii].myPoint.x - c[i].myPoint.x) * distratio,
             c[i].myPoint.y + (c[ii].myPoint.y - c[i].myPoint.y) * distratio,
             c[i].myPoint.z + (c[ii].myPoint.z - c[i].myPoint.z) * distratio),
@@ -315,6 +321,11 @@ public class Polygon implements iTranslatable{
         j++;
         Vector2D.freeInstance(theTextureDistance);
       } else{
+        //if we get here it means the first point is on the wrong side of the plane
+        //the second is on the right side of theplane
+        //insert a new Vertex there where the line from the first vertex to the second vertex intersects the plane
+        //unlike the previous situation we do not add the point on the right side of the plane, it will be added in the next
+        //iteration
         Vector2D theTextureDistance = Texture2.distance(myTexture, c[ii].myTextureCoordinate, c[i].myTextureCoordinate);
         distratio = dist2/(dist2-dist1);
         theTempVertexes[j] = new Vertex(new Point3D(c[ii].myPoint.x + (c[i].myPoint.x - c[ii].myPoint.x) * distratio,

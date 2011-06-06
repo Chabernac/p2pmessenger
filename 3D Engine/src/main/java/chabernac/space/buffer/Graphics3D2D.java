@@ -336,6 +336,7 @@ public class Graphics3D2D implements iBufferStrategy {
       //TimeTracker.logTime("Intersecting with horizontal line: " + y);
       if(theScanLine.length == 2 && theScanLine[0] != null && theScanLine[1] != null){
         //        synchronized(this){
+        //TODO is the math.floor necessar?
         Segment theSegment = Segment.getInstance(theScanLine[0],theScanLine[1], (y * myWidth + (int)Math.floor(theScanLine[0].getPoint().x)), aPolygon.getTexture(), myXStep ); 
         //        Segment theSegment = new Segment(theScanLine[0],theScanLine[1], aPolygon.getTexture() );
         xMax = theScanLine[1].getPoint().x;
