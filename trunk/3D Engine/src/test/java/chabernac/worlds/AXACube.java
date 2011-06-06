@@ -23,7 +23,7 @@ public class AXACube extends AbstractWorld implements iSynchronizedEvent{
   private RotationManager myRotationManager = null;
   
   public AXACube(){
-    super(new Dimension( 800, 600 ));
+    super(new Dimension( 800, 600));
   }
   
   protected void buildWorld(World aWorld){
@@ -119,11 +119,11 @@ public class AXACube extends AbstractWorld implements iSynchronizedEvent{
     
     
     
-    Shape theShape = ShapeFactory.makeCube(new Point3D(5,0,400), 94,94,94);
-    theShape.explode(50);
-    theShape.setColor(new Color(0,0,255,100));
+//    Shape theShape = ShapeFactory.makeCube(new Point3D(5,0,400), 94,94,94);
+//    theShape.explode(50);
+//    theShape.setColor(new Color(0,0,255,100));
     //theShape.setTexture(new TextureImage(ImageFactory.createImage("AXA", new Font("Arial", Font.BOLD, 40), 100, 100, Color.BLUE, Color.WHITE, true)));
-    theShape.setTexture("axa","guy", false, false);
+//    theShape.setTexture("axa","guy", false, false);
 //    theShape.triangulate();
 //    theShape.triangulate();
 //    theShape.triangulate();
@@ -135,15 +135,15 @@ public class AXACube extends AbstractWorld implements iSynchronizedEvent{
 //    theMouseTranslationManager.addTranslatable(theShape);
 //    myRotationManager.addTranslatable(theShape);
     
-//    theShape = ShapeFactory.makeCube(new Point3D(-800,-800,500), 3400,3400,3400);
+    Shape theShape = ShapeFactory.makeCube(new Point3D(-800,-800,500), 3400,3400,3400);
 //    theShape.setColor(new Color(0,0,255,100));
     //theShape.setTexture(new TextureImage(ImageFactory.createImage("AXA", new Font("Arial", Font.BOLD, 40), 100, 100, Color.BLUE, Color.WHITE, true)));
-//    theShape.setTexture("metal006","metal006", false, false);
+    theShape.setTexture("metal006","metal006", false, false);
 //    theShape.setTexture("leslie", false, false);
 //    theShape.myPolygons[0].setTexture("axa", false);
 //    theShape.myPolygons[0].setTexture("guy", false, false);
 //    theShape.myPolygons[1].setTexture("leslie", false, false);
-//    myWorld.addShape(theShape);
+    myWorld.addShape(theShape);
 //    theMouseTranslationManager.addTranslatable(theShape);
 //    myRotationManager.addTranslatable(theShape);
     
@@ -194,12 +194,12 @@ public class AXACube extends AbstractWorld implements iSynchronizedEvent{
 //    myWorld.getTranslateManagerContainer().addTranslateManager(theRManager);
     
 
-    myPanel3D.getGraphics3D().setDrawNormals(true);
+    myPanel3D.getGraphics3D().setDrawNormals(false);
     myPanel3D.getGraphics3D().setDrawRibs(false);
     myPanel3D.getGraphics3D().setDrawBackFacing(false);
     myPanel3D.getGraphics3D().setDrawPlanes(true);
     myPanel3D.getGraphics3D().setDrawLightSources( false );
-    myPanel3D.getGraphics3D().setDrawTextureNormals( true );
+    myPanel3D.getGraphics3D().setDrawTextureNormals( false );
     myPanel3D.getGraphics3D().setDrawBumpVectors(false);
     myPanel3D.getGraphics3D().setDrawVertexNormals( false);
     myPanel3D.getGraphics3D().setDrawTextureCoordinates(false );
@@ -210,7 +210,7 @@ public class AXACube extends AbstractWorld implements iSynchronizedEvent{
     myPanel3D.getGraphics3D().setUseClipping( false );
     myPanel3D.getGraphics3D().getGraphics3D2D().setUsePartialClearing( false );
     myPanel3D.getGraphics3D().setVertexShaders( getVertexShaders() );
-    myPanel3D.getGraphics3D().setDrawWorldOrigin(true);
+    myPanel3D.getGraphics3D().setDrawWorldOrigin(false);
     
   }
   
@@ -260,7 +260,7 @@ public class AXACube extends AbstractWorld implements iSynchronizedEvent{
   }
   
   protected int getFPS(){
-    return 50;
+    return 1000;
   }
   
 
