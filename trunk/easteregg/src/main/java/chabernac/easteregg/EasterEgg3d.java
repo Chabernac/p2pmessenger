@@ -27,7 +27,6 @@ import chabernac.space.geom.Rotation;
 import chabernac.space.geom.Shape;
 import chabernac.space.shading.AmbientShading;
 import chabernac.space.shading.BumpShader;
-import chabernac.space.shading.PhongShader;
 import chabernac.space.shading.TextureShader;
 import chabernac.space.shading.iPixelShader;
 import chabernac.space.shading.iVertexShader;
@@ -82,7 +81,7 @@ public class EasterEgg3d extends DefaultEasterEggPaintable {
      */
 
     //myWorld.addLightSource(new LightSource(new Point3D(0,0,-50), 100));
-    myWorld.addLightSource(new LightSource(new Point3D(0,0,-100), 500));
+    myWorld.addLightSource(new LightSource(new Point3D(0,0,-200), 500));
 
     myCamera = new Camera();
 
@@ -109,22 +108,32 @@ public class EasterEgg3d extends DefaultEasterEggPaintable {
   private void initGraphics(Rectangle aBounds){
     myEyePoint = new Point3D(aBounds.width/2,aBounds.height/2,(aBounds.width + aBounds.height)/2);
     myGraphics = new Graphics3D(new ScreenFrustrum(myEyePoint, new Dimension(aBounds.width, aBounds.height), 0.1F, 2000),
-                                myEyePoint,
-                                myCamera,
-                                myWorld,
-                                new Graphics3D2D(myWorld, aBounds.width, aBounds.height)
+        myEyePoint,
+        myCamera,
+        myWorld,
+        new Graphics3D2D(myWorld, aBounds.width, aBounds.height)
     );
-    myGraphics.setVertexShaders(new iVertexShader[]{new AmbientShading(0)});
+    myGraphics.setVertexShaders(new iVertexShader[]{
+        new AmbientShading(0.4F)
+//           new GouroudShading(0F),
+        });
     myGraphics.setBackGroundColor( Color.black );
 
     myGraphics.getGraphics3D2D().setPixelShaders( 
-                                                 new iPixelShader[]{
-                                                                    new TextureShader( ), 
-                                                                    new BumpShader( myWorld ),
-                                                                    new PhongShader( myWorld )
-                                                 }
+        new iPixelShader[]{
+            new BumpShader( myWorld ),
+          
+//            new PhongShader( myWorld ),
+            new TextureShader( ), 
+        });
 
-    );
+    myGraphics.setUseClipping( false );
+    myGraphics.getGraphics3D2D().setUsePartialClearing( false );
+    myGraphics.setDrawTextureNormals( false );
+    myGraphics.setDrawNormals(false);
+    myGraphics.setDrawPixelNormals(false);
+    
+
   }
 
   private class MouseTranslationManager extends OneLocationTranslateManager implements MouseMotionListener, MouseWheelListener{
