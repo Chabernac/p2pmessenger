@@ -64,6 +64,8 @@ public class PublicKeyStore {
   }
   
   public void load(){
+    if(!myKeyStoreLocation.exists()) return;
+    
     ObjectInputStream theInputStream = null;
     try{
       theInputStream = new ObjectInputStream(new FileInputStream( myKeyStoreLocation ));

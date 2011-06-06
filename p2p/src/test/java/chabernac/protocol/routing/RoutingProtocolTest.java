@@ -75,7 +75,7 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
 
     //delete routing table files is they exist
     for(int i=1;i<10;i++){
-      File theFile = new File("RoutingTable_" + i + ".csv");
+      File theFile = new File("RoutingTable_" + i + ".bin");
       if(theFile.exists()){
         assertTrue( theFile.delete() );
       }
