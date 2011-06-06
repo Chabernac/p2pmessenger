@@ -20,7 +20,7 @@ public class OneLocationTranslateManager extends TranslateManager{
 
 	protected void translate(iTranslatable aTranslatable) {
 		
-		GVector theDirection = myDestination.minus(aTranslatable.getCenterPoint());
+		GVector theDirection = myDestination.minus(aTranslatable.getCamCenterPoint());
 		if(theDirection.length() > mySpeed){
 			theDirection.normalize();
 			theDirection.multiply(mySpeed);

@@ -12,8 +12,9 @@ public class Transformation implements iTransformator{
   private Point3D myOriginTransform = null;
   private Point3D myInvOriginTransform = null;
   
-  public void addTransformation(Matrix aTransformation){
+  public Transformation addTransformation(Matrix aTransformation){
     myTransformationMatrix = myTransformationMatrix.multiply(aTransformation);
+    return this;
   }
   
   

@@ -108,7 +108,7 @@ public class CoordinateSystem implements iTranslatable{
   }
 
   @Override
-  public Point3D getCenterPoint() {
+  public Point3D getCamCenterPoint() {
     // TODO Auto-generated method stub
     return null;
   }

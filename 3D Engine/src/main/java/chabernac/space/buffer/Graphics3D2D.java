@@ -50,6 +50,8 @@ public class Graphics3D2D implements iBufferStrategy {
   public static enum Shader{TEXTURE, BUMP, DEPTH, PHONG, SPECULAR};
   
   private iPixelSetter myPixelSetter = new SinglePixelSetter();
+  
+  private iPixelListener myPixelListener = null;
 
   private int myYStep = 1;
   private int myXStep = 1;
@@ -167,6 +169,8 @@ public class Graphics3D2D implements iBufferStrategy {
       aSegment.next();
 
       myPixelSetter.setPixel(thePixel);
+      
+      if(myPixelListener != null) myPixelListener.pixelCalculated(thePixel);
     } 
   }
 
@@ -361,7 +365,13 @@ public class Graphics3D2D implements iBufferStrategy {
     isUsePartialClearing = aUsePartialClearing;
   }
   
-  
+  public iPixelListener getPixelListener() {
+    return myPixelListener;
+  }
+
+  public void setPixelListener(iPixelListener anPixelListener) {
+    myPixelListener = anPixelListener;
+  }
 
   public int getYStep() {
     return myYStep;

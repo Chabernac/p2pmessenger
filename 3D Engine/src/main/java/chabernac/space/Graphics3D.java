@@ -11,7 +11,9 @@ import java.util.concurrent.Executors;
 import chabernac.space.buffer.DrawingRectangle;
 import chabernac.space.buffer.DrawingRectangleContainer;
 import chabernac.space.buffer.Graphics3D2D;
+import chabernac.space.buffer.Pixel;
 import chabernac.space.buffer.iBufferStrategy;
+import chabernac.space.buffer.iPixelListener;
 import chabernac.space.geom.GVector;
 import chabernac.space.geom.GeomFunctions;
 import chabernac.space.geom.Point2D;
@@ -91,7 +93,9 @@ public class Graphics3D{
   }
 
   private void drawWorldAxis(){
-    drawCoordinateSystem(new CoordinateSystem(new Point3D(0,0,0), new GVector(1,0,0), new GVector(0,1,0), new GVector(0,0,1)));
+    CoordinateSystem theSystem = new CoordinateSystem(new Point3D(0,0,0), new GVector(1,0,0), new GVector(0,1,0), new GVector(0,0,1));
+    theSystem.translate(new Transformation().addTransformation(myCamera.getMatrix()));
+    drawCoordinateSystem(theSystem);
   }
 
   public void drawCoordinateSystem(CoordinateSystem aSystem){
@@ -207,7 +211,7 @@ public class Graphics3D{
 
     Polygon2D thePolygon = new Polygon2D(aPolygon.myCamSize);
     for(int i=0;i<aPolygon.myCamSize;i++){
-            thePolygon.addVertex(new Vertex2D(GeomFunctions.cam2Screen(aPolygon.c[i].myPoint, myEyePoint),  aPolygon.c[i].myTextureCoordinate, myFrustrum.calculateRelativeDepth(aPolygon.c[i].myPoint.z), aPolygon.c[i].lightIntensity));
+      thePolygon.addVertex(new Vertex2D(GeomFunctions.cam2Screen(aPolygon.c[i].myPoint, myEyePoint),  aPolygon.c[i].myTextureCoordinate, myFrustrum.calculateRelativeDepth(aPolygon.c[i].myPoint.z), aPolygon.c[i].lightIntensity));
     }
     //    thePolygon.setColor(aPolygon.getColor());
     //aPolygon.getTexture().cam2screen(myEyePoint);
@@ -265,14 +269,14 @@ public class Graphics3D{
     myWorld.getTranslateManagerContainer().doTranslation();
 
     myWorld.world2Cam(myCamera);
-    
+
     //    myWorld.sort();
     myWorld.clip2Frustrum(myFrustrum);
-    
+
     for(iVertexShader theShader : myVertexShaders){
       theShader.applyShading( myWorld );
     }
-    
+
     for(int i=myWorld.myShapes.length - 1;i>=0;i--){
       drawShape(myWorld.myShapes[i], aG);
     }
@@ -280,7 +284,7 @@ public class Graphics3D{
     if(drawWorldOrigin) drawWorldAxis();
 
     drawImage(aG, aCycle);
-    
+
     for(int i=myWorld.myPointShapes.length - 1;i>=0;i--){
       drawPointShape(myWorld.myPointShapes[i], aG);
     }
@@ -297,7 +301,7 @@ public class Graphics3D{
 
     isSingleFullRepaint = false;
   }
-  
+
   private void drawImage(Graphics aG, long aCycle){
     Rectangle theOrigClip = aG.getClipBounds();
 
@@ -512,5 +516,37 @@ public class Graphics3D{
   public void setSingleFullRepaint(boolean anIsSingleFullRepaint) {
     isSingleFullRepaint = anIsSingleFullRepaint;
   }
+
+  public boolean isDrawWorldOrigin() {
+    return drawWorldOrigin;
+  }
+
+  public void setDrawWorldOrigin(boolean anDrawWorldOrigin) {
+    drawWorldOrigin = anDrawWorldOrigin;
+  }
+
+  public void setDrawPixelNormals(boolean isDrawPixelNormals) {
+    if(isDrawPixelNormals){
+      myGraphics3D2D.setPixelListener(new PixelNormalPainter());
+    } else {
+      myGraphics3D2D.setPixelListener(null);
+    }
+  }
+
+  public class PixelNormalPainter implements iPixelListener {
+    private int COLOR = Color.white.getRGB();
+    private int counter = 0;
+    @Override
+    public void pixelCalculated(Pixel aPixel) {
+      if(aPixel.uInt % 10 == 0 && aPixel.vInt % 10 == 0){
+        GVector theCamNormalVector = aPixel.getNormal().multip(20);
+
+        Point3D theCamPoint = aPixel.getCamPoint();
+
+        drawLine(theCamPoint, theCamPoint.addition(theCamNormalVector), COLOR);
+      }
+    }
+  }
+
 }
 

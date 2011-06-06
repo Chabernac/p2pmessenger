@@ -17,9 +17,9 @@ public class RotationManager extends TranslateManager {
   protected void translate(iTranslatable aTranslatable) {
     GVector theVector;
     if(myRotationCenter != null){
-      theVector = new GVector(myRotationCenter.getCenterPoint());
+      theVector = new GVector(myRotationCenter.getCamCenterPoint());
     } else {
-      theVector = new GVector(aTranslatable.getCenterPoint());
+      theVector = new GVector(aTranslatable.getCamCenterPoint());
     }
 
     Transformation theTransform = new Transformation();
