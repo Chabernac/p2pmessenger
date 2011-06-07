@@ -9,6 +9,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
@@ -33,11 +34,11 @@ public class WebPeer extends AbstractPeer {
   public WebPeer(){
     this(null);
   }
-  
+
   public WebPeer(URL anUrl) {
     this("", anUrl);
   }
-  
+
   public WebPeer(String aPeerId, URL anUrl) {
     super(aPeerId);
     myURL = anUrl;
@@ -64,7 +65,7 @@ public class WebPeer extends AbstractPeer {
   public boolean isValidEndPoint() {
     return myURL != null;
   }
-  
+
   public EndPointContainer getEndPointContainer() {
     return myEndPointContainer;
   }
@@ -80,24 +81,26 @@ public class WebPeer extends AbstractPeer {
     OutputStreamWriter theWriter = new OutputStreamWriter(theConnection.getOutputStream());
     theWriter.write("id=" + aLocalPeerId);
     theWriter.flush();
-    Executors.newScheduledThreadPool(1).schedule(new Runnable(){
+    final ScheduledExecutorService theService = Executors.newScheduledThreadPool(1);
+    theService.schedule(new Runnable(){
       public void run(){
-          ((HttpURLConnection)theConnection).disconnect();
+        ((HttpURLConnection)theConnection).disconnect();
+        theService.shutdownNow();
       }
     }, TIMEOUT_IN_MINUTES, TimeUnit.MINUTES);
     BufferedReader theReader = new BufferedReader(new InputStreamReader(theConnection.getInputStream()));
     String theEvent = theReader.readLine();
-//    LOGGER.debug("Received comet event line '" + theEvent + "'");
+    //    LOGGER.debug("Received comet event line '" + theEvent + "'");
     CometEvent theCometEvent = getCometStringConverter().getObject( theEvent );
     getExecutorService().execute( new CometEventResponseSender(theCometEvent) );
     return theCometEvent;
   }
-  
+
   private iObjectStringConverter<CometEvent> getCometStringConverter(){
     if(myObjectStringConverter == null) myObjectStringConverter = new Base64ObjectStringConverter<CometEvent>();
     return myObjectStringConverter;
   }
-  
+
   private ExecutorService getExecutorService(){
     if(myService == null) myService = Executors.newSingleThreadExecutor();
     return myService;
@@ -119,7 +122,7 @@ public class WebPeer extends AbstractPeer {
       throw new IOException("Could not send response for comet event", e);
     }
   }
-  
+
   public String toString(){
     StringBuilder theBuilder = new StringBuilder();
     theBuilder.append( getPeerId() );
