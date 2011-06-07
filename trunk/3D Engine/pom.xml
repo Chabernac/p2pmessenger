@@ -24,8 +24,22 @@
 				<version>1.0-beta-2</version>
 			</extension>
 		</extensions>
+
+		<!-- <aspectSourceDirectory>src/aspectj</aspectSourceDirectory>  -->
+
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<excludes>
+					<exclude>textures/Whole_world_-_land_and_oceans.jpg</exclude>
+					<exclude>textures/Earth-Color4096.jpg</exclude>
+					<exclude>textures/stars.png</exclude>
+					<exclude>textures/MoonMap2_2500x1250.jpg</exclude>
+				</excludes>
+			</resource>
+		</resources>
 	</build>
-	
+
 	<distributionManagement>
 		<repository>
 			<id>googlecode.bzb.repo</id>
@@ -37,7 +51,7 @@
 			<uniqueVersion>false</uniqueVersion>
 		</snapshotRepository>
 	</distributionManagement>
-	
+
 	<repositories>
 		<repository>
 			<id>maven2</id>
@@ -69,7 +83,7 @@
 			</snapshots>
 		</repository>
 	</repositories>
-	
+
 
 	<dependencies>
 		<dependency>
@@ -89,6 +103,13 @@
 			<groupId>chabernac</groupId>
 			<artifactId>services</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>aspectjlib</artifactId>
+			<version>1.6.2</version>
+			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
 	</dependencies>
