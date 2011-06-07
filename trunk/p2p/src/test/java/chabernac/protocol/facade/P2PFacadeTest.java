@@ -28,6 +28,7 @@ import chabernac.io.SocketProxy;
 import chabernac.protocol.message.DeliveryReport;
 import chabernac.protocol.message.MessageArchive;
 import chabernac.protocol.message.MultiPeerMessage;
+import chabernac.protocol.message.iDeliverReportListener;
 import chabernac.protocol.message.iMultiPeerMessageListener;
 import chabernac.protocol.pipe.Pipe;
 import chabernac.protocol.routing.AbstractPeer;
@@ -59,8 +60,17 @@ public class P2PFacadeTest extends TestCase {
 
     Thread.sleep(1000);
 
+    final CountDownLatch theCountDown = new CountDownLatch(2);
+    
     DeliveryReportCollector theDeliveryReportCollector = new DeliveryReportCollector();
     theFacade1.addDeliveryReportListener( theDeliveryReportCollector );
+    theFacade1.addDeliveryReportListener(new iDeliverReportListener(){
+
+      @Override
+      public void acceptDeliveryReport(DeliveryReport aDeliverReport) {
+        theCountDown.countDown();
+      }
+    });
 
     P2PFacade theFacade2 = new P2PFacade()
     .setExchangeDelay( 300 )
@@ -84,7 +94,7 @@ public class P2PFacadeTest extends TestCase {
 
       assertNotNull(  theFacade1.sendEncryptedMessage( theMessage, Executors.newFixedThreadPool( 1 ) ).get() );
 
-      Thread.sleep( 4000 );
+      theCountDown.await(10, TimeUnit.SECONDS);
 
       assertEquals( 2, theDeliveryReportCollector.getDeliveryReports().size() );
       assertEquals( DeliveryReport.Status.IN_PROGRESS, theDeliveryReportCollector.getDeliveryReports().get( 0 ).getDeliveryStatus());
