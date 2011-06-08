@@ -148,12 +148,12 @@ public class ChatMediator {
         LOGGER.error( "Could not execute command" );
       }
       return true;
-    } else if(checkEasterEgg( myMessageProvider.getMessage() )){
-      return true;
-    }
-    else if(myMessageProvider.getMessage().equalsIgnoreCase( "exit" )){
+    } else if(myMessageProvider.getMessage().equalsIgnoreCase( "exit" )){
       CommandSession.getInstance().execute(myActionFactory.getCommand(Action.EXIT_WITHOUT_ASKING));
     }
+    
+    checkEasterEgg( myMessageProvider.getMessage() );
+    
     return false;
   }
 

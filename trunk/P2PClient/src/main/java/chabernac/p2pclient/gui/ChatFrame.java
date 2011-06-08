@@ -35,7 +35,6 @@ import chabernac.p2pclient.gui.action.ActionDecorator;
 import chabernac.p2pclient.settings.Settings;
 import chabernac.preference.ApplicationPreferences;
 import chabernac.preference.iApplicationPreferenceListener;
-import chabernac.protocol.facade.P2PFacade;
 import chabernac.protocol.facade.P2PFacadeException;
 import chabernac.tools.Tools;
 
