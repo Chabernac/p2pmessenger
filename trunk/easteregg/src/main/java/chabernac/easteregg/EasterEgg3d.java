@@ -121,10 +121,10 @@ public class EasterEgg3d extends DefaultEasterEggPaintable {
 
     myGraphics.getGraphics3D2D().setPixelShaders( 
         new iPixelShader[]{
+            new TextureShader( ), 
             new BumpShader( myWorld ),
           
 //            new PhongShader( myWorld ),
-            new TextureShader( ), 
         });
 
     myGraphics.setUseClipping( false );
