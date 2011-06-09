@@ -17,6 +17,6 @@ public class HTMLTools {
    * @return
    */
   public static String detectLinksInTextAndMakeHref(String aText){
-    return aText.replaceAll("([^\".]*://[^<>[:space:]]+[[:alnum:]/])", "<a href=\"$1\">$1</a>");
+    return new LinkReplacer(aText).replace();
   }
 }
