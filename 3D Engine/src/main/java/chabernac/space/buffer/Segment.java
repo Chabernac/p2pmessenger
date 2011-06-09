@@ -18,6 +18,7 @@ public class Segment {
   private Texture2 texture = null;
   private Vertex2D start = null;
   private Vertex2D end = null;
+  private float xend;
   private Pixel myPixel = new Pixel( );
 
   private float dz;
@@ -63,6 +64,8 @@ public class Segment {
     dv = (end.getPerspectiveCorrectTexturePoint().y - start.getPerspectiveCorrectTexturePoint().y) / dx;
     dl = (end.getLightning() - start.getLightning()) / dx; 
 
+    xend = end.getPoint().x;
+    
     myPixel.x = (int)start.getPoint().x;
     myInverseZInStepPixels = start.getInverseDepth();
     light = start.getLightning();
@@ -81,7 +84,7 @@ public class Segment {
   }
 
   public boolean hasNext(){
-    return myPixel.x < end.getPoint().x;
+    return myPixel.x < xend;
   }
 
   public void next(){
