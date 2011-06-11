@@ -26,6 +26,7 @@ import chabernac.protocol.message.MultiPeerMessage;
 import chabernac.protocol.message.iDeliverReportListener;
 import chabernac.protocol.message.iMultiPeerMessageListener;
 import chabernac.tools.HTMLTools;
+import chabernac.tools.SmileyTools;
 import chabernac.tools.Tools;
 
 public class ReceivedMessagesField extends GPanel implements iReceivedMessagesProvider{
@@ -110,7 +111,7 @@ public class ReceivedMessagesField extends GPanel implements iReceivedMessagesPr
             send = theMessage.getSource().equals(myMediator.getP2PFacade().getPeerId());
             myHTML += "<tr "+ (send ? SEND_FONT : RECEIVE_FONT) + " >";
             myHTML += "<td><i>" +  TIME_FORMAT.format(theMessage.getCreationTime()) + " " + Tools.getEnvelop(myMediator.getP2PFacade(), theMessage) + ":</i> ";
-            myHTML += HTMLTools.detectLinksInTextAndMakeHref(theMessage.getMessage());
+            myHTML += HTMLTools.detectLinksInTextAndMakeHref(SmileyTools.replaceSmileys(theMessage.getMessage()));
             myHTML += "</td>";
             myHTML += "</tr>";
           }

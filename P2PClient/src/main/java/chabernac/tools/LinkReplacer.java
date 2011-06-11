@@ -7,8 +7,9 @@ package chabernac.tools;
 import java.util.StringTokenizer;
 
 public class LinkReplacer {
-  private enum Mode{TEXT, LINK};
-  
+  private enum Mode{TEXT, LINK, IMG};
+  private final static String[] IMAGE_EXTENTIONS = new String[]{"jpg","gif","png","bmp","tiff"}; 
+
   private final String myText;
   private Mode myMode = Mode.TEXT;
 
@@ -16,7 +17,7 @@ public class LinkReplacer {
     super();
     myText = aText;
   }
-  
+
   public String replace(){
     StringBuilder theBuilder = new StringBuilder();
     StringTokenizer theTokenizer = new StringTokenizer(myText, " ");
@@ -24,12 +25,25 @@ public class LinkReplacer {
       String theToken = theTokenizer.nextToken();
       if(theToken.equalsIgnoreCase("<a")) myMode = Mode.LINK;
       else if(theToken.equalsIgnoreCase("</a>")) myMode = Mode.TEXT;
-      
-      if(myMode == Mode.LINK){
-        theBuilder.append(theToken);
+      else if(theToken.equalsIgnoreCase("<img")) myMode = Mode.IMG;
+
+      if(myMode == Mode.TEXT){
+        String theNewToken = theToken;
+        for(String theExtention : IMAGE_EXTENTIONS){
+          if(theNewToken.length() == theToken.length()) theNewToken = theToken.replaceAll("(?i)(.*://[^<>\\s]+[\\p{Alnum}/]+." + theExtention + ")", "<img src=\"$1\">");
+        }
+        if(theNewToken.length() == theToken.length()) theNewToken = theToken.replaceAll("(.*://[^<>\\s]+[\\p{Alnum}/]+)", "<a href=\"$1\">$1</a>"); 
+        theBuilder.append(theNewToken);
       } else {
-        theBuilder.append(theToken.replaceAll("(.*://[^<>[:space:]]+[[:alnum:]/])", "<a href=\"$1\">$1</a>"));
+        theBuilder.append(theToken);
       }
+
+      if(myMode == Mode.IMG){
+        if(theToken.endsWith(">") || theToken.endsWith("/>")){
+          myMode = Mode.TEXT;
+        }
+      }
+
       if(theTokenizer.hasMoreTokens()) theBuilder.append(" ");
     }
     return theBuilder.toString();
