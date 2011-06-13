@@ -15,6 +15,7 @@ import chabernac.space.PolygonException;
 import chabernac.space.Vertex;
 import chabernac.space.iTransformator;
 import chabernac.space.iTranslatable;
+import chabernac.space.shading.iPixelShader;
 import chabernac.space.texture.Texture2;
 import chabernac.space.texture.TextureFactory;
 import chabernac.space.texture.TextureImage;
@@ -46,6 +47,7 @@ public class Polygon implements iTranslatable{
   private String myTextureName = null;
   private boolean isTransparentTexture = true;
   private String myBumpMap = null;
+  private iPixelShader[] myPixelShaders = null;
 
   public Polygon(Vertex... worldVertexes){
     initialize();
@@ -430,6 +432,14 @@ public class Polygon implements iTranslatable{
   public void setTexture(Texture2 anTexture) {
     myTexture = anTexture;
     calculateTexturePoints();
+  }
+  
+  public iPixelShader[] getPixelShaders() {
+    return myPixelShaders;
+  }
+
+  public void setPixelShaders(iPixelShader[] anPixelShaders) {
+    myPixelShaders = anPixelShaders;
   }
 
   public List<Polygon> triangulate(){

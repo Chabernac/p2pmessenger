@@ -324,6 +324,12 @@ public class Graphics3D2D implements iBufferStrategy {
 
   public void drawPolygon(Polygon2D aPolygon, Polygon anOrigPolygon) {
     //TimeTracker.start();
+    
+    if(anOrigPolygon.getPixelShaders() != null){
+      myPixelSetter.setPixelShaders(anOrigPolygon.getPixelShaders());
+    } else {
+      myPixelSetter.setPixelShaders(myPixelShaders);
+    }
 
     float[] minmax = BufferTools.findMinMaxY(aPolygon);
     yMax = minmax[1];
@@ -393,9 +399,12 @@ public class Graphics3D2D implements iBufferStrategy {
 
   private interface iPixelSetter{
     public void setPixel(Pixel aPixel);
+    public void setPixelShaders(iPixelShader[] aPixelShaders);
   }
 
   private class SinglePixelSetter implements iPixelSetter{
+    private iPixelShader[] myPixelShaders;
+    
     public void setPixel(Pixel aPixel){
       if(myDepthBuffer.isDrawPixel( aPixel.index, aPixel.invZ)){
         for(iPixelShader theShader : myPixelShaders){
@@ -407,9 +416,15 @@ public class Graphics3D2D implements iBufferStrategy {
         myPixels[aPixel.index] = aPixel.color;
       }      
     }
+
+    @Override
+    public void setPixelShaders(iPixelShader[] aPixelShaders) {
+     myPixelShaders = aPixelShaders;
+    }
   }
   
   private class MultiPixelSetter implements iPixelSetter{
+    private iPixelShader[] myPixelShaders;
     private final int xStep;
     private final int yStep;
     
@@ -436,6 +451,11 @@ public class Graphics3D2D implements iBufferStrategy {
           }
         }
       }      
+    }
+
+    @Override
+    public void setPixelShaders(iPixelShader[] aPixelShaders) {
+      myPixelShaders = aPixelShaders;
     }
   }
 
