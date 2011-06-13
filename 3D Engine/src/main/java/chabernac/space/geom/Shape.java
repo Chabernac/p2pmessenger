@@ -15,6 +15,7 @@ import chabernac.space.TranslateException;
 import chabernac.space.Vertex;
 import chabernac.space.iTransformator;
 import chabernac.space.iTranslatable;
+import chabernac.space.shading.iPixelShader;
 import chabernac.space.texture.TextureImage;
 import chabernac.utils.ArrayTools;
 
@@ -235,6 +236,12 @@ public class Shape implements Comparable, iTranslatable{
   public void setDoubleSided(boolean isDoubleSided) {
     for(Polygon thePolygon : myPolygons){
       thePolygon.doubleSided = isDoubleSided;
+    }
+  }
+  
+  public void setPixelShaders(iPixelShader[] aPixelShaders){
+    for(Polygon thePolygon : myPolygons){
+      thePolygon.setPixelShaders(aPixelShaders);
     }
   }
 
