@@ -47,6 +47,23 @@ public class NetTools {
     return theIpList;
   }
   
+  public static SimpleNetworkInterface getLoopBackInterface() throws SocketException{
+    Enumeration<NetworkInterface> theInterfaces = NetworkInterface.getNetworkInterfaces();
+    while(theInterfaces.hasMoreElements()){
+      NetworkInterface theInterface = theInterfaces.nextElement();
+      if(theInterface.isLoopback()) {
+        List<String> theIpAddresses = new ArrayList< String >();
+        Enumeration<InetAddress> theAddresses = theInterface.getInetAddresses();
+        while(theAddresses.hasMoreElements()){
+          InetAddress theAddress = theAddresses.nextElement();
+          theIpAddresses.add(theAddress.getHostAddress());
+        }
+        return  new SimpleNetworkInterface(theIpAddresses, theInterface.getHardwareAddress());
+      }
+    }
+    return null;
+  }
+  
   
   private static boolean isCandidate(NetworkInterface anInterface) throws SocketException{
     if(anInterface.isLoopback()) return false;

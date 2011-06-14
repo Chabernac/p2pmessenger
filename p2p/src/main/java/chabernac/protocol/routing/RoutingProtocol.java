@@ -215,6 +215,13 @@ public class RoutingProtocol extends Protocol {
         }catch(NoAvailableNetworkAdapterException e){
           //TODO we should do something when the network adapter becomes available again
           LOGGER.error( "The local network adapter could not be located", e );
+          try {
+            SocketPeer theSocketPeer = new SocketPeer(getLocalPeerId(), NetTools.getLoopBackInterface(), myServerInfo.getServerPort());
+            theSocketPeer.addLocalIpListener();
+            theLocalPeer = theSocketPeer;
+          } catch ( SocketException e1 ) {
+            LOGGER.error( "The loop back adres could not be found", e1 );
+          }
         }
       } else if(myServerInfo.getServerType() == Type.WEB){
         try {

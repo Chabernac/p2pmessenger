@@ -28,4 +28,10 @@ public class NetToolsTest extends TestCase{
     int theLimit = 20;
     assertTrue( "Number of local interfaces lookup per second '" + theTimesPerSecond + "' < '" + theLimit + "'", theTimesPerSecond > theLimit );
   }
+  
+  public void testGetLoopbackInterface() throws SocketException{
+    SimpleNetworkInterface theInterface = NetTools.getLoopBackInterface();
+    assertNotNull( theInterface );
+    assertEquals( "127.0.0.1", theInterface.getIp().iterator().next());
+  }
 }

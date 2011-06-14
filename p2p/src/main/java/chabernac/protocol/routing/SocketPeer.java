@@ -40,8 +40,8 @@ public class SocketPeer extends AbstractPeer implements Serializable {
     addLocalIpListener();
   }
 
-  private void addLocalIpListener(){
-    new LocalIPCollecter( null, 1000 * 60 * 5 ).addIPListener( new iIPListener(){
+  public void addLocalIpListener(){
+    new LocalIPCollecter( null, 1000 * 60 * 1 ).addIPListener( new iIPListener(){
       @Override
       public void newIPBound( InetAddress anAddress ) {
         try{
