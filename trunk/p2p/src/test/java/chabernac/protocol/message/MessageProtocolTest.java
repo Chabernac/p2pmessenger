@@ -12,7 +12,6 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
@@ -30,6 +29,7 @@ import chabernac.protocol.routing.RoutingTable;
 import chabernac.protocol.routing.RoutingTableEntry;
 import chabernac.protocol.routing.SocketPeer;
 import chabernac.protocol.routing.UnknownPeerException;
+import chabernac.testingutils.MessageCounterListener;
 
 public class MessageProtocolTest extends AbstractProtocolTest {
   private static Logger LOGGER = Logger.getLogger(MessageProtocolTest.class);
@@ -420,24 +420,6 @@ public class MessageProtocolTest extends AbstractProtocolTest {
     } finally {
       theServer1.stop();
       theServer2.stop();
-    }
-  }
-
-  public class MessageCounterListener implements iMessageListener{
-    private AtomicInteger myCounter = new AtomicInteger();
-
-    @Override
-    public void messageReceived( Message aMessage ) {
-      myCounter.incrementAndGet();
-    }
-
-    public int getCounter(){
-      return myCounter.get();
-    }
-
-    @Override
-    public void messageUpdated( Message aMessage ) {
-      
     }
   }
 

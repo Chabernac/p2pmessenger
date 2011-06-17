@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 
@@ -91,8 +92,8 @@ public class MultiPeerMessageProtocol extends Protocol{
     }
   }
 
-  private MessageProtocol getMessageProtocol() throws ProtocolException{
-    return (MessageProtocol)findProtocolContainer().getProtocol( MessageProtocol.ID);
+  private AsyncMessageProcotol getMessageProtocol() throws ProtocolException{
+    return (AsyncMessageProcotol)findProtocolContainer().getProtocol( AsyncMessageProcotol.ID);
   }
 
   public RoutingTable getRoutingTable() throws ProtocolException{
@@ -152,7 +153,7 @@ public class MultiPeerMessageProtocol extends Protocol{
     public void run() {
       try {
         sendDeliveryReport( new DeliveryReport(myMultiPeerMessage, Status.IN_PROGRESS, myMessage) );
-        String theResult = getMessageProtocol().sendMessage( myMessage );
+        String theResult = getMessageProtocol().sendAndWaitForResponse( myMessage, 15, TimeUnit.SECONDS );
         if(theResult.equalsIgnoreCase( STATUS_MESSAGE.DELIVERED.name() )){
           sendDeliveryReport( new DeliveryReport(myMultiPeerMessage, Status.DELIVERED, myMessage));
         } else {

@@ -4,7 +4,7 @@
  */
 package chabernac.protocol.message;
 
-import chabernac.protocol.message.MessageProtocol.Response;
+import chabernac.protocol.message.AbstractMessageProtocol.Response;
 
 public class MessageException extends Exception {
 

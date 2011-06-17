@@ -22,6 +22,7 @@ import chabernac.protocol.filetransfer.iFileHandler;
 import chabernac.protocol.infoexchange.InfoExchangeProtocol;
 import chabernac.protocol.infoexchange.InfoObject;
 import chabernac.protocol.list.ListProtocol;
+import chabernac.protocol.message.AsyncMessageProcotol;
 import chabernac.protocol.message.MessageProtocol;
 import chabernac.protocol.message.MultiPeerMessageProtocol;
 import chabernac.protocol.ping.PingProtocol;
@@ -142,6 +143,10 @@ public class ProtocolFactory implements iProtocolFactory{
     
     if(ProcessProtocol.ID.equalsIgnoreCase( aProtocolId )) {
       return new ProcessProtocol();
+    }
+    
+    if(AsyncMessageProcotol.ID.equalsIgnoreCase( aProtocolId )) {
+      return new AsyncMessageProcotol();
     }
 
     throw new ProtocolException("The protocol with id '" + aProtocolId + "' is not known");

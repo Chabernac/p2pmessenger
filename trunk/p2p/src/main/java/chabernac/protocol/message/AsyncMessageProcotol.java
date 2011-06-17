@@ -11,6 +11,8 @@ import java.util.UUID;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import chabernac.io.Base64ObjectStringConverter;
@@ -23,14 +25,16 @@ import chabernac.protocol.routing.RoutingTable;
 import chabernac.protocol.routing.iPeerSender;
 
 public class AsyncMessageProcotol extends AbstractMessageProtocol {
-  public static enum Response{MESSAGE_PROCESSED, NOK, UNCRECOGNIZED_MESSAGE, MESSAGE_LOOP_DETECTED, DELIVERED};
+  public static final String ID = "AMP";
 
   private iObjectStringConverter< Message > myMessageConverter = new Base64ObjectStringConverter< Message >();
   private ExecutorService mySenderService = DynamicSizeExecutor.getMediumInstance();
   private Map<String, ArrayBlockingQueue<String>> myStatusQueues = new HashMap<String, ArrayBlockingQueue<String>> ();
+  
+  private ScheduledExecutorService myQueueCleanupService = Executors.newScheduledThreadPool( 1 );
 
   public AsyncMessageProcotol( ) {
-    super( "AMP" );
+    super( ID );
   }
 
   @Override
@@ -79,8 +83,6 @@ public class AsyncMessageProcotol extends AbstractMessageProtocol {
 
   @Override
   public void stop() {
-    // TODO Auto-generated method stub
-
   }
   
   private synchronized BlockingQueue<String> getBlockingQueueForMessage(String aMessageId){
@@ -91,22 +93,40 @@ public class AsyncMessageProcotol extends AbstractMessageProtocol {
     return myStatusQueues.get( aMessageId );
   }
   
-  private void handleDeliveryStatus( Message aMessage ) throws InterruptedException {
+  private void handleDeliveryStatus( final Message aMessage ) throws InterruptedException {
     getBlockingQueueForMessage( aMessage.getHeader( "MESSAGE-ID" ) ).put( aMessage.getHeader( "STATUS" ) );
-    //TODO what if the delivery status response comes after the timeout of the getResponse?
-    //in that case the response will stay forever on the queue, we should find a way to clean it up
-    
+    myQueueCleanupService.schedule( new Runnable(){
+      public void run(){
+        //when no one picked up the status for this message, remove it after 2 minutes so that it does not stay cached for ever
+        myStatusQueues.remove( aMessage.getHeader( "MESSAGE-ID" ) );
+      }
+    }, 2, TimeUnit.MINUTES);
   }
   
-  public String getResponse(String aMessageId, long aTimeout, TimeUnit aTimeUnit) throws InterruptedException{
-    String theResponse = getBlockingQueueForMessage( aMessageId ).poll( aTimeout, aTimeUnit );
-    myStatusQueues.remove( aMessageId );
-    return theResponse;
+  public String getResponse(String aMessageId, long aTimeout, TimeUnit aTimeUnit){
+    try {
+      String theResponse = getBlockingQueueForMessage( aMessageId ).poll( aTimeout, aTimeUnit );
+      if(theResponse == null){
+        return Response.NO_CONFIRMATION_RECEIVED.name();
+      }
+      return theResponse;
+    } catch ( InterruptedException e ) {
+      LOGGER.error("Could not wait for response", e);
+      return null;
+    } finally {
+      myStatusQueues.remove( aMessageId );
+    }
   }
   
   public void sendMessage(Message aMessage) throws MessageException{
     inspectMessage(aMessage);
     handleMessage( UUID.randomUUID().toString(), aMessage );
+  }
+  
+  public String sendAndWaitForResponse(Message aMesage, long aTimeout, TimeUnit aTimeUnit) throws MessageException{
+    sendMessage( aMesage );
+    String theResponse = getResponse( aMesage.getMessageId().toString(), aTimeout, aTimeUnit );
+    return inspectResult( theResponse );
   }
 
   private void handleMessage(String aSessionId, Message aMessage){
@@ -149,13 +169,13 @@ public class AsyncMessageProcotol extends AbstractMessageProtocol {
           //in that case we do not need to do anything
           //in all other cases something went wrong and the message will not be delivered to the destination
           //send a delivery status message to indicate that something went wrong
-          if(Response.MESSAGE_PROCESSED.name().equalsIgnoreCase( theResponse )){
+          if(!Response.MESSAGE_PROCESSED.name().equalsIgnoreCase( theResponse )){
             sendDeliveryStatus( myMessage.getSource().getPeerId(), myMessage.getMessageId().toString(), theResponse ); 
           }
         }
       } catch(Exception e){
         LOGGER.error( "Unable to process message", e );
-        sendDeliveryStatus( myMessage.getSource().getPeerId(), myMessage.getMessageId().toString(), Response.NOK.name() );
+        sendDeliveryStatus( myMessage.getSource().getPeerId(), myMessage.getMessageId().toString(), Response.UNDELIVERABLE.name() );
       }
     }
   }

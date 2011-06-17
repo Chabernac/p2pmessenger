@@ -29,175 +29,155 @@ public class MessageProtocol extends AbstractMessageProtocol {
   private static Logger LOGGER = Logger.getLogger( MessageProtocol.class );
   public static final String ID = "MSG";
 
-  public static enum Response {
-    UNKNOWN_PEER, 
-    UNKNOWN_HOST, 
-    UNDELIVERABLE, 
-    DELIVERED, 
-    UNCRECOGNIZED_MESSAGE, 
-    COULD_NOT_DECRYPT, 
-    TTL_EXPIRED, 
-    MESSAGE_LOOP_DETECTED,
-    MESSAGE_ALREADY_RECEIVED};
+  private boolean isKeepHistory = false;
 
-    private boolean isKeepHistory = false;
+  private List< MessageAndResponse > myHistory = new ArrayList< MessageAndResponse >();
 
-    private List< MessageAndResponse > myHistory = new ArrayList< MessageAndResponse >();
+  private List<iMessageListener> myHistoryListeners = new ArrayList< iMessageListener >();
 
-    private List<iMessageListener> myHistoryListeners = new ArrayList< iMessageListener >();
+  public MessageProtocol ( ) {
+    super( ID );
+  }
 
-    public MessageProtocol ( ) {
-      super( ID );
+  @Override
+  public String getDescription() {
+    return "Message protocol";
+  }
+
+  @Override
+  public String handleCommand( String aSessionId, String anInput ) {
+    Message theMessage;
+    try {
+      theMessage = myMessageConverter.getObject( anInput );
+    } catch ( IOException e ) {
+      return Response.UNCRECOGNIZED_MESSAGE.name();
     }
 
-    @Override
-    public String getDescription() {
-      return "Message protocol";
+    return  handleMessage( aSessionId, theMessage );
+  }
+
+  public String handleMessage(String aSessionId, Message aMessage){
+    MessageAndResponse theHistoryItem = new MessageAndResponse( aMessage );
+    if(isKeepHistory){
+      myHistory.add(theHistoryItem);
+      for(iMessageListener theListener : myHistoryListeners) theListener.messageReceived( aMessage );
     }
 
-    @Override
-    public String handleCommand( String aSessionId, String anInput ) {
-      Message theMessage;
-      try {
-        theMessage = myMessageConverter.getObject( anInput );
-      } catch ( IOException e ) {
-        return Response.UNCRECOGNIZED_MESSAGE.name();
+    String theResult = handleMessageInternal( aSessionId, aMessage );
+
+    if(isKeepHistory){
+      theHistoryItem.setResponse( theResult );
+      for(iMessageListener theListener : myHistoryListeners) theListener.messageUpdated( aMessage );
+    }
+
+    return theResult;
+  }
+
+  public String handleMessageInternal(String aSessionId, Message aMessage){
+    if(myProcessingMessages.contains(aMessage.getMessageId())){
+      return Response.MESSAGE_LOOP_DETECTED.name();
+    } 
+
+    checkMessage(aMessage);
+
+    AbstractPeer theDestination = aMessage.getDestination();
+    try {
+      myProcessingMessages.add(aMessage.getMessageId());
+      if(theDestination.getPeerId().equals( getRoutingTable().getLocalPeerId() )){
+        return handleMessageForUs(aSessionId, aMessage);
+      } else {
+        //the message is not intented for us, it needs to be sended further.
+        //only send the message further if the time to live (TTL) is not yet 0.
+        return forwardMessage(aMessage);
       }
-
-      return  handleMessage( aSessionId, theMessage );
+    } catch ( UnknownPeerException e ) {
+      LOGGER.error( "Unknown peer", e );
+      return Response.UNKNOWN_PEER.name();
+    } catch ( UnknownHostException e ) {
+      LOGGER.error( "Unknown host", e );
+      return Response.UNKNOWN_HOST.name();
+    } catch ( IOException e ) { 
+      LOGGER.error( "Message could not be deliverd", e );
+      return Response.UNDELIVERABLE.name() + " " + e.getMessage();
+    } catch ( ProtocolException e ) {
+      LOGGER.error( "Protocol excepotin", e );
+      return ProtocolContainer.Response.UNKNOWN_PROTOCOL.name();
+    } catch ( EncryptionException e ) {
+      LOGGER.error("Could not decrypt message", e);
+      return Response.COULD_NOT_DECRYPT.name() + " " + e.getReason().name();
+    } finally {
+      myProcessingMessages.remove(aMessage.getMessageId());
     }
-    
-    public String handleMessage(String aSessionId, Message aMessage){
-      MessageAndResponse theHistoryItem = new MessageAndResponse( aMessage );
-      if(isKeepHistory){
-        myHistory.add(theHistoryItem);
-        for(iMessageListener theListener : myHistoryListeners) theListener.messageReceived( aMessage );
-      }
-      
-      String theResult = handleMessageInternal( aSessionId, aMessage );
-      
-      if(isKeepHistory){
-        theHistoryItem.setResponse( theResult );
-        for(iMessageListener theListener : myHistoryListeners) theListener.messageUpdated( aMessage );
-      }
-      
-      return theResult;
-    }
-
-    public String handleMessageInternal(String aSessionId, Message aMessage){
-      if(myProcessingMessages.contains(aMessage.getMessageId())){
-        return Response.MESSAGE_LOOP_DETECTED.name();
-      } 
-      
-      checkMessage(aMessage);
-      
-      AbstractPeer theDestination = aMessage.getDestination();
-      try {
-        myProcessingMessages.add(aMessage.getMessageId());
-        if(theDestination.getPeerId().equals( getRoutingTable().getLocalPeerId() )){
-          return handleMessageForUs(aSessionId, aMessage);
-        } else {
-          //the message is not intented for us, it needs to be sended further.
-          //only send the message further if the time to live (TTL) is not yet 0.
-          return forwardMessage(aMessage);
-        }
-      } catch ( UnknownPeerException e ) {
-        LOGGER.error( "Unknown peer", e );
-        return Response.UNKNOWN_PEER.name();
-      } catch ( UnknownHostException e ) {
-        LOGGER.error( "Unknown host", e );
-        return Response.UNKNOWN_HOST.name();
-      } catch ( IOException e ) { 
-        LOGGER.error( "Message could not be deliverd", e );
-        return Response.UNDELIVERABLE.name() + " " + e.getMessage();
-      } catch ( ProtocolException e ) {
-        LOGGER.error( "Protocol excepotin", e );
-        return ProtocolContainer.Response.UNKNOWN_PROTOCOL.name();
-      } catch ( EncryptionException e ) {
-        LOGGER.error("Could not decrypt message", e);
-        return Response.COULD_NOT_DECRYPT.name() + " " + e.getReason().name();
-      } finally {
-        myProcessingMessages.remove(aMessage.getMessageId());
-      }
-    }
+  }
 
 
-    /**
-     * in this method we ask the routing protocol to check the sending peer.
-     * When the peer is not yet in the routing table, the routing protocol will try to contact the peer
-     * and update the routing table
-     * @param anMessage
-     */
-    private void checkMessage( Message anMessage ) {
-      try{
-        RoutingProtocol theProtocol = ((RoutingProtocol)findProtocolContainer().getProtocol( RoutingProtocol.ID ));
-        theProtocol.checkPeer( anMessage.getSource() );
-      }catch(Exception e){
-        LOGGER.error("An error occured while checking for peer ", e);
-      }
+  /**
+   * in this method we ask the routing protocol to check the sending peer.
+   * When the peer is not yet in the routing table, the routing protocol will try to contact the peer
+   * and update the routing table
+   * @param anMessage
+   */
+  private void checkMessage( Message anMessage ) {
+    try{
+      RoutingProtocol theProtocol = ((RoutingProtocol)findProtocolContainer().getProtocol( RoutingProtocol.ID ));
+      theProtocol.checkPeer( anMessage.getSource() );
+    }catch(Exception e){
+      LOGGER.error("An error occured while checking for peer ", e);
+    }
+  }
+
+  public String sendMessage(Message aMessage) throws MessageException{
+    int theRetries = 0;
+    boolean isRetry = true;
+
+    String theResult = null;
+    while(isRetry){
+      Message theMessage = aMessage.copy();
+      inspectMessage(theMessage);
+      theResult = handleMessage( UUID.randomUUID().toString(), theMessage );
+      isRetry = isRetryResponse( theResult ) && theRetries++ < 3;
+    }
+    return inspectResult(theResult);
+  }
+
+
+  private boolean isRetryResponse(String aResponse){
+    //if the encryption protocol was not able to decrypt the message it probably meant that the sender encoded the message with an old
+    //public key, by now the encryption protocol will have send the new public key to the sending peer.  The sending peer can now retry
+    //sending the encrypted message
+    if(aResponse.startsWith( Response.COULD_NOT_DECRYPT.name() )) {
+      return true;
     }
 
-    public String sendMessage(Message aMessage) throws MessageException{
-        int theRetries = 0;
-        boolean isRetry = true;
-        
-        String theResult = null;
-        while(isRetry){
-          Message theMessage = aMessage.copy();
-          inspectMessage(theMessage);
-          theResult = handleMessage( UUID.randomUUID().toString(), theMessage );
-          isRetry = isRetryResponse( theResult ) && theRetries++ < 3;
-        }
-        return inspectResult(theResult);
-    }
-        
-    
-    private boolean isRetryResponse(String aResponse){
-      //if the encryption protocol was not able to decrypt the message it probably meant that the sender encoded the message with an old
-      //public key, by now the encryption protocol will have send the new public key to the sending peer.  The sending peer can now retry
-      //sending the encrypted message
-      if(aResponse.startsWith( Response.COULD_NOT_DECRYPT.name() )) {
-        return true;
-      }
-      
-      return false;
-    }
+    return false;
+  }
 
-    private String inspectResult(String aResult) throws MessageException{
-      if(aResult.startsWith( Response.DELIVERED.name() )){
-        return aResult.substring( Response.DELIVERED.name().length() );
-      } else if(aResult.startsWith(Response.MESSAGE_ALREADY_RECEIVED.name())){
-        throw new MessageAlreadyDeliveredException("This message was already delivered to this peer");
-      }
-      throw new MessageException("Message could not be delivered return code: '" + aResult + "'", Response.valueOf(aResult.split(" ")[0]));  
-    }
+  public void addMessageHistoryListener(iMessageListener aListener){
+    myHistoryListeners.add( aListener );
+  }
 
-    public void addMessageHistoryListener(iMessageListener aListener){
-      myHistoryListeners.add( aListener );
-    }
+  public void removeMessageHistoryListener(iMessageListener aListener){
+    myHistoryListeners.remove( aListener );
+  }
 
-    public void removeMessageHistoryListener(iMessageListener aListener){
-      myHistoryListeners.remove( aListener );
-    }
+  public List<MessageAndResponse> getHistory(){
+    return Collections.unmodifiableList( myHistory );
+  }
 
-    public List<MessageAndResponse> getHistory(){
-      return Collections.unmodifiableList( myHistory );
-    }
+  public boolean isKeepHistory() {
+    return isKeepHistory;
+  }
 
-    public boolean isKeepHistory() {
-      return isKeepHistory;
-    }
+  public void setKeepHistory( boolean anKeepHistory ) {
+    isKeepHistory = anKeepHistory;
+  }
 
-    public void setKeepHistory( boolean anKeepHistory ) {
-      isKeepHistory = anKeepHistory;
-    }
-    
-    public void clearHistory(){
-      myHistory.clear();
-    }
+  public void clearHistory(){
+    myHistory.clear();
+  }
 
-    @Override
-    public void stop() {
-      myHistory.clear();
-    }
+  @Override
+  public void stop() {
+    myHistory.clear();
+  }
 }
