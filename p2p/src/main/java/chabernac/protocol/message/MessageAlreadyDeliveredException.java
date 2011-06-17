@@ -1,6 +1,6 @@
 package chabernac.protocol.message;
 
-import chabernac.protocol.message.MessageProtocol.Response;
+import chabernac.protocol.message.AbstractMessageProtocol.Response;
 
 public class MessageAlreadyDeliveredException extends MessageException {
 
@@ -11,7 +11,7 @@ public class MessageAlreadyDeliveredException extends MessageException {
   }
 
   public MessageAlreadyDeliveredException(String anMessage,
-      Response aResponseCode) {
+                                          Response aResponseCode) {
     super(anMessage, aResponseCode);
   }
 

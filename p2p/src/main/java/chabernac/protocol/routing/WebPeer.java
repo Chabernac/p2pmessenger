@@ -78,22 +78,43 @@ public class WebPeer extends AbstractPeer {
     URL theCometURL = new URL(myURL, "p2p/comet");
     final URLConnection theConnection = theCometURL.openConnection();
     theConnection.setDoOutput(true);
-    OutputStreamWriter theWriter = new OutputStreamWriter(theConnection.getOutputStream());
-    theWriter.write("id=" + aLocalPeerId);
-    theWriter.flush();
-    final ScheduledExecutorService theService = Executors.newScheduledThreadPool(1);
-    theService.schedule(new Runnable(){
-      public void run(){
-        ((HttpURLConnection)theConnection).disconnect();
-        theService.shutdownNow();
+    OutputStreamWriter theWriter = null;
+    BufferedReader theReader = null;
+
+    try{
+      theWriter = new OutputStreamWriter(theConnection.getOutputStream());
+      theWriter.write("id=" + aLocalPeerId);
+      theWriter.flush();
+      final ScheduledExecutorService theService = Executors.newScheduledThreadPool(1);
+      theService.schedule(new Runnable(){
+        public void run(){
+          ((HttpURLConnection)theConnection).disconnect();
+          theService.shutdownNow();
+        }
+      }, TIMEOUT_IN_MINUTES, TimeUnit.MINUTES);
+      theReader = new BufferedReader(new InputStreamReader(theConnection.getInputStream()));
+      String theEvent = theReader.readLine();
+      //    LOGGER.debug("Received comet event line '" + theEvent + "'");
+      CometEvent theCometEvent = getCometStringConverter().getObject( theEvent );
+      getExecutorService().execute( new CometEventResponseSender(theCometEvent) );
+      return theCometEvent;
+    } finally {
+      if(theReader != null){
+        try{
+          theReader.close();
+        }catch(IOException e){
+          LOGGER.error("Could not close input stream", e);
+        }
       }
-    }, TIMEOUT_IN_MINUTES, TimeUnit.MINUTES);
-    BufferedReader theReader = new BufferedReader(new InputStreamReader(theConnection.getInputStream()));
-    String theEvent = theReader.readLine();
-    //    LOGGER.debug("Received comet event line '" + theEvent + "'");
-    CometEvent theCometEvent = getCometStringConverter().getObject( theEvent );
-    getExecutorService().execute( new CometEventResponseSender(theCometEvent) );
-    return theCometEvent;
+      if(theWriter != null){
+        try{
+          theWriter.close();
+        } catch(IOException e){
+          LOGGER.error("Could not close writer", e);
+        }
+      }
+    }
+
   }
 
   private iObjectStringConverter<CometEvent> getCometStringConverter(){
@@ -108,18 +129,35 @@ public class WebPeer extends AbstractPeer {
 
   private boolean sendResponseForCometEvent( CometEvent anEvent ) throws IOException
   {
+    OutputStreamWriter theWriter = null;
+    BufferedReader theReader = null;
     try{
       URL theCometURL = new URL(myURL, "p2p/comet");
       URLConnection theConnection = theCometURL.openConnection();
       theConnection.setDoOutput(true);
-      OutputStreamWriter theWriter = new OutputStreamWriter(theConnection.getOutputStream());
+      theWriter = new OutputStreamWriter(theConnection.getOutputStream());
       theWriter.write("id=" + getPeerId() + "&eventid=" + anEvent.getId() + "&eventoutput=" + anEvent.getOutput( 0 ).replaceAll("\\+", "{plus}"));
       theWriter.flush();
-      BufferedReader theReader = new BufferedReader(new InputStreamReader(theConnection.getInputStream()));
+      theReader = new BufferedReader(new InputStreamReader(theConnection.getInputStream()));
       String theResult = theReader.readLine();
       return theResult.equalsIgnoreCase( "OK" );
     }catch(CometException e){
       throw new IOException("Could not send response for comet event", e);
+    } finally {
+      if(theWriter != null){
+        try{
+          theWriter.close();
+        }catch(IOException e){
+          LOGGER.error("Could not close outputstream", e);
+        }
+      }
+      if(theReader != null){
+        try{
+          theReader.close();
+        }catch(IOException e){
+          LOGGER.error("Could not close input stream", e);
+        }
+      }
     }
   }
 

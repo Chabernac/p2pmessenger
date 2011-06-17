@@ -94,7 +94,7 @@ public class P2PFacadeTest extends TestCase {
 
       assertNotNull(  theFacade1.sendEncryptedMessage( theMessage, Executors.newFixedThreadPool( 1 ) ).get() );
 
-      theCountDown.await(10, TimeUnit.SECONDS);
+      theCountDown.await(20, TimeUnit.SECONDS);
 
       assertEquals( 2, theDeliveryReportCollector.getDeliveryReports().size() );
       assertEquals( DeliveryReport.Status.IN_PROGRESS, theDeliveryReportCollector.getDeliveryReports().get( 0 ).getDeliveryStatus());

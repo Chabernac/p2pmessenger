@@ -107,6 +107,7 @@ public class Message implements Serializable{
   }
   
   public String getHeader(String aHeader){
+    if(myHeaders == null) return null;
     return myHeaders.get(aHeader);
   }
   

@@ -21,7 +21,6 @@ import chabernac.protocol.Protocol;
 import chabernac.protocol.ProtocolException;
 import chabernac.protocol.encryption.EncryptionException;
 import chabernac.protocol.encryption.EncryptionProtocol;
-import chabernac.protocol.message.MessageProtocol.Response;
 import chabernac.protocol.routing.AbstractPeer;
 import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.RoutingTable;
@@ -38,6 +37,20 @@ public abstract class AbstractMessageProtocol extends Protocol {
   protected Set<UUID> myProcessedMessages = Collections.synchronizedSet(new HashSet<UUID>());
   
   protected List<iMessageListener> myListeners = new ArrayList< iMessageListener >();
+  
+  public static enum Response {
+    UNKNOWN_PEER, 
+    UNKNOWN_HOST, 
+    UNDELIVERABLE, 
+    DELIVERED, 
+    UNCRECOGNIZED_MESSAGE, 
+    COULD_NOT_DECRYPT, 
+    TTL_EXPIRED, 
+    MESSAGE_LOOP_DETECTED,
+    MESSAGE_ALREADY_RECEIVED,
+    MESSAGE_PROCESSED,
+    NO_CONFIRMATION_RECEIVED
+    };
 
   public AbstractMessageProtocol( String anId ) {
     super( anId );
@@ -141,6 +154,15 @@ public abstract class AbstractMessageProtocol extends Protocol {
 
     //we reset the TTL, it might be that the same message is reused.
     aMessage.resetTTL();
+  }
+  
+  protected String inspectResult(String aResult) throws MessageException{
+    if(aResult.startsWith( Response.DELIVERED.name() )){
+      return aResult.substring( Response.DELIVERED.name().length() );
+    } else if(aResult.startsWith(Response.MESSAGE_ALREADY_RECEIVED.name())){
+      throw new MessageAlreadyDeliveredException("This message was already delivered to this peer");
+    }
+    throw new MessageException("Message could not be delivered return code: '" + aResult + "'", Response.valueOf(aResult.split(" ")[0]));  
   }
   
   public void addMessageListener(iMessageListener aListener){
