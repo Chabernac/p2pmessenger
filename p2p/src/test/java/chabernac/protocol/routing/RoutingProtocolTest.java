@@ -573,7 +573,7 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
       List<SimpleNetworkInterface> theHosts = new ArrayList< SimpleNetworkInterface >();
       theHosts.add( new SimpleNetworkInterface("10.240.111.22", null) );
       theDummyPeer.setHosts( theHosts );
-      theDummyPeer.setPort( 54645 );
+      theDummyPeer.setPort( 12808 );
       
       RoutingTableEntry theDummyEntry = new RoutingTableEntry(theDummyPeer, 1, theDummyPeer, System.currentTimeMillis());
       
