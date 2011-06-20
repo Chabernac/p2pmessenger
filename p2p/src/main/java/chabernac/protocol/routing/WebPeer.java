@@ -113,6 +113,9 @@ public class WebPeer extends AbstractPeer {
           LOGGER.error("Could not close writer", e);
         }
       }
+      if(theConnection != null){
+        ((HttpURLConnection)theConnection).disconnect();
+      }
     }
 
   }
@@ -131,9 +134,10 @@ public class WebPeer extends AbstractPeer {
   {
     OutputStreamWriter theWriter = null;
     BufferedReader theReader = null;
+    URLConnection theConnection = null;
     try{
       URL theCometURL = new URL(myURL, "p2p/comet");
-      URLConnection theConnection = theCometURL.openConnection();
+      theConnection = theCometURL.openConnection();
       theConnection.setDoOutput(true);
       theWriter = new OutputStreamWriter(theConnection.getOutputStream());
       theWriter.write("id=" + getPeerId() + "&eventid=" + anEvent.getId() + "&eventoutput=" + anEvent.getOutput( 0 ).replaceAll("\\+", "{plus}"));
@@ -157,6 +161,9 @@ public class WebPeer extends AbstractPeer {
         }catch(IOException e){
           LOGGER.error("Could not close input stream", e);
         }
+      }
+      if(theConnection != null){
+        ((HttpURLConnection)theConnection).disconnect();
       }
     }
   }
