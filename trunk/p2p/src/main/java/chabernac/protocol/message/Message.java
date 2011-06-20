@@ -49,7 +49,7 @@ public class Message implements Serializable{
   public void setDestination( AbstractPeer anDestination ) {
     if(isLocked) throw new ConcurrentModificationException("Can not modify message when it is locked");
     myDestination = anDestination;
-//    myMessageId = UUID.randomUUID();
+    myMessageId = UUID.randomUUID();
   }
   public String getMessage() {
     return myMessage;
@@ -57,7 +57,7 @@ public class Message implements Serializable{
   public void setMessage( String anMessage ) {
     if(isLocked) throw new ConcurrentModificationException("Can not modify message when it is locked");
     myMessage = anMessage;
-//    myMessageId = UUID.randomUUID();
+    myMessageId = UUID.randomUUID();
   }
   public byte[] getBytes() {
     return myBytes;
@@ -65,7 +65,7 @@ public class Message implements Serializable{
   public void setBytes( byte[] anBytes ) {
     if(isLocked) throw new ConcurrentModificationException("Can not modify message when it is locked");
     myBytes = anBytes;
-//    myMessageId = UUID.randomUUID();
+    myMessageId = UUID.randomUUID();
   }
   public void addMessageIndicator(MessageIndicator anIndicator){
     if(isLocked) throw new ConcurrentModificationException("Can not modify message when it is locked");

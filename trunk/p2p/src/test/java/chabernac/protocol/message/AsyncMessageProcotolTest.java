@@ -60,7 +60,7 @@ public class AsyncMessageProcotolTest extends AbstractProtocolTest {
       for(int i=0;i<times;i++){
         theMessage.setMessage( "test message " + i );
         System.out.println(i);
-        theMessageProtocol1.sendAndWaitForResponse( theMessage, 5, TimeUnit.SECONDS );
+        theMessageProtocol1.sendAndWaitForResponse( theMessage, 50, TimeUnit.SECONDS );
       }
 
       assertEquals( times, theListener.getCounter() );
