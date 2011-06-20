@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
@@ -59,9 +60,12 @@ public class PeerToWebSender {
           theWriter.close();
         }catch(IOException e){}
       }
+      if(theConnection != null){
+          ((HttpURLConnection)theConnection).disconnect();
+      }
     }
   }
-  
+
   private class StreamCloser implements Runnable{
     private final OutputStream myOutputStream;
 
