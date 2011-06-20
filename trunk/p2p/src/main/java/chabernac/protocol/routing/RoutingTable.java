@@ -169,6 +169,7 @@ public class RoutingTable implements Iterable< RoutingTableEntry >, Serializable
     }
     
     for(RoutingTableEntry theEntry : theEntriesToRemove){
+      LOGGER.debug( "Removing invalid peer '" + theEntry.getPeer().getPeerId() + "'" );
       removeRoutingTableEntry( theEntry );
     }
   }

@@ -16,7 +16,7 @@ public class RoutingTableTest extends TestCase {
   public void testRoutingTable() throws SocketException, NoAvailableNetworkAdapterException, UnknownPeerException{
     RoutingTable theTable = new RoutingTable("1");
 
-    SocketPeer thePeer = new SocketPeer("2", "localhost", 1002);
+    SocketPeer thePeer = new SocketPeer("2", "localhost", 12800);
     RoutingTableEntry theEntry = new RoutingTableEntry(thePeer, 1, thePeer, System.currentTimeMillis());
     RoutingTableEntry theEntry2 = new RoutingTableEntry(thePeer, 2, thePeer, System.currentTimeMillis());
 
@@ -28,10 +28,10 @@ public class RoutingTableTest extends TestCase {
     assertEquals( theEntry, theTable.getEntries().get( 0 ) );
 
     RoutingTable theTable2 = new RoutingTable("3");
-    SocketPeer thePeer4 = new SocketPeer("4", "x20d1148", 1004);
+    SocketPeer thePeer4 = new SocketPeer("4", "x20d1148", 12801);
     RoutingTableEntry theEntry4 = new RoutingTableEntry(thePeer4, 1, thePeer4, System.currentTimeMillis());
     theTable2.addRoutingTableEntry( theEntry4 );
-    SocketPeer thePeer3 = new SocketPeer("3", "x20d1148", 1003);
+    SocketPeer thePeer3 = new SocketPeer("3", "x20d1148", 12802);
     RoutingTableEntry theEntry3 = new RoutingTableEntry(thePeer3, 0, thePeer3, System.currentTimeMillis());
     theTable2.addRoutingTableEntry( theEntry3 );
 
@@ -49,7 +49,7 @@ public class RoutingTableTest extends TestCase {
   public void testRespondingEntry() throws UnknownPeerException{
     RoutingTable theTable = new RoutingTable("1");
 
-    SocketPeer thePeer = new SocketPeer("2", "localhost", 1002);
+    SocketPeer thePeer = new SocketPeer("2", "localhost", 12800);
     RoutingTableEntry theEntry = new RoutingTableEntry(thePeer, 1, thePeer, System.currentTimeMillis());
 
     RoutingTableEntry theEntry2 = new RoutingTableEntry(thePeer, RoutingTableEntry.MAX_HOP_DISTANCE, thePeer, System.currentTimeMillis());
@@ -66,7 +66,7 @@ public class RoutingTableTest extends TestCase {
     assertEquals(theEntry2, theTable.getEntries().get(0));
 
 
-    SocketPeer thePeer3 = new SocketPeer("3", "localhost", 1002);
+    SocketPeer thePeer3 = new SocketPeer("3", "localhost", 12801);
 
     RoutingTableEntry theEntry3 = new RoutingTableEntry(thePeer, 3, thePeer3, System.currentTimeMillis());
 
@@ -79,10 +79,10 @@ public class RoutingTableTest extends TestCase {
   public void testSameEntryDifferentPort() throws SocketException, NoAvailableNetworkAdapterException{
     RoutingTable theTable = new RoutingTable("1");
 
-    SocketPeer thePeer = new SocketPeer("2", 1002);
+    SocketPeer thePeer = new SocketPeer("2", 12801);
     RoutingTableEntry theEntry = new RoutingTableEntry(thePeer, RoutingTableEntry.MAX_HOP_DISTANCE, thePeer, System.currentTimeMillis());
 
-    SocketPeer thePeer2 = new SocketPeer("2", 1003);
+    SocketPeer thePeer2 = new SocketPeer("2", 12802);
     RoutingTableEntry theEntry2 = new RoutingTableEntry(thePeer2, 2, thePeer, System.currentTimeMillis());
 
     theTable.addRoutingTableEntry(theEntry);
@@ -91,7 +91,7 @@ public class RoutingTableTest extends TestCase {
     assertEquals(1, theTable.getEntries().size());
 
     assertEquals(theEntry2, theTable.getEntries().get(0));
-    assertEquals(1003, ((SocketPeer)theTable.getEntries().get(0).getPeer()).getPort());
+    assertEquals(12802, ((SocketPeer)theTable.getEntries().get(0).getPeer()).getPort());
   }
 
   public void testCopyWithoutUnreachablePeers() throws NoAvailableNetworkAdapterException{
@@ -198,6 +198,40 @@ public class RoutingTableTest extends TestCase {
     
     //becasue entry 3 has now hop distance 6 and peer 4 is reachble trough peer 3 peer 4 must get hop distance 6 too
     assertEquals( RoutingTableEntry.MAX_HOP_DISTANCE, theRoutingTable.getEntryForPeer( "4" ).getHopDistance());
+  }
+  
+  public void testRemoveInvalidPeers(){
+    RoutingTable theRoutingTable = new RoutingTable( "1" );
+    theRoutingTable.setPeerInspector( new MyPeerInspector() );
+    
+    DummyPeer thePeer1 = new DummyPeer( "invalid1" );
+    DummyPeer thePeer2 = new DummyPeer( "2" );
+    DummyPeer thePeer3 = new DummyPeer( "3" );
+    DummyPeer thePeer4 = new DummyPeer( "invalid4" );
+    
+    theRoutingTable.addEntry( new RoutingTableEntry( thePeer1, 0, thePeer1, System.currentTimeMillis() ));
+    theRoutingTable.addEntry( new RoutingTableEntry( thePeer2, 0, thePeer2, System.currentTimeMillis() ));
+    theRoutingTable.addEntry( new RoutingTableEntry( thePeer3, 0, thePeer3, System.currentTimeMillis() ));
+    theRoutingTable.addEntry( new RoutingTableEntry( thePeer4, 0, thePeer4, System.currentTimeMillis() ));
+
+    assertEquals( 4, theRoutingTable.getEntries().size() );
+    
+    theRoutingTable.removeInvalidPeers();
+    
+    assertEquals( 2, theRoutingTable.getEntries().size() );
+    
+    assertFalse( theRoutingTable.containsEntryForPeer( "invalid1" ) );
+    assertTrue( theRoutingTable.containsEntryForPeer( "2" ) );
+    assertTrue( theRoutingTable.containsEntryForPeer( "3" ) );
+    assertFalse( theRoutingTable.containsEntryForPeer( "invalid4" ) );
+  }
+  
+  private class MyPeerInspector implements iPeerInspector{
+
+    @Override
+    public boolean isValidPeer( AbstractPeer aPeer ) {
+      return !aPeer.getPeerId().startsWith( "invalid" );
+    }
     
   }
 }
