@@ -4,8 +4,6 @@
  */
 package chabernac.tools;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 
 public class TestTools {
   private static Boolean isUnitTest = null;
@@ -18,11 +16,23 @@ public class TestTools {
       return TestTools.isUnitTest;
     }
     
-    Exception theE = new Exception();
-    theE.fillInStackTrace();
-    StringWriter theStringWriter =new StringWriter();
-    theE.printStackTrace( new PrintWriter(theStringWriter) );
-    String theStrackTrace = theStringWriter.toString();
-    return theStrackTrace.contains( "junit.framework.TestCase" );
+    Thread theCurrentThread = Thread.currentThread();
+    ThreadGroup theGroup = theCurrentThread.getThreadGroup();
+    while(theGroup.getParent() != null){
+      theGroup = theGroup.getParent();
+    }
+    
+    Thread[] theThreads = new Thread[theGroup.activeCount()];
+    theGroup.enumerate(theThreads);
+    
+    for(Thread theThread : theThreads){
+      for(StackTraceElement theElement : theThread.getStackTrace()) {
+        if(theElement.getClassName().toString().equalsIgnoreCase("junit.framework.TestCase")){
+          return true;
+        }
+      }
+    }
+    
+    return false;
   }
 }
