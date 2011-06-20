@@ -18,7 +18,9 @@ public class RoutingTableObjectPersister implements iObjectPersister< RoutingTab
   public RoutingTable loadObject( InputStream anInputStream ) throws IOException {
     ObjectInputStream theObjectInputStream = new ObjectInputStream(anInputStream);
     try {
-      return (RoutingTable)theObjectInputStream.readObject();
+      RoutingTable theTable = (RoutingTable)theObjectInputStream.readObject();
+      theTable.removeInvalidPeers();
+      return theTable;
     } catch ( ClassNotFoundException e ) {
       throw new IOException();
     }

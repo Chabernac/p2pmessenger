@@ -87,7 +87,7 @@ public class RoutingTable implements Iterable< RoutingTableEntry >, Serializable
     }
     
     if(!isValidPeer(anEntry.getPeer())){
-      
+      return;
     }
     
     if(anEntry.getHopDistance() == RoutingTableEntry.MAX_HOP_DISTANCE && 
@@ -156,6 +156,20 @@ public class RoutingTable implements Iterable< RoutingTableEntry >, Serializable
     }
     synchronized(this){
       notifyAll();
+    }
+  }
+  
+  public void removeInvalidPeers(){
+    List<RoutingTableEntry> theEntriesToRemove = new ArrayList<RoutingTableEntry>();
+    
+    for(RoutingTableEntry theEntry : getEntries()){
+      if(!isValidPeer( theEntry.getPeer() )){
+        theEntriesToRemove.add( theEntry );
+      }
+    }
+    
+    for(RoutingTableEntry theEntry : theEntriesToRemove){
+      removeRoutingTableEntry( theEntry );
     }
   }
   

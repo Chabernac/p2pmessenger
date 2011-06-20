@@ -39,7 +39,7 @@ public class RoutingTableModel implements TableModel {
 
   @Override
   public int getColumnCount() {
-    return 6;
+    return 7;
   }
     
     
@@ -52,6 +52,7 @@ public class RoutingTableModel implements TableModel {
     if(anColumnIndex == 3) return "Last online time";
     if(anColumnIndex == 4) return "Supported protocols";
     if(anColumnIndex == 5) return "Temporary peer";
+    if(anColumnIndex == 6) return "Test peer";
     return "Unkwnown column";
   }
 
@@ -86,6 +87,8 @@ public class RoutingTableModel implements TableModel {
       
     }
     if(anColumnIndex == 5) return theRoutingTableEntry.getPeer().isTemporaryPeer();
+    
+    if(anColumnIndex == 6) return theRoutingTableEntry.getPeer().isTestPeer();
     return "";
   }
   
