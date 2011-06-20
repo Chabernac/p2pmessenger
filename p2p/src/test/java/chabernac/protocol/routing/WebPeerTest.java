@@ -68,7 +68,7 @@ public class WebPeerTest extends TestCase {
         }
       });
       
-      Thread.sleep( 1000 );
+      Thread.sleep( 2000 );
 
       EndPointContainer theEndPoints =  (EndPointContainer)root.getServletContext().getAttribute( "EndPoints" );
       assertNotNull( theEndPoints );
