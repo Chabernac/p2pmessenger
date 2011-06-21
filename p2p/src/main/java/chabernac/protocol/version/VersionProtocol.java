@@ -23,6 +23,7 @@ import chabernac.protocol.routing.IRoutingTableListener;
 import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.RoutingTable;
 import chabernac.protocol.routing.RoutingTableEntry;
+import chabernac.thread.DynamicSizeExecutor;
 
 public class VersionProtocol extends Protocol {
   private static Logger LOGGER = Logger.getLogger(VersionProtocol.class);
@@ -34,7 +35,7 @@ public class VersionProtocol extends Protocol {
 
   private Map<String, Version> myVersions = Collections.synchronizedMap( new HashMap< String, Version >() );
 
-  private ExecutorService myService = Executors.newFixedThreadPool( 5 );
+  private ExecutorService myService = DynamicSizeExecutor.getTinyInstance();
 
   private Set< VersionListener > myVersionsListeners = new HashSet< VersionListener >();
 

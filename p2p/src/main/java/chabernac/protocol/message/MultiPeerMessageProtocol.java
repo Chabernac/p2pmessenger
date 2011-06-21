@@ -14,13 +14,13 @@ import org.apache.log4j.Logger;
 
 import chabernac.io.Base64ObjectStringConverter;
 import chabernac.io.iObjectStringConverter;
-import chabernac.protocol.DynamicSizeExecutor;
 import chabernac.protocol.Protocol;
 import chabernac.protocol.ProtocolException;
 import chabernac.protocol.message.DeliveryReport.Status;
 import chabernac.protocol.routing.DummyPeer;
 import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.RoutingTable;
+import chabernac.thread.DynamicSizeExecutor;
 
 public class MultiPeerMessageProtocol extends Protocol{
   private static Logger LOGGER = Logger.getLogger( MultiPeerMessageProtocol.class );
