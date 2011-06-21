@@ -18,5 +18,6 @@ public class HTMLToolsTest extends TestCase{
     assertEquals( "<a href=\"http://www.google.com/a.html\">http://www.google.com/a.html</a>", HTMLTools.detectLinksInTextAndMakeHref( "http://www.google.com/a.html" ) );
     assertEquals( "<a href=\"http://www.google.com\">http://www.google.com</a>", HTMLTools.detectLinksInTextAndMakeHref( "<a href=\"http://www.google.com\">http://www.google.com</a>" ) );
     assertEquals( "<img src=\"http:www.img.com/a.jpg\">", HTMLTools.detectLinksInTextAndMakeHref( "<img src=\"http:www.img.com/a.jpg\">" ) );
+    assertEquals( "<a href=\"http://www.google.com/search?q=thequickbrownfoxjumpseasilyoverthefatandlazydog\">http://www.google.com/search?q...</a>", HTMLTools.detectLinksInTextAndMakeHref( "http://www.google.com/search?q=thequickbrownfoxjumpseasilyoverthefatandlazydog" ) );
   }
 }

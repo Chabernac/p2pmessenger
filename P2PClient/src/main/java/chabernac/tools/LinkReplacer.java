@@ -5,6 +5,8 @@
 package chabernac.tools;
 
 import java.util.StringTokenizer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class LinkReplacer {
   private enum Mode{TEXT, LINK, IMG};
@@ -12,6 +14,9 @@ public class LinkReplacer {
 
   private final String myText;
   private Mode myMode = Mode.TEXT;
+  
+  private final Pattern URL_PATTERN = Pattern.compile( "(?i)(.*://[^<>\\s]+[\\p{Alnum}/]+.)");
+  public final static int MAX_URL_LENGTH = 30;
 
   public LinkReplacer( String aText ) {
     super();
@@ -32,7 +37,9 @@ public class LinkReplacer {
         for(String theExtention : IMAGE_EXTENTIONS){
           if(theNewToken.length() == theToken.length()) theNewToken = theToken.replaceAll("(?i)(.*://[^<>\\s]+[\\p{Alnum}/]+." + theExtention + ")", "<img src=\"$1\">");
         }
-        if(theNewToken.length() == theToken.length()) theNewToken = theToken.replaceAll("(.*://[^<>\\s]+[\\p{Alnum}/]+)", "<a href=\"$1\">$1</a>"); 
+        
+        if(theNewToken.length() == theToken.length()) theNewToken = replaceLinkInString( theToken );
+        //if(theNewToken.length() == theToken.length()) theNewToken = theToken.replaceAll("(.*://[^<>\\s]+[\\p{Alnum}/]+)", "<a href=\"$1\">$1</a>"); 
         theBuilder.append(theNewToken);
       } else {
         theBuilder.append(theToken);
@@ -47,6 +54,22 @@ public class LinkReplacer {
       if(theTokenizer.hasMoreTokens()) theBuilder.append(" ");
     }
     return theBuilder.toString();
+  }
+  
+  private String replaceLinkInString(String aString){
+    Matcher theMatcher = URL_PATTERN.matcher( aString );
+    
+    String theResult = aString;
+    
+    while(theMatcher.find()){
+      String theURL = theMatcher.group( 1 );
+      String theContent = theURL;
+      if(theContent.length() > MAX_URL_LENGTH){
+        theContent = theContent.substring( 0, MAX_URL_LENGTH ) + "...";
+      }
+      theResult = theResult.replace( theURL, "<a href=\"" + theURL + "\">" + theContent + "</a>" );
+    }
+    return theResult;
   }
 
 }

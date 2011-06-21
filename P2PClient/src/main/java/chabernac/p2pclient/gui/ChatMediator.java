@@ -32,6 +32,7 @@ import chabernac.protocol.message.MessageIndicator;
 import chabernac.protocol.message.MultiPeerMessage;
 import chabernac.protocol.message.iMultiPeerMessageListener;
 import chabernac.protocol.userinfo.UserInfo.Status;
+import chabernac.thread.DynamicSizeExecutor;
 
 public class ChatMediator {
   private static Logger LOGGER = Logger.getLogger(ChatMediator.class);
@@ -47,7 +48,7 @@ public class ChatMediator {
   private iChatFrame myChatFrame = null;
   private SystemTrayMenu mySystemTrayMenu = null;
 
-  private ExecutorService myExecutorService = Executors.newFixedThreadPool( 5 );
+  private ExecutorService myExecutorService = DynamicSizeExecutor.getTinyInstance();
 
   private MultiPeerMessage myLastSendMessage = null;
   private MultiPeerMessage myConcept = null;
@@ -55,8 +56,8 @@ public class ChatMediator {
 
   private int myRestoreIndex = -1;
 
-  private ExecutorService myFileTransferr = Executors.newFixedThreadPool( 5 );
-  private ExecutorService myFileTransferResponse = Executors.newFixedThreadPool( 5 );
+  private ExecutorService myFileTransferr = DynamicSizeExecutor.getTinyInstance();
+  private ExecutorService myFileTransferResponse = DynamicSizeExecutor.getTinyInstance();
   
   private final ActionFactory myActionFactory;
   private final String POPUP_BLOCKED_MESSAGE = "Let op: popups zijn geblokkeerd!";
