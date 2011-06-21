@@ -5,6 +5,7 @@ import java.util.Map;
 
 public class SmileyTools {
   private static Map<String, String> SMILEYS = new HashMap<String, String>();
+  public static boolean ENABLED = false;
   
   static{
     SMILEYS.put("\\:\\-\\)", "http://serve.mysmiley.net/happy/happy0024.gif");
@@ -12,6 +13,7 @@ public class SmileyTools {
   }
   
   public static String replaceSmileys(String aString){
+    if(!ENABLED) return aString;
     for(String theKey : SMILEYS.keySet()){
       aString = aString.replaceAll(theKey, SMILEYS.get(theKey));
     }
