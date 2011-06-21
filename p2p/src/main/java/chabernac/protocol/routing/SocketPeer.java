@@ -95,6 +95,17 @@ public class SocketPeer extends AbstractPeer implements Serializable {
     } catch ( SocketException e ) {
       throw new NoAvailableNetworkAdapterException("Could not detect local network adapter", e);
     }
+    
+    if(myHost.size() == 0){
+      try{
+        SimpleNetworkInterface theLoopBackInterface = NetTools.getLoopBackInterface();
+        myHost = new ArrayList<SimpleNetworkInterface>();
+        myHost.add(theLoopBackInterface);
+      }catch(SocketException f){
+        throw new NoAvailableNetworkAdapterException("Could not detect local network adapter", f);
+      }
+    }
+    
     if(myHost.size() == 0){
       throw new NoAvailableNetworkAdapterException("There is no available network adapter on this system");
     }
