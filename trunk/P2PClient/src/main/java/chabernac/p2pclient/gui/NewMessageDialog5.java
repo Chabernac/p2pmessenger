@@ -53,6 +53,7 @@ import chabernac.preference.iApplicationPreferenceListener;
 import chabernac.protocol.facade.P2PFacadeException;
 import chabernac.protocol.message.MessageIndicator;
 import chabernac.protocol.message.MultiPeerMessage;
+import chabernac.thread.DynamicSizeExecutor;
 import chabernac.tools.Tools;
 
 
@@ -76,8 +77,8 @@ public class NewMessageDialog5 extends JDialog implements iMessageDialog{
   private JScrollPane myReplyScrollPane = null;
   private Robot myRobot;
 
-  private ExecutorService myService = Executors.newFixedThreadPool( 1 );
-  private ExecutorService mySendService = Executors.newFixedThreadPool( 5 );
+  private ExecutorService myService = Executors.newSingleThreadExecutor();
+  private ExecutorService mySendService = DynamicSizeExecutor.getTinyInstance();
 //  private AtomicLong myMessageCounter = new AtomicLong(0);
 
   private Object VISIBLE_LOCK = new Object();

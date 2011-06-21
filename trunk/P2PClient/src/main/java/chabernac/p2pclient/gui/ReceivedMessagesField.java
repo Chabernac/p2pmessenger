@@ -13,6 +13,7 @@ import java.util.Set;
 
 import javax.swing.JEditorPane;
 import javax.swing.JScrollPane;
+import javax.swing.JTextPane;
 import javax.swing.SwingUtilities;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
@@ -38,7 +39,7 @@ public class ReceivedMessagesField extends GPanel implements iReceivedMessagesPr
   private static final SimpleDateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm");
 
   private ChatMediator myMediator = null;
-  private JEditorPane myPane = null;
+  private JTextPane myPane = null;
   private String myHTML = "";
 
   public ReceivedMessagesField(ChatMediator aMediator) throws P2PFacadeException{
@@ -55,16 +56,17 @@ public class ReceivedMessagesField extends GPanel implements iReceivedMessagesPr
   }
 
   private void init(){
-    myPane = new JEditorPane();
+    myPane = new JTextPane();
     myPane.setEditable(false);
     myPane.setContentType("text/html");
     myPane.setDragEnabled(true);
     myPane.addHyperlinkListener(new HyperlinkActivator());
+//    myPane.setDocument( new LongWordWrappingDocumentDecorator( (StyledDocument)myPane.getDocument() ) );
   }
 
   private void buildGUI(){
     setLayout(new BorderLayout());
-    JScrollPane theScrollPane = new JScrollPane(myPane, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+    JScrollPane theScrollPane = new JScrollPane(myPane, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
     theScrollPane.getVerticalScrollBar().setUnitIncrement(50);
     add(theScrollPane, BorderLayout.CENTER);
     new ReceivedMessagesPopup(this, myMediator);
