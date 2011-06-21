@@ -17,18 +17,18 @@ import java.util.concurrent.TimeUnit;
 
 import chabernac.io.Base64ObjectStringConverter;
 import chabernac.io.iObjectStringConverter;
-import chabernac.protocol.DynamicSizeExecutor;
 import chabernac.protocol.ProtocolException;
 import chabernac.protocol.routing.AbstractPeer;
 import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.RoutingTable;
 import chabernac.protocol.routing.iPeerSender;
+import chabernac.thread.DynamicSizeExecutor;
 
 public class AsyncMessageProcotol extends AbstractMessageProtocol {
   public static final String ID = "AMP";
 
   private iObjectStringConverter< Message > myMessageConverter = new Base64ObjectStringConverter< Message >();
-  private ExecutorService mySenderService = DynamicSizeExecutor.getMediumInstance();
+  private ExecutorService mySenderService = DynamicSizeExecutor.getSmallInstance();
   private Map<String, ArrayBlockingQueue<String>> myStatusQueues = new HashMap<String, ArrayBlockingQueue<String>> ();
   
   private ScheduledExecutorService myQueueCleanupService = Executors.newScheduledThreadPool( 1 );

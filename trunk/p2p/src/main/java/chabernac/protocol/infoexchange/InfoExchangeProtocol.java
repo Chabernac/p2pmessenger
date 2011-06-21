@@ -19,7 +19,6 @@ import org.apache.log4j.Logger;
 
 import chabernac.io.Base64ObjectStringConverter;
 import chabernac.io.iObjectStringConverter;
-import chabernac.protocol.DynamicSizeExecutor;
 import chabernac.protocol.IProtocol;
 import chabernac.protocol.Protocol;
 import chabernac.protocol.ProtocolException;
@@ -29,6 +28,7 @@ import chabernac.protocol.routing.IRoutingTableListener;
 import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.RoutingTable;
 import chabernac.protocol.routing.RoutingTableEntry;
+import chabernac.thread.DynamicSizeExecutor;
 
 /**
  *

@@ -27,6 +27,7 @@ import chabernac.protocol.routing.RoutingTableEntry;
 import chabernac.protocol.routing.SocketPeer;
 import chabernac.protocol.routing.UnknownPeerException;
 import chabernac.protocol.routing.iPeerSender;
+import chabernac.thread.DynamicSizeExecutor;
 import chabernac.tools.IOTools;
 import chabernac.tools.NetTools;
 
@@ -55,7 +56,7 @@ public class PipeProtocol extends Protocol {
 
   public PipeProtocol ( int aNumberOfServerSocketsAllowed ) {
     super( ID );
-    myServerSocketExecutor = Executors.newFixedThreadPool( aNumberOfServerSocketsAllowed );
+    myServerSocketExecutor = new DynamicSizeExecutor( 1, aNumberOfServerSocketsAllowed );
   }
 
   @Override

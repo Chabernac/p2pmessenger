@@ -22,13 +22,13 @@ import javax.swing.JTextArea;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.TableCellRenderer;
 
-import chabernac.protocol.DynamicSizeExecutor;
 import chabernac.protocol.ProtocolException;
 import chabernac.protocol.routing.AbstractPeer;
 import chabernac.protocol.routing.IRoutingProtocolMonitor;
 import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.RoutingTableEntry;
 import chabernac.protocol.routing.RoutingTableModel;
+import chabernac.thread.DynamicSizeExecutor;
 
 public class RoutingPanel extends JPanel {
   private static final long serialVersionUID = 8719080293187156681L;

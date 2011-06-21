@@ -33,6 +33,7 @@ import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.RoutingTable;
 import chabernac.protocol.routing.RoutingTableEntry;
 import chabernac.protocol.userinfo.UserInfo.Status;
+import chabernac.thread.DynamicSizeExecutor;
 
 public class UserInfoProtocol extends Protocol {
   private static Logger LOGGER = Logger.getLogger(UserInfoProtocol.class);
@@ -44,7 +45,7 @@ public class UserInfoProtocol extends Protocol {
 
   private Map<String, UserInfo> myUserInfo = Collections.synchronizedMap( new HashMap< String, UserInfo >());
 
-  private ExecutorService myRetrievalService = Executors.newFixedThreadPool( 5 );
+  private ExecutorService myRetrievalService = DynamicSizeExecutor.getTinyInstance();
   private ScheduledExecutorService myService = Executors.newScheduledThreadPool( 1 );
 
   private iUserInfoProvider myUserInfoProvider = null;
