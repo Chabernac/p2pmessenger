@@ -52,7 +52,7 @@ public class InfoExchangeProtocol<T extends Observable & Serializable> extends P
   private Map<String, T> myInfoMap = Collections.synchronizedMap( new HashMap< String, T > ());
   private Set<iInfoListener<T>> myInfoListeners = new HashSet< iInfoListener< T >>();
 
-  private ExecutorService myService = DynamicSizeExecutor.getSmallInstance();
+//  private ExecutorService myService = DynamicSizeExecutor.getSmallInstance();
 
   private enum Command{PUT};
   private enum Response{OK, NOK, UNKNOWN_COMMAND};
@@ -134,7 +134,7 @@ public class InfoExchangeProtocol<T extends Observable & Serializable> extends P
       RoutingTable theTable = getRoutingTable();
       for(RoutingTableEntry theEntry : theTable){
         if(theEntry.isReachable()){
-          myService.execute( new SendInfoToPeer(theEntry.getPeer().getPeerId()));
+          getExecutorService().execute( new SendInfoToPeer(theEntry.getPeer().getPeerId()));
         }
       }
     }catch(Exception e){
@@ -197,7 +197,7 @@ public class InfoExchangeProtocol<T extends Observable & Serializable> extends P
     public void routingTableEntryChanged( final RoutingTableEntry anEntry ) {
       //TODO it might be that this is not a new entry, but just changed, in that case we 
       //should not have send the information, nevertheless we can not know that at the moment
-      myService.execute( new SendInfoToPeer(anEntry.getPeer().getPeerId()));
+      getExecutorService().execute( new SendInfoToPeer(anEntry.getPeer().getPeerId()));
     }
 
     @Override

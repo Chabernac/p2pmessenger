@@ -35,7 +35,7 @@ public class VersionProtocol extends Protocol {
 
   private Map<String, Version> myVersions = Collections.synchronizedMap( new HashMap< String, Version >() );
 
-  private ExecutorService myService = DynamicSizeExecutor.getTinyInstance();
+//  private ExecutorService myService = DynamicSizeExecutor.getTinyInstance();
 
   private Set< VersionListener > myVersionsListeners = new HashSet< VersionListener >();
 
@@ -115,7 +115,7 @@ public class VersionProtocol extends Protocol {
   }
 
   private void getVersionForPeer(final String aPeerId){
-    myService.execute( new Runnable(){
+    getExecutorService().execute( new Runnable(){
       public void run(){
         try{
           RoutingTableEntry theEntry = getRoutingTable().getEntryForPeer( aPeerId );

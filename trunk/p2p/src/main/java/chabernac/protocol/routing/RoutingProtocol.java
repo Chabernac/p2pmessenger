@@ -25,7 +25,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -44,7 +43,6 @@ import chabernac.protocol.Protocol;
 import chabernac.protocol.ProtocolException;
 import chabernac.protocol.ServerInfo;
 import chabernac.protocol.ServerInfo.Type;
-import chabernac.thread.DynamicSizeExecutor;
 import chabernac.tools.IOTools;
 import chabernac.tools.NetTools;
 import chabernac.tools.SimpleNetworkInterface;
@@ -108,12 +106,12 @@ public class RoutingProtocol extends Protocol {
   private boolean isPersistRoutingTable = false;
   private boolean isStopWhenAlreadyRunning = false;
 
-  private ExecutorService myChangeService = null;
+//  private ExecutorService myChangeService = null;
 
   private String myLocalPeerId = null;
 
-  private ExecutorService myUDPPacketHandlerService = DynamicSizeExecutor.getSmallInstance();
-  private ExecutorService myScannerService = Executors.newCachedThreadPool( );
+//  private ExecutorService myUDPPacketHandlerService = DynamicSizeExecutor.getSmallInstance();
+//  private ExecutorService myScannerService = Executors.newCachedThreadPool( );
 
   private MulticastSocket myServerMulticastSocket = null;
 
@@ -247,7 +245,7 @@ public class RoutingProtocol extends Protocol {
       if(myExchangeDelay > 0 ) scheduleRoutingTableExchange();
 
       if(myServerInfo.getServerType() == Type.SOCKET){
-        myChangeService = DynamicSizeExecutor.getSmallInstance();
+//        myChangeService = DynamicSizeExecutor.getSmallInstance();
         myRoutingTable.addRoutingTableListener( new RoutingTableListener() );
         startUDPListener();
         saveRoutingTable();
@@ -273,7 +271,7 @@ public class RoutingProtocol extends Protocol {
   }
 
   private void startUDPListener(){
-    myUDPPacketHandlerService.execute( new MulticastServerThread() );
+    getExecutorService().execute( new MulticastServerThread() );
   }
 
 
@@ -420,7 +418,7 @@ public class RoutingProtocol extends Protocol {
 
   public void checkPeer(final AbstractPeer aPeer){
     if(!myRoutingTable.containsEntryForPeer( aPeer.getPeerId() )){
-      myScannerService.execute( new Runnable(){
+      getExecutorService().execute( new Runnable(){
         public void run(){
           contactPeer( aPeer, myUnreachablePeers, false );
         }
@@ -468,7 +466,7 @@ public class RoutingProtocol extends Protocol {
       LOGGER.debug( "Scanning local system" );
       List<String> theLocalHosts = NetTools.getLocalExposedIpAddresses();
       for(int i=START_PORT;i<=END_PORT;i++){
-        myScannerService.execute( new ScanSystem(this, theLocalHosts, i, myUnreachablePeers));
+        getExecutorService().execute( new ScanSystem(this, theLocalHosts, i, myUnreachablePeers));
       }
     }catch(SocketException e){
       LOGGER.error( "Could not get local ip addressed", e );
@@ -526,7 +524,7 @@ public class RoutingProtocol extends Protocol {
         while(myRoutingTable.getNrOfReachablePeers() <= 1 && theIterator.hasNext()){
           ScanSystem theScanSystem = new ScanSystem(this, theIterator.next(), START_PORT);
           theScanSystem.setCondition( new NrOfPeersSmallerThenCondition(myRoutingTable, 1) );
-          myScannerService.execute( theScanSystem );
+          getExecutorService().execute( theScanSystem );
         }
       }catch(Exception e ){
         LOGGER.error( "An error occured while scanning system", e );
@@ -552,9 +550,9 @@ public class RoutingProtocol extends Protocol {
       for(String theIp : mySuperNodes){
         if(!hostHasActivePeer( theIp )){
           if(theIp.startsWith("http:")){
-            myScannerService.execute( new ScanWebSystem(RoutingProtocol.this, new URL(theIp)));
+            getExecutorService().execute( new ScanWebSystem(RoutingProtocol.this, new URL(theIp)));
           } else {
-            myScannerService.execute( new ScanSystem(RoutingProtocol.this, theIp, START_PORT, myUnreachablePeers));
+            getExecutorService().execute( new ScanSystem(RoutingProtocol.this, theIp, START_PORT, myUnreachablePeers));
           }
         }
       }
@@ -743,21 +741,21 @@ public class RoutingProtocol extends Protocol {
     //remove all listeners from the routing table
     myRoutingTable.removeAllRoutingTableListeners();
 
-    if(myScannerService != null){
-      myScannerService.shutdownNow();
-    }
+//    if(myScannerService != null){
+//      myScannerService.shutdownNow();
+//    }
 
     if(mySheduledService != null){
       mySheduledService.shutdownNow();
     }
 
-    if(myChangeService != null) {
-      myChangeService.shutdownNow();
-    }
+//    if(myChangeService != null) {
+//      myChangeService.shutdownNow();
+//    }
 
-    if(myUDPPacketHandlerService != null){
-      myUDPPacketHandlerService.shutdownNow();
-    }
+//    if(myUDPPacketHandlerService != null){
+//      myUDPPacketHandlerService.shutdownNow();
+//    }
 
     if(isPersistRoutingTable) saveRoutingTable();
 
@@ -779,7 +777,7 @@ public class RoutingProtocol extends Protocol {
   private class RoutingTableListener implements IRoutingTableListener{
     @Override
     public void routingTableEntryChanged( RoutingTableEntry anEntry ) {
-      myChangeService.execute( new SendAnnouncement(anEntry) );
+      getExecutorService().execute( new SendAnnouncement(anEntry) );
     }
 
     @Override
