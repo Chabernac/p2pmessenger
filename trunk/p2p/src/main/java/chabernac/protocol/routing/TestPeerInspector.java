@@ -1,9 +1,13 @@
 package chabernac.protocol.routing;
 
+import org.apache.log4j.Logger;
+
 import chabernac.tools.TestTools;
 
 public class TestPeerInspector implements iPeerInspector {
-//  private static Logger LOGGER = Logger.getLogger(TestPeerInspector.class);
+  private static Logger LOGGER = Logger.getLogger(TestPeerInspector.class);
+  
+  private static boolean isInUnitTest = TestTools.isInUnitTest();
 
   @Override
   public boolean isValidPeer(AbstractPeer aPeer) {
@@ -21,7 +25,8 @@ public class TestPeerInspector implements iPeerInspector {
 //    }
     
     //only return true if the peer was created in the same context as we currently are
-    return TestTools.isInUnitTest() == aPeer.isTestPeer();
+    LOGGER.debug( isInUnitTest + " ==? " + aPeer.isTestPeer() );
+    return isInUnitTest == aPeer.isTestPeer();
   }
 
 }
