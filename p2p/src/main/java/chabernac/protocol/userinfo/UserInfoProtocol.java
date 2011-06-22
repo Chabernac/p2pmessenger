@@ -45,7 +45,7 @@ public class UserInfoProtocol extends Protocol {
 
   private Map<String, UserInfo> myUserInfo = Collections.synchronizedMap( new HashMap< String, UserInfo >());
 
-  private ExecutorService myRetrievalService = DynamicSizeExecutor.getTinyInstance();
+//  private ExecutorService myRetrievalService = DynamicSizeExecutor.getTinyInstance();
   private ScheduledExecutorService myService = Executors.newScheduledThreadPool( 1 );
 
   private iUserInfoProvider myUserInfoProvider = null;
@@ -117,7 +117,7 @@ public class UserInfoProtocol extends Protocol {
               && thePeer.isOnSameChannel(theLocalPeer) 
               && (!myUserInfo.containsKey( thePeer.getPeerId() ) 
                   || myUserInfo.get(thePeer.getPeerId()).getStatus() == Status.OFFLINE)){
-            myRetrievalService.execute( new UserInfoRetriever(thePeer.getPeerId()) );
+            getExecutorService().execute( new UserInfoRetriever(thePeer.getPeerId()) );
           }
         }
       }
@@ -136,7 +136,7 @@ public class UserInfoProtocol extends Protocol {
 
       for(RoutingTableEntry theEntry : theTable){
         if(theEntry.isReachable() && theEntry.getPeer().isOnSameChannel(theLocalPeer)){
-          myRetrievalService.execute( new UserInfoSender(theEntry.getPeer().getPeerId()) );
+          getExecutorService().execute( new UserInfoSender(theEntry.getPeer().getPeerId()) );
         }
       }
     }catch(Exception e){
@@ -346,7 +346,7 @@ public class UserInfoProtocol extends Protocol {
       try{
         if(!myUserInfo.containsKey( anEntry.getPeer().getPeerId() ) || myUserInfo.get(anEntry.getPeer().getPeerId()).getStatus() == Status.OFFLINE){
           if(anEntry.getPeer().isProtocolSupported( UserInfoProtocol.ID ) && anEntry.isReachable() && anEntry.getPeer().isOnSameChannel(getRoutingTable().getEntryForLocalPeer().getPeer())){
-            myRetrievalService.execute( new UserInfoRetriever(anEntry.getPeer().getPeerId()) );
+            getExecutorService().execute( new UserInfoRetriever(anEntry.getPeer().getPeerId()) );
           }
         } else {
           //we have user information for this peer

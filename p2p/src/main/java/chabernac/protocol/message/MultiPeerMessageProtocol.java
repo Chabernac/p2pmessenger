@@ -29,7 +29,7 @@ public class MultiPeerMessageProtocol extends Protocol{
   private static enum STATUS_MESSAGE { FAILED, DELIVERED }
 
   private List< iDeliverReportListener > myDeliverReportListeners = new ArrayList< iDeliverReportListener >();
-  private ExecutorService mySendService = DynamicSizeExecutor.getSmallInstance();
+//  private ExecutorService mySendService = DynamicSizeExecutor.getSmallInstance();
   private iObjectStringConverter< MultiPeerMessage > myObjectStringConverter = new Base64ObjectStringConverter< MultiPeerMessage >();
   private List<iMultiPeerMessageListener> myMessageListeners = new ArrayList< iMultiPeerMessageListener >();
   private ExecutorService myEventHandlerService = Executors.newSingleThreadExecutor();
@@ -131,12 +131,12 @@ public class MultiPeerMessageProtocol extends Protocol{
   }
   
   void sendMessage(MultiPeerMessage aMultiPeerMessage, Message aMessage){
-    mySendService.execute( new MessageSender(aMultiPeerMessage, aMessage) );
+    getExecutorService().execute( new MessageSender(aMultiPeerMessage, aMessage) );
   }
 
   @Override
   public void stop() {
-    mySendService.shutdownNow();
+//    mySendService.shutdownNow();
   }
 
   private class MessageSender implements Runnable{

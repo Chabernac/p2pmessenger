@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -22,13 +21,12 @@ import chabernac.protocol.routing.AbstractPeer;
 import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.RoutingTable;
 import chabernac.protocol.routing.iPeerSender;
-import chabernac.thread.DynamicSizeExecutor;
 
 public class AsyncMessageProcotol extends AbstractMessageProtocol {
   public static final String ID = "AMP";
 
   private iObjectStringConverter< Message > myMessageConverter = new Base64ObjectStringConverter< Message >();
-  private ExecutorService mySenderService = DynamicSizeExecutor.getSmallInstance();
+//  private ExecutorService mySenderService = DynamicSizeExecutor.getSmallInstance();
   private Map<String, ArrayBlockingQueue<String>> myStatusQueues = new HashMap<String, ArrayBlockingQueue<String>> ();
   
   private ScheduledExecutorService myQueueCleanupService = Executors.newScheduledThreadPool( 1 );
@@ -130,7 +128,7 @@ public class AsyncMessageProcotol extends AbstractMessageProtocol {
   }
 
   private void handleMessage(String aSessionId, Message aMessage){
-    mySenderService.execute( new MessageProcessor( aSessionId, aMessage ) );
+    getExecutorService().execute( new MessageProcessor( aSessionId, aMessage ) );
   }
 
   private class MessageProcessor implements Runnable{

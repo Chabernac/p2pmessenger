@@ -4,6 +4,10 @@
  */
 package chabernac.protocol;
 
+import java.util.concurrent.ExecutorService;
+
+import chabernac.thread.DynamicSizeExecutor;
+
 
 public abstract class Protocol implements IProtocol{
   protected IProtocol myParentProtocol = null;
@@ -50,6 +54,12 @@ public abstract class Protocol implements IProtocol{
       return ((Protocol)myParentProtocol).findProtocolContainer();
     }
     return null;
+  }
+  
+  public ExecutorService getExecutorService(){
+    ProtocolContainer theContainer = findProtocolContainer();
+    if(theContainer == null) return DynamicSizeExecutor.getSmallInstance();
+    return theContainer.getExecutorService();
   }
   
   public ServerInfo getServerInfo() {
