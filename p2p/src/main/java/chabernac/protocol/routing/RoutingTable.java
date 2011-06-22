@@ -33,7 +33,7 @@ public class RoutingTable implements Iterable< RoutingTableEntry >, Serializable
   private Map<String, RoutingTableEntry> myRoutingTable = new HashMap< String, RoutingTableEntry >();
   private transient Set<IRoutingTableListener> myRoutingTableListeners = null;
   private transient List<RoutingTableEntryHistory> myRoutingTableEntryHistory = null;
-  private transient iPeerInspector myPeerInspector = new TestPeerInspector();
+  private transient iPeerInspector myPeerInspector = null;
 
   public RoutingTable(String aLocalPeerId){
     myLocalPeerId = aLocalPeerId;
@@ -85,10 +85,12 @@ public class RoutingTable implements Iterable< RoutingTableEntry >, Serializable
     if(!anEntry.getPeer().getPeerId().equals( myLocalPeerId ) && anEntry.getGateway().getPeerId().equals( myLocalPeerId )){
       return;
     }
-    
+   
     if(!isValidPeer(anEntry.getPeer())){
       return;
     }
+    
+    LOGGER.error(anEntry.getPeer().getPeerId() + " test=" + anEntry.getPeer().isTestPeer()  + " is a valid peer according to " + myPeerInspector);
     
     if(anEntry.getHopDistance() == RoutingTableEntry.MAX_HOP_DISTANCE && 
        !containsEntryForPeer( anEntry.getPeer().getPeerId() ) &&
@@ -175,8 +177,7 @@ public class RoutingTable implements Iterable< RoutingTableEntry >, Serializable
   }
   
   private boolean isValidPeer(AbstractPeer anPeer) {
-    if(myPeerInspector == null) return true;
-    return myPeerInspector.isValidPeer(anPeer);
+    return getPeerInspector().isValidPeer(anPeer);
   }
 
   private void checkIntegrityForEntry(RoutingTableEntry anEntry){
@@ -395,6 +396,9 @@ public class RoutingTable implements Iterable< RoutingTableEntry >, Serializable
   }
 
   public iPeerInspector getPeerInspector() {
+    if(myPeerInspector == null){
+      myPeerInspector = new TestPeerInspector();
+    }
     return myPeerInspector;
   }
 
