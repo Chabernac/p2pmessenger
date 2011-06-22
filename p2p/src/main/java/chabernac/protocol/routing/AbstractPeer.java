@@ -19,8 +19,8 @@ public abstract class AbstractPeer implements Serializable{
   
   public AbstractPeer(String anPeerId) {
     super();
-    myPeerId = anPeerId;
     isTestPeer = TestTools.isInUnitTest();
+    myPeerId = anPeerId;
   }
   
   public String getPeerId() {
