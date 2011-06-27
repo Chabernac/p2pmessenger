@@ -6,6 +6,8 @@ package chabernac.command;
 
 import java.util.Map;
 import java.util.Stack;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  *
@@ -32,9 +34,19 @@ public class CommandSession {
   
   private Mode myMode = Mode.NORMAL;
   
+  private ExecutorService myExecutorService = null;
+  
   private CommandSession(){
     init();
   }
+  
+  public void setNumberOfThreads(int aNumberOfThreads){
+    if(myExecutorService != null){
+      myExecutorService.shutdownNow();
+    }
+    myExecutorService = Executors.newFixedThreadPool( aNumberOfThreads );
+  }
+  
   
   private void init(){
     myUndoableCommands = new Stack< UndoableCommand >();
@@ -52,10 +64,25 @@ public class CommandSession {
     return (CommandSession)aContext.get( CommandSession.class.toString() );
   }
   
-  public void execute(Command aCommand) throws CommandException{
-    if(inspectMode()) aCommand.execute();
-    if(aCommand instanceof UndoableCommand){
-      myUndoableCommands.add((UndoableCommand)aCommand);
+  private void executeRunnable(Runnable aRunnable){
+   if(myExecutorService == null) {
+     aRunnable.run();
+   } else {
+     myExecutorService.execute( aRunnable );
+   }
+  }
+  
+  public void execute(final Command aCommand) throws CommandException{
+    if(inspectMode()) {
+      executeRunnable(new Runnable() {
+        @Override
+        public void run() {
+          aCommand.execute();
+          if(aCommand instanceof UndoableCommand){
+            myUndoableCommands.add((UndoableCommand)aCommand);
+          }
+        }
+      });
     }
   }
   
@@ -68,10 +95,18 @@ public class CommandSession {
 
   public void undoNumberOfSteps(int aNumber) throws CommandException{
     for(int i=aNumber;i>0 && myUndoableCommands.size() > 0;i--){
-      UndoableCommand theCommand = myUndoableCommands.peek();
-      if(inspectMode()) theCommand.undo();
-      myUndoableCommands.pop();
-      myRedoableCommands.push( theCommand );
+      executeRunnable( new Runnable() {
+        @Override
+        public void run() {
+          UndoableCommand theCommand = myUndoableCommands.peek();
+          if(inspectMode()) {
+            theCommand.undo();
+            myUndoableCommands.pop();
+            myRedoableCommands.push( theCommand );    
+          }
+        }
+      });
+      
     }
   }
   

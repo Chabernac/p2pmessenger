@@ -6,6 +6,8 @@ package chabernac.command;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import junit.framework.TestCase;
 import chabernac.command.CommandSession.Mode;
@@ -104,7 +106,63 @@ public class CommandSessionTest extends TestCase {
 
       fail( "should not get here because of exception" );
     }catch(CommandException e){
-      
+
     }
+  }
+
+  public void testMultiThreadedCommandSession() throws InterruptedException{
+    CommandSession theSession = CommandSession.getInstance(new HashMap());
+    theSession.setNumberOfThreads( 2 );
+
+    int theCount = 100;
+    final CountDownLatch theLatch = new CountDownLatch( theCount );
+
+    for(int i=0;i<theCount;i++){
+      theSession.execute( new Command(){
+        @Override
+        public void execute() {
+          theLatch.countDown();
+        }
+      });
+    }
+
+    theLatch.await( 2, TimeUnit.SECONDS );
+    assertEquals( 0, theLatch.getCount() );
+  }
+
+  public void testBlockedCommandMultiThreadedCommandSession() throws InterruptedException{
+    int theThreads = 3;
+    CommandSession theSession = CommandSession.getInstance(new HashMap());
+    theSession.setNumberOfThreads( theThreads );
+
+    int theCount = 100;
+    final CountDownLatch theLatch = new CountDownLatch( theCount );
+    int theBlocked = 2;
+
+    for(int i=0;i<theBlocked;i++){
+      theSession.execute( new Command() {
+        @Override
+        public void execute() {
+          try {
+            Thread.sleep( 60000 );
+          } catch ( InterruptedException e ) {
+          }
+        }
+      });
+    }
+
+    //2 threads are blocked but the other one should still process the commands
+    
+    for(int i=0;i<theCount;i++){
+      theSession.execute( new Command(){
+        @Override
+        public void execute() {
+          theLatch.countDown();
+        }
+      });
+    }
+
+    theLatch.await( 2, TimeUnit.SECONDS );
+    assertEquals( 0, theLatch.getCount() );
   }
 }

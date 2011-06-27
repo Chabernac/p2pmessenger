@@ -11,22 +11,33 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import org.apache.log4j.Logger;
+
 public class DynamicSizeExecutor implements ExecutorService{
+  private static Logger LOGGER = Logger.getLogger( DynamicSizeExecutor.class );
   private final ThreadPoolExecutor myExecutor;
   private ArrayBlockingQueue<Runnable> myQueue = new ArrayBlockingQueue<Runnable>( 1024 );
-  
+
+  private static DynamicSizeExecutor TINY = null;
+  private static DynamicSizeExecutor SMALL = null;
+  private static DynamicSizeExecutor MEDIUM = null;
+  private static DynamicSizeExecutor LARGE = null;
+  private static DynamicSizeExecutor CUSTOM = null;
+
+
   public DynamicSizeExecutor(int aCoreSize, int aMaxPoolSize){
     myExecutor = new ThreadPoolExecutor( aCoreSize, aMaxPoolSize, 10, TimeUnit.SECONDS, myQueue);
   }
-  
+
   public void execute(Runnable aRunnable){
     myExecutor.execute( aRunnable );
   }
-  
+
   @Override
   public boolean awaitTermination( long aTimeout, TimeUnit aUnit ) throws InterruptedException {
     return myExecutor.awaitTermination( aTimeout, aUnit );
@@ -34,12 +45,12 @@ public class DynamicSizeExecutor implements ExecutorService{
 
   @Override
   public <T> List<Future<T>> invokeAll( Collection<? extends Callable<T>> aTasks ) throws InterruptedException {
-   return myExecutor.invokeAll( aTasks );
+    return myExecutor.invokeAll( aTasks );
   }
 
   @Override
   public <T> List<Future<T>> invokeAll( Collection<? extends Callable<T>> aTasks, long aTimeout, TimeUnit aUnit )
-      throws InterruptedException {
+  throws InterruptedException {
     return myExecutor.invokeAll( aTasks, aTimeout, aUnit );
   }
 
@@ -50,7 +61,7 @@ public class DynamicSizeExecutor implements ExecutorService{
 
   @Override
   public <T> T invokeAny( Collection<? extends Callable<T>> aTasks, long aTimeout, TimeUnit aUnit ) throws InterruptedException,
-      ExecutionException, TimeoutException {
+  ExecutionException, TimeoutException {
     return myExecutor.invokeAny( aTasks, aTimeout, aUnit );
   }
 
@@ -88,20 +99,78 @@ public class DynamicSizeExecutor implements ExecutorService{
   public <T> Future<T> submit( Runnable aTask, T aResult ) {
     return myExecutor.submit( aTask, aResult );
   }
-  
+
   public static DynamicSizeExecutor getTinyInstance(){
     return new DynamicSizeExecutor( 0, 5 );
   }
-  
+
   public static DynamicSizeExecutor getSmallInstance(){
     return new DynamicSizeExecutor( 1, 20 );
   }
-  
+
   public static DynamicSizeExecutor getMediumInstance(){
     return new DynamicSizeExecutor( 10, 256 );
   }
-  
+
   public static DynamicSizeExecutor getLargeInstance(){
     return new DynamicSizeExecutor( 20, 1024 );
+  }
+
+  public static synchronized DynamicSizeExecutor getCachedTinyInstance(){
+    if(TINY == null){
+      TINY = getTinyInstance();
+    }
+    return TINY;
+  }
+
+  public static synchronized DynamicSizeExecutor getCachedSmallInstance(){
+    if(SMALL == null){
+      SMALL = getSmallInstance();
+    }
+    return SMALL;
+  }
+
+  public static synchronized DynamicSizeExecutor getCachedMediumInstance(){
+    if(MEDIUM == null){
+      MEDIUM = getMediumInstance();
+    }
+    return MEDIUM;
+  }
+
+  public static synchronized DynamicSizeExecutor getCachedLargeInstance(){
+    if(LARGE == null){
+      LARGE = getLargeInstance();
+    }
+    return LARGE;
+  }
+
+  public static synchronized DynamicSizeExecutor getCustomInstance(){
+    if(CUSTOM == null) throw new NullPointerException( "The custom size executor was not instantiated, init it with initCustom()");
+    return CUSTOM;
+  }
+
+  public static synchronized void initCustom(int aCoreSize, int aMaxPoolSize){
+    if(CUSTOM == null){
+      CUSTOM = new DynamicSizeExecutor( aCoreSize, aMaxPoolSize );
+    }
+  }
+
+  public static synchronized void clearCachedInstances(){
+    shutDown( TINY );
+    TINY = null;
+    shutDown( SMALL );
+    SMALL = null;
+    shutDown( MEDIUM );
+    MEDIUM = null;
+    shutDown( LARGE );
+    LARGE = null;
+    shutDown( CUSTOM );
+    CUSTOM = null;
+  }
+
+  private static void shutDown(DynamicSizeExecutor anExecutor){
+    if(anExecutor != null){
+      anExecutor.shutdownNow();
+    }
   }
 }
