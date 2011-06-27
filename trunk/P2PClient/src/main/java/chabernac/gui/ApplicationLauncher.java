@@ -16,6 +16,8 @@ import java.util.concurrent.TimeUnit;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 
+import chabernac.command.CommandSession;
+import chabernac.command.CommandSessionTest;
 import chabernac.gui.tray.NewMessageInfoPanelDisplayer;
 import chabernac.gui.tray.NewMessageTrayIconDisplayer;
 import chabernac.gui.tray.SystemTrayMenu;
@@ -63,6 +65,8 @@ public class ApplicationLauncher {
   public static void main( String[] args ) {
     try{
       ArgsInterPreter theInterPretser = new ArgsInterPreter(args);
+      
+      initCommandSession();
 
       initProxy(theInterPretser);
 
@@ -106,6 +110,10 @@ public class ApplicationLauncher {
       LOGGER.error("An error occured during boot process", e);
       System.exit(-1);
     }
+  }
+  
+  private static void initCommandSession(){
+    CommandSession.getInstance().setNumberOfThreads( 3 );
   }
   
   private static void loadPlugins(){
