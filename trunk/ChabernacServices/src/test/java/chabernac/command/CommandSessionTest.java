@@ -9,6 +9,8 @@ import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.log4j.BasicConfigurator;
+
 import junit.framework.TestCase;
 import chabernac.command.CommandSession.Mode;
 
@@ -26,6 +28,11 @@ import chabernac.command.CommandSession.Mode;
  */
 
 public class CommandSessionTest extends TestCase {
+  static{
+    BasicConfigurator.resetConfiguration();
+    BasicConfigurator.configure();
+  }
+  
   public void testSession(){
     StringBuffer theBuffer = new StringBuffer();
     CommandSession theSession = CommandSession.getInstance();

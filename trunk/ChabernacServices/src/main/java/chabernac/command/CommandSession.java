@@ -9,6 +9,8 @@ import java.util.Stack;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.apache.log4j.Logger;
+
 /**
  *
  * <br><br>
@@ -22,6 +24,7 @@ import java.util.concurrent.Executors;
  * @author <a href="mailto:guy.chauliac@axa.be"> Guy Chauliac </a>
  */
 public class CommandSession {
+  private static Logger LOGGER = Logger.getLogger(CommandSession.class);
   
   private static class InstanceHolder{
     private static final CommandSession INSTANCE = new CommandSession();
@@ -77,6 +80,7 @@ public class CommandSession {
       executeRunnable(new Runnable() {
         @Override
         public void run() {
+          LOGGER.debug( "Executing command '" + aCommand.getClass() + "'" );
           aCommand.execute();
           if(aCommand instanceof UndoableCommand){
             myUndoableCommands.add((UndoableCommand)aCommand);
