@@ -5,6 +5,7 @@ import java.util.concurrent.Executors;
 
 import chabernac.math.MatrixException;
 import chabernac.space.geom.PointShape;
+import chabernac.space.geom.Polygon;
 import chabernac.space.geom.Shape;
 import chabernac.utils.ArrayTools;
 import chabernac.utils.sort.FastArrayQSortAlgorithm;
@@ -21,10 +22,16 @@ public class World{
   private int myCurrentLightSource = 0;
   public LightSource[] lightSources = new LightSource[0];
   
+  //list of all polygons of all shapes
+  private int myCurrentPolygon = 0;
+  public Polygon[] myPolygons = new Polygon[0];
+  
   private FastArrayQSortAlgorithm theSortAlgorithm = null;
   private TranslateManagerContainer myTranslateManagerContainer = new TranslateManagerContainer();
 
   private ExecutorService myService = Executors.newFixedThreadPool( Runtime.getRuntime().availableProcessors() );
+  
+  
 
   public World(){
     initialize();
@@ -55,11 +62,30 @@ public class World{
     if(myCurrentPointShape == myShapes.length) myShapes = (Shape[])ArrayTools.growArray( myCurrentPointShape, 1 );
     myPointShapes[myCurrentPointShape++] = aPointShape;
   }
+  
+  private void indexAllPolygons(){
+    //first calculate the number of polygons
+    int theNrOfPolygons = 0;
+    for(Shape theShape : myShapes){
+      theNrOfPolygons += theShape.myPolygons.length;
+    }
+    
+    myPolygons = new Polygon[theNrOfPolygons];
+    
+    //now create references to the polygons in the myPolygons array
+    int theCurrentPolygon = 0;
+    for(Shape theShape : myShapes){
+      for(Polygon thePolygon : theShape.myPolygons){
+        myPolygons[theCurrentPolygon++] = thePolygon;
+      }
+    }
+  }
 
   public void done() throws PolygonException{
     //affectLightning();
     calculateCenterPoints();
     calculateNormalVectors();
+    indexAllPolygons();
   }
 
   /*
