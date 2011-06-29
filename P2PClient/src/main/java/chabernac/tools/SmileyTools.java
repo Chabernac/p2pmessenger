@@ -12,7 +12,10 @@ public class SmileyTools {
     SMILEYS.put("\\:\\-\\)", "http://www.freewebthings.net/smileys/images/laughing/laughing-smiley-005.gif");
     
 //    SMILEYS.put("\\:\\-\\(", "http://serve.mysmiley.net/sad/sad0024.gif");
-    SMILEYS.put("\\:\\-\\(", "http://www.freewebthings.net/smileys/images/sad/sad-smiley-036.gif");
+    SMILEYS.put("\\:\\-\\(", "http://www.freewebthings.net/smileys/images/sad/sad-smiley-052.gif");
+    
+    SMILEYS.put("\\:\\-\\|", "http://www.freewebthings.net/smileys/images/other/scared.gif");
+    
   }
   
   public static String replaceSmileys(String aString){
