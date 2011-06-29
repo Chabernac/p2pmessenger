@@ -20,7 +20,6 @@ import chabernac.protocol.message.DeliveryReport.Status;
 import chabernac.protocol.routing.DummyPeer;
 import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.RoutingTable;
-import chabernac.thread.DynamicSizeExecutor;
 
 public class MultiPeerMessageProtocol extends Protocol{
   private static Logger LOGGER = Logger.getLogger( MultiPeerMessageProtocol.class );
