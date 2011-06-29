@@ -4,6 +4,15 @@
  */
 package chabernac.protocol.message;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutput;
+import java.io.ObjectOutputStream;
+
+import org.apache.commons.codec.binary.Base64;
+
+import chabernac.io.Base64ObjectStringConverter;
+import chabernac.io.iObjectStringConverter;
 import chabernac.protocol.routing.DummyPeer;
 import junit.framework.TestCase;
 
@@ -56,5 +65,27 @@ public class MessageTest extends TestCase {
     
     assertEquals("a header", theCopy.getHeader("HEADER_1"));
     assertTrue(theMessage.containsIndicator(MessageIndicator.ENCRYPTED));
+  }
+  
+  public void testMessageSize() throws IOException{
+    iObjectStringConverter< Message > myMessageConverter = new Base64ObjectStringConverter< Message >();
+    Message theMessage = new Message();
+    theMessage.setBytes( new byte[4096] );
+    
+    ByteArrayOutputStream theBytes = new ByteArrayOutputStream();
+    ObjectOutputStream theOut = new ObjectOutputStream( theBytes );
+    theOut.writeObject( theMessage );
+    theOut.flush();
+    System.out.println(theBytes.toByteArray().length);
+    
+    String theString = myMessageConverter.toString( theMessage );
+    theOut = new ObjectOutputStream( theBytes );
+    theOut.writeObject( theString );
+    theOut.flush();
+    System.out.println(theBytes.toByteArray().length);
+    
+    byte[] theResult = Base64.encodeBase64( new byte[4096], false );
+    System.out.println(theResult.length);
+    
   }
 }
