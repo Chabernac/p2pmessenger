@@ -7,7 +7,6 @@ package chabernac.protocol.asyncfiletransfer;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
@@ -65,9 +64,10 @@ public class AsyncFileTransferProtocol extends Protocol {
         String theFileName = theParams[0];
         String theUUId = theParams[1];
         int thePacketSize = Integer.parseInt( theParams[2] );
+        int theNrOfPackets = Integer.parseInt( theParams[3] );
         
         File theFile = myHandler.acceptFile( theFileName );
-        FilePacketIO theIO = new FilePacketIO( theFile, thePacketSize, theUUId );
+        FilePacketIO theIO = FilePacketIO.createForWrite( theFile, theUUId, thePacketSize, theNrOfPackets );
         myFilePacketIO.put( theUUId, theIO );
         
         //create a 
@@ -121,7 +121,7 @@ public class AsyncFileTransferProtocol extends Protocol {
       AbstractPeer theDestination = getRoutingTable().getEntryForPeer( aPeer ).getPeer();
 
       //create a new FilePacketIO for this file transfer
-      FilePacketIO theIO = new FilePacketIO( aFile, PACKET_SIZE );
+      FilePacketIO theIO = FilePacketIO.createForRead( aFile, PACKET_SIZE );
       //store it
       myFilePacketIO.put( theIO.getId(), theIO );
 
@@ -131,7 +131,7 @@ public class AsyncFileTransferProtocol extends Protocol {
       if(theResult.startsWith( Response.FILE_ACCEPTED.name() )){
         //only continue if the file was accepted by the client
         //now loop over all packets and send them to the other peer
-        for(int i=0;i<=theIO.getNrOfPackets();i++){
+        for(int i=0;i<theIO.getNrOfPackets();i++){
           sendPacket( theDestination, theIO.getPacket( i ) );
         }
       }

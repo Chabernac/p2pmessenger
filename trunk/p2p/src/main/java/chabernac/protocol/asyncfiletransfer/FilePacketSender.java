@@ -34,7 +34,7 @@ public class FilePacketSender {
     
     
     final CountDownLatch theLatch = new CountDownLatch( myFilePacket.getNrOfPackets() );
-    for(int i=0;i<=myFilePacket.getNrOfPackets();i++){
+    for(int i=0;i<myFilePacket.getNrOfPackets();i++){
       final int thePacket = i;
     
       final Message theMessage = new Message();

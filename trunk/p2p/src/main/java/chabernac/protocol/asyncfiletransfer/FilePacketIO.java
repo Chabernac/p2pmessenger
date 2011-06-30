@@ -19,17 +19,23 @@ public class FilePacketIO {
   private final String myId;
   private final boolean[] myWrittenPackets;
   
-  public FilePacketIO( File aFile, int aPacketSize){
-    this(aFile, aPacketSize, null);
+  public static FilePacketIO createForRead(File aFile, int aPacketSize){
+    return new FilePacketIO( aFile, aPacketSize, null, -1 );
+  }
+  
+  public static FilePacketIO createForWrite(File aFile, String anUUid, int aPacketSize, int aNumberOfPackets){
+    return new FilePacketIO( aFile, aPacketSize, anUUid, aNumberOfPackets );
   }
 
-  public FilePacketIO( File aFile, int aPacketSize, String anUUid ) {
+  private FilePacketIO( File aFile, int aPacketSize, String anUUid, int aNumberOfPackets ) {
     super();
     myFile = aFile;
     myPacketSize = aPacketSize;
     myFileSize = myFile.length();
     if(myFileSize > 0){
-      myNrOfPackets = (int)Math.ceil( myFileSize / myPacketSize );
+      myNrOfPackets = (int)Math.ceil( (double)myFileSize / (double)myPacketSize );
+    } else {
+      myNrOfPackets = aNumberOfPackets;
     }
     if(anUUid == null){
       myId = UUID.randomUUID().toString();

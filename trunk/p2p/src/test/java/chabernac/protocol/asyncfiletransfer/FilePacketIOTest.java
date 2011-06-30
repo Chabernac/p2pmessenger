@@ -18,12 +18,12 @@ public class FilePacketIOTest extends TestCase {
     File theWrite = new File("out.jpg");
     if(theWrite.exists()) theWrite.delete();
     
-    FilePacketIO theReadPacket = new FilePacketIO( theRead, 1024);
-    FilePacketIO theWritePacket = new FilePacketIO( theWrite, 1024);
+    FilePacketIO theReadPacket = FilePacketIO.createForRead( theRead, 1024);
+    FilePacketIO theWritePacket = FilePacketIO.createForWrite( theWrite, theReadPacket.getId(), theReadPacket.getPacketSize(), theReadPacket.getNrOfPackets() );
     
     System.out.println("File size: " + theRead.length());
     
-    for(int i=0;i<=theReadPacket.getNrOfPackets();i++){
+    for(int i=0;i<theReadPacket.getNrOfPackets();i++){
       System.out.println("Writing packet " + i);
       theWritePacket.writePacket( theReadPacket.getPacket( i ) );
     }
@@ -42,5 +42,11 @@ public class FilePacketIOTest extends TestCase {
     
     theReader1.close();
     theReader2.close();
+    
+    boolean[] theWrittenPackets = theWritePacket.getWrittenPackts();
+    
+    for(int i=0;i<theWrittenPackets.length;i++){
+      assertTrue( theWrittenPackets[i] );
+    }
   }
 }
