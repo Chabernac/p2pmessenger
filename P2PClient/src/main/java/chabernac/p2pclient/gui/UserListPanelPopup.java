@@ -61,6 +61,8 @@ public class UserListPanelPopup extends GPanelPopupMenu {
     }
     addSeparator();
     add(new CommandMenuItem(new SearchPeersCommand()));
+    addSeparator();
+    add(new CommandMenuItem(new LockUserSelectionCommand()));
 
   }
 
@@ -140,6 +142,23 @@ public class UserListPanelPopup extends GPanelPopupMenu {
       } catch ( P2PFacadeException e ) {
         logger.error( "Unable to scan super nodes" );
       }
+    }
+  }
+  
+  private class LockUserSelectionCommand extends AbstractCommand{
+    public String getName() { 
+      if(myMediator.getUserSelectionProvider() == null || !myMediator.getUserSelectionProvider().isUserSelectionLocked()){
+        return "Selectie blokkeren";
+      } else {
+        return "Selectie deblokkeren";
+      }
+    }
+
+    public boolean isEnabled() { return true; }
+
+    public void execute(){
+      myMediator.getUserSelectionProvider().setUserSelectionLocked(!myMediator.getUserSelectionProvider().isUserSelectionLocked());
+      notifyObs();
     }
   }
 

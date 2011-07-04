@@ -65,6 +65,8 @@ public class UserPanel extends GPanel implements iUserSelectionProvider{
   private Map<String, Set<String>> myGroups = new HashMap< String, Set<String> >();
 
   private iPaintable mySeperator = null;
+  
+  private boolean isUserSelectionLocked = false;
 
   public UserPanel(ChatMediator aP2PFacade) throws P2PFacadeException{
     myMediator = aP2PFacade;
@@ -337,6 +339,7 @@ public class UserPanel extends GPanel implements iUserSelectionProvider{
 
   @Override
   public void setSelectedUsers( Set< String > aUserList ) {
+    if(isUserSelectionLocked) return;
     clear();
 
     //now select the ones from the list
@@ -346,6 +349,7 @@ public class UserPanel extends GPanel implements iUserSelectionProvider{
   }
 
   private void setSelectedUserIds( Set< String > aUserList ) {
+    if(isUserSelectionLocked) return;
     clear();
 
     //now select the ones from the list
@@ -422,6 +426,7 @@ public class UserPanel extends GPanel implements iUserSelectionProvider{
 
   @Override
   public void clear() {
+    if(isUserSelectionLocked) return;
     for(JCheckBox theCheckBox : myCheckBoxes.values()){
       theCheckBox.setSelected( false );
     }
@@ -449,5 +454,15 @@ public class UserPanel extends GPanel implements iUserSelectionProvider{
         theListener.selectionChanged();
       }
     }
+  }
+
+  @Override
+  public boolean isUserSelectionLocked() {
+    return isUserSelectionLocked;
+  }
+
+  @Override
+  public void setUserSelectionLocked( boolean isUserSelectionLocked ) {
+    this.isUserSelectionLocked = isUserSelectionLocked;
   }
 }

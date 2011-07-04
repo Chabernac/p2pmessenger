@@ -16,7 +16,8 @@ import javax.swing.JMenuItem;
 import chabernac.command.AbstractCommand;
 
 public class CommandMenuItem extends JMenuItem implements Observer, ActionListener{
-	private AbstractCommand myCommand = null;
+  private static final long serialVersionUID = 2145957926171156640L;
+  private AbstractCommand myCommand = null;
 	
 	public CommandMenuItem(AbstractCommand aCommand){
 		myCommand = aCommand;

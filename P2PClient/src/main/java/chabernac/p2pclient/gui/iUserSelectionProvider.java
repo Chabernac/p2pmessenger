@@ -14,4 +14,6 @@ public interface iUserSelectionProvider {
   public void clear();
   public void setMultiPeerMessage(MultiPeerMessage aMessage);
   public void addSelectionChangedListener(iSelectionChangedListener aListener);
+  public void setUserSelectionLocked(boolean isUserSelectionLocked);
+  public boolean isUserSelectionLocked();
 }
