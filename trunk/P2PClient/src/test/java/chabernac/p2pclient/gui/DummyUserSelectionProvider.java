@@ -39,4 +39,16 @@ public class DummyUserSelectionProvider implements iUserSelectionProvider {
     
   }
 
+  @Override
+  public boolean isUserSelectionLocked() {
+    // TODO Auto-generated method stub
+    return false;
+  }
+
+  @Override
+  public void setUserSelectionLocked( boolean isUserSelectionLocked ) {
+    // TODO Auto-generated method stub
+    
+  }
+
 }
