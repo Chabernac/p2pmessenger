@@ -17,9 +17,9 @@ import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 
 import chabernac.command.CommandSession;
-import chabernac.command.CommandSessionTest;
 import chabernac.gui.tray.NewMessageInfoPanelDisplayer;
 import chabernac.gui.tray.NewMessageTrayIconDisplayer;
+import chabernac.gui.tray.NewUserTrayIconDisplayer;
 import chabernac.gui.tray.SystemTrayMenu;
 import chabernac.io.SocketProxy;
 import chabernac.ldapuserinfoprovider.AXALDAPUserInfoProvider;
@@ -101,6 +101,7 @@ public class ApplicationLauncher {
       myMediator.setSystemTrayMenu( theMenu );
 
       new NewMessageTrayIconDisplayer(myChatFrame.getMediator());
+      new NewUserTrayIconDisplayer(myChatFrame.getMediator());
       new NewMessageInfoPanelDisplayer(myChatFrame.getMediator());
 
       initSaveMessages();
