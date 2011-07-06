@@ -13,7 +13,7 @@ import chabernac.protocol.userinfo.iUserInfoListener;
 
 public class NewUserTrayIconDisplayer extends TrayIconAnimator{
   public NewUserTrayIconDisplayer ( ChatMediator anMediator ) throws Exception {
-    super(anMediator, "images/message.png", "images/message2.png", 30);
+    super(anMediator, "images/message.png", "images/message2.png", 60);
   }
   
   private Map<String, UserInfo> myLatestUserInfo = new HashMap<String, UserInfo>();
@@ -23,20 +23,23 @@ public class NewUserTrayIconDisplayer extends TrayIconAnimator{
 
     @Override
     public void userInfoChanged( UserInfo aUserInfo, Map<String, UserInfo> aFullUserInfoList ) {
-      for(String theUserId : aFullUserInfoList.keySet()){
-        UserInfo theNewUserInfo = aFullUserInfoList.get(theUserId);
-        //only if the new user info changed to an online status
-        if(theNewUserInfo.getStatus() != UserInfo.Status.OFFLINE) {
-          //only if the user was not known yet or the status was previously offline
-          if(!myLatestUserInfo.containsKey( theUserId ) || myLatestUserInfo.get( theUserId ).getStatus() == UserInfo.Status.OFFLINE){
-            animate();
-            //if we have detected one user change stop further processing
-            return;
-          }
-        }
-        
-      }
+      checkUserInfo( aFullUserInfoList );
       myLatestUserInfo = aFullUserInfoList;
+    }
+  }
+  
+  private void checkUserInfo(Map<String, UserInfo> aFullUserInfoList){
+    for(String theUserId : aFullUserInfoList.keySet()){
+      UserInfo theNewUserInfo = aFullUserInfoList.get(theUserId);
+      //only if the new user info changed to an online status
+      if(theNewUserInfo.getStatus() != UserInfo.Status.OFFLINE) {
+        //only if the user was not known yet or the status was previously offline
+        if(!myLatestUserInfo.containsKey( theUserId ) || myLatestUserInfo.get( theUserId ).getStatus() == UserInfo.Status.OFFLINE){
+          animate();
+          //if we have detected one user change stop further processing
+          return;
+        }
+      }
     }
   }
   
