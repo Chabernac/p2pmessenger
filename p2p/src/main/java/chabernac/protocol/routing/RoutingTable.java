@@ -90,7 +90,7 @@ public class RoutingTable implements Iterable< RoutingTableEntry >, Serializable
       return;
     }
     
-    LOGGER.error(anEntry.getPeer().getPeerId() + " test=" + anEntry.getPeer().isTestPeer()  + " is a valid peer according to " + myPeerInspector);
+//    LOGGER.error(anEntry.getPeer().getPeerId() + " test=" + anEntry.getPeer().isTestPeer()  + " is a valid peer according to " + myPeerInspector);
     
     if(anEntry.getHopDistance() == RoutingTableEntry.MAX_HOP_DISTANCE && 
        !containsEntryForPeer( anEntry.getPeer().getPeerId() ) &&
