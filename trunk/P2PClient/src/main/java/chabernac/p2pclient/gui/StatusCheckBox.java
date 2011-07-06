@@ -12,6 +12,7 @@ import java.awt.Image;
 import java.awt.Insets;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
+import java.awt.event.MouseEvent;
 
 import javax.swing.JCheckBox;
 
@@ -30,6 +31,8 @@ public class StatusCheckBox extends JCheckBox {
   private static final Insets DEFAULT_MARGIN = new Insets(0,0,0,LIGHT_WIDTH);
   
   private DeliveryReport.Status myDeliveryStatus = null;
+  
+  private boolean isEditable = true;
 
   public StatusCheckBox(){
     this(Status.ONLINE);
@@ -123,4 +126,27 @@ public class StatusCheckBox extends JCheckBox {
       g.fillOval( theX - LIGHT_WIDTH / 2, theY - LIGHT_WIDTH / 2, LIGHT_WIDTH, LIGHT_WIDTH );
     }
   }
+  
+  public void processMouseEvent(MouseEvent me) {
+    if(isEditable){
+      super.processMouseEvent( me );
+    }
+  }
+
+
+  public boolean isEditable() {
+    return isEditable;
+  }
+
+  public void setEditable( boolean aEditable ) {
+    isEditable = aEditable;
+  }
+  
+  public void setSelected(boolean isSelected){
+    if(isEditable){
+      super.setSelected( isSelected );
+    }
+  }
+  
+  
 }

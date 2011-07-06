@@ -10,6 +10,7 @@ import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -63,11 +64,10 @@ public class UserPanel extends GPanel implements iUserSelectionProvider{
   private List<iSelectionChangedListener> mySelectionListeners = new ArrayList< iSelectionChangedListener >();
   private ChangeListener myCheckBoxListener = new MyCheckBoxListener();
   private Map<String, Set<String>> myGroups = new HashMap< String, Set<String> >();
+  private boolean isUserSelectionLocked = false;
 
   private iPaintable mySeperator = null;
   
-  private boolean isUserSelectionLocked = false;
-
   public UserPanel(ChatMediator aP2PFacade) throws P2PFacadeException{
     myMediator = aP2PFacade;
     loadGroupsInPreferences();
@@ -124,6 +124,7 @@ public class UserPanel extends GPanel implements iUserSelectionProvider{
           } catch ( P2PFacadeException e ) {
           }
         }
+        enableDisableLockedItems();
       }
     });
   }
@@ -339,7 +340,7 @@ public class UserPanel extends GPanel implements iUserSelectionProvider{
 
   @Override
   public void setSelectedUsers( Set< String > aUserList ) {
-    if(isUserSelectionLocked) return;
+    if(isUserSelectionLocked()) return;
     clear();
 
     //now select the ones from the list
@@ -349,7 +350,7 @@ public class UserPanel extends GPanel implements iUserSelectionProvider{
   }
 
   private void setSelectedUserIds( Set< String > aUserList ) {
-    if(isUserSelectionLocked) return;
+    if(isUserSelectionLocked()) return;
     clear();
 
     //now select the ones from the list
@@ -426,7 +427,7 @@ public class UserPanel extends GPanel implements iUserSelectionProvider{
 
   @Override
   public void clear() {
-    if(isUserSelectionLocked) return;
+    if(isUserSelectionLocked()) return;
     for(JCheckBox theCheckBox : myCheckBoxes.values()){
       theCheckBox.setSelected( false );
     }
@@ -455,6 +456,12 @@ public class UserPanel extends GPanel implements iUserSelectionProvider{
       }
     }
   }
+  
+  private void enableDisableLockedItems(){
+    for(StatusCheckBox theBox : myCheckBoxes.values()){
+      theBox.setEditable( !isUserSelectionLocked );
+    }
+  }
 
   @Override
   public boolean isUserSelectionLocked() {
@@ -464,5 +471,6 @@ public class UserPanel extends GPanel implements iUserSelectionProvider{
   @Override
   public void setUserSelectionLocked( boolean isUserSelectionLocked ) {
     this.isUserSelectionLocked = isUserSelectionLocked;
+    enableDisableLockedItems();
   }
 }
