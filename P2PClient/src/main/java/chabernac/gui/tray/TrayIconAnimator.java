@@ -36,6 +36,10 @@ public abstract class TrayIconAnimator {
   
   private Object LOCK = new Object();
 
+  TrayIconAnimator(){
+    myMediator = null;
+  }
+  
   public TrayIconAnimator ( ChatMediator anMediator, String anImageResource1, String anImageResource2, long aMaxDurationInSeconds ) throws Exception {
     super();
     myMediator = anMediator;
