@@ -102,4 +102,11 @@ public class FilePacketIO {
   public boolean[] getWrittenPackts() {
     return myWrittenPackets;
   }
+  
+  public boolean isComplete(){
+    for(boolean theBlockComplet : myWrittenPackets){
+      if(!theBlockComplet) return false;
+    }
+    return true;
+  }
 }
