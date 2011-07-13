@@ -45,7 +45,7 @@ public class AsyncFileTransferProtocolTest extends AbstractProtocolTest {
     File theFileToWrite = new File("in.temp");
     TestFileHandler theFileHandler = new TestFileHandler(theFileToWrite);
     ProtocolServer theServer3 = new ProtocolServer(theProtocol3, RoutingProtocol.START_PORT + 2, 5);
-    ((AsyncFileTransferProtocol)theProtocol3.getProtocol( AsyncFileTransferProtocol.ID )).setHandler( theFileHandler );
+    ((AsyncFileTransferProtocol)theProtocol3.getProtocol( AsyncFileTransferProtocol.ID )).setFileHandler( theFileHandler );
     RoutingProtocol theRoutingProtocol3 = (RoutingProtocol)theProtocol3.getProtocol( RoutingProtocol.ID );
 
     ((RoutingProtocol)theProtocol1.getProtocol( RoutingProtocol.ID )).getLocalUnreachablePeerIds().add( "3" );
@@ -146,11 +146,10 @@ public class AsyncFileTransferProtocolTest extends AbstractProtocolTest {
     public void fileTransfer( String aFile, String aFileId, double aPercentageComplete ) {
       
     }
-  }
-  
-  private class TestFileListener implements iAsyncFileTransferListener{
+
     @Override
-    public void fileReceived( File aFile ) {
+    public void fileSaved( File aFile ) throws FileTransferException {
+      // TODO Auto-generated method stub
       
     }
   }
