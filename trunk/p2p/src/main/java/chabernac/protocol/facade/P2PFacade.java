@@ -30,6 +30,8 @@ import chabernac.protocol.ProtocolWebServer;
 import chabernac.protocol.iP2PServer;
 import chabernac.protocol.iProtocolDelegate;
 import chabernac.protocol.application.ApplicationProtocol;
+import chabernac.protocol.asyncfiletransfer.AsyncFileTransferProtocol;
+import chabernac.protocol.asyncfiletransfer.iAsyncFileTransferHandler;
 import chabernac.protocol.filetransfer.FileTransferProtocol;
 import chabernac.protocol.filetransfer.iFileHandler;
 import chabernac.protocol.infoexchange.InfoExchangeProtocol;
@@ -188,12 +190,45 @@ public class P2PFacade {
       throw new P2PFacadeException("An error occured while sending file", e);
     }
   }
+  
+  public Future<Boolean> sendFileAsync(final File aFile, final String aPeerId, ExecutorService aService) {
+    return aService.submit(  new Callable< Boolean >(){
+
+      @Override
+      public Boolean call() throws Exception {
+        sendFileAsync( aFile, aPeerId );
+        return Boolean.TRUE;
+      }
+    });
+  }
+  
+  private void sendFileAsync(File aFile, String aPeerId) throws P2PFacadeException{
+    if(!isStarted()) throw new P2PFacadeException("Can not execute this action when the server is not started");
+    try {
+      ((AsyncFileTransferProtocol)myContainer.getProtocol( AsyncFileTransferProtocol.ID )).sendFile( aFile, aPeerId );
+    } catch ( Exception e ) {
+      throw new P2PFacadeException("An error occured while sending file", e);
+    }
+  }
 
   public P2PFacade setFileHandler(iFileHandler aFileHandler) throws P2PFacadeException{
     myProperties.setProperty( "chabernac.protocol.filetransfer.iFileHandler", aFileHandler );
     if(isStarted()){
       try {
         ((FileTransferProtocol)myContainer.getProtocol( FileTransferProtocol.ID )).setFileHandler( aFileHandler );
+      } catch ( ProtocolException e ) {
+        throw new P2PFacadeException("An error occured while setting file handler", e);
+      }
+    }
+    return this;
+  }
+  
+  
+  public P2PFacade setAsyncFileHandler(iAsyncFileTransferHandler aFileHandler) throws P2PFacadeException{
+    myProperties.setProperty( "chabernac.protocol.filetransfer.iAsyncFileTransferHandler", aFileHandler );
+    if(isStarted()){
+      try {
+        ((AsyncFileTransferProtocol)myContainer.getProtocol( AsyncFileTransferProtocol.ID )).setFileHandler( aFileHandler );
       } catch ( ProtocolException e ) {
         throw new P2PFacadeException("An error occured while setting file handler", e);
       }
