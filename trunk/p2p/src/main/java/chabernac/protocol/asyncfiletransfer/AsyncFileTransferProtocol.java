@@ -34,7 +34,7 @@ public class AsyncFileTransferProtocol extends Protocol {
   private static enum Command{ACCEPT_FILE, RESEND_PACKET, ACCEPT_PACKET, END_FILE_TRANSFER};
   private static enum Response{FILE_ACCEPTED, PACKET_OK, NOK, UNKNOWN_ID, END_FILE_TRANSFER_OK};
 
-  private static final int PACKET_SIZE = 24;
+  private static final int PACKET_SIZE = 1024;
   private static final int MAX_RETRY = 8;
 
   private iObjectStringConverter<FilePacket> myObjectPerister = new Base64ObjectStringConverter<FilePacket>();
