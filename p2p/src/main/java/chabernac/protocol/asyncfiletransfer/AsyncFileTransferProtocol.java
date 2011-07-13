@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
@@ -22,6 +23,7 @@ import chabernac.protocol.message.Message;
 import chabernac.protocol.routing.AbstractPeer;
 import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.RoutingTable;
+import chabernac.thread.DynamicSizeExecutor;
 
 public class AsyncFileTransferProtocol extends Protocol {
   private static final Logger LOGGER = Logger.getLogger( AsyncFileTransferException.class );
@@ -40,6 +42,8 @@ public class AsyncFileTransferProtocol extends Protocol {
 
   private iAsyncFileTransferHandler myHandler = null;
   private List<iAsyncFileTransferListener> myListeners = new ArrayList<iAsyncFileTransferListener>();
+  
+  private ExecutorService myService = DynamicSizeExecutor.getTinyInstance();
 
   public AsyncFileTransferProtocol( ) {
     super( ID );
@@ -127,16 +131,20 @@ public class AsyncFileTransferProtocol extends Protocol {
       }});
   }
 
-  private void sendPacket(AbstractPeer aPeer, FilePacket aPacket) throws AsyncFileTransferException{
-    try{
-      Message theMessage = new Message();
-      theMessage.setDestination( aPeer );
-      theMessage.setProtocolMessage( true );
-      theMessage.setMessage( createMessage( Command.ACCEPT_PACKET + " " + myObjectPerister.toString( aPacket ) ) );
-      getMessageProtocol().sendMessage( theMessage );
-    }catch(Exception e){
-      throw new AsyncFileTransferException( "Error occured when transferring packet", e );
-    }
+  private void sendPacket(final AbstractPeer aPeer, final FilePacket aPacket){
+    myService.execute( new Runnable(){
+      public void run(){
+        try{
+          Message theMessage = new Message();
+          theMessage.setDestination( aPeer );
+          theMessage.setProtocolMessage( true );
+          theMessage.setMessage( createMessage( Command.ACCEPT_PACKET + " " + myObjectPerister.toString( aPacket ) ) );
+          getMessageProtocol().sendAndWaitForResponse( theMessage, 5, TimeUnit.SECONDS );
+        }catch(Exception e){
+          LOGGER.error("Error occured while sending packet " + aPacket.getPacket(), e);
+        }    
+      }
+    });
   }
 
   private String sendMessageTo(AbstractPeer aPeer, String aMessage) throws AsyncFileTransferException{
