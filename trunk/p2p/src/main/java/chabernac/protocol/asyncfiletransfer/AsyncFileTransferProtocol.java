@@ -5,7 +5,9 @@
 package chabernac.protocol.asyncfiletransfer;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -30,14 +32,16 @@ public class AsyncFileTransferProtocol extends Protocol {
   private static enum Response{FILE_ACCEPTED, PACKET_OK, NOK, UNKNOWN_ID, END_FILE_TRANSFER_OK};
 
   private static final int PACKET_SIZE = 1024;
+  private static final int MAX_RETRY = 8;
 
   private iObjectStringConverter<FilePacket> myObjectPerister = new Base64ObjectStringConverter<FilePacket>();
 
   private Map<String, FilePacketIO> myFilePacketIO = new HashMap<String, FilePacketIO>();
 
   private iAsyncFileTransferHandler myHandler = null;
+  private List<iAsyncFileTransferListener> myListeners = new ArrayList<iAsyncFileTransferListener>();
 
-  public AsyncFileTransferProtocol( String anId ) {
+  public AsyncFileTransferProtocol( ) {
     super( ID );
   }
 
@@ -66,7 +70,7 @@ public class AsyncFileTransferProtocol extends Protocol {
         int thePacketSize = Integer.parseInt( theParams[2] );
         int theNrOfPackets = Integer.parseInt( theParams[3] );
         
-        File theFile = myHandler.acceptFile( theFileName );
+        File theFile = myHandler.acceptFile( theFileName, theUUId );
         FilePacketIO theIO = FilePacketIO.createForWrite( theFile, theUUId, thePacketSize, theNrOfPackets );
         myFilePacketIO.put( theUUId, theIO );
         
@@ -79,7 +83,11 @@ public class AsyncFileTransferProtocol extends Protocol {
         if(!myFilePacketIO.containsKey( thePacket.getId() )){
           return Response.UNKNOWN_ID.name();
         }
-        myFilePacketIO.get( thePacket.getId() ).writePacket( thePacket );
+        
+        FilePacketIO theIO = myFilePacketIO.get(thePacket.getId());
+        theIO.writePacket( thePacket );
+        
+        myHandler.fileTransfer( theIO.getFile().getName(), thePacket.getId(), theIO.getPercentageWritten());
         
         return Response.PACKET_OK.name();
       } else if(anInput.startsWith( Command.END_FILE_TRANSFER.name() )){
@@ -88,12 +96,12 @@ public class AsyncFileTransferProtocol extends Protocol {
         String theUUId = theParams[0];
         FilePacketIO theIO = myFilePacketIO.get(theUUId);
         if(theIO.isComplete()){
-          if(myHandler
+          notifyIncomingFile( theIO.getFile() );
           return Response.END_FILE_TRANSFER_OK.name();
         } else {
           String theIncompletePacktets = "";
-          for(int i=0;i<theIO.getWrittenPackts().length;i++){
-            if(!theIO.getWrittenPackts()[i]){
+          for(int i=0;i<theIO.getWrittenPackets().length;i++){
+            if(!theIO.getWrittenPackets()[i]){
               theIncompletePacktets += i + " ";
             }
           }
@@ -108,11 +116,22 @@ public class AsyncFileTransferProtocol extends Protocol {
     // TODO Auto-generated method stub
     return null;
   }
+  
+  private void notifyIncomingFile(final File aFile){
+    getExecutorService().execute( new Runnable() {
+      @Override
+      public void run() {
+        for(iAsyncFileTransferListener theListener : myListeners){
+          theListener.fileReceived( aFile );
+        }
+      }});
+  }
 
   private void sendPacket(AbstractPeer aPeer, FilePacket aPacket) throws AsyncFileTransferException{
     try{
       Message theMessage = new Message();
       theMessage.setDestination( aPeer );
+      theMessage.setProtocolMessage( true );
       theMessage.setMessage( createMessage( Command.ACCEPT_PACKET + " " + myObjectPerister.toString( aPacket ) ) );
       getMessageProtocol().sendMessage( theMessage );
     }catch(Exception e){
@@ -124,14 +143,15 @@ public class AsyncFileTransferProtocol extends Protocol {
     try{
       Message theMessage = new Message();
       theMessage.setDestination( aPeer );
-      theMessage.setMessage( aMessage );
+      theMessage.setMessage( createMessage( aMessage ));
+      theMessage.setProtocolMessage( true );
       return getMessageProtocol().sendAndWaitForResponse( theMessage, 5, TimeUnit.SECONDS );
     }catch(Exception e){
       throw new AsyncFileTransferException("Could not send message", e);
     }
   }
 
-  public void sendFile(String aPeer, File aFile) throws AsyncFileTransferException{
+  public void sendFile(File aFile, String aPeer) throws AsyncFileTransferException{
     try{
       AbstractPeer theDestination = getRoutingTable().getEntryForPeer( aPeer ).getPeer();
 
@@ -141,7 +161,11 @@ public class AsyncFileTransferProtocol extends Protocol {
       myFilePacketIO.put( theIO.getId(), theIO );
 
       //init file transfer with other peer
-      String theResult = sendMessageTo( theDestination, createMessage( Command.ACCEPT_FILE.name() + " " + aFile.getName() ) );
+      String theResult = sendMessageTo( theDestination, Command.ACCEPT_FILE.name() + " " + 
+                                        aFile.getName()  + " " + 
+                                        theIO.getId() + " " + 
+                                        theIO.getPacketSize() + " " + 
+                                        theIO.getNrOfPackets());
 
       if(theResult.startsWith( Response.FILE_ACCEPTED.name() )){
         //only continue if the file was accepted by the client
@@ -152,23 +176,41 @@ public class AsyncFileTransferProtocol extends Protocol {
       }
 
       String theResponse = null;
-      while( !(theResponse = sendMessageTo( theDestination, Command.END_FILE_TRANSFER.name()  + " " + theIO.getId())).equalsIgnoreCase(Response.END_FILE_TRANSFER_OK.name())){
+      int j=0;
+      while( j++ < MAX_RETRY && !(theResponse = sendMessageTo( theDestination, Command.END_FILE_TRANSFER.name()  + " " + theIO.getId())).equalsIgnoreCase(Response.END_FILE_TRANSFER_OK.name())){
         //if we get here not all packets where correctly delivered resend the missed packets
         String[] thePacketsToResend = theResponse.split(" ");
         for(int i=0;i<thePacketsToResend.length;i++){
           sendPacket(theDestination, theIO.getPacket(Integer.parseInt(thePacketsToResend[i])));
         }
       }
-
+      
+      if(!theResponse.equalsIgnoreCase(Response.END_FILE_TRANSFER_OK.name())){
+        throw new AsyncFileTransferException("Transferring file failed, not all packets where send successfull, missing packet number '" + theResponse + "'");
+      }
     }catch(Exception e){
       throw new AsyncFileTransferException("Could not send file to peer '" + aPeer + "'", e);
     }
+  }
+  
+  public void addFileListener(iAsyncFileTransferListener aListener){
+    myListeners.add(aListener);
+  }
+  
+  public void removeListener(iAsyncFileTransferListener aListener){
+    myListeners.remove( aListener );
+  }
+  
+  public iAsyncFileTransferHandler getHandler() {
+    return myHandler;
+  }
+
+  public void setHandler( iAsyncFileTransferHandler aHandler ) {
+    myHandler = aHandler;
   }
 
   @Override
   public void stop() {
     // TODO Auto-generated method stub
-
   }
-
 }
