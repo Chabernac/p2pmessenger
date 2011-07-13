@@ -6,13 +6,13 @@ package chabernac.protocol;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.RollingFileAppender;
 import org.apache.log4j.TTCCLayout;
 
 import chabernac.protocol.application.ApplicationProtocol;
+import chabernac.protocol.asyncfiletransfer.AsyncFileTransferProtocol;
 import chabernac.protocol.echo.EchoProtocol;
 import chabernac.protocol.encryption.EncryptionException;
 import chabernac.protocol.encryption.EncryptionProtocol;
@@ -147,6 +147,10 @@ public class ProtocolFactory implements iProtocolFactory{
     
     if(AsyncMessageProcotol.ID.equalsIgnoreCase( aProtocolId )) {
       return new AsyncMessageProcotol();
+    }
+    
+    if(AsyncFileTransferProtocol.ID.equalsIgnoreCase( aProtocolId )){
+      return new AsyncFileTransferProtocol( );
     }
 
     throw new ProtocolException("The protocol with id '" + aProtocolId + "' is not known");

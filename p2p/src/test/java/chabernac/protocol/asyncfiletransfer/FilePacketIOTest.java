@@ -24,8 +24,9 @@ public class FilePacketIOTest extends TestCase {
     System.out.println("File size: " + theRead.length());
     
     for(int i=0;i<theReadPacket.getNrOfPackets();i++){
-      System.out.println("Writing packet " + i);
+      System.out.println("Writing packet " + i + " " + theWritePacket.getPercentageWritten());
       theWritePacket.writePacket( theReadPacket.getPacket( i ) );
+      
     }
     
     theWritePacket.close();
@@ -43,7 +44,7 @@ public class FilePacketIOTest extends TestCase {
     theReader1.close();
     theReader2.close();
     
-    boolean[] theWrittenPackets = theWritePacket.getWrittenPackts();
+    boolean[] theWrittenPackets = theWritePacket.getWrittenPackets();
     
     for(int i=0;i<theWrittenPackets.length;i++){
       assertTrue( theWrittenPackets[i] );

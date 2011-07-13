@@ -9,5 +9,6 @@ import java.io.File;
 import chabernac.protocol.filetransfer.FileTransferException;
 
 public interface iAsyncFileTransferHandler {
-  public File acceptFile(String aFileName) throws FileTransferException;
+  public File acceptFile(String aFileName, String aFileId) throws FileTransferException;
+  public void fileTransfer(String aFileName, String aFileId, double aPercentageComplete);
 }

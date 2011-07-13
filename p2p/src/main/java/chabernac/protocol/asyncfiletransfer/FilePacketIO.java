@@ -98,8 +98,16 @@ public class FilePacketIO {
   public String getId() {
     return myId;
   }
+  
+  public double getPercentageWritten(){
+    int theWrittenPackets = 0;
+    for(boolean isWritten : myWrittenPackets){
+      if(isWritten) theWrittenPackets++;
+    }
+    return (double)theWrittenPackets / (double)myNrOfPackets;
+  }
 
-  public boolean[] getWrittenPackts() {
+  public boolean[] getWrittenPackets() {
     return myWrittenPackets;
   }
   
