@@ -7,6 +7,7 @@ package chabernac.protocol.asyncfiletransfer;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -26,15 +27,15 @@ import chabernac.protocol.routing.RoutingTable;
 import chabernac.thread.DynamicSizeExecutor;
 
 public class AsyncFileTransferProtocol extends Protocol {
-  private static final Logger LOGGER = Logger.getLogger( AsyncFileTransferException.class );
+  private static final Logger LOGGER = Logger.getLogger( AsyncFileTransferProtocol.class );
 
   public static final String ID = "AFP";
 
   private static enum Command{ACCEPT_FILE, RESEND_PACKET, ACCEPT_PACKET, END_FILE_TRANSFER};
   private static enum Response{FILE_ACCEPTED, FILE_REFUSED, PACKET_OK, PACKET_REFUSED, NOK, UNKNOWN_ID, END_FILE_TRANSFER_OK, ABORT_FILE_TRANSFER};
 
-  private static final int PACKET_SIZE = 1024;
-  private static final int MAX_RETRY = 8;
+  private int myPacketSize = 1024;
+  private int myMaxRetries = 8;
 
   private iObjectStringConverter<FilePacket> myObjectPerister = new Base64ObjectStringConverter<FilePacket>();
 
@@ -43,6 +44,11 @@ public class AsyncFileTransferProtocol extends Protocol {
   private iAsyncFileTransferHandler myHandler = null;
 
   private ExecutorService myService = DynamicSizeExecutor.getTinyInstance();
+  
+  //just for test purposes, if set to a number > 0 everty 1 / myIsIgnorePacketRatio packets will be simulated as being lost so that a resend
+  //of the packed will be triggered
+  private int myIsIgnorePacketRatio = -1;
+  private Random myRandom = new Random();
 
   public AsyncFileTransferProtocol( ) {
     super( ID );
@@ -86,6 +92,11 @@ public class AsyncFileTransferProtocol extends Protocol {
       } else if(anInput.startsWith( Command.ACCEPT_PACKET.name() )){
         String thePack = anInput.substring(Command.ACCEPT_PACKET.name().length() + 1 );
         FilePacket thePacket = myObjectPerister.getObject( thePack );
+        
+        if(isSimulateLostPacket()) {
+          LOGGER.debug("Simulating lost packet '" + thePacket.getPacket() + "'");
+          return Response.NOK.name();
+        }
 
         if(!myFilePacketIO.containsKey( thePacket.getId() )){
           return Response.UNKNOWN_ID.name();
@@ -97,6 +108,7 @@ public class AsyncFileTransferProtocol extends Protocol {
 
         myHandler.fileTransfer( theIO.getFile().getName(), thePacket.getId(), theIO.getPercentageWritten());
 
+        LOGGER.debug( "Packet accepted '" + thePacket.getPacket() + "'" );
         return Response.PACKET_OK.name();
       } else if(anInput.startsWith( Command.END_FILE_TRANSFER.name() )){
         String[] theParams = anInput.substring( Command.END_FILE_TRANSFER.name().length() + 1 ).split( " " );
@@ -125,6 +137,11 @@ public class AsyncFileTransferProtocol extends Protocol {
     return null;
   }
 
+  private boolean isSimulateLostPacket() {
+    if(myIsIgnorePacketRatio <= 0) return false;
+    return (myRandom.nextInt() % myIsIgnorePacketRatio == 0); 
+  }
+
   private void sendPacket(final AbstractPeer aPeer, final FilePacket aPacket,final CountDownLatch aLatch, final AtomicBoolean isContinue){
     myService.execute( new Runnable(){
       public void run(){
@@ -133,6 +150,7 @@ public class AsyncFileTransferProtocol extends Protocol {
           theMessage.setDestination( aPeer );
           theMessage.setProtocolMessage( true );
           theMessage.setMessage( createMessage( Command.ACCEPT_PACKET + " " + myObjectPerister.toString( aPacket ) ) );
+          LOGGER.debug("Packet send '" + aPacket.getPacket() + "'");
           String theResponse = getMessageProtocol().sendAndWaitForResponse( theMessage, 5, TimeUnit.SECONDS );
           if(theResponse.startsWith( Response.PACKET_REFUSED.name() )){
             isContinue.set( false );
@@ -163,7 +181,7 @@ public class AsyncFileTransferProtocol extends Protocol {
       AbstractPeer theDestination = getRoutingTable().getEntryForPeer( aPeer ).getPeer();
 
       //create a new FilePacketIO for this file transfer
-      FilePacketIO theIO = FilePacketIO.createForRead( aFile, PACKET_SIZE );
+      FilePacketIO theIO = FilePacketIO.createForRead( aFile, myPacketSize );
       //store it
       myFilePacketIO.put( theIO.getId(), theIO );
 
@@ -192,14 +210,14 @@ public class AsyncFileTransferProtocol extends Protocol {
 
       String theResponse = null;
       int j=0;
-      while( j++ < MAX_RETRY && !(theResponse = sendMessageTo( theDestination, Command.END_FILE_TRANSFER.name()  + " " + theIO.getId())).equalsIgnoreCase(Response.END_FILE_TRANSFER_OK.name())){
+      while( j++ < myMaxRetries && !(theResponse = sendMessageTo( theDestination, Command.END_FILE_TRANSFER.name()  + " " + theIO.getId())).equalsIgnoreCase(Response.END_FILE_TRANSFER_OK.name())){
         //if we get here not all packets where correctly delivered resend the missed packets
+        LOGGER.debug("Some packets need to be resended '" + theResponse + "'");
         String[] thePacketsToResend = theResponse.split(" ");
         theLatch = new CountDownLatch( thePacketsToResend.length );
         for(int i=0;i<thePacketsToResend.length && isContinue.get();i++){
-          LOGGER.debug("Resending packet " + thePacketsToResend[i]);
+          LOGGER.debug("Resending packet '" + thePacketsToResend[i] + "'");
           sendPacket(theDestination, theIO.getPacket(Integer.parseInt(thePacketsToResend[i])), theLatch, isContinue);
-          theLatch.countDown();
         }
         
         if(!isContinue.get()) throw new AsyncFileTransferException("Transferring file aborted because a packet was refused");
@@ -222,6 +240,30 @@ public class AsyncFileTransferProtocol extends Protocol {
 
   public void setFileHandler( iAsyncFileTransferHandler aHandler ) {
     myHandler = aHandler;
+  }
+  
+  int getIsIgnorePacketRatio() {
+    return myIsIgnorePacketRatio;
+  }
+
+  void setIsIgnorePacketRatio( int aIsIgnorePacketRatio ) {
+    myIsIgnorePacketRatio = aIsIgnorePacketRatio;
+  }
+
+  protected int getPacketSize() {
+    return myPacketSize;
+  }
+
+  protected void setPacketSize( int aPacketSize ) {
+    myPacketSize = aPacketSize;
+  }
+
+  protected int getMaxRetries() {
+    return myMaxRetries;
+  }
+
+  protected void setMaxRetries( int aMaxRetries ) {
+    myMaxRetries = aMaxRetries;
   }
 
   @Override

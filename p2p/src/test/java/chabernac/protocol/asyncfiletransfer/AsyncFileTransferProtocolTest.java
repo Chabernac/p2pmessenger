@@ -36,6 +36,11 @@ public class AsyncFileTransferProtocolTest extends AbstractProtocolTest {
     ProtocolContainer theProtocol1 = getProtocolContainer( -1, false, "1");
     ProtocolServer theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT, 5);
     RoutingProtocol theRoutingProtocol1 = (RoutingProtocol)theProtocol1.getProtocol( RoutingProtocol.ID );
+    AsyncFileTransferProtocol theAFP1 = ((AsyncFileTransferProtocol)theProtocol1.getProtocol( AsyncFileTransferProtocol.ID ));
+    theAFP1.setPacketSize( 24 );
+    //we set the retry ratio pretty high so that we might almost be 100% sure that all packets will finally be delivered
+    theAFP1.setMaxRetries( 50 );
+
 
     ProtocolContainer theProtocol2 = getProtocolContainer( -1, false, "2");
     ProtocolServer theServer2 = new ProtocolServer(theProtocol2, RoutingProtocol.START_PORT + 1, 5);
@@ -43,9 +48,12 @@ public class AsyncFileTransferProtocolTest extends AbstractProtocolTest {
 
     ProtocolContainer theProtocol3 = getProtocolContainer( -1, false, "3");
     File theFileToWrite = new File("in.temp");
+    if(theFileToWrite.exists()) theFileToWrite.delete();
     TestFileHandler theFileHandler = new TestFileHandler(theFileToWrite);
     ProtocolServer theServer3 = new ProtocolServer(theProtocol3, RoutingProtocol.START_PORT + 2, 5);
-    ((AsyncFileTransferProtocol)theProtocol3.getProtocol( AsyncFileTransferProtocol.ID )).setFileHandler( theFileHandler );
+    AsyncFileTransferProtocol theAFP3 = ((AsyncFileTransferProtocol)theProtocol3.getProtocol( AsyncFileTransferProtocol.ID ));
+    theAFP3.setFileHandler( theFileHandler );
+    theAFP3.setIsIgnorePacketRatio( 5 );
     RoutingProtocol theRoutingProtocol3 = (RoutingProtocol)theProtocol3.getProtocol( RoutingProtocol.ID );
 
     ((RoutingProtocol)theProtocol1.getProtocol( RoutingProtocol.ID )).getLocalUnreachablePeerIds().add( "3" );
@@ -93,11 +101,15 @@ public class AsyncFileTransferProtocolTest extends AbstractProtocolTest {
 
       assertTrue( theFileToWrite.exists() );
       assertEquals( theTempFile.length(), theFileToWrite.length());
+      
+      assertEquals( 1D, theFileHandler.getLastPercentage() );
+      assertTrue( (int)Math.ceil( theTempFile.length() / theAFP1.getPacketSize() ) <= theFileHandler.getNumberOfPercentages() );
 
 //      assertEquals( theTempFile.getName(), theFileHandler.getAcceptedFile());
 //      assertEquals( theTempFile.length(), theFileHandler.getTotalBytes());
 //      assertEquals( theTempFile.length(), theFileHandler.getTotalBytes());
 //      assertNull(  theFileHandler.getInterruptedFile() );
+      assertEquals( theFileToWrite, theFileHandler.getFile());
       assertEquals( theFileToWrite, theFileHandler.getSavedFile());
 
     } finally {
@@ -127,13 +139,16 @@ public class AsyncFileTransferProtocolTest extends AbstractProtocolTest {
   
   private class TestFileHandler implements iAsyncFileTransferHandler{
     private File myFile;
+    private File mySavedFile;
+    private double myLastPercentage;
+    private double myNumberOfPercentages = 0;
 
     public TestFileHandler( File aFile ) {
       super();
       myFile = aFile;
     }
 
-    public File getSavedFile() {
+    public File getFile() {
       return myFile;
     }
 
@@ -144,13 +159,35 @@ public class AsyncFileTransferProtocolTest extends AbstractProtocolTest {
 
     @Override
     public void fileTransfer( String aFile, String aFileId, double aPercentageComplete ) {
-      
+      myNumberOfPercentages++;
+      myLastPercentage = aPercentageComplete;
     }
 
     @Override
     public void fileSaved( File aFile ) throws FileTransferException {
-      // TODO Auto-generated method stub
-      
+      mySavedFile = aFile;
     }
+    
+    public File getSavedFile(){
+      return mySavedFile;
+    }
+
+    protected double getLastPercentage() {
+      return myLastPercentage;
+    }
+
+    protected void setLastPercentage( double aLastPercentage ) {
+      myLastPercentage = aLastPercentage;
+    }
+
+    protected double getNumberOfPercentages() {
+      return myNumberOfPercentages;
+    }
+
+    protected void setNumberOfPercentages( double aNumberOfPercentages ) {
+      myNumberOfPercentages = aNumberOfPercentages;
+    }
+    
+    
   }
 }
