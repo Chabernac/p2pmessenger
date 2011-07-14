@@ -14,7 +14,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.log4j.Logger;
 
-import chabernac.gui.AboutDialog;
 import chabernac.io.Base64ObjectStringConverter;
 import chabernac.io.iObjectStringConverter;
 import chabernac.protocol.Protocol;
