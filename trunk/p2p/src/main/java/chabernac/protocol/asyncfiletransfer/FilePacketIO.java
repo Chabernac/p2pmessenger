@@ -59,7 +59,7 @@ public class FilePacketIO {
    int theLength = (int)Math.min((long)myPacketSize, myFileSize - theStart );
    byte[] thePacket = new byte[theLength];
    theRandomAccess.seek( theStart );
-   System.out.println("read at " + theStart + " length " + theLength);
+//   System.out.println("read at " + theStart + " length " + theLength);
    theRandomAccess.read( thePacket, 0, theLength);
    return new FilePacket( myId, thePacket, aNumber );
   }
@@ -68,7 +68,7 @@ public class FilePacketIO {
     int theStart = aPacket.getPacket() * myPacketSize;
     RandomAccessFile theRandomAccess = getRandomAccessFile();
     theRandomAccess.seek( theStart );
-    System.out.println("write at " + theStart + " length " + aPacket.getBytes().length + " file size is " + myFile.length());
+//    System.out.println("write at " + theStart + " length " + aPacket.getBytes().length + " file size is " + myFile.length());
     theRandomAccess.write( aPacket.getBytes(), 0, aPacket.getBytes().length);
     myWrittenPackets[aPacket.getPacket()] = true;
   }
