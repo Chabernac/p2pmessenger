@@ -5,16 +5,16 @@
 package chabernac.protocol.asyncfiletransfer;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.log4j.Logger;
 
+import chabernac.gui.AboutDialog;
 import chabernac.io.Base64ObjectStringConverter;
 import chabernac.io.iObjectStringConverter;
 import chabernac.protocol.Protocol;
@@ -28,11 +28,11 @@ import chabernac.thread.DynamicSizeExecutor;
 
 public class AsyncFileTransferProtocol extends Protocol {
   private static final Logger LOGGER = Logger.getLogger( AsyncFileTransferException.class );
-  
+
   public static final String ID = "AFP";
 
   private static enum Command{ACCEPT_FILE, RESEND_PACKET, ACCEPT_PACKET, END_FILE_TRANSFER};
-  private static enum Response{FILE_ACCEPTED, PACKET_OK, NOK, UNKNOWN_ID, END_FILE_TRANSFER_OK};
+  private static enum Response{FILE_ACCEPTED, FILE_REFUSED, PACKET_OK, PACKET_REFUSED, NOK, UNKNOWN_ID, END_FILE_TRANSFER_OK, ABORT_FILE_TRANSFER};
 
   private static final int PACKET_SIZE = 1024;
   private static final int MAX_RETRY = 8;
@@ -42,7 +42,7 @@ public class AsyncFileTransferProtocol extends Protocol {
   private Map<String, FilePacketIO> myFilePacketIO = new HashMap<String, FilePacketIO>();
 
   private iAsyncFileTransferHandler myHandler = null;
-  
+
   private ExecutorService myService = DynamicSizeExecutor.getTinyInstance();
 
   public AsyncFileTransferProtocol( ) {
@@ -65,38 +65,43 @@ public class AsyncFileTransferProtocol extends Protocol {
 
   @Override
   public String handleCommand( String aSessionId, String anInput ) {
+    //we can not do anything if there is no file handler
+    if(myHandler == null) return Response.ABORT_FILE_TRANSFER.name();
+
     try{
       if(anInput.startsWith( Command.ACCEPT_FILE.name() )){
         String[] theParams = anInput.substring( Command.ACCEPT_FILE.name().length() + 1 ).split( " " );
-        
+
         String theFileName = theParams[0];
         String theUUId = theParams[1];
         int thePacketSize = Integer.parseInt( theParams[2] );
         int theNrOfPackets = Integer.parseInt( theParams[3] );
-        
+
         File theFile = myHandler.acceptFile( theFileName, theUUId );
+
         FilePacketIO theIO = FilePacketIO.createForWrite( theFile, theUUId, thePacketSize, theNrOfPackets );
         myFilePacketIO.put( theUUId, theIO );
-        
+
         //create a 
         return Response.FILE_ACCEPTED.name();
       } else if(anInput.startsWith( Command.ACCEPT_PACKET.name() )){
         String thePack = anInput.substring(Command.ACCEPT_PACKET.name().length() + 1 );
         FilePacket thePacket = myObjectPerister.getObject( thePack );
-        
+
         if(!myFilePacketIO.containsKey( thePacket.getId() )){
           return Response.UNKNOWN_ID.name();
         }
-        
+
         FilePacketIO theIO = myFilePacketIO.get(thePacket.getId());
         theIO.writePacket( thePacket );
-        
+
+
         myHandler.fileTransfer( theIO.getFile().getName(), thePacket.getId(), theIO.getPercentageWritten());
-        
+
         return Response.PACKET_OK.name();
       } else if(anInput.startsWith( Command.END_FILE_TRANSFER.name() )){
         String[] theParams = anInput.substring( Command.END_FILE_TRANSFER.name().length() + 1 ).split( " " );
-        
+
         String theUUId = theParams[0];
         FilePacketIO theIO = myFilePacketIO.get(theUUId);
         if(theIO.isComplete()){
@@ -120,8 +125,8 @@ public class AsyncFileTransferProtocol extends Protocol {
     // TODO Auto-generated method stub
     return null;
   }
-  
-  private void sendPacket(final AbstractPeer aPeer, final FilePacket aPacket,final CountDownLatch aLatch){
+
+  private void sendPacket(final AbstractPeer aPeer, final FilePacket aPacket,final CountDownLatch aLatch, final AtomicBoolean isContinue){
     myService.execute( new Runnable(){
       public void run(){
         try{
@@ -129,7 +134,10 @@ public class AsyncFileTransferProtocol extends Protocol {
           theMessage.setDestination( aPeer );
           theMessage.setProtocolMessage( true );
           theMessage.setMessage( createMessage( Command.ACCEPT_PACKET + " " + myObjectPerister.toString( aPacket ) ) );
-          getMessageProtocol().sendAndWaitForResponse( theMessage, 5, TimeUnit.SECONDS );
+          String theResponse = getMessageProtocol().sendAndWaitForResponse( theMessage, 5, TimeUnit.SECONDS );
+          if(theResponse.startsWith( Response.PACKET_REFUSED.name() )){
+            isContinue.set( false );
+          }
         }catch(Exception e){
           LOGGER.error("Error occured while sending packet " + aPacket.getPacket(), e);
         }finally {
@@ -160,6 +168,8 @@ public class AsyncFileTransferProtocol extends Protocol {
       //store it
       myFilePacketIO.put( theIO.getId(), theIO );
 
+      AtomicBoolean isContinue = new AtomicBoolean(true);
+
       //init file transfer with other peer
       String theResult = sendMessageTo( theDestination, Command.ACCEPT_FILE.name() + " " + 
                                         aFile.getName()  + " " + 
@@ -167,16 +177,18 @@ public class AsyncFileTransferProtocol extends Protocol {
                                         theIO.getPacketSize() + " " + 
                                         theIO.getNrOfPackets());
 
+      //only continue if the file was accepted by the client
+      if(!theResult.startsWith( Response.FILE_ACCEPTED.name() )) throw new AsyncFileTransferException("Transferring file aborted");
+
       CountDownLatch theLatch = new CountDownLatch( theIO.getNrOfPackets() );
-      if(theResult.startsWith( Response.FILE_ACCEPTED.name() )){
-        //only continue if the file was accepted by the client
-        //now loop over all packets and send them to the other peer
-        for(int i=0;i<theIO.getNrOfPackets();i++){
-          sendPacket( theDestination, theIO.getPacket( i ), theLatch );
-          myHandler.fileTransfer( theIO.getFile().getName(), theIO.getId(), (double)i / (double)theIO.getNrOfPackets());
-        }
+      //now loop over all packets and send them to the other peer
+      for(int i=0;i<theIO.getNrOfPackets() && isContinue.get();i++){
+        sendPacket( theDestination, theIO.getPacket( i ), theLatch, isContinue );
+        if(myHandler != null) myHandler.fileTransfer( theIO.getFile().getName(), theIO.getId(), (double)i / (double)theIO.getNrOfPackets());
       }
       
+      if(!isContinue.get()) throw new AsyncFileTransferException("Transferring file aborted because a packet was refused");
+
       theLatch.await( 5, TimeUnit.SECONDS );
 
       String theResponse = null;
@@ -185,22 +197,26 @@ public class AsyncFileTransferProtocol extends Protocol {
         //if we get here not all packets where correctly delivered resend the missed packets
         String[] thePacketsToResend = theResponse.split(" ");
         theLatch = new CountDownLatch( thePacketsToResend.length );
-        for(int i=0;i<thePacketsToResend.length;i++){
+        for(int i=0;i<thePacketsToResend.length && isContinue.get();i++){
           LOGGER.debug("Resending packet " + thePacketsToResend[i]);
-          sendPacket(theDestination, theIO.getPacket(Integer.parseInt(thePacketsToResend[i])), theLatch);
+          sendPacket(theDestination, theIO.getPacket(Integer.parseInt(thePacketsToResend[i])), theLatch, isContinue);
           theLatch.countDown();
         }
+        
+        if(!isContinue.get()) throw new AsyncFileTransferException("Transferring file aborted because a packet was refused");
+        
         theLatch.await(5, TimeUnit.SECONDS);
       }
-      
+
       if(!theResponse.equalsIgnoreCase(Response.END_FILE_TRANSFER_OK.name())){
         throw new AsyncFileTransferException("Transferring file failed, not all packets where send successfull, missing packet number '" + theResponse + "'");
       }
     }catch(Exception e){
+      if(e instanceof AsyncFileTransferException) throw (AsyncFileTransferException)e;
       throw new AsyncFileTransferException("Could not send file to peer '" + aPeer + "'", e);
     }
   }
-  
+
   public iAsyncFileTransferHandler getHandler() {
     return myHandler;
   }
