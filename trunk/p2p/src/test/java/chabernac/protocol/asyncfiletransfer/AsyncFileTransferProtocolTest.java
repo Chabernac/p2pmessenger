@@ -97,18 +97,12 @@ public class AsyncFileTransferProtocolTest extends AbstractProtocolTest {
       theFileTransferProtocol.sendFile( theTempFile, theRoutingTable3.getLocalPeerId() );
       LOGGER.debug( "Done Sending file" );
 
-//      Thread.sleep( 10000 );
-
       assertTrue( theFileToWrite.exists() );
       assertEquals( theTempFile.length(), theFileToWrite.length());
       
       assertEquals( 1D, theFileHandler.getLastPercentage() );
       assertTrue( (int)Math.ceil( theTempFile.length() / theAFP1.getPacketSize() ) <= theFileHandler.getNumberOfPercentages() );
 
-//      assertEquals( theTempFile.getName(), theFileHandler.getAcceptedFile());
-//      assertEquals( theTempFile.length(), theFileHandler.getTotalBytes());
-//      assertEquals( theTempFile.length(), theFileHandler.getTotalBytes());
-//      assertNull(  theFileHandler.getInterruptedFile() );
       assertEquals( theFileToWrite, theFileHandler.getFile());
       assertEquals( theFileToWrite, theFileHandler.getSavedFile());
 
@@ -123,6 +117,10 @@ public class AsyncFileTransferProtocolTest extends AbstractProtocolTest {
         theFileToWrite.delete();
       }
     }
+  }
+  
+  public void testRefuseFile(){
+    
   }
   
   private File createTempFile() throws FileNotFoundException{
