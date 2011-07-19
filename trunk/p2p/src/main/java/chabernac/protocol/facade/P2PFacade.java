@@ -31,6 +31,7 @@ import chabernac.protocol.iP2PServer;
 import chabernac.protocol.iProtocolDelegate;
 import chabernac.protocol.application.ApplicationProtocol;
 import chabernac.protocol.asyncfiletransfer.AsyncFileTransferProtocol;
+import chabernac.protocol.asyncfiletransfer.FileTransferHandler;
 import chabernac.protocol.asyncfiletransfer.iAsyncFileTransferHandler;
 import chabernac.protocol.filetransfer.FileTransferProtocol;
 import chabernac.protocol.filetransfer.iFileHandler;
@@ -191,21 +192,10 @@ public class P2PFacade {
     }
   }
   
-  public Future<Boolean> sendFileAsync(final File aFile, final String aPeerId, ExecutorService aService) {
-    return aService.submit(  new Callable< Boolean >(){
-
-      @Override
-      public Boolean call() throws Exception {
-        sendFileAsync( aFile, aPeerId );
-        return Boolean.TRUE;
-      }
-    });
-  }
-  
-  private void sendFileAsync(File aFile, String aPeerId) throws P2PFacadeException{
+  public FileTransferHandler sendFileAsync(File aFile, String aPeerId) throws P2PFacadeException{
     if(!isStarted()) throw new P2PFacadeException("Can not execute this action when the server is not started");
     try {
-      ((AsyncFileTransferProtocol)myContainer.getProtocol( AsyncFileTransferProtocol.ID )).sendFile( aFile, aPeerId );
+      return ((AsyncFileTransferProtocol)myContainer.getProtocol( AsyncFileTransferProtocol.ID )).sendFile( aFile, aPeerId );
     } catch ( Exception e ) {
       throw new P2PFacadeException("An error occured while sending file", e);
     }
