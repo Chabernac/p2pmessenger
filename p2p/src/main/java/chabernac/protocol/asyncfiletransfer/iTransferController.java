@@ -1,0 +1,28 @@
+package chabernac.protocol.asyncfiletransfer;
+
+import java.util.Set;
+
+public interface iTransferController {
+  //return a set of transfers id's for wich the controller has state
+  public Set<String> getRunningTransfers();
+  
+  //resume the transfer with the given id and return a new transfer handler
+  //if the transfer with this id does not exist throw an exception
+  public FileTransferHandler resume(String aTransferId) throws AsyncFileTransferException;
+  
+  //interrupt the tranfer with the given id
+  //if the transfer with this id does not exist throw an exception
+  //if the transfer is running then stop it
+  public void removeAndInterrupt(String aTransferId) throws AsyncFileTransferException;
+  
+  //pause the transfer with the given id
+  //if the transfer with this id does not exist throw an exception
+  public void pause(String aTransferId) throws AsyncFileTransferException;
+  
+  //return the state of the transfer
+  //if the transfer with this id does not exist a state CANCELLED_OR_REMOVED is returned
+  public FileTransferState getState(String anTransferId);
+  
+  //remove the status of all finished file transfers
+  public void removeFinished();
+}

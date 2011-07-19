@@ -9,6 +9,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.util.concurrent.ExecutionException;
 
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
@@ -31,7 +32,7 @@ public class AsyncFileTransferProtocolTest extends AbstractProtocolTest {
     BasicConfigurator.configure();
   }
   
-  public void testAsyncFileTransferProtocol() throws InterruptedException, ProtocolException, FileNotFoundException, UnknownPeerException, AsyncFileTransferException{
+  public void testAsyncFileTransferProtocol() throws InterruptedException, ProtocolException, FileNotFoundException, UnknownPeerException, AsyncFileTransferException, ExecutionException{
     //p1 <--> p2 <--> p3 peer 1 cannot reach peer 3
     ProtocolContainer theProtocol1 = getProtocolContainer( -1, false, "1");
     ProtocolServer theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT, 5);
@@ -94,7 +95,7 @@ public class AsyncFileTransferProtocolTest extends AbstractProtocolTest {
       assertNotNull( thePeer3.getPeer() );
       assertTrue(thePeer3.isReachable());
       LOGGER.debug( "Sending file" );
-      theFileTransferProtocol.sendFile( theTempFile, theRoutingTable3.getLocalPeerId() );
+      assertTrue(theFileTransferProtocol.sendFile( theTempFile, theRoutingTable3.getLocalPeerId() ).waitForTransferred());
       LOGGER.debug( "Done Sending file" );
 
       assertTrue( theFileToWrite.exists() );
