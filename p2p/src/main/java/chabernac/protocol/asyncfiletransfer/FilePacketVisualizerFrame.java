@@ -9,9 +9,10 @@ import java.awt.BorderLayout;
 import javax.swing.JFrame;
 
 public class FilePacketVisualizerFrame extends JFrame {
-  private final FilePacketIO myIO;
+  private static final long serialVersionUID = 8477681824036423333L;
+  private final FileTransferHandler myIO;
   
-  public FilePacketVisualizerFrame(FilePacketIO anIO){
+  public FilePacketVisualizerFrame(FileTransferHandler anIO){
     myIO = anIO;
     buildGUI();
   }
@@ -21,5 +22,9 @@ public class FilePacketVisualizerFrame extends JFrame {
     setSize( 400,400 );
     add(new FilePacketVisualizerPanel( myIO ));
     setVisible( true );
+    try {
+      setTitle(myIO.getState().getDirection().name() + " " + myIO.getFile().getName());
+    } catch (AsyncFileTransferException e) {
+    }
   }
 }

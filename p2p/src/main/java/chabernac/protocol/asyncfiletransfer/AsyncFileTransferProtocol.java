@@ -19,6 +19,7 @@ import chabernac.io.Base64ObjectStringConverter;
 import chabernac.io.iObjectStringConverter;
 import chabernac.protocol.Protocol;
 import chabernac.protocol.ProtocolException;
+import chabernac.protocol.asyncfiletransfer.FileTransferState.Direction;
 import chabernac.protocol.message.AsyncMessageProcotol;
 import chabernac.protocol.message.Message;
 import chabernac.protocol.routing.AbstractPeer;
@@ -283,17 +284,18 @@ public class AsyncFileTransferProtocol extends Protocol implements iTransferCont
   public FileTransferState getState(String aTransferId){
     synchronized(LOCK){
       if(!containsTransferId( aTransferId )) {
-        return new FileTransferState(new Percentage( 0, 0 ), FileTransferState.State.CANCELLED_OR_REMOVED);
+        return new FileTransferState(new Percentage( 0, 0 ), FileTransferState.State.CANCELLED_OR_REMOVED, Direction.UNKNOWN, null);
       }
-
+      
       try{
+        Direction theDirection = mySendingFiles.containsKey(aTransferId) ? Direction.SENDING : Direction.RECEIVING;
         iFileIO theSender = getFileIO( aTransferId );
         if(theSender.isComplete())  {
-          return new FileTransferState(theSender.getPercentageComplete(), FileTransferState.State.DONE);
+          return new FileTransferState(theSender.getPercentageComplete(), FileTransferState.State.DONE, theDirection, theSender.getCompletedPackets());
         } else if(theSender.isTransferring()){
-          return new FileTransferState(theSender.getPercentageComplete(), FileTransferState.State.RUNNING);
+          return new FileTransferState(theSender.getPercentageComplete(), FileTransferState.State.RUNNING, theDirection, theSender.getCompletedPackets());
         }  else {
-          return new FileTransferState(new Percentage( 0, 0 ), FileTransferState.State.NOT_STARTED);
+          return new FileTransferState(new Percentage( 0, 0 ), FileTransferState.State.NOT_STARTED, theDirection, null);
         }
       }catch(Exception e){
         LOGGER.error("We should not come here", e);
@@ -360,5 +362,10 @@ public class AsyncFileTransferProtocol extends Protocol implements iTransferCont
     if(myReceivingFiles.containsKey( aTransferId )) return true;
     if(mySendingFiles.containsKey( aTransferId )) return true;
     return false;
+  }
+
+  @Override
+  public File getFile(String anTransferId) throws AsyncFileTransferException {
+    return getFileIO(anTransferId).getFile();
   }
 }

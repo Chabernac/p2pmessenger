@@ -4,6 +4,7 @@
  */
 package chabernac.protocol.asyncfiletransfer;
 
+import java.io.File;
 import java.util.concurrent.ExecutorService;
 
 public interface iFileIO {
@@ -15,4 +16,6 @@ public interface iFileIO {
   public boolean isComplete();
   public boolean isTransferring();
   public Percentage getPercentageComplete();
+  public boolean[] getCompletedPackets();
+  public File getFile();
 }

@@ -1,5 +1,7 @@
 package chabernac.protocol.asyncfiletransfer;
 
+import java.io.File;
+
 
 public class FileTransferHandler {
   private final String myTransferId;
@@ -31,7 +33,11 @@ public class FileTransferHandler {
     myTransferController.waitUntillDone( myTransferId);
   } 
 
-  public FileTransferState getState() throws AsyncFileTransferException{
+  public FileTransferState getState(){
     return myTransferController.getState(myTransferId);
+  }
+  
+  public File getFile() throws AsyncFileTransferException{
+    return myTransferController.getFile(myTransferId);
   }
 }

@@ -1,5 +1,6 @@
 package chabernac.protocol.asyncfiletransfer;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.Callable;
@@ -25,12 +26,14 @@ public class FileSender implements iFileIO{
   private Percentage myPercentageCompleted = new Percentage( 0, 0 );
   private ArrayBlockingQueue<Boolean> myEventQueue = new ArrayBlockingQueue<Boolean>( 1 );
   private Future<Boolean> myTransferComplete;
+  private final boolean[] mySendPackets;
   
   public FileSender(String anPeer, FilePacketIO anIo, AsyncFileTransferProtocol anProtocol) {
     super();
     myPeer = anPeer;
     myProtocol = anProtocol;
     myFilePacketIO = anIo;
+    mySendPackets = new boolean[anIo.getNrOfPackets()];
   }
 
 
@@ -75,7 +78,7 @@ public class FileSender implements iFileIO{
       //only continue if the file was accepted by the client
       if(!theResult.startsWith( Response.FILE_ACCEPTED.name() )) throw new AsyncFileTransferException("Transferring file aborted");
 
-      myPacketSender = new PacketSender(myFilePacketIO, theDestination, myProtocol);
+      myPacketSender = new PacketSender(myFilePacketIO, theDestination, myProtocol, mySendPackets);
       //now loop over all packets and send them to the other peer
       while(myLastPacketSend++ < myFilePacketIO.getNrOfPackets() && myPacketSender.isContinue()){
         myPacketSender.sendPacket(myLastPacketSend);
@@ -162,5 +165,17 @@ public class FileSender implements iFileIO{
     } catch ( Exception e ) {
       LOGGER.error("Error occured whild waiting untill done", e);
     }
+  }
+
+
+  @Override
+  public boolean[] getCompletedPackets() {
+    return mySendPackets;
+  }
+
+
+  @Override
+  public File getFile() {
+    return myFilePacketIO.getFile();
   }
 }
