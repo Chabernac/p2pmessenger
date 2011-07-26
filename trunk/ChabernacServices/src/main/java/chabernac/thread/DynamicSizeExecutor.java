@@ -11,17 +11,13 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
-import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import org.apache.log4j.Logger;
-
 public class DynamicSizeExecutor implements ExecutorService{
-  private static Logger LOGGER = Logger.getLogger( DynamicSizeExecutor.class );
+//  private static Logger LOGGER = Logger.getLogger( DynamicSizeExecutor.class );
   private final ThreadPoolExecutor myExecutor;
-  private ArrayBlockingQueue<Runnable> myQueue = new ArrayBlockingQueue<Runnable>( 1024 );
 
   private static DynamicSizeExecutor TINY = null;
   private static DynamicSizeExecutor SMALL = null;
@@ -30,8 +26,12 @@ public class DynamicSizeExecutor implements ExecutorService{
   private static DynamicSizeExecutor CUSTOM = null;
 
 
+  public DynamicSizeExecutor(int aCoreSize, int aMaxPoolSize, int aQueueSize){
+    myExecutor = new ThreadPoolExecutor( aCoreSize, aMaxPoolSize, 10, TimeUnit.SECONDS, new OfferBlockingQueue<Runnable>(aQueueSize) );
+  }
+  
   public DynamicSizeExecutor(int aCoreSize, int aMaxPoolSize){
-    myExecutor = new ThreadPoolExecutor( aCoreSize, aMaxPoolSize, 10, TimeUnit.SECONDS, myQueue);
+    myExecutor = new ThreadPoolExecutor( aCoreSize, aMaxPoolSize, 10, TimeUnit.SECONDS, new OfferBlockingQueue<Runnable>(1024) );
   }
 
   public void execute(Runnable aRunnable){
@@ -171,6 +171,22 @@ public class DynamicSizeExecutor implements ExecutorService{
   private static void shutDown(DynamicSizeExecutor anExecutor){
     if(anExecutor != null){
       anExecutor.shutdownNow();
+    }
+  }
+  
+  private class OfferBlockingQueue<T> extends ArrayBlockingQueue<T>{
+
+    public OfferBlockingQueue(int aQueueSize) {
+      super(aQueueSize);
+    }
+    
+    public boolean offer(T anObject){
+      try {
+        put(anObject);
+        return true;
+      } catch (InterruptedException e) {
+        return false;
+      }
     }
   }
 }
