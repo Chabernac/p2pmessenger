@@ -1,5 +1,6 @@
 package chabernac.protocol.asyncfiletransfer;
 
+import java.io.File;
 import java.util.Set;
 
 public interface iTransferController {
@@ -36,4 +37,8 @@ public interface iTransferController {
   
   //remove the status of all finished file transfers
   public void removeFinished();
+
+  //return the file of this transfer
+  //if the transfer with this id does not exist throw an exception
+  public File getFile(String anTransferId) throws AsyncFileTransferException;
 }

@@ -43,7 +43,6 @@ public class FilePacketIO {
       myId = anUUid;
     }
     myWrittenPackets = new boolean[myNrOfPackets];
-    new FilePacketVisualizerFrame( this );
   }
   
   private RandomAccessFile getRandomAccessFile() throws FileNotFoundException{

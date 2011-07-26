@@ -12,15 +12,17 @@ import java.util.concurrent.TimeUnit;
 
 import javax.swing.JPanel;
 
+import chabernac.protocol.asyncfiletransfer.FileTransferState.State;
+
 public class FilePacketVisualizerPanel extends JPanel {
   private static final long serialVersionUID = -3590938754899429749L;
 
   private ScheduledExecutorService myService;
   
-  private final FilePacketIO myIO;
+  private final FileTransferHandler myIO;
   private int myCellSize = 10;
 
-  public FilePacketVisualizerPanel( FilePacketIO aIO ) {
+  public FilePacketVisualizerPanel( FileTransferHandler aIO ) {
     super();
     myIO = aIO;
     myService = Executors.newScheduledThreadPool( 1 );
@@ -30,7 +32,7 @@ public class FilePacketVisualizerPanel extends JPanel {
   public void paint(Graphics g){
     int theNrOfHorizontallCells = (int)Math.floor((double)getWidth() / (double)myCellSize);
     //start drawing the cells
-    boolean[] theWrittenPacktes = myIO.getWrittenPackets();
+    boolean[] theWrittenPacktes = myIO.getState().getCompletedPackets();
     
     for(int i=0;i<theWrittenPacktes.length;i++){
       int theRow = (int)Math.floor((double)i / (double)theNrOfHorizontallCells);
@@ -51,7 +53,7 @@ public class FilePacketVisualizerPanel extends JPanel {
   public class Repainter implements Runnable {
     @Override
     public void run() {
-      if(myIO.isComplete()){
+      if(myIO.getState().getState() == State.DONE){
         myService.shutdownNow();
       }
       repaint();

@@ -115,4 +115,9 @@ public class FileReceiver implements iFileIO{
   public void startAsync( ExecutorService aService ) throws AsyncFileTransferException {
     // TODO Auto-generated method stub
   }
+
+  @Override
+  public boolean[] getCompletedPackets() {
+    return myFilePacketIO.getWrittenPackets();
+  }
 }

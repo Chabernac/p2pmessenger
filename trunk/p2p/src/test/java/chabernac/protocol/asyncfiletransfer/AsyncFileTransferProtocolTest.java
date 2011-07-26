@@ -104,6 +104,13 @@ public class AsyncFileTransferProtocolTest extends AbstractProtocolTest {
       assertTrue(thePeer3.isReachable());
       LOGGER.debug( "Sending file" );
       FileTransferHandler theHandler = theFileTransferProtocol.sendFile( theTempFile, theRoutingTable3.getLocalPeerId() );
+      new FilePacketVisualizerFrame(theHandler);
+      
+      Thread.sleep(1000);
+      assertEquals(1, theAFP3.getReceivingTransfers().size());
+      new FilePacketVisualizerFrame(theAFP3.getTransferHandler(theAFP3.getReceivingTransfers().iterator().next()));
+      
+      
       theHandler.waitUntillDone();
       assertEquals(FileTransferState.State.DONE,  theHandler.getState().getState());
       LOGGER.debug( "Done Sending file" );
