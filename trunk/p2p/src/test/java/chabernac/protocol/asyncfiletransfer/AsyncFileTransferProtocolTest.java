@@ -95,7 +95,9 @@ public class AsyncFileTransferProtocolTest extends AbstractProtocolTest {
       assertNotNull( thePeer3.getPeer() );
       assertTrue(thePeer3.isReachable());
       LOGGER.debug( "Sending file" );
-      assertTrue(theFileTransferProtocol.sendFile( theTempFile, theRoutingTable3.getLocalPeerId() ).waitForTransferred());
+      FileTransferHandler theHandler = theFileTransferProtocol.sendFile( theTempFile, theRoutingTable3.getLocalPeerId() );
+      theHandler.waitUntillDone();
+      assertEquals(FileTransferState.State.DONE,  theHandler.getState().getState());
       LOGGER.debug( "Done Sending file" );
 
       assertTrue( theFileToWrite.exists() );

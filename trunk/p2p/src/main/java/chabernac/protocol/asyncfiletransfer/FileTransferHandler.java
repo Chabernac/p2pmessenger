@@ -1,25 +1,14 @@
 package chabernac.protocol.asyncfiletransfer;
 
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 
 public class FileTransferHandler {
-  private final Future<Boolean> isTransferred;
   private final String myTransferId;
   private final iTransferController myTransferController;
-  
-  
 
-  public FileTransferHandler(Future<Boolean> anIsTransferred,
-      String anTransferId, iTransferController anTransferController) {
+  public FileTransferHandler(String anTransferId, iTransferController anTransferController) {
     super();
-    isTransferred = anIsTransferred;
     myTransferId = anTransferId;
     myTransferController = anTransferController;
-  }
-
-  public boolean waitForTransferred() throws InterruptedException, ExecutionException{
-    return isTransferred.get();
   }
 
   public String getTransferId(){
@@ -37,6 +26,10 @@ public class FileTransferHandler {
   public void resume() throws AsyncFileTransferException{
     myTransferController.resume(myTransferId);
   }
+  
+  public void waitUntillDone() throws AsyncFileTransferException{
+    myTransferController.waitUntillDone( myTransferId);
+  } 
 
   public FileTransferState getState() throws AsyncFileTransferException{
     return myTransferController.getState(myTransferId);
