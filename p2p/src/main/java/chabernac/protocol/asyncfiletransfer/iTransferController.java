@@ -4,7 +4,14 @@ import java.util.Set;
 
 public interface iTransferController {
   //return a set of transfers id's for wich the controller has state
-  public Set<String> getRunningTransfers();
+  public Set<String> getSendingTransfers();
+  
+  //return a set of transfers id's for wich the controller has state
+  public Set<String> getReceivingTransfers();
+
+  //get the transfer handler for this id
+//if the transfer with this id does not exist throw an exception
+  public FileTransferHandler getTransferHandler(String aTransferId) throws AsyncFileTransferException;
   
   //resume the transfer with the given id and return a new transfer handler
   //if the transfer with this id does not exist throw an exception
@@ -18,6 +25,10 @@ public interface iTransferController {
   //pause the transfer with the given id
   //if the transfer with this id does not exist throw an exception
   public void pause(String aTransferId) throws AsyncFileTransferException;
+  
+  //wait untill the given transfer has finished
+  //if the transfer with this id does not exist throw an exception
+  public void waitUntillDone(String aTransferId) throws AsyncFileTransferException;
   
   //return the state of the transfer
   //if the transfer with this id does not exist a state CANCELLED_OR_REMOVED is returned

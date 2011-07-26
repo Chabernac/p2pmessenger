@@ -6,7 +6,7 @@ import chabernac.protocol.asyncfiletransfer.AsyncFileTransferProtocol.Command;
 import chabernac.protocol.asyncfiletransfer.AsyncFileTransferProtocol.Response;
 import chabernac.protocol.routing.AbstractPeer;
 
-public class FileSender {
+public class FileSender implements iFileIO{
   private static final Logger LOGGER = Logger.getLogger( AsyncFileTransferProtocol.class );
   
   private final String myPeer;
@@ -33,6 +33,7 @@ public class FileSender {
         if(isSending) throw new AsyncFileTransferException("Already in sending state");
         isSending = true;
       }
+      
       myProtocol.testReachable(myPeer); 
       AbstractPeer theDestination = myProtocol.getRoutingTable().getEntryForPeer(myPeer).getPeer();
       
@@ -96,6 +97,27 @@ public class FileSender {
   
   public void stop(){
     myPacketSender.setContinue(false);
+    waitTillDone();
+  }
+  
+  public void reset(){
+    myLastPacketSend = -1;
+  }
+  
+  public boolean isTransferring(){
+    return isSending;
+  }
+  
+  public boolean isComplete(){
+    return isComplete;
+  }
+
+  public double getPercentageComplete() {
+    return myPercentageCompleted;
+  }
+
+  @Override
+  public void waitTillDone() {
     synchronized(this){
       while(isSending){
         try {
@@ -105,23 +127,5 @@ public class FileSender {
         }
       }
     }
-  }
-  
-  public void reset(){
-    myLastPacketSend = -1;
-  }
-  
-  public boolean isSending(){
-    return isSending;
-  }
-  
-  public boolean isComplete(){
-    return isComplete;
-  }
-
-
-
-  public double getPercentageComplete() {
-    return myPercentageCompleted;
   }
 }
