@@ -33,7 +33,7 @@ public class AsyncFileTransferProtocolTest extends AbstractProtocolTest {
   }
   
   public void setUp(){
-    PacketSender.SEND_SLEEP = 100;
+    PacketSender.SEND_SLEEP = 10;
   }
   
   public void tearDown(){
