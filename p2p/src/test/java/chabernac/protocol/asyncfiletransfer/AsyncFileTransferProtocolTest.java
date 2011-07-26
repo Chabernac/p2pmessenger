@@ -32,13 +32,21 @@ public class AsyncFileTransferProtocolTest extends AbstractProtocolTest {
     BasicConfigurator.configure();
   }
   
+  public void setUp(){
+    PacketSender.SEND_SLEEP = 100;
+  }
+  
+  public void tearDown(){
+    PacketSender.SEND_SLEEP = -1;
+  }
+  
   public void testAsyncFileTransferProtocol() throws InterruptedException, ProtocolException, FileNotFoundException, UnknownPeerException, AsyncFileTransferException, ExecutionException{
     //p1 <--> p2 <--> p3 peer 1 cannot reach peer 3
     ProtocolContainer theProtocol1 = getProtocolContainer( -1, false, "1");
     ProtocolServer theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT, 5);
     RoutingProtocol theRoutingProtocol1 = (RoutingProtocol)theProtocol1.getProtocol( RoutingProtocol.ID );
     AsyncFileTransferProtocol theAFP1 = ((AsyncFileTransferProtocol)theProtocol1.getProtocol( AsyncFileTransferProtocol.ID ));
-    theAFP1.setPacketSize( 24 );
+    theAFP1.setPacketSize( 1 );
     //we set the retry ratio pretty high so that we might almost be 100% sure that all packets will finally be delivered
     theAFP1.setMaxRetries( 50 );
 
@@ -103,7 +111,7 @@ public class AsyncFileTransferProtocolTest extends AbstractProtocolTest {
       assertTrue( theFileToWrite.exists() );
       assertEquals( theTempFile.length(), theFileToWrite.length());
       
-      assertEquals( 1D, theFileHandler.getLastPercentage() );
+      assertEquals( 1D, theFileHandler.getLastPercentage().getPercentage() );
       assertTrue( (int)Math.ceil( theTempFile.length() / theAFP1.getPacketSize() ) <= theFileHandler.getNumberOfPercentages() );
 
       assertEquals( theFileToWrite, theFileHandler.getFile());
@@ -141,7 +149,7 @@ public class AsyncFileTransferProtocolTest extends AbstractProtocolTest {
   private class TestFileHandler implements iAsyncFileTransferHandler{
     private File myFile;
     private File mySavedFile;
-    private double myLastPercentage;
+    private Percentage myLastPercentage;
     private double myNumberOfPercentages = 0;
 
     public TestFileHandler( File aFile ) {
@@ -159,7 +167,7 @@ public class AsyncFileTransferProtocolTest extends AbstractProtocolTest {
     }
 
     @Override
-    public void fileTransfer( String aFile, String aFileId, double aPercentageComplete ) {
+    public void fileTransfer( String aFile, String aFileId, Percentage aPercentageComplete ) {
       myNumberOfPercentages++;
       myLastPercentage = aPercentageComplete;
     }
@@ -173,11 +181,11 @@ public class AsyncFileTransferProtocolTest extends AbstractProtocolTest {
       return mySavedFile;
     }
 
-    protected double getLastPercentage() {
+    protected Percentage getLastPercentage() {
       return myLastPercentage;
     }
 
-    protected void setLastPercentage( double aLastPercentage ) {
+    protected void setLastPercentage( Percentage aLastPercentage ) {
       myLastPercentage = aLastPercentage;
     }
 

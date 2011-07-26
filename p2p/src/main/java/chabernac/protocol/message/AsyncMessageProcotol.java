@@ -11,6 +11,7 @@ import java.util.UUID;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Executors;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
@@ -26,9 +27,9 @@ public class AsyncMessageProcotol extends AbstractMessageProtocol {
   public static final String ID = "AMP";
 
   private iObjectStringConverter< Message > myMessageConverter = new Base64ObjectStringConverter< Message >();
-//  private ExecutorService mySenderService = DynamicSizeExecutor.getSmallInstance();
+  //  private ExecutorService mySenderService = DynamicSizeExecutor.getSmallInstance();
   private Map<String, ArrayBlockingQueue<String>> myStatusQueues = new HashMap<String, ArrayBlockingQueue<String>> ();
-  
+
   private ScheduledExecutorService myQueueCleanupService = Executors.newScheduledThreadPool( 1 );
 
   public AsyncMessageProcotol( ) {
@@ -57,9 +58,12 @@ public class AsyncMessageProcotol extends AbstractMessageProtocol {
       return Response.UNCRECOGNIZED_MESSAGE.name();
     }
 
-    handleMessage( aSessionId, theMessage );
+    if(handleMessage( aSessionId, theMessage )){
+      return Response.MESSAGE_PROCESSED.name();
+    } else {
+      return Response.MESSAGE_REJECTED.name();
+    }
 
-    return Response.MESSAGE_PROCESSED.name();
   }
 
   private void sendDeliveryStatus(String aPeerId, String aMessageId, String aResponse){
@@ -82,15 +86,15 @@ public class AsyncMessageProcotol extends AbstractMessageProtocol {
   @Override
   public void stop() {
   }
-  
+
   private synchronized BlockingQueue<String> getBlockingQueueForMessage(String aMessageId){
     if(!myStatusQueues.containsKey( aMessageId )){
       myStatusQueues.put( aMessageId, new ArrayBlockingQueue<String>( 1 ));
     }
-    
+
     return myStatusQueues.get( aMessageId );
   }
-  
+
   private void handleDeliveryStatus( final Message aMessage ) throws InterruptedException {
     getBlockingQueueForMessage( aMessage.getHeader( "MESSAGE-ID" ) ).put( aMessage.getHeader( "STATUS" ) );
     myQueueCleanupService.schedule( new Runnable(){
@@ -100,7 +104,7 @@ public class AsyncMessageProcotol extends AbstractMessageProtocol {
       }
     }, 2, TimeUnit.MINUTES);
   }
-  
+
   public String getResponse(String aMessageId, long aTimeout, TimeUnit aTimeUnit){
     try {
       String theResponse = getBlockingQueueForMessage( aMessageId ).poll( aTimeout, aTimeUnit );
@@ -115,20 +119,26 @@ public class AsyncMessageProcotol extends AbstractMessageProtocol {
       myStatusQueues.remove( aMessageId );
     }
   }
-  
+
   public void sendMessage(Message aMessage) throws MessageException{
     inspectMessage(aMessage);
     handleMessage( UUID.randomUUID().toString(), aMessage );
   }
-  
+
   public String sendAndWaitForResponse(Message aMesage, long aTimeout, TimeUnit aTimeUnit) throws MessageException{
     sendMessage( aMesage );
     String theResponse = getResponse( aMesage.getMessageId().toString(), aTimeout, aTimeUnit );
     return inspectResult( theResponse );
   }
 
-  private void handleMessage(String aSessionId, Message aMessage){
-    getExecutorService().execute( new MessageProcessor( aSessionId, aMessage ) );
+  private boolean handleMessage(String aSessionId, Message aMessage){
+    try{
+      getExecutorService().execute( new MessageProcessor( aSessionId, aMessage ) );
+      return true;
+    } catch(RejectedExecutionException e){
+      LOGGER.error("Message was rejected ", e);
+      return false;
+    }
   }
 
   private class MessageProcessor implements Runnable{

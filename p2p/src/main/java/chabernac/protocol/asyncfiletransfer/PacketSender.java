@@ -20,6 +20,8 @@ import chabernac.protocol.routing.AbstractPeer;
  */
 public class PacketSender {
   private static final Logger LOGGER = Logger.getLogger( AsyncFileTransferProtocol.class );
+  //just for testing and debugging
+  static int SEND_SLEEP = -1;
   
   private CountDownLatch myLatch;
   private final AtomicInteger myFailuresLeft;
@@ -56,6 +58,9 @@ public class PacketSender {
   public void sendPacket(final int aPacketNr) throws AsyncFileTransferException{
     //test if the peer is still reachable
     myProtocol.testReachable(myDestination.getPeerId());
+    
+    //TODO we get a rejected execution exception if all threads are in use instead of waiting untill a thread comes free
+    //change and use ArrayBlockingQueue or something like that
     myProtocol.myPacketSenderService.execute( new Runnable(){
       public void run(){
         try{
@@ -71,6 +76,7 @@ public class PacketSender {
           }
           //reset the failures left counter to the max
           myFailuresLeft.set(myProtocol.myMaxConsecutiveFailures);
+          if(SEND_SLEEP > 0) Thread.sleep( SEND_SLEEP );
         }catch(Exception e){
           LOGGER.error("Error occured while sending packet " + aPacketNr, e);
           if(myFailuresLeft.decrementAndGet() <= 0){
