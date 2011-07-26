@@ -32,8 +32,8 @@ public class AsyncFileTransferProtocol extends Protocol implements iTransferCont
 
   public static final String ID = "AFP";
 
-  static enum Command{ACCEPT_FILE, RESEND_PACKET, ACCEPT_PACKET, END_FILE_TRANSFER};
-  static enum Response{FILE_ACCEPTED, FILE_REFUSED, PACKET_OK, PACKET_REFUSED, NOK, UNKNOWN_ID, END_FILE_TRANSFER_OK, ABORT_FILE_TRANSFER};
+  static enum Command{ACCEPT_FILE, ACCEPT_PACKET, END_FILE_TRANSFER, STOP_TRANSFER, RESUME_TRANSFER, TRANSFER_STOPPED};
+  static enum Response{FILE_ACCEPTED, FILE_REFUSED, PACKET_OK, PACKET_REFUSED, NOK, UNKNOWN_ID, END_FILE_TRANSFER_OK, ABORT_FILE_TRANSFER, OK};
 
   int myPacketSize = 1024;
   int myMaxRetries = 8;
@@ -90,12 +90,13 @@ public class AsyncFileTransferProtocol extends Protocol implements iTransferCont
         String theUUId = theParams[1];
         int thePacketSize = Integer.parseInt( theParams[2] );
         int theNrOfPackets = Integer.parseInt( theParams[3] );
+        String thePeerId = theParams[4];
 
         File theFile = myHandler.acceptFile( theFileName, theUUId );
 
         FilePacketIO theIO = FilePacketIO.createForWrite( theFile, theUUId, thePacketSize, theNrOfPackets );
         //we should receive the peer id from who we are receiving the file
-        FileReceiver theReceiver = new FileReceiver( null, theIO, this);
+        FileReceiver theReceiver = new FileReceiver( thePeerId, theIO, this);
         myReceivingFiles.put( theUUId, theReceiver );
 
         //create a 
@@ -138,7 +139,29 @@ public class AsyncFileTransferProtocol extends Protocol implements iTransferCont
           }
           return theIncompletePacktets;
         }
+      } else if(anInput.startsWith( Command.STOP_TRANSFER.name() )){
+        String[] theParams = anInput.substring( Command.STOP_TRANSFER.name().length() + 1 ).split( " " );
+        String theUUId = theParams[0];
+        if(!mySendingFiles.containsKey( theUUId )) return Response.UNKNOWN_ID.name();
+        
+        iFileIO theSender = mySendingFiles.get(theUUId);
+        theSender.stop();
+        return Response.OK.name();
+      } else if(anInput.startsWith( Command.RESUME_TRANSFER.name() )){
+        String[] theParams = anInput.substring( Command.RESUME_TRANSFER.name().length() + 1 ).split( " " );
+        String theUUId = theParams[0];
+        if(!mySendingFiles.containsKey( theUUId )) return Response.UNKNOWN_ID.name();
+        resume( theUUId );
+        return Response.OK.name();
+      } else if(anInput.startsWith( Command.TRANSFER_STOPPED.name() )){
+        String[] theParams = anInput.substring( Command.TRANSFER_STOPPED.name().length() + 1 ).split( " " );
+        String theUUId = theParams[0];
+        if(!myReceivingFiles.containsKey( theUUId )) return Response.UNKNOWN_ID.name();
+        
+        FileReceiver theReceiver = myReceivingFiles.get(theUUId);
+        theReceiver.setTransferring( false );
       }
+      
     }catch(Exception e){
       LOGGER.error( "Error occured in ayncfiletransferprotocol", e );
       return Response.NOK.name();
@@ -182,17 +205,7 @@ public class AsyncFileTransferProtocol extends Protocol implements iTransferCont
     final FileSender theFileSender = new FileSender(aPeer, theIO, this);
     mySendingFiles.put(theIO.getId(), theFileSender);
 
-
-    myFileSenderService.submit(new Runnable(){
-      @Override
-      public void run() {
-        try{
-          theFileSender.start();
-        }catch(AsyncFileTransferException e) {
-          LOGGER.error("An error occured while transferring file", e);
-        }
-      }
-    });
+    theFileSender.startAsync( myFileSenderService );
 
     return new FileTransferHandler(theIO.getId(), this);
   }
@@ -234,6 +247,9 @@ public class AsyncFileTransferProtocol extends Protocol implements iTransferCont
     for(FileSender theSender : mySendingFiles.values()){
       theSender.stop();
     }
+    for(FileReceiver theReceiver : myReceivingFiles.values()){
+      theReceiver.stop();
+    }
   }
 
   @Override
@@ -257,39 +273,28 @@ public class AsyncFileTransferProtocol extends Protocol implements iTransferCont
   @Override
   public FileTransferHandler resume(final String aTransferId) throws AsyncFileTransferException {
     synchronized(LOCK){
-      getFileIO( aTransferId );
+      iFileIO theFileIo = getFileIO( aTransferId );
+      theFileIo.startAsync( myFileSenderService );
     }
 
-    myFileSenderService.submit(new Runnable(){
-      @Override
-      public void run(){
-        try{
-          getFileIO( aTransferId ).start();
-        }catch(AsyncFileTransferException e) {
-          LOGGER.error("An error occured while transferring file", e);
-        }
-      }
-    });
-
     return new FileTransferHandler(aTransferId, this);
-
   }
 
   @Override
   public FileTransferState getState(String aTransferId){
     synchronized(LOCK){
       if(!containsTransferId( aTransferId )) {
-        return new FileTransferState(0, FileTransferState.State.CANCELLED_OR_REMOVED);
+        return new FileTransferState(new Percentage( 0, 0 ), FileTransferState.State.CANCELLED_OR_REMOVED);
       }
 
       try{
         iFileIO theSender = getFileIO( aTransferId );
         if(theSender.isComplete())  {
-          return new FileTransferState(1D, FileTransferState.State.DONE);
+          return new FileTransferState(theSender.getPercentageComplete(), FileTransferState.State.DONE);
         } else if(theSender.isTransferring()){
           return new FileTransferState(theSender.getPercentageComplete(), FileTransferState.State.RUNNING);
         }  else {
-          return new FileTransferState(0, FileTransferState.State.NOT_STARTED);
+          return new FileTransferState(new Percentage( 0, 0 ), FileTransferState.State.NOT_STARTED);
         }
       }catch(Exception e){
         LOGGER.error("We should not come here", e);

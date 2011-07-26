@@ -1,5 +1,11 @@
 package chabernac.protocol.asyncfiletransfer;
 
+import java.io.IOException;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
+
 import org.apache.log4j.Logger;
 
 import chabernac.protocol.asyncfiletransfer.AsyncFileTransferProtocol.Command;
@@ -7,7 +13,7 @@ import chabernac.protocol.asyncfiletransfer.AsyncFileTransferProtocol.Response;
 import chabernac.protocol.routing.AbstractPeer;
 
 public class FileSender implements iFileIO{
-  private static final Logger LOGGER = Logger.getLogger( AsyncFileTransferProtocol.class );
+  private static final Logger LOGGER = Logger.getLogger( FileSender.class );
   
   private final String myPeer;
   private final AsyncFileTransferProtocol myProtocol;
@@ -16,7 +22,9 @@ public class FileSender implements iFileIO{
   private int myLastPacketSend = -1;
   private boolean isSending = false;
   private boolean isComplete = false;
-  private double myPercentageCompleted = 0D;
+  private Percentage myPercentageCompleted = new Percentage( 0, 0 );
+  private ArrayBlockingQueue<Boolean> myEventQueue = new ArrayBlockingQueue<Boolean>( 1 );
+  private Future<Boolean> myTransferComplete;
   
   public FileSender(String anPeer, FilePacketIO anIo, AsyncFileTransferProtocol anProtocol) {
     super();
@@ -26,8 +34,27 @@ public class FileSender implements iFileIO{
   }
 
 
+  public void startAsync(ExecutorService aService){
+    Exception e = new Exception();
+    e.fillInStackTrace();
+    LOGGER.error( "Starting file sender ascyn", e );
+    myTransferComplete = aService.submit( new Callable<Boolean>(){
+
+      @Override
+      public Boolean call() throws Exception {
+        try{
+          start();
+          return Boolean.TRUE;
+        }catch(Exception e){
+          LOGGER.error("An error occured while starting file sender asynchronous", e);
+          return Boolean.FALSE;
+        }
+      }
+    });
+  }
 
   public void start() throws AsyncFileTransferException{
+    AbstractPeer theDestination = null;
     try{
       synchronized(this){
         if(isSending) throw new AsyncFileTransferException("Already in sending state");
@@ -35,14 +62,15 @@ public class FileSender implements iFileIO{
       }
       
       myProtocol.testReachable(myPeer); 
-      AbstractPeer theDestination = myProtocol.getRoutingTable().getEntryForPeer(myPeer).getPeer();
+      theDestination = myProtocol.getRoutingTable().getEntryForPeer(myPeer).getPeer();
       
       //init file transfer with other peer
       String theResult = myProtocol.sendMessageTo( theDestination, Command.ACCEPT_FILE.name() + " " + 
           myFilePacketIO.getFile().getName()  + " " + 
           myFilePacketIO.getId() + " " + 
           myFilePacketIO.getPacketSize() + " " + 
-          myFilePacketIO.getNrOfPackets());
+          myFilePacketIO.getNrOfPackets() + " " + 
+          myProtocol.getRoutingTable().getLocalPeerId());
 
       //only continue if the file was accepted by the client
       if(!theResult.startsWith( Response.FILE_ACCEPTED.name() )) throw new AsyncFileTransferException("Transferring file aborted");
@@ -53,7 +81,7 @@ public class FileSender implements iFileIO{
         myPacketSender.sendPacket(myLastPacketSend);
         
         if(myProtocol.myHandler != null) {
-          myPercentageCompleted = (double)myLastPacketSend / (double)myFilePacketIO.getNrOfPackets();
+          myPercentageCompleted = new Percentage(myLastPacketSend, myFilePacketIO.getNrOfPackets());
           myProtocol.myHandler.fileTransfer( myFilePacketIO.getFile().getName(), myFilePacketIO.getId(), myPercentageCompleted);
         }
       }
@@ -88,6 +116,15 @@ public class FileSender implements iFileIO{
       if(e instanceof AsyncFileTransferException) throw (AsyncFileTransferException)e;
       throw new AsyncFileTransferException("Could not send file to peer '" + myPeer + "'", e);
     } finally {
+      if(theDestination != null){
+        myProtocol.sendMessageTo( theDestination, Command.TRANSFER_STOPPED + " " + myFilePacketIO.getId() );
+      }
+      //always close the file when we are not sending any more to free resources
+      try {
+        myFilePacketIO.close();
+      } catch ( IOException e ) {
+        LOGGER.error("Could not close file packet io", e);
+      }
       synchronized(this){
         isSending = false;
         notifyAll();
@@ -96,7 +133,9 @@ public class FileSender implements iFileIO{
   }
   
   public void stop(){
-    myPacketSender.setContinue(false);
+    if(myPacketSender != null){
+      myPacketSender.setContinue(false);
+    }
     waitTillDone();
   }
   
@@ -112,20 +151,16 @@ public class FileSender implements iFileIO{
     return isComplete;
   }
 
-  public double getPercentageComplete() {
+  public Percentage getPercentageComplete() {
     return myPercentageCompleted;
   }
 
   @Override
   public void waitTillDone() {
-    synchronized(this){
-      while(isSending){
-        try {
-          wait();
-        } catch (InterruptedException e) {
-          LOGGER.error("Could not wait");
-        }
-      }
+    try {
+      myTransferComplete.get();
+    } catch ( Exception e ) {
+      LOGGER.error("Error occured whild waiting untill done", e);
     }
   }
 }

@@ -49,6 +49,7 @@ public abstract class AbstractMessageProtocol extends Protocol {
     MESSAGE_LOOP_DETECTED,
     MESSAGE_ALREADY_RECEIVED,
     MESSAGE_PROCESSED,
+    MESSAGE_REJECTED,
     NO_CONFIRMATION_RECEIVED
     };
 

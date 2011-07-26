@@ -43,6 +43,7 @@ public class FilePacketIO {
       myId = anUUid;
     }
     myWrittenPackets = new boolean[myNrOfPackets];
+    new FilePacketVisualizerFrame( this );
   }
   
   private RandomAccessFile getRandomAccessFile() throws FileNotFoundException{
@@ -64,7 +65,7 @@ public class FilePacketIO {
    return new FilePacket( myId, thePacket, aNumber );
   }
   
-  public void writePacket(FilePacket aPacket) throws IOException{
+  public synchronized void writePacket(FilePacket aPacket) throws IOException{
     int theStart = aPacket.getPacket() * myPacketSize;
     RandomAccessFile theRandomAccess = getRandomAccessFile();
     theRandomAccess.seek( theStart );
@@ -73,9 +74,16 @@ public class FilePacketIO {
     myWrittenPackets[aPacket.getPacket()] = true;
   }
   
-  public void close() throws IOException{
+  public synchronized void close() throws IOException{
     if(myRandomAccess != null){
       myRandomAccess.close();
+      myRandomAccess = null;
+    }
+  }
+  
+  public synchronized void clearWrittenPackets(){
+    for(int i=0;i<myWrittenPackets.length;i++){
+      myWrittenPackets[i] = false;
     }
   }
   
@@ -99,12 +107,12 @@ public class FilePacketIO {
     return myId;
   }
   
-  public double getPercentageWritten(){
+  public Percentage getPercentageWritten(){
     int theWrittenPackets = 0;
     for(boolean isWritten : myWrittenPackets){
       if(isWritten) theWrittenPackets++;
     }
-    return (double)theWrittenPackets / (double)myNrOfPackets;
+    return new Percentage( theWrittenPackets, myWrittenPackets.length );
   }
 
   public boolean[] getWrittenPackets() {

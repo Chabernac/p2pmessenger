@@ -26,7 +26,9 @@ public class FilePacketIOTest extends TestCase {
     for(int i=0;i<theReadPacket.getNrOfPackets();i++){
       System.out.println("Writing packet " + i + " " + theWritePacket.getPercentageWritten());
       theWritePacket.writePacket( theReadPacket.getPacket( i ) );
-      
+      //just close after some packets to test if we can still use the object for further processing
+      if(i % 5 == 0) theReadPacket.close();
+      if(i % 10 == 0) theWritePacket.close();
     }
     
     theWritePacket.close();

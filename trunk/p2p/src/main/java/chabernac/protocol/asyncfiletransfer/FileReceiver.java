@@ -6,14 +6,19 @@ package chabernac.protocol.asyncfiletransfer;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.ExecutorService;
+
+import org.apache.log4j.Logger;
+
+import chabernac.protocol.routing.AbstractPeer;
 
 
 public class FileReceiver implements iFileIO{
+  private static final Logger LOGGER = Logger.getLogger(FileReceiver.class);
   
   private final String myPeer;
   private final AsyncFileTransferProtocol myProtocol;
   private final FilePacketIO myFilePacketIO;
-  private int myLastPacketReceived = -1;
   private boolean isTransferring = false;
   
   public FileReceiver(String anPeer, FilePacketIO anIo, AsyncFileTransferProtocol anProtocol) {
@@ -25,34 +30,62 @@ public class FileReceiver implements iFileIO{
 
   @Override
   public void reset() throws AsyncFileTransferException {
-    // TODO Auto-generated method stub
-    
+    myFilePacketIO.clearWrittenPackets();
   }
 
   @Override
-  public void start() throws AsyncFileTransferException {
-    // TODO Auto-generated method stub
-    
+  /**
+   * in file receiver start() is actually a resume() since there can not be a filereceiver
+   * withouth the file transfer has already been started, so when executing the start() method
+   * we send a command to the sending peer to resume the sending of the file
+   */
+  public void start(){
+    try{
+      myProtocol.testReachable( myPeer );
+      AbstractPeer theDestination = myProtocol.getRoutingTable().getEntryForPeer(myPeer).getPeer();
+      myProtocol.sendMessageTo( theDestination, AsyncFileTransferProtocol.Command.RESUME_TRANSFER.name() + " " + myFilePacketIO.getId());
+    }catch(Exception e){
+      LOGGER.error("An error occured while sending resume command", e);
+    }
   }
 
   @Override
-  public void stop() throws AsyncFileTransferException {
-    // TODO Auto-generated method stub
-    
+  public void stop() {
+    try{
+      myProtocol.testReachable( myPeer );
+      AbstractPeer theDestination = myProtocol.getRoutingTable().getEntryForPeer(myPeer).getPeer();
+      myProtocol.sendMessageTo( theDestination, AsyncFileTransferProtocol.Command.STOP_TRANSFER.name() + " " + myFilePacketIO.getId());
+    }catch(Exception e){
+      LOGGER.error("An error occured while sending stop command", e);
+    }
   }
 
   @Override
   public void waitTillDone() throws AsyncFileTransferException {
-    // TODO Auto-generated method stub
-    
+    while(!isComplete()){
+      try {
+        synchronized(this){
+          wait();
+        }
+      } catch ( InterruptedException e ) {
+      }
+    }
   }
   
   public void writePacket(FilePacket aPacket) throws IOException{
     myFilePacketIO.writePacket( aPacket );
+    isTransferring = !myFilePacketIO.isComplete();
+    //automatically close the io if the transfer if the file is complete
+    if(myFilePacketIO.isComplete()){
+      myFilePacketIO.close();
+    }
+    synchronized(this){
+      notifyAll();
+    }
   }
 
   @Override
-  public double getPercentageComplete() {
+  public Percentage getPercentageComplete() {
     return myFilePacketIO.getPercentageWritten();
   }
 
@@ -65,6 +98,10 @@ public class FileReceiver implements iFileIO{
   public boolean isTransferring() {
     return isTransferring;
   }
+  
+  public void setTransferring(boolean isTransferring){
+    this.isTransferring = isTransferring;
+  }
 
   public File getFile() {
     return myFilePacketIO.getFile();
@@ -74,4 +111,8 @@ public class FileReceiver implements iFileIO{
     return myFilePacketIO;
   }
 
+  @Override
+  public void startAsync( ExecutorService aService ) throws AsyncFileTransferException {
+    // TODO Auto-generated method stub
+  }
 }
