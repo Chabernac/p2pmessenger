@@ -10,10 +10,11 @@ import org.apache.log4j.Logger;
 import chabernac.command.AbstractCommand;
 import chabernac.gui.CommandButton;
 
-public class FileTransferPanel extends JPanel{
+public class FileTransferPanel extends JPanel implements iFileTransferListener{
   private static final long serialVersionUID = 1937364427569729273L;
   private static Logger LOGGER = Logger.getLogger(FileTransferPanel.class);
   private final FileTransferHandler myHandler;
+  private AbstractCommand myStartStopCommand = null;
 
   public FileTransferPanel(FileTransferHandler aHandler){
     myHandler = aHandler;
@@ -23,7 +24,16 @@ public class FileTransferPanel extends JPanel{
   private void buildGUI(){
     setLayout(new BorderLayout());
     add(new FileTransferProgressPanel(myHandler), BorderLayout.CENTER);
-    add(new CommandButton(new StartStopAction()), BorderLayout.EAST);
+    myStartStopCommand = new StartStopAction();
+    add(new CommandButton(myStartStopCommand), BorderLayout.EAST);
+    addListeners();
+  }
+  
+  private void addListeners(){
+    try {
+      myHandler.addFileTransferListener(this);
+    } catch (AsyncFileTransferException e) {
+    }
   }
 
   public Dimension getPreferredSize(){
@@ -63,5 +73,10 @@ public class FileTransferPanel extends JPanel{
       
       notifyObs();
     }
+  }
+
+  @Override
+  public void transferStateChanged() {
+    myStartStopCommand.notifyObs();
   }
 }
