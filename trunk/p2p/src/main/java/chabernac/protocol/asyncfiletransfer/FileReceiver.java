@@ -13,7 +13,7 @@ import org.apache.log4j.Logger;
 import chabernac.protocol.routing.AbstractPeer;
 
 
-public class FileReceiver implements iFileIO{
+public class FileReceiver extends AbstractFileIO{
   private static final Logger LOGGER = Logger.getLogger(FileReceiver.class);
   
   private final String myPeer;
@@ -72,7 +72,7 @@ public class FileReceiver implements iFileIO{
     }
   }
   
-  public void writePacket(FilePacket aPacket) throws IOException{
+  public void writePacket(FilePacket aPacket) throws IOException {
     myFilePacketIO.writePacket( aPacket );
     isTransferring = !myFilePacketIO.isComplete();
     //automatically close the io if the transfer if the file is complete
@@ -82,6 +82,7 @@ public class FileReceiver implements iFileIO{
     synchronized(this){
       notifyAll();
     }
+    notifyListeners();
   }
 
   @Override

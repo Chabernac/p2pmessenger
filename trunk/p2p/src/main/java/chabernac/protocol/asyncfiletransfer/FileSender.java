@@ -13,7 +13,7 @@ import chabernac.protocol.asyncfiletransfer.AsyncFileTransferProtocol.Command;
 import chabernac.protocol.asyncfiletransfer.AsyncFileTransferProtocol.Response;
 import chabernac.protocol.routing.AbstractPeer;
 
-public class FileSender implements iFileIO{
+public class FileSender extends AbstractFileIO{
   private static final Logger LOGGER = Logger.getLogger( FileSender.class );
   
   private final String myPeer;
@@ -78,7 +78,7 @@ public class FileSender implements iFileIO{
       //only continue if the file was accepted by the client
       if(!theResult.startsWith( Response.FILE_ACCEPTED.name() )) throw new AsyncFileTransferException("Transferring file aborted");
 
-      myPacketSender = new PacketSender(myFilePacketIO, theDestination, myProtocol, mySendPackets);
+      myPacketSender = new PacketSender(this, myFilePacketIO, theDestination, myProtocol, mySendPackets);
       //now loop over all packets and send them to the other peer
       while(myLastPacketSend++ < myFilePacketIO.getNrOfPackets() && myPacketSender.isContinue()){
         myPacketSender.sendPacket(myLastPacketSend);
@@ -132,6 +132,7 @@ public class FileSender implements iFileIO{
         isSending = false;
         notifyAll();
       }
+      notifyAll();
     }
   }
   

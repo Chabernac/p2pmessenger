@@ -18,4 +18,5 @@ public interface iFileIO {
   public Percentage getPercentageComplete();
   public boolean[] getCompletedPackets();
   public File getFile();
+  public void addFileTransferListener( iFileTransferListener aListener );
 }
