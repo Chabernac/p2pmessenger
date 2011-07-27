@@ -44,21 +44,20 @@ public class FilePacketVisualizerPanel extends JPanel {
       int theColumn = i % theNrOfHorizontallCells;
       int theX = theColumn * myCellSize;
       int theY = theRow * myCellSize;
-      g.setColor( Color.black );
-      g.drawRect( theX, theY , myCellSize, myCellSize );
       if(theWrittenPacktes[i]){
         g.setColor( Color.green );
       } else {
         g.setColor( Color.orange );
       }
-      g.fillRect( theX + 1, theY + 1, myCellSize - 2, myCellSize - 2 );
+      g.fillRect( theX, theY, myCellSize, myCellSize);
+      g.setColor( Color.black );
+      g.drawRect( theX, theY , myCellSize, myCellSize );
     }
   }
   
   public class Repainter implements iFileTransferListener {
     @Override
     public void transferStateChanged() {
-      System.out.println("repainting");
       repaint();
     }
   }

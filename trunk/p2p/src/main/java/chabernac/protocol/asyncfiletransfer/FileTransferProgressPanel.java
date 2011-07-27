@@ -12,15 +12,15 @@ import java.text.NumberFormat;
 
 import javax.swing.JPanel;
 
-public class FileTransferProgress extends JPanel implements iFileTransferListener {
+public class FileTransferProgressPanel extends JPanel implements iFileTransferListener {
   private static final long serialVersionUID = -2109149737877351501L;
   private final FileTransferHandler myHandler;
-  private final int HEIGHT = 20;
-  private final int CELLS = 20;
-  private final int ROUNDING_RADIUS = 5;
-  private final Font FONT = new Font("Serif", Font.BOLD, 14);
-  private static NumberFormat FORMAT = NumberFormat.getInstance();
-  private static final Color CELL_COLOR = new Color(140,250,140);
+  final static int HEIGHT = 20;
+  private final static int CELLS = 20;
+  private final static int ROUNDING_RADIUS = 5;
+  private final static Font FONT = new Font("Serif", Font.BOLD, 14);
+  private final static NumberFormat FORMAT = NumberFormat.getInstance();
+  private final static Color CELL_COLOR = new Color(140,250,140);
   
   static{
     FORMAT.setMaximumFractionDigits( 0 );
@@ -29,7 +29,7 @@ public class FileTransferProgress extends JPanel implements iFileTransferListene
   
 
 
-  public FileTransferProgress( FileTransferHandler aHandler ) {
+  public FileTransferProgressPanel( FileTransferHandler aHandler ) {
     super();
     myHandler = aHandler;
     addListeners();
@@ -62,8 +62,6 @@ public class FileTransferProgress extends JPanel implements iFileTransferListene
     FileTransferState theState = myHandler.getState();
     
     Percentage thePercentage = theState.getPercentageComplete();
-    
-    System.out.println("Percentage complete: '" + thePercentage.toString() + "'");
     
     double theNrOfCompletedCells = (double)CELLS * (double)thePercentage.getDenominator() / (double)thePercentage.getDivisor();
     int theIntNrOfCompletedCells = (int)Math.floor(theNrOfCompletedCells);

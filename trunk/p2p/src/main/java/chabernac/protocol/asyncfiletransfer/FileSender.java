@@ -15,7 +15,7 @@ import chabernac.protocol.routing.AbstractPeer;
 
 public class FileSender extends AbstractFileIO{
   private static final Logger LOGGER = Logger.getLogger( FileSender.class );
-  
+
   private final String myPeer;
   private final AsyncFileTransferProtocol myProtocol;
   private final FilePacketIO myFilePacketIO;
@@ -27,7 +27,7 @@ public class FileSender extends AbstractFileIO{
   private ArrayBlockingQueue<Boolean> myEventQueue = new ArrayBlockingQueue<Boolean>( 1 );
   private Future<Boolean> myTransferComplete;
   private final boolean[] mySendPackets;
-  
+
   public FileSender(String anPeer, FilePacketIO anIo, AsyncFileTransferProtocol anProtocol) {
     super();
     myPeer = anPeer;
@@ -55,7 +55,7 @@ public class FileSender extends AbstractFileIO{
       }
     });
   }
-  
+
   void calculatePercentageComplete(){
     int theSucc = 0;
     for(boolean ok: mySendPackets){
@@ -71,10 +71,10 @@ public class FileSender extends AbstractFileIO{
         if(isSending) throw new AsyncFileTransferException("Already in sending state");
         isSending = true;
       }
-      
+
       myProtocol.testReachable(myPeer); 
       theDestination = myProtocol.getRoutingTable().getEntryForPeer(myPeer).getPeer();
-      
+
       //init file transfer with other peer
       String theResult = myProtocol.sendMessageTo( theDestination, Command.ACCEPT_FILE.name() + " " + 
           myFilePacketIO.getFile().getName()  + " " + 
@@ -90,12 +90,12 @@ public class FileSender extends AbstractFileIO{
       //now loop over all packets and send them to the other peer
       while(myLastPacketSend++ < myFilePacketIO.getNrOfPackets() && myPacketSender.isContinue()){
         myPacketSender.sendPacket(myLastPacketSend);
-        
+
         if(myProtocol.myHandler != null) {
           myProtocol.myHandler.fileTransfer( myFilePacketIO.getFile().getName(), myFilePacketIO.getId(), myPercentageCompleted);
         }
       }
-      
+
       if(!myPacketSender.isContinue()) throw new AsyncFileTransferException("Transferring file aborted because a packet was refused");
 
       myPacketSender.waitUntillAllSend();
@@ -120,7 +120,7 @@ public class FileSender extends AbstractFileIO{
       if(!theResponse.equalsIgnoreCase(Response.END_FILE_TRANSFER_OK.name())){
         throw new AsyncFileTransferException("Transferring file failed, not all packets where send successfull, missing packet number '" + theResponse + "'");
       }
-      
+
       isComplete = true;
     }catch(Exception e){
       if(e instanceof AsyncFileTransferException) throw (AsyncFileTransferException)e;
@@ -142,22 +142,22 @@ public class FileSender extends AbstractFileIO{
       notifyAll();
     }
   }
-  
+
   public void stop(){
     if(myPacketSender != null){
       myPacketSender.setContinue(false);
     }
     waitTillDone();
   }
-  
+
   public void reset(){
     myLastPacketSend = -1;
   }
-  
+
   public boolean isTransferring(){
     return isSending;
   }
-  
+
   public boolean isComplete(){
     return isComplete;
   }

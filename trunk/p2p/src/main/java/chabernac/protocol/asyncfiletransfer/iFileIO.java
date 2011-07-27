@@ -15,6 +15,7 @@ public interface iFileIO {
   public void waitTillDone() throws AsyncFileTransferException;
   public boolean isComplete();
   public boolean isTransferring();
+  public boolean isPaused();
   public Percentage getPercentageComplete();
   public boolean[] getCompletedPackets();
   public File getFile();
