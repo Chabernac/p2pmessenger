@@ -55,6 +55,14 @@ public class FileSender extends AbstractFileIO{
       }
     });
   }
+  
+  void calculatePercentageComplete(){
+    int theSucc = 0;
+    for(boolean ok: mySendPackets){
+      if(ok) theSucc++;
+    }
+    myPercentageCompleted = new Percentage( theSucc, mySendPackets.length );
+  }
 
   public void start() throws AsyncFileTransferException{
     AbstractPeer theDestination = null;
@@ -84,7 +92,6 @@ public class FileSender extends AbstractFileIO{
         myPacketSender.sendPacket(myLastPacketSend);
         
         if(myProtocol.myHandler != null) {
-          myPercentageCompleted = new Percentage(myLastPacketSend, myFilePacketIO.getNrOfPackets());
           myProtocol.myHandler.fileTransfer( myFilePacketIO.getFile().getName(), myFilePacketIO.getId(), myPercentageCompleted);
         }
       }

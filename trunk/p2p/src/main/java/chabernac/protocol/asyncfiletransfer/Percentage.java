@@ -8,7 +8,7 @@ public class Percentage {
   private final int myDivisor;
   private final int myDenominator;
   
-  public Percentage( int aDivisor, int aDenominator ) {
+  public Percentage( int aDenominator, int aDivisor ) {
     super();
     myDivisor = aDivisor;
     myDenominator = aDenominator;
@@ -24,4 +24,9 @@ public class Percentage {
     if(myDivisor == 0) return 0;
     return (double)myDenominator / (double)myDivisor;
   }
+  
+  public String toString(){
+    return myDenominator + " / " + myDivisor;
+  }
+  
 }

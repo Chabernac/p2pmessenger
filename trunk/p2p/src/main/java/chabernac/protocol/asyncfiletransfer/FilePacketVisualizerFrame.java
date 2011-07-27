@@ -20,7 +20,8 @@ public class FilePacketVisualizerFrame extends JFrame {
   private void buildGUI(){
     setLayout( new BorderLayout() );
     setSize( 400,400 );
-    add(new FilePacketVisualizerPanel( myIO ));
+    add(new FilePacketVisualizerPanel( myIO ), BorderLayout.CENTER);
+    add(new FileTransferProgress( myIO ), BorderLayout.SOUTH);
     setVisible( true );
     try {
       setTitle(myIO.getState().getDirection().name() + " " + myIO.getFile().getName());

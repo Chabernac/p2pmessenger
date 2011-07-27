@@ -289,11 +289,11 @@ public class AsyncFileTransferProtocol extends Protocol implements iTransferCont
       
       try{
         Direction theDirection = mySendingFiles.containsKey(aTransferId) ? Direction.SENDING : Direction.RECEIVING;
-        iFileIO theSender = getFileIO( aTransferId );
-        if(theSender.isComplete())  {
-          return new FileTransferState(theSender.getPercentageComplete(), FileTransferState.State.DONE, theDirection, theSender.getCompletedPackets());
-        } else if(theSender.isTransferring()){
-          return new FileTransferState(theSender.getPercentageComplete(), FileTransferState.State.RUNNING, theDirection, theSender.getCompletedPackets());
+        iFileIO theFileIO = getFileIO( aTransferId );
+        if(theFileIO.isComplete())  {
+          return new FileTransferState(theFileIO.getPercentageComplete(), FileTransferState.State.DONE, theDirection, theFileIO.getCompletedPackets());
+        } else if(theFileIO.isTransferring()){
+          return new FileTransferState(theFileIO.getPercentageComplete(), FileTransferState.State.RUNNING, theDirection, theFileIO.getCompletedPackets());
         }  else {
           return new FileTransferState(new Percentage( 0, 0 ), FileTransferState.State.NOT_STARTED, theDirection, null);
         }
