@@ -26,13 +26,13 @@ public class PacketSender {
   private CountDownLatch myLatch;
   private final AtomicInteger myFailuresLeft;
   private final FilePacketIO myFilePacketIO;
-  private final AbstractFileIO myFileIO;
+  private final FileSender myFileIO;
   private final AbstractPeer myDestination;
   private final AtomicBoolean myIsContinue = new AtomicBoolean(true);
   private final AsyncFileTransferProtocol myProtocol;
   private final boolean[] mySendPackets;
 
-  public PacketSender(AbstractFileIO aFileIO, FilePacketIO anIO, AbstractPeer aDestination, AsyncFileTransferProtocol aProtocol, boolean[] aSendPackets){
+  public PacketSender(FileSender aFileIO, FilePacketIO anIO, AbstractPeer aDestination, AsyncFileTransferProtocol aProtocol, boolean[] aSendPackets){
     myFileIO = aFileIO;
     myFilePacketIO = anIO;
     myLatch = new CountDownLatch(myFilePacketIO.getNrOfPackets());
@@ -82,6 +82,7 @@ public class PacketSender {
             //reset the failures left counter to the max
             myFailuresLeft.set(myProtocol.myMaxConsecutiveFailures);
             mySendPackets[aPacketNr] = true;
+            myFileIO.calculatePercentageComplete();
             myFileIO.notifyListeners();
           }
           if(SEND_SLEEP > 0) Thread.sleep( SEND_SLEEP );
