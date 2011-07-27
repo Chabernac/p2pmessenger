@@ -32,11 +32,11 @@ public class FilePacketIO {
     myFile = aFile;
     myPacketSize = aPacketSize;
     myFileSize = myFile.length();
-    if(myFileSize > 0){
-      myNrOfPackets = (int)Math.ceil( (double)myFileSize / (double)myPacketSize );
-    } else {
+    if(aNumberOfPackets > 0){
       myNrOfPackets = aNumberOfPackets;
-    }
+    } else if(myFileSize > 0){
+      myNrOfPackets = (int)Math.ceil( (double)myFileSize / (double)myPacketSize );
+    } 
     if(anUUid == null){
       myId = UUID.randomUUID().toString();
     } else {

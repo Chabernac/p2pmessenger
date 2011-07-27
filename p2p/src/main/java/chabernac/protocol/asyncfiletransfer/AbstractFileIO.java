@@ -19,4 +19,11 @@ public abstract class AbstractFileIO implements iFileIO {
   protected void notifyListeners(){
     for(iFileTransferListener theListener : myListeners) theListener.transferStateChanged();
   }
+  
+  @Override
+  public boolean isPaused() {
+    if(getPercentageComplete() == null ) return false;
+    if(getPercentageComplete().getDivisor() == 0) return false;
+    return !isComplete();
+  }
 }

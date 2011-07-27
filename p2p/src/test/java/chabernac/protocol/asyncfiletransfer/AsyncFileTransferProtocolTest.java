@@ -110,7 +110,6 @@ public class AsyncFileTransferProtocolTest extends AbstractProtocolTest {
       assertEquals(1, theAFP3.getReceivingTransfers().size());
       new FilePacketVisualizerFrame(theAFP3.getTransferHandler(theAFP3.getReceivingTransfers().iterator().next()));
       
-      
       theHandler.waitUntillDone();
       assertEquals(FileTransferState.State.DONE,  theHandler.getState().getState());
       LOGGER.debug( "Done Sending file" );

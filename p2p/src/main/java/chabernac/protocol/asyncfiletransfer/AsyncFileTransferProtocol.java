@@ -95,11 +95,11 @@ public class AsyncFileTransferProtocol extends Protocol implements iTransferCont
         File theFile = myHandler.acceptFile( theFileName, theUUId );
 
         FilePacketIO theIO = FilePacketIO.createForWrite( theFile, theUUId, thePacketSize, theNrOfPackets );
-        //we should receive the peer id from who we are receiving the file
-        FileReceiver theReceiver = new FileReceiver( thePeerId, theIO, this);
-        myReceivingFiles.put( theUUId, theReceiver );
 
-        //create a 
+        if(!myReceivingFiles.containsKey(theUUId)){
+          myReceivingFiles.put( theUUId, new FileReceiver( thePeerId, theIO, this) );
+        }
+        
         return Response.FILE_ACCEPTED.name();
       } else if(anInput.startsWith( Command.ACCEPT_PACKET.name() )){
         String thePack = anInput.substring(Command.ACCEPT_PACKET.name().length() + 1 );
@@ -294,6 +294,8 @@ public class AsyncFileTransferProtocol extends Protocol implements iTransferCont
           return new FileTransferState(theFileIO.getPercentageComplete(), FileTransferState.State.DONE, theDirection, theFileIO.getCompletedPackets());
         } else if(theFileIO.isTransferring()){
           return new FileTransferState(theFileIO.getPercentageComplete(), FileTransferState.State.RUNNING, theDirection, theFileIO.getCompletedPackets());
+        } else if(theFileIO.isPaused()){
+          return new FileTransferState(theFileIO.getPercentageComplete(), FileTransferState.State.PAUSED, theDirection, theFileIO.getCompletedPackets());
         }  else {
           return new FileTransferState(new Percentage( 0, 0 ), FileTransferState.State.NOT_STARTED, theDirection, null);
         }
