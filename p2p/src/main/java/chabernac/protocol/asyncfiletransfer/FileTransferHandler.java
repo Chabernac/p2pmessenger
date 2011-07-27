@@ -40,4 +40,8 @@ public class FileTransferHandler {
   public File getFile() throws AsyncFileTransferException{
     return myTransferController.getFile(myTransferId);
   }
+  
+  public void addFileTransferListener(iFileTransferListener aListener) throws AsyncFileTransferException{
+    myTransferController.addFileTransferListener(myTransferId, aListener);
+  }
 }

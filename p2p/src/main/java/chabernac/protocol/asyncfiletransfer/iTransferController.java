@@ -41,4 +41,8 @@ public interface iTransferController {
   //return the file of this transfer
   //if the transfer with this id does not exist throw an exception
   public File getFile(String anTransferId) throws AsyncFileTransferException;
+
+  //add a file transfer listener for this transfer
+  //if the transfer with this id does not exist throw an exception
+  public void addFileTransferListener( String aTransferId, iFileTransferListener aListener ) throws AsyncFileTransferException;
 }

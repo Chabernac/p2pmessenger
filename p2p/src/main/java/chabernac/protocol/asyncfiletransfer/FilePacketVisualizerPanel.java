@@ -8,11 +8,8 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 import javax.swing.JPanel;
-
-import chabernac.protocol.asyncfiletransfer.FileTransferState.State;
 
 public class FilePacketVisualizerPanel extends JPanel {
   private static final long serialVersionUID = -3590938754899429749L;
@@ -26,8 +23,16 @@ public class FilePacketVisualizerPanel extends JPanel {
     super();
     myIO = aIO;
     myService = Executors.newScheduledThreadPool( 1 );
-    myService.scheduleAtFixedRate( new Repainter(), 0, 200, TimeUnit.MILLISECONDS );
+    addListeners();
   }
+  
+  private void addListeners(){
+    try {
+      myIO.addFileTransferListener( new Repainter() );
+    } catch ( AsyncFileTransferException e ) {
+    }
+  }
+  
   
   public void paint(Graphics g){
     int theNrOfHorizontallCells = (int)Math.floor((double)getWidth() / (double)myCellSize);
@@ -50,12 +55,10 @@ public class FilePacketVisualizerPanel extends JPanel {
     }
   }
   
-  public class Repainter implements Runnable {
+  public class Repainter implements iFileTransferListener {
     @Override
-    public void run() {
-      if(myIO.getState().getState() == State.DONE){
-        myService.shutdownNow();
-      }
+    public void transferStateChanged() {
+      System.out.println("repainting");
       repaint();
     }
   }

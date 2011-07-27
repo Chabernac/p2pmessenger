@@ -368,4 +368,9 @@ public class AsyncFileTransferProtocol extends Protocol implements iTransferCont
   public File getFile(String anTransferId) throws AsyncFileTransferException {
     return getFileIO(anTransferId).getFile();
   }
+
+  @Override
+  public void addFileTransferListener( String aTransferId, iFileTransferListener aListener ) throws AsyncFileTransferException {
+    getFileIO( aTransferId ).addFileTransferListener(aListener);
+  }
 }
