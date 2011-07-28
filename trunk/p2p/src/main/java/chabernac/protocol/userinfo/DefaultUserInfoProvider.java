@@ -8,7 +8,6 @@ import chabernac.protocol.userinfo.UserInfo.Status;
 
 
 public class DefaultUserInfoProvider implements iUserInfoProvider {
-  private boolean isFirstTime = true;
   private String myEmail = "";
   private String myId = "";
   private String myName = "";

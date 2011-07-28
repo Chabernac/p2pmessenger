@@ -92,6 +92,10 @@ public class RoutingTableEntry implements Serializable{
     return "<PeerEntry peerid='" + myPeer.getPeerId() + "' endpoint='" + myPeer.getEndPointRepresentation() + "' hopDistance='" + myHopDistance + "' gateway='" + myGateway.getPeerId() + "' creationTime='" + myCreationTime + "'/>";
   }
   
+  public int hashCode(){
+    return getPeer().getPeerId().hashCode();
+  }
+  
   public boolean equals(Object anObject){
     if(!(anObject instanceof RoutingTableEntry)) return false;
     RoutingTableEntry theEntry = (RoutingTableEntry)anObject;

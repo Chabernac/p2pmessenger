@@ -335,7 +335,6 @@ public class MessageProtocolTest extends AbstractProtocolTest {
 
     RoutingProtocol theRoutingProtocol2 = (RoutingProtocol)theProtocol2.getProtocol( RoutingProtocol.ID );
     RoutingTable theRoutingTable2 = theRoutingProtocol2.getRoutingTable();
-    MessageProtocol theMessageProtocol2 = (MessageProtocol)theProtocol2.getProtocol( MessageProtocol.ID );
 
     try{
       assertTrue( theServer1.start() );
@@ -383,7 +382,6 @@ public class MessageProtocolTest extends AbstractProtocolTest {
 
     RoutingProtocol theRoutingProtocol2 = (RoutingProtocol)theProtocol2.getProtocol( RoutingProtocol.ID );
     RoutingTable theRoutingTable2 = theRoutingProtocol2.getRoutingTable();
-    MessageProtocol theMessageProtocol2 = (MessageProtocol)theProtocol2.getProtocol( MessageProtocol.ID );
 
     try{
       assertTrue( theServer1.start() );

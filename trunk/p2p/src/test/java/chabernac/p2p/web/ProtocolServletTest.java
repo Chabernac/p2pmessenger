@@ -19,7 +19,6 @@ public class ProtocolServletTest extends TestCase {
   public void testP2PServlet() throws Exception{
     final ServletTester theServletTester = new ServletTester();
     theServletTester.setContextPath("/p2p");
-    Map<String, String> theParams = new HashMap<String, String>();
     ServletHolder theHandler = theServletTester.addServlet(ProtocolServlet.class, "/protocol");
     theHandler.setInitParameter( "serverurl", "http://localhost:8080/" );
     theServletTester.start();

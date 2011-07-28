@@ -427,10 +427,11 @@ public class RoutingTable implements Iterable< RoutingTableEntry >, Serializable
   }
   
   public String toString(){
-    String theS = "";
+    StringBuilder theS = new StringBuilder();
     for(RoutingTableEntry theEntry : myRoutingTable.values()){
-      theS += theEntry.toString() + "\r\n";
+      theS.append( theEntry.toString() );
+      theS.append( "\r\n" );
     }
-    return theS;
+    return theS.toString();
   }
 }

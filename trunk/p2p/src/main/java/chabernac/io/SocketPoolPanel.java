@@ -97,7 +97,9 @@ public class SocketPoolPanel extends JPanel implements Observer {
     }
   }
   
-  public class CleanUp  extends AbstractAction{
+  private class CleanUp extends AbstractAction{
+    private static final long serialVersionUID = 5917904289431997118L;
+
     public CleanUp(){
       putValue( Action.NAME, "Cleanup" );
     }

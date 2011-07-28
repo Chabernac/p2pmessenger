@@ -732,7 +732,7 @@ public class P2PFacade {
       }
 
       return this;
-    }catch(Exception e){
+    }catch(ProtocolException e){
       if(myProtocolServer != null){
         myProtocolServer.stop();
       }

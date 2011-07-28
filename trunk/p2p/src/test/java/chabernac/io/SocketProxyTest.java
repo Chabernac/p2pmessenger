@@ -60,7 +60,7 @@ public class SocketProxyTest extends TestCase {
     theWriter.println(aMessage);
     theWriter.flush();
     String theLine = theReader.readLine();
-    if(theLine.equals( "HELLO" )){
+    if("HELLO".equals( theLine )){
       theLine = theReader.readLine();
     }
     return theLine;

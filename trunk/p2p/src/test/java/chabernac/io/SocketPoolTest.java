@@ -103,7 +103,7 @@ public class SocketPoolTest extends TestCase {
       assertEquals( 0, thePool.getCheckedInPool().size() );
 
       try{
-        theSocket3 = thePool.checkOut( new InetSocketAddress("localhost", 78978) );
+        thePool.checkOut( new InetSocketAddress("localhost", 78978) );
         fail("We must not get here");
       }catch(Exception e){
       }

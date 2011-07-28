@@ -78,12 +78,12 @@ public class RoutingTableModel implements TableModel {
       return FORMAT.format( theDate );
     }
     if(anColumnIndex == 4) {
-      String theProtocols = "";
+      StringBuilder theProtocols = new StringBuilder();
       for(String theProt : theRoutingTableEntry.getPeer().getSupportedProtocols()){
-        theProtocols += theProt;
-        theProtocols += ";";
+        theProtocols.append( theProt );
+        theProtocols.append( ";" );
       }
-      return theProtocols;
+      return theProtocols.toString();
       
     }
     if(anColumnIndex == 5) return theRoutingTableEntry.getPeer().isTemporaryPeer();

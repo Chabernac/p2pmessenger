@@ -31,7 +31,7 @@ public class Base64ObjectStringConverterTest extends TestCase {
     Base64ObjectStringConverter< SocketPeer> theConverter2 = new Base64ObjectStringConverter< SocketPeer >();
     
     SocketPeer theSocketPeer = new SocketPeer("1", "x22P0212", 12700);
-    SocketPeer theSocketPeer2 = new SocketPeer("1", "x22P0212", 12701);
+//    SocketPeer theSocketPeer2 = new SocketPeer("1", "x22P0212", 12701);
     
     String theSocketPeerString = theConverter2.toString(theSocketPeer);
     assertNotNull(theSocketPeerString);
