@@ -139,7 +139,7 @@ public class FileSender extends AbstractFileIO{
         isSending = false;
         notifyAll();
       }
-      notifyAll();
+      notifyListeners();
     }
   }
 
