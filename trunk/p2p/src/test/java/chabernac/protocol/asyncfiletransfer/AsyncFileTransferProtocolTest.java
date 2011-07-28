@@ -133,6 +133,7 @@ public class AsyncFileTransferProtocolTest extends AbstractProtocolTest {
 
     Thread.sleep(1000);
     assertEquals(1, myAFP3.getReceivingTransfers().size());
+    assertEquals(1, myAFP1.getSendingTransfers().size());
     new FilePacketVisualizerFrame(myAFP3.getTransferHandler(myAFP3.getReceivingTransfers().iterator().next()));
 
     theHandler.waitUntillDone();
@@ -304,9 +305,7 @@ public class AsyncFileTransferProtocolTest extends AbstractProtocolTest {
     compareFiles();
   }
   
-  
-  
-  public void testInterrupt() throws InterruptedException, AsyncFileTransferException{
+  public void testCancelTransfer() throws InterruptedException, AsyncFileTransferException{
     FileTransferHandler theSenderHandler = myAFP1.sendFile( myTempFile, thePeerId3 );
     Thread.sleep(500);
     
@@ -319,6 +318,34 @@ public class AsyncFileTransferProtocolTest extends AbstractProtocolTest {
     Thread.sleep(500);
     assertEquals( FileTransferState.State.CANCELLED_OR_REMOVED, theSenderHandler.getState().getState() );
     assertEquals( FileTransferState.State.CANCELLED_OR_REMOVED, theReceivingHandler.getState().getState() );
+    
+    assertEquals(0, myAFP1.getSendingTransfers().size());
+    assertEquals(0, myAFP3.getReceivingTransfers().size());
+  }
+  
+  public void testRemoveFinishedTransfers() throws InterruptedException, AsyncFileTransferException{
+    //bigger packet size for faster test
+    myAFP1.setPacketSize( 24 );
+
+    FileTransferHandler theHandler = myAFP1.sendFile( myTempFile, thePeerId3 );
+
+    Thread.sleep(1000);
+    assertEquals(1, myAFP3.getReceivingTransfers().size());
+    assertEquals(1, myAFP1.getSendingTransfers().size());
+
+    theHandler.waitUntillDone();
+    assertEquals(FileTransferState.State.DONE,  theHandler.getState().getState());
+
+    //the transfers are still not removed
+    assertEquals(1, myAFP3.getReceivingTransfers().size());
+    assertEquals(1, myAFP1.getSendingTransfers().size());
+
+    myAFP1.removeFinished();
+    myAFP3.removeFinished();
+
+    assertEquals(0, myAFP3.getReceivingTransfers().size());
+    assertEquals(0, myAFP1.getSendingTransfers().size());
+    compareFiles();
   }
 
   private File createTempFile() throws FileNotFoundException{
