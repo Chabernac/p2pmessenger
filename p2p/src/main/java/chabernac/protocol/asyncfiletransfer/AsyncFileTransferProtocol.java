@@ -13,6 +13,8 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import javax.sql.rowset.spi.SyncResolver;
+
 import org.apache.log4j.Logger;
 
 import chabernac.io.Base64ObjectStringConverter;
@@ -43,7 +45,7 @@ public class AsyncFileTransferProtocol extends Protocol implements iTransferCont
 
   iObjectStringConverter<FilePacket> myObjectPerister = new Base64ObjectStringConverter<FilePacket>();
 
-//  private Map<String, FilePacketIO> myFilePacketIO = new HashMap<String, FilePacketIO>();
+  //  private Map<String, FilePacketIO> myFilePacketIO = new HashMap<String, FilePacketIO>();
 
   private final Object LOCK = new Object();
   private Map<String, FileSender> mySendingFiles = new HashMap<String, FileSender>();
@@ -99,7 +101,7 @@ public class AsyncFileTransferProtocol extends Protocol implements iTransferCont
         if(!myReceivingFiles.containsKey(theUUId)){
           myReceivingFiles.put( theUUId, new FileReceiver( thePeerId, theIO, this) );
         }
-        
+
         return Response.FILE_ACCEPTED.name();
       } else if(anInput.startsWith( Command.ACCEPT_PACKET.name() )){
         String thePack = anInput.substring(Command.ACCEPT_PACKET.name().length() + 1 );
@@ -143,7 +145,7 @@ public class AsyncFileTransferProtocol extends Protocol implements iTransferCont
         String[] theParams = anInput.substring( Command.STOP_TRANSFER.name().length() + 1 ).split( " " );
         String theUUId = theParams[0];
         if(!mySendingFiles.containsKey( theUUId )) return Response.UNKNOWN_ID.name();
-        
+
         iFileIO theSender = mySendingFiles.get(theUUId);
         theSender.stop();
         return Response.OK.name();
@@ -157,11 +159,11 @@ public class AsyncFileTransferProtocol extends Protocol implements iTransferCont
         String[] theParams = anInput.substring( Command.TRANSFER_STOPPED.name().length() + 1 ).split( " " );
         String theUUId = theParams[0];
         if(!myReceivingFiles.containsKey( theUUId )) return Response.UNKNOWN_ID.name();
-        
+
         FileReceiver theReceiver = myReceivingFiles.get(theUUId);
         theReceiver.setTransferring( false );
       }
-      
+
     }catch(Exception e){
       LOGGER.error( "Error occured in ayncfiletransferprotocol", e );
       return Response.NOK.name();
@@ -254,20 +256,15 @@ public class AsyncFileTransferProtocol extends Protocol implements iTransferCont
 
   @Override
   public void removeAndInterrupt(String aTransferId) throws AsyncFileTransferException {
-    synchronized(LOCK){
-      iFileIO theIO = getFileIO( aTransferId );
-      theIO.stop();
-      removeFileIO( aTransferId );
-    }
+    iFileIO theIO = getFileIO( aTransferId );
+    theIO.stop();
+    removeFileIO( aTransferId );
   }
 
   @Override
   public void pause(String aTransferId) throws AsyncFileTransferException {
-    synchronized(LOCK){
-      iFileIO theIO = getFileIO( aTransferId );
-      theIO.stop();
-    }
-
+    iFileIO theIO = getFileIO( aTransferId );
+    theIO.stop();
   }
 
   @Override
@@ -286,7 +283,7 @@ public class AsyncFileTransferProtocol extends Protocol implements iTransferCont
       if(!containsTransferId( aTransferId )) {
         return new FileTransferState(new Percentage( 0, 0 ), FileTransferState.State.CANCELLED_OR_REMOVED, Direction.UNKNOWN, null);
       }
-      
+
       try{
         Direction theDirection = mySendingFiles.containsKey(aTransferId) ? Direction.SENDING : Direction.RECEIVING;
         iFileIO theFileIO = getFileIO( aTransferId );
@@ -323,7 +320,6 @@ public class AsyncFileTransferProtocol extends Protocol implements iTransferCont
           myReceivingFiles.remove(theTransferId);
         }
       }
-
     }
   }
 
@@ -345,14 +341,18 @@ public class AsyncFileTransferProtocol extends Protocol implements iTransferCont
   }
 
   private iFileIO getFileIO( String aTransferId ) throws AsyncFileTransferException {
-    if(myReceivingFiles.containsKey( aTransferId )) return myReceivingFiles.get( aTransferId );
-    if(mySendingFiles.containsKey( aTransferId )) return mySendingFiles.get(aTransferId);
-    throw new AsyncFileTransferException("No file io for transfer id '" + aTransferId + "'");
+    synchronized(LOCK){
+      if(myReceivingFiles.containsKey( aTransferId )) return myReceivingFiles.get( aTransferId );
+      if(mySendingFiles.containsKey( aTransferId )) return mySendingFiles.get(aTransferId);
+      throw new AsyncFileTransferException("No file io for transfer id '" + aTransferId + "'");
+    }
   }
 
   private void removeFileIO(String aTransferId){
-    if(myReceivingFiles.containsKey( aTransferId )) myReceivingFiles.remove( aTransferId );
-    if(mySendingFiles.containsKey( aTransferId )) mySendingFiles.remove(aTransferId);
+    synchronized(LOCK){
+      if(myReceivingFiles.containsKey( aTransferId )) myReceivingFiles.remove( aTransferId );
+      if(mySendingFiles.containsKey( aTransferId )) mySendingFiles.remove(aTransferId);
+    }
   }
 
   @Override
