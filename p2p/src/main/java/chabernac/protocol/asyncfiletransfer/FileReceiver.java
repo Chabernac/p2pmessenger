@@ -102,6 +102,7 @@ public class FileReceiver extends AbstractFileIO{
   
   public void setTransferring(boolean isTransferring){
     this.isTransferring = isTransferring;
+    notifyListeners();
   }
 
   public File getFile() {
