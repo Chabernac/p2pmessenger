@@ -61,7 +61,7 @@ public class FileTransferProgressPanel extends JPanel implements iFileTransferLi
 
     int theWidth = getWidth();
 
-    g.setColor( getBackground() );
+    g.setColor( new Color(238,238,238) );
     g.fillRect(  0, 0, theImage.getWidth(), theImage.getHeight() );
 
     double theCellWidth = Math.floor((double)theWidth / (double)CELLS);
@@ -86,13 +86,7 @@ public class FileTransferProgressPanel extends JPanel implements iFileTransferLi
       g.setColor( Color.gray );
       g.drawRoundRect( (int)Math.floor( i * theCellWidth + 1), 1, (int)Math.floor(theCellWidth - 2), HEIGHT - 2, ROUNDING_RADIUS, ROUNDING_RADIUS);
     }
-
-
-    if(theState.getState() == FileTransferState.State.PAUSED){
-      theImage = blur( theImage );
-      g = theImage.getGraphics();
-    }
-
+    
     try {
       g.setColor( Color.black );
       g.setFont( FONT );
@@ -106,16 +100,21 @@ public class FileTransferProgressPanel extends JPanel implements iFileTransferLi
     } catch ( AsyncFileTransferException e ) {
     }
 
+    if(theState.getState() == FileTransferState.State.PAUSED){
+      theImage = blur( theImage );
+      g = theImage.getGraphics();
+    }
+    
     aGraphics.drawImage( theImage, 0, 0, null );
   }
 
   private BufferedImage blur(BufferedImage anImage){
-    //    float data[] = { 0.0625f, 0.125f, 0.0625f,
-    //                     0.125f , 0.25f , 0.125f,
-    //                     0.0625f, 0.125f, 0.0625f };
-    float data[] = { 0.120f, 0.120f, 0.120f,
-                     0.120f , 0.165f , 0.120f,
-                     0.120f, 0.120f, 0.120f };
+        float data[] = { 0.0625f, 0.125f, 0.0625f,
+                         0.125f , 0.25f , 0.125f,
+                         0.0625f, 0.125f, 0.0625f };
+//    float data[] = { 0.120f, 0.120f, 0.120f,
+//                     0.120f , 0.165f , 0.120f,
+//                     0.120f, 0.120f, 0.120f };
 
     Kernel kernel = new Kernel(3, 3, data);
     ConvolveOp convolve = new ConvolveOp(kernel, ConvolveOp.EDGE_NO_OP, null);

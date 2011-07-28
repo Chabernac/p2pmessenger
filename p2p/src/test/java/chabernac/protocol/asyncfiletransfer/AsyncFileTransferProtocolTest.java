@@ -9,6 +9,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import org.apache.log4j.BasicConfigurator;
@@ -139,7 +141,6 @@ public class AsyncFileTransferProtocolTest extends AbstractProtocolTest {
 
   public void testAsyncFileTransferProtocol() throws InterruptedException, ProtocolException, FileNotFoundException, UnknownPeerException, AsyncFileTransferException, ExecutionException{
     FileTransferHandler theHandler = myAFP1.sendFile( myTempFile, thePeerId3 );
-    new FilePacketVisualizerFrame(theHandler);
 
     Thread.sleep(1000);
     assertEquals(1, myAFP3.getReceivingTransfers().size());
@@ -150,6 +151,21 @@ public class AsyncFileTransferProtocolTest extends AbstractProtocolTest {
     assertEquals(FileTransferState.State.DONE,  theHandler.getState().getState());
 
     compareFiles();
+  }
+  
+  public void testGraphicalComponents() throws InterruptedException, AsyncFileTransferException{
+    List<FileTransferHandler> theFileHandlers = new ArrayList<FileTransferHandler>();
+    
+    new FileTransferOverviewFrame(myAFP1).setVisible(true);
+    
+    for(int i=0;i<15;i++){
+      theFileHandlers.add(myAFP1.sendFile( myTempFile, thePeerId3 ));
+    }
+    
+    for(FileTransferHandler theHandler : theFileHandlers){
+      theHandler.waitUntillDone();
+      assertEquals(FileTransferState.State.DONE,  theHandler.getState().getState());
+    }
   }
   
   private void compareFiles(){

@@ -151,7 +151,7 @@ public class MultiPeerMessage implements Serializable{
   }
 
   public int hashCode(){
-    return myUniqueId.clockSequence();
+    return myUniqueId.hashCode();
   }
   
   public boolean equals(Object anObject){
