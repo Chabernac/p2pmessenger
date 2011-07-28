@@ -45,4 +45,8 @@ public interface iTransferController {
   //add a file transfer listener for this transfer
   //if the transfer with this id does not exist throw an exception
   public void addFileTransferListener( String aTransferId, iFileTransferListener aListener ) throws AsyncFileTransferException;
+  
+  //add a file transfer change listener
+  //the listener must be invoked when a transfer has been added
+  public void addTransferChangeListener(iTransferChangeListener aListener);
 }

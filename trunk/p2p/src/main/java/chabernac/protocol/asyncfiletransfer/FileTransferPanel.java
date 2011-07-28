@@ -25,7 +25,7 @@ public class FileTransferPanel extends JPanel implements iFileTransferListener{
     setLayout(new BorderLayout());
     add(new FileTransferProgressPanel(myHandler), BorderLayout.CENTER);
     myStartStopCommand = new StartStopAction();
-    add(new CommandButton(myStartStopCommand), BorderLayout.EAST);
+    add(new CommandButton(myStartStopCommand, 100), BorderLayout.EAST);
     addListeners();
   }
   

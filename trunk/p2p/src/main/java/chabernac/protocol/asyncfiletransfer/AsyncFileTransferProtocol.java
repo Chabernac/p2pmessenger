@@ -5,8 +5,10 @@
 package chabernac.protocol.asyncfiletransfer;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
@@ -58,6 +60,8 @@ public class AsyncFileTransferProtocol extends Protocol implements iTransferCont
   //of the packed will be triggered
   private int myIsIgnorePacketRatio = -1;
   private Random myRandom = new Random();
+  
+  private List<iTransferChangeListener> myTransferChangeListeners = new ArrayList<iTransferChangeListener>();
 
   public AsyncFileTransferProtocol( ) {
     super( ID );
@@ -101,6 +105,7 @@ public class AsyncFileTransferProtocol extends Protocol implements iTransferCont
 
         if(!myReceivingFiles.containsKey(theUUId)){
           myReceivingFiles.put( theUUId, new FileReceiver( thePeerId, theIO, this) );
+          notifyNewTransfer(theUUId);
         }
         
         myReceivingFiles.get(theUUId).setTransferring( true );
@@ -168,6 +173,7 @@ public class AsyncFileTransferProtocol extends Protocol implements iTransferCont
         String theUUId = theParams[0];
         if(!myReceivingFiles.containsKey( theUUId )) return Response.UNKNOWN_ID.name();
         myReceivingFiles.remove( theUUId );
+        notifyTransferRemoved(theUUId);
       } else if(anInput.startsWith( Command.RESUME_TRANSFER.name() )){
         String[] theParams = anInput.substring( Command.RESUME_TRANSFER.name().length() + 1 ).split( " " );
         String theUUId = theParams[0];
@@ -226,7 +232,7 @@ public class AsyncFileTransferProtocol extends Protocol implements iTransferCont
     //store it
     final FileSender theFileSender = new FileSender(aPeer, theIO, this);
     mySendingFiles.put(theIO.getId(), theFileSender);
-
+    notifyNewTransfer(theIO.getId());
     theFileSender.startAsync( myFileSenderService );
 
     return new FileTransferHandler(theIO.getId(), this);
@@ -333,6 +339,7 @@ public class AsyncFileTransferProtocol extends Protocol implements iTransferCont
         FileSender theSender = mySendingFiles.get(theTransferId);
         if(theSender.isComplete()){
           mySendingFiles.remove(theTransferId);
+          notifyTransferRemoved(theTransferId);
         }
       }
       for(Iterator<String> theTransferIds = myReceivingFiles.keySet().iterator();theTransferIds.hasNext();){
@@ -340,6 +347,7 @@ public class AsyncFileTransferProtocol extends Protocol implements iTransferCont
         FileReceiver theReceiver = myReceivingFiles.get(theTransferId);
         if(theReceiver.isComplete()){
           myReceivingFiles.remove(theTransferId);
+          notifyTransferRemoved(theTransferId);
         }
       }
     }
@@ -374,6 +382,7 @@ public class AsyncFileTransferProtocol extends Protocol implements iTransferCont
     synchronized(LOCK){
       if(myReceivingFiles.containsKey( aTransferId )) myReceivingFiles.remove( aTransferId );
       if(mySendingFiles.containsKey( aTransferId )) mySendingFiles.remove(aTransferId);
+      notifyTransferRemoved(aTransferId);
     }
   }
 
@@ -396,5 +405,18 @@ public class AsyncFileTransferProtocol extends Protocol implements iTransferCont
   @Override
   public void addFileTransferListener( String aTransferId, iFileTransferListener aListener ) throws AsyncFileTransferException {
     getFileIO( aTransferId ).addFileTransferListener(aListener);
+  }
+
+  @Override
+  public void addTransferChangeListener(iTransferChangeListener aListener) {
+    myTransferChangeListeners.add(aListener);
+  }
+  
+  private void notifyNewTransfer(String aTransferId){
+    for(iTransferChangeListener theListener : myTransferChangeListeners) theListener.transferStarted(aTransferId);
+  }
+  
+  private void notifyTransferRemoved(String aTransferId){
+    for(iTransferChangeListener theListener : myTransferChangeListeners) theListener.transferRemoved(aTransferId);
   }
 }
