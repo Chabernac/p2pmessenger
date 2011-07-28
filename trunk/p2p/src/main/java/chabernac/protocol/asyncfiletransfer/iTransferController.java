@@ -21,7 +21,7 @@ public interface iTransferController {
   //interrupt the tranfer with the given id
   //if the transfer with this id does not exist throw an exception
   //if the transfer is running then stop it
-  public void removeAndInterrupt(String aTransferId) throws AsyncFileTransferException;
+  public void cancel(String aTransferId) throws AsyncFileTransferException;
   
   //pause the transfer with the given id
   //if the transfer with this id does not exist throw an exception

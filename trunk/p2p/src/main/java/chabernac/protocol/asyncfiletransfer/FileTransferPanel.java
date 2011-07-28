@@ -65,7 +65,7 @@ public class FileTransferPanel extends JPanel implements iFileTransferListener{
         } else if(myHandler.getState().getState() == FileTransferState.State.PAUSED){
           myHandler.resume();
         } else {
-          myHandler.interrupt();
+          myHandler.cancel();
         }
       }catch(Exception e){
         LOGGER.error("Could not invoke command", e);
