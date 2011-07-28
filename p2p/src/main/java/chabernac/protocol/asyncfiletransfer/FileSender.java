@@ -38,11 +38,7 @@ public class FileSender extends AbstractFileIO{
 
 
   public void startAsync(ExecutorService aService){
-    Exception e = new Exception();
-    e.fillInStackTrace();
-    LOGGER.error( "Starting file sender ascyn", e );
     myTransferComplete = aService.submit( new Callable<Boolean>(){
-
       @Override
       public Boolean call() throws Exception {
         try{
