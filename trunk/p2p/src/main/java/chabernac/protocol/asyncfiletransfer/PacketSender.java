@@ -63,7 +63,6 @@ public class PacketSender {
     //test if the peer is still reachable
     myProtocol.testReachable(myDestination.getPeerId());
 
-    //TODO we get a rejected execution exception if all threads are in use instead of waiting untill a thread comes free
     //change and use ArrayBlockingQueue or something like that
     myProtocol.myPacketSenderService.execute( new Runnable(){
       public void run(){
