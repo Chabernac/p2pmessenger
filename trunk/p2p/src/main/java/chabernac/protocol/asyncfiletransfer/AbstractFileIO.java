@@ -24,6 +24,7 @@ public abstract class AbstractFileIO implements iFileIO {
   public boolean isPaused() {
     if(getPercentageComplete() == null ) return false;
     if(getPercentageComplete().getDivisor() == 0) return false;
+    if(isTransferring()) return false;
     return !isComplete();
   }
 }
