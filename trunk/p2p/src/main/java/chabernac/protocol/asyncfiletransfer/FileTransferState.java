@@ -31,4 +31,8 @@ public class FileTransferState {
   public Direction getDirection() {
     return myDirection;
   }
+  
+  public String toString(){
+    return myDirection.name() + " " + myState.name() + " " + myPercentageComplete.getDenominator() + " / " + myPercentageComplete.getDivisor();
+  }
 }

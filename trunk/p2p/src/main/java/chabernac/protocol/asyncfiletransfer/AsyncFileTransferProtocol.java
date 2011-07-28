@@ -81,11 +81,10 @@ public class AsyncFileTransferProtocol extends Protocol implements iTransferCont
 
   @Override
   public String handleCommand( String aSessionId, String anInput ) {
-    //we can not do anything if there is no file handler
-    if(myHandler == null) return Response.ABORT_FILE_TRANSFER.name();
 
     try{
       if(anInput.startsWith( Command.ACCEPT_FILE.name() )){
+        if(myHandler == null) return Response.ABORT_FILE_TRANSFER.name();
         String[] theParams = anInput.substring( Command.ACCEPT_FILE.name().length() + 1 ).split( " " );
 
         String theFileName = theParams[0];
@@ -101,9 +100,12 @@ public class AsyncFileTransferProtocol extends Protocol implements iTransferCont
         if(!myReceivingFiles.containsKey(theUUId)){
           myReceivingFiles.put( theUUId, new FileReceiver( thePeerId, theIO, this) );
         }
+        
+        myReceivingFiles.get(theUUId).setTransferring( true );
 
         return Response.FILE_ACCEPTED.name();
       } else if(anInput.startsWith( Command.ACCEPT_PACKET.name() )){
+        if(myHandler == null) return Response.ABORT_FILE_TRANSFER.name();
         String thePack = anInput.substring(Command.ACCEPT_PACKET.name().length() + 1 );
         FilePacket thePacket = myObjectPerister.getObject( thePack );
 
@@ -125,6 +127,7 @@ public class AsyncFileTransferProtocol extends Protocol implements iTransferCont
         LOGGER.debug( "Packet accepted '" + thePacket.getPacket() + "'" );
         return Response.PACKET_OK.name();
       } else if(anInput.startsWith( Command.END_FILE_TRANSFER.name() )){
+        if(myHandler == null) return Response.ABORT_FILE_TRANSFER.name();
         String[] theParams = anInput.substring( Command.END_FILE_TRANSFER.name().length() + 1 ).split( " " );
 
         String theUUId = theParams[0];
@@ -153,6 +156,7 @@ public class AsyncFileTransferProtocol extends Protocol implements iTransferCont
         String[] theParams = anInput.substring( Command.RESUME_TRANSFER.name().length() + 1 ).split( " " );
         String theUUId = theParams[0];
         if(!mySendingFiles.containsKey( theUUId )) return Response.UNKNOWN_ID.name();
+        LOGGER.debug( "Resuming file transfer for transfer '" + theUUId + "'" );
         resume( theUUId );
         return Response.OK.name();
       } else if(anInput.startsWith( Command.TRANSFER_STOPPED.name() )){

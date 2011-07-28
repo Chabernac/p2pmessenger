@@ -44,4 +44,12 @@ public class FileTransferHandler {
   public void addFileTransferListener(iFileTransferListener aListener) throws AsyncFileTransferException{
     myTransferController.addFileTransferListener(myTransferId, aListener);
   }
+  
+  public String toString(){
+    try {
+      return getFile().getName() + " " + getState().toString();
+    } catch ( AsyncFileTransferException e ) {
+      return "Exception occured in to string of FileTransferHandler";
+    }
+  }
 }

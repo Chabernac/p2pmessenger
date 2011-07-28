@@ -74,7 +74,6 @@ public class FileReceiver extends AbstractFileIO{
   
   public void writePacket(FilePacket aPacket) throws IOException {
     myFilePacketIO.writePacket( aPacket );
-    isTransferring = !myFilePacketIO.isComplete();
     //automatically close the io if the transfer if the file is complete
     if(myFilePacketIO.isComplete()){
       myFilePacketIO.close();
@@ -115,7 +114,11 @@ public class FileReceiver extends AbstractFileIO{
 
   @Override
   public void startAsync( ExecutorService aService ) throws AsyncFileTransferException {
-    // TODO Auto-generated method stub
+    aService.execute( new Runnable(){
+      public void run(){
+        start();
+      }
+    });
   }
 
   @Override
