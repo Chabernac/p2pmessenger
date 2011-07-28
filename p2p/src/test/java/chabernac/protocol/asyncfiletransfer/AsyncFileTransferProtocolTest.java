@@ -26,6 +26,9 @@ import chabernac.protocol.routing.UnknownPeerException;
 
 public class AsyncFileTransferProtocolTest extends AbstractProtocolTest {
   private static Logger LOGGER = Logger.getLogger(AsyncFileTransferProtocol.class);
+  
+  private static final int IGNORE_PACKET_RATIO = 5;
+  private static final int MAX_RETRIES = 50;
 
   private ProtocolServer myServer1 = null;
   private ProtocolContainer myProtocolContainer1 = null;
@@ -64,7 +67,7 @@ public class AsyncFileTransferProtocolTest extends AbstractProtocolTest {
     myAFP1 = ((AsyncFileTransferProtocol)myProtocolContainer1.getProtocol( AsyncFileTransferProtocol.ID ));
     myAFP1.setPacketSize( 1 );
     //we set the retry ratio pretty high so that we might almost be 100% sure that all packets will finally be delivered
-    myAFP1.setMaxRetries( 50 );
+    myAFP1.setMaxRetries( MAX_RETRIES );
 
 
     myProtocolContainer2 = getProtocolContainer( -1, false, "2");
@@ -78,7 +81,7 @@ public class AsyncFileTransferProtocolTest extends AbstractProtocolTest {
     myServer3 = new ProtocolServer(myProtocolContainer3, RoutingProtocol.START_PORT + 2, 5);
     myAFP3 = ((AsyncFileTransferProtocol)myProtocolContainer3.getProtocol( AsyncFileTransferProtocol.ID ));
     myAFP3.setFileHandler( myFileHandler );
-    myAFP3.setIsIgnorePacketRatio( 5 );
+    myAFP3.setIsIgnorePacketRatio( IGNORE_PACKET_RATIO );
     RoutingProtocol theRoutingProtocol3 = (RoutingProtocol)myProtocolContainer3.getProtocol( RoutingProtocol.ID );
 
     ((RoutingProtocol)myProtocolContainer1.getProtocol( RoutingProtocol.ID )).getLocalUnreachablePeerIds().add( "3" );
@@ -125,6 +128,13 @@ public class AsyncFileTransferProtocolTest extends AbstractProtocolTest {
     
     if(myTempFile != null && myTempFile.exists()) myTempFile.delete();
     if(myFileToWrite != null && myFileToWrite.exists()) myFileToWrite.delete();
+  }
+  
+  public void testSetterGetters(){
+    assertEquals( "Async file transfer protocol", myAFP1.getDescription());
+    assertEquals( myFileHandler, myAFP3.getHandler() );
+    assertEquals( IGNORE_PACKET_RATIO, myAFP3.getIsIgnorePacketRatio());
+    assertEquals( MAX_RETRIES, myAFP1.getMaxRetries() );
   }
 
   public void testAsyncFileTransferProtocol() throws InterruptedException, ProtocolException, FileNotFoundException, UnknownPeerException, AsyncFileTransferException, ExecutionException{
