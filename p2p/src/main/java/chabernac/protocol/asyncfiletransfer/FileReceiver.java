@@ -59,6 +59,18 @@ public class FileReceiver extends AbstractFileIO{
       LOGGER.error("An error occured while sending stop command", e);
     }
   }
+  
+  @Override
+  public void cancel() {
+    try{
+      myProtocol.testReachable( myPeer );
+      AbstractPeer theDestination = myProtocol.getRoutingTable().getEntryForPeer(myPeer).getPeer();
+      myProtocol.sendMessageTo( theDestination, AsyncFileTransferProtocol.Command.CANCEL_TRANSFER.name() + " " + myFilePacketIO.getId());
+    }catch(Exception e){
+      LOGGER.error("An error occured while sending stop command", e);
+    }
+  }
+  
 
   @Override
   public void waitTillDone() throws AsyncFileTransferException {
@@ -124,5 +136,10 @@ public class FileReceiver extends AbstractFileIO{
   @Override
   public boolean[] getCompletedPackets() {
     return myFilePacketIO.getWrittenPackets();
+  }
+
+  @Override
+  public boolean isRefused() {
+    return false;
   }
 }

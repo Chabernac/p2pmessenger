@@ -17,8 +17,8 @@ public class FileTransferHandler {
     return myTransferId;
   }
 
-  public void interrupt() throws AsyncFileTransferException{
-    myTransferController.removeAndInterrupt(myTransferId);
+  public void cancel() throws AsyncFileTransferException{
+    myTransferController.cancel(myTransferId);
   }
 
   public void pause() throws AsyncFileTransferException{

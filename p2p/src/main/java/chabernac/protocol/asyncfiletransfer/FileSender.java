@@ -9,9 +9,11 @@ import java.util.concurrent.Future;
 
 import org.apache.log4j.Logger;
 
+import chabernac.protocol.ProtocolException;
 import chabernac.protocol.asyncfiletransfer.AsyncFileTransferProtocol.Command;
 import chabernac.protocol.asyncfiletransfer.AsyncFileTransferProtocol.Response;
 import chabernac.protocol.routing.AbstractPeer;
+import chabernac.protocol.routing.UnknownPeerException;
 
 public class FileSender extends AbstractFileIO{
   private static final Logger LOGGER = Logger.getLogger( FileSender.class );
@@ -23,6 +25,7 @@ public class FileSender extends AbstractFileIO{
   private int myLastPacketSend = -1;
   private boolean isSending = false;
   private boolean isComplete = false;
+  private boolean isRefused = false;
   private Percentage myPercentageCompleted = new Percentage( 0, 0 );
   private ArrayBlockingQueue<Boolean> myEventQueue = new ArrayBlockingQueue<Boolean>( 1 );
   private Future<Boolean> myTransferComplete;
@@ -59,6 +62,10 @@ public class FileSender extends AbstractFileIO{
     }
     myPercentageCompleted = new Percentage( theSucc, mySendPackets.length );
   }
+  
+  private AbstractPeer getDestination() throws UnknownPeerException, ProtocolException{
+    return myProtocol.getRoutingTable().getEntryForPeer(myPeer).getPeer();
+  }
 
   public void start() throws AsyncFileTransferException{
     AbstractPeer theDestination = null;
@@ -69,7 +76,7 @@ public class FileSender extends AbstractFileIO{
       }
 
       myProtocol.testReachable(myPeer); 
-      theDestination = myProtocol.getRoutingTable().getEntryForPeer(myPeer).getPeer();
+      theDestination = getDestination();
 
       //init file transfer with other peer
       String theResult = myProtocol.sendMessageTo( theDestination, Command.ACCEPT_FILE.name() + " " + 
@@ -79,6 +86,8 @@ public class FileSender extends AbstractFileIO{
           myFilePacketIO.getNrOfPackets() + " " + 
           myProtocol.getRoutingTable().getLocalPeerId());
 
+      isRefused = Response.FILE_REFUSED.name().equals( theResult );
+      
       //only continue if the file was accepted by the client
       if(!theResult.startsWith( Response.FILE_ACCEPTED.name() )) throw new AsyncFileTransferException("Transferring file aborted");
 
@@ -145,6 +154,17 @@ public class FileSender extends AbstractFileIO{
     }
     waitTillDone();
   }
+  
+  public void cancel(){
+    stop();
+    //send signal to the receiver that the transfer will be removed and can not be resumed
+    try {
+      String theResponse = myProtocol.sendMessageTo( getDestination(), Command.TRANSFER_CANCELLED.name() + " " + myFilePacketIO.getId() );
+      LOGGER.debug("Response on cancellation '" + theResponse + "'");
+    } catch ( Exception e ) {
+      LOGGER.error( "Unable to notify receiver of transfer cancellation", e );
+    }
+  }
 
   public void reset(){
     myLastPacketSend = -1;
@@ -181,5 +201,11 @@ public class FileSender extends AbstractFileIO{
   @Override
   public File getFile() {
     return myFilePacketIO.getFile();
+  }
+
+
+  @Override
+  public boolean isRefused() {
+    return isRefused;
   }
 }
