@@ -138,13 +138,14 @@ public class AsyncFileTransferProtocol extends Protocol implements iTransferCont
           myHandler.fileSaved( theIO.getFile() );
           return Response.END_FILE_TRANSFER_OK.name();
         } else {
-          String theIncompletePacktets = "";
+          StringBuilder theIncompletePackets = new StringBuilder();
           for(int i=0;i<theIO.getWrittenPackets().length;i++){
             if(!theIO.getWrittenPackets()[i]){
-              theIncompletePacktets += i + " ";
+              theIncompletePackets.append( i );
+              theIncompletePackets.append( " " );
             }
           }
-          return theIncompletePacktets;
+          return theIncompletePackets.toString();
         }
       } else if(anInput.startsWith( Command.STOP_TRANSFER.name() )){
         String[] theParams = anInput.substring( Command.STOP_TRANSFER.name().length() + 1 ).split( " " );

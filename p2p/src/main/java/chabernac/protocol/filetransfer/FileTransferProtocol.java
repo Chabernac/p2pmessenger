@@ -289,7 +289,7 @@ public class FileTransferProtocol extends Protocol {
       notifyAll();
     }
 
-    public Status getStatus(){
+    public synchronized Status getStatus(){
       return myStatus;
     }
 

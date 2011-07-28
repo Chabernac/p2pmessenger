@@ -77,7 +77,7 @@ public class RoutingTablePersisterTest extends TestCase {
     assertEquals( theTable.getLocalPeerId(), theTable2.getLocalPeerId() );
                  
     List<RoutingTableEntry> theEntries1 = theTable.getEntries();
-    List<RoutingTableEntry> theEntries2 = theTable2.getEntries();
+//    List<RoutingTableEntry> theEntries2 = theTable2.getEntries();
     
     for(int i=0;i<theEntries1.size();i++){
       RoutingTableEntry theEntry = theEntries1.get( i );

@@ -282,15 +282,12 @@ public class UserInfoProtocolTest extends AbstractProtocolTest {
     RoutingProtocol theRoutingProtocol1 = (RoutingProtocol)theProtocol1.getProtocol( RoutingProtocol.ID );
     RoutingTable theRoutingTable1 = theRoutingProtocol1.getRoutingTable();
     RoutingProtocol theRoutingProtocol2 = (RoutingProtocol)theProtocol2.getProtocol( RoutingProtocol.ID );
-    RoutingTable theRoutingTable2 = theRoutingProtocol2.getRoutingTable();
     
     UserInfoProtocol theUserInfoProtocol2 = (UserInfoProtocol)theProtocol2.getProtocol( UserInfoProtocol.ID );
     UserInfoListener theListener = new UserInfoListener();
     theUserInfoProtocol2.addUserInfoListener( theListener );
     
     try{
-      UserInfoProtocol theUserInfoProtocol = (UserInfoProtocol)theProtocol1.getProtocol( UserInfoProtocol.ID );
-      
       assertTrue( theServer1.start() );
       assertTrue( theServer2.start() );
       

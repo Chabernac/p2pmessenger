@@ -150,6 +150,10 @@ public class MultiPeerMessage implements Serializable{
     return new MultiPeerMessage(getDestinations(), getSource(), getMessage(), getIndicators(), getUniqueId(), aConversationId, isLoopBack);
   }
 
+  public int hashCode(){
+    return myUniqueId.clockSequence();
+  }
+  
   public boolean equals(Object anObject){
     if(!(anObject instanceof MultiPeerMessage)){
       return false;

@@ -18,6 +18,7 @@ public class FilePacketIO {
   private RandomAccessFile myRandomAccess = null;
   private final String myId;
   private final boolean[] myWrittenPackets;
+  private int myMaxReadBlock = -1;
   
   public static FilePacketIO createForRead(File aFile, int aPacketSize){
     return new FilePacketIO( aFile, aPacketSize, null, -1 );
@@ -57,10 +58,18 @@ public class FilePacketIO {
    
    long theStart = aNumber * myPacketSize;
    int theLength = (int)Math.min((long)myPacketSize, myFileSize - theStart );
+   
    byte[] thePacket = new byte[theLength];
    theRandomAccess.seek( theStart );
 //   System.out.println("read at " + theStart + " length " + theLength);
-   theRandomAccess.read( thePacket, 0, theLength);
+   int theNrOfBytesRead = 0;
+   while(theNrOfBytesRead < theLength){
+     int theReadLength = Math.min( theLength, theLength - theNrOfBytesRead );
+     if(myMaxReadBlock > 0) theReadLength = Math.min( theReadLength, myMaxReadBlock );
+     
+     theNrOfBytesRead += theRandomAccess.read( thePacket, theNrOfBytesRead, theReadLength);
+     
+   }
    return new FilePacket( myId, thePacket, aNumber );
   }
   
@@ -124,4 +133,14 @@ public class FilePacketIO {
     }
     return true;
   }
+
+  protected int getMaxReadBlock() {
+    return myMaxReadBlock;
+  }
+
+  protected void setMaxReadBlock( int aMaxReadBlock ) {
+    myMaxReadBlock = aMaxReadBlock;
+  }
+  
+  
 }

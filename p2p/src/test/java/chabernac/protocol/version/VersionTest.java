@@ -34,7 +34,7 @@ public class VersionTest extends TestCase {
     assertEquals( "5.6.7", theVersion.toString() );
     
     try{
-      theVersion = new Version("1.2.3.4");
+      new Version("1.2.3.4");
       fail("Should not get here");
     }catch(Exception e){
     }

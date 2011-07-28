@@ -54,12 +54,11 @@ public class Version implements Serializable{
     return 0;
   }
   
-  public int getHashCode(){
+  public int hashCode(){
     return myMajor;
   }
   
   public boolean equals(Object anObject){
    return toString().equals( anObject.toString() ); 
   }
-  
 }

@@ -46,7 +46,7 @@ public class AsyncFileTransferProtocolTest extends AbstractProtocolTest {
   
   private TestFileHandler myFileHandler = null;
   
-  private String thePeerId1 = null;
+//  private String thePeerId1 = null;
   private String thePeerId3 = null;
   
   static{
@@ -115,7 +115,7 @@ public class AsyncFileTransferProtocolTest extends AbstractProtocolTest {
     assertNotNull( thePeer3.getPeer() );
     assertTrue(thePeer3.isReachable());
     
-    thePeerId1 = theRoutingTable1.getLocalPeerId();
+//    thePeerId1 = theRoutingTable1.getLocalPeerId();
     thePeerId3 = theRoutingTable3.getLocalPeerId();
   }
 
