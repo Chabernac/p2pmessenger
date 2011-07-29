@@ -155,10 +155,12 @@ public class AsyncFileTransferProtocolTest extends AbstractProtocolTest {
   
   public void testGraphicalComponents() throws InterruptedException, AsyncFileTransferException{
     List<FileTransferHandler> theFileHandlers = new ArrayList<FileTransferHandler>();
+    myAFP1.setPacketSize(20);
     
     new FileTransferOverviewFrame(myAFP1).setVisible(true);
     
     for(int i=0;i<15;i++){
+      LOGGER.debug("Starting file transfer '" + i + "'");
       theFileHandlers.add(myAFP1.sendFile( myTempFile, thePeerId3 ));
     }
     
