@@ -41,6 +41,7 @@ public class FileSender extends AbstractFileIO{
 
 
   public void startAsync(ExecutorService aService){
+    LOGGER.debug("Sheduling file transfer '" + myFilePacketIO.getId() + "'");
     myTransferComplete = aService.submit( new Callable<Boolean>(){
       @Override
       public Boolean call() throws Exception {
@@ -68,6 +69,7 @@ public class FileSender extends AbstractFileIO{
   }
 
   public void start() throws AsyncFileTransferException{
+    LOGGER.debug("Staring file transfer '" + myFilePacketIO.getId() + "'");
     AbstractPeer theDestination = null;
     try{
       synchronized(this){
@@ -94,6 +96,7 @@ public class FileSender extends AbstractFileIO{
       myPacketSender = new PacketSender(this, myFilePacketIO, theDestination, myProtocol, mySendPackets);
       //now loop over all packets and send them to the other peer
       while(myLastPacketSend++ < myFilePacketIO.getNrOfPackets() && myPacketSender.isContinue()){
+        LOGGER.debug("Queing packet for send of file transfer '" + myFilePacketIO.getId() + " packet: '" + myLastPacketSend + "'");
         myPacketSender.sendPacket(myLastPacketSend);
 
         if(myProtocol.myHandler != null) {

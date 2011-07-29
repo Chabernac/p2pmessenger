@@ -54,7 +54,7 @@ public class AsyncFileTransferProtocol extends Protocol implements iTransferCont
   iAsyncFileTransferHandler myHandler = null;
 
   ExecutorService myPacketSenderService = new DynamicSizeExecutor(1, 5, 5);
-  ExecutorService myFileSenderService = DynamicSizeExecutor.getTinyInstance();
+  ExecutorService myFileSenderService = new DynamicSizeExecutor(5, 5, 50);
 
   //just for test purposes, if set to a number > 0 everty 1 / myIsIgnorePacketRatio packets will be simulated as being lost so that a resend
   //of the packed will be triggered
