@@ -11,6 +11,7 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.ExecutionException;
 
 import org.apache.log4j.BasicConfigurator;
@@ -30,6 +31,7 @@ public class AsyncFileTransferProtocolTest extends AbstractProtocolTest {
   private static Logger LOGGER = Logger.getLogger(AsyncFileTransferProtocol.class);
   
   private static final int IGNORE_PACKET_RATIO = 5;
+  private static final int IGNORE_PACKET_RATIO_2 = 2;
   private static final int MAX_RETRIES = 50;
 
   private ProtocolServer myServer1 = null;
@@ -48,7 +50,7 @@ public class AsyncFileTransferProtocolTest extends AbstractProtocolTest {
   
   private TestFileHandler myFileHandler = null;
   
-//  private String thePeerId1 = null;
+  private String thePeerId1 = null;
   private String thePeerId3 = null;
   
   static{
@@ -61,6 +63,10 @@ public class AsyncFileTransferProtocolTest extends AbstractProtocolTest {
     PacketSender.SEND_SLEEP = 10;
     
     myTempFile = createTempFile();
+    
+    myFileToWrite = new File("in.temp");
+    if(myFileToWrite.exists()) myFileToWrite.delete();
+    myFileHandler = new TestFileHandler(myFileToWrite);
 
     //p1 <--> p2 <--> p3 peer 1 cannot reach peer 3
     myProtocolContainer1 = getProtocolContainer( -1, false, "1");
@@ -70,6 +76,8 @@ public class AsyncFileTransferProtocolTest extends AbstractProtocolTest {
     myAFP1.setPacketSize( 1 );
     //we set the retry ratio pretty high so that we might almost be 100% sure that all packets will finally be delivered
     myAFP1.setMaxRetries( MAX_RETRIES );
+    myAFP1.setFileHandler(myFileHandler);
+    myAFP1.setIsIgnorePacketRatio(IGNORE_PACKET_RATIO_2);
 
 
     myProtocolContainer2 = getProtocolContainer( -1, false, "2");
@@ -77,9 +85,6 @@ public class AsyncFileTransferProtocolTest extends AbstractProtocolTest {
     RoutingProtocol theRoutingProtocol2 = (RoutingProtocol)myProtocolContainer2.getProtocol( RoutingProtocol.ID );
 
     myProtocolContainer3 = getProtocolContainer( -1, false, "3");
-    myFileToWrite = new File("in.temp");
-    if(myFileToWrite.exists()) myFileToWrite.delete();
-    myFileHandler = new TestFileHandler(myFileToWrite);
     myServer3 = new ProtocolServer(myProtocolContainer3, RoutingProtocol.START_PORT + 2, 5);
     myAFP3 = ((AsyncFileTransferProtocol)myProtocolContainer3.getProtocol( AsyncFileTransferProtocol.ID ));
     myAFP3.setFileHandler( myFileHandler );
@@ -117,7 +122,7 @@ public class AsyncFileTransferProtocolTest extends AbstractProtocolTest {
     assertNotNull( thePeer3.getPeer() );
     assertTrue(thePeer3.isReachable());
     
-//    thePeerId1 = theRoutingTable1.getLocalPeerId();
+    thePeerId1 = theRoutingTable1.getLocalPeerId();
     thePeerId3 = theRoutingTable3.getLocalPeerId();
   }
 
@@ -156,18 +161,25 @@ public class AsyncFileTransferProtocolTest extends AbstractProtocolTest {
   public void testGraphicalComponents() throws InterruptedException, AsyncFileTransferException{
     List<FileTransferHandler> theFileHandlers = new ArrayList<FileTransferHandler>();
     myAFP1.setPacketSize(20);
+    myAFP3.setPacketSize(30);
     
     new FileTransferOverviewFrame(myAFP1).setVisible(true);
     
+    Random theRandom = new Random();
     for(int i=0;i<15;i++){
       LOGGER.debug("Starting file transfer '" + i + "'");
-      theFileHandlers.add(myAFP1.sendFile( myTempFile, thePeerId3 ));
+      if(theRandom.nextBoolean()){
+        theFileHandlers.add(myAFP1.sendFile( myTempFile, thePeerId3 ));
+      } else {
+        theFileHandlers.add(myAFP3.sendFile( myTempFile, thePeerId1 ));
+      }
     }
     
     for(FileTransferHandler theHandler : theFileHandlers){
       theHandler.waitUntillDone();
-      assertEquals(FileTransferState.State.DONE,  theHandler.getState().getState());
     }
+    
+    Thread.sleep(20000);
   }
   
   private void compareFiles(){
