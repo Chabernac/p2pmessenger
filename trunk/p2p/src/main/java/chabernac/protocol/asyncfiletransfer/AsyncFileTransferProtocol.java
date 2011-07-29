@@ -226,11 +226,11 @@ public class AsyncFileTransferProtocol extends Protocol implements iTransferCont
     }
   }
 
-  public FileTransferHandler sendFile(final File aFile,final String aPeer){
+  public FileTransferHandler sendFile(final File aFile, final String aPeer){
     //create a new FilePacketIO for this file transfer
     FilePacketIO theIO = FilePacketIO.createForRead( aFile, myPacketSize );
     //store it
-    final FileSender theFileSender = new FileSender(aPeer, theIO, this);
+    FileSender theFileSender = new FileSender(aPeer, theIO, this);
     mySendingFiles.put(theIO.getId(), theFileSender);
     notifyNewTransfer(theIO.getId());
     theFileSender.startAsync( myFileSenderService );
