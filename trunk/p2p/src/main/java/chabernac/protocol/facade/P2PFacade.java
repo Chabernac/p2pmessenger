@@ -32,7 +32,9 @@ import chabernac.protocol.iProtocolDelegate;
 import chabernac.protocol.application.ApplicationProtocol;
 import chabernac.protocol.asyncfiletransfer.AsyncFileTransferProtocol;
 import chabernac.protocol.asyncfiletransfer.FileTransferHandler;
+import chabernac.protocol.asyncfiletransfer.FileTransferOverviewPanel;
 import chabernac.protocol.asyncfiletransfer.iAsyncFileTransferHandler;
+import chabernac.protocol.asyncfiletransfer.iTransferController;
 import chabernac.protocol.filetransfer.FileTransferProtocol;
 import chabernac.protocol.filetransfer.iFileHandler;
 import chabernac.protocol.infoexchange.InfoExchangeProtocol;
@@ -100,6 +102,7 @@ public class P2PFacade {
   private Integer myAJPPort = null;
   private URL myWebURL = null;
   private Set<String> mySupportedProtocols = null;
+  private FileTransferOverviewPanel 
 
   /**
    * set the exchange delay.
@@ -224,6 +227,20 @@ public class P2PFacade {
       }
     }
     return this;
+  }
+  
+  public iTransferController getAsyncFileTransferController() throws P2PFacadeException{
+    if(!isStarted()) throw new P2PFacadeException("Can not execute this action when the server is not started");
+    try {
+      return ((AsyncFileTransferProtocol)myContainer.getProtocol( AsyncFileTransferProtocol.ID ));
+    } catch ( Exception e ) {
+      throw new P2PFacadeException("An error occured while sending file", e);
+    }
+  }
+  
+  public FileTransferOverviewPanel getFileTransferOverview(){
+    if(!isStarted()) throw new P2PFacadeException("Can not execute this action when the server is not started");
+    
   }
 
   public Future<Boolean> sendMessage(final MultiPeerMessage aMessage, ExecutorService aService){
