@@ -102,7 +102,7 @@ public class P2PFacade {
   private Integer myAJPPort = null;
   private URL myWebURL = null;
   private Set<String> mySupportedProtocols = null;
-  private FileTransferOverviewPanel 
+  private FileTransferOverviewPanel myFileTransferOverview = null; 
 
   /**
    * set the exchange delay.
@@ -216,7 +216,6 @@ public class P2PFacade {
     return this;
   }
   
-  
   public P2PFacade setAsyncFileHandler(iAsyncFileTransferHandler aFileHandler) throws P2PFacadeException{
     myProperties.setProperty( "chabernac.protocol.filetransfer.iAsyncFileTransferHandler", aFileHandler );
     if(isStarted()){
@@ -238,9 +237,14 @@ public class P2PFacade {
     }
   }
   
-  public FileTransferOverviewPanel getFileTransferOverview(){
+  public FileTransferOverviewPanel getFileTransferOverview() throws P2PFacadeException{
     if(!isStarted()) throw new P2PFacadeException("Can not execute this action when the server is not started");
     
+    if(myFileTransferOverview == null) {
+      myFileTransferOverview = new FileTransferOverviewPanel( getAsyncFileTransferController() );
+    }
+    
+    return myFileTransferOverview;
   }
 
   public Future<Boolean> sendMessage(final MultiPeerMessage aMessage, ExecutorService aService){
@@ -764,6 +768,4 @@ public class P2PFacade {
     P2PSettings.getInstance().getSocketPool().cleanUp();
     return this;
   }
-
-
 }
