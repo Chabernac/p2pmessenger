@@ -10,7 +10,6 @@ import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -101,7 +100,7 @@ public class UserPanel extends GPanel implements iUserSelectionProvider{
     myMediator.getP2PFacade().addDeliveryReportListener( new DeliveryReportListener() );
     new ComponentMoveDecorator(this, new ComponentMoveListener());
   }
-
+  
   private void addUsers(final Map<String,  UserInfo > aUserList){
     Tools.invokeLaterIfNotEventDispatchingThread(  new Runnable(){
       public void run(){
@@ -112,6 +111,7 @@ public class UserPanel extends GPanel implements iUserSelectionProvider{
               if(!myCheckBoxes.containsKey( thePeerId )){
                 StatusCheckBox theCheckBox = new StatusCheckBox(Status.ONLINE);
                 theCheckBox.addChangeListener( myCheckBoxListener );
+                theCheckBox.setTransferHandler( new FileTransferHandler(myMediator.getP2PFacade(), thePeerId) );
                 int theFontSize = Integer.parseInt(ApplicationPreferences.getInstance().getProperty("userlist.font.size", "12"));
                 theCheckBox.setFontSize( theFontSize );
                 myCheckBoxes.put( thePeerId, theCheckBox );

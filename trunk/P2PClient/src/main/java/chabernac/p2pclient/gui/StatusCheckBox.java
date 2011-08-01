@@ -45,7 +45,7 @@ public class StatusCheckBox extends JCheckBox {
     setMargin(DEFAULT_MARGIN);
     setFont();
   }
-
+  
   private void setFont(){
     String thefontSize = ApplicationPreferences.getInstance().getProperty("userlist.font.size");
     //String theFont = ApplicationPreferences.getInstance().getProperty("userlist.font.name");
