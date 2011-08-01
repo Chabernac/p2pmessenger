@@ -24,8 +24,10 @@ import chabernac.p2pclient.gui.action.ActionFactory.Action;
 import chabernac.p2pclient.settings.Settings;
 import chabernac.preference.ApplicationPreferences;
 import chabernac.preference.iApplicationPreferenceListener;
+import chabernac.protocol.asyncfiletransfer.iAsyncFileTransferHandler;
 import chabernac.protocol.facade.P2PFacade;
 import chabernac.protocol.facade.P2PFacadeException;
+import chabernac.protocol.filetransfer.iFileHandler;
 import chabernac.protocol.message.MessageArchive;
 import chabernac.protocol.message.MessageIndicator;
 import chabernac.protocol.message.MultiPeerMessage;
@@ -46,6 +48,7 @@ public class ChatMediator {
   private iMessageDialog myMessageDialog = null;
   private iChatFrame myChatFrame = null;
   private SystemTrayMenu mySystemTrayMenu = null;
+  private iAsyncFileTransferHandler myFileHandler = null;
 
   private ExecutorService myExecutorService = DynamicSizeExecutor.getTinyInstance();
 
@@ -66,6 +69,13 @@ public class ChatMediator {
     myActionFactory = new ActionFactory(this);
     setP2PFacade( anFacade );
     addPreferenceListener();
+    //TODO does this belong here?
+    setupFileHandler();
+  }
+  
+  private void setupFileHandler() throws P2PFacadeException{
+    myFileHandler = new AsyncFileHandler(myP2PFacade);
+    myP2PFacade.setAsyncFileHandler( myFileHandler );
   }
   
   private void addPreferenceListener(){

@@ -42,6 +42,7 @@ public class FileTransferHandler extends TransferHandler {
           for(int j=0;j<theList.size();j++){
             try {
               myFacade.sendFileAsync( (File)theList.get(j), myPeerId);
+              myFacade.showFileTransferOverView();
             } catch ( P2PFacadeException e ) {
               LOGGER.error("could not send file", e);
             }
@@ -60,11 +61,6 @@ public class FileTransferHandler extends TransferHandler {
 
   public boolean canImport(JComponent comp,
                            DataFlavor[] transferFlavors) {
-    JTextComponent c = (JTextComponent)comp;
-    if (!(c.isEditable() && c.isEnabled())) {
-      return false;
-    }
-
     for(int i=0;i<transferFlavors.length;i++){
       LOGGER.debug(transferFlavors[i].getClass().toString());
       if(transferFlavors[i].equals(DataFlavor.javaFileListFlavor)) {
