@@ -32,6 +32,7 @@ import chabernac.protocol.iProtocolDelegate;
 import chabernac.protocol.application.ApplicationProtocol;
 import chabernac.protocol.asyncfiletransfer.AsyncFileTransferProtocol;
 import chabernac.protocol.asyncfiletransfer.FileTransferHandler;
+import chabernac.protocol.asyncfiletransfer.FileTransferOverviewFrame;
 import chabernac.protocol.asyncfiletransfer.FileTransferOverviewPanel;
 import chabernac.protocol.asyncfiletransfer.iAsyncFileTransferHandler;
 import chabernac.protocol.asyncfiletransfer.iTransferController;
@@ -103,6 +104,7 @@ public class P2PFacade {
   private URL myWebURL = null;
   private Set<String> mySupportedProtocols = null;
   private FileTransferOverviewPanel myFileTransferOverview = null; 
+  private FileTransferOverviewFrame myFileTransferOverviewFrame = null; 
 
   /**
    * set the exchange delay.
@@ -245,6 +247,14 @@ public class P2PFacade {
     }
     
     return myFileTransferOverview;
+  }
+  
+  public void showFileTransferOverView() throws P2PFacadeException{
+    if(!isStarted()) throw new P2PFacadeException("Can not execute this action when the server is not started");
+    if(myFileTransferOverviewFrame == null){
+      myFileTransferOverviewFrame = new FileTransferOverviewFrame( getAsyncFileTransferController() );
+    }
+    myFileTransferOverviewFrame.setVisible( true );
   }
 
   public Future<Boolean> sendMessage(final MultiPeerMessage aMessage, ExecutorService aService){
