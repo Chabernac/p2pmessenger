@@ -77,6 +77,7 @@ public class WebPeer extends AbstractPeer {
       theConnectionHelper.write( "id", aLocalPeerId );
       theConnectionHelper.flush();
       String theEvent = theConnectionHelper.readLine();
+      if(theEvent == null) throw new IOException("Empty response received from webnode at '" + myURL + "'");
       CometEvent theCometEvent = getCometStringConverter().getObject( theEvent );
       getExecutorService().execute( new CometEventResponseSender(theCometEvent) );
       return theCometEvent;
