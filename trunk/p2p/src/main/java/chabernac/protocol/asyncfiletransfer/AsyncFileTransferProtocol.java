@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
@@ -36,7 +37,7 @@ public class AsyncFileTransferProtocol extends Protocol implements iTransferCont
   public static final String ID = "AFP";
 
   static enum Command{ACCEPT_FILE, ACCEPT_PACKET, END_FILE_TRANSFER, STOP_TRANSFER, RESUME_TRANSFER, TRANSFER_STOPPED, TRANSFER_CANCELLED, CANCEL_TRANSFER};
-  static enum Response{FILE_ACCEPTED, FILE_REFUSED, PACKET_OK, PACKET_REFUSED, NOK, UNKNOWN_ID, END_FILE_TRANSFER_OK, ABORT_FILE_TRANSFER, OK};
+  static enum Response{FILE_ACCEPTED, FILE_REFUSED, PACKET_OK, PACKET_REFUSED, NOK, UNKNOWN_ID, END_FILE_TRANSFER_OK, ABORT_FILE_TRANSFER, OK, TRANSFER_PENDING};
 
   int myPacketSize = 8192;
   int myMaxRetries = 8;
@@ -55,6 +56,8 @@ public class AsyncFileTransferProtocol extends Protocol implements iTransferCont
 
   ExecutorService myPacketSenderService = new DynamicSizeExecutor(1, 5, 5);
   ExecutorService myFileSenderService = new DynamicSizeExecutor(5, 5, 50);
+
+  private ExecutorService myAcceptFileService = new DynamicSizeExecutor(1,5,5);
 
   //just for test purposes, if set to a number > 0 everty 1 / myIsIgnorePacketRatio packets will be simulated as being lost so that a resend
   //of the packed will be triggered
@@ -95,22 +98,12 @@ public class AsyncFileTransferProtocol extends Protocol implements iTransferCont
         int theNrOfPackets = Integer.parseInt( theParams[3] );
         String thePeerId = theParams[4];
 
-        File theFile = myHandler.acceptFile( theFileName, theUUId );
-
-        if(theFile == null){
+        try{
+          myAcceptFileService.submit(new FileAccepter(theFileName, theUUId, thePeerId, thePacketSize, theNrOfPackets));
+          return Response.TRANSFER_PENDING.name();
+        }catch(RejectedExecutionException e){
           return Response.FILE_REFUSED.name();
         }
-
-        FilePacketIO theIO = FilePacketIO.createForWrite( theFile, theUUId, thePacketSize, theNrOfPackets );
-
-        if(!myReceivingFiles.containsKey(theUUId)){
-          myReceivingFiles.put( theUUId, new FileReceiver( thePeerId, theIO, this) );
-          notifyNewTransfer(theUUId);
-        }
-
-        myReceivingFiles.get(theUUId).setTransferring( true );
-
-        return Response.FILE_ACCEPTED.name();
       } else if(anInput.startsWith( Command.ACCEPT_PACKET.name() )){
         if(myHandler == null) return Response.ABORT_FILE_TRANSFER.name();
         String thePack = anInput.substring(Command.ACCEPT_PACKET.name().length() + 1 );
@@ -461,5 +454,53 @@ public class AsyncFileTransferProtocol extends Protocol implements iTransferCont
 
   private void notifyTransferRemoved(String aTransferId){
     for(iTransferChangeListener theListener : myTransferChangeListeners) theListener.transferRemoved(aTransferId);
+  }
+
+  private class FileAccepter implements Runnable{
+    private final String myFileName;
+    private final String myUUId;
+    private final String myPeer;
+    private final int myPacketSize;
+    private final int myNrOfPackets;
+
+    public FileAccepter(String anFileName, String anId, String anPeer,
+        int anPacketSize, int anNrOfPackets) {
+      super();
+      myFileName = anFileName;
+      myUUId = anId;
+      myPeer = anPeer;
+      myPacketSize = anPacketSize;
+      myNrOfPackets = anNrOfPackets;
+    }
+
+    public void run(){
+      try{
+        testReachable(myPeer);
+        AbstractPeer theSender = getRoutingTable().getEntryForPeer(myPeer).getPeer();
+
+        File theFile = myHandler.acceptFile( myFileName, myUUId );
+
+
+        if(theFile == null){
+          sendMessageAsyncTo(theSender, Command.CANCEL_TRANSFER.name() + " " + myUUId);
+        } else {
+
+          FilePacketIO theIO = FilePacketIO.createForWrite( theFile, myUUId, myPacketSize, myNrOfPackets );
+
+          if(!myReceivingFiles.containsKey(myUUId)){
+            myReceivingFiles.put( myUUId, new FileReceiver( myPeer, theIO, AsyncFileTransferProtocol.this) );
+            notifyNewTransfer(myUUId);
+          }
+
+          myReceivingFiles.get(myUUId).setTransferring( true );
+
+          //send a message to the sender that it can start sending
+          sendMessageAsyncTo(theSender, Command.RESUME_TRANSFER.name() + " " + myUUId);
+        }
+      }catch(Exception e){
+        LOGGER.error("Error occured in FileAccepter", e);
+      }
+
+    }
   }
 }
