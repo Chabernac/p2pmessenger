@@ -32,6 +32,8 @@ public class AsyncMessageProcotol extends AbstractMessageProtocol {
 
   private ScheduledExecutorService myQueueCleanupService = Executors.newScheduledThreadPool( 1 );
 
+  private final String CANCEL = UUID.randomUUID().toString();
+  
   public AsyncMessageProcotol( ) {
     super( ID );
   }
@@ -102,16 +104,18 @@ public class AsyncMessageProcotol extends AbstractMessageProtocol {
         //when no one picked up the status for this message, remove it after 2 minutes so that it does not stay cached for ever
         myStatusQueues.remove( aMessage.getHeader( "MESSAGE-ID" ) );
       }
-    }, 2, TimeUnit.MINUTES);
+    }, 5, TimeUnit.MINUTES);
   }
 
-  public String getResponse(String aMessageId, long aTimeout, TimeUnit aTimeUnit){
+  public String getResponse(String aMessageId, long aTimeout, TimeUnit aTimeUnit) throws MessageException{
     try {
       String theResponse = getBlockingQueueForMessage( aMessageId ).poll( aTimeout, aTimeUnit );
       if(theResponse == null){
         return Response.NO_CONFIRMATION_RECEIVED.name();
+      } else if(CANCEL.equals( theResponse )){
+        return Response.MESSAGE_REJECTED.name();
       }
-      return theResponse;
+      return inspectResult( theResponse );
     } catch ( InterruptedException e ) {
       LOGGER.error("Could not wait for response", e);
       return null;
@@ -119,6 +123,11 @@ public class AsyncMessageProcotol extends AbstractMessageProtocol {
       myStatusQueues.remove( aMessageId );
     }
   }
+  
+  public void cancelResponse( String aMessageId ) throws InterruptedException {
+    getBlockingQueueForMessage( aMessageId ).put( CANCEL );
+  }
+
 
   public void sendMessage(Message aMessage) throws MessageException{
     inspectMessage(aMessage);
@@ -127,8 +136,7 @@ public class AsyncMessageProcotol extends AbstractMessageProtocol {
 
   public String sendAndWaitForResponse(Message aMesage, long aTimeout, TimeUnit aTimeUnit) throws MessageException{
     sendMessage( aMesage );
-    String theResponse = getResponse( aMesage.getMessageId().toString(), aTimeout, aTimeUnit );
-    return inspectResult( theResponse );
+    return getResponse( aMesage.getMessageId().toString(), aTimeout, aTimeUnit );
   }
 
   private boolean handleMessage(String aSessionId, Message aMessage){

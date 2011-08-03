@@ -147,4 +147,9 @@ public class FileReceiver extends AbstractFileIO{
   public boolean isFailed() {
     return false;
   }
+
+  @Override
+  public boolean isPending() {
+    return false;
+  }
 }
