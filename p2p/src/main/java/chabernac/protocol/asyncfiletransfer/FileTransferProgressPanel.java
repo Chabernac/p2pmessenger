@@ -8,6 +8,8 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.awt.image.ConvolveOp;
 import java.awt.image.Kernel;
@@ -43,6 +45,7 @@ public class FileTransferProgressPanel extends JPanel implements iFileTransferLi
       myHandler.addFileTransferListener( this );
     } catch ( AsyncFileTransferException e ) {
     }
+    addMouseListener( new FilePacketVisualizer() );
   }
 
   @Override
@@ -122,4 +125,17 @@ public class FileTransferProgressPanel extends JPanel implements iFileTransferLi
     ConvolveOp convolve = new ConvolveOp(kernel, ConvolveOp.EDGE_NO_OP, null);
     return convolve.filter(anImage, null);
   }
+  
+  private class FilePacketVisualizer extends MouseAdapter {
+    private FilePacketVisualizerFrame myVisualizer = null;
+
+    @Override
+    public void mouseClicked( MouseEvent aE ) {
+      if(myVisualizer == null){
+        myVisualizer =new FilePacketVisualizerFrame( myHandler );
+      }
+      myVisualizer.setVisible( true );
+    }
+  }
+
 }

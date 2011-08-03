@@ -6,6 +6,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 
@@ -27,10 +28,12 @@ public class FileSender extends AbstractFileIO{
   private boolean isComplete = false;
   private boolean isRefused = false;
   private boolean isFailed = false;
+  private boolean isPending = false;
   private Percentage myPercentageCompleted = new Percentage( 0, 0 );
   private ArrayBlockingQueue<Boolean> myEventQueue = new ArrayBlockingQueue<Boolean>( 1 );
   private Future<Boolean> myTransferComplete;
   private final boolean[] mySendPackets;
+  private String myPendingMessage = null;
 
   public FileSender(String anPeer, FilePacketIO anIo, AsyncFileTransferProtocol anProtocol) {
     super();
@@ -77,18 +80,26 @@ public class FileSender extends AbstractFileIO{
         if(isSending) throw new AsyncFileTransferException("Already in sending state");
         isSending = true;
         isFailed = false;
+        isPending = false;
       }
 
       myProtocol.testReachable(myPeer);
       theDestination = getDestination();
 
       //init file transfer with other peer
-      String theResult = myProtocol.sendMessageTo( theDestination, Command.ACCEPT_FILE.name() + " " + 
+      myPendingMessage = myProtocol.sendMessageAsyncTo( theDestination, Command.ACCEPT_FILE.name() + " " + 
           myFilePacketIO.getFile().getName()  + " " + 
           myFilePacketIO.getId() + " " + 
           myFilePacketIO.getPacketSize() + " " + 
           myFilePacketIO.getNrOfPackets() + " " + 
           myProtocol.getRoutingTable().getLocalPeerId());
+      
+      isPending = true;
+      notifyListeners();
+
+      String theResult = myProtocol.waitForResponse( myPendingMessage, 5, TimeUnit.MINUTES);
+      isPending = false;
+      notifyListeners();
       
       LOGGER.error("Receiver response '" + theResult + "'");
 
@@ -164,6 +175,13 @@ public class FileSender extends AbstractFileIO{
     if(myPacketSender != null){
       myPacketSender.setContinue(false);
     }
+    if(myPendingMessage != null){
+      try {
+        myProtocol.cancelResponse( myPendingMessage );
+      } catch ( AsyncFileTransferException e ) {
+        LOGGER.error("Unable to cancel pending message", e);
+      }
+    }
     waitTillDone();
   }
   
@@ -225,5 +243,11 @@ public class FileSender extends AbstractFileIO{
   @Override
   public boolean isFailed() {
     return isFailed;
+  }
+
+
+  @Override
+  public boolean isPending() {
+    return isPending;
   }
 }

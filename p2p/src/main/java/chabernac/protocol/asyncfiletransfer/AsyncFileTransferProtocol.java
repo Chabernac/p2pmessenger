@@ -60,7 +60,7 @@ public class AsyncFileTransferProtocol extends Protocol implements iTransferCont
   //of the packed will be triggered
   private int myIsIgnorePacketRatio = -1;
   private Random myRandom = new Random();
-  
+
   private List<iTransferChangeListener> myTransferChangeListeners = new ArrayList<iTransferChangeListener>();
 
   public AsyncFileTransferProtocol( ) {
@@ -96,7 +96,7 @@ public class AsyncFileTransferProtocol extends Protocol implements iTransferCont
         String thePeerId = theParams[4];
 
         File theFile = myHandler.acceptFile( theFileName, theUUId );
-        
+
         if(theFile == null){
           return Response.FILE_REFUSED.name();
         }
@@ -107,7 +107,7 @@ public class AsyncFileTransferProtocol extends Protocol implements iTransferCont
           myReceivingFiles.put( theUUId, new FileReceiver( thePeerId, theIO, this) );
           notifyNewTransfer(theUUId);
         }
-        
+
         myReceivingFiles.get(theUUId).setTransferring( true );
 
         return Response.FILE_ACCEPTED.name();
@@ -210,6 +210,10 @@ public class AsyncFileTransferProtocol extends Protocol implements iTransferCont
   }
 
   String sendMessageTo(AbstractPeer aPeer, String aMessage) throws AsyncFileTransferException{
+    return sendMessageTo( aPeer, aMessage, 5, TimeUnit.SECONDS );
+  }
+
+  String sendMessageTo(AbstractPeer aPeer, String aMessage, int aTimeout, TimeUnit aTimeUnit) throws AsyncFileTransferException{
     try{
       Message theMessage = new Message();
       theMessage.setDestination( aPeer );
@@ -218,6 +222,38 @@ public class AsyncFileTransferProtocol extends Protocol implements iTransferCont
       return getMessageProtocol().sendAndWaitForResponse( theMessage, 5, TimeUnit.SECONDS );
     }catch(Exception e){
       throw new AsyncFileTransferException("Could not send message", e);
+    }
+  }
+
+  /**
+   * will send a message async to the peer and return the id of the message
+   */
+  String sendMessageAsyncTo(AbstractPeer aPeer, String aMessage) throws AsyncFileTransferException{
+    try{
+      Message theMessage = new Message();
+      theMessage.setDestination( aPeer );
+      theMessage.setMessage( createMessage( aMessage ));
+      theMessage.setProtocolMessage( true );
+      getMessageProtocol().sendMessage( theMessage );
+      return theMessage.getMessageId().toString();
+    }catch(Exception e){
+      throw new AsyncFileTransferException("Could not send message", e);
+    }
+  }
+
+  String waitForResponse(String aMessageId, long aTimeout, TimeUnit aTimeUnit) throws AsyncFileTransferException{
+    try {
+      return getMessageProtocol().getResponse( aMessageId, aTimeout, aTimeUnit );
+    } catch ( Exception e ) {
+      throw new AsyncFileTransferException("Error occured while waiting for response", e);
+    }
+  }
+
+  void cancelResponse(String aMessageId) throws AsyncFileTransferException{
+    try{
+      getMessageProtocol().cancelResponse(aMessageId);
+    }catch(Exception e){
+      throw new AsyncFileTransferException("could not cancel response", e);
     }
   }
 
@@ -418,11 +454,11 @@ public class AsyncFileTransferProtocol extends Protocol implements iTransferCont
   public void addTransferChangeListener(iTransferChangeListener aListener) {
     myTransferChangeListeners.add(aListener);
   }
-  
+
   private void notifyNewTransfer(String aTransferId){
     for(iTransferChangeListener theListener : myTransferChangeListeners) theListener.transferStarted(aTransferId);
   }
-  
+
   private void notifyTransferRemoved(String aTransferId){
     for(iTransferChangeListener theListener : myTransferChangeListeners) theListener.transferRemoved(aTransferId);
   }

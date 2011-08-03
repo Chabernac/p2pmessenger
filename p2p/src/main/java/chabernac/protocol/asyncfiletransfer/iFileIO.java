@@ -19,6 +19,7 @@ public interface iFileIO {
   public boolean isPaused();
   public boolean isRefused();
   public boolean isFailed();
+  public boolean isPending();
   public Percentage getPercentageComplete();
   public boolean[] getCompletedPackets();
   public File getFile();
