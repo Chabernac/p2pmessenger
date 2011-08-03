@@ -98,8 +98,9 @@ public class FileSender extends AbstractFileIO{
       notifyListeners();
 
       String theResult = myProtocol.waitForResponse( myPendingMessage, 5, TimeUnit.MINUTES);
-      isPending = false;
+      isPending = Response.TRANSFER_PENDING.name().equalsIgnoreCase(theResult);
       notifyListeners();
+      if(isPending) return;
       
       LOGGER.error("Receiver response '" + theResult + "'");
 
