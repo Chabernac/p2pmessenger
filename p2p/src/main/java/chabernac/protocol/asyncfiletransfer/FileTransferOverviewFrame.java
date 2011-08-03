@@ -17,7 +17,7 @@ public class FileTransferOverviewFrame extends JFrame {
   private void buildGUI(){
     setLayout(new BorderLayout());
     add(new FileTransferOverviewPanel(myTransferController), BorderLayout.CENTER);
-    setSize(400, 600);
+    setSize(500, 600);
     setTitle("Downloads / Uploads");
   }
 }

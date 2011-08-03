@@ -25,7 +25,8 @@ public class PeerToWebSender {
       theConnectionHelper.flush();
       return theConnectionHelper.readLine();
     }catch(IOException e){
-      LOGGER.error("Could not send message to web peer at endpoint: '" + aWebPeer.getEndPointRepresentation() + "'", e);
+      //LOGGER.error("Could not send message to web peer at endpoint: '" + aWebPeer.getEndPointRepresentation() + "'", e);
+      LOGGER.error("Could not send message to web peer at endpoint: '" + aWebPeer.getEndPointRepresentation() + "'");
       throw e;
     } finally {
       theConnectionHelper.close();

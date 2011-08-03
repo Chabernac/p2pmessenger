@@ -18,7 +18,7 @@ import javax.swing.JPanel;
 public class FileTransferProgressPanel extends JPanel implements iFileTransferListener {
   private static final long serialVersionUID = -2109149737877351501L;
   private final FileTransferHandler myHandler;
-  final static int HEIGHT = 20;
+  final static int HEIGHT = 25;
   private final static int CELLS = 20;
   private final static int ROUNDING_RADIUS = 5;
   private final static Font FONT = new Font("Serif", Font.BOLD, 14);
@@ -95,7 +95,9 @@ public class FileTransferProgressPanel extends JPanel implements iFileTransferLi
 
       if(theState.getState() == FileTransferState.State.PAUSED){
         theString += " PAUZED";
-      } 
+      }  else if(theState.getState() == FileTransferState.State.FAILED){
+        theString += " FAILED";
+      }
       g.drawString( theString, 10, HEIGHT - 4 );
     } catch ( AsyncFileTransferException e ) {
     }
