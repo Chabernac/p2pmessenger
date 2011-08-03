@@ -38,7 +38,7 @@ public class AsyncFileTransferProtocol extends Protocol implements iTransferCont
   static enum Command{ACCEPT_FILE, ACCEPT_PACKET, END_FILE_TRANSFER, STOP_TRANSFER, RESUME_TRANSFER, TRANSFER_STOPPED, TRANSFER_CANCELLED, CANCEL_TRANSFER};
   static enum Response{FILE_ACCEPTED, FILE_REFUSED, PACKET_OK, PACKET_REFUSED, NOK, UNKNOWN_ID, END_FILE_TRANSFER_OK, ABORT_FILE_TRANSFER, OK};
 
-  int myPacketSize = 1024;
+  int myPacketSize = 8192;
   int myMaxRetries = 8;
   //when this number of failers happen consecutive the file transfer will be aborted to avoid floading the network with unroutable messages
   int myMaxConsecutiveFailures = 10;
@@ -172,8 +172,13 @@ public class AsyncFileTransferProtocol extends Protocol implements iTransferCont
         String[] theParams = anInput.substring( Command.TRANSFER_CANCELLED.name().length() + 1 ).split( " " );
         String theUUId = theParams[0];
         if(!myReceivingFiles.containsKey( theUUId )) return Response.UNKNOWN_ID.name();
-        myReceivingFiles.remove( theUUId );
-        notifyTransferRemoved(theUUId);
+        iFileIO  theFileIo = myReceivingFiles.get(theUUId);
+        //only when the transfer was not completed
+        //otherwise an already completed tranfer would be removed and the user can not know that the transfer was done successfully
+        if(!theFileIo.isComplete()){
+          myReceivingFiles.remove( theUUId );
+          notifyTransferRemoved(theUUId);
+        }
       } else if(anInput.startsWith( Command.RESUME_TRANSFER.name() )){
         String[] theParams = anInput.substring( Command.RESUME_TRANSFER.name().length() + 1 ).split( " " );
         String theUUId = theParams[0];
@@ -317,6 +322,8 @@ public class AsyncFileTransferProtocol extends Protocol implements iTransferCont
           return new FileTransferState(theFileIO.getPercentageComplete(), FileTransferState.State.DONE, theDirection, theFileIO.getCompletedPackets());
         } else if(theFileIO.isTransferring()){
           return new FileTransferState(theFileIO.getPercentageComplete(), FileTransferState.State.RUNNING, theDirection, theFileIO.getCompletedPackets());
+        } else if(theFileIO.isFailed()){
+          return new FileTransferState(theFileIO.getPercentageComplete(), FileTransferState.State.FAILED, theDirection, theFileIO.getCompletedPackets());
         } else if(theFileIO.isPaused()){
           return new FileTransferState(theFileIO.getPercentageComplete(), FileTransferState.State.PAUSED, theDirection, theFileIO.getCompletedPackets());
         } else if(theFileIO.isRefused()){

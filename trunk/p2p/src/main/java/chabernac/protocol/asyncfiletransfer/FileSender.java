@@ -26,6 +26,7 @@ public class FileSender extends AbstractFileIO{
   private boolean isSending = false;
   private boolean isComplete = false;
   private boolean isRefused = false;
+  private boolean isFailed = false;
   private Percentage myPercentageCompleted = new Percentage( 0, 0 );
   private ArrayBlockingQueue<Boolean> myEventQueue = new ArrayBlockingQueue<Boolean>( 1 );
   private Future<Boolean> myTransferComplete;
@@ -75,9 +76,10 @@ public class FileSender extends AbstractFileIO{
       synchronized(this){
         if(isSending) throw new AsyncFileTransferException("Already in sending state");
         isSending = true;
+        isFailed = false;
       }
 
-      myProtocol.testReachable(myPeer); 
+      myProtocol.testReachable(myPeer);
       theDestination = getDestination();
 
       //init file transfer with other peer
@@ -87,6 +89,8 @@ public class FileSender extends AbstractFileIO{
           myFilePacketIO.getPacketSize() + " " + 
           myFilePacketIO.getNrOfPackets() + " " + 
           myProtocol.getRoutingTable().getLocalPeerId());
+      
+      LOGGER.error("Receiver response '" + theResult + "'");
 
       isRefused = Response.FILE_REFUSED.name().equals( theResult );
       
@@ -95,7 +99,7 @@ public class FileSender extends AbstractFileIO{
 
       myPacketSender = new PacketSender(this, myFilePacketIO, theDestination, myProtocol, mySendPackets);
       //now loop over all packets and send them to the other peer
-      while(myLastPacketSend++ < myFilePacketIO.getNrOfPackets() && myPacketSender.isContinue()){
+      while(++myLastPacketSend < myFilePacketIO.getNrOfPackets() && myPacketSender.isContinue()){
         LOGGER.debug("Queing packet for send of file transfer '" + myFilePacketIO.getId() + " packet: '" + myLastPacketSend + "'");
         myPacketSender.sendPacket(myLastPacketSend);
 
@@ -131,11 +135,16 @@ public class FileSender extends AbstractFileIO{
 
       isComplete = true;
     }catch(Exception e){
+      isFailed = true;
       if(e instanceof AsyncFileTransferException) throw (AsyncFileTransferException)e;
       throw new AsyncFileTransferException("Could not send file to peer '" + myPeer + "'", e);
     } finally {
       if(theDestination != null){
-        myProtocol.sendMessageTo( theDestination, Command.TRANSFER_STOPPED + " " + myFilePacketIO.getId() );
+        try{
+          myProtocol.sendMessageTo( theDestination, Command.TRANSFER_STOPPED + " " + myFilePacketIO.getId() );
+        }catch(AsyncFileTransferException e){
+          LOGGER.error("Could not send '" + Command.TRANSFER_STOPPED.name() + "' to peer '" + myPeer + "'");
+        }
       }
       //always close the file when we are not sending any more to free resources
       try {
@@ -210,5 +219,11 @@ public class FileSender extends AbstractFileIO{
   @Override
   public boolean isRefused() {
     return isRefused;
+  }
+
+
+  @Override
+  public boolean isFailed() {
+    return isFailed;
   }
 }

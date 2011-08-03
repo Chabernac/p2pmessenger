@@ -142,4 +142,9 @@ public class FileReceiver extends AbstractFileIO{
   public boolean isRefused() {
     return false;
   }
+
+  @Override
+  public boolean isFailed() {
+    return false;
+  }
 }
