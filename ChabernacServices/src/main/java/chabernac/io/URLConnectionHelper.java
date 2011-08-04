@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.log4j.Logger;
 
 public class URLConnectionHelper {
-  private static Logger LOGGER = Logger.getLogger( URLConnection.class );
+  private static Logger LOGGER = Logger.getLogger( URLConnectionHelper.class );
 
   private final URL myURL;
 
@@ -116,7 +116,7 @@ public class URLConnectionHelper {
   private void handleIOException(IOException e){
     try{
       int theRespCode = ((HttpURLConnection)myConnection).getResponseCode();
-      LOGGER.error("Error occured in url connection '" + theRespCode + "'");
+      LOGGER.error("Error occured while connecting to '" + myURL + "' Error code '" + theRespCode + "'");
       BufferedReader theErrorReader = null;
       try{
         theErrorReader = new BufferedReader( new InputStreamReader( ((HttpURLConnection)myConnection).getErrorStream()));
@@ -130,7 +130,8 @@ public class URLConnectionHelper {
         }
       }
     }catch(IOException e1){
-      LOGGER.error( "Could not handle io exception", e );
+      //LOGGER.error( "Could not get response code when handling error on connecting to '" + myURL + "'", e1 );
+      LOGGER.error( "Could not get response code when handling error on connecting to '" + myURL + "'" );
     }
 
   }

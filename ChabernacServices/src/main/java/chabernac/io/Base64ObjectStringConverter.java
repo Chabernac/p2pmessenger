@@ -24,7 +24,7 @@ public class Base64ObjectStringConverter <T extends Serializable >implements iOb
     try{
       byte[] theBytes = Base64.decodeBase64( aString.getBytes() );
       ByteArrayInputStream theInputStream  = new ByteArrayInputStream(theBytes);
-      ObjectInputStream theObjectInputStream = new ObjectInputStream(theInputStream);
+      ObjectInputStream theObjectInputStream = new ObjectInputStream(theInputStream );
       return (T)theObjectInputStream.readObject();
     }catch(Exception e){
       LOGGER.error("Unable to parse object from line '" + aString + "'");
@@ -40,7 +40,7 @@ public class Base64ObjectStringConverter <T extends Serializable >implements iOb
     while(theRetries-- > 0){
       try{
         ByteArrayOutputStream theArrayOutputStream = new ByteArrayOutputStream();
-        ObjectOutputStream theObjectOutputStream = new ObjectOutputStream(theArrayOutputStream);
+        ObjectOutputStream theObjectOutputStream = new ObjectOutputStream( theArrayOutputStream );
         theObjectOutputStream.writeObject( anObject );
         byte[] theBytes = theArrayOutputStream.toByteArray();
         return new String(Base64.encodeBase64( theBytes, false ));
