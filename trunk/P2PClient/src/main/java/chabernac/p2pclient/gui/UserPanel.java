@@ -437,7 +437,7 @@ public class UserPanel extends GPanel implements iUserSelectionProvider{
 
     @Override
     public void acceptDeliveryReport( DeliveryReport aDeliverReport ) {
-      if(myMediator.getLastSendMessage().getUniqueId().equals( aDeliverReport.getMultiPeerMessage().getUniqueId())){
+      if(myMediator.getLastSendMessage() != null && myMediator.getLastSendMessage().getUniqueId().equals( aDeliverReport.getMultiPeerMessage().getUniqueId())){
         setMultiPeerMessage( aDeliverReport.getMultiPeerMessage() );
       }
     }
