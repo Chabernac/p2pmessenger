@@ -420,7 +420,7 @@ public class AsyncFileTransferProtocolTest extends AbstractProtocolTest {
     }
 
     @Override
-    public File acceptFile( String aFileName, String aFileId ){
+    public File acceptFile( String aFileName, String aFileId, iTransferController aController ){
       return myFile;
     }
 
