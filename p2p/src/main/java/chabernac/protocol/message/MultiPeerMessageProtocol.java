@@ -103,6 +103,7 @@ public class MultiPeerMessageProtocol extends Protocol{
     try {
       if(aMultiPeerMessage.isLoopBack()){
         theMultiPeerMessage = aMultiPeerMessage.addDestination( getRoutingTable().getLocalPeerId() );
+        theMultiPeerMessage = aMultiPeerMessage.setSource( getRoutingTable().getLocalPeerId() );
       } else {
         theMultiPeerMessage = aMultiPeerMessage.setSource( getRoutingTable().getLocalPeerId() )
          .removeDestination( getRoutingTable().getLocalPeerId() );

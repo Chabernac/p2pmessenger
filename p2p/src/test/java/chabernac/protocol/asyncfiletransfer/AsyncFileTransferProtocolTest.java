@@ -21,6 +21,7 @@ import chabernac.protocol.AbstractProtocolTest;
 import chabernac.protocol.ProtocolContainer;
 import chabernac.protocol.ProtocolException;
 import chabernac.protocol.ProtocolServer;
+import chabernac.protocol.asyncfiletransfer.AcceptFileResponse.Response;
 import chabernac.protocol.filetransfer.FileTransferException;
 import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.RoutingTable;
@@ -242,7 +243,7 @@ public class AsyncFileTransferProtocolTest extends AbstractProtocolTest {
   
   public void testStopReceiverResumeReceiver() throws InterruptedException, AsyncFileTransferException{
     //bigger packet size for faster test
-    myAFP1.setPacketSize( 24 );
+    myAFP1.setPacketSize( 12 );
 
     FileTransferHandler theSenderHandler = myAFP1.sendFile( myTempFile, thePeerId3 );
     
@@ -420,8 +421,12 @@ public class AsyncFileTransferProtocolTest extends AbstractProtocolTest {
     }
 
     @Override
-    public File acceptFile( String aFileName, String aFileId, iTransferController aController ){
-      return myFile;
+    public AcceptFileResponse acceptFile( String aPeerId, String aFileName, String aFileId, iTransferController aController ){
+      if(myFile == null){
+        return new AcceptFileResponse(aFileId, Response.REFUSED, myFile);
+      } else {
+        return new AcceptFileResponse(aFileId, Response.ACCEPT, myFile);
+      }
     }
 
     @Override
