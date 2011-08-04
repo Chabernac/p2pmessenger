@@ -11,14 +11,10 @@ import chabernac.protocol.filetransfer.FileTransferException;
 public interface iAsyncFileTransferHandler {
   /**
    * this method will be executed when an incoming file is detected
-   * a File objects must be returned indicating at which place the file must be stored
-   * return null when the the file is refused
-   * @param aFileName
-   * @param aFileId
-   * @return
-   * @throws FileTransferException
+   * you must call iTransferController.acceptFileTransfer to start the file transfer
+   * or return inmediately the accepted File
    */
-  public File acceptFile(String aFileName, String aFileId);
+  public File acceptFile(String aFileName, String aFileId, iTransferController aController);
   public void fileTransfer(String aFileName, String aFileId, Percentage aPercentageComplete);
   public void fileSaved(File aFile) throws FileTransferException;
 }

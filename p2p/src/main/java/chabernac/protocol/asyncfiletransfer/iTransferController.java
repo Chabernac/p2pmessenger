@@ -11,8 +11,12 @@ public interface iTransferController {
   public Set<String> getReceivingTransfers();
 
   //get the transfer handler for this id
-//if the transfer with this id does not exist throw an exception
+  //if the transfer with this id does not exist throw an exception
   public FileTransferHandler getTransferHandler(String aTransferId) throws AsyncFileTransferException;
+  
+  //indicate that the transfer with the given id is accepted and that the incoming
+  //file must be saved in the given file
+  public void acceptFileTransfer(String aTransferId, File aFile) throws AsyncFileTransferException;
   
   //resume the transfer with the given id and return a new transfer handler
   //if the transfer with this id does not exist throw an exception
