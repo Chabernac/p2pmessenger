@@ -27,7 +27,6 @@ import chabernac.preference.iApplicationPreferenceListener;
 import chabernac.protocol.asyncfiletransfer.iAsyncFileTransferHandler;
 import chabernac.protocol.facade.P2PFacade;
 import chabernac.protocol.facade.P2PFacadeException;
-import chabernac.protocol.filetransfer.iFileHandler;
 import chabernac.protocol.message.MessageArchive;
 import chabernac.protocol.message.MessageIndicator;
 import chabernac.protocol.message.MultiPeerMessage;
@@ -74,7 +73,7 @@ public class ChatMediator {
   }
   
   private void setupFileHandler() throws P2PFacadeException{
-    myFileHandler = new AsyncFileHandler(myP2PFacade);
+    myFileHandler = new AsyncFileHandler(this);
     myP2PFacade.setAsyncFileHandler( myFileHandler );
   }
   
@@ -444,7 +443,7 @@ public class ChatMediator {
 
   }
 
-  private void sendSystemMessage(String aMessage){
+  public void sendSystemMessage(String aMessage){
     try{
       MultiPeerMessage theMessage = MultiPeerMessage.createMessage( aMessage )
       .setSource( "SYSTEM" )

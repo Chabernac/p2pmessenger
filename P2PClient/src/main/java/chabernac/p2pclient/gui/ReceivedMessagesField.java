@@ -12,6 +12,7 @@ import java.text.SimpleDateFormat;
 import java.util.Set;
 
 import javax.swing.JEditorPane;
+import javax.swing.JFileChooser;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
 import javax.swing.SwingUtilities;
@@ -21,6 +22,8 @@ import javax.swing.event.HyperlinkListener;
 import org.apache.log4j.Logger;
 
 import chabernac.gui.GPanel;
+import chabernac.protocol.asyncfiletransfer.AcceptFileResponse;
+import chabernac.protocol.asyncfiletransfer.AcceptFileResponse.Response;
 import chabernac.protocol.facade.P2PFacadeException;
 import chabernac.protocol.message.DeliveryReport;
 import chabernac.protocol.message.MultiPeerMessage;
@@ -61,7 +64,7 @@ public class ReceivedMessagesField extends GPanel implements iReceivedMessagesPr
     myPane.setContentType("text/html");
     myPane.setDragEnabled(true);
     myPane.addHyperlinkListener(new HyperlinkActivator());
-//    myPane.setDocument( new LongWordWrappingDocumentDecorator( (StyledDocument)myPane.getDocument() ) );
+    //    myPane.setDocument( new LongWordWrappingDocumentDecorator( (StyledDocument)myPane.getDocument() ) );
   }
 
   private void buildGUI(){
@@ -80,22 +83,43 @@ public class ReceivedMessagesField extends GPanel implements iReceivedMessagesPr
   public class HyperlinkActivator implements HyperlinkListener{ 
     public void hyperlinkUpdate(HyperlinkEvent e){ 
       if(e.getEventType()==HyperlinkEvent.EventType.ACTIVATED){
-        String theURL = e.getURL().toString().replaceAll("file:/", "");
-        logger.debug("URL: " + theURL);
-        try{
-          String theCMD = "";
-          if(theURL.startsWith("http")){
-            theCMD = "cmd /c start " + theURL;  
-          } else {
-            theCMD = "cmd /c \"" + theURL + "\"";
+        if(e.getDescription().startsWith( "download:")){
+          activateDownload(e.getDescription());
+        } else {
+          String theURL = e.getURL().toString().replaceAll("file:/", "");
+          logger.debug("URL: " + theURL);
+          try{
+            String theCMD = "";
+            if(theURL.startsWith("http")){
+              theCMD = "cmd /c start " + theURL;  
+            } else {
+              theCMD = "cmd /c \"" + theURL + "\"";
+            }
+            logger.debug("Cmd: " + theCMD);
+            Runtime.getRuntime().exec(theCMD);
+          }catch(IOException f){
+            logger.error("Could not show url", f);
           }
-          logger.debug("Cmd: " + theCMD);
-          Runtime.getRuntime().exec(theCMD);
-        }catch(IOException f){
-          logger.error("Could not show url", f);
         }
       } 
-    } 
+    }
+
+    private void activateDownload(String aURL){
+      String theTransferId = aURL.substring( aURL.indexOf( ":" ) + 1 );
+
+      JFileChooser theChooser = new JFileChooser();
+      int theReturn = theChooser.showOpenDialog( ReceivedMessagesField.this );
+      try {
+        if(theReturn == JFileChooser.APPROVE_OPTION){
+          myMediator.getP2PFacade().showFileTransferOverView();
+          myMediator.getP2PFacade().getAsyncFileTransferController().setFileTransferResponse( new AcceptFileResponse( theTransferId, Response.ACCEPT, theChooser.getSelectedFile() ) );
+        } else {
+          myMediator.getP2PFacade().getAsyncFileTransferController().setFileTransferResponse( new AcceptFileResponse( theTransferId, Response.REFUSED, null ) );
+        }
+      } catch ( Exception e ) {
+        logger.error( "An error occured while setting accept file response", e);
+      }
+    }
   }
 
   private void createHTML() {
