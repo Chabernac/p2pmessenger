@@ -31,6 +31,7 @@ public class PacketSender {
   private final AtomicBoolean myIsContinue = new AtomicBoolean(true);
   private final AsyncFileTransferProtocol myProtocol;
   private final boolean[] mySendPackets;
+  private boolean isErrorOccured = false;
 
   public PacketSender(FileSender aFileIO, FilePacketIO anIO, AbstractPeer aDestination, AsyncFileTransferProtocol aProtocol, boolean[] aSendPackets){
     myFileIO = aFileIO;
@@ -57,6 +58,10 @@ public class PacketSender {
 
   public void resetLatch(int aNumberOfPacketsLeft){
     myLatch = new CountDownLatch(aNumberOfPacketsLeft);
+  }
+  
+  public boolean isErrorOccured(){
+    return isErrorOccured;
   }
 
   public void sendPacket(final int aPacketNr) throws AsyncFileTransferException{
@@ -86,6 +91,7 @@ public class PacketSender {
           }
           if(SEND_SLEEP > 0) Thread.sleep( SEND_SLEEP );
         }catch(Exception e){
+          isErrorOccured = true;
           LOGGER.error("Error occured while sending packet " + aPacketNr, e);
           if(myFailuresLeft.decrementAndGet() <= 0){
             LOGGER.error("Max number of failures reached, aborting file transfer");

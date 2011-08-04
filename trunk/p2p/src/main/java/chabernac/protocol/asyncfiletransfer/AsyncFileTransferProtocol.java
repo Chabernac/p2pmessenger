@@ -97,18 +97,20 @@ public class AsyncFileTransferProtocol extends Protocol implements iTransferCont
         String thePeerId = theParams[4];
 
         if(!myReceivingFiles.containsKey(theUUId)){
-          File theFile = myHandler.acceptFile( theFileName, theUUId, this );
-          
-          if(theFile == null){
+          AcceptFileResponse theResponse = myHandler.acceptFile(thePeerId, theFileName, theUUId, this );
+
+          if(theResponse.getResponse() == AcceptFileResponse.Response.PENDING){
             PendingTransfer thePendingTransfer = new PendingTransfer( theFileName, theUUId, thePeerId, thePacketSize, theNrOfPackets );
             myPendingTransfers.put(theUUId, thePendingTransfer);
             return Response.TRANSFER_PENDING.name();
-          } else {
-            FilePacketIO theIO = FilePacketIO.createForWrite( theFile, theUUId, thePacketSize, theNrOfPackets );
-            myReceivingFiles.put( theUUId, new FileReceiver( theUUId, theIO, AsyncFileTransferProtocol.this) );
+          } else if(theResponse.getResponse() == AcceptFileResponse.Response.ACCEPT){
+            FilePacketIO theIO = FilePacketIO.createForWrite( theResponse.getFile(), theUUId, thePacketSize, theNrOfPackets );
+            myReceivingFiles.put( theUUId, new FileReceiver( thePeerId, theIO, AsyncFileTransferProtocol.this) );
             myReceivingFiles.get(theUUId).setTransferring( true );
             notifyNewTransfer(theUUId);
             return Response.FILE_ACCEPTED.name();
+          } else if(theResponse.getResponse() == AcceptFileResponse.Response.REFUSED){
+            return Response.FILE_REFUSED.name();
           }
         } else {
           myReceivingFiles.get(theUUId).setTransferring( true );
@@ -361,12 +363,12 @@ public class AsyncFileTransferProtocol extends Protocol implements iTransferCont
           return new FileTransferState(theFileIO.getPercentageComplete(), FileTransferState.State.DONE, theDirection, theFileIO.getCompletedPackets());
         } else if(theFileIO.isTransferring()){
           return new FileTransferState(theFileIO.getPercentageComplete(), FileTransferState.State.RUNNING, theDirection, theFileIO.getCompletedPackets());
+        } else if(theFileIO.isRefused()){
+          return new FileTransferState(new Percentage( 0, 0 ), FileTransferState.State.REFUSED, theDirection, null);
         } else if(theFileIO.isFailed()){
           return new FileTransferState(theFileIO.getPercentageComplete(), FileTransferState.State.FAILED, theDirection, theFileIO.getCompletedPackets());
         } else if(theFileIO.isPaused()){
           return new FileTransferState(theFileIO.getPercentageComplete(), FileTransferState.State.PAUSED, theDirection, theFileIO.getCompletedPackets());
-        } else if(theFileIO.isRefused()){
-          return new FileTransferState(new Percentage( 0, 0 ), FileTransferState.State.REFUSED, theDirection, null);
         } else {
           return new FileTransferState(new Percentage( 0, 0 ), FileTransferState.State.NOT_STARTED, theDirection, null);
         }
@@ -467,20 +469,20 @@ public class AsyncFileTransferProtocol extends Protocol implements iTransferCont
   }
 
   @Override
-  public void acceptFileTransfer( String aTransferId, File aFile )  throws AsyncFileTransferException{
-    if(!myPendingTransfers.containsKey( aTransferId )) throw new AsyncFileTransferException( "No pending transfer with id '" + aTransferId + "'" );
+  public void setFileTransferResponse( AcceptFileResponse aResponse )  throws AsyncFileTransferException{
+    if(!myPendingTransfers.containsKey( aResponse.getTransferId() )) throw new AsyncFileTransferException( "No pending transfer with id '" +  aResponse.getTransferId()  + "'" );
 
-    PendingTransfer thePendingTransfer = myPendingTransfers.remove( aTransferId );
 
-    testReachable(thePendingTransfer.getPeer());
+    PendingTransfer thePendingTransfer = myPendingTransfers.remove(  aResponse.getTransferId()  );
+
     try{
       AbstractPeer theSender = getRoutingTable().getEntryForPeer(thePendingTransfer.getPeer()).getPeer();
+      testReachable(thePendingTransfer.getPeer());
 
-      if(aFile == null){
+      if(aResponse.getResponse() == AcceptFileResponse.Response.REFUSED){
         sendMessageAsyncTo(theSender, Command.CANCEL_TRANSFER.name() + " " + thePendingTransfer.getUUId());
-      } else {
-
-        FilePacketIO theIO = FilePacketIO.createForWrite( aFile, thePendingTransfer.getUUId(), thePendingTransfer.getPacketSize(), thePendingTransfer.getNrOfPackets() );
+      } else if(aResponse.getResponse() == AcceptFileResponse.Response.ACCEPT){
+        FilePacketIO theIO = FilePacketIO.createForWrite( aResponse.getFile(), thePendingTransfer.getUUId(), thePendingTransfer.getPacketSize(), thePendingTransfer.getNrOfPackets() );
 
         if(!myReceivingFiles.containsKey(thePendingTransfer.getUUId())){
           myReceivingFiles.put( thePendingTransfer.getUUId(), new FileReceiver( thePendingTransfer.getUUId(), theIO, AsyncFileTransferProtocol.this) );

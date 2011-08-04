@@ -14,7 +14,7 @@ public interface iAsyncFileTransferHandler {
    * you must call iTransferController.acceptFileTransfer to start the file transfer
    * or return inmediately the accepted File
    */
-  public File acceptFile(String aFileName, String aFileId, iTransferController aController);
+  public AcceptFileResponse acceptFile(String aPeerId, String aFileName, String aFileId, iTransferController aController);
   public void fileTransfer(String aFileName, String aFileId, Percentage aPercentageComplete);
   public void fileSaved(File aFile) throws FileTransferException;
 }

@@ -120,7 +120,8 @@ public class FileSender extends AbstractFileIO{
         }
       }
 
-      if(!myPacketSender.isContinue()) throw new AsyncFileTransferException("Transferring file aborted because a packet was refused");
+      if(!myPacketSender.isContinue() && myPacketSender.isErrorOccured()) throw new AsyncFileTransferException("Transferring file aborted because a packet was refused");
+      if(!myPacketSender.isContinue()) return;
 
       myPacketSender.waitUntillAllSend();
 
@@ -136,7 +137,8 @@ public class FileSender extends AbstractFileIO{
           myPacketSender.sendPacket(Integer.parseInt(thePacketsToResend[i]));
         }
 
-        if(!myPacketSender.isContinue()) throw new AsyncFileTransferException("Transferring file aborted because a packet was refused");
+        if(!myPacketSender.isContinue() && myPacketSender.isErrorOccured()) throw new AsyncFileTransferException("Transferring file aborted because a packet was refused");
+        if(!myPacketSender.isContinue()) return;
 
         myPacketSender.waitUntillAllSend();
       }
