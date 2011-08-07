@@ -45,7 +45,7 @@ public class FileTransferProgressPanel extends JPanel implements iFileTransferLi
       myHandler.addFileTransferListener( this );
     } catch ( AsyncFileTransferException e ) {
     }
-    addMouseListener( new FilePacketVisualizer() );
+//    addMouseListener( new FilePacketVisualizer() );
   }
 
   @Override

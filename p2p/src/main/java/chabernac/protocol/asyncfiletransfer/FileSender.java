@@ -87,11 +87,11 @@ public class FileSender extends AbstractFileIO{
       theDestination = getDestination();
 
       //init file transfer with other peer
-      myPendingMessage = myProtocol.sendMessageAsyncTo( theDestination, Command.ACCEPT_FILE.name() + " " + 
-          myFilePacketIO.getFile().getName()  + " " + 
-          myFilePacketIO.getId() + " " + 
-          myFilePacketIO.getPacketSize() + " " + 
-          myFilePacketIO.getNrOfPackets() + " " + 
+      myPendingMessage = myProtocol.sendMessageAsyncTo( theDestination, Command.ACCEPT_FILE.name() + ";" + 
+          myFilePacketIO.getFile().getName()  + ";" + 
+          myFilePacketIO.getId() + ";" + 
+          myFilePacketIO.getPacketSize() + ";" + 
+          myFilePacketIO.getNrOfPackets() + ";" + 
           myProtocol.getRoutingTable().getLocalPeerId());
       
       isPending = true;
@@ -107,7 +107,7 @@ public class FileSender extends AbstractFileIO{
       isRefused = Response.FILE_REFUSED.name().equals( theResult );
       
       //only continue if the file was accepted by the client
-      if(!theResult.startsWith( Response.FILE_ACCEPTED.name() )) throw new AsyncFileTransferException("Transferring file aborted");
+      if(!theResult.startsWith( Response.FILE_ACCEPTED.name() )) throw new AsyncFileTransferException("Transferring file aborted, client did not accept file '" + theResult + "'");
 
       myPacketSender = new PacketSender(this, myFilePacketIO, theDestination, myProtocol, mySendPackets);
       //now loop over all packets and send them to the other peer
@@ -127,10 +127,10 @@ public class FileSender extends AbstractFileIO{
 
       String theResponse = null;
       int j=0;
-      while( j++ < myProtocol.myMaxRetries && !(theResponse = myProtocol.sendMessageTo( theDestination, Command.END_FILE_TRANSFER.name()  + " " + myFilePacketIO.getId())).equalsIgnoreCase(Response.END_FILE_TRANSFER_OK.name())){
+      while( j++ < myProtocol.myMaxRetries && !(theResponse = myProtocol.sendMessageTo( theDestination, Command.END_FILE_TRANSFER.name()  + ";" + myFilePacketIO.getId())).equalsIgnoreCase(Response.END_FILE_TRANSFER_OK.name())){
         //if we get here not all packets where correctly delivered resend the missed packets
         LOGGER.debug("Some packets need to be resended '" + theResponse + "'");
-        String[] thePacketsToResend = theResponse.split(" ");
+        String[] thePacketsToResend = theResponse.split(";");
         myPacketSender.resetLatch(thePacketsToResend.length);
         for(int i=0;i<thePacketsToResend.length && myPacketSender.isContinue();i++){
           LOGGER.debug("Resending packet '" + thePacketsToResend[i] + "'");
@@ -155,7 +155,7 @@ public class FileSender extends AbstractFileIO{
     } finally {
       if(theDestination != null){
         try{
-          myProtocol.sendMessageTo( theDestination, Command.TRANSFER_STOPPED + " " + myFilePacketIO.getId() );
+          myProtocol.sendMessageTo( theDestination, Command.TRANSFER_STOPPED + ";" + myFilePacketIO.getId() );
         }catch(AsyncFileTransferException e){
           LOGGER.error("Could not send '" + Command.TRANSFER_STOPPED.name() + "' to peer '" + myPeer + "'");
         }
@@ -192,7 +192,7 @@ public class FileSender extends AbstractFileIO{
     stop();
     //send signal to the receiver that the transfer will be removed and can not be resumed
     try {
-      String theResponse = myProtocol.sendMessageTo( getDestination(), Command.TRANSFER_CANCELLED.name() + " " + myFilePacketIO.getId() );
+      String theResponse = myProtocol.sendMessageTo( getDestination(), Command.TRANSFER_CANCELLED.name() + ";" + myFilePacketIO.getId() );
       LOGGER.debug("Response on cancellation '" + theResponse + "'");
     } catch ( Exception e ) {
       LOGGER.error( "Unable to notify receiver of transfer cancellation", e );
