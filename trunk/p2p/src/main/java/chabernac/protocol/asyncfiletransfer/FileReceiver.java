@@ -43,7 +43,7 @@ public class FileReceiver extends AbstractFileIO{
     try{
       myProtocol.testReachable( myPeer );
       AbstractPeer theDestination = myProtocol.getRoutingTable().getEntryForPeer(myPeer).getPeer();
-      myProtocol.sendMessageTo( theDestination, AsyncFileTransferProtocol.Command.RESUME_TRANSFER.name() + " " + myFilePacketIO.getId());
+      myProtocol.sendMessageTo( theDestination, AsyncFileTransferProtocol.Command.RESUME_TRANSFER.name() + ";" + myFilePacketIO.getId());
     }catch(Exception e){
       LOGGER.error("An error occured while sending resume command", e);
     }
@@ -54,7 +54,7 @@ public class FileReceiver extends AbstractFileIO{
     try{
       myProtocol.testReachable( myPeer );
       AbstractPeer theDestination = myProtocol.getRoutingTable().getEntryForPeer(myPeer).getPeer();
-      myProtocol.sendMessageTo( theDestination, AsyncFileTransferProtocol.Command.STOP_TRANSFER.name() + " " + myFilePacketIO.getId());
+      myProtocol.sendMessageTo( theDestination, AsyncFileTransferProtocol.Command.STOP_TRANSFER.name() + ";" + myFilePacketIO.getId());
     }catch(Exception e){
       LOGGER.error("An error occured while sending stop command", e);
     }
@@ -65,7 +65,7 @@ public class FileReceiver extends AbstractFileIO{
     try{
       myProtocol.testReachable( myPeer );
       AbstractPeer theDestination = myProtocol.getRoutingTable().getEntryForPeer(myPeer).getPeer();
-      myProtocol.sendMessageTo( theDestination, AsyncFileTransferProtocol.Command.CANCEL_TRANSFER.name() + " " + myFilePacketIO.getId());
+      myProtocol.sendMessageTo( theDestination, AsyncFileTransferProtocol.Command.CANCEL_TRANSFER.name() + ";" + myFilePacketIO.getId());
     }catch(Exception e){
       LOGGER.error("An error occured while sending stop command", e);
     }

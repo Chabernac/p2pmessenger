@@ -88,7 +88,7 @@ public class AsyncFileTransferProtocol extends Protocol implements iTransferCont
     try{
       if(anInput.startsWith( Command.ACCEPT_FILE.name() )){
         if(myHandler == null) return Response.ABORT_FILE_TRANSFER.name();
-        String[] theParams = anInput.substring( Command.ACCEPT_FILE.name().length() + 1 ).split( " " );
+        String[] theParams = anInput.substring( Command.ACCEPT_FILE.name().length() + 1 ).split( ";" );
 
         String theFileName = theParams[0];
         String theUUId = theParams[1];
@@ -140,7 +140,7 @@ public class AsyncFileTransferProtocol extends Protocol implements iTransferCont
         return Response.PACKET_OK.name();
       } else if(anInput.startsWith( Command.END_FILE_TRANSFER.name() )){
         if(myHandler == null) return Response.ABORT_FILE_TRANSFER.name();
-        String[] theParams = anInput.substring( Command.END_FILE_TRANSFER.name().length() + 1 ).split( " " );
+        String[] theParams = anInput.substring( Command.END_FILE_TRANSFER.name().length() + 1 ).split( ";" );
 
         String theUUId = theParams[0];
         FilePacketIO theIO = myReceivingFiles.get(theUUId).getIO();
@@ -152,13 +152,13 @@ public class AsyncFileTransferProtocol extends Protocol implements iTransferCont
           for(int i=0;i<theIO.getWrittenPackets().length;i++){
             if(!theIO.getWrittenPackets()[i]){
               theIncompletePackets.append( i );
-              theIncompletePackets.append( " " );
+              theIncompletePackets.append( ";" );
             }
           }
           return theIncompletePackets.toString();
         }
       } else if(anInput.startsWith( Command.STOP_TRANSFER.name() )){
-        String[] theParams = anInput.substring( Command.STOP_TRANSFER.name().length() + 1 ).split( " " );
+        String[] theParams = anInput.substring( Command.STOP_TRANSFER.name().length() + 1 ).split( ";" );
         String theUUId = theParams[0];
         if(!mySendingFiles.containsKey( theUUId )) return Response.UNKNOWN_ID.name();
 
@@ -166,7 +166,7 @@ public class AsyncFileTransferProtocol extends Protocol implements iTransferCont
         theSender.stop();
         return Response.OK.name();
       } else if(anInput.startsWith( Command.CANCEL_TRANSFER.name() )){
-        String[] theParams = anInput.substring( Command.CANCEL_TRANSFER.name().length() + 1 ).split( " " );
+        String[] theParams = anInput.substring( Command.CANCEL_TRANSFER.name().length() + 1 ).split( ";" );
         String theUUId = theParams[0];
         if(!mySendingFiles.containsKey( theUUId )) return Response.UNKNOWN_ID.name();
 
@@ -174,7 +174,7 @@ public class AsyncFileTransferProtocol extends Protocol implements iTransferCont
         theSender.cancel();
         return Response.OK.name();
       } else if(anInput.startsWith( Command.TRANSFER_CANCELLED.name() )){
-        String[] theParams = anInput.substring( Command.TRANSFER_CANCELLED.name().length() + 1 ).split( " " );
+        String[] theParams = anInput.substring( Command.TRANSFER_CANCELLED.name().length() + 1 ).split( ";" );
         String theUUId = theParams[0];
         if(!myReceivingFiles.containsKey( theUUId )) return Response.UNKNOWN_ID.name();
         iFileIO  theFileIo = myReceivingFiles.get(theUUId);
@@ -185,14 +185,14 @@ public class AsyncFileTransferProtocol extends Protocol implements iTransferCont
           notifyTransferRemoved(theUUId);
         }
       } else if(anInput.startsWith( Command.RESUME_TRANSFER.name() )){
-        String[] theParams = anInput.substring( Command.RESUME_TRANSFER.name().length() + 1 ).split( " " );
+        String[] theParams = anInput.substring( Command.RESUME_TRANSFER.name().length() + 1 ).split( ";" );
         String theUUId = theParams[0];
         if(!mySendingFiles.containsKey( theUUId )) return Response.UNKNOWN_ID.name();
         LOGGER.debug( "Resuming file transfer for transfer '" + theUUId + "'" );
         resume( theUUId );
         return Response.OK.name();
       } else if(anInput.startsWith( Command.TRANSFER_STOPPED.name() )){
-        String[] theParams = anInput.substring( Command.TRANSFER_STOPPED.name().length() + 1 ).split( " " );
+        String[] theParams = anInput.substring( Command.TRANSFER_STOPPED.name().length() + 1 ).split( ";" );
         String theUUId = theParams[0];
         if(!myReceivingFiles.containsKey( theUUId )) return Response.UNKNOWN_ID.name();
 
@@ -480,7 +480,7 @@ public class AsyncFileTransferProtocol extends Protocol implements iTransferCont
       testReachable(thePendingTransfer.getPeer());
 
       if(aResponse.getResponse() == AcceptFileResponse.Response.REFUSED){
-        sendMessageAsyncTo(theSender, Command.CANCEL_TRANSFER.name() + " " + thePendingTransfer.getUUId());
+        sendMessageAsyncTo(theSender, Command.CANCEL_TRANSFER.name() + ";" + thePendingTransfer.getUUId());
       } else if(aResponse.getResponse() == AcceptFileResponse.Response.ACCEPT){
         FilePacketIO theIO = FilePacketIO.createForWrite( aResponse.getFile(), thePendingTransfer.getUUId(), thePendingTransfer.getPacketSize(), thePendingTransfer.getNrOfPackets() );
 
@@ -492,7 +492,7 @@ public class AsyncFileTransferProtocol extends Protocol implements iTransferCont
         myReceivingFiles.get(thePendingTransfer.getUUId()).setTransferring( true );
 
         //send a message to the sender that it can start sending
-        sendMessageAsyncTo(theSender, Command.RESUME_TRANSFER.name() + " " + thePendingTransfer.getUUId());
+        sendMessageAsyncTo(theSender, Command.RESUME_TRANSFER.name() + ";" + thePendingTransfer.getUUId());
       }
     }catch(Exception e){
       throw new AsyncFileTransferException( "Peer '" +  thePendingTransfer.getPeer() + "' is not known");
