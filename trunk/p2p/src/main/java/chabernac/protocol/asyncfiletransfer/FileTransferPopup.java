@@ -4,7 +4,6 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
-import javax.swing.JComponent;
 import javax.swing.JPopupMenu;
 
 import org.apache.log4j.Logger;
@@ -27,7 +26,7 @@ public class FileTransferPopup extends JPopupMenu {
     myFileTransferHandler.addFileTransferListener(new FileTransferListener());
   }
 
-  private void buildMenu(){
+  private synchronized void buildMenu(){
     FileTransferState theState = myFileTransferHandler.getState();
     if(myLastState != theState.getState()){
       removeAll();
@@ -38,11 +37,15 @@ public class FileTransferPopup extends JPopupMenu {
         add(new RemoveAction());
         break;
       }
-      case FAILED:
-      case NOT_STARTED:
+      case NOT_STARTED:{
+        add(new StartAction("Download starten"));
+        add(new RemoveAction());
+        break;
+      }
       case REFUSED:
+      case FAILED:
       case PAUSED:{
-        add(new StartAction());
+        add(new StartAction("Download herstarten"));
         add(new RemoveAction());
         break;
       }
@@ -117,8 +120,8 @@ public class FileTransferPopup extends JPopupMenu {
   private class StartAction extends AbstractAction {
     private static final long serialVersionUID = -7356442420934284553L;
 
-    public StartAction(){
-      putValue( Action.NAME, "Download starten" );
+    public StartAction(String aName){
+      putValue( Action.NAME, aName );
     }
 
     @Override
