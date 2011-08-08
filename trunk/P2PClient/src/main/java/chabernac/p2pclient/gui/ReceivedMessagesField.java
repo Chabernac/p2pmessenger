@@ -105,9 +105,11 @@ public class ReceivedMessagesField extends GPanel implements iReceivedMessagesPr
     }
 
     private void activateDownload(String aURL){
-      String theTransferId = aURL.substring( aURL.indexOf( ":" ) + 1 );
+      String[] theParts = aURL.split( ":" );
+      String theTransferId = theParts[1];
+      String theFileName = theParts[2];
 
-      JFileChooser theChooser = new JFileChooser();
+      JFileChooser theChooser = new JFileChooser(theFileName);
       int theReturn = theChooser.showOpenDialog( ReceivedMessagesField.this );
       try {
         if(theReturn == JFileChooser.APPROVE_OPTION){
