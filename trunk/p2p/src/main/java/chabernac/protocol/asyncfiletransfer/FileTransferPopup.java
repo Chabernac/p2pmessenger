@@ -28,9 +28,9 @@ public class FileTransferPopup extends JPopupMenu {
   }
 
   private void buildMenu(){
-    removeAll();
     FileTransferState theState = myFileTransferHandler.getState();
     if(myLastState != theState.getState()){
+      removeAll();
       switch(theState.getState()){
       case DONE:{
         add(new OpenAction());
@@ -135,13 +135,13 @@ public class FileTransferPopup extends JPopupMenu {
     private static final long serialVersionUID = -7356442420934284553L;
 
     public StopAction(){
-      putValue( Action.NAME, "Download stoppen" );
+      putValue( Action.NAME, "Download pauzeren" );
     }
 
     @Override
     public void actionPerformed(ActionEvent anArg0) {
       try {
-        myFileTransferHandler.resume();
+        myFileTransferHandler.pause();
       } catch (Exception e) {
         LOGGER.error("An error occured while stopping download", e);
       }

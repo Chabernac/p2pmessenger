@@ -102,8 +102,6 @@ public class FileSender extends AbstractFileIO{
       notifyListeners();
       if(isPending) return;
       
-      LOGGER.error("Receiver response '" + theResult + "'");
-
       isRefused = Response.FILE_REFUSED.name().equals( theResult );
       
       //only continue if the file was accepted by the client
