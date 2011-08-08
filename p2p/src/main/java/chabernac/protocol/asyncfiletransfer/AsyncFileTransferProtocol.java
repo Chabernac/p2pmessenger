@@ -485,7 +485,7 @@ public class AsyncFileTransferProtocol extends Protocol implements iTransferCont
         FilePacketIO theIO = FilePacketIO.createForWrite( aResponse.getFile(), thePendingTransfer.getUUId(), thePendingTransfer.getPacketSize(), thePendingTransfer.getNrOfPackets() );
 
         if(!myReceivingFiles.containsKey(thePendingTransfer.getUUId())){
-          myReceivingFiles.put( thePendingTransfer.getUUId(), new FileReceiver( thePendingTransfer.getUUId(), theIO, AsyncFileTransferProtocol.this) );
+          myReceivingFiles.put( thePendingTransfer.getUUId(), new FileReceiver( thePendingTransfer.getPeer(), theIO, AsyncFileTransferProtocol.this) );
           notifyNewTransfer(thePendingTransfer.getUUId());
         }
 
