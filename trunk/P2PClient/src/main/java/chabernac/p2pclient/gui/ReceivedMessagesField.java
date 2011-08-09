@@ -7,6 +7,7 @@
 package chabernac.p2pclient.gui;
 
 import java.awt.BorderLayout;
+import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Set;
@@ -109,7 +110,9 @@ public class ReceivedMessagesField extends GPanel implements iReceivedMessagesPr
       String theTransferId = theParts[1];
       String theFileName = theParts[2];
 
-      JFileChooser theChooser = new JFileChooser(theFileName);
+      File theCurrentFile = new File(theFileName);
+      JFileChooser theChooser = new JFileChooser();
+      theChooser.setSelectedFile(theCurrentFile);
       int theReturn = theChooser.showOpenDialog( ReceivedMessagesField.this );
       try {
         if(theReturn == JFileChooser.APPROVE_OPTION){
