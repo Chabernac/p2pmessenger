@@ -94,7 +94,7 @@ public class FileTransferProgressPanel extends JPanel implements iFileTransferLi
       g.setColor( Color.black );
       g.setFont( FONT );
 
-      String theString = theState.getDirection().name() + " " + myHandler.getFile().getName() + " " + FORMAT.format( theState.getPercentageComplete().getPercentage() * 100) + " %";
+      String theString = myHandler.getFile().getName() + " " + FORMAT.format( theState.getPercentageComplete().getPercentage() * 100) + " %";
 
       theString += " " + theState.getState().name();
       

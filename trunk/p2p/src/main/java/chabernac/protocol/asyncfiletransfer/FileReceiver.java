@@ -152,4 +152,8 @@ public class FileReceiver extends AbstractFileIO{
   public boolean isPending() {
     return false;
   }
+
+  @Override
+  public void refuse() throws AsyncFileTransferException {
+  }
 }

@@ -35,12 +35,13 @@ public class FileTransferPanel extends JPanel implements iFileTransferListener{
   private void buildGUI(){
     setLayout(new BorderLayout());
     add(new FileTransferProgressPanel(myHandler), BorderLayout.CENTER);
-    myStartStopCommand = new StartStopAction();
-    JPanel theButtonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-    theButtonPanel.add(new CommandButton(myStartStopCommand, 70));
-    myCancelCommand = new CancelCommand();
-    theButtonPanel.add(new CommandButton(myCancelCommand, 80));
-    add(theButtonPanel, BorderLayout.EAST);
+    
+//    myStartStopCommand = new StartStopAction();
+//    JPanel theButtonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+//    theButtonPanel.add(new CommandButton(myStartStopCommand, 70));
+//    myCancelCommand = new CancelCommand();
+//    theButtonPanel.add(new CommandButton(myCancelCommand, 80));
+//    add(theButtonPanel, BorderLayout.EAST);
 
     addListeners();
   }
@@ -126,8 +127,8 @@ public class FileTransferPanel extends JPanel implements iFileTransferListener{
 
   @Override
   public void transferStateChanged() {
-    myStartStopCommand.notifyObs();
-    myCancelCommand.notifyObs();
+//    myStartStopCommand.notifyObs();
+//    myCancelCommand.notifyObs();
   }
   
   private void buildPopupMenu(MouseEvent evt) throws AsyncFileTransferException{

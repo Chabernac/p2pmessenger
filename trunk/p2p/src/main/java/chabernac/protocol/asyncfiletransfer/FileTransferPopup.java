@@ -15,6 +15,7 @@ public class FileTransferPopup extends JPopupMenu {
   private static final Logger LOGGER = Logger.getLogger(FileTransferPopup.class);
   private final FileTransferHandler myFileTransferHandler;
   private FileTransferState.State myLastState = null;
+  private FilePacketVisualizerFrame myPacketVisualizer = null;
 
   public FileTransferPopup(FileTransferHandler aHandler) throws AsyncFileTransferException{
     myFileTransferHandler = aHandler;
@@ -52,6 +53,7 @@ public class FileTransferPopup extends JPopupMenu {
       case RUNNING:{
         add(new StopAction());
         add(new RemoveAction());
+        add(new VisualizePacketAction());
         break;
       }
       }
@@ -148,6 +150,22 @@ public class FileTransferPopup extends JPopupMenu {
       } catch (Exception e) {
         LOGGER.error("An error occured while stopping download", e);
       }
+    }
+  }
+  
+  private class VisualizePacketAction extends AbstractAction {
+    private static final long serialVersionUID = -7356442420934284553L;
+
+    public VisualizePacketAction(){
+      putValue( Action.NAME, "Details bestandsoverdracht" );
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent anArg0) {
+      if(myPacketVisualizer == null){
+        myPacketVisualizer = new FilePacketVisualizerFrame(myFileTransferHandler);
+      }
+      myPacketVisualizer.setVisible(true);
     }
   }
 
