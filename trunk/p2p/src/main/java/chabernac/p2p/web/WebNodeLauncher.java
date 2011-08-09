@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
 import chabernac.protocol.facade.P2PFacade;
+import chabernac.protocol.message.AsyncMessageProcotol;
 import chabernac.protocol.message.MessageProtocol;
 import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.WebPeerProtocol;
@@ -43,6 +44,7 @@ public class WebNodeLauncher {
       .addSupportedProtocol( RoutingProtocol.ID )
       .addSupportedProtocol( WebPeerProtocol.ID )
       .addSupportedProtocol( MessageProtocol.ID )
+      .addSupportedProtocol( AsyncMessageProcotol.ID )
       .start();
       
       System.out.println("Webnode started!");
