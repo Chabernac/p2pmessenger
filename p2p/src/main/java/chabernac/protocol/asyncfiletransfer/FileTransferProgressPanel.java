@@ -96,11 +96,16 @@ public class FileTransferProgressPanel extends JPanel implements iFileTransferLi
 
       String theString = theState.getDirection().name() + " " + myHandler.getFile().getName() + " " + FORMAT.format( theState.getPercentageComplete().getPercentage() * 100) + " %";
 
+      theString += " " + theState.getState().name();
+      
+      /*
       if(theState.getState() == FileTransferState.State.PAUSED){
         theString += " PAUZED";
       }  else if(theState.getState() == FileTransferState.State.FAILED){
         theString += " FAILED";
       }
+      */
+      
       g.drawString( theString, 10, HEIGHT - 4 );
     } catch ( AsyncFileTransferException e ) {
     }
