@@ -35,7 +35,7 @@ public class AsyncFileTransferProtocol extends Protocol implements iTransferCont
 
   public static final String ID = "AFP";
 
-  static enum Command{ACCEPT_FILE, ACCEPT_PACKET, END_FILE_TRANSFER, STOP_TRANSFER, RESUME_TRANSFER, TRANSFER_STOPPED, TRANSFER_CANCELLED, CANCEL_TRANSFER};
+  static enum Command{ACCEPT_FILE, ACCEPT_PACKET, END_FILE_TRANSFER, STOP_TRANSFER, RESUME_TRANSFER, TRANSFER_STOPPED, TRANSFER_CANCELLED, CANCEL_TRANSFER, TRANSFER_REFUSED};
   static enum Response{FILE_ACCEPTED, FILE_REFUSED, PACKET_OK, PACKET_REFUSED, NOK, UNKNOWN_ID, END_FILE_TRANSFER_OK, ABORT_FILE_TRANSFER, OK, TRANSFER_PENDING};
 
   int myPacketSize = 8192;
@@ -165,6 +165,13 @@ public class AsyncFileTransferProtocol extends Protocol implements iTransferCont
         iFileIO theSender = mySendingFiles.get(theUUId);
         theSender.stop();
         return Response.OK.name();
+      } else if(anInput.startsWith(Command.TRANSFER_REFUSED.name())){
+        String[] theParams = anInput.substring( Command.TRANSFER_REFUSED.name().length() + 1 ).split( ";" );
+        String theUUId = theParams[0];
+        if(!mySendingFiles.containsKey( theUUId )) return Response.UNKNOWN_ID.name();
+
+        iFileIO theSender = mySendingFiles.get(theUUId);
+        theSender.refuse();
       } else if(anInput.startsWith( Command.CANCEL_TRANSFER.name() )){
         String[] theParams = anInput.substring( Command.CANCEL_TRANSFER.name().length() + 1 ).split( ";" );
         String theUUId = theParams[0];
@@ -482,7 +489,7 @@ public class AsyncFileTransferProtocol extends Protocol implements iTransferCont
       testReachable(thePendingTransfer.getPeer());
 
       if(aResponse.getResponse() == AcceptFileResponse.Response.REFUSED){
-        sendMessageAsyncTo(theSender, Command.CANCEL_TRANSFER.name() + ";" + thePendingTransfer.getUUId());
+        sendMessageAsyncTo(theSender, Command.TRANSFER_REFUSED.name() + ";" + thePendingTransfer.getUUId());
       } else if(aResponse.getResponse() == AcceptFileResponse.Response.ACCEPT){
         FilePacketIO theIO = FilePacketIO.createForWrite( aResponse.getFile(), thePendingTransfer.getUUId(), thePendingTransfer.getPacketSize(), thePendingTransfer.getNrOfPackets() );
 

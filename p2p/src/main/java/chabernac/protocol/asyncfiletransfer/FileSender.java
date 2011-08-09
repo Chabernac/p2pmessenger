@@ -196,6 +196,13 @@ public class FileSender extends AbstractFileIO{
       LOGGER.error( "Unable to notify receiver of transfer cancellation", e );
     }
   }
+  
+  public void refuse(){
+    stop();
+    isRefused = true;
+    isPending = false;
+    notifyListeners();
+  }
 
   public void reset(){
     myLastPacketSend = -1;

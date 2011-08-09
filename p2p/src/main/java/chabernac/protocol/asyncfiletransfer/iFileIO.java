@@ -13,6 +13,7 @@ public interface iFileIO {
   public void stop() throws AsyncFileTransferException;
   public void reset() throws AsyncFileTransferException;
   public void cancel() throws AsyncFileTransferException;
+  public void refuse() throws AsyncFileTransferException;
   public void waitTillDone() throws AsyncFileTransferException;
   public boolean isComplete();
   public boolean isTransferring();
