@@ -361,6 +361,8 @@ public class AsyncFileTransferProtocol extends Protocol implements iTransferCont
         iFileIO theFileIO = getFileIO( aTransferId );
         if(theFileIO.isComplete())  {
           return new FileTransferState(theFileIO.getPercentageComplete(), FileTransferState.State.DONE, theDirection, theFileIO.getCompletedPackets());
+        } else if(theFileIO.isPending()){
+          return new FileTransferState(theFileIO.getPercentageComplete(), FileTransferState.State.PENDING, theDirection, theFileIO.getCompletedPackets());
         } else if(theFileIO.isTransferring()){
           return new FileTransferState(theFileIO.getPercentageComplete(), FileTransferState.State.RUNNING, theDirection, theFileIO.getCompletedPackets());
         } else if(theFileIO.isRefused()){
