@@ -13,7 +13,6 @@ import java.util.List;
 
 import javax.swing.JComponent;
 import javax.swing.TransferHandler;
-import javax.swing.text.JTextComponent;
 
 import org.apache.log4j.Logger;
 
