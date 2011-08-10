@@ -113,7 +113,7 @@ public class ReceivedMessagesField extends GPanel implements iReceivedMessagesPr
       File theCurrentFile = new File(theFileName);
       JFileChooser theChooser = new JFileChooser();
       theChooser.setSelectedFile(theCurrentFile);
-      int theReturn = theChooser.showOpenDialog( ReceivedMessagesField.this );
+      int theReturn = theChooser.showSaveDialog( ReceivedMessagesField.this );
       try {
         if(theReturn == JFileChooser.APPROVE_OPTION){
           myMediator.getP2PFacade().showFileTransferOverView();
