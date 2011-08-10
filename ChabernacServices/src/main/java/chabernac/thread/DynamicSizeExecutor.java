@@ -31,7 +31,7 @@ public class DynamicSizeExecutor implements ExecutorService{
   }
   
   public DynamicSizeExecutor(int aCoreSize, int aMaxPoolSize){
-    myExecutor = new ThreadPoolExecutor( aCoreSize, aMaxPoolSize, 10, TimeUnit.SECONDS, new OfferBlockingQueue<Runnable>(1024) );
+    myExecutor = new ThreadPoolExecutor( aCoreSize, aMaxPoolSize, 10, TimeUnit.SECONDS, new OfferBlockingQueue<Runnable>(aMaxPoolSize) );
   }
 
   public void execute(Runnable aRunnable){
@@ -101,19 +101,19 @@ public class DynamicSizeExecutor implements ExecutorService{
   }
 
   public static DynamicSizeExecutor getTinyInstance(){
-    return new DynamicSizeExecutor( 0, 5 );
+    return new DynamicSizeExecutor( 5, 5, 10 );
   }
 
   public static DynamicSizeExecutor getSmallInstance(){
-    return new DynamicSizeExecutor( 1, 20 );
+    return new DynamicSizeExecutor( 5, 20, 10 );
   }
 
   public static DynamicSizeExecutor getMediumInstance(){
-    return new DynamicSizeExecutor( 10, 256 );
+    return new DynamicSizeExecutor( 10, 256, 20 );
   }
 
   public static DynamicSizeExecutor getLargeInstance(){
-    return new DynamicSizeExecutor( 20, 1024 );
+    return new DynamicSizeExecutor( 20, 1024, 50 );
   }
 
   public static synchronized DynamicSizeExecutor getCachedTinyInstance(){
