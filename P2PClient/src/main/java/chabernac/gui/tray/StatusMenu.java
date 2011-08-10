@@ -12,8 +12,8 @@ import chabernac.protocol.facade.P2PFacadeException;
 import chabernac.protocol.userinfo.UserInfo.Status;
 
 public class StatusMenu extends Menu {
-  
-  
+  private static final long serialVersionUID = -9010911314375885233L;
+
   public StatusMenu(ChatMediator aMediator) throws IOException, P2PFacadeException{
     super("Status");
     

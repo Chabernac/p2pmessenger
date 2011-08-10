@@ -81,7 +81,9 @@ public class ReceivedMessagesField extends GPanel implements iReceivedMessagesPr
     return myPane;
   }
 
-  public class HyperlinkActivator implements HyperlinkListener{ 
+  public class HyperlinkActivator implements HyperlinkListener{
+    private JFileChooser myFileChooser = new JFileChooser();
+    
     public void hyperlinkUpdate(HyperlinkEvent e){ 
       if(e.getEventType()==HyperlinkEvent.EventType.ACTIVATED){
         if(e.getDescription().startsWith( "download:")){
@@ -111,13 +113,12 @@ public class ReceivedMessagesField extends GPanel implements iReceivedMessagesPr
       String theFileName = theParts[2];
 
       File theCurrentFile = new File(theFileName);
-      JFileChooser theChooser = new JFileChooser();
-      theChooser.setSelectedFile(theCurrentFile);
-      int theReturn = theChooser.showSaveDialog( ReceivedMessagesField.this );
+      myFileChooser.setSelectedFile(theCurrentFile);
+      int theReturn = myFileChooser.showSaveDialog( ReceivedMessagesField.this );
       try {
         if(theReturn == JFileChooser.APPROVE_OPTION){
           myMediator.getP2PFacade().showFileTransferOverView();
-          myMediator.getP2PFacade().getAsyncFileTransferController().setFileTransferResponse( new AcceptFileResponse( theTransferId, Response.ACCEPT, theChooser.getSelectedFile() ) );
+          myMediator.getP2PFacade().getAsyncFileTransferController().setFileTransferResponse( new AcceptFileResponse( theTransferId, Response.ACCEPT, myFileChooser.getSelectedFile() ) );
         } else {
           myMediator.getP2PFacade().getAsyncFileTransferController().setFileTransferResponse( new AcceptFileResponse( theTransferId, Response.REFUSED, null ) );
         }
