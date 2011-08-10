@@ -20,6 +20,7 @@ import chabernac.event.Event;
 import chabernac.event.iEventListener;
 import chabernac.protocol.facade.P2PFacade;
 import chabernac.protocol.facade.P2PFacadeException;
+import chabernac.protocol.message.AsyncMessageProcotol;
 import chabernac.protocol.message.MessageProtocol;
 import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.WebPeerProtocol;
@@ -63,6 +64,7 @@ public class P2PStatusConnector implements iEventListener, iUserInfoListener {
     .addSupportedProtocol( RoutingProtocol.ID )
     .addSupportedProtocol( MessageProtocol.ID )
     .addSupportedProtocol( WebPeerProtocol.ID )
+    .addSupportedProtocol( AsyncMessageProcotol.ID )
     .start( 256 );
 
     myP2PFacade.forceProtocolStart( UserInfoProtocol.ID );
