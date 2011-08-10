@@ -34,7 +34,7 @@ public class AsyncFileHandler implements iAsyncFileTransferHandler {
         theFrom = theUserInfo.getName();
       }
 
-      myMediator.sendSystemMessage( theFrom + " wenst u een file te sturen, klik op <a href='download:" + aTransferId + ":" + aFileName+ "'>" + aFileName + "</a> om de file te ontvangen" );
+      myMediator.sendSystemMessage( aPeerId, theFrom + " wenst u een file te sturen, klik op <a href='download:" + aTransferId + ":" + aFileName+ "'>" + aFileName + "</a> om de file te ontvangen" );
     }catch(P2PFacadeException e){
       LOGGER.error( "An error occured while sending system message", e );
     }

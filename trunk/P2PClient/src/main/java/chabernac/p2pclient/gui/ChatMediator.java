@@ -444,9 +444,13 @@ public class ChatMediator {
   }
 
   public void sendSystemMessage(String aMessage){
+    sendSystemMessage( "SYSTEM", aMessage );
+  }
+  
+  public void sendSystemMessage(String aFrom, String aMessage){
     try{
       MultiPeerMessage theMessage = MultiPeerMessage.createMessage( aMessage )
-      .setSource( "SYSTEM" )
+      .setSource( aFrom )
       .addDestination( myP2PFacade.getPeerId() )
       .setLoopBack( true );
       myP2PFacade.sendMessage( theMessage, myExecutorService );    
