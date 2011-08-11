@@ -18,6 +18,7 @@ import org.apache.log4j.Logger;
 
 import chabernac.command.AbstractCommand;
 import chabernac.gui.CommandButton;
+import chabernac.tools.SystemTools;
 
 public class FileTransferPanel extends JPanel implements iFileTransferListener{
   private static final long serialVersionUID = 1937364427569729273L;
@@ -35,13 +36,13 @@ public class FileTransferPanel extends JPanel implements iFileTransferListener{
   private void buildGUI(){
     setLayout(new BorderLayout());
     add(new FileTransferProgressPanel(myHandler), BorderLayout.CENTER);
-    
-//    myStartStopCommand = new StartStopAction();
-//    JPanel theButtonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-//    theButtonPanel.add(new CommandButton(myStartStopCommand, 70));
-//    myCancelCommand = new CancelCommand();
-//    theButtonPanel.add(new CommandButton(myCancelCommand, 80));
-//    add(theButtonPanel, BorderLayout.EAST);
+
+    //    myStartStopCommand = new StartStopAction();
+    //    JPanel theButtonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+    //    theButtonPanel.add(new CommandButton(myStartStopCommand, 70));
+    //    myCancelCommand = new CancelCommand();
+    //    theButtonPanel.add(new CommandButton(myCancelCommand, 80));
+    //    add(theButtonPanel, BorderLayout.EAST);
 
     addListeners();
   }
@@ -51,7 +52,7 @@ public class FileTransferPanel extends JPanel implements iFileTransferListener{
       myHandler.addFileTransferListener(this);
     } catch (AsyncFileTransferException e) {
     }
-    
+
     addMouseListener(new ShowPopupMenuListener());
   }
 
@@ -127,10 +128,10 @@ public class FileTransferPanel extends JPanel implements iFileTransferListener{
 
   @Override
   public void transferStateChanged() {
-//    myStartStopCommand.notifyObs();
-//    myCancelCommand.notifyObs();
+    //    myStartStopCommand.notifyObs();
+    //    myCancelCommand.notifyObs();
   }
-  
+
   private void buildPopupMenu(MouseEvent evt) throws AsyncFileTransferException{
     if(myPopupMenu ==  null) {
       myPopupMenu = new FileTransferPopup(myHandler);
@@ -138,15 +139,26 @@ public class FileTransferPanel extends JPanel implements iFileTransferListener{
     Point theRelativePoint = SwingUtilities.convertPoint(evt.getComponent(), evt.getX(), evt.getY(), this);
     myPopupMenu.show(this, theRelativePoint.x, theRelativePoint.y);
   }
-  
+
   public class ShowPopupMenuListener extends MouseAdapter {
     public void mouseReleased(MouseEvent evt){
+      if(evt.getButton() == MouseEvent.BUTTON3){
       try {
         buildPopupMenu(evt);
       } catch (AsyncFileTransferException e) {
         LOGGER.error("Could not show popup menu", e);
       }
+      }
+    }
+    public void mousePressed(MouseEvent evt){
+      if(evt.getButton() == MouseEvent.BUTTON1 && evt.getClickCount() >= 2){
+        try {
+          SystemTools.openFile(myHandler.getFile());
+        } catch (Exception e) {
+          LOGGER.error("An error occured while opening file", e);
+        }
+      }
     }
   }
-  
+
 }
