@@ -616,7 +616,7 @@ public class P2PFacadeTest extends TestCase {
 
       assertTrue( theFacade1.sendMessage( theMessage, Executors.newFixedThreadPool( 1 ) ).get() );
 
-      //give the system some time to detect that the peer is unreachble and collect the message int the message resender
+      //give the system some time to detect that the peer is unreachable and collect the message int the message resender
       Thread.sleep( 3000 );
 
       assertEquals( 0, theCollector.getMessages().size() );
