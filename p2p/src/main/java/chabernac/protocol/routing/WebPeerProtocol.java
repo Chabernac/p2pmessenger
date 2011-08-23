@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.log4j.Logger;
 
@@ -22,7 +21,7 @@ public class WebPeerProtocol extends Protocol{
   private static Logger LOGGER = Logger.getLogger(WebPeerProtocol.class);
   public static final String ID = "WPP";
   private static final int MAX_ERRORS = 100;
-  private static final int MAX_THREADS_PER_PEER = 2;
+  private static final int MAX_THREADS_PER_PEER = 1;
 
   public static enum Input{EVENT};
   public static enum Response{UNKNOWN_COMMAND};
@@ -117,7 +116,7 @@ public class WebPeerProtocol extends Protocol{
   private class WebPeerEventListener implements Runnable{
     private final WebPeer myWebPeer;
     private boolean stop = false;
-    private AtomicInteger myConcurrentThreads = new AtomicInteger(0);
+//    private AtomicInteger myConcurrentThreads = new AtomicInteger(0);
 
     public WebPeerEventListener(WebPeer anWebPeer) {
       super();
@@ -132,20 +131,21 @@ public class WebPeerProtocol extends Protocol{
     public void run() {
       int theErrors = 0;
       myListeners.put(myWebPeer, this);
-      boolean isDeamon = myConcurrentThreads.get() == 0;
+//      boolean isDeamon = myConcurrentThreads.get() == 0;
       try{
-        myConcurrentThreads.incrementAndGet();
-        boolean isContinue = myConcurrentThreads.get() <= MAX_THREADS_PER_PEER;
-        while(!stop && theErrors < MAX_ERRORS && (isContinue || isDeamon)){
+//        myConcurrentThreads.incrementAndGet();
+//        boolean isContinue = myConcurrentThreads.get() <= MAX_THREADS_PER_PEER;
+//        while(!stop && theErrors < MAX_ERRORS && (isContinue || isDeamon)){
+        while(!stop && theErrors < MAX_ERRORS ){
           try{
             CometEvent theEvent = myWebPeer.waitForEvent(getRoutingTable().getLocalPeerId());
-            LOGGER.debug( "Pending events '" + theEvent.getPendingEvents() + "' + threads '" + myConcurrentThreads.get() + "'" );
+//            LOGGER.debug( "Pending events '" + theEvent.getPendingEvents() + "' + threads '" + myConcurrentThreads.get() + "'" );
             
-            if(theEvent.getPendingEvents() > 0 && myConcurrentThreads.get() < MAX_THREADS_PER_PEER){
-              myWebPeerListenerService.execute( this );
-            } else if(theEvent.getPendingEvents() == 0 && myConcurrentThreads.get() > 1){
-              isContinue = false;
-            }
+//            if(theEvent.getPendingEvents() > 0 && myConcurrentThreads.get() < MAX_THREADS_PER_PEER){
+//              myWebPeerListenerService.execute( this );
+//            } else if(theEvent.getPendingEvents() == 0 && myConcurrentThreads.get() > 1){
+//              isContinue = false;
+//            }
             
             if(!theEvent.getInput().equals( CometServlet.Responses.NO_DATA.name() )){
               String theResult = handleCommand(UUID.randomUUID().toString(), Input.EVENT.name() + " " + theEvent.getInput());
@@ -168,9 +168,9 @@ public class WebPeerProtocol extends Protocol{
           }
         }
       } finally {
-        myConcurrentThreads.decrementAndGet();
+//        myConcurrentThreads.decrementAndGet();
         myListeners.remove(myWebPeer);
-        LOGGER.debug( "Concurrent webpeereventlisteners '" + myConcurrentThreads.get() + "'" );
+//        LOGGER.debug( "Concurrent webpeereventlisteners '" + myConcurrentThreads.get() + "'" );
       }
     }
   }
