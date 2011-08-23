@@ -25,7 +25,6 @@ public class PacketProtocol extends Protocol {
   public static enum Input{ PACKET, REPSONSE };
   public static enum Response{ UNREACHABLE, NOK, DELIVERED, UNKNOWN_COMMAND, MAX_HOPS_REACHED };
   
-  
   private List<iPacketListener> myPacketListeners = new ArrayList<iPacketListener>();
 
   public PacketProtocol(  ) {
@@ -72,6 +71,7 @@ public class PacketProtocol extends Protocol {
   private void processCommandForLocalPeer(String aFrom, String aTo, String anId, String aCommand, String aData){
     if(Input.PACKET.name().equalsIgnoreCase( aCommand )) {
       processPacketForLocalPeer( new Packet( aFrom, aTo, anId,  Base64.decodeBase64( aData.getBytes() )) );
+      sendResponse( aFrom, anId, Response.DELIVERED );
     } else if(Input.REPSONSE.name().equalsIgnoreCase(aCommand)){
       
       if(Response.DELIVERED.name().equalsIgnoreCase( aData )){
