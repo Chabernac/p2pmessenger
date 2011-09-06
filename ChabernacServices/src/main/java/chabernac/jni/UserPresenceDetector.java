@@ -33,7 +33,7 @@ public class UserPresenceDetector {
   public void start(){
     if(myExecutorService == null){
       myExecutorService = Executors.newScheduledThreadPool( 1 );
-      myExecutorService.scheduleAtFixedRate( new PollingThread(), 1, 1, TimeUnit.SECONDS );
+      myExecutorService.scheduleAtFixedRate( new PollingThread(), 5, 5, TimeUnit.SECONDS );
     }
   }
 
