@@ -34,15 +34,19 @@ public class ExitCommand implements Command {
       myFrame = ((JFrame)myMediator.getTitleProvider());
     }
     
+    LOGGER.error( "Showing confirm dialog "  + isCloseDirectly );
+    
     if(isCloseDirectly || JOptionPane.OK_OPTION == JOptionPane.showConfirmDialog( myFrame, "Ben je zeker dat je wilt afsluiten? Als je afsluit kan je geen berichten meer ontvangen.", "Afsluiten", JOptionPane.OK_CANCEL_OPTION)){
       try{
+        LOGGER.error( "Changing tray icon text" );
         SystemTray.getSystemTray().getTrayIcons()[0].setToolTip( "P2PClient: Bezig met afsluiten" );
         
         myFrame.setVisible( false );
         
         EventDispatcher.getInstance( SavePreferencesEvent.class ).fireEvent( new SavePreferencesEvent() );
+        LOGGER.error( "Saving" );
         ApplicationPreferences.getInstance().save();
-        
+        LOGGER.error( "Stopping facade" );
         myMediator.getP2PFacade().stop();
         
         //give some time to end sockets
@@ -50,6 +54,7 @@ public class ExitCommand implements Command {
       }catch(Throwable e){
         LOGGER.error("Could not properly exit", e);
       } finally {
+        LOGGER.error( "Exiting" );
         System.exit(0);
       }
     }

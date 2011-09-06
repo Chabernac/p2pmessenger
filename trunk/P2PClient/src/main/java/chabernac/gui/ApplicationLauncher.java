@@ -181,6 +181,8 @@ public class ApplicationLauncher {
     .setSocketReuse( true )
     .setMessageResenderActivated( true )
     .start( 256 );
+    
+    myFacade.enableAutoUserStatusDetection();
   }
 
   private static void addRun2Startup(){
