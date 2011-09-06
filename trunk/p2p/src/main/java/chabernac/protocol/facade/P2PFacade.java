@@ -57,6 +57,7 @@ import chabernac.protocol.routing.RoutingTable;
 import chabernac.protocol.routing.RoutingTableEntry;
 import chabernac.protocol.routing.SocketPeer;
 import chabernac.protocol.routing.WebPeerProtocol;
+import chabernac.protocol.userinfo.AutoUserInfoStatusDector;
 import chabernac.protocol.userinfo.UserInfo;
 import chabernac.protocol.userinfo.UserInfoProtocol;
 import chabernac.protocol.userinfo.iUserInfoListener;
@@ -104,7 +105,8 @@ public class P2PFacade {
   private URL myWebURL = null;
   private Set<String> mySupportedProtocols = null;
   private FileTransferOverviewPanel myFileTransferOverview = null; 
-  private FileTransferOverviewFrame myFileTransferOverviewFrame = null; 
+  private FileTransferOverviewFrame myFileTransferOverviewFrame = null;
+  private AutoUserInfoStatusDector myAutoUserInfoStatusDetector = null;
 
   /**
    * set the exchange delay.
@@ -173,6 +175,21 @@ public class P2PFacade {
       } catch ( ProtocolException e ) {
         throw new P2PFacadeException("An error occured while setting user info provider", e);
       }
+    }
+    return this;
+  }
+  
+  public P2PFacade enableAutoUserStatusDetection() throws P2PFacadeException{
+    if(myAutoUserInfoStatusDetector == null){
+      myAutoUserInfoStatusDetector = new AutoUserInfoStatusDector( getPersonalInfo() );
+      myAutoUserInfoStatusDetector.start();
+    }
+    return this;
+  }
+  
+  public P2PFacade disableAutoUserStatusDetection() {
+    if(myAutoUserInfoStatusDetector != null){
+      myAutoUserInfoStatusDetector.stop();
     }
     return this;
   }
