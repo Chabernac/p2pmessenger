@@ -17,6 +17,8 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
+import org.omg.CosNaming.IstringHelper;
+
 import chabernac.io.BasicSocketPool;
 import chabernac.io.CachingSocketPool;
 import chabernac.io.iSocketPool;
@@ -107,6 +109,7 @@ public class P2PFacade {
   private FileTransferOverviewPanel myFileTransferOverview = null; 
   private FileTransferOverviewFrame myFileTransferOverviewFrame = null;
   private AutoUserInfoStatusDector myAutoUserInfoStatusDetector = null;
+  private boolean isAutoUserStatusEnabled = false;
 
   /**
    * set the exchange delay.
@@ -179,10 +182,20 @@ public class P2PFacade {
     return this;
   }
   
-  public P2PFacade enableAutoUserStatusDetection() throws P2PFacadeException{
-    if(myAutoUserInfoStatusDetector == null){
-      myAutoUserInfoStatusDetector = new AutoUserInfoStatusDector( getPersonalInfo() );
-      myAutoUserInfoStatusDetector.start();
+  public P2PFacade setAutoUserStatusDetectionEnabled(boolean isAutoUserStatusEnabled) throws P2PFacadeException{
+    if(isStarted()){
+      if(isAutoUserStatusEnabled){
+        if(myAutoUserInfoStatusDetector == null){
+          myAutoUserInfoStatusDetector = new AutoUserInfoStatusDector( getPersonalInfo() );
+          myAutoUserInfoStatusDetector.start();
+        }
+      } else {
+        if(myAutoUserInfoStatusDetector != null){
+          myAutoUserInfoStatusDetector.stop();
+        } 
+      }
+    } else {
+      this.isAutoUserStatusEnabled = isAutoUserStatusEnabled;
     }
     return this;
   }
@@ -778,6 +791,8 @@ public class P2PFacade {
         myMessageResender = new FailedMessageResender( myContainer );
         myMessageResender.start();
       }
+      
+      setAutoUserStatusDetectionEnabled(isAutoUserStatusEnabled);
 
       return this;
     }catch(ProtocolException e){
