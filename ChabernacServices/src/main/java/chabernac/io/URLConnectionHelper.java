@@ -156,6 +156,12 @@ public class URLConnectionHelper {
         LOGGER.error( "Could not close outputstream", e );
       }
     }
+    
+    //only if the input stream is null we connect the url connection
+    //otherwise a deadlock might arise on waiting for the input stream
+    if(myInputStream == null){
+      ((HttpURLConnection)myConnection).disconnect();
+    }
   }
 
   public void disconnect(){
