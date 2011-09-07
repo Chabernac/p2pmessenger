@@ -4,9 +4,9 @@
  */
 package chabernac.protocol.userinfo;
 
-import chabernac.jni.UserPresenceDetector;
-import chabernac.jni.UserState;
-import chabernac.jni.iUserPresenceListener;
+import chabernac.jna.UserPresenceDetector;
+import chabernac.jna.UserState;
+import chabernac.jna.iUserPresenceListener;
 import chabernac.protocol.userinfo.UserInfo.Status;
 
 public class AutoUserInfoStatusDector {
