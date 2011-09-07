@@ -45,6 +45,7 @@ import chabernac.protocol.userinfo.UserInfoException;
 import chabernac.protocol.userinfo.iUserInfoProvider;
 import chabernac.tools.SaveMessagesToFile;
 import chabernac.utils.ArgsInterPreter;
+import chabernac.utils.EventDispatchThreadHangMonitor;
 import chabernac.utils.ServiceTools;
 
 public class ApplicationLauncher {
@@ -106,7 +107,10 @@ public class ApplicationLauncher {
 
       initSaveMessages();
       
+      EventDispatchThreadHangMonitor.initMonitoring();
+      
       loadPlugins();
+      
     }catch(Exception e){
       LOGGER.error("An error occured during boot process", e);
       System.exit(-1);
