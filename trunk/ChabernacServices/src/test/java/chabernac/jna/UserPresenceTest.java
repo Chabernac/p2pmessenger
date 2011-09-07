@@ -2,12 +2,16 @@
  * Copyright (c) 2011 Axa Holding Belgium, SA. All rights reserved.
  * This software is the confidential and proprietary information of the AXA Group.
  */
-package chabernac.jni;
+package chabernac.jna;
 
 import java.awt.AWTException;
 import java.awt.Robot;
 import java.util.ArrayList;
 import java.util.List;
+
+import chabernac.jna.UserPresenceDetector;
+import chabernac.jna.UserState;
+import chabernac.jna.iUserPresenceListener;
 
 import junit.framework.TestCase;
 
