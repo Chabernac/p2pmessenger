@@ -17,6 +17,8 @@ import javax.swing.JTabbedPane;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 
+import chabernac.command.Command;
+import chabernac.command.CommandSession;
 import chabernac.io.CachingSocketPool;
 import chabernac.io.SocketPoolPanel;
 import chabernac.io.SocketProxy;
@@ -113,6 +115,10 @@ public class RoutingFrame extends JFrame {
       theProtocolServer.setRunnableListener( theMonitorPanel );
       thePane.add("Threads", theMonitorPanel);
     }
+    
+    MonitorPanel theCommandSessionMonitor = new MonitorPanel();
+    CommandSession.getInstance().setRunnableListener( theCommandSessionMonitor );
+    thePane.add("CommandSessionMonitor", theCommandSessionMonitor);
 
     MessageProtocol theMessageProtocol = (MessageProtocol)myProtocolContainer.getProtocol( MessageProtocol.ID );
     thePane.add("Messages", new MessagePanel(theMessageProtocol));
