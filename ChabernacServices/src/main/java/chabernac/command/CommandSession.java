@@ -92,7 +92,7 @@ public class CommandSession {
         new Runnable() {
         @Override
         public void run() {
-          LOGGER.debug( "Executing command '" + aCommand.getClass() + "'" );
+          //LOGGER.debug( "Executing command '" + aCommand.getClass() + "'" );
           aCommand.execute();
           if(aCommand instanceof UndoableCommand){
             myUndoableCommands.add((UndoableCommand)aCommand);
