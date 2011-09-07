@@ -148,7 +148,6 @@ public class ReceivedMessagesField extends GPanel implements iReceivedMessagesPr
             myHTML += "</tr>";
           }
           myHTML += "</table></body></html>";
-          System.out.println(myHTML);
           myPane.setText(myHTML);
           myPane.setCaretPosition(myPane.getDocument().getLength() > 0 ? myPane.getDocument().getLength() - 1 : 0);
         }catch(P2PFacadeException e){

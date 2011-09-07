@@ -6,13 +6,11 @@ import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.GridLayout;
 import java.awt.KeyboardFocusManager;
-import java.awt.Point;
 import java.awt.Robot;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -45,6 +43,7 @@ import javax.swing.border.TitledBorder;
 import org.apache.log4j.Logger;
 
 import chabernac.gui.ApplicationLauncher;
+import chabernac.jna.WindowUtils;
 import chabernac.p2pclient.gui.action.ActionFactory;
 import chabernac.p2pclient.gui.action.CommandAction;
 import chabernac.p2pclient.settings.Settings;
@@ -129,6 +128,8 @@ public class NewMessageDialog5 extends JDialog implements iMessageDialog{
     } catch ( AWTException e ) {
       logger.error("Could not initialize robot", e);
     }
+    
+    WindowUtils.setWindowAlpha( this, 0.9f );
   }
 
 
