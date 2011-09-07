@@ -8,8 +8,13 @@ import java.util.Map;
 import java.util.Stack;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 
 import org.apache.log4j.Logger;
+
+import chabernac.util.concurrent.MonitorrableRunnable;
+import chabernac.util.concurrent.MonitorrableRunnableDelegate;
+import chabernac.util.concurrent.iRunnableListener;
 
 /**
  *
@@ -38,6 +43,8 @@ public class CommandSession {
   private Mode myMode = Mode.NORMAL;
   
   private ExecutorService myExecutorService = null;
+  
+  private iRunnableListener myRunnableListener = null;
   
   private CommandSession(){
     init();
@@ -75,9 +82,14 @@ public class CommandSession {
    }
   }
   
+  public int getActiveCount(){
+    return ((ThreadPoolExecutor)myExecutorService).getActiveCount();
+  }
+  
   public void execute(final Command aCommand) throws CommandException{
     if(inspectMode()) {
-      executeRunnable(new Runnable() {
+      Runnable theRunnable =
+        new Runnable() {
         @Override
         public void run() {
           LOGGER.debug( "Executing command '" + aCommand.getClass() + "'" );
@@ -86,7 +98,16 @@ public class CommandSession {
             myUndoableCommands.add((UndoableCommand)aCommand);
           }
         }
-      });
+      };
+      
+      if(myRunnableListener != null){
+        MonitorrableRunnableDelegate theMonitorrableRunnable = new MonitorrableRunnableDelegate(theRunnable);
+        theMonitorrableRunnable.addListener( myRunnableListener );
+        theMonitorrableRunnable.setExtraInfo( aCommand.getClass().getName() );
+        theRunnable = theMonitorrableRunnable;
+      }
+      
+      executeRunnable(theRunnable);
     }
   }
   
@@ -143,5 +164,13 @@ public class CommandSession {
 
   public void setMode( Mode anMode ) {
     myMode = anMode;
+  }
+
+  public iRunnableListener getRunnableListener() {
+    return myRunnableListener;
+  }
+
+  public void setRunnableListener( iRunnableListener aRunnableListener ) {
+    myRunnableListener = aRunnableListener;
   }
 }
