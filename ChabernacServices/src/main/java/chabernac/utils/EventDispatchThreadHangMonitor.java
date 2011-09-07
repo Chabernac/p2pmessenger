@@ -212,7 +212,6 @@ public final class EventDispatchThreadHangMonitor extends EventQueue {
     @Override
     protected void dispatchEvent(AWTEvent event) {
         try {
-          System.out.println("Dispathcing event " + event);
             preDispatchEvent();
             super.dispatchEvent(event);
         } finally {
