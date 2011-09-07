@@ -159,6 +159,11 @@ public class ChatMediator {
       return true;
     } else if(myMessageProvider.getMessage().equalsIgnoreCase( "exit" )){
       CommandSession.getInstance().execute(myActionFactory.getCommand(Action.EXIT_WITHOUT_ASKING));
+    } else if(myMessageProvider.getMessage().equalsIgnoreCase( "sleep" )){
+      try {
+        Thread.sleep( 5000 );
+      } catch ( InterruptedException e ) {
+      }
     }
     
     checkEasterEgg( myMessageProvider.getMessage() );
