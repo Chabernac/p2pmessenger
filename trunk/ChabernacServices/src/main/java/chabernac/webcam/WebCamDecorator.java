@@ -26,31 +26,34 @@ public class WebCamDecorator {
     myParentFrame = aParentFrame;
     init();
   }
-  
+
   private void init(){
-    List<VideoCaptureDevice> devices = VideoCaptureLibrary.findAllVideoCaptureDevices();
-    myCaptureDevice = devices.get(0);
-    myCaptureDevice.setFrameFlip(false);  
+    List<VideoCaptureDevice> theDevices = VideoCaptureLibrary.findAllVideoCaptureDevices();
+    if(theDevices.size() > 0){
+      myCaptureDevice = theDevices.get(0);
+      myCaptureDevice.setFrameFlip(false);
+    }
   }
-  
+
   public void start(){
+    if(myCaptureDevice == null) return;
     // int width = 640, height = 480;
     myCaptureDevice.startVideoCapture(
-                                      new HWND(Native.getComponentPointer(myParentFrame)), 
-                                      myVideoScreen.getWidth(), 
-                                      myVideoScreen.getHeight(), 
-                                      new IVideoFrameProcessor() {
-      public void onFrame(final int width, final int height, final byte[] rgb, int components){
-        SwingUtilities.invokeLater(new Runnable(){
-          public void run(){
-            myVideoScreen.setFrameSize(width, height);
-            myVideoScreen.setFrame(rgb);
+        new HWND(Native.getComponentPointer(myParentFrame)), 
+        myVideoScreen.getWidth(), 
+        myVideoScreen.getHeight(), 
+        new IVideoFrameProcessor() {
+          public void onFrame(final int width, final int height, final byte[] rgb, int components){
+            SwingUtilities.invokeLater(new Runnable(){
+              public void run(){
+                myVideoScreen.setFrameSize(width, height);
+                myVideoScreen.setFrame(rgb);
+              }
+            });
           }
         });
-      }
-    });
   }
-  
+
   public void stop(){
     myCaptureDevice.stopVideoCapture();
   }
