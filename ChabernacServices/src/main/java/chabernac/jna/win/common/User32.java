@@ -10,9 +10,9 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.  
  */
-package chabernac.jna;
+package chabernac.jna.win.common;
 
-import chabernac.jna.GDI32.RECT;
+import chabernac.jna.win.common.GDI32.RECT;
 
 import com.sun.jna.Native;
 import com.sun.jna.Pointer;

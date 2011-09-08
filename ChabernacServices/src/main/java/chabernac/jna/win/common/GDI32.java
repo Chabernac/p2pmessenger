@@ -10,11 +10,11 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
  */
-package chabernac.jna;
+package chabernac.jna.win.common;
 
 import java.awt.Rectangle;
 
-import chabernac.jna.User32.POINT;
+import chabernac.jna.win.common.User32.POINT;
 
 import com.sun.jna.Native;
 import com.sun.jna.Pointer;
