@@ -11,7 +11,7 @@ import chabernac.protocol.userinfo.UserInfo.Status;
 
 public class AutoUserInfoStatusDector {
   private final UserInfo myUserInfo;
-  private final UserPresenceDetector myDetector = new UserPresenceDetector( 60, 60 );
+  private final UserPresenceDetector myDetector = new UserPresenceDetector( 60, 60, 5 );
   private Status myLastStatus;
   
   public AutoUserInfoStatusDector( UserInfo aUserInfo ) {
