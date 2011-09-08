@@ -7,6 +7,7 @@ package chabernac.webcam;
 import java.awt.BorderLayout;
 
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.border.TitledBorder;
 
 public class WebCamPanelTest {
@@ -17,12 +18,13 @@ public class WebCamPanelTest {
   public static void main( String[] args ) {
     JFrame theFrame = new JFrame();
     theFrame.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
-    theFrame.setSize( 30, 30);
+    theFrame.setSize( 640, 480);
     theFrame.setVisible( true );
     theFrame.getContentPane().setLayout( new BorderLayout() );
-    WebCamPanel thePanel = new WebCamPanel(theFrame);
+    WebCamPanel thePanel = new WebCamPanel();
     thePanel.setBorder( new TitledBorder( "test" ) );
     theFrame.getContentPane().add( thePanel, BorderLayout.NORTH );
+    theFrame.getContentPane().add( new JLabel("test"), BorderLayout.SOUTH );
     theFrame.pack();
     thePanel.start();
   }
