@@ -4,15 +4,14 @@
  */
 package chabernac.webcam;
 
-import java.awt.Frame;
 
 public class WebCamPanel extends JVideoScreen {
   private static final long serialVersionUID = -7757405759734484204L;
   private final WebCamDecorator myWebCamDecorator;
   
-  public WebCamPanel(Frame aParentFrame){
+  public WebCamPanel(){
     super(true);
-    myWebCamDecorator = new WebCamDecorator( this, aParentFrame );
+    myWebCamDecorator = new WebCamDecorator( this );
   }
   
   public void start(){
