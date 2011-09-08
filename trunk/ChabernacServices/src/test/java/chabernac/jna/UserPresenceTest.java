@@ -22,7 +22,7 @@ public class UserPresenceTest extends TestCase {
     //to mouse move to make sure a user event was triggered
     theRobot.mouseMove( 100, 100 );
     
-    UserPresenceDetector theDetector = new UserPresenceDetector( 5, 10 );
+    UserPresenceDetector theDetector = new UserPresenceDetector( 5, 10, 1 );
     UserPresenceListener theListener = new UserPresenceListener();
     theDetector.addListener( theListener );
     theDetector.start();

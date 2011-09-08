@@ -10,7 +10,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.  
  */
-package chabernac.jna;
+package chabernac.jna.unix.common;
 
 import com.sun.jna.Library;
 import com.sun.jna.Native;

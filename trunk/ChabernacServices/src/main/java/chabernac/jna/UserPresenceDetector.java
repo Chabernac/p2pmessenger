@@ -13,13 +13,15 @@ import java.util.concurrent.TimeUnit;
 public class UserPresenceDetector {
   private List<iUserPresenceListener> myListeners = new ArrayList<iUserPresenceListener>();
   private ScheduledExecutorService myExecutorService = null;
-  private int myIdleTimeout;
-  private int myAwayTimeout;
+  private int myIdleTimeoutInSeconds;
+  private int myAwayTimeoutInSeconds;
+  private int myRefreshTimeInSeconds;
 
 
-  public UserPresenceDetector(int anIdleTimeout, int anAwayTimeout){
-    myIdleTimeout = anIdleTimeout;
-    myAwayTimeout= anAwayTimeout;
+  public UserPresenceDetector(int anIdleTimeoutInSeconds, int anAwayTimeoutInSeconds, int aRefreshTimeInSeconds){
+    myIdleTimeoutInSeconds = anIdleTimeoutInSeconds;
+    myAwayTimeoutInSeconds= anAwayTimeoutInSeconds;
+    myRefreshTimeInSeconds = aRefreshTimeInSeconds;
   }
 
   public void addListener(iUserPresenceListener aListener){
@@ -33,7 +35,7 @@ public class UserPresenceDetector {
   public void start(){
     if(myExecutorService == null){
       myExecutorService = Executors.newScheduledThreadPool( 1 );
-      myExecutorService.scheduleAtFixedRate( new PollingThread(), 5, 5, TimeUnit.SECONDS );
+      myExecutorService.scheduleAtFixedRate( new PollingThread(), myRefreshTimeInSeconds, myRefreshTimeInSeconds, TimeUnit.SECONDS );
     }
   }
 
@@ -46,8 +48,8 @@ public class UserPresenceDetector {
     int idleSec = Win32IdleTime.getIdleTimeMillisWin32() / 1000;
 
     UserState theUserState =
-      idleSec < myIdleTimeout ? UserState.ONLINE :
-        idleSec > myAwayTimeout ? UserState.AWAY : UserState.IDLE;
+      idleSec < myIdleTimeoutInSeconds ? UserState.ONLINE :
+        idleSec > myAwayTimeoutInSeconds ? UserState.AWAY : UserState.IDLE;
         return theUserState;
   }
 
