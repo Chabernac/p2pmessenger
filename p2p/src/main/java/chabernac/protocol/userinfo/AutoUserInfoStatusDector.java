@@ -22,7 +22,7 @@ public class AutoUserInfoStatusDector {
   }
 
   public void start(){
-    myDetector.start();
+  myDetector.start();
   }
   
   public void stop(){
@@ -37,7 +37,11 @@ public class AutoUserInfoStatusDector {
         myLastStatus = myUserInfo.getStatus();
         myUserInfo.setStatus( Status.AWAY );
       } else {
-        myUserInfo.setStatus( myLastStatus );
+        if(myLastStatus == Status.AWAY){
+          myUserInfo.setStatus( Status.ONLINE );
+        } else {
+          myUserInfo.setStatus( myLastStatus );
+        }
       }
     }
   }
