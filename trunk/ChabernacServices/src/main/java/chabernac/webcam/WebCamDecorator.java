@@ -14,12 +14,14 @@ import com.smaxe.os.jna.win32.support.IVideoFrameProcessor;
 import com.smaxe.os.jna.win32.support.VideoCaptureDevice;
 import com.smaxe.os.jna.win32.support.VideoCaptureLibrary;
 import com.sun.jna.Native;
+import com.sun.jna.Pointer;
 import com.sun.jna.platform.win32.W32API.HWND;
 
 public class WebCamDecorator {
   private final JVideoScreen myVideoScreen;
   private VideoCaptureDevice myCaptureDevice;
   private int myCounter = 0;
+  private Pointer myFramePointer = null;
 
   public WebCamDecorator( JVideoScreen aVideoScreen ) {
     super();
@@ -33,39 +35,35 @@ public class WebCamDecorator {
       myCaptureDevice = theDevices.get(0);
       myCaptureDevice.setFrameFlip(false);
     }
-  }
-
-  public void start(){
-    if(myCaptureDevice == null) return;
-    // int width = 640, height = 480;
     
     JFrame theTestFrame = new JFrame();
     theTestFrame.setUndecorated( true );
     theTestFrame.setSize( 0, 0 );
     theTestFrame.setVisible( true );
     
+    myFramePointer = Native.getComponentPointer(theTestFrame);
+    
+    theTestFrame.setVisible(false);
+  }
+
+  public void start(){
+    if(myCaptureDevice == null) return;
+    
     myCaptureDevice.startVideoCapture(
-        new HWND(Native.getComponentPointer(theTestFrame)), 
+        new HWND(myFramePointer), 
         myVideoScreen.getWidth(), 
         myVideoScreen.getHeight(), 
         new IVideoFrameProcessor() {
           public void onFrame(final int width, final int height, final byte[] rgb, int components){
             SwingUtilities.invokeLater(new Runnable(){
               public void run(){
-//                if(!isCaptured){
-//                System.out.println(rgb.length + " bytes");
                 myVideoScreen.setFrameSize(width, height);
                 myVideoScreen.setFrame(rgb);
-                //take one snap and then stop
-//                stop();
-//                }
-//                isCaptured = true;
               }
             });
           }
         });
     
-    theTestFrame.setVisible( false );
   }
 
   public void stop(){
