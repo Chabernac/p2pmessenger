@@ -17,11 +17,11 @@ import java.util.concurrent.Executors;
 
 import org.apache.log4j.Logger;
 
-import sun.security.krb5.internal.APOptions;
+import chabernac.thread.DynamicSizeExecutor;
 
 public class PluginActivator {
   private static Logger LOGGER = Logger.getLogger(PluginActivator.class);
-  private static Executor PLUGIN_LOADER = Executors.newFixedThreadPool(20); 
+  private static Executor PLUGIN_LOADER = DynamicSizeExecutor.getSmallInstance(); 
 
   public static void loadAll(boolean isWaitUntillLoaded){
     loadPluginsFromManifeset( isWaitUntillLoaded );

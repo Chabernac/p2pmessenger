@@ -19,7 +19,7 @@ public class PluginRegistry {
 	private static Logger LOGGER = Logger.getLogger(PluginRegistry.class);
 	private Set<Item> myPlugins= null;
   private Set<iPluginRegistryListener> myListeners = Collections.synchronizedSet( new HashSet<iPluginRegistryListener>() );
-  private ExecutorService myListenerThread = Executors.newFixedThreadPool( 1 );
+  private ExecutorService myListenerThread = Executors.newSingleThreadExecutor();
 	
 	private static class InstanceHolder{
 		public static PluginRegistry INSTANCE = new PluginRegistry();
