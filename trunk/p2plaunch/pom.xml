@@ -89,7 +89,7 @@
 		<repository>
 			<id>bzb releases</id>
 			<name>BZB Repository</name>
-			<url>http://p2pmessenger.googlecode.com/svn/maven-repo/</url>
+			<url>http://p2pmessenger.googlecode.com/svn/maven-repository/</url>
 			<releases>
 				<enabled>true</enabled>
 			</releases>
