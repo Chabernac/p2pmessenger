@@ -26,6 +26,7 @@ import chabernac.protocol.list.ListProtocol;
 import chabernac.protocol.message.AsyncMessageProcotol;
 import chabernac.protocol.message.MessageProtocol;
 import chabernac.protocol.message.MultiPeerMessageProtocol;
+import chabernac.protocol.packet.PacketProtocol;
 import chabernac.protocol.ping.PingProtocol;
 import chabernac.protocol.pipe.PipeProtocol;
 import chabernac.protocol.routing.RoutingProtocol;
@@ -156,6 +157,10 @@ public class ProtocolFactory implements iProtocolFactory{
         theProtocol.setFileHandler( (iAsyncFileTransferHandler )myProtocolProperties.getProperty( "chabernac.protocol.filetransfer.iAsyncFileTransferHandler", null ));
       }
       return theProtocol;
+    }
+    
+    if(PacketProtocol.ID.equalsIgnoreCase( aProtocolId )) {
+      return new PacketProtocol();
     }
 
     throw new ProtocolException("The protocol with id '" + aProtocolId + "' is not known");
