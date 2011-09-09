@@ -15,7 +15,7 @@ import org.apache.log4j.Logger;
 
 import chabernac.protocol.packet.Packet;
 import chabernac.protocol.packet.PacketProtocol;
-import chabernac.protocol.packet.iPacketListener;
+import chabernac.protocol.packet.PacketProtocolException;
 import chabernac.protocol.packet.iPacketProtocol;
 import chabernac.webcam.JPGWebCamCapture;
 
@@ -44,6 +44,11 @@ public class CamProtocol implements iPacketProtocol {
     return ID;
   }
   
+  public void requestCapture(String aPeerId) throws PacketProtocolException{
+    Packet theCapturePacket = new Packet( aPeerId, ID, Command.CAPTURE.name(), 5, false );
+    myPacketProtocol.sendPacket( theCapturePacket );
+  }
+  
 
   @Override
   public void handlePacket( Packet aPacket ) {
@@ -65,28 +70,7 @@ public class CamProtocol implements iPacketProtocol {
     
   }
   
-  
-  private class PacketListener implements iPacketListener {
-
-    @Override
-    public void packetDelivered( String aPacketId ) {
-
-    }
-
-    @Override
-    public void packetDeliveryFailed( String aPacketId ) {
-      // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void packetReceived( Packet aPacket ) {
-      // TODO Auto-generated method stub
-
-    }
+  public void addCamListener(iCamListener aListener){
+    myCamListeners.add(aListener);
   }
-
-
-
-
 }
