@@ -4,6 +4,8 @@ import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Transparency;
 import java.awt.color.ColorSpace;
+import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.ComponentColorModel;
@@ -21,6 +23,7 @@ import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageWriteParam;
 import javax.imageio.ImageWriter;
+import javax.imageio.stream.MemoryCacheImageOutputStream;
 import javax.swing.JFrame;
 
 import com.smaxe.os.jna.win32.support.IVideoFrameProcessor;
@@ -45,6 +48,7 @@ public class JPGWebCamCapture {
   private Pointer myFramePointer;
   private Dimension myDimension;
   private float myQuality;
+  private boolean isFlip = true;
   
   private SampleModel mySampleModel = null;
   
@@ -102,12 +106,17 @@ public class JPGWebCamCapture {
             myDimension.width * myDimension.height * 3, 0), ZERO_POINT),
             false, null);
     
+    if(isFlip){
+      theBufferedImage = flip( theBufferedImage );
+    }
+    
     IIOImage outputImage = new IIOImage(theBufferedImage, null, null);
 
     ByteArrayOutputStream theByteArrayOutputStream = new ByteArrayOutputStream();
+    MemoryCacheImageOutputStream theOutput = new MemoryCacheImageOutputStream( theByteArrayOutputStream );
     
     ImageWriter writer = ImageIO.getImageWritersByFormatName("jpeg").next();        
-    writer.setOutput(theByteArrayOutputStream);
+    writer.setOutput(theOutput);
     ImageWriteParam writeParam = writer.getDefaultWriteParam();
     writeParam.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
     writeParam.setCompressionQuality(myQuality); // float between 0 and 1, 1 for max quality.
@@ -124,16 +133,7 @@ public class JPGWebCamCapture {
         new HWND(myFramePointer), 
         myDimension.width, 
         myDimension.height, 
-        new IVideoFrameProcessor() {
-          public void onFrame(final int width, final int height, final byte[] rgb, int components){
-            try {
-              theJPGQueue.add(createJPG(rgb, width, height));
-            } catch (IOException e) {
-              theJPGQueue.add(new byte[0]);
-            }
-            myCaptureDevice.stopVideoCapture();
-          }
-        });
+        new VideoFrameProcessor( theJPGQueue ));
 
     byte[] theBytes;
     try {
@@ -145,5 +145,47 @@ public class JPGWebCamCapture {
     if(theBytes.length == 0) throw new WCException("Could not capture image");
     
     return theBytes;
+  }
+  
+  public BufferedImage flip(BufferedImage anImage){
+    AffineTransform tx = AffineTransform.getScaleInstance(1, -1);
+    tx.translate(0, -anImage.getHeight(null));
+    AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
+    return op.filter(anImage, null);
+  }
+  
+  public boolean isFlip() {
+    return isFlip;
+  }
+
+  public void setFlip( boolean aFlip ) {
+    isFlip = aFlip;
+  }
+
+
+
+  private class VideoFrameProcessor implements IVideoFrameProcessor{
+    private int myCounter = 0;
+    private final ArrayBlockingQueue<byte[]> myQueue;
+    
+    public VideoFrameProcessor( ArrayBlockingQueue<byte[]> aQueue ) {
+      super();
+      myQueue = aQueue;
+    }
+
+    @Override
+    public void onFrame( int width, int height, byte[] rgb, int aArg3 ) {
+      //the first frame is black
+      if(++myCounter == 2){
+        try {
+          myQueue.add(createJPG(rgb, width, height));
+        } catch (IOException e) {
+          myQueue.add(new byte[0]);
+        }
+        myCaptureDevice.stopVideoCapture();
+      }
+      
+    }
+    
   }
 }
