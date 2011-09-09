@@ -135,7 +135,12 @@ public class JPGWebCamCapture {
           }
         });
 
-    byte[] theBytes = theJPGQueue.poll();
+    byte[] theBytes;
+    try {
+      theBytes = theJPGQueue.take();
+    } catch ( InterruptedException e ) {
+      throw new WCException("Could not wait for image bytes", e);
+    }
     
     if(theBytes.length == 0) throw new WCException("Could not capture image");
     
