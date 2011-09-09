@@ -17,8 +17,6 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
-import org.omg.CosNaming.IstringHelper;
-
 import chabernac.io.BasicSocketPool;
 import chabernac.io.CachingSocketPool;
 import chabernac.io.iSocketPool;
@@ -38,6 +36,8 @@ import chabernac.protocol.asyncfiletransfer.FileTransferOverviewFrame;
 import chabernac.protocol.asyncfiletransfer.FileTransferOverviewPanel;
 import chabernac.protocol.asyncfiletransfer.iAsyncFileTransferHandler;
 import chabernac.protocol.asyncfiletransfer.iTransferController;
+import chabernac.protocol.cam.CamProtocol;
+import chabernac.protocol.cam.iCamListener;
 import chabernac.protocol.filetransfer.FileTransferProtocol;
 import chabernac.protocol.filetransfer.iFileHandler;
 import chabernac.protocol.infoexchange.InfoExchangeProtocol;
@@ -50,6 +50,8 @@ import chabernac.protocol.message.MultiPeerMessage;
 import chabernac.protocol.message.MultiPeerMessageProtocol;
 import chabernac.protocol.message.iDeliverReportListener;
 import chabernac.protocol.message.iMultiPeerMessageListener;
+import chabernac.protocol.packet.PacketProtocol;
+import chabernac.protocol.packet.PacketProtocolException;
 import chabernac.protocol.pipe.IPipeListener;
 import chabernac.protocol.pipe.Pipe;
 import chabernac.protocol.pipe.PipeProtocol;
@@ -110,6 +112,7 @@ public class P2PFacade {
   private FileTransferOverviewFrame myFileTransferOverviewFrame = null;
   private AutoUserInfoStatusDector myAutoUserInfoStatusDetector = null;
   private boolean isAutoUserStatusEnabled = false;
+  private CamProtocol myCamProtocol = null;
 
   /**
    * set the exchange delay.
@@ -731,6 +734,18 @@ public class P2PFacade {
 
     myWebURL = aWebURL;
     return this;
+  }
+  
+  public void startWebCam() throws ProtocolException{
+    myCamProtocol = new CamProtocol( (PacketProtocol)myContainer.getProtocol( PacketProtocol.ID ) );
+  }
+  
+  public void setCamListener(iCamListener aListener){
+    myCamProtocol.addCamListener( aListener );
+  }
+  
+  public void requestCapture(String aPeerId) throws PacketProtocolException{
+    myCamProtocol.requestCapture( aPeerId );
   }
   
   public P2PFacade addSupportedProtocol(String aProtocol) throws P2PFacadeException{
