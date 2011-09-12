@@ -59,10 +59,8 @@ public class JPGWebCamCapture {
     }; // BAND_OFFSETS.length represents # of bands
 
 
-  public JPGWebCamCapture(int aWidth, int aHeight, float aQuality){
+  public JPGWebCamCapture(){
     init();
-    setDimensions(new Dimension(aWidth, aHeight));
-    myQuality = aQuality;
   }
   
   private void createSampleModel(){
@@ -124,8 +122,12 @@ public class JPGWebCamCapture {
     return theByteArrayOutputStream.toByteArray();
   }
 
-  public synchronized byte[] capture() throws WCException{
+  public synchronized byte[] capture(int aWidth, int aHeight, float aQuality) throws WCException{
     if(myCaptureDevice == null) throw new WCException("No capture device");
+    
+    setDimensions( new Dimension(aWidth, aHeight) );
+    myQuality = aQuality;
+    
     
     final ArrayBlockingQueue<byte[]> theJPGQueue = new ArrayBlockingQueue<byte[]>(1);
 
@@ -184,8 +186,10 @@ public class JPGWebCamCapture {
         }
         myCaptureDevice.stopVideoCapture();
       }
-      
     }
-    
+  }
+  
+  public void stop(){
+    myCaptureDevice.stopVideoCapture();
   }
 }
