@@ -4,6 +4,7 @@
  */
 package chabernac.protocol.cam;
 
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 
@@ -16,11 +17,16 @@ public class CamPanel extends JPanel implements iCamListener {
   @Override
   public void imageReceived( BufferedImage anImage ) {
     myImage = anImage;
+    setPreferredSize( new Dimension( anImage.getWidth(), anImage.getHeight() ) );
     repaint();
   }
   
   public void paint(Graphics g){
     g.drawImage( myImage, 0, 0, null);
+  }
+  
+  public int getPreferredWidth(){
+    return myImage.getWidth();
   }
 
 }
