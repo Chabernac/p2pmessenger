@@ -21,6 +21,7 @@ import chabernac.command.AbstractCommand;
 import chabernac.gui.CommandMenuItem;
 import chabernac.gui.GPanelPopupMenu;
 import chabernac.gui.SavedFrame.MyComponentListener;
+import chabernac.preference.ApplicationPreferences;
 import chabernac.protocol.cam.CamFrame;
 import chabernac.protocol.facade.P2PFacadeException;
 import chabernac.protocol.userinfo.UserInfo.Status;
@@ -66,8 +67,9 @@ public class UserListPanelPopup extends GPanelPopupMenu {
     add(new CommandMenuItem(new SearchPeersCommand()));
     addSeparator();
     add(new CommandMenuItem(new LockUserSelectionCommand()));
-    add(new CommandMenuItem(new CaptureCommand()));
-
+    if("true".equalsIgnoreCase( ApplicationPreferences.getInstance().getProperty( "snap.enabled" ))){
+      add(new CommandMenuItem(new CaptureCommand()));
+    }
   }
 
   private void buildGroups(){
@@ -247,21 +249,23 @@ public class UserListPanelPopup extends GPanelPopupMenu {
 
     @Override
     public boolean isEnabled() {
-      return getSelectedComponent() instanceof StatusCheckBox;
+      return true;
     }
 
     @Override
     public void execute() {
+      if(!(getSelectedComponent() instanceof StatusCheckBox)) return;
       try{
         if(myCamFrame == null) {
-          myCamFrame = new CamFrame();
+          myCamFrame = new CamFrame(myMediator.getP2PFacade() );
           myMediator.getP2PFacade().setCamListener( myCamFrame );
         }
-        myCamFrame.setVisible( true );
+        
 
         StatusCheckBox theStatusCheckBox = (StatusCheckBox)getSelectedComponent();
         String theUser = myPanel.getUserForCheckBox( theStatusCheckBox );
-        myMediator.getP2PFacade().requestCapture(theUser, 320, 240, 0.6f);
+        myCamFrame.setUserId( theUser );
+        myCamFrame.setVisible( true );
       }catch(P2PFacadeException e){
         logger.error("Error occured while capturing", e);
       }
