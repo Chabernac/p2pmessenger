@@ -13,39 +13,28 @@ import javax.imageio.ImageIO;
 
 import org.apache.log4j.Logger;
 
+import chabernac.protocol.packet.AbstractPacketProtocol;
 import chabernac.protocol.packet.Packet;
-import chabernac.protocol.packet.PacketProtocol;
 import chabernac.protocol.packet.PacketProtocolException;
-import chabernac.protocol.packet.iPacketProtocol;
 import chabernac.webcam.JPGWebCamCapture;
 
-public class CamProtocol implements iPacketProtocol {
+public class CamProtocol extends AbstractPacketProtocol {
   private static Logger LOGGER = Logger.getLogger( CamProtocol.class );
 
   public static String ID = "CAM";
-  private final PacketProtocol myPacketProtocol;
-  private JPGWebCamCapture myCapture = new JPGWebCamCapture( 320, 240, 0.5f);
+  private JPGWebCamCapture myCapture = new JPGWebCamCapture();
   
   private List<iCamListener> myCamListeners = new ArrayList<iCamListener>();
   
   private static enum Command {CAPTURE};
   
-  public CamProtocol( PacketProtocol aPacketProtocol ) {
-    myPacketProtocol = aPacketProtocol;
-    init();
-  }
-  
-  private void init(){
-    myPacketProtocol.addPacketProtocol( this );
-  }
-
   @Override
   public String getId() {
     return ID;
   }
   
-  public void requestCapture(String aPeerId) throws PacketProtocolException{
-    Packet theCapturePacket = new Packet( aPeerId, ID, Command.CAPTURE.name(), 5, false );
+  public void requestCapture(String aPeerId, int aWidth, int aHeight, float aQuality) throws PacketProtocolException{
+    Packet theCapturePacket = new Packet( aPeerId, ID, Command.CAPTURE.name() + ";" + aWidth + ";" + aHeight + ";" + aQuality, 5, false );
     myPacketProtocol.sendPacket( theCapturePacket );
   }
   
@@ -53,8 +42,12 @@ public class CamProtocol implements iPacketProtocol {
   @Override
   public void handlePacket( Packet aPacket ) {
     try{
-    if(aPacket.getBytesAsString().equalsIgnoreCase( Command.CAPTURE.name() )){
-      byte[] theBytes = myCapture.capture();
+    if(aPacket.getBytesAsString().startsWith( Command.CAPTURE.name() )){
+      String[] theParams = aPacket.getBytesAsString().split( ";" );
+      int theWidth = Integer.parseInt(theParams[1]);
+      int theHeight= Integer.parseInt(theParams[2]);
+      float theQuality = Float.parseFloat(theParams[3]);
+      byte[] theBytes = myCapture.capture(theWidth, theHeight, theQuality);
       Packet theCapturePacket = new Packet( aPacket.getFrom(), ID, theBytes, 5, false );
       myPacketProtocol.sendPacket( theCapturePacket );
     } else {
@@ -67,10 +60,14 @@ public class CamProtocol implements iPacketProtocol {
     }catch(Exception e){
       LOGGER.error("Error occured while handling packet", e);
     }
-    
   }
   
   public void addCamListener(iCamListener aListener){
     myCamListeners.add(aListener);
+  }
+
+  @Override
+  public void stop() {
+    myCapture.stop();
   }
 }

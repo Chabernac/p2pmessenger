@@ -10,8 +10,8 @@ public class PacketStringConverter implements iObjectStringConverter<Packet> {
 
   @Override
   public Packet getObject( String aString ) {
-    String[] theParts= aString.split( ";" );
-    return new Packet( theParts[0], theParts[1], theParts[2], theParts[3], Integer.parseInt(theParts[4]), Boolean.parseBoolean( theParts[5] ));
+    String[] theParts = aString.split( "(?<!\\\\);" );
+    return new Packet( theParts[0], theParts[1], theParts[2], theParts[3].replace( "\\;", ";"), Integer.parseInt(theParts[4]), Boolean.parseBoolean( theParts[5] ));
   }
 
   @Override
@@ -23,7 +23,7 @@ public class PacketStringConverter implements iObjectStringConverter<Packet> {
     theBuilder.append(";");
     theBuilder.append(aPacket.getId());
     theBuilder.append(";");
-    theBuilder.append(aPacket.getBytesAsString());
+    theBuilder.append(aPacket.getBytesAsString().replaceAll( ";", "\\\\;"));
     theBuilder.append(";");
     theBuilder.append(aPacket.getHopDistance());
     theBuilder.append(";");
