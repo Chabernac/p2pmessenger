@@ -18,8 +18,8 @@ public class JPGWebCamCaptureTest {
    * @throws IOException 
    */
   public static void main(String[] args) throws WCException, IOException {
-    JPGWebCamCapture theCamCaputure = new JPGWebCamCapture(320, 240, 0.5f);
-    byte[] theJPG = theCamCaputure.capture();
+    JPGWebCamCapture theCamCaputure = new JPGWebCamCapture();
+    byte[] theJPG = theCamCaputure.capture(320, 240, 0.5f);
     
     System.out.println("bytes: " + theJPG.length);
     
