@@ -188,8 +188,6 @@ public class PacketProtocolTest extends AbstractProtocolTest {
 
       assertEquals( 2, theRoutingTableEntry.getHopDistance() );
       
-      
-
       PacketListener theSenderListener = new PacketListener();
       PacketListener theReceiverListener = new PacketListener();
       
