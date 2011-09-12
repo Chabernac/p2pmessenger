@@ -6,7 +6,6 @@ package chabernac.protocol.cam;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.HeadlessException;
@@ -23,7 +22,7 @@ import chabernac.gui.CommandButton;
 import chabernac.protocol.facade.P2PFacade;
 import chabernac.protocol.facade.P2PFacadeException;
 
-public class CamFrame extends JFrame implements iCamListener{
+public class CamFrame extends JFrame {
   private static final long serialVersionUID = 7244851544793739106L;
   private BufferedImage myImage = null;
   
@@ -61,8 +60,9 @@ public class CamFrame extends JFrame implements iCamListener{
   
   private void buildGUI(){
     getContentPane().setLayout( new BorderLayout() );
+    getContentPane().add( buildControlPanel(), BorderLayout.NORTH );
+    myQualitySlider.setMinorTickSpacing( 5 );
     getContentPane().add( myCamPanel, BorderLayout.CENTER );
-    getContentPane().add( buildControlPanel(), BorderLayout.SOUTH );
   }
 
   private Component buildControlPanel() {
@@ -79,6 +79,7 @@ public class CamFrame extends JFrame implements iCamListener{
     theControlPanel.add( myLarge );
     
     theCons.weightx = 1;
+    theCons.fill = GridBagConstraints.HORIZONTAL;
     theCons.gridx++;
     theControlPanel.add(myQualitySlider);
     
@@ -87,18 +88,6 @@ public class CamFrame extends JFrame implements iCamListener{
     theControlPanel.add(new CommandButton( new SnapShotCommand() ));
     
     return theControlPanel;
-  }
-
-  @Override
-  public void imageReceived( BufferedImage anImage ) {
-    myImage = anImage;
-//    setSize( anImage.getWidth(), anImage.getHeight() );
-    setSize( 50, 50 );
-    repaint();
-  }
-  
-  public void paint(Graphics g){
-    g.drawImage( myImage, 0, 0, null );
   }
   
   private int getSnapWidth(){
