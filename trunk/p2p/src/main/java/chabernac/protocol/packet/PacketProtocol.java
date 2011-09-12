@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
 
 import chabernac.protocol.Protocol;
 import chabernac.protocol.ProtocolException;
+import chabernac.protocol.ProtocolFactory;
 import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.RoutingTable;
 import chabernac.protocol.routing.RoutingTableEntry;
@@ -30,7 +31,7 @@ public class PacketProtocol extends Protocol {
   private PacketStringConverter myConverter = new PacketStringConverter();
   private List<iPacketListener> myPacketListeners = new ArrayList<iPacketListener>();
   
-  private List<iPacketProtocol> myPacketProtocols = new ArrayList<iPacketProtocol>();
+  private PacketProtocolFactory myProtocolFactory = new PacketProtocolFactory(this);
 
   public PacketProtocol(  ) {
     super( ID );
@@ -55,10 +56,11 @@ public class PacketProtocol extends Protocol {
       theListener.packetReceived( aPacket );
     }
     
-    for(iPacketProtocol theProtocol : myPacketProtocols){
-      if(theProtocol.getId().equalsIgnoreCase( aPacket.getId() )){
-        theProtocol.handlePacket( aPacket );
-      }
+    try {
+      AbstractPacketProtocol thePacketProtocol = myProtocolFactory.getProtocol( aPacket.getId() );
+      thePacketProtocol.handlePacket( aPacket );
+    } catch ( PacketProtocolException e ) {
+      LOGGER.error("Could not process packet ", e);
     }
   }
 
@@ -139,6 +141,9 @@ public class PacketProtocol extends Protocol {
 
   @Override
   public void stop() {
+    for(AbstractPacketProtocol theProtocol : myProtocolFactory.getPacketProtocols()){
+      theProtocol.stop();
+    }
   }
 
   public void addPacketListenr(iPacketListener aPacketListener){
@@ -149,8 +154,7 @@ public class PacketProtocol extends Protocol {
     myPacketListeners.remove( aPacketListener );
   }
   
-  public void addPacketProtocol(iPacketProtocol aPacketProtocol){
-    myPacketProtocols.add(aPacketProtocol);
+  public PacketProtocolFactory getPacketProtocolFactory(){
+    return myProtocolFactory;
   }
-
 }

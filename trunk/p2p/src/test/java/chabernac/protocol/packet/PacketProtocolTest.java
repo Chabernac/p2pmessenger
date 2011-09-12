@@ -48,6 +48,7 @@ public class PacketProtocolTest extends AbstractProtocolTest {
     PacketProtocol thePacketProtocol1 = (PacketProtocol)theProtocol1.getProtocol( PacketProtocol.ID );
 
     RoutingProtocol theRoutingProtocol2 = (RoutingProtocol)theProtocol2.getProtocol( RoutingProtocol.ID );
+    RoutingTable theRoutingTable2 = theRoutingProtocol2.getRoutingTable();
     PacketProtocol thePacketProtocol2 = (PacketProtocol)theProtocol2.getProtocol( PacketProtocol.ID );
 
     try{
@@ -56,9 +57,13 @@ public class PacketProtocolTest extends AbstractProtocolTest {
 
       theRoutingProtocol1.scanLocalSystem();
       theRoutingProtocol2.scanLocalSystem();
-
+      
       //scanning the local system might take a small time
       Thread.sleep( SLEEP_AFTER_SCAN );
+      
+      assertTrue( theRoutingTable1.containsEntryForPeer( "2" ) );
+      assertTrue( theRoutingTable2.containsEntryForPeer( "1" ) );
+
       
       PacketListener theSenderListener = new PacketListener();
       PacketListener theReceiverListener = new PacketListener();

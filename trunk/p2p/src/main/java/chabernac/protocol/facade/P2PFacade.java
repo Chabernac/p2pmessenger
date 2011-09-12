@@ -112,7 +112,6 @@ public class P2PFacade {
   private FileTransferOverviewFrame myFileTransferOverviewFrame = null;
   private AutoUserInfoStatusDector myAutoUserInfoStatusDetector = null;
   private boolean isAutoUserStatusEnabled = false;
-  private CamProtocol myCamProtocol = null;
 
   /**
    * set the exchange delay.
@@ -184,7 +183,7 @@ public class P2PFacade {
     }
     return this;
   }
-  
+
   public P2PFacade setAutoUserStatusDetectionEnabled(boolean isAutoUserStatusEnabled) throws P2PFacadeException{
     if(isStarted()){
       if(isAutoUserStatusEnabled){
@@ -202,7 +201,7 @@ public class P2PFacade {
     }
     return this;
   }
-  
+
   public P2PFacade disableAutoUserStatusDetection() {
     if(myAutoUserInfoStatusDetector != null){
       myAutoUserInfoStatusDetector.stop();
@@ -229,7 +228,7 @@ public class P2PFacade {
       throw new P2PFacadeException("An error occured while sending file", e);
     }
   }
-  
+
   public FileTransferHandler sendFileAsync(File aFile, String aPeerId) throws P2PFacadeException{
     if(!isStarted()) throw new P2PFacadeException("Can not execute this action when the server is not started");
     try {
@@ -250,7 +249,7 @@ public class P2PFacade {
     }
     return this;
   }
-  
+
   public P2PFacade setAsyncFileHandler(iAsyncFileTransferHandler aFileHandler) throws P2PFacadeException{
     myProperties.setProperty( "chabernac.protocol.filetransfer.iAsyncFileTransferHandler", aFileHandler );
     if(isStarted()){
@@ -262,7 +261,7 @@ public class P2PFacade {
     }
     return this;
   }
-  
+
   public iTransferController getAsyncFileTransferController() throws P2PFacadeException{
     if(!isStarted()) throw new P2PFacadeException("Can not execute this action when the server is not started");
     try {
@@ -271,17 +270,17 @@ public class P2PFacade {
       throw new P2PFacadeException("An error occured while sending file", e);
     }
   }
-  
+
   public FileTransferOverviewPanel getFileTransferOverview() throws P2PFacadeException{
     if(!isStarted()) throw new P2PFacadeException("Can not execute this action when the server is not started");
-    
+
     if(myFileTransferOverview == null) {
       myFileTransferOverview = new FileTransferOverviewPanel( getAsyncFileTransferController() );
     }
-    
+
     return myFileTransferOverview;
   }
-  
+
   public void showFileTransferOverView() throws P2PFacadeException{
     if(!isStarted()) throw new P2PFacadeException("Can not execute this action when the server is not started");
     if(myFileTransferOverviewFrame == null){
@@ -627,10 +626,10 @@ public class P2PFacade {
         myMessageResender = null;
       }
     }
-    
+
     return this;
   }
-  
+
   public FailedMessageResender getFailedMessageResender(){
     return myMessageResender;
   }
@@ -706,21 +705,21 @@ public class P2PFacade {
       throw new P2PFacadeException("Could not force start protocol '" + aProtocolId + "'", e);
     }
   }
-  
+
   public P2PFacade setWebNode(boolean anIsWebNode) throws P2PFacadeException {
     if(isStarted()) throw new P2PFacadeException("Can not set this property whern the server has been started");
     isWebNode = anIsWebNode;
     return this;
   }
-  
+
   public P2PFacade setWebPort( int aWebPort ) throws P2PFacadeException {
     if(isStarted()) throw new P2PFacadeException("Can not set this property whern the server has been started");
     if(!isWebNode)  throw new P2PFacadeException("Can only set this property on a webnode");
     myWebPort = aWebPort;
     return this;
   }
-  
-  
+
+
   public P2PFacade setAJPPort( Integer aAJPPort ) throws P2PFacadeException {
     if(isStarted()) throw new P2PFacadeException("Can not set this property whern the server has been started");
     if(!isWebNode)  throw new P2PFacadeException("Can only set this property on a webnode");
@@ -736,18 +735,29 @@ public class P2PFacade {
     return this;
   }
   
-  public void startWebCam() throws ProtocolException{
-    myCamProtocol = new CamProtocol( (PacketProtocol)myContainer.getProtocol( PacketProtocol.ID ) );
+  private CamProtocol getCamProtocol() throws P2PFacadeException{
+    try{
+      PacketProtocol thePacketProtocol = ((PacketProtocol)myContainer.getProtocol( PacketProtocol.ID ));
+      return ((CamProtocol)thePacketProtocol.getPacketProtocolFactory().getProtocol( CamProtocol.ID )); 
+    }catch(Exception e){
+      throw new P2PFacadeException("An error occured while getting cam protocol", e);
+    }
   }
-  
-  public void setCamListener(iCamListener aListener){
-    myCamProtocol.addCamListener( aListener );
+
+  public void setCamListener(iCamListener aListener) throws P2PFacadeException{
+    if(!isStarted()) throw new P2PFacadeException("Can not execute this action when the server is not started");
+
+    getCamProtocol().addCamListener( aListener );
   }
-  
-  public void requestCapture(String aPeerId) throws PacketProtocolException{
-    myCamProtocol.requestCapture( aPeerId );
+
+  public void requestCapture(String aPeerId, int aWidth, int aHeight, float aQuality) throws P2PFacadeException{
+    try {
+      getCamProtocol().requestCapture( aPeerId, aWidth, aHeight, aQuality );
+    } catch ( PacketProtocolException e ) {
+      throw new P2PFacadeException("An error occured while capturing", e);
+    }
   }
-  
+
   public P2PFacade addSupportedProtocol(String aProtocol) throws P2PFacadeException{
     if(isStarted()) throw new P2PFacadeException("Can not set this property whern the server has been started");
 
@@ -759,27 +769,27 @@ public class P2PFacade {
   public P2PFacade start() throws P2PFacadeException{
     return start(256);
   }
-  
+
   public P2PFacade start(int aNumberOfThreads) throws P2PFacadeException{
     if(isStarted()) return this;
 
     try{
       ProtocolFactory theFactory = new ProtocolFactory(myProperties);
       myContainer = new ProtocolContainer(theFactory, mySupportedProtocols);
-      
+
       if(isWebNode){
         if(myWebURL == null) throw new P2PFacadeException( "Must set a web url before starting" );
         ProtocolWebServer theProtocolWebServer = new ProtocolWebServer( myContainer, myWebPort, myWebURL );
         theProtocolWebServer.setAJPPort( myAJPPort );
         myProtocolServer = theProtocolWebServer;
-        
+
       } else {
         myProtocolServer = new ProtocolServer(myContainer, RoutingProtocol.START_PORT, aNumberOfThreads, true);
       }
 
       if(!myProtocolServer.start()) throw new P2PFacadeException("Unable to start protocol server");
 
-      //we retrieve the routing protcol
+      //we retrieve the routing protocol
       //this way it is instantiated and start exchanging routing information
       RoutingProtocol theRoutingProtocol = (RoutingProtocol)myContainer.getProtocol( RoutingProtocol.ID );
       theRoutingProtocol.getRoutingTable().setKeepHistory( myIsKeepHistory );
@@ -801,12 +811,12 @@ public class P2PFacade {
       if(theSocketPool instanceof CachingSocketPool){
         ((CachingSocketPool)theSocketPool).setCleanUpTimeInSeconds( 30 );
       }
-      
+
       if(isActivateMessageResender){
         myMessageResender = new FailedMessageResender( myContainer );
         myMessageResender.start();
       }
-      
+
       setAutoUserStatusDetectionEnabled(isAutoUserStatusEnabled);
 
       return this;
