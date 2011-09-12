@@ -114,12 +114,14 @@
 			<groupId>chabernac</groupId>
 			<artifactId>platform</artifactId>
 			<version>3.2.5</version>
+			<optional>true</optional>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>chabernac</groupId>
 			<artifactId>jna-win-avicap</artifactId>
 			<version>0.2.2</version>
+			<optional>true</optional>
 			<scope>compile</scope>
 		</dependency>
 	</dependencies>
