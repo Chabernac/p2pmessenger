@@ -175,7 +175,7 @@ public class ApplicationLauncher {
     .setExchangeDelay( 300 )
     .setPersist( "true".equals(anInterPreter.getKeyValue( "persist" )) )
     .setUserInfoProvider( theUserInfoProvider )
-    .addSuperNode( "http://localhost:8080/" )
+//    .addSuperNode( "http://localhost:8080/" )
 //    .setSuperNodesDataSource( new ClassPathResource("supernodes.txt") )
     .setStopWhenAlreadyRunning( true )
     .setChannel(anInterPreter.getKeyValue("channel", "default"))
