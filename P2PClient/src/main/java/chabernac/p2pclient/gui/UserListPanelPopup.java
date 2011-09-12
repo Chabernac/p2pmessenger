@@ -253,20 +253,14 @@ public class UserListPanelPopup extends GPanelPopupMenu {
     @Override
     public void execute() {
       if(!(getSelectedComponent() instanceof StatusCheckBox)) return;
-      try{
-        if(myCamFrame == null) {
-          myCamFrame = new CamFrame(myMediator.getP2PFacade() );
-          myMediator.getP2PFacade().setCamListener( myCamFrame );
-        }
-        
-
-        StatusCheckBox theStatusCheckBox = (StatusCheckBox)getSelectedComponent();
-        String theUser = myPanel.getUserForCheckBox( theStatusCheckBox );
-        myCamFrame.setUserId( theUser );
-        myCamFrame.setVisible( true );
-      }catch(P2PFacadeException e){
-        logger.error("Error occured while capturing", e);
+      if(myCamFrame == null) {
+        myCamFrame = new CamFrame(myMediator.getP2PFacade() );
       }
+
+      StatusCheckBox theStatusCheckBox = (StatusCheckBox)getSelectedComponent();
+      String theUser = myPanel.getUserForCheckBox( theStatusCheckBox );
+      myCamFrame.setUserId( theUser );
+      myCamFrame.setVisible( true );
     }
 
   }
