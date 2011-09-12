@@ -12,7 +12,6 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.ResourceBundle;
 
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 import org.apache.log4j.Logger;
@@ -20,7 +19,6 @@ import org.apache.log4j.Logger;
 import chabernac.command.AbstractCommand;
 import chabernac.gui.CommandMenuItem;
 import chabernac.gui.GPanelPopupMenu;
-import chabernac.gui.SavedFrame.MyComponentListener;
 import chabernac.preference.ApplicationPreferences;
 import chabernac.protocol.cam.CamFrame;
 import chabernac.protocol.facade.P2PFacadeException;
