@@ -473,4 +473,13 @@ public class UserPanel extends GPanel implements iUserSelectionProvider{
     this.isUserSelectionLocked = isUserSelectionLocked;
     enableDisableLockedItems();
   }
+  
+  public String getUserForCheckBox(StatusCheckBox aCheckBox){
+    for(String theUser : myCheckBoxes.keySet()){
+      if(myCheckBoxes.get(theUser) == aCheckBox){
+        return theUser;
+      }
+    }
+    return null;
+  }
 }

@@ -12,6 +12,7 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.ResourceBundle;
 
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 import org.apache.log4j.Logger;
@@ -19,6 +20,8 @@ import org.apache.log4j.Logger;
 import chabernac.command.AbstractCommand;
 import chabernac.gui.CommandMenuItem;
 import chabernac.gui.GPanelPopupMenu;
+import chabernac.gui.SavedFrame.MyComponentListener;
+import chabernac.protocol.cam.CamFrame;
 import chabernac.protocol.facade.P2PFacadeException;
 import chabernac.protocol.userinfo.UserInfo.Status;
 
@@ -44,12 +47,12 @@ public class UserListPanelPopup extends GPanelPopupMenu {
     add(new CommandMenuItem(new NewGroupCommand()));
     add(new CommandMenuItem(new AddToGroupCommand()));
     add(new CommandMenuItem(new RemoveGroupCommand()));
-//    add(new CommandMenuItem(new RemoveOfflineUsers()));
+    //    add(new CommandMenuItem(new RemoveOfflineUsers()));
     addSeparator();
     buildGroups();
     addSeparator();
-//    add(new CommandMenuItem(new HideCommand()));
-//    addSeparator();
+    //    add(new CommandMenuItem(new HideCommand()));
+    //    addSeparator();
 
     try{
       add(new CommandMenuItem(new StatusCommand(Status.ONLINE)));
@@ -63,6 +66,7 @@ public class UserListPanelPopup extends GPanelPopupMenu {
     add(new CommandMenuItem(new SearchPeersCommand()));
     addSeparator();
     add(new CommandMenuItem(new LockUserSelectionCommand()));
+    add(new CommandMenuItem(new CaptureCommand()));
 
   }
 
@@ -104,7 +108,7 @@ public class UserListPanelPopup extends GPanelPopupMenu {
     }
   }
 
-  
+
   private class RemoveGroupCommand extends AbstractCommand{
     public String getName() { return "Groep verwijderen"; }
     public boolean isEnabled() { return true; }
@@ -130,7 +134,7 @@ public class UserListPanelPopup extends GPanelPopupMenu {
       myPanel.selectGroup(myGroup);
     }
   }
-  
+
   private class SearchPeersCommand extends AbstractCommand{
     public String getName() { return "Zoeken naar peers"; }
 
@@ -144,7 +148,7 @@ public class UserListPanelPopup extends GPanelPopupMenu {
       }
     }
   }
-  
+
   private class LockUserSelectionCommand extends AbstractCommand{
     public String getName() { 
       if(myMediator.getUserSelectionProvider() == null || !myMediator.getUserSelectionProvider().isUserSelectionLocked()){
@@ -166,19 +170,19 @@ public class UserListPanelPopup extends GPanelPopupMenu {
     public String getName() {
       return "Hide to";
       //TODO implement hide
-//      if(myMediator.getMessengerClientService().isHideTo()){
-//        return "Unhide to";
-//      } else {
-//        return "Hide to";
-//      }
+      //      if(myMediator.getMessengerClientService().isHideTo()){
+      //        return "Unhide to";
+      //      } else {
+      //        return "Hide to";
+      //      }
     }
 
     public boolean isEnabled(){ return true;    }
 
     public void execute() {
       //TODO implement hide
-//      myMediator.getMessengerClientService().setHideTo(!myMediator.getMessengerClientService().isHideTo());
-//      notifyObs();
+      //      myMediator.getMessengerClientService().setHideTo(!myMediator.getMessengerClientService().isHideTo());
+      //      notifyObs();
     }
   }
 
@@ -230,6 +234,37 @@ public class UserListPanelPopup extends GPanelPopupMenu {
 
     public void execute() {
       //TODO implement this
+    }
+  }
+
+  private class CaptureCommand extends AbstractCommand {
+    private CamFrame myCamFrame = null;
+
+    @Override
+    public String getName() {
+      return "Capture";
+    }
+
+    @Override
+    public boolean isEnabled() {
+      return getSelectedComponent() instanceof StatusCheckBox;
+    }
+
+    @Override
+    public void execute() {
+      try{
+        if(myCamFrame == null) {
+          myCamFrame = new CamFrame();
+          myMediator.getP2PFacade().setCamListener( myCamFrame );
+        }
+        myCamFrame.setVisible( true );
+
+        StatusCheckBox theStatusCheckBox = (StatusCheckBox)getSelectedComponent();
+        String theUser = myPanel.getUserForCheckBox( theStatusCheckBox );
+        myMediator.getP2PFacade().requestCapture(theUser, 320, 240, 0.6f);
+      }catch(P2PFacadeException e){
+        logger.error("Error occured while capturing", e);
+      }
     }
 
   }
