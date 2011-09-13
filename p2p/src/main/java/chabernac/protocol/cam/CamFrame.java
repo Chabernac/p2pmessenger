@@ -10,12 +10,17 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.HeadlessException;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 
+import javax.imageio.ImageIO;
 import javax.swing.ButtonGroup;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JSlider;
+
+import org.apache.log4j.Logger;
 
 import chabernac.command.AbstractCommand;
 import chabernac.gui.CommandButton;
@@ -24,7 +29,7 @@ import chabernac.protocol.facade.P2PFacadeException;
 
 public class CamFrame extends JFrame {
   private static final long serialVersionUID = 7244851544793739106L;
-  private BufferedImage myImage = null;
+  private static final Logger LOGGER = Logger.getLogger(CamFrame.class);
   
   private final P2PFacade myFacade;
   private String myUserId;
@@ -84,8 +89,13 @@ public class CamFrame extends JFrame {
     theControlPanel.add(myQualitySlider);
     
     theCons.weightx = 0;
+    theCons.gridx = 0;
+    theCons.gridy = 0;
     theCons.gridx++;
+    theCons.gridy++;
     theControlPanel.add(new CommandButton( new SnapShotCommand() ));
+    theCons.gridx++;
+    theControlPanel.add(new CommandButton( new SaveCommand() ));
     
     return theControlPanel;
   }
@@ -131,6 +141,33 @@ public class CamFrame extends JFrame {
         myFacade.requestCapture( myUserId, getSnapWidth(), getSnapHeight(), ((float)myQualitySlider.getValue()) / 100f );
       } catch ( P2PFacadeException e ) {
       }
+    }
+  }
+  
+  private class SaveCommand extends AbstractCommand {
+    @Override
+    public String getName() {
+      return "Save";
+    }
+
+    @Override
+    public boolean isEnabled() {
+      return true; 
+    }
+
+    @Override
+    public void execute() {
+        BufferedImage theImage = myCamPanel.getImage();
+        if(theImage == null) return;
+        JFileChooser theChooser = new JFileChooser();
+        int theResult = theChooser.showSaveDialog( CamFrame.this );
+        if(theResult == JFileChooser.APPROVE_OPTION){
+          try {
+            ImageIO.write( theImage, "jpg", theChooser.getSelectedFile() );
+          } catch ( IOException e ) {
+            LOGGER.error("Could not write image", e);
+          }
+        }
     }
   }
 
