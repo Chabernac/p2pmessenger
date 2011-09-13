@@ -106,12 +106,12 @@ public class RoutingProtocol extends Protocol {
   private boolean isPersistRoutingTable = false;
   private boolean isStopWhenAlreadyRunning = false;
 
-//  private ExecutorService myChangeService = null;
+  //  private ExecutorService myChangeService = null;
 
   private String myLocalPeerId = null;
 
-//  private ExecutorService myUDPPacketHandlerService = DynamicSizeExecutor.getSmallInstance();
-//  private ExecutorService myScannerService = Executors.newCachedThreadPool( );
+  //  private ExecutorService myUDPPacketHandlerService = DynamicSizeExecutor.getSmallInstance();
+  //  private ExecutorService myScannerService = Executors.newCachedThreadPool( );
 
   private MulticastSocket myServerMulticastSocket = null;
 
@@ -245,7 +245,7 @@ public class RoutingProtocol extends Protocol {
       if(myExchangeDelay > 0 ) scheduleRoutingTableExchange();
 
       if(myServerInfo.getServerType() == Type.SOCKET){
-//        myChangeService = DynamicSizeExecutor.getSmallInstance();
+        //        myChangeService = DynamicSizeExecutor.getSmallInstance();
         myRoutingTable.addRoutingTableListener( new RoutingTableListener() );
         startUDPListener();
         saveRoutingTable();
@@ -479,6 +479,10 @@ public class RoutingProtocol extends Protocol {
    * on a different port, if one is found, the port scan stops
    */
   public void scanRemoteSystem(boolean isExcludeLocal){
+    //if we are already integrated in the network the scan remote system not necessar
+    if(myRoutingTable.getNrOfDirectNeighbours() > 0) return;
+
+
     if(myRoutingProtocolMonitor != null) myRoutingProtocolMonitor.remoteSystemScanStarted();
     //first search all hosts which have no single peer
     Map<SimpleNetworkInterface, Boolean> theHosts = new HashMap< SimpleNetworkInterface, Boolean >();
@@ -517,18 +521,20 @@ public class RoutingProtocol extends Protocol {
    * we only do this if there are no ohter peers in the network but our selfs
    */
   public void detectRemoteSystem(){
+    //if we are already integrated in the network the scan remote system not necessar
+    if(myRoutingTable.getNrOfDirectNeighbours() > 0) return;
+
+
     if(myRoutingProtocolMonitor != null) myRoutingProtocolMonitor.detectingRemoteSystemStarted();
-    if(myRoutingTable.getNrOfReachablePeers() <= 1){
-      try{
-        InetAddresIterator theIterator = new InetAddresIterator(InetAddress.getLocalHost(), 24);
-        while(myRoutingTable.getNrOfReachablePeers() <= 1 && theIterator.hasNext()){
-          ScanSystem theScanSystem = new ScanSystem(this, theIterator.next(), START_PORT);
-          theScanSystem.setCondition( new NrOfPeersSmallerThenCondition(myRoutingTable, 1) );
-          getExecutorService().execute( theScanSystem );
-        }
-      }catch(Exception e ){
-        LOGGER.error( "An error occured while scanning system", e );
+    try{
+      InetAddresIterator theIterator = new InetAddresIterator(InetAddress.getLocalHost(), 24);
+      while(myRoutingTable.getNrOfReachablePeers() <= 1 && theIterator.hasNext()){
+        ScanSystem theScanSystem = new ScanSystem(this, theIterator.next(), START_PORT);
+        theScanSystem.setCondition( new NrOfPeersSmallerThenCondition(myRoutingTable, 1) );
+        getExecutorService().execute( theScanSystem );
       }
+    }catch(Exception e ){
+      LOGGER.error( "An error occured while scanning system", e );
     }
   }
 
@@ -576,11 +582,19 @@ public class RoutingProtocol extends Protocol {
   public void exchangeRoutingTable(){
     refreshLocalEntry();
 
+    int theNumberOfNeighbours = myRoutingTable.getNrOfDirectNeighbours();
+
     if(myRoutingProtocolMonitor != null) myRoutingProtocolMonitor.exchangingRoutingTables();
     LOGGER.debug("Exchanging routing table for peer: " + myRoutingTable.getLocalPeerId());
 
     for(RoutingTableEntry theEntry : myRoutingTable.getEntries()){
-      sendAnnouncementWithReply(theEntry);
+      //only exchange with peers which are not reachable if there are no reachable peers
+      //otherwise only try to exchange with peers which are reachable
+      //by doing this we will hopefully avoid too much sockets to be created to peers which are not available
+      //a new peer will still integrate in the network because of the condition theNumberOfNeighbours == 0 
+      if(theNumberOfNeighbours == 0 || theEntry.getHopDistance() < RoutingTableEntry.MAX_HOP_DISTANCE){
+        sendAnnouncementWithReply(theEntry);
+      }
     }
 
     myExchangeCounter.incrementAndGet();
@@ -677,7 +691,6 @@ public class RoutingProtocol extends Protocol {
         }
       }
     }
-
   }
 
   public long getExchangeCounter(){
@@ -742,21 +755,21 @@ public class RoutingProtocol extends Protocol {
     //remove all listeners from the routing table
     myRoutingTable.removeAllRoutingTableListeners();
 
-//    if(myScannerService != null){
-//      myScannerService.shutdownNow();
-//    }
+    //    if(myScannerService != null){
+    //      myScannerService.shutdownNow();
+    //    }
 
     if(mySheduledService != null){
       mySheduledService.shutdownNow();
     }
 
-//    if(myChangeService != null) {
-//      myChangeService.shutdownNow();
-//    }
+    //    if(myChangeService != null) {
+    //      myChangeService.shutdownNow();
+    //    }
 
-//    if(myUDPPacketHandlerService != null){
-//      myUDPPacketHandlerService.shutdownNow();
-//    }
+    //    if(myUDPPacketHandlerService != null){
+    //      myUDPPacketHandlerService.shutdownNow();
+    //    }
 
     if(isPersistRoutingTable) saveRoutingTable();
 
@@ -841,6 +854,9 @@ public class RoutingProtocol extends Protocol {
   }
 
   public void sendUDPAnnouncement(){
+    //if we are already integrated in the network the udp announcement is not necessar
+    if(myRoutingTable.getNrOfDirectNeighbours() > 0) return;
+
     refreshLocalEntry();
 
     if(myRoutingProtocolMonitor != null) myRoutingProtocolMonitor.sendingUDPAnnouncement();
