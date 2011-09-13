@@ -23,7 +23,7 @@ public class PacketProtocol extends Protocol {
   public static final String ID = "PCP";
 
   public static enum Input{ PACKET, REPSONSE };
-  public static enum Response{ UNREACHABLE, NOK, DELIVERED, UNKNOWN_COMMAND, MAX_HOPS_REACHED };
+  public static enum Response{ UNREACHABLE, NOK, DELIVERED, UNKNOWN_COMMAND, MAX_HOPS_REACHED, PACKET_HANDLED };
 
   public static final int MAX_HOP_DISTANCE = 5;
 
@@ -136,7 +136,7 @@ public class PacketProtocol extends Protocol {
         }
       }
     });
-    return Response.UNKNOWN_COMMAND.name();
+    return Response.PACKET_HANDLED.name();
   }
 
   @Override
