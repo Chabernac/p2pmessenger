@@ -16,13 +16,13 @@ import org.apache.log4j.Logger;
 import chabernac.protocol.packet.AbstractPacketProtocol;
 import chabernac.protocol.packet.Packet;
 import chabernac.protocol.packet.PacketProtocolException;
-import chabernac.webcam.JPGWebCamCapture;
+import chabernac.web.JPGWebCapture;
 
 public class CamProtocol extends AbstractPacketProtocol {
   private static Logger LOGGER = Logger.getLogger( CamProtocol.class );
 
   public static String ID = "CAM";
-  private JPGWebCamCapture myCapture = new JPGWebCamCapture();
+  private JPGWebCapture myCapture = new JPGWebCapture();
   
   private List<iCamListener> myCamListeners = new ArrayList<iCamListener>();
   
