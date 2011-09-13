@@ -386,6 +386,17 @@ public class RoutingTable implements Iterable< RoutingTableEntry >, Serializable
     }
     return theCounter;
   }
+  
+  public int getNrOfDirectNeighbours(){
+    int theCounter = 0;
+    for(RoutingTableEntry theEntry : getEntries()){
+      if(theEntry.getHopDistance() == 1){
+        theCounter ++;
+      }
+    }
+    return theCounter;
+  }
+
 
   public boolean isKeepHistory() {
     return isKeepHistory;
