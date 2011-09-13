@@ -118,7 +118,7 @@
 		</dependency>
 		<dependency>
 			<groupId>chabernac</groupId>
-			<artifactId>jna-win-avicap</artifactId>
+			<artifactId>jna-win-ac</artifactId>
 			<version>0.2.2</version>
 			<scope>compile</scope>
 		</dependency>
