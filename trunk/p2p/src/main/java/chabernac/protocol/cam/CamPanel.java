@@ -29,4 +29,8 @@ public class CamPanel extends JPanel implements iCamListener {
     return myImage.getWidth();
   }
 
+  public BufferedImage getImage() {
+    return myImage;
+  }
+
 }
