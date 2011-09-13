@@ -87,7 +87,7 @@ public class JPGWebCamCapture {
 
     myFramePointer = Native.getComponentPointer(theTestFrame);
 
-    theTestFrame.setVisible(false);
+//    theTestFrame.setVisible(false);
   }
   
   private void setDimensions(Dimension aDimension){
@@ -104,9 +104,9 @@ public class JPGWebCamCapture {
             myDimension.width * myDimension.height * 3, 0), ZERO_POINT),
             false, null);
     
-    if(isFlip){
-      theBufferedImage = flip( theBufferedImage );
-    }
+//    if(isFlip){
+//      theBufferedImage = flip( theBufferedImage );
+//    }
     
     IIOImage outputImage = new IIOImage(theBufferedImage, null, null);
 
@@ -131,6 +131,8 @@ public class JPGWebCamCapture {
     
     final ArrayBlockingQueue<byte[]> theJPGQueue = new ArrayBlockingQueue<byte[]>(1);
 
+    myCaptureDevice.setFrameRate( 1 );
+    myCaptureDevice.setFrameFlip( true );
     myCaptureDevice.startVideoCapture(
         new HWND(myFramePointer), 
         myDimension.width, 
