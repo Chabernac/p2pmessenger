@@ -610,7 +610,7 @@ public class RoutingProtocol extends Protocol {
   private void sendAnnouncementWithReply(RoutingTableEntry aRoutingTableEntry){
     AbstractPeer thePeer = aRoutingTableEntry.getPeer();
 
-    if(!thePeer.getPeerId().equals(myRoutingTable.getLocalPeerId())){
+    if(thePeer.isContactable() && !thePeer.getPeerId().equals(myRoutingTable.getLocalPeerId())){
       try {
         if(myUnreachablePeers.contains( thePeer.getPeerId())){
           //simulate that we cannot contact the peer

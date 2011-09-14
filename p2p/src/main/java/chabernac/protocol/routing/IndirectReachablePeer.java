@@ -50,4 +50,9 @@ public class IndirectReachablePeer extends AbstractPeer {
     theBuilder.append(getChannel());
     return theBuilder.toString();
   }
+
+  @Override
+  public boolean isContactable() {
+    return false;
+  }
 }

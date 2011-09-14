@@ -89,4 +89,10 @@ public abstract class AbstractPeer implements Serializable{
   public boolean isTestPeer() {
     return isTestPeer;
   }
+  
+  /**
+   * return whether it is possible to send a message to this peer
+   * @return
+   */
+  public abstract boolean isContactable();
 }

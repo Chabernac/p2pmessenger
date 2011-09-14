@@ -193,4 +193,9 @@ public class SocketPeer extends AbstractPeer implements Serializable {
   public String getEndPointRepresentation() {
     return myHost + ":" + myPort;
   }
+
+  @Override
+  public boolean isContactable() {
+    return true;
+  }
 }

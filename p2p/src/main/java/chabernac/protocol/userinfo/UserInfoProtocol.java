@@ -45,7 +45,7 @@ public class UserInfoProtocol extends Protocol {
 
   private Map<String, UserInfo> myUserInfo = Collections.synchronizedMap( new HashMap< String, UserInfo >());
 
-//  private ExecutorService myRetrievalService = DynamicSizeExecutor.getTinyInstance();
+  //  private ExecutorService myRetrievalService = DynamicSizeExecutor.getTinyInstance();
   private ScheduledExecutorService myService = Executors.newScheduledThreadPool( 1 );
 
   private iUserInfoProvider myUserInfoProvider = null;
@@ -129,13 +129,15 @@ public class UserInfoProtocol extends Protocol {
 
   public void announceMe(){
     if(myPersonalUserInfo.isEmpty()) return;
-    
+
     try{
       RoutingTable theTable = getRoutingTable();
       AbstractPeer theLocalPeer = theTable.getEntryForLocalPeer().getPeer();
 
       for(RoutingTableEntry theEntry : theTable){
-        if(theEntry.isReachable() && theEntry.getPeer().isOnSameChannel(theLocalPeer)){
+        if(theEntry.isReachable() && 
+            theEntry.getPeer().isOnSameChannel(theLocalPeer) &&
+            theEntry.getPeer().isProtocolSupported( ID )){
           getExecutorService().execute( new UserInfoSender(theEntry.getPeer().getPeerId()) );
         }
       }
@@ -241,14 +243,17 @@ public class UserInfoProtocol extends Protocol {
 
   public void sendUserInfoToPeer(String aPeerId) throws UserInfoException{
     try{
-      Message theMessage = new Message(  );
-      theMessage.setDestination( getRoutingTable().getEntryForPeer( aPeerId ).getPeer() );
-      theMessage.setSource( getRoutingTable().getEntryForLocalPeer().getPeer() );
-      theMessage.setMessage( createMessage( Command.PUT.name() + ";" + getRoutingTable().getLocalPeerId() + ";" + myConverter.toString( myPersonalUserInfo )));
-      theMessage.setProtocolMessage( true );
-      String theResult = ((MessageProtocol)findProtocolContainer().getProtocol( MessageProtocol.ID )).sendMessage( theMessage );
-      if(!theResult.equals( Response.OK.name() )){
-        throw new UserInfoException("Could not send user info to peer '" + aPeerId + "' response: '" + theResult + "'");
+      AbstractPeer theDestination = getRoutingTable().getEntryForPeer( aPeerId ).getPeer();
+      if(theDestination.isProtocolSupported( ID )){
+        Message theMessage = new Message(  );
+        theMessage.setDestination( theDestination );
+        theMessage.setSource( getRoutingTable().getEntryForLocalPeer().getPeer() );
+        theMessage.setMessage( createMessage( Command.PUT.name() + ";" + getRoutingTable().getLocalPeerId() + ";" + myConverter.toString( myPersonalUserInfo )));
+        theMessage.setProtocolMessage( true );
+        String theResult = ((MessageProtocol)findProtocolContainer().getProtocol( MessageProtocol.ID )).sendMessage( theMessage );
+        if(!theResult.equals( Response.OK.name() )){
+          throw new UserInfoException("Could not send user info to peer '" + aPeerId + "' response: '" + theResult + "'");
+        }
       }
     }catch(Exception e){
       throw new UserInfoException("Could not send user info to peer '" + aPeerId + "'", e);
@@ -258,7 +263,7 @@ public class UserInfoProtocol extends Protocol {
   public void changeStatus(String aUserId, Status aStatus) throws UserInfoException{
     changeStatus( aUserId, aStatus, null);
   }
-  
+
   public void changeStatus(String aUserId, Status aStatus, String aStatusMessage) throws UserInfoException{
     for(String thePeerId : getUserInfo().keySet()){
       try{
