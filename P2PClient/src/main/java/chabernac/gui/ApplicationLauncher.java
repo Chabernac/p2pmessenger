@@ -15,6 +15,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
 
 import chabernac.command.CommandSession;
 import chabernac.gui.tray.NewMessageInfoPanelDisplayer;
@@ -67,6 +68,8 @@ public class ApplicationLauncher {
     try{
       ArgsInterPreter theInterPretser = new ArgsInterPreter(args);
       
+      initLogging();
+      
       initCommandSession();
 
       initProxy(theInterPretser);
@@ -78,8 +81,6 @@ public class ApplicationLauncher {
       if("true".equals(theInterPretser.getKeyValue("checklock", "true"))){
         if(!checkLockAndActivate()) return;
       }
-
-      BasicConfigurator.configure();
 
       addRun2Startup();
 
@@ -115,6 +116,13 @@ public class ApplicationLauncher {
       LOGGER.error("An error occured during boot process", e);
       System.exit(-1);
     }
+  }
+  
+  private static void initLogging(){
+    InitLogging theInitLogging = new InitLogging();
+    theInitLogging.run();
+    ScheduledExecutorService theService = Executors.newScheduledThreadPool( 1 );
+    theService.scheduleAtFixedRate( theInitLogging, 1, 1, TimeUnit.MINUTES );
   }
   
   private static void initCommandSession(){
@@ -242,6 +250,19 @@ public class ApplicationLauncher {
         }
       }
       return "nok";
+    }
+  }
+  
+  private static class InitLogging implements Runnable {
+    @Override
+    public void run() {
+      File theLogConfig = new File("log4j.properties");
+      //only if the log file exist use this log file, 
+      //otherwise log4j will fall back on the log config file in the jar
+      if(theLogConfig.exists()){
+        BasicConfigurator.resetConfiguration();
+        PropertyConfigurator.configure( theLogConfig.getName() );
+      }
     }
   }
 }
