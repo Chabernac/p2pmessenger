@@ -178,7 +178,10 @@ public class RoutingProtocol extends Protocol {
     }
 
     try {
-      mySuperNodes.addAll( IOTools.loadStreamAsList( new FileResource("supernodes.txt").getInputStream() ));
+      FileResource theSuperNodes = new FileResource("supernodes.txt");
+      if(theSuperNodes.exists()){
+        mySuperNodes.addAll( IOTools.loadStreamAsList( theSuperNodes.getInputStream() ));
+      }
     } catch ( IOException e ) {
       LOGGER.error("Could not load super nodes", e);
     }

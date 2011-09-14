@@ -174,7 +174,10 @@ public class InfoExchangeProtocol<T extends Observable & Serializable> extends P
       try{
         RoutingTableEntry theEntry = getRoutingTable().getEntryForPeer( myPeerId );
 
-        if(theEntry.isReachable() && theEntry.getPeer().isOnSameChannel(getRoutingTable().getEntryForLocalPeer().getPeer())){
+        if(theEntry.isReachable() && 
+            theEntry.getPeer().isOnSameChannel(getRoutingTable().getEntryForLocalPeer().getPeer()) &&
+            theEntry.getPeer().isProtocolSupported( ID )            
+            ){
           Message theMessage = new Message();
           theMessage.setDestination( theEntry.getPeer() );
           theMessage.setSource( getRoutingTable().getEntryForLocalPeer().getPeer() );
