@@ -9,6 +9,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 public class FileResource extends AbstractResource{
+  private static final long serialVersionUID = 956117281332995847L;
   private File myFile = null;
   
   public FileResource(String aLocation){
