@@ -24,4 +24,8 @@ public class DummyPeer extends AbstractPeer {
     return false;
   }
 
+  @Override
+  public boolean isContactable() {
+    return false;
+  }
 }

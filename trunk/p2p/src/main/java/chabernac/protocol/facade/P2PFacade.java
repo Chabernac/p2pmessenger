@@ -799,9 +799,8 @@ public class P2PFacade {
       if(mySupportedProtocols == null || mySupportedProtocols.contains( UserInfoProtocol.ID )) myContainer.getProtocol( UserInfoProtocol.ID );
 
       //retrieve the version protocol so that is starts exchanging versions
-      //retrieve the user info protocol
-      //this way it is instantiated and listens for routing table changes and retrieves user info of the changed peers
-      if(mySupportedProtocols == null || mySupportedProtocols.contains( VersionProtocol.ID)) myContainer.getProtocol( VersionProtocol.ID );
+      //the version protocol is not used any more, version info is exchanged with info exchange protocol
+//      if(mySupportedProtocols == null || mySupportedProtocols.contains( VersionProtocol.ID)) myContainer.getProtocol( VersionProtocol.ID );
 
       if(mySupportedProtocols == null || mySupportedProtocols.contains( WebPeerProtocol.ID)) myContainer.getProtocol( WebPeerProtocol.ID );
 

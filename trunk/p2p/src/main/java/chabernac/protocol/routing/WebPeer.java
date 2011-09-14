@@ -226,4 +226,10 @@ public class WebPeer extends AbstractPeer {
       }
     }
   }
+
+
+  @Override
+  public boolean isContactable() {
+    return true;
+  }
 }

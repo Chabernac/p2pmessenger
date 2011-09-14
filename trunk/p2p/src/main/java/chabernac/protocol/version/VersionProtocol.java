@@ -9,8 +9,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import org.apache.log4j.Logger;
 
@@ -23,7 +21,6 @@ import chabernac.protocol.routing.IRoutingTableListener;
 import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.RoutingTable;
 import chabernac.protocol.routing.RoutingTableEntry;
-import chabernac.thread.DynamicSizeExecutor;
 
 public class VersionProtocol extends Protocol {
   private static Logger LOGGER = Logger.getLogger(VersionProtocol.class);
@@ -95,7 +92,9 @@ public class VersionProtocol extends Protocol {
       RoutingTable theRoutingTable = getRoutingTable();
 
       for(RoutingTableEntry theEntry : theRoutingTable.getEntries()){
-        if(theEntry.isReachable() && theEntry.getPeer().isOnSameChannel(theRoutingTable.getEntryForLocalPeer().getPeer())){
+        if(theEntry.isReachable() && 
+            theEntry.getPeer().isOnSameChannel(theRoutingTable.getEntryForLocalPeer().getPeer()) &&
+            theEntry.getPeer().isProtocolSupported( ID )){
           if(!myVersions.containsKey( theEntry.getPeer().getPeerId() )){
             getVersionForPeer( theEntry.getPeer().getPeerId() );
           }
@@ -130,10 +129,11 @@ public class VersionProtocol extends Protocol {
             Version theVersion = new Version(theResult.substring( Response.OK.name().length() ));
             myVersions.put(aPeerId, theVersion);
             notifyListeners(aPeerId, theVersion);
+          } else {
+            throw new VersionProtocolException("Received invalid response from version protocol '" + theResult + "'");
           }
-          throw new VersionProtocolException("Received invalid response from version protocol '" + theResult + "'");
         }catch(Exception e){
-          LOGGER.error("Unable to retrieve version for peer '" + aPeerId + "'");
+          LOGGER.error("Unable to retrieve version for peer '" + aPeerId + "'", e);
         }
       }
     });
@@ -149,7 +149,9 @@ public class VersionProtocol extends Protocol {
     @Override
     public void routingTableEntryChanged( final RoutingTableEntry anEntry ) {
       try{
-        if(anEntry.isReachable() && anEntry.getPeer().isOnSameChannel(getRoutingTable().getEntryForLocalPeer().getPeer())){
+        if(anEntry.isReachable() && 
+            anEntry.getPeer().isOnSameChannel(getRoutingTable().getEntryForLocalPeer().getPeer()) &&
+            anEntry.getPeer().isProtocolSupported( ID )){
           getVersionForPeer( anEntry.getPeer().getPeerId() );
         }
       }catch(Exception e){
