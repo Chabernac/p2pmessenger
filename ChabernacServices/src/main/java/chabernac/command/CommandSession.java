@@ -10,9 +10,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
-import org.apache.log4j.Logger;
-
-import chabernac.util.concurrent.MonitorrableRunnable;
 import chabernac.util.concurrent.MonitorrableRunnableDelegate;
 import chabernac.util.concurrent.iRunnableListener;
 
@@ -29,7 +26,7 @@ import chabernac.util.concurrent.iRunnableListener;
  * @author <a href="mailto:guy.chauliac@axa.be"> Guy Chauliac </a>
  */
 public class CommandSession {
-  private static Logger LOGGER = Logger.getLogger(CommandSession.class);
+//  private static Logger LOGGER = Logger.getLogger(CommandSession.class);
   
   private static class InstanceHolder{
     private static final CommandSession INSTANCE = new CommandSession();
