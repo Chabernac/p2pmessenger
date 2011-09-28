@@ -30,7 +30,6 @@ public class UserInfo extends Observable implements Serializable{
   public String getProperty(Property aProperty){
     return myProperties.get( aProperty );
   }
-  
 
   public Status getStatus() {
     return myStatus;
