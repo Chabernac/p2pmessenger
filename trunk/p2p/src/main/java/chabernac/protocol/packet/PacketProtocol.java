@@ -11,7 +11,6 @@ import org.apache.log4j.Logger;
 
 import chabernac.protocol.Protocol;
 import chabernac.protocol.ProtocolException;
-import chabernac.protocol.ProtocolFactory;
 import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.RoutingTable;
 import chabernac.protocol.routing.RoutingTableEntry;

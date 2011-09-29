@@ -4,15 +4,22 @@
  */
 package chabernac.protocol.packet;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.commons.codec.binary.Base64;
 
 public class Packet {
   private final String myFrom;
   private final String myTo;
+  
+  //the id of the protocol for which the packet is intended
   private final String myId;
   private final String myBytes;
   private final int myHopDistance;
-  private boolean isSendResponse;
+  private final boolean isSendResponse;
+  private final Map<String, String> myHeaders = new HashMap<String, String>();
   
   public Packet( String aTo, String aId, byte[] aBytes, int aHopDistance, boolean isSendResponse ) {
     this(null, aTo, aId, new String(Base64.encodeBase64( aBytes )), aHopDistance, isSendResponse);
@@ -69,10 +76,21 @@ public class Packet {
   public boolean isSendResponse() {
     return isSendResponse;
   }
-
-  public void setSendResponse( boolean aSendResponse ) {
-    isSendResponse = aSendResponse;
+  
+  public void setHeader(String aKey, String aValue){
+	  myHeaders.put(aKey, aValue);
   }
   
+  public String getHeader(String aKey){
+	  return myHeaders.get(aKey);
+  }
   
+  public boolean containsHeader(String aKey){
+	  return myHeaders.containsKey(aKey);
+  }
+  
+  public Map<String, String> getHeaders(){
+	  if(myHeaders == null) return new HashMap<String, String>();
+	  return Collections.unmodifiableMap(myHeaders);
+  }
 }
