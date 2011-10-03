@@ -13,12 +13,17 @@ import javax.imageio.ImageIO;
 
 import org.apache.log4j.Logger;
 
-import chabernac.protocol.packet.AbstractPacketProtocol;
+import chabernac.protocol.Protocol;
+import chabernac.protocol.ProtocolException;
+import chabernac.protocol.message.Message;
+import chabernac.protocol.message.MessageProtocol;
 import chabernac.protocol.packet.Packet;
 import chabernac.protocol.packet.PacketProtocolException;
+import chabernac.protocol.routing.RoutingProtocol;
+import chabernac.protocol.routing.RoutingTable;
 import chabernac.web.JPGWebCapture;
 
-public class CamProtocol extends AbstractPacketProtocol {
+public class CamProtocol extends Protocol {
   private static Logger LOGGER = Logger.getLogger( CamProtocol.class );
 
   public static String ID = "CAM";
@@ -28,14 +33,24 @@ public class CamProtocol extends AbstractPacketProtocol {
   
   private static enum Command {CAPTURE};
   
-  @Override
-  public String getId() {
-    return ID;
+  public CamProtocol(){
+    super(ID);
   }
   
+  private MessageProtocol getMessageProtocol() throws ProtocolException{
+    return (MessageProtocol)findProtocolContainer().getProtocol(MessageProtocol.ID);
+  }
+  
+  private RoutingTable getRoutingTable() throws ProtocolException{
+    return ((RoutingProtocol)findProtocolContainer().getProtocol( RoutingProtocol.ID )).getRoutingTable();
+  }
+
+  
   public void requestCapture(String aPeerId, int aWidth, int aHeight, float aQuality) throws PacketProtocolException{
-    Packet theCapturePacket = new Packet( aPeerId, ID, Command.CAPTURE.name() + ";" + aWidth + ";" + aHeight + ";" + aQuality, 5, false );
-    myPacketProtocol.sendPacket( theCapturePacket );
+    Message theMessage = new Message();
+    theMessage.setDestination(getRoutingTable().getEntryForPeer(aPeerId).getPeer());
+    theMessage.setMessage(createMessage(Command.CAPTURE.name() + ";" + aWidth + ";" + aHeight + ";" + aQuality ));
+    getMessageProtocol().sendMessage(theMessage);
   }
   
 
@@ -69,5 +84,16 @@ public class CamProtocol extends AbstractPacketProtocol {
   @Override
   public void stop() {
     myCapture.stop();
+  }
+
+  @Override
+  public String getDescription() {
+    return "cam protocol";
+  }
+
+  @Override
+  public String handleCommand(String aSessionId, String anInput) {
+    // TODO Auto-generated method stub
+    return null;
   }
 }
