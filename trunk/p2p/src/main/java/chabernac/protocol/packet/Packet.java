@@ -16,24 +16,26 @@ public class Packet {
   
   //the id of the protocol for which the packet is intended
   private final String myId;
+  private final String myListenerId;
   private final String myBytes;
   private final int myHopDistance;
   private final boolean isSendResponse;
   private final Map<String, String> myHeaders = new HashMap<String, String>();
   
-  public Packet( String aTo, String aId, byte[] aBytes, int aHopDistance, boolean isSendResponse ) {
-    this(null, aTo, aId, new String(Base64.encodeBase64( aBytes )), aHopDistance, isSendResponse);
+  public Packet( String aTo, String aId, String aListenerId, byte[] aBytes, int aHopDistance, boolean isSendResponse ) {
+    this(null, aTo, aId, aListenerId, new String(Base64.encodeBase64( aBytes )), aHopDistance, isSendResponse);
   }
   
-  public Packet( String aTo, String aId, String aBytes, int aHopDistance, boolean isSendResponse ) {
-    this(null, aTo, aId, aBytes, aHopDistance, isSendResponse);
+  public Packet( String aTo, String aId, String aListenerId, String aBytes, int aHopDistance, boolean isSendResponse ) {
+    this(null, aTo, aId, aListenerId, aBytes, aHopDistance, isSendResponse);
   }
   
-  Packet( String aFrom, String aTo, String aId, String aBytes, int aHopDistance, boolean isSendResponse ) {
+  Packet( String aFrom, String aTo, String aId, String aListenerId, String aBytes, int aHopDistance, boolean isSendResponse ) {
     super();
     myFrom = aFrom;
     myTo = aTo;
     myId = aId;
+    myListenerId = aListenerId;
     myBytes = aBytes;
     myHopDistance = aHopDistance;
     this.isSendResponse = isSendResponse;
@@ -79,6 +81,10 @@ public class Packet {
   
   public void setHeader(String aKey, String aValue){
 	  myHeaders.put(aKey, aValue);
+  }
+
+  public String getListenerId() {
+    return myListenerId;
   }
   
   public String getHeader(String aKey){
