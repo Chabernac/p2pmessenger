@@ -90,6 +90,10 @@ public class JPGWebCapture {
     theTestFrame.setVisible(false);
   }
   
+  public boolean isReady(){
+    return myCaptureDevice != null;
+  }
+  
   private void setDimensions(Dimension aDimension){
     if(myDimension == null || !myDimension.equals(aDimension)){
       myDimension = aDimension;
@@ -193,5 +197,11 @@ public class JPGWebCapture {
   
   public void stop(){
     myCaptureDevice.stopVideoCapture();
+    //give the system some time to execute the previous command
+    //if we do not sleep and the jvm is closed it will exit with a dirty crash
+    try {
+      Thread.sleep( 1000 );
+    } catch ( InterruptedException e ) {
+    }
   }
 }

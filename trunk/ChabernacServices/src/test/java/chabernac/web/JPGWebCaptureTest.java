@@ -31,7 +31,7 @@ public class JPGWebCaptureTest {
     theFrame.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE ); 
     theFrame.getContentPane().setLayout(new BorderLayout());
     theFrame.getContentPane().add(new ImagePanel(theImage));
-    theFrame.setSize(320, 240);
+    theFrame.setSize(10, 10);
     theFrame.setVisible(true);
     
   }
