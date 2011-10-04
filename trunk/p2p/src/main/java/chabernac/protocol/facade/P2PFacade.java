@@ -37,6 +37,7 @@ import chabernac.protocol.asyncfiletransfer.FileTransferOverviewPanel;
 import chabernac.protocol.asyncfiletransfer.iAsyncFileTransferHandler;
 import chabernac.protocol.asyncfiletransfer.iTransferController;
 import chabernac.protocol.cam.CamProtocol;
+import chabernac.protocol.cam.CamProtocolException;
 import chabernac.protocol.cam.iCamListener;
 import chabernac.protocol.filetransfer.FileTransferProtocol;
 import chabernac.protocol.filetransfer.iFileHandler;
@@ -736,11 +737,12 @@ public class P2PFacade {
   }
   
   private CamProtocol getCamProtocol() throws P2PFacadeException{
+    if(!isStarted()) throw new P2PFacadeException("Can not execute this action when the server is not started");
+    
     try{
-      PacketProtocol thePacketProtocol = ((PacketProtocol)myContainer.getProtocol( PacketProtocol.ID ));
-      return ((CamProtocol)thePacketProtocol.getPacketProtocolFactory().getProtocol( CamProtocol.ID )); 
+      return ((CamProtocol)myContainer.getProtocol( CamProtocol.ID ));
     }catch(Exception e){
-      throw new P2PFacadeException("An error occured while getting cam protocol", e);
+      throw new P2PFacadeException("Could not show routing frame", e);
     }
   }
 
@@ -753,7 +755,7 @@ public class P2PFacade {
   public void requestCapture(String aPeerId, int aWidth, int aHeight, float aQuality) throws P2PFacadeException{
     try {
       getCamProtocol().requestCapture( aPeerId, aWidth, aHeight, aQuality );
-    } catch ( PacketProtocolException e ) {
+    } catch ( CamProtocolException e ) {
       throw new P2PFacadeException("An error occured while capturing", e);
     }
   }

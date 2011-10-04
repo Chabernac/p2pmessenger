@@ -48,28 +48,19 @@ public class PacketProtocol extends Protocol {
     return ((RoutingProtocol)findProtocolContainer().getProtocol( RoutingProtocol.ID )).getPeerSender();
   }
 
-
-  private void processPacketForLocalPeer(Packet aPacket){
-    if(!myPacketListeners.containsKey(aPacket.getId())){
-      LOGGER.error("No packet listener found for id '" + aPacket.getId() + "'");
-    }
-    
-    myPacketListeners.get(aPacket.getId()).packetReceived(aPacket);
-  }
-
   private RoutingTableEntry getEntry(String aPeerId) throws UnknownPeerException, ProtocolException{
     return getRoutingTable().getEntryForPeer( aPeerId );
   }
 
-  private String createMessage(String aFrom, String aTo, String anId, Input aCommand, String aResponse){
-    return createMessage( myConverter.toString(new Packet( aFrom, aTo, anId, Input.RESPONSE.name(), aResponse, MAX_HOP_DISTANCE, false )));
+  private String createMessage(String aFrom, String aTo, String anId, String aListenerId, Input aCommand, String aResponse){
+    return createMessage( myConverter.toString(new Packet( aFrom, aTo, anId, aListenerId, aCommand.name() + aResponse, MAX_HOP_DISTANCE, false )));
   }
 
-  private void sendResponse(String aTo, String anId, Response aResponse){
+  private void sendResponse(String aTo, String anId, String aListenerId, Response aResponse){
     try{
       RoutingTableEntry theEntry = getEntry( aTo);
       if(theEntry.isReachable()) {
-        getPeerSender().send( theEntry.getGateway(), createMessage( getRoutingTable().getLocalPeerId(), aTo, anId, Input.RESPONSE, aResponse.name() ) );
+        getPeerSender().send( theEntry.getGateway(), createMessage( getRoutingTable().getLocalPeerId(), aTo, anId, aListenerId, Input.RESPONSE, aResponse.name() ) );
       }
     }catch(Exception e){
       LOGGER.error("Could not send response", e);
@@ -78,21 +69,23 @@ public class PacketProtocol extends Protocol {
   
   private iPacketListener getPacketListener(String aListenerId){
     if(myPacketListeners.containsKey(aListenerId)) return myPacketListeners.get(aListenerId);
+    LOGGER.error( "No packet listener for listener id '" + aListenerId + "'" );
     return myDummyListener;
   }
 
   private void processCommandForLocalPeer(Packet aPacket){
 
-    if(aPacket.getId().startsWith( Input.RESPONSE.name() )){
-      if(aPacket.getListenerId().equalsIgnoreCase(Input.RESPONSE.name())){
+    if(aPacket.getBytesAsString().startsWith( Input.RESPONSE.name() )){
+      String theResponse = aPacket.getBytesAsString().substring( Input.RESPONSE.name().length() );
+      if(theResponse.equalsIgnoreCase(Response.DELIVERED.name())){
         getPacketListener(aPacket.getListenerId()).packetDelivered(aPacket.getId());
       } else {
         getPacketListener(aPacket.getListenerId()).packetDeliveryFailed(aPacket.getId());
       }
     } else  {
-      processPacketForLocalPeer( aPacket );
+      getPacketListener( aPacket.getListenerId()).packetReceived(aPacket);
       if(aPacket.isSendResponse()){
-        sendResponse( aPacket.getFrom(), aPacket.getId(), Response.DELIVERED );
+        sendResponse( aPacket.getFrom(), aPacket.getId(), aPacket.getListenerId(), Response.DELIVERED );
       }
     }
   }
@@ -117,9 +110,9 @@ public class PacketProtocol extends Protocol {
           } else {
             RoutingTableEntry theDestination = getRoutingTable().getEntryForPeer( thePacket.getTo() );
             if(thePacket.isSendResponse() && thePacket.getHopDistance() <= 0) {
-              sendResponse( thePacket.getFrom(), thePacket.getId(), Response.MAX_HOPS_REACHED);
+              sendResponse( thePacket.getFrom(), thePacket.getId(), thePacket.getListenerId(), Response.MAX_HOPS_REACHED);
             } if(thePacket.isSendResponse() && !theDestination.isReachable()) {
-              sendResponse( thePacket.getFrom(), thePacket.getId(), Response.UNREACHABLE);
+              sendResponse( thePacket.getFrom(), thePacket.getId(), thePacket.getListenerId(), Response.UNREACHABLE);
             } else {
               getPeerSender().send( theDestination.getGateway(),  createMessage( myConverter.toString( thePacket )));
             }
@@ -127,7 +120,7 @@ public class PacketProtocol extends Protocol {
         }catch(Exception e){
           LOGGER.error("An error occured while processing packet", e);
           if(thePacket.isSendResponse()){
-            sendResponse( thePacket.getFrom(), thePacket.getId(), Response.NOK );
+            sendResponse( thePacket.getFrom(), thePacket.getId(), thePacket.getListenerId(), Response.NOK );
           }
         }
       }
@@ -148,24 +141,13 @@ public class PacketProtocol extends Protocol {
   }
   
   private class DummyPacketListener implements iPacketListener{
+    @Override
+    public void packetDelivered(String aPacketId) {}
 
     @Override
-    public void packetDelivered(String aPacketId) {
-      // TODO Auto-generated method stub
-      
-    }
+    public void packetDeliveryFailed(String aPacketId) {}
 
     @Override
-    public void packetDeliveryFailed(String aPacketId) {
-      // TODO Auto-generated method stub
-      
-    }
-
-    @Override
-    public void packetReceived(Packet aPacket) {
-      // TODO Auto-generated method stub
-      
-    }
-    
+    public void packetReceived(Packet aPacket) {}
   }
 }

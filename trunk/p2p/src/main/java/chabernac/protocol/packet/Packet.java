@@ -51,7 +51,7 @@ public class Packet {
   }
   
   public Packet setFrom(String aFrom){
-    return new Packet( aFrom, myTo, myId, myBytes, myHopDistance, isSendResponse );
+    return new Packet( aFrom, myTo, myId, myListenerId, myBytes, myHopDistance, isSendResponse );
   }
 
   public String getId() {
@@ -72,7 +72,7 @@ public class Packet {
   }
   
   public Packet decreaseHopDistance(){
-    return new Packet( myFrom, myTo, myId, myBytes, myHopDistance - 1, isSendResponse);
+    return new Packet( myFrom, myTo, myId, myListenerId, myBytes, myHopDistance - 1, isSendResponse);
   }
 
   public boolean isSendResponse() {

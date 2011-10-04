@@ -66,9 +66,9 @@ public class PacketProtocolTest extends AbstractProtocolTest {
       PacketListener theSenderListener = new PacketListener();
       PacketListener theReceiverListener = new PacketListener();
       
-      thePacketProtocol1.addPacketListenr( theSenderListener );
-      thePacketProtocol2.addPacketListenr( theReceiverListener );
-      Packet thePacket = new Packet( "2", "testid", "testbytes", 2, true );
+      thePacketProtocol1.addPacketListenr( "TEST", theSenderListener );
+      thePacketProtocol2.addPacketListenr( "TEST", theReceiverListener );
+      Packet thePacket = new Packet( "2", "testid", "TEST", "testbytes", 2, true );
       thePacketProtocol1.sendPacket( thePacket );
       
       Thread.sleep( 2000 );
@@ -114,9 +114,9 @@ public class PacketProtocolTest extends AbstractProtocolTest {
       PacketListener theSenderListener = new PacketListener();
       PacketListener theReceiverListener = new PacketListener();
       
-      thePacketProtocol1.addPacketListenr( theSenderListener );
-      thePacketProtocol2.addPacketListenr( theReceiverListener );
-      Packet thePacket = new Packet( "2", "testid", "testbytes", 2, false );
+      thePacketProtocol1.addPacketListenr( "TEST", theSenderListener );
+      thePacketProtocol2.addPacketListenr( "TEST", theReceiverListener );
+      Packet thePacket = new Packet( "2", "testid", "TEST", "testbytes", 2, false );
       thePacketProtocol1.sendPacket( thePacket );
       
       Thread.sleep( 1000 );
@@ -189,9 +189,9 @@ public class PacketProtocolTest extends AbstractProtocolTest {
       PacketListener theSenderListener = new PacketListener();
       PacketListener theReceiverListener = new PacketListener();
       
-      thePacketProtocol1.addPacketListenr( theSenderListener );
-      thePacketProtocol3.addPacketListenr( theReceiverListener );
-      Packet thePacket = new Packet( "3", "testid", "testbytes", 3, true );
+      thePacketProtocol1.addPacketListenr( "TEST", theSenderListener );
+      thePacketProtocol3.addPacketListenr( "TEST", theReceiverListener );
+      Packet thePacket = new Packet( "3", "testid", "TEST", "testbytes", 3, true );
       thePacketProtocol1.sendPacket( thePacket );
       
       Thread.sleep( 2000 );
