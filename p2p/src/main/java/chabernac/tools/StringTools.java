@@ -4,6 +4,8 @@
  */
 package chabernac.tools;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -31,6 +33,12 @@ public class StringTools {
       if(i < anID.length - 1) theString.append(",");
     }
     return theString.toString();
-    
+  }
+  
+  public static String toString(Exception e){
+    StringWriter theStringWriter = new StringWriter();
+    PrintWriter theWriter = new PrintWriter( theStringWriter );
+    e.printStackTrace( theWriter );
+    return theStringWriter.getBuffer().toString();
   }
 }

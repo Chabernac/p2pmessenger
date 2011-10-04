@@ -14,6 +14,7 @@ import org.apache.log4j.TTCCLayout;
 import chabernac.protocol.application.ApplicationProtocol;
 import chabernac.protocol.asyncfiletransfer.AsyncFileTransferProtocol;
 import chabernac.protocol.asyncfiletransfer.iAsyncFileTransferHandler;
+import chabernac.protocol.cam.CamProtocol;
 import chabernac.protocol.echo.EchoProtocol;
 import chabernac.protocol.encryption.EncryptionException;
 import chabernac.protocol.encryption.EncryptionProtocol;
@@ -161,6 +162,10 @@ public class ProtocolFactory implements iProtocolFactory{
     
     if(PacketProtocol.ID.equalsIgnoreCase( aProtocolId )) {
       return new PacketProtocol();
+    }
+    
+    if(CamProtocol.ID.equalsIgnoreCase( aProtocolId )) {
+      return new CamProtocol();
     }
 
     throw new ProtocolException("The protocol with id '" + aProtocolId + "' is not known");

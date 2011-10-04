@@ -43,7 +43,7 @@ public class CamProtocolTest extends AbstractProtocolTest {
     BasicConfigurator.configure();
   }
 
-  public void testCapture() throws ProtocolException, InterruptedException, MessageException, UnknownPeerException, PacketProtocolException{
+  public void testCapture() throws Exception{
     ProtocolContainer theProtocol1 = getProtocolContainer( -1, false, "1" );
     ProtocolServer theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT, 5);
 
@@ -53,6 +53,7 @@ public class CamProtocolTest extends AbstractProtocolTest {
     RoutingProtocol theRoutingProtocol1 = (RoutingProtocol)theProtocol1.getProtocol( RoutingProtocol.ID );
     RoutingTable theRoutingTable1 = theRoutingProtocol1.getRoutingTable();
     PacketProtocol thePacketProtocol1 = (PacketProtocol)theProtocol1.getProtocol( PacketProtocol.ID );
+    CamProtocol theCamProtocol1 = (CamProtocol)theProtocol1.getProtocol( CamProtocol.ID );
 
     RoutingProtocol theRoutingProtocol2 = (RoutingProtocol)theProtocol2.getProtocol( RoutingProtocol.ID );
     RoutingTable theRoutingTable2 = theRoutingProtocol2.getRoutingTable();
@@ -70,16 +71,14 @@ public class CamProtocolTest extends AbstractProtocolTest {
       assertTrue( theRoutingTable1.containsEntryForPeer( "2" ) );
       assertTrue( theRoutingTable2.containsEntryForPeer( "1" ) );
       
-      CamProtocol theCamProtocol1 = (CamProtocol)thePacketProtocol1.getPacketProtocolFactory().getProtocol( CamProtocol.ID );
-
       CountDownLatch theLatch = new CountDownLatch( 1 );
       CamListener theCamListener = new CamListener(theLatch);
       theCamProtocol1.addCamListener( theCamListener );
       theCamProtocol1.requestCapture( "2", 100,100,0.5f );
       
-      theLatch.await( 10, TimeUnit.SECONDS );
+      theLatch.await( 2000, TimeUnit.SECONDS );
       assertNotNull( theCamListener.getImage() );
-    } finally {
+    }  finally {
       theServer1.stop();
       theServer2.stop();
     }
