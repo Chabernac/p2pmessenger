@@ -4,7 +4,8 @@
  */
 package chabernac.protocol.packet;
 
-public interface iPacketProvider {
-  public Packet getNextPacket();
-  public boolean hasNextPacket();
+import java.io.IOException;
+
+public interface iDataPacketPersister {
+  public void persistDataPacket(DataPacket aPacket) throws IOException;
 }
