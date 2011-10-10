@@ -12,18 +12,18 @@ public class PacketTransferState {
   
   private final String myTransferId;
   private final List<String> myPacketsInProgress;
-  private final List<String> mySendPackets;
+  private final List<String> myTransferredPackets;
   private final List<String> myFailedPackets;
   private final int myNrOfPackets;
   private final Direction myDirection;
   private final State myState;
   
-  public PacketTransferState ( String aTransferId , List< String > aPacketsInProgress , List< String > aSendPackets ,
+  public PacketTransferState ( String aTransferId , List< String > aPacketsInProgress , List< String > aTransferredPacktes ,
       List< String > aFailedPackets , int aNrOfPackets , Direction aDirection , State aState ) {
     super();
     myTransferId = aTransferId;
     myPacketsInProgress = aPacketsInProgress;
-    mySendPackets = aSendPackets;
+    myTransferredPackets = aTransferredPacktes;
     myFailedPackets = aFailedPackets;
     myNrOfPackets = aNrOfPackets;
     myDirection = aDirection;
@@ -38,8 +38,8 @@ public class PacketTransferState {
     return myPacketsInProgress;
   }
 
-  public List< String > getSendPackets() {
-    return mySendPackets;
+  public List< String > getTransferredPackets() {
+    return myTransferredPackets;
   }
 
   public List< String > getFailedPackets() {
@@ -59,6 +59,6 @@ public class PacketTransferState {
   }
   
   public String toString(){
-    return "transferid '" + myTransferId + "' packets '" + myNrOfPackets + "' state '" + myState + "' send '" + mySendPackets.size() + "' sending '" + myPacketsInProgress.size() + "' failed '" + myFailedPackets.size() + "'";
+    return "transferid '" + myTransferId + "' direction '" + myDirection + "' packets '" + myNrOfPackets + "' state '" + myState + "' transferred '" + myTransferredPackets.size() + "' transferring '" + myPacketsInProgress.size() + "' failed '" + myFailedPackets.size() + "'";
   }
 }

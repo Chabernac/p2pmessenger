@@ -44,4 +44,14 @@ public class FileDataPacketPersister implements iDataPacketPersister {
   public void close() throws IOException {
     myFilePacketIo.close();
   }
+
+  @Override
+  public int getNrOfPackets() {
+    return myFilePacketIo.getNrOfPackets();
+  }
+
+  @Override
+  public boolean isComplete() {
+    return myFilePacketIo.isComplete();
+  }
 }

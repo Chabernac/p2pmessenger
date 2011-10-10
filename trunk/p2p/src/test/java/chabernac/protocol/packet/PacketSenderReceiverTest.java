@@ -97,20 +97,24 @@ public class PacketSenderReceiverTest extends AbstractProtocolTest {
       FileDataPacketProvider theProvider = new FileDataPacketProvider( theFile.getFile(), 1024 );
 
       PacketSender thePacketSender = new PacketSender( theProvider, myPeerId2, myPacketProtocl1, "file-transfer-1", 5 );
-
       CountDownLatch theLatch = new CountDownLatch( 1 );
       PacketTransferListener theListener = new PacketTransferListener(theLatch);
       thePacketSender.addPacketTransferListener( theListener );
-
+      
+      CountDownLatch theReceiverLatch = new CountDownLatch( 1 );
+      PacketTransferListener theReceiverListener = new PacketTransferListener(theReceiverLatch);
       FileDataPacketPersister thePersister = new FileDataPacketPersister( theTempFile, theProvider.getPacketSize(),  theProvider.getNrOfPackets());
       PacketReceiver theReceiver = new PacketReceiver( myPacketProtocol2, "file-transfer-1", thePersister );
+      theReceiver.addPacketTransferListener( theReceiverListener );
       theReceiver.start();
 
       thePacketSender.start();
 
       theLatch.await( 10, TimeUnit.SECONDS );
+      theReceiverLatch.await(1, TimeUnit.SECONDS);
       
       assertEquals( 1, theListener.getStates().size() );
+      assertEquals( 1, theReceiverListener.getStates().size() );
 
       theInput1 = new FileInputStream( theFile.getFile() );
       theInput2 = new FileInputStream( theTempFile );
