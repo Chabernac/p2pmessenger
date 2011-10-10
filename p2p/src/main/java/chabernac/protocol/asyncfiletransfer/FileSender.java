@@ -15,6 +15,7 @@ import chabernac.protocol.asyncfiletransfer.AsyncFileTransferProtocol.Command;
 import chabernac.protocol.asyncfiletransfer.AsyncFileTransferProtocol.Response;
 import chabernac.protocol.routing.AbstractPeer;
 import chabernac.protocol.routing.UnknownPeerException;
+import chabernac.tools.Percentage;
 
 public class FileSender extends AbstractFileIO{
   private static final Logger LOGGER = Logger.getLogger( FileSender.class );

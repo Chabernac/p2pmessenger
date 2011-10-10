@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.UUID;
 
+import chabernac.tools.Percentage;
+
 public class FilePacketIO {
   private final File myFile;
   private final int myPacketSize;

@@ -29,6 +29,7 @@ import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.RoutingTable;
 import chabernac.protocol.routing.RoutingTableEntry;
 import chabernac.thread.DynamicSizeExecutor;
+import chabernac.tools.Percentage;
 
 public class AsyncFileTransferProtocol extends Protocol implements iTransferController {
   private static final Logger LOGGER = Logger.getLogger( AsyncFileTransferProtocol.class );

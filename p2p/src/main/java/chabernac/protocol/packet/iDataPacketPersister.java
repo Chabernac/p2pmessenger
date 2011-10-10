@@ -5,7 +5,10 @@
 package chabernac.protocol.packet;
 
 import java.io.IOException;
+import java.util.List;
 
 public interface iDataPacketPersister {
   public void persistDataPacket(DataPacket aPacket) throws IOException;
+  public List<String> listMissingPackets();
+  public void close() throws IOException;
 }

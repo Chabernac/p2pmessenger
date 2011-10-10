@@ -4,6 +4,7 @@
  */
 package chabernac.protocol.packet;
 
+import java.io.IOException;
 import java.io.InputStream;
 
 public class InputStreamDataPacketProvider implements iDataPacketProvider {
@@ -45,6 +46,16 @@ public class InputStreamDataPacketProvider implements iDataPacketProvider {
   public void releasePacket( String aPacketId ) {
     // TODO Auto-generated method stub
     
+  }
+
+  @Override
+  public void close() throws IOException {
+    myInputStream.close();
+  }
+
+  @Override
+  public int getPacketSize() {
+    return myPacketSize;
   }
 
 }

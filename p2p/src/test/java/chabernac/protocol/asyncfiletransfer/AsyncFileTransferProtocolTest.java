@@ -27,6 +27,7 @@ import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.RoutingTable;
 import chabernac.protocol.routing.RoutingTableEntry;
 import chabernac.protocol.routing.UnknownPeerException;
+import chabernac.tools.Percentage;
 
 public class AsyncFileTransferProtocolTest extends AbstractProtocolTest {
   private static Logger LOGGER = Logger.getLogger(AsyncFileTransferProtocol.class);

@@ -7,6 +7,8 @@ package chabernac.protocol.asyncfiletransfer;
 import java.io.File;
 import java.util.concurrent.ExecutorService;
 
+import chabernac.tools.Percentage;
+
 public interface iFileIO {
   public void start() throws AsyncFileTransferException;
   public void startAsync(ExecutorService aService) throws AsyncFileTransferException;

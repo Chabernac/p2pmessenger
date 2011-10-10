@@ -49,4 +49,14 @@ public class FileDataPacketProvider implements iDataPacketProvider {
 
   }
 
+  @Override
+  public int getPacketSize() {
+    return myFilePacketIo.getPacketSize();
+  }
+
+  @Override
+  public void close() throws IOException {
+    myFilePacketIo.close();
+  }
+
 }
