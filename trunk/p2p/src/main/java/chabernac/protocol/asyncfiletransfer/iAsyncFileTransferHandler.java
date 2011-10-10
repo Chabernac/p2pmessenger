@@ -7,6 +7,7 @@ package chabernac.protocol.asyncfiletransfer;
 import java.io.File;
 
 import chabernac.protocol.filetransfer.FileTransferException;
+import chabernac.tools.Percentage;
 
 public interface iAsyncFileTransferHandler {
   /**

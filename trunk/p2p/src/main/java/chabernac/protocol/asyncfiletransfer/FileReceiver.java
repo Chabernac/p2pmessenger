@@ -11,6 +11,7 @@ import java.util.concurrent.ExecutorService;
 import org.apache.log4j.Logger;
 
 import chabernac.protocol.routing.AbstractPeer;
+import chabernac.tools.Percentage;
 
 
 public class FileReceiver extends AbstractFileIO{

@@ -17,6 +17,8 @@ import java.text.NumberFormat;
 
 import javax.swing.JPanel;
 
+import chabernac.tools.Percentage;
+
 public class FileTransferProgressPanel extends JPanel implements iFileTransferListener {
   private static final long serialVersionUID = -2109149737877351501L;
   private final FileTransferHandler myHandler;

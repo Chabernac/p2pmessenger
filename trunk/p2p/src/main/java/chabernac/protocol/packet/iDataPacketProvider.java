@@ -11,5 +11,7 @@ public interface iDataPacketProvider {
   public boolean hasNextPacket();
   public DataPacket getPacket(String aPacketId) throws IOException;
   public int getNrOfPackets();
+  public int getPacketSize();
   public void releasePacket(String aPacketId);
+  public void close() throws IOException;
 }

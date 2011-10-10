@@ -1,5 +1,7 @@
 package chabernac.protocol.asyncfiletransfer;
 
+import chabernac.tools.Percentage;
+
 public class FileTransferState {
   public static enum State{NOT_STARTED, RUNNING, PAUSED, CANCELLED_OR_REMOVED, DONE, REFUSED, FAILED, PENDING};
   public static enum Direction{RECEIVING, SENDING, UNKNOWN};
