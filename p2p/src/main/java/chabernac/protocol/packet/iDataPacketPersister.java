@@ -11,4 +11,6 @@ public interface iDataPacketPersister {
   public void persistDataPacket(DataPacket aPacket) throws IOException;
   public List<String> listMissingPackets();
   public void close() throws IOException;
+  public int getNrOfPackets();
+  public boolean isComplete();
 }

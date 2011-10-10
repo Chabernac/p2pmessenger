@@ -100,8 +100,6 @@ public class PacketSender {
     
     myListenerService.execute( new Runnable(){
       public void run(){
-    
-
         PacketTransferState theState = new PacketTransferState(
             myTransferId, 
             theSendingPackets,
