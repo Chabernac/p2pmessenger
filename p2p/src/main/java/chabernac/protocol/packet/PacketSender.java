@@ -21,7 +21,7 @@ import org.apache.log4j.Logger;
 import chabernac.protocol.packet.PacketTransferState.Direction;
 import chabernac.protocol.packet.PacketTransferState.State;
 
-public class PacketSender {
+public class PacketSender extends AbstractPacketTransfer{
   private static final Logger LOGGER = Logger.getLogger(PacketSender.class);
   private static final int PACKET_TIMEOUT = 10000;
 
@@ -37,10 +37,6 @@ public class PacketSender {
 
   private List<String> mySuccessPackets = new ArrayList< String >();
   private List<String> myFailedPackets = new ArrayList< String >();
-
-  private List<iPacketTransferListener> myListeners = new ArrayList< iPacketTransferListener >();
-
-  private ExecutorService myListenerService = Executors.newFixedThreadPool( 1 );
 
   public PacketSender ( iDataPacketProvider aPacketProvider , String aDestination , PacketProtocol aPacketProtocol ,
       String aTransferId, int anOutstandingPackets ) {
@@ -83,45 +79,12 @@ public class PacketSender {
     return Collections.unmodifiableList( myFailedPackets );
   }
 
-  public void addPacketTransferListener(iPacketTransferListener aListener){
-    myListeners.add( aListener );
-  }
-
-  public void remotePacketTransferListener(iPacketTransferListener aListener){
-    myListeners.remove( aListener );
-  }
-
-  private synchronized void informListeners(){
-    //create copies to avoid concurrent modification exceptions
-    final List<String> theSendingPackets = new ArrayList< String >(mySendPackets.keySet());
-    final List<String> theSuccessPackets = new ArrayList< String >(mySuccessPackets);
-    final List<String> theFailedPackets = new ArrayList< String >(myFailedPackets);
-    final State theStat = isFinished() ? State.DONE : stop ? State.STOPPED : State.STARTED;
-    
-    myListenerService.execute( new Runnable(){
-      public void run(){
-        PacketTransferState theState = new PacketTransferState(
-            myTransferId, 
-            theSendingPackets,
-            theSuccessPackets,
-            theFailedPackets,
-            myPacketProvider.getNrOfPackets(),
-            Direction.SENDING,
-            theStat);
-
-        for(iPacketTransferListener theListener : myListeners){
-          theListener.transferUpdated( theState );
-        }
-      }
-    });
-  }
-
   private synchronized void sendPacket(DataPacket aPacket){
     try{
       Packet thePacket = new Packet( myDestination, aPacket.getId(), myTransferId, aPacket.getBytes(), PacketProtocol.MAX_HOP_DISTANCE, true );
       mySendPackets.put(aPacket.getId(), new PacketContainer( thePacket ));
       myPacketProtocol.sendPacket( thePacket );
-      informListeners();
+      notifyListeners();
     }catch(PacketProtocolException e){
       LOGGER.error("An error occured while sending packet with id '" + aPacket.getId() + "'", e);
       mySendPackets.remove( aPacket.getId() );
@@ -152,7 +115,7 @@ public class PacketSender {
       synchronized(PacketSender.this){
         mySuccessPackets.add( aPacketId );
         mySendPackets.remove( aPacketId );
-        informListeners();
+        notifyListeners();
         sendPacketsUntillSlotsFull();
         myPacketProvider.releasePacket( aPacketId );
       }
@@ -163,7 +126,7 @@ public class PacketSender {
       synchronized(PacketSender.this){
         myFailedPackets.add(aPacketId);
         mySendPackets.remove(aPacketId);
-        informListeners();
+        notifyListeners();
         sendPacketsUntillSlotsFull();
       }
     }
@@ -209,5 +172,28 @@ public class PacketSender {
       //TODO we must detect if something is wrong with the communication or the sender will keep trying to send all packets forever
       sendPacketsUntillSlotsFull();
     }
+  }
+
+  @Override
+  public void waitUntillDone() {
+    //TODO implement waitUntillDone();
+  }
+
+  @Override
+  public PacketTransferState getTransferState() {
+    //create copies to avoid concurrent modification exceptions
+    final List<String> theSendingPackets = new ArrayList< String >(mySendPackets.keySet());
+    final List<String> theSuccessPackets = new ArrayList< String >(mySuccessPackets);
+    final List<String> theFailedPackets = new ArrayList< String >(myFailedPackets);
+    final State theStat = isFinished() ? State.DONE : stop ? State.STOPPED : State.STARTED;
+
+    return new PacketTransferState(
+        myTransferId, 
+        theSendingPackets,
+        theSuccessPackets,
+        theFailedPackets,
+        myPacketProvider.getNrOfPackets(),
+        Direction.SENDING,
+        theStat);
   }
 }
