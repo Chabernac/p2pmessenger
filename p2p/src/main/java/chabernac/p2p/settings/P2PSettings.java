@@ -9,8 +9,6 @@ import java.util.concurrent.TimeUnit;
 import chabernac.io.BasicSocketPool;
 import chabernac.io.SocketPoolCleanUpDecorator;
 import chabernac.io.iSocketPool;
-import chabernac.protocol.routing.PeerSender;
-import chabernac.protocol.routing.iPeerSender;
 
 public class P2PSettings {
   private iSocketPool mySocketPool = new BasicSocketPool();

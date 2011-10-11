@@ -10,7 +10,9 @@ import chabernac.protocol.facade.P2PFacadeException;
 import chabernac.protocol.version.Version;
 
 public class VersionProtocolTest extends TestCase {
-  public void testVersions() throws P2PFacadeException, InterruptedException{
+  
+  @Deprecated
+  public void deprecatedTestVersions() throws P2PFacadeException, InterruptedException{
     P2PFacade theFacade1 = new P2PFacade()
     .setPeerId( "1" )
     .setExchangeDelay( 3 )

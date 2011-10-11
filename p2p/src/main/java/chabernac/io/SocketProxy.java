@@ -41,6 +41,7 @@ public class SocketProxy {
     if(mySocket != null) return;
 
     Socket theSocket = new Socket();
+    theSocket.setReuseAddress( true );
     theSocket.connect( myAddress );
     myConnectTime = new Date();
     updateStackTrace();
@@ -104,6 +105,7 @@ public class SocketProxy {
   public synchronized void close(){
     if(mySocket != null){
       try {
+        mySocket.getOutputStream().flush();
         mySocket.close();
       } catch ( IOException e ) {
         LOGGER.error( "Unable to close socket", e);
