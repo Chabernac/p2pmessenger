@@ -31,88 +31,94 @@ import chabernac.util.concurrent.MonitorrableRunnable.Status;
  */
 
 public class CommandSessionTest extends TestCase {
+  private CommandSession mySession;
+  
   static{
     BasicConfigurator.resetConfiguration();
     BasicConfigurator.configure();
   }
   
+  public void setUp(){
+    mySession = CommandSession.getInstance();
+    mySession.setMode( Mode.NORMAL );
+  }
+  
   public void testSession(){
     StringBuffer theBuffer = new StringBuffer();
-    CommandSession theSession = CommandSession.getInstance();
-    theSession.execute( new StringBufferAddCommand(theBuffer, "a") );
+    mySession.execute( new StringBufferAddCommand(theBuffer, "a") );
     assertEquals( "a", theBuffer.toString() );
-    theSession.execute( new StringBufferAddCommand(theBuffer, "b") );
+    mySession.execute( new StringBufferAddCommand(theBuffer, "b") );
     assertEquals( "ab", theBuffer.toString() );
-    theSession.undoNumberOfSteps( 1 );
+    mySession.undoNumberOfSteps( 1 );
     assertEquals( "a", theBuffer.toString() );
-    theSession.redoNumberOfSteps( 1 );
+    mySession.redoNumberOfSteps( 1 );
     assertEquals( "ab", theBuffer.toString() );
-    theSession.execute( new StringBufferAddCommand(theBuffer, "c") );
+    mySession.execute( new StringBufferAddCommand(theBuffer, "c") );
     assertEquals( "abc", theBuffer.toString() );
-    theSession.undoNumberOfSteps( 2 );
+    mySession.undoNumberOfSteps( 2 );
     assertEquals( "a", theBuffer.toString() );
-    theSession.redoNumberOfSteps( 1 );
+    mySession.redoNumberOfSteps( 1 );
     assertEquals( "ab", theBuffer.toString() );
-    theSession.redoNumberOfSteps( 1 );
+    mySession.redoNumberOfSteps( 1 );
     assertEquals( "abc", theBuffer.toString() );
-    theSession.redoNumberOfSteps( 2 );
+    mySession.redoNumberOfSteps( 2 );
     assertEquals( "abc", theBuffer.toString() );
-    theSession.undoAll();
+    mySession.undoAll();
     assertEquals( "", theBuffer.toString() );
-    theSession.redoAll();
+    mySession.redoAll();
     assertEquals( "abc", theBuffer.toString() );
-    theSession.redoAll();
+    mySession.redoAll();
     assertEquals( "abc", theBuffer.toString() );
-    theSession.execute( new StringBufferAddCommand(theBuffer, "d") );
-    theSession.undoNumberOfSteps( 3 );
+    mySession.execute( new StringBufferAddCommand(theBuffer, "d") );
+    mySession.undoNumberOfSteps( 3 );
     assertEquals( "a", theBuffer.toString() );
-    theSession.redoNumberOfSteps( 3 );
+    mySession.redoNumberOfSteps( 3 );
     assertEquals( "abcd", theBuffer.toString() );
 
-    theSession.reset();
-    theSession.undoNumberOfSteps( 2 );
+    mySession.reset();
+    mySession.undoNumberOfSteps( 2 );
     assertEquals( "abcd", theBuffer.toString() );
-    theSession.redoNumberOfSteps( 2 );
+    mySession.redoNumberOfSteps( 2 );
     assertEquals( "abcd", theBuffer.toString() );
-    theSession.execute( new StringBufferAddCommand(theBuffer, "e") );
+    mySession.execute( new StringBufferAddCommand(theBuffer, "e") );
     assertEquals( "abcde", theBuffer.toString() );
-    theSession.execute( new StringBufferAddCommand(theBuffer, "f") );
+    mySession.execute( new StringBufferAddCommand(theBuffer, "f") );
     assertEquals( "abcdef", theBuffer.toString() );
-    theSession.undoNumberOfSteps( 1 );
+    mySession.undoNumberOfSteps( 1 );
     assertEquals( "abcde", theBuffer.toString() );
-    theSession.redoAll();
+    mySession.redoAll();
     assertEquals( "abcdef", theBuffer.toString() );
-    theSession.undoAll();
+    mySession.undoAll();
     assertEquals( "abcd", theBuffer.toString() );
   }
 
   public void testCommandSessionInstance(){
     Map theContext = new HashMap();
-    CommandSession theSession = CommandSession.getInstance();
-    assertEquals( theSession, CommandSession.getInstance() );
-    theSession = CommandSession.getInstance(theContext);
-    assertEquals( theSession, CommandSession.getInstance(theContext) );
+    CommandSession mySession = CommandSession.getInstance();
+    assertEquals( mySession, CommandSession.getInstance() );
+    mySession = CommandSession.getInstance(theContext);
+    assertEquals( mySession, CommandSession.getInstance(theContext) );
   }
 
   public void testCommandSessionMode(){
     StringBuffer theBuffer = new StringBuffer();
-    CommandSession theSession = CommandSession.getInstance();
-    theSession.execute( new StringBufferAddCommand(theBuffer, "a") );
+    CommandSession mySession = CommandSession.getInstance();
+    mySession.execute( new StringBufferAddCommand(theBuffer, "a") );
 
     assertEquals( "a", theBuffer.toString());
 
-    theSession.setMode( Mode.SKIP );
+    mySession.setMode( Mode.SKIP );
 
-    theSession.execute( new StringBufferAddCommand(theBuffer, "b") );
+    mySession.execute( new StringBufferAddCommand(theBuffer, "b") );
     assertEquals( "a", theBuffer.toString());
 
-    theSession.setMode( Mode.NORMAL);
-    theSession.execute( new StringBufferAddCommand(theBuffer, "b") );
+    mySession.setMode( Mode.NORMAL);
+    mySession.execute( new StringBufferAddCommand(theBuffer, "b") );
     assertEquals( "ab", theBuffer.toString());
 
-    theSession.setMode( Mode.EXCEPTION);
+    mySession.setMode( Mode.EXCEPTION);
     try{
-      theSession.execute( new StringBufferAddCommand(theBuffer, "c") );
+      mySession.execute( new StringBufferAddCommand(theBuffer, "c") );
 
       fail( "should not get here because of exception" );
     }catch(CommandException e){
@@ -121,14 +127,14 @@ public class CommandSessionTest extends TestCase {
   }
 
   public void testMultiThreadedCommandSession() throws InterruptedException{
-    CommandSession theSession = CommandSession.getInstance(new HashMap());
-    theSession.setNumberOfThreads( 2 );
+    CommandSession mySession = CommandSession.getInstance(new HashMap());
+    mySession.setNumberOfThreads( 2 );
 
     int theCount = 100;
     final CountDownLatch theLatch = new CountDownLatch( theCount );
 
     for(int i=0;i<theCount;i++){
-      theSession.execute( new Command(){
+      mySession.execute( new Command(){
         @Override
         public void execute() {
           theLatch.countDown();
@@ -142,15 +148,15 @@ public class CommandSessionTest extends TestCase {
 
   public void testBlockedCommandMultiThreadedCommandSession() throws InterruptedException{
     int theThreads = 3;
-    CommandSession theSession = CommandSession.getInstance(new HashMap());
-    theSession.setNumberOfThreads( theThreads );
+    CommandSession mySession = CommandSession.getInstance(new HashMap());
+    mySession.setNumberOfThreads( theThreads );
 
     int theCount = 100;
     final CountDownLatch theLatch = new CountDownLatch( theCount );
     int theBlocked = 2;
 
     for(int i=0;i<theBlocked;i++){
-      theSession.execute( new Command() {
+      mySession.execute( new Command() {
         @Override
         public void execute() {
           try {
@@ -164,7 +170,7 @@ public class CommandSessionTest extends TestCase {
     //2 threads are blocked but the other one should still process the commands
     
     for(int i=0;i<theCount;i++){
-      theSession.execute( new Command(){
+      mySession.execute( new Command(){
         @Override
         public void execute() {
           theLatch.countDown();
@@ -178,19 +184,20 @@ public class CommandSessionTest extends TestCase {
   
   public void testExecutionWithMonitor() throws InterruptedException{
    RunnableMonitor theMonitor = new RunnableMonitor();
-   CommandSession theSession = CommandSession.getInstance();
-   theSession.setNumberOfThreads( 1 );
-   theSession.setRunnableListener( theMonitor );
+   CommandSession mySession = CommandSession.getInstance();
+   mySession.setMode( Mode.NORMAL );
+   mySession.setNumberOfThreads( 1 );
+   mySession.setRunnableListener( theMonitor );
    
    StringBuffer theBuffer = new StringBuffer();
-   theSession.execute( new StringBufferAddCommand(theBuffer, "a") );
+   mySession.execute( new StringBufferAddCommand(theBuffer, "a") );
    Thread.sleep( 200 );
    assertEquals( "a", theBuffer.toString() );
    
    assertEquals( 1,theMonitor.getStatusMap().size());
    assertEquals( Status.END, theMonitor.getStatusMap().values().iterator().next() );
 
-   theSession.execute( new PauseCommand( 1000 ) );
+   mySession.execute( new PauseCommand( 1000 ) );
    Thread.sleep( 100 );
    assertEquals( 1, theMonitor.getStatusMap().size());
    assertEquals( Status.RUNNING, theMonitor.getStatusMap().values().toArray()[0]);
