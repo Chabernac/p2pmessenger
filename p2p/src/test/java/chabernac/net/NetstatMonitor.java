@@ -23,19 +23,19 @@ import org.apache.log4j.Logger;
 public class NetstatMonitor extends JFrame {
   private static final long serialVersionUID = -52669569018545738L;
   private static final int MAX_SOCKETS = 700;
-  private static final int MAX_SAMPLES = 54000;
+  private static final int MAX_SAMPLES = 1800;
   private static Logger LOGGER = Logger.getLogger(NetstatMonitor.class);
 
   private List<Integer> mySocketsUsed = new ArrayList< Integer >();
-  
+
   private int myMaxIndex = -1;
 
   public NetstatMonitor(){
     init();
     startTimer();
-    
+
   }
-  
+
   private void init(){
     setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
     setTitle( "Netstat monitor" );
@@ -45,27 +45,27 @@ public class NetstatMonitor extends JFrame {
     ScheduledExecutorService theService = Executors.newScheduledThreadPool( 1 );
     theService.scheduleAtFixedRate( new RetrieveNrOfSocktes(), 1, 1, TimeUnit.SECONDS );
   }
-  
+
   private void drawAxes(Graphics g){
     //draw y axx
-    
-    
-  
+
+
+
   }
-  
+
   public void paint(Graphics g){
     super.paint( g );
-    
+
     BufferedImage theImage = new BufferedImage( getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB );
     Graphics theGraphics = theImage.getGraphics();
-    
+
     drawAxes(theGraphics);
-    
+
     double theWidth = getWidth();
     double theHeight = getHeight();
     double theHSpacing = (double)theWidth / (double)mySocketsUsed.size(); 
     double theVSpacing =  (double)theHeight / (double)MAX_SOCKETS;
-    
+
     //draw y axis
     theGraphics.setColor( Color.black );
     theGraphics.drawLine( 10, 0, 10, getHeight() );
@@ -76,7 +76,7 @@ public class NetstatMonitor extends JFrame {
       theGraphics.setColor( Color.LIGHT_GRAY );
       theGraphics.drawLine( 0, y , getWidth(), y );
     }
-    
+
     //draw x axis
     theGraphics.setColor( Color.black );
     theGraphics.drawLine( 0, getHeight() - 10, getWidth(), getHeight() - 10);
@@ -87,22 +87,24 @@ public class NetstatMonitor extends JFrame {
       theGraphics.setColor( Color.LIGHT_GRAY );
       theGraphics.drawLine( x, 0, x, getHeight() );
     }
-    
+
     theGraphics.setColor( Color.blue);
-    
-    double thePreviousX = 0;
-    double thePreviousY = theHeight;
-    
-    for(int i=0;i<mySocketsUsed.size();i++){
-      double theX = (i + 1) * theHSpacing;
-      double theY = theHeight - (mySocketsUsed.get( i ) * theVSpacing);
-      
-      theGraphics.drawLine( (int)thePreviousX, (int)thePreviousY, (int)theX, (int)theY );
-      
-      thePreviousX = theX;
-      thePreviousY = theY;
+
+    if(mySocketsUsed.size() > 0){
+      double thePreviousX = 0;
+      double thePreviousY = theHeight - (mySocketsUsed.get( 0 ) * theVSpacing);
+
+      for(int i=1;i<mySocketsUsed.size();i++){
+        double theX = (i + 1) * theHSpacing;
+        double theY = theHeight - (mySocketsUsed.get( i ) * theVSpacing);
+
+        theGraphics.drawLine( (int)thePreviousX, (int)thePreviousY, (int)theX, (int)theY );
+
+        thePreviousX = theX;
+        thePreviousY = theY;
+      }
     }
-    
+
     //draw max
     if(myMaxIndex >= 0){
       theGraphics.setColor( Color.red );
@@ -111,13 +113,16 @@ public class NetstatMonitor extends JFrame {
       double theY = theHeight - theMaxSockets * theVSpacing;
       theGraphics.drawString( Integer.toString( theMaxSockets ), (int)theX, (int)theY );
     }
-    
+
     g.drawImage( theImage, 0, 0, null );
   }
-  
+
   private void checkMax(){
-    if(myMaxIndex == -1 || mySocketsUsed.get( mySocketsUsed.size() - 1 ) > mySocketsUsed.get(myMaxIndex)){
-      myMaxIndex = mySocketsUsed.size() - 1;
+    myMaxIndex = -1;
+    for(int i=0;i<mySocketsUsed.size();i++){
+      if(myMaxIndex == -1 || mySocketsUsed.get(i) >= mySocketsUsed.get(myMaxIndex)){
+        myMaxIndex = i;
+      }
     }
   }
 
@@ -142,7 +147,7 @@ public class NetstatMonitor extends JFrame {
       repaint();
     }
   }
-  
+
   public static void main(String[] args){
     BasicConfigurator.configure();
     NetstatMonitor theMonitor = new NetstatMonitor();
