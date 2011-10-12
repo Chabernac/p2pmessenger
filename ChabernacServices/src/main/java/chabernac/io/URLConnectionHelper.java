@@ -151,6 +151,7 @@ public class URLConnectionHelper {
 
     if(myOutputStream != null){
       try{
+        myOutputStream.flush();
         myOutputStream.close();
       }catch(IOException e){
         LOGGER.error( "Could not close outputstream", e );
