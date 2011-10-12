@@ -30,9 +30,9 @@ public abstract class AbstractPacketTransfer implements iPacketTransfer {
   }
   
   protected void notifyListeners(){
+    final PacketTransferState theState = getTransferState();
     myListenerService.execute( new Runnable(){
       public void run(){
-        PacketTransferState theState = getTransferState();
         for(iPacketTransferListener theListener : getPacketTransferListeners()){
           theListener.transferUpdated( theState );
         }
