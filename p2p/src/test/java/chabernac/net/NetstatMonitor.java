@@ -138,7 +138,7 @@ public class NetstatMonitor extends JFrame {
         while(theReader.readLine() != null){
           theLines++;
         }
-        mySocketsUsed.add( theLines );
+        mySocketsUsed.add( theLines - 5 );
         if(mySocketsUsed.size() >= MAX_SAMPLES) mySocketsUsed.remove( 0 );
         checkMax();
       }catch(Exception e){
