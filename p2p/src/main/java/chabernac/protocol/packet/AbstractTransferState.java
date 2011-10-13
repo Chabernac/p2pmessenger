@@ -26,6 +26,13 @@ public abstract class AbstractTransferState {
     myRemotePeer = aRemotePeer;
   }
 
+  public void changeToState(State aState) throws StateChangeException{
+    if(myState == aState) return;
+    if(aState == State.RUNNING) start();
+    else if(aState == State.STOPPED) stop();
+    else if(aState == State.CANCELLED) cancel();
+  }
+  
   public void start() throws StateChangeException{
     //we can only start if the current state is pending or stopped
     
