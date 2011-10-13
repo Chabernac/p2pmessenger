@@ -16,11 +16,11 @@ public class PacketTransferHandler {
     return myTransferId;
   }
   
-  public void start(){
+  public void start() throws StateChangeException{
    myTransferController.start( myTransferId ); 
   }
   
-  public void stop(){
+  public void stop() throws StateChangeException{
    myTransferController.stop( myTransferId ) ; 
   }
   
