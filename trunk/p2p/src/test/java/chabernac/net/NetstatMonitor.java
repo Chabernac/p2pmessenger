@@ -23,7 +23,8 @@ import org.apache.log4j.Logger;
 public class NetstatMonitor extends JFrame {
   private static final long serialVersionUID = -52669569018545738L;
   private static final int MAX_SOCKETS = 700;
-  private static final int MAX_SAMPLES = 1800;
+  private static final int MAX_SAMPLES = 720;
+  private static final int SECONDS_PER_SAMPLE = 5;
   private static Logger LOGGER = Logger.getLogger(NetstatMonitor.class);
 
   private List<Integer> mySocketsUsed = new ArrayList< Integer >();
@@ -43,7 +44,7 @@ public class NetstatMonitor extends JFrame {
 
   private void startTimer(){
     ScheduledExecutorService theService = Executors.newScheduledThreadPool( 1 );
-    theService.scheduleAtFixedRate( new RetrieveNrOfSocktes(), 1, 1, TimeUnit.SECONDS );
+    theService.scheduleAtFixedRate( new RetrieveNrOfSocktes(), 1, SECONDS_PER_SAMPLE, TimeUnit.SECONDS );
   }
 
   private void drawAxes(Graphics g){
@@ -80,10 +81,11 @@ public class NetstatMonitor extends JFrame {
     //draw x axis
     theGraphics.setColor( Color.black );
     theGraphics.drawLine( 0, getHeight() - 10, getWidth(), getHeight() - 10);
-    for(int i=0;i<=MAX_SAMPLES;i+=60){
+    int theMinute = 0;
+    for(int i=0;i<=MAX_SAMPLES;i+=(60 / SECONDS_PER_SAMPLE)){
       theGraphics.setColor( Color.black );
       int x = (int)(i * theHSpacing);
-      theGraphics.drawString(Integer.toString( i / 60 ), x,  getHeight() - 10);
+      theGraphics.drawString(Integer.toString( theMinute++ ), x,  getHeight() - 10);
       theGraphics.setColor( Color.LIGHT_GRAY );
       theGraphics.drawLine( x, 0, x, getHeight() );
     }
