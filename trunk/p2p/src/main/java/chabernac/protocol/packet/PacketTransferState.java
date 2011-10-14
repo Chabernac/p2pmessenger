@@ -6,6 +6,8 @@ package chabernac.protocol.packet;
 
 import java.util.List;
 
+import chabernac.tools.Percentage;
+
 public class PacketTransferState {
   public static enum Direction{RECEIVING, SENDING};
   public static enum State{STARTED,STOPPED,DONE,FAILED};
@@ -60,5 +62,9 @@ public class PacketTransferState {
   
   public String toString(){
     return "transferid '" + myTransferId + "' direction '" + myDirection + "' packets '" + myNrOfPackets + "' state '" + myState + "' transferred '" + myTransferredPackets.size() + "' transferring '" + myPacketsInProgress.size() + "' failed '" + myFailedPackets.size() + "'";
+  }
+
+  public Percentage getPercentageComplete() {
+    return new Percentage( myTransferredPackets.size(), myNrOfPackets );
   }
 }

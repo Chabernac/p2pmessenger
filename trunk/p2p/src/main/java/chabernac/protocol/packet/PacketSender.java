@@ -11,7 +11,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -46,11 +45,11 @@ public class PacketSender extends AbstractPacketTransfer{
     myPacketProtocol = aPacketProtocol;
     myTransferId = aTransferId;
     myOutstandingPackets = anOutstandingPackets;
+    myPacketProtocol.addPacketListenr( myTransferId, new PacketListener() );
   }
 
   public synchronized void start(){
     stop = false;
-    myPacketProtocol.addPacketListenr( myTransferId, new PacketListener() );
     sendPacketsUntillSlotsFull();
     myTimeOutService = Executors.newScheduledThreadPool( 1 );
     myTimeOutService.scheduleAtFixedRate( new CheckPacketSendTimeout(), 5, 5, TimeUnit.SECONDS);
@@ -58,9 +57,12 @@ public class PacketSender extends AbstractPacketTransfer{
 
   public synchronized void stop(){
     stop = true;
-    myPacketProtocol.removePacketListener( myTransferId );
     myTimeOutService.shutdownNow();
     myTimeOutService = null;
+  }
+  
+  public synchronized void done(){
+    myPacketProtocol.removePacketListener( myTransferId );
   }
 
   public synchronized boolean isFinished(){
