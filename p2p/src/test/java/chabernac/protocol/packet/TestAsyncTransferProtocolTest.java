@@ -93,9 +93,9 @@ public class TestAsyncTransferProtocolTest extends AbstractProtocolTest {
 
     try{
       AcceptTransferListener theAcceptListener =  new AcceptTransferListener(theReceivingFile) ; 
-      myTransferProtocol2.setTransferListener(theAcceptListener);
+      myTransferProtocol2.addTransferListener( theAcceptListener);
 
-      AbstractTransferState theSendState = myTransferProtocl1.startFileTransfer( theFile.getFile(), "2" );
+      AbstractTransferState theSendState = myTransferProtocl1.startFileTransfer( theFile.getFile(), "2", 256, 5 );
       theSendState.addPacketTransferListener( new PacketTransferVisualizerFrame( ) );
       assertTrue( theSendState.waitForState( State.DONE, 20, TimeUnit.SECONDS ));
 
@@ -118,9 +118,9 @@ public class TestAsyncTransferProtocolTest extends AbstractProtocolTest {
     ClassPathResource theFile = new ClassPathResource( "chabernac/protocol/asyncfiletransfer/mars_1k_color.jpg" );
 
     RefuseTransferListener theAcceptListener =  new RefuseTransferListener() ; 
-    myTransferProtocol2.setTransferListener(theAcceptListener);
+    myTransferProtocol2.addTransferListener( theAcceptListener);
 
-    AbstractTransferState theSendState = myTransferProtocl1.startFileTransfer( theFile.getFile(), "2" );
+    AbstractTransferState theSendState = myTransferProtocl1.startFileTransfer( theFile.getFile(), "2", 256, 5 );
     theSendState.waitForState( State.CANCELLED, 5, TimeUnit.SECONDS );
     assertEquals( State.CANCELLED,theSendState.getState() );
     theAcceptListener.getTransferState().waitForState( State.CANCELLED, 1, TimeUnit.SECONDS );
@@ -153,12 +153,6 @@ public class TestAsyncTransferProtocolTest extends AbstractProtocolTest {
     }
   }
   
-  public void testContains(){
-    ArrayList< Integer > theList = new ArrayList< Integer >();
-    theList.add(1);
-    assertTrue( theList.contains( 1 ) );
-  }
-
   private class RefuseTransferListener implements iTransferListener {
     private CountDownLatch myLatch = new CountDownLatch( 1 );
     private AbstractTransferState myTransferState;

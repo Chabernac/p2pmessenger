@@ -92,11 +92,11 @@ public class FileTransferStateTest extends AbstractProtocolTest {
     if(theReceivingFile.exists()) theReceivingFile.delete();
 
     try{
-      FileTransferState theSendState = FileTransferState.createForSend( myPacketProtocl1, "transfer-1", theFile.getFile(), "2");
+      FileTransferState theSendState = FileTransferState.createForSend( myPacketProtocl1, "transfer-1", theFile.getFile(), "2", 1024, 5);
       StateChangeListener theSendStateListener = new StateChangeListener();
       theSendState.addStateChangeListener( theSendStateListener );
 
-      FileTransferState theReceiveState = FileTransferState.createForReceive( myPacketProtocol2, theSendState.getTransferId(), theReceivingFile, "1", theSendState.getNrOfPackets() );
+      FileTransferState theReceiveState = FileTransferState.createForReceive( myPacketProtocol2, theSendState.getTransferId(), theReceivingFile, "1", theSendState.getNrOfPackets(), theSendState.getPacketSize() );
       StateChangeListener theReceiveStateListener = new StateChangeListener();
       theReceiveState.addStateChangeListener( theReceiveStateListener );
 

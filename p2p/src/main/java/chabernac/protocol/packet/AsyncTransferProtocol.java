@@ -5,7 +5,9 @@
 package chabernac.protocol.packet;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -32,7 +34,7 @@ public class AsyncTransferProtocol extends Protocol {
   private static enum Command{SETUP_TRANSFER, STATE_CHANGE};
   private static enum Response{TRANSFER_ID_NOT_FOUND, UNKNOWN_COMMAND, NOK, OK};
   
-  private iTransferListener myTransferListener;
+  private List<iTransferListener> myTransferListener = new ArrayList< iTransferListener >();
 
   public AsyncTransferProtocol ( ) {
     super( ID );
@@ -55,14 +57,14 @@ public class AsyncTransferProtocol extends Protocol {
     return ((RoutingProtocol)findProtocolContainer().getProtocol( RoutingProtocol.ID)).getRoutingTable();
   }
   
-  public iTransferListener getTransferListener() {
-    return myTransferListener;
+  public void addTransferListener(iTransferListener aTransferListener){
+    myTransferListener.add( aTransferListener );
   }
-
-  public void setTransferListener( iTransferListener aTransferListener ) {
-    myTransferListener = aTransferListener;
+  
+  public void removeTransferListener(iTransferListener aTransferListener){
+    myTransferListener.remove( aTransferListener );
   }
-
+  
   @Override
   public String handleCommand( String aSessionId, String anInput ) {
     if(anInput.startsWith( Command.STATE_CHANGE.name() )){
@@ -85,12 +87,12 @@ public class AsyncTransferProtocol extends Protocol {
         String[] theParams = anInput.split( ";" );
         String theTransferId = theParams[1];
         int theNrOfPackets = Integer.parseInt( theParams[2] );
-        String theFile = theParams[3];
-        String theRemotePeer = theParams[4];
-        AbstractTransferState theReceiveTransferState = FileTransferState.createForReceive( getPacketProtocol(), theTransferId, new File(theFile), theRemotePeer, theNrOfPackets);
+        int thePacketSize = Integer.parseInt( theParams[3] );
+        String theFile = theParams[4];
+        String theRemotePeer = theParams[5];
+        AbstractTransferState theReceiveTransferState = FileTransferState.createForReceive( getPacketProtocol(), theTransferId, new File(theFile), theRemotePeer, theNrOfPackets, thePacketSize);
         theReceiveTransferState.addStateChangeListener( myStateChangeListener );
-        myTransferStates.put( theTransferId, theReceiveTransferState );
-        myTransferListener.incomingTransfer( theReceiveTransferState );
+        addTransfer( theReceiveTransferState );
         return Response.OK.name();
       }catch(Exception e){
         LOGGER.error("Unable to setup file transfer", e);
@@ -99,6 +101,13 @@ public class AsyncTransferProtocol extends Protocol {
     }
     return Response.UNKNOWN_COMMAND.name();
   }
+  
+  private void addTransfer(AbstractTransferState aTransfer){
+    myTransferStates.put(aTransfer.getTransferId(), aTransfer);
+    for(iTransferListener theListener : myTransferListener){
+      theListener.incomingTransfer( aTransfer );
+    }
+  }
 
   @Override
   public void stop() {
@@ -106,14 +115,14 @@ public class AsyncTransferProtocol extends Protocol {
 
   }
 
-  public AbstractTransferState startFileTransfer(File aFile, String aPeer) throws AsyncTransferException{
+  public AbstractTransferState startFileTransfer(File aFile, String aPeer, int aPacketSize, int anOutstandingPackets) throws AsyncTransferException{
     try{
       String theTransferId = UUID.randomUUID().toString();
-      FileTransferState theFileTransfeState = FileTransferState.createForSend( getPacketProtocol(), theTransferId, aFile, aPeer );
+      FileTransferState theFileTransfeState = FileTransferState.createForSend( getPacketProtocol(), theTransferId, aFile, aPeer, aPacketSize, anOutstandingPackets );
       theFileTransfeState.addStateChangeListener( myStateChangeListener );
-      myTransferStates.put( theTransferId, theFileTransfeState );
       
-      String theResponse = sendMessage( Command.SETUP_TRANSFER + ";" + theTransferId + ";" + theFileTransfeState.getNrOfPackets() + ";" + aFile.getName() + ";" + getRoutingTable().getLocalPeerId(), aPeer );
+      addTransfer( theFileTransfeState );
+      String theResponse = sendMessage( Command.SETUP_TRANSFER + ";" + theTransferId + ";" + theFileTransfeState.getNrOfPackets() + ";" + aPacketSize + ";" + aFile.getName() + ";" + getRoutingTable().getLocalPeerId(), aPeer );
       if(!Response.OK.name().equalsIgnoreCase( theResponse )) throw new AsyncTransferException("an error occured while setting up transfer with id '" + theTransferId + "'");
       
       return theFileTransfeState;

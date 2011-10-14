@@ -37,7 +37,7 @@ public class PacketTransferVisualizerPanel extends JPanel implements iPacketTran
       } else if(myState.getPacketsInProgress().contains( thePacket )){
         g.setColor( Color.blue );
       } else {
-        g.setColor( Color.black );
+        g.setColor( Color.gray );
       }
       g.fillRect( theX, theY, myCellSize, myCellSize);
       g.setColor( Color.black );
