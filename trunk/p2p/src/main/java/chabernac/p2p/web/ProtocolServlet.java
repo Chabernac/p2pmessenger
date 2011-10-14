@@ -88,8 +88,7 @@ public class ProtocolServlet extends HttpServlet {
     String theInput = aRequest.getParameter(  "input" );
     String theSession = aRequest.getParameter( "session" );
     String thePeerId = aRequest.getParameter("peerid");
-
-
+    
     LOGGER.debug( "Received message from peer '" + thePeerId + "' in session '" + theSession + "': " + theInput + "'" + " at remote ip '" + aRequest.getRemoteAddr() + "'" );
     //TODO remove when logging correctly enabled on server
     //    System.out.println("Received message from peer '" + thePeerId + "' in session '" + theSession + "': " + theInput + "'" );
@@ -104,6 +103,7 @@ public class ProtocolServlet extends HttpServlet {
       } else {
         getPeerIpMap().put(thePeerId, aRequest.getRemoteAddr());
         getSessionData().putProperty(theSession, "requestor.ip", aRequest.getRemoteAddr());
+        getSessionData().putProperty(theSession, "requestor.url", aRequest.getRequestURI());
         
         String theResult = getProtocolContainer().handleCommand(theSession , theInput );
         aResponse.getWriter().println(theResult);

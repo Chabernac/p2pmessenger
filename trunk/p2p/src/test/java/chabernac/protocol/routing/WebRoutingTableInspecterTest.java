@@ -90,4 +90,39 @@ public class WebRoutingTableInspecterTest extends TestCase {
     assertTrue(  theNewRoutingTable.getEntryForPeer( "5" ).getPeer() instanceof IndirectReachablePeer);
     assertTrue(  theNewRoutingTable.getEntryForPeer( "6" ).getPeer() instanceof IndirectReachablePeer);
   }
+  
+  public void testConvertLocalWebPeerToURLOfRequestor() throws MalformedURLException, UnknownPeerException{
+    SessionData theSessionData = new SessionData();
+    theSessionData.putProperty( "session-1", "requestor.url", "http://blable.org/");
+    Map<String, String> thePeerExternalIpLink = new HashMap<String, String>();
+
+
+    WebRoutingTableInspecter theInspector = new WebRoutingTableInspecter( theSessionData, thePeerExternalIpLink);
+
+    RoutingTable theRoutingTable = new RoutingTable( "1" );
+    
+    WebPeer theLocalWebPeer =  new WebPeer( "1", new URL("http://localhost:80/") );
+    RoutingTableEntry theEntry = new RoutingTableEntry(theLocalWebPeer, 0, theLocalWebPeer, System.currentTimeMillis() );
+    theRoutingTable.addRoutingTableEntry( theEntry );
+    
+    RoutingTable theNewRoutingTable = theInspector.inspectRoutingTable( "session-1", theRoutingTable );
+    
+    assertTrue( theNewRoutingTable.containsEntryForPeer( "1" ) );
+    assertTrue(  theNewRoutingTable.getEntryForPeer( "1" ).getPeer() instanceof WebPeer );
+    
+    RoutingTableEntry theNewEntry = theNewRoutingTable.getEntryForPeer( "1" );
+    
+    assertEquals( 0, theNewEntry.getHopDistance() );
+    assertTrue( theNewEntry.getPeer() == theNewEntry.getGateway() );
+    assertEquals( theEntry.getLastOnlineTime(), theNewEntry.getLastOnlineTime());
+    assertEquals( theEntry.getCreationTime(), theNewEntry.getCreationTime());
+    
+    WebPeer theNewWebPeer = (WebPeer)theNewEntry.getPeer();
+    assertEquals( "http://blable.org/", theNewWebPeer.getURL().toString() );
+    assertEquals( theLocalWebPeer.getChannel(), theNewWebPeer.getChannel() );
+    assertEquals( theLocalWebPeer.getPeerId(), theNewWebPeer.getPeerId() );
+    assertEquals( theLocalWebPeer.getSupportedProtocols(), theNewWebPeer.getSupportedProtocols());
+    assertEquals( theLocalWebPeer.isTestPeer(), theNewWebPeer.isTestPeer());
+    assertEquals( theLocalWebPeer.isTemporaryPeer(), theNewWebPeer.isTemporaryPeer());
+  }
 }

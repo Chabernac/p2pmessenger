@@ -38,6 +38,15 @@ public class WebPeer extends AbstractPeer {
     super(aPeerId);
     myURL = anUrl;
   }
+  
+  public WebPeer(URL anURL, WebPeer aWebPeer ){
+   this(aWebPeer.getPeerId(), anURL);
+   setChannel( aWebPeer.getChannel() );
+   setTestPeer( aWebPeer.isTestPeer() );
+   setTemporaryPeer( aWebPeer.isTemporaryPeer() );
+   mySupportedProtocols.clear();
+   mySupportedProtocols.addAll(aWebPeer.getSupportedProtocols());
+  }
 
   @Override
   public String getEndPointRepresentation() {

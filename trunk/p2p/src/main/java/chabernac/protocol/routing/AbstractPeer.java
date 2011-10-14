@@ -15,7 +15,7 @@ public abstract class AbstractPeer implements Serializable{
   private boolean isTemporaryPeer = true;
   
   //Maybe this is not so clean but how else to define if a peer was created during a unit test?
-  private final boolean isTestPeer;
+  private boolean isTestPeer;
   
   public AbstractPeer(String anPeerId) {
     super();
@@ -88,6 +88,11 @@ public abstract class AbstractPeer implements Serializable{
 
   public boolean isTestPeer() {
     return isTestPeer;
+  }
+  
+  public AbstractPeer setTestPeer(boolean isTestPeer){
+    this.isTestPeer = isTestPeer;
+    return this;
   }
   
   /**

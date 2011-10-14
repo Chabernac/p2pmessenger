@@ -21,7 +21,7 @@ import chabernac.protocol.routing.RoutingTable;
 
 public class AsyncTransferProtocol extends Protocol implements iPacketTransferController {
   private static final Logger LOGGER = Logger.getLogger(AsyncTransferException.class);
-  
+
   public static final String ID = "ATP";
 
   private Map<String, AbstractTransferState> myTransferStates = new HashMap< String, AbstractTransferState >();
@@ -29,7 +29,7 @@ public class AsyncTransferProtocol extends Protocol implements iPacketTransferCo
   private iStateChangeListener myStateChangeListener = new StateChangeListener();
 
   private static enum Command{STATE_CHANGE};
-  private static enum Response{TRANSFER_ID_NOT_FOUND, UNKNOWN_COMMAND};
+  private static enum Response{TRANSFER_ID_NOT_FOUND, UNKNOWN_COMMAND, NOK};
 
   public AsyncTransferProtocol ( String anId ) {
     super( ID );
@@ -90,9 +90,14 @@ public class AsyncTransferProtocol extends Protocol implements iPacketTransferCo
       if(!myTransferStates.containsKey( theTransferId )){
         return Response.TRANSFER_ID_NOT_FOUND.name();
       }
-      
-      AbstractTransferState.State theNewStat = AbstractTransferState.State.valueOf( theNewState );
-      myTransferStates.get( theTransferId ).changeToState( theNewStat );
+
+      try{
+        AbstractTransferState.State theNewStat = AbstractTransferState.State.valueOf( theNewState );
+        myTransferStates.get( theTransferId ).changeToState( theNewStat );
+      }catch(StateChangeException e){
+        LOGGER.error("Could not change state", e);
+        return Response.NOK.name();
+      }
     }
     return Response.UNKNOWN_COMMAND.name();
   }
@@ -131,10 +136,10 @@ public class AsyncTransferProtocol extends Protocol implements iPacketTransferCo
     @Override
     public void stateChanged( String aTransferId, State anOldState, State aNewState ) {
       try{
-      if(myTransferStates.containsKey( aTransferId )){
-        String theRemotePeer = myTransferStates.get(aTransferId).getRemotePeer();
-        sendMessage( Command.STATE_CHANGE.name() + ";" + aTransferId + ";" + aNewState, theRemotePeer );
-      }
+        if(myTransferStates.containsKey( aTransferId )){
+          String theRemotePeer = myTransferStates.get(aTransferId).getRemotePeer();
+          sendMessage( Command.STATE_CHANGE.name() + ";" + aTransferId + ";" + aNewState, theRemotePeer );
+        }
       }catch(AsyncTransferException e){
         LOGGER.error("Unable to announce state changed", e);
       }

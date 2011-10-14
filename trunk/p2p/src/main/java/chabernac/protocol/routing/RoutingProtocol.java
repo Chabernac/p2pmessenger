@@ -180,6 +180,7 @@ public class RoutingProtocol extends Protocol {
     try {
       FileResource theSuperNodes = new FileResource("supernodes.txt");
       if(theSuperNodes.exists()){
+        LOGGER.debug( "Loading supernodes from supernodes.txt" );
         mySuperNodes.addAll( IOTools.loadStreamAsList( theSuperNodes.getInputStream() ));
       }
     } catch ( IOException e ) {
