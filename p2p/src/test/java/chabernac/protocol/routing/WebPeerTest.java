@@ -5,6 +5,7 @@
 package chabernac.protocol.routing;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -123,6 +124,22 @@ public class WebPeerTest extends TestCase {
   
   public void testReplacePlus(){
     assertEquals("+", "+".replaceAll("\\+", "{plus}").replaceAll("\\{plus\\}", "\\+"));
+  }
+  
+  public void testCreateWebPeerCopy() throws MalformedURLException{
+    WebPeer theWebPeer = new WebPeer( new URL("http://123.4.5.6/") );
+    theWebPeer.setChannel( "channel" );
+    theWebPeer.setPeerId( "5555" );
+    theWebPeer.setTemporaryPeer( true );
+    theWebPeer.setTestPeer( false );
+    
+    WebPeer theNewWebPeer = new WebPeer(new URL("http://5.6.7.8/"), theWebPeer);
+    assertEquals( theWebPeer.getPeerId(), theNewWebPeer.getPeerId() );
+    assertEquals( theWebPeer.getChannel(), theNewWebPeer.getChannel());
+    assertEquals( theWebPeer.getSupportedProtocols(), theNewWebPeer.getSupportedProtocols());
+    assertEquals( theWebPeer.isTemporaryPeer(), theNewWebPeer.isTemporaryPeer());
+    assertEquals( theWebPeer.isTestPeer(), theNewWebPeer.isTestPeer());
+    assertEquals( "http://5.6.7.8/", theNewWebPeer.getURL().toString());
   }
   
   private class MyPeerSender extends AbstractPeerSender{
