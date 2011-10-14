@@ -29,12 +29,15 @@ public class PacketTransferVisualizerPanel extends JPanel implements iPacketTran
       int theColumn = i % theNrOfHorizontallCells;
       int theX = theColumn * myCellSize;
       int theY = theRow * myCellSize;
-      if(myState.getTransferredPackets().contains( i )){
+      String thePacket = Integer.toString( i );
+      if(myState.getTransferredPackets().contains( thePacket )){
         g.setColor( Color.green );
-      } else if(myState.getFailedPackets().contains( i )){
+      } else if(myState.getFailedPackets().contains( thePacket )){
         g.setColor( Color.orange );
-      } else if(myState.getPacketsInProgress().contains( i )){
+      } else if(myState.getPacketsInProgress().contains( thePacket )){
         g.setColor( Color.blue );
+      } else {
+        g.setColor( Color.black );
       }
       g.fillRect( theX, theY, myCellSize, myCellSize);
       g.setColor( Color.black );
