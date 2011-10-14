@@ -9,6 +9,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -96,7 +97,7 @@ public class TestAsyncTransferProtocolTest extends AbstractProtocolTest {
 
       AbstractTransferState theSendState = myTransferProtocl1.startFileTransfer( theFile.getFile(), "2" );
       theSendState.addPacketTransferListener( new PacketTransferVisualizerFrame( ) );
-      assertTrue( theSendState.waitForState( State.DONE, 5, TimeUnit.SECONDS ));
+      assertTrue( theSendState.waitForState( State.DONE, 20, TimeUnit.SECONDS ));
 
       assertTrue( theAcceptListener.getTransferState().waitForState( State.DONE, 1, TimeUnit.SECONDS ));
 
@@ -150,6 +151,12 @@ public class TestAsyncTransferProtocolTest extends AbstractProtocolTest {
       myLatch.await(5, TimeUnit.SECONDS);
       return myTransferState;
     }
+  }
+  
+  public void testContains(){
+    ArrayList< Integer > theList = new ArrayList< Integer >();
+    theList.add(1);
+    assertTrue( theList.contains( 1 ) );
   }
 
   private class RefuseTransferListener implements iTransferListener {

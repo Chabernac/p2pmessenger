@@ -11,7 +11,7 @@ public class FileTransferState extends AbstractTransferState{
   public static enum Direction{SEND, RECEIVE};
   
   private final int PACKETS_SIZE = 8;
-  private final int OUTSTANDING_PACKETS = 5;
+  private final int OUTSTANDING_PACKETS = 10;
   
   private final Direction myDirection;
   private File myFile;
