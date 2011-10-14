@@ -7,6 +7,8 @@ package chabernac.protocol.packet;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 public abstract class AbstractTransferState {
   public static enum State{PENDING, RUNNING, STOPPED, CANCELLED, DONE, FAILED};
@@ -25,15 +27,12 @@ public abstract class AbstractTransferState {
     myTransferId = aTransferId;
     myRemotePeer = aRemotePeer;
   }
-
-  public void changeToState(State aState) throws StateChangeException{
-    if(myState == aState) return;
-    if(aState == State.RUNNING) start();
-    else if(aState == State.STOPPED) stop();
-    else if(aState == State.CANCELLED) cancel();
-  }
   
   public void start() throws StateChangeException{
+    startInternal( true );
+  }
+
+  public void startInternal(boolean isFireStateChange) throws StateChangeException{
     //we can only start if the current state is pending or stopped
     
     if(myState == State.PENDING || myState == State.STOPPED){
@@ -45,29 +44,37 @@ public abstract class AbstractTransferState {
         }
       }
       myTransfer.start();
-      changeState( State.RUNNING );
+      changeState( State.RUNNING, isFireStateChange );
     } else {
       throw new StateChangeException("Could not start from state '" + myState + "'");
     }
   }
   
   public void stop() throws StateChangeException{
+    stopInternal(true);
+  }
+  
+  private void stopInternal(boolean isFireChangeStateEvent) throws StateChangeException{
     //we can only stop if the current state is running
     if(myState == State.RUNNING){
       myTransfer.stop();
-      changeState( State.STOPPED );
+      changeState( State.STOPPED, isFireChangeStateEvent );
     } else {
       throw new StateChangeException("Could not stop from state '" + myState + "'");
     }
   }
   
   public void cancel() throws StateChangeException{
+    cancelInternal( true);
+  }
+  
+  private void cancelInternal(boolean isFireStateChangeEvent) throws StateChangeException{
     //we can only cancel if the current state is pending running or stopped
     if(myState == State.RUNNING || myState == State.STOPPED || myState == State.PENDING){
       if(myTransfer != null){
         myTransfer.stop();
       }
-      changeState( State.CANCELLED );
+      changeState( State.CANCELLED, isFireStateChangeEvent );
     } else {
       throw new StateChangeException("Could not cancel from state '" + myState + "'");
     }
@@ -75,8 +82,16 @@ public abstract class AbstractTransferState {
   }
   
   protected abstract iPacketTransfer createPacketTransfer() throws IOException;
+  protected abstract String getTransferDescription();
   
-  private void changeState(State aNewState){
+  public void changeToState(State aState) throws StateChangeException{
+    if(myState == aState) return;
+    if(aState == State.RUNNING) startInternal(false);
+    else if(aState == State.STOPPED) stopInternal(false);
+    else if(aState == State.CANCELLED) cancelInternal(false);
+  }
+  
+  private void changeState(State aNewState, boolean isFireStatChangeEvent){
     State theOldState = myState;
     myState = aNewState;
     //if the state is changed to running then add auto detection for the states DONE and FAILED
@@ -85,7 +100,22 @@ public abstract class AbstractTransferState {
     } else if( theOldState == State.RUNNING && myState != State.RUNNING){
       myTransfer.removePacketTransferListener( myPacketTransferListener );
     }
-    notifyStateChange(theOldState, aNewState);
+    if(isFireStatChangeEvent) notifyStateChange(theOldState, aNewState);
+  }
+  
+  public State getState(){
+    return myState;
+  }
+  
+  public PacketTransferState getPacketTransferState(){
+    return myTransfer.getTransferState();
+  }
+  
+  public boolean waitForState(State aState, int aTimeout, TimeUnit aTimeUnit) throws InterruptedException{
+    CountDownLatch theLatch = new CountDownLatch( 1 );
+    addStateChangeListener( new WaitForStateListener(aState, theLatch) );
+    theLatch.await(aTimeout, aTimeUnit);
+    return getState() == aState;
   }
 
   private void notifyStateChange( State anOldState, State aNewState ) {
@@ -102,6 +132,10 @@ public abstract class AbstractTransferState {
     myStateChangeListeners.remove(aStateChangeListener);
   }
   
+  public void addPacketTransferListener(iPacketTransferListener aPacketTransferListener){
+    myTransfer.addPacketTransferListener( aPacketTransferListener );
+  }
+  
   public String getRemotePeer(){
     return myRemotePeer;
   }
@@ -114,11 +148,27 @@ public abstract class AbstractTransferState {
     @Override
     public void transferUpdated( PacketTransferState aPacketTransferState ) {
       if(aPacketTransferState.getState() == PacketTransferState.State.FAILED){
-        changeState( State.FAILED );
+        changeState( State.FAILED, true );
       } else if(aPacketTransferState.getState() == PacketTransferState.State.DONE){
-        changeState( State.DONE );
+        changeState( State.DONE, true );
       }
     }
   }
+  
+  private class WaitForStateListener implements iStateChangeListener {
+    private final State myState;
+    private final CountDownLatch myLatch;
+    
+    public WaitForStateListener ( State aState , CountDownLatch aLatch ) {
+      myState = aState;
+      myLatch = aLatch;
+    }
 
+    @Override
+    public void stateChanged( String aTransferId, State anOldState, State aNewState ) {
+     if(aNewState == myState){
+       myLatch.countDown();
+     }
+    }
+  }
 }

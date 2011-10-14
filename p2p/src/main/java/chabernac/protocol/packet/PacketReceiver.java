@@ -29,15 +29,18 @@ public class PacketReceiver extends AbstractPacketTransfer{
     myDataPacketPersister = aDataPacketPersister;
     myTransferId = aTransferId;
     myPacketProtocol = aPacketProtocol;
+    myPacketProtocol.addPacketListenr( myTransferId,  new PacketListener() );
   }
 
   public void start(){
     stop = false;
-    myPacketProtocol.addPacketListenr( myTransferId,  new PacketListener() ); 
   }
 
   public void stop(){
     stop = true;
+  }
+  
+  public void done(){
     myPacketProtocol.removePacketListener( myTransferId );
   }
   
@@ -60,6 +63,7 @@ public class PacketReceiver extends AbstractPacketTransfer{
       try{
         myDataPacketPersister.persistDataPacket( theDataPacket );
         myReceivedPackets.add(aPacket.getId());
+        if(myDataPacketPersister.isComplete()) done();
         notifyListeners();
       }catch(IOException e){
         LOGGER.error( "an error occured while persisting data packet", e );

@@ -11,6 +11,7 @@ public interface iPacketTransfer {
   
   public void start();
   public void stop();
+  public void done();
   public void waitUntillDone();
   public PacketTransferState getTransferState();
 }

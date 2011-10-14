@@ -27,6 +27,7 @@ import chabernac.protocol.list.ListProtocol;
 import chabernac.protocol.message.AsyncMessageProcotol;
 import chabernac.protocol.message.MessageProtocol;
 import chabernac.protocol.message.MultiPeerMessageProtocol;
+import chabernac.protocol.packet.AsyncTransferProtocol;
 import chabernac.protocol.packet.PacketProtocol;
 import chabernac.protocol.ping.PingProtocol;
 import chabernac.protocol.pipe.PipeProtocol;
@@ -167,6 +168,11 @@ public class ProtocolFactory implements iProtocolFactory{
     if(CamProtocol.ID.equalsIgnoreCase( aProtocolId )) {
       return new CamProtocol();
     }
+    
+    if(AsyncTransferProtocol.ID.equalsIgnoreCase( aProtocolId )) {
+      return new AsyncTransferProtocol( );
+    }
+
 
     throw new ProtocolException("The protocol with id '" + aProtocolId + "' is not known");
   }
