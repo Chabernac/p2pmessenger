@@ -19,7 +19,6 @@ import chabernac.comet.CometServlet;
 import chabernac.p2p.web.ProtocolServlet;
 import chabernac.protocol.AbstractProtocolTest;
 import chabernac.protocol.ProtocolContainer;
-import chabernac.protocol.ProtocolException;
 import chabernac.protocol.ProtocolServer;
 import chabernac.protocol.message.Message;
 import chabernac.protocol.message.MessageProtocol;

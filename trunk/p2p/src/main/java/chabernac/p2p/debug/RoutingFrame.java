@@ -17,7 +17,6 @@ import javax.swing.JTabbedPane;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 
-import chabernac.command.Command;
 import chabernac.command.CommandSession;
 import chabernac.io.CachingSocketPool;
 import chabernac.io.SocketPoolPanel;

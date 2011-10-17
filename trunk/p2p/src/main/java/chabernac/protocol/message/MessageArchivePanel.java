@@ -23,7 +23,11 @@ import chabernac.protocol.ProtocolException;
 
 public class MessageArchivePanel extends JPanel {
 
-  private final MessageArchive myMesageArchive;
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 5584286562658868121L;
+private final MessageArchive myMesageArchive;
   private MessageArchiveTableModel myModel = null;
   private final MultiPeerMessageProtocol myProtocol;
   private final String myLocalPeerId;
@@ -67,7 +71,12 @@ public class MessageArchivePanel extends JPanel {
   }
   
   public class RefreshAction extends AbstractAction {
-    public RefreshAction(){
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -5168493551995257843L;
+
+	public RefreshAction(){
       putValue( Action.NAME, "Refresh" );
     }
     

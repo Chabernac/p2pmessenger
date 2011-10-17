@@ -51,8 +51,6 @@ import chabernac.protocol.message.MultiPeerMessage;
 import chabernac.protocol.message.MultiPeerMessageProtocol;
 import chabernac.protocol.message.iDeliverReportListener;
 import chabernac.protocol.message.iMultiPeerMessageListener;
-import chabernac.protocol.packet.PacketProtocol;
-import chabernac.protocol.packet.PacketProtocolException;
 import chabernac.protocol.pipe.IPipeListener;
 import chabernac.protocol.pipe.Pipe;
 import chabernac.protocol.pipe.PipeProtocol;
@@ -533,7 +531,8 @@ public class P2PFacade {
     return this;
   }
 
-  public InfoObject getInfoObject() throws P2PFacadeException{
+  @SuppressWarnings("unchecked")
+public InfoObject getInfoObject() throws P2PFacadeException{
     if(!isStarted()) {
       if(!myProperties.containsKey( "chabernac.protocol.infoexchange.InfoObject" )){
         myProperties.setProperty( "chabernac.protocol.infoexchange.InfoObject", new InfoObject() );

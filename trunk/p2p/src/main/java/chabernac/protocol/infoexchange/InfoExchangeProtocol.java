@@ -12,9 +12,6 @@ import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
 import org.apache.log4j.Logger;
 
 import chabernac.io.Base64ObjectStringConverter;
@@ -28,7 +25,6 @@ import chabernac.protocol.routing.IRoutingTableListener;
 import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.RoutingTable;
 import chabernac.protocol.routing.RoutingTableEntry;
-import chabernac.thread.DynamicSizeExecutor;
 
 /**
  *

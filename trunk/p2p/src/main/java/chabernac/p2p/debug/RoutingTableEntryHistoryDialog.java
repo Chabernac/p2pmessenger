@@ -82,7 +82,11 @@ public class RoutingTableEntryHistoryDialog extends JDialog {
   }
 
   public class StartTrackingHistory extends AbstractAction {
-    public StartTrackingHistory(){
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 5366820265975141581L;
+	public StartTrackingHistory(){
       putValue( Action.NAME, "Start tracking" );
     }
     @Override
@@ -91,7 +95,11 @@ public class RoutingTableEntryHistoryDialog extends JDialog {
     }
   }
   public class StopTrackingHistory extends AbstractAction {
-    public StopTrackingHistory(){
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -8999569522020952181L;
+	public StopTrackingHistory(){
       putValue( Action.NAME, "Stop tracking" );
     }
     @Override
@@ -100,7 +108,11 @@ public class RoutingTableEntryHistoryDialog extends JDialog {
     }
   }
   public class RefreshHistory extends AbstractAction {
-    public RefreshHistory(){
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -7424156241445404269L;
+	public RefreshHistory(){
       putValue( Action.NAME, "Refresh" );
     }
     @Override
@@ -110,7 +122,11 @@ public class RoutingTableEntryHistoryDialog extends JDialog {
   }
 
   public class ClearHistory extends AbstractAction {
-    public ClearHistory(){
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 6372273881967481025L;
+	public ClearHistory(){
       putValue( Action.NAME, "Clear" );
     }
     @Override

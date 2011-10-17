@@ -89,7 +89,12 @@ public class RoutingPanel extends JPanel {
   }
   
   public class StartLocalSystemScan  extends AbstractAction{
-    public StartLocalSystemScan(){
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -8773364986791187155L;
+
+	public StartLocalSystemScan(){
       putValue( Action.NAME, "Local scan" );
     }
     
@@ -104,7 +109,12 @@ public class RoutingPanel extends JPanel {
   }  
   
   public class StartRemoteSystemScan  extends AbstractAction{
-    public StartRemoteSystemScan(){
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 6011412995328892025L;
+
+	public StartRemoteSystemScan(){
       putValue( Action.NAME, "remote scan" );
     }
     
@@ -119,7 +129,12 @@ public class RoutingPanel extends JPanel {
   }
   
   public class SendUDPAnnouncement  extends AbstractAction{
-    public SendUDPAnnouncement(){
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -596393164465244545L;
+
+	public SendUDPAnnouncement(){
       putValue( Action.NAME, "send UDP announcement" );
     }
     
@@ -134,7 +149,12 @@ public class RoutingPanel extends JPanel {
   }
   
   public class ExchangeRoutingTable  extends AbstractAction{
-    public ExchangeRoutingTable(){
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -9165061106192729191L;
+
+	public ExchangeRoutingTable(){
       putValue( Action.NAME, "Exchange routing table" );
     }
     
@@ -149,7 +169,11 @@ public class RoutingPanel extends JPanel {
   }
   
   public class DetectRemoteSystem  extends AbstractAction{
-    public DetectRemoteSystem(){
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -6293979828266668777L;
+	public DetectRemoteSystem(){
       putValue( Action.NAME, "Detect remote system" );
     }
     @Override
@@ -163,7 +187,11 @@ public class RoutingPanel extends JPanel {
   }
   
   public class StopAction  extends AbstractAction{
-    public StopAction(){
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -4399121816282915298L;
+	public StopAction(){
       putValue( Action.NAME, "Stop" );
     }
     @Override
@@ -177,7 +205,11 @@ public class RoutingPanel extends JPanel {
   }
   
   public class StartAction  extends AbstractAction{
-    public StartAction(){
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -7099808806129502391L;
+	public StartAction(){
       putValue( Action.NAME, "Start" );
     }
     @Override
@@ -195,7 +227,11 @@ public class RoutingPanel extends JPanel {
   }
   
   public class ScanSuperNodesAction  extends AbstractAction{
-    public ScanSuperNodesAction(){
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 6431633852407007558L;
+	public ScanSuperNodesAction(){
       putValue( Action.NAME, "Scan super nodes" );
     }
     @Override
@@ -209,7 +245,11 @@ public class RoutingPanel extends JPanel {
   }
   
   public class ShowRoutingTableEntryHistory  extends AbstractAction{
-    public ShowRoutingTableEntryHistory(){
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -8653407321194756153L;
+	public ShowRoutingTableEntryHistory(){
       putValue( Action.NAME, "Show history" );
     }
     @Override

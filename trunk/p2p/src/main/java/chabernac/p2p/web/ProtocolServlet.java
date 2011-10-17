@@ -33,117 +33,124 @@ import chabernac.protocol.routing.WebRoutingTableInspecter;
 import chabernac.tools.PropertyMap;
 
 public class ProtocolServlet extends HttpServlet {
-  private static final long serialVersionUID = -1872170586728725631L;
-  private static Logger LOGGER = Logger.getLogger(ProtocolServlet.class);
-  private AtomicLong myConcurrentRequestCounter = new AtomicLong(0);
+	private static final long serialVersionUID = -1872170586728725631L;
+	private static Logger LOGGER = Logger.getLogger(ProtocolServlet.class);
+	private AtomicLong myConcurrentRequestCounter = new AtomicLong(0);
 
-  public void init() throws ServletException{
-    super.init();
-    try{
-      if(getServletContext().getAttribute("SessionData") == null){
-        getServletContext().setAttribute("SessionData", new SessionData());
-      }
+	public void init() throws ServletException{
+		super.init();
+		try{
+			if(getServletContext().getAttribute("SessionData") == null){
+				getServletContext().setAttribute("SessionData", new SessionData());
+			}
 
-      if(getServletContext().getAttribute("PeerIpMap") == null){
-        getServletContext().setAttribute("PeerIpMap", new HashMap<String, String>());
-      }
+			if(getServletContext().getAttribute("PeerIpMap") == null){
+				getServletContext().setAttribute("PeerIpMap", new HashMap<String, String>());
+			}
 
-      if(getServletContext().getAttribute( "ProtocolContainer") == null){
-        PropertyMap thePropertyMap = new PropertyMap();
-        thePropertyMap.setProperty("routingprotocol.exchangedelay", "60");
-        thePropertyMap.setProperty("routingprotocol.persist", "true".equalsIgnoreCase(getInitParameter("persist")));
+			if(getServletContext().getAttribute( "ProtocolContainer") == null){
+				PropertyMap thePropertyMap = new PropertyMap();
+				thePropertyMap.setProperty("routingprotocol.exchangedelay", "60");
+				thePropertyMap.setProperty("routingprotocol.persist", "true".equalsIgnoreCase(getInitParameter("persist")));
 
-        Set<String> theSupportedProtocols = new HashSet< String >();
-        theSupportedProtocols.add( RoutingProtocol.ID );
-        theSupportedProtocols.add( MessageProtocol.ID );
-        theSupportedProtocols.add( EchoProtocol.ID );
+				Set<String> theSupportedProtocols = new HashSet< String >();
+				theSupportedProtocols.add( RoutingProtocol.ID );
+				theSupportedProtocols.add( MessageProtocol.ID );
+				theSupportedProtocols.add( EchoProtocol.ID );
 
-        ProtocolContainer theProtocolContainer = new ProtocolContainer(new ProtocolFactory(thePropertyMap), theSupportedProtocols);
+				ProtocolContainer theProtocolContainer = new ProtocolContainer(new ProtocolFactory(thePropertyMap), theSupportedProtocols);
 
-        getServletContext().setAttribute( "ProtocolContainer", theProtocolContainer );
-      }
-      
-      ServerInfo theServerInfo = new ServerInfo(Type.WEB);
-      theServerInfo.setServerURL( getServletConfig().getInitParameter( "serverurl" ));
+				getServletContext().setAttribute( "ProtocolContainer", theProtocolContainer );
+			}
 
-      getProtocolContainer().setServerInfo(theServerInfo);
+			ServerInfo theServerInfo = new ServerInfo(Type.WEB);
+			theServerInfo.setServerURL( getServletConfig().getInitParameter( "serverurl" ));
 
-      WebPeer theWebPeer = (WebPeer)((RoutingProtocol)getProtocolContainer().getProtocol( RoutingProtocol.ID )).getRoutingTable().getEntryForLocalPeer().getPeer();
-      theWebPeer.setEndPointContainer( (EndPointContainer)getServletContext().getAttribute( "EndPoints" ) );
-      
-      try{
-        RoutingProtocol theRoutingProtocol = (RoutingProtocol)getProtocolContainer().getProtocol(RoutingProtocol.ID);
-        WebRoutingTableInspecter theInspector = new WebRoutingTableInspecter(getSessionData(), getPeerIpMap());
-        theRoutingProtocol.setRoutingTableInspector(theInspector);
-      }catch(Exception e){
-        LOGGER.error( "Unable to get routingprotocol", e );
-      }
+			getProtocolContainer().setServerInfo(theServerInfo);
 
-    }catch(Exception e){
-      throw new ServletException("Could not init p2p servlet", e);
-    }
-  }
+			WebPeer theWebPeer = (WebPeer)((RoutingProtocol)getProtocolContainer().getProtocol( RoutingProtocol.ID )).getRoutingTable().getEntryForLocalPeer().getPeer();
+			theWebPeer.setEndPointContainer( (EndPointContainer)getServletContext().getAttribute( "EndPoints" ) );
 
-  public void doGet(HttpServletRequest aRequest, HttpServletResponse aResponse){
-    String theInput = aRequest.getParameter(  "input" );
-    String theSession = aRequest.getParameter( "session" );
-    String thePeerId = aRequest.getParameter("peerid");
-    
-    LOGGER.debug( "Received message from peer '" + thePeerId + "' in session '" + theSession + "': " + theInput + "'" + " at remote ip '" + aRequest.getRemoteAddr() + "'" );
-    //TODO remove when logging correctly enabled on server
-    //    System.out.println("Received message from peer '" + thePeerId + "' in session '" + theSession + "': " + theInput + "'" );
+			try{
+				RoutingProtocol theRoutingProtocol = (RoutingProtocol)getProtocolContainer().getProtocol(RoutingProtocol.ID);
+				WebRoutingTableInspecter theInspector = new WebRoutingTableInspecter(getSessionData(), getPeerIpMap());
+				theRoutingProtocol.setRoutingTableInspector(theInspector);
+			}catch(Exception e){
+				LOGGER.error( "Unable to get routingprotocol", e );
+			}
 
-    try {
-      LOGGER.debug( "Concurrent requests in ProtocolServlet: "  + myConcurrentRequestCounter.incrementAndGet());
-      
-      if("exchange".equalsIgnoreCase( theInput ) ){
-        ((RoutingProtocol)getProtocolContainer().getProtocol( RoutingProtocol.ID )).exchangeRoutingTable();
-      }else if(theInput == null || "".equals( theInput ) || theSession == null || "".equals( theSession )){
-        printDebugInfo(aRequest, aResponse);
-      } else {
-        getPeerIpMap().put(thePeerId, aRequest.getRemoteAddr());
-        getSessionData().putProperty(theSession, "requestor.ip", aRequest.getRemoteAddr());
-        getSessionData().putProperty(theSession, "requestor.url", aRequest.getRequestURI());
-        
-        String theResult = getProtocolContainer().handleCommand(theSession , theInput );
-        aResponse.getWriter().println(theResult);
-      }
-    } catch ( Exception e ) {
-      LOGGER.error( "could not send response message ", e );
-    } finally {
-      //remove the session data
-      getSessionData().clearSessionData( theSession );
-      myConcurrentRequestCounter.decrementAndGet();
-    }
-  }
-  
-  private void printDebugInfo(HttpServletRequest aRequest, HttpServletResponse aResponse) throws IOException, ProtocolException{
-    aResponse.getWriter().println("Routing table");
-    aResponse.getWriter().println("");
-    aResponse.getWriter().println( ((RoutingProtocol)getProtocolContainer().getProtocol( RoutingProtocol.ID )).getLocalPeerId() );
-    aResponse.getWriter().println( ((RoutingProtocol)getProtocolContainer().getProtocol( RoutingProtocol.ID )).getRoutingTable() );
-    aResponse.getWriter().println("Peer ip map");
-    aResponse.getWriter().println("");
-    for(String thePeer : getPeerIpMap().keySet()){
-      aResponse.getWriter().println("Peer '" + thePeer + "' has ip '" + getPeerIpMap().get(thePeer) + "'");
-    }
+		}catch(Exception e){
+			throw new ServletException("Could not init p2p servlet", e);
+		}
+	}
 
-    
-  }
+	public void doGet(HttpServletRequest aRequest, HttpServletResponse aResponse){
+		String theInput = aRequest.getParameter(  "input" );
+		String theSession = aRequest.getParameter( "session" );
+		String thePeerId = aRequest.getParameter("peerid");
 
-  public void doPost(HttpServletRequest aRequest, HttpServletResponse aResponse){
-    doGet(aRequest, aResponse);
-  }
+		LOGGER.debug( "Received message from peer '" + thePeerId + "' in session '" + theSession + "': " + theInput + "'" + " at remote ip '" + aRequest.getRemoteAddr() + "'" );
+		//TODO remove when logging correctly enabled on server
+		//    System.out.println("Received message from peer '" + thePeerId + "' in session '" + theSession + "': " + theInput + "'" );
 
-  public ProtocolContainer getProtocolContainer(){
-    return (ProtocolContainer)getServletContext().getAttribute( "ProtocolContainer" );
-  }
+		try {
+			LOGGER.debug( "Concurrent requests in ProtocolServlet: "  + myConcurrentRequestCounter.incrementAndGet());
 
-  public SessionData getSessionData(){
-    return (SessionData)getServletContext().getAttribute( "SessionData" );
-  }
+			if(theSession != null && !"".equals( theSession )){
+				String theURL = aRequest.getRequestURL().toString();
+				theURL = theURL.substring(0, theURL.indexOf("/", 7));
+				getSessionData().putProperty(theSession, "requestor.ip", aRequest.getRemoteAddr());
+				getSessionData().putProperty(theSession, "requestor.url", theURL);
+				LOGGER.debug("Remote ip '" + getSessionData().getProperty(theSession, "requestor.ip" + "'"));
+				LOGGER.debug("Remote url '" + getSessionData().getProperty(theSession, "requestor.url" + "'"));
+			}
 
-  public Map<String, String> getPeerIpMap(){
-    return (Map<String, String>)getServletContext().getAttribute( "PeerIpMap" );
-  }
+			if("exchange".equalsIgnoreCase( theInput ) ){
+				((RoutingProtocol)getProtocolContainer().getProtocol( RoutingProtocol.ID )).exchangeRoutingTable();
+			}else if(theInput == null || "".equals( theInput )){
+				printDebugInfo(aRequest, aResponse, theSession);
+			} else {
+				getPeerIpMap().put(thePeerId, aRequest.getRemoteAddr());
+
+				String theResult = getProtocolContainer().handleCommand(theSession , theInput );
+				aResponse.getWriter().println(theResult);
+			}
+		} catch ( Exception e ) {
+			LOGGER.error( "could not send response message ", e );
+		} finally {
+			//remove the session data
+			getSessionData().clearSessionData( theSession );
+			myConcurrentRequestCounter.decrementAndGet();
+		}
+	}
+
+	private void printDebugInfo(HttpServletRequest aRequest, HttpServletResponse aResponse, String aSession) throws IOException, ProtocolException{
+		aResponse.getWriter().println("Routing table");
+		aResponse.getWriter().println("");
+		aResponse.getWriter().println( ((RoutingProtocol)getProtocolContainer().getProtocol( RoutingProtocol.ID )).getLocalPeerId() );
+		aResponse.getWriter().println( ((RoutingProtocol)getProtocolContainer().getProtocol( RoutingProtocol.ID )).getInspectedRoutingTable(aSession) );
+		aResponse.getWriter().println("Peer ip map");
+		aResponse.getWriter().println("");
+		for(String thePeer : getPeerIpMap().keySet()){
+			aResponse.getWriter().println("Peer '" + thePeer + "' has ip '" + getPeerIpMap().get(thePeer) + "'");
+		}
+
+
+	}
+
+	public void doPost(HttpServletRequest aRequest, HttpServletResponse aResponse){
+		doGet(aRequest, aResponse);
+	}
+
+	public ProtocolContainer getProtocolContainer(){
+		return (ProtocolContainer)getServletContext().getAttribute( "ProtocolContainer" );
+	}
+
+	public SessionData getSessionData(){
+		return (SessionData)getServletContext().getAttribute( "SessionData" );
+	}
+
+	public Map<String, String> getPeerIpMap(){
+		return (Map<String, String>)getServletContext().getAttribute( "PeerIpMap" );
+	}
 }

@@ -41,7 +41,7 @@ public class WebRoutingTableInspecter implements iRoutingTableInspector {
     String theIPRequestor = mySessionData.getProperty( aSessionId, "requestor.ip" );
     String theURLRequestor = mySessionData.getProperty( aSessionId, "requestor.url" );
 
-    LOGGER.debug("Inspecting routing table in session '" + aSessionId + "' for peer with remote ip '" + theIPRequestor + "'");
+    LOGGER.debug("Inspecting routing table in session '" + aSessionId + "' for peer with remote ip '" + theIPRequestor + "' and requesting url '" + theURLRequestor + "'");
 
     boolean hasIPRequestor = theIPRequestor != null && !"".equals( theIPRequestor );
     boolean hasURLRequestor = theURLRequestor != null && !"".equals( theURLRequestor );

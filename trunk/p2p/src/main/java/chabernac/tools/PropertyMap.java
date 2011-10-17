@@ -7,7 +7,12 @@ package chabernac.tools;
 import java.util.HashMap;
 
 public class PropertyMap extends HashMap< String, Object > {
-  public Object getProperty(String aProperty, Object aDefault){
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 7551356327353644803L;
+
+public Object getProperty(String aProperty, Object aDefault){
     if(!containsKey( aProperty )) return aDefault;
     return get( aProperty );
   }

@@ -69,7 +69,12 @@ public class UserInfoPanel extends JPanel {
 
 
   private class RefreshUserInfo extends AbstractAction {
-    public RefreshUserInfo(){
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 955347661327806918L;
+
+	public RefreshUserInfo(){
       putValue( Action.NAME, "Refresh user info" );
     }
     
@@ -80,7 +85,12 @@ public class UserInfoPanel extends JPanel {
   }
   
   private class AnnounceMe extends AbstractAction {
-    public AnnounceMe(){
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 5835221418443107772L;
+
+	public AnnounceMe(){
       putValue( Action.NAME, "Announce Me" );
     }
     
