@@ -98,7 +98,7 @@ public class ProtocolServlet extends HttpServlet {
 
 			if(theSession != null && !"".equals( theSession )){
 				String theURL = aRequest.getRequestURL().toString();
-				theURL = theURL.substring(0, theURL.indexOf("/", 7));
+				theURL = theURL.substring(0, theURL.indexOf("/", 8));
 				getSessionData().putProperty(theSession, "requestor.ip", aRequest.getRemoteAddr());
 				getSessionData().putProperty(theSession, "requestor.url", theURL);
 				LOGGER.debug("Remote ip '" + getSessionData().getProperty(theSession, "requestor.ip" + "'"));
