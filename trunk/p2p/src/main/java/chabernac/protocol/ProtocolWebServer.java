@@ -19,6 +19,13 @@ public class ProtocolWebServer implements iP2PServer {
   private final int myPort;
   private Integer myAJPPort = null;
   private Server myServer = null;
+  
+  public static String CONTEXT = "/p2p";
+  public static String COMET = "/comet";
+  public static String PROTOCOL = "/protocol";
+  
+  public static String CONTEXT_PROTOCOL = "p2p/protocol";
+  public static String CONTEXT_COMET = "p2p/comet";
 
   public ProtocolWebServer(ProtocolContainer anProtocolContainer, int aPort, URL anURL) {
     super();
@@ -56,18 +63,18 @@ public class ProtocolWebServer implements iP2PServer {
         myServer.addConnector(theAJPConnector);
       }
 
-      Context root = new Context(myServer,"/p2p",Context.SESSIONS);
+      Context root = new Context(myServer,CONTEXT,Context.SESSIONS);
       root.getServletContext().setAttribute("ProtocolContainer", myProtocolContainer);
 
       CometServlet theCometServlet = new CometServlet();
       ServletHolder theCometHolder = new ServletHolder(theCometServlet);
       theCometHolder.setInitOrder( 1 );
-      root.addServlet(theCometHolder, "/comet");
+      root.addServlet(theCometHolder, COMET);
       
       ProtocolServlet theProtocolServlet = new ProtocolServlet();
       ServletHolder theProtocolHolder = new ServletHolder(theProtocolServlet);
       theProtocolHolder.setInitOrder(2);
-      root.addServlet(theProtocolHolder, "/protocol");
+      root.addServlet(theProtocolHolder, PROTOCOL);
 
       theProtocolHolder.setInitParameter( "serverurl", myURL.toString() );
       
