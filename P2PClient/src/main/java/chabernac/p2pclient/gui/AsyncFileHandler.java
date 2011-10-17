@@ -9,13 +9,13 @@ import java.io.File;
 import org.apache.log4j.Logger;
 
 import chabernac.protocol.asyncfiletransfer.AcceptFileResponse;
-import chabernac.protocol.asyncfiletransfer.Percentage;
 import chabernac.protocol.asyncfiletransfer.iAsyncFileTransferHandler;
 import chabernac.protocol.asyncfiletransfer.iTransferController;
 import chabernac.protocol.asyncfiletransfer.AcceptFileResponse.Response;
 import chabernac.protocol.facade.P2PFacadeException;
 import chabernac.protocol.filetransfer.FileTransferException;
 import chabernac.protocol.userinfo.UserInfo;
+import chabernac.tools.Percentage;
 
 public class AsyncFileHandler implements iAsyncFileTransferHandler {
   private static Logger LOGGER = Logger.getLogger(AsyncFileHandler.class);
