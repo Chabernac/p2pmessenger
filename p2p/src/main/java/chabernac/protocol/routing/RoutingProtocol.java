@@ -403,6 +403,10 @@ public class RoutingProtocol extends Protocol {
     if(myRoutingTableInspector == null) return aRoutingTable;
     else return myRoutingTableInspector.inspectRoutingTable(aSessionId, aRoutingTable);
   }
+  
+  public RoutingTable getInspectedRoutingTable(String aSessionId){
+	  return myRoutingTableInspector.inspectRoutingTable(aSessionId, myRoutingTable);
+  }
 
   //  private void verifyNeighbours(){
   //    for(RoutingTableEntry theEntry : myRoutingTable.getEntries()){

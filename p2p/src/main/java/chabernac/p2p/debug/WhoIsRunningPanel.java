@@ -16,7 +16,11 @@ import javax.swing.table.TableCellRenderer;
 import chabernac.protocol.routing.RoutingProtocol;
 
 public class WhoIsRunningPanel extends JPanel {
-  private final int myScanIntervalTimeoutInSeconds;
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 7577814509143406576L;
+private final int myScanIntervalTimeoutInSeconds;
   private final String myHost;
   private final WhoIsRunningTableModel myTableModel;
   private final WhoIsRunning myWhoIs;

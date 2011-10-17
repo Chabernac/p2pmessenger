@@ -1,8 +1,5 @@
 package chabernac.p2p.web;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import junit.framework.TestCase;
 
 import org.apache.log4j.BasicConfigurator;

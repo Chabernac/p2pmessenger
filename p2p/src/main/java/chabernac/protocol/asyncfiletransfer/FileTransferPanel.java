@@ -2,14 +2,10 @@ package chabernac.protocol.asyncfiletransfer;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Point;
-import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-import javax.swing.AbstractAction;
-import javax.swing.Action;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
@@ -17,7 +13,6 @@ import javax.swing.SwingUtilities;
 import org.apache.log4j.Logger;
 
 import chabernac.command.AbstractCommand;
-import chabernac.gui.CommandButton;
 import chabernac.tools.SystemTools;
 
 public class FileTransferPanel extends JPanel implements iFileTransferListener{

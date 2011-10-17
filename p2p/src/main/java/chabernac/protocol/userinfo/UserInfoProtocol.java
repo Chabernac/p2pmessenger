@@ -33,7 +33,6 @@ import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.RoutingTable;
 import chabernac.protocol.routing.RoutingTableEntry;
 import chabernac.protocol.userinfo.UserInfo.Status;
-import chabernac.thread.DynamicSizeExecutor;
 
 public class UserInfoProtocol extends Protocol {
   private static Logger LOGGER = Logger.getLogger(UserInfoProtocol.class);

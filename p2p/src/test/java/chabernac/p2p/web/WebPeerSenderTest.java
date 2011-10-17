@@ -1,6 +1,5 @@
 package chabernac.p2p.web;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
