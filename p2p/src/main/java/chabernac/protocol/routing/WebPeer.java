@@ -14,6 +14,7 @@ import chabernac.comet.EndPointContainer;
 import chabernac.io.Base64ObjectStringConverter;
 import chabernac.io.URLConnectionHelper;
 import chabernac.io.iObjectStringConverter;
+import chabernac.protocol.ProtocolWebServer;
 
 public class WebPeer extends AbstractPeer {
   private static final long serialVersionUID = -6488979114630311123L;
@@ -79,7 +80,7 @@ public class WebPeer extends AbstractPeer {
   }
   
   public CometEvent waitForEvent(String aLocalPeerId) throws IOException{
-    URLConnectionHelper theConnectionHelper = new URLConnectionHelper( myURL, "p2p/comet" );
+    URLConnectionHelper theConnectionHelper = new URLConnectionHelper( myURL, ProtocolWebServer.CONTEXT_COMET );
     try{
       theConnectionHelper.connectInputOutput();
       theConnectionHelper.scheduleClose(TIMEOUT_IN_MINUTES, TimeUnit.MINUTES);
@@ -95,52 +96,6 @@ public class WebPeer extends AbstractPeer {
     }
   }
 
-//  public CometEvent waitForEvent(String aLocalPeerId) throws IOException{
-//    URL theCometURL = new URL(myURL, "p2p/comet");
-//    final URLConnection theConnection = theCometURL.openConnection();
-//    theConnection.setDoOutput(true);
-//    OutputStreamWriter theWriter = null;
-//    BufferedReader theReader = null;
-//
-//    try{
-//      theWriter = new OutputStreamWriter(theConnection.getOutputStream());
-//      theWriter.write("id=" + aLocalPeerId);
-//      theWriter.flush();
-//      final ScheduledExecutorService theService = Executors.newScheduledThreadPool(1);
-//      theService.schedule(new Runnable(){
-//        public void run(){
-//          ((HttpURLConnection)theConnection).disconnect();
-//          theService.shutdownNow();
-//        }
-//      }, TIMEOUT_IN_MINUTES, TimeUnit.MINUTES);
-//      theReader = new BufferedReader(new InputStreamReader(theConnection.getInputStream()));
-//      String theEvent = theReader.readLine();
-//      //    LOGGER.debug("Received comet event line '" + theEvent + "'");
-//      CometEvent theCometEvent = getCometStringConverter().getObject( theEvent );
-//      getExecutorService().execute( new CometEventResponseSender(theCometEvent) );
-//      return theCometEvent;
-//    } finally {
-//      if(theReader != null){
-//        try{
-//          theReader.close();
-//        }catch(IOException e){
-//          LOGGER.error("Could not close input stream", e);
-//        }
-//      }
-//      if(theWriter != null){
-//        try{
-//          theWriter.close();
-//        } catch(IOException e){
-//          LOGGER.error("Could not close writer", e);
-//        }
-//      }
-//      if(theConnection != null){
-//        ((HttpURLConnection)theConnection).disconnect();
-//      }
-//    }
-//
-//  }
-
   private iObjectStringConverter<CometEvent> getCometStringConverter(){
     if(myObjectStringConverter == null) myObjectStringConverter = new Base64ObjectStringConverter<CometEvent>();
     return myObjectStringConverter;
@@ -153,7 +108,7 @@ public class WebPeer extends AbstractPeer {
 
   private boolean sendResponseForCometEvent( CometEvent anEvent ) throws IOException
   {
-    URLConnectionHelper theConnectionHelper = new URLConnectionHelper( myURL, "p2p/comet" );
+    URLConnectionHelper theConnectionHelper = new URLConnectionHelper( myURL, ProtocolWebServer.CONTEXT_COMET );
     try{
       theConnectionHelper.connectInputOutput();
       theConnectionHelper.scheduleClose(TIMEOUT_IN_MINUTES, TimeUnit.MINUTES);
@@ -168,41 +123,6 @@ public class WebPeer extends AbstractPeer {
     } finally {
       theConnectionHelper.close();
     }
-//    
-//    OutputStreamWriter theWriter = null;
-//    BufferedReader theReader = null;
-//    URLConnection theConnection = null;
-//    try{
-//      URL theCometURL = new URL(myURL, "p2p/comet");
-//      theConnection = theCometURL.openConnection();
-//      theConnection.setDoOutput(true);
-//      theWriter = new OutputStreamWriter(theConnection.getOutputStream());
-//      theWriter.write("id=" + getPeerId() + "&eventid=" + anEvent.getId() + "&eventoutput=" + anEvent.getOutput( 0 ).replaceAll("\\+", "{plus}"));
-//      theWriter.flush();
-//      theReader = new BufferedReader(new InputStreamReader(theConnection.getInputStream()));
-//      String theResult = theReader.readLine();
-//      return theResult.equalsIgnoreCase( "OK" );
-//    }catch(CometException e){
-//      throw new IOException("Could not send response for comet event", e);
-//    } finally {
-//      if(theWriter != null){
-//        try{
-//          theWriter.close();
-//        }catch(IOException e){
-//          LOGGER.error("Could not close outputstream", e);
-//        }
-//      }
-//      if(theReader != null){
-//        try{
-//          theReader.close();
-//        }catch(IOException e){
-//          LOGGER.error("Could not close input stream", e);
-//        }
-//      }
-//      if(theConnection != null){
-//        ((HttpURLConnection)theConnection).disconnect();
-//      }
-//    }
   }
 
   public String toString(){

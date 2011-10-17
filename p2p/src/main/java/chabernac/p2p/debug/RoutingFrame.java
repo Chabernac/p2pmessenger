@@ -198,9 +198,7 @@ public class RoutingFrame extends JFrame {
         ,"10.240.223.46"
         ,"10.240.222.101"
         ,"10.240.221.112"
-        ,"10.240.221.73"
-        ,"http://x22p0212:8080/p2p/"
-        ,"http://peertopeerwebnode.appspot.com/") );
+        ,"10.240.221.73"));
     ProtocolFactory theFactory = new ProtocolFactory(theProperties);
     ProtocolContainer theContainer = new ProtocolContainer(theFactory);
     ProtocolServer theServer1 = new ProtocolServer(theContainer, RoutingProtocol.START_PORT, 20, true);
