@@ -61,6 +61,10 @@ public class FileTransferState extends AbstractTransferState{
   public int getPacketSize() {
     return myPacketSize;
   }
+  
+  public File getFile(){
+    return myFile;
+  }
 
   @Override
   protected iPacketTransfer createPacketTransfer() throws IOException{
@@ -74,7 +78,7 @@ public class FileTransferState extends AbstractTransferState{
   }
 
   @Override
-  protected String getTransferDescription() {
+  public String getTransferDescription() {
     return myFile.toString();
   }
 

@@ -82,7 +82,7 @@ public abstract class AbstractTransferState {
   }
   
   protected abstract iPacketTransfer createPacketTransfer() throws IOException;
-  protected abstract String getTransferDescription();
+  public abstract String getTransferDescription();
   
   public void changeToState(State aState) throws StateChangeException{
     if(myState == aState) return;

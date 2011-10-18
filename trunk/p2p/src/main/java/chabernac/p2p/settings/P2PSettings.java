@@ -4,7 +4,10 @@
  */
 package chabernac.p2p.settings;
 
+import java.util.concurrent.TimeUnit;
+
 import chabernac.io.BasicSocketPool;
+import chabernac.io.SocketPoolCleanUpDecorator;
 import chabernac.io.iSocketPool;
 
 public class P2PSettings {
@@ -14,7 +17,7 @@ public class P2PSettings {
   public P2PSettings(){
     BasicSocketPool theSocketPool = new BasicSocketPool();
     theSocketPool.setSocketReuse( true );
-    //mySocketPool = new SocketPoolCleanUpDecorator( theSocketPool, 30, TimeUnit.SECONDS);
+    mySocketPool = new SocketPoolCleanUpDecorator( theSocketPool, 30, TimeUnit.SECONDS);
   }
   
   private static final class INSTANCE_HOLDER{

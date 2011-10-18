@@ -6,9 +6,12 @@ package chabernac.protocol.packet;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -22,13 +25,14 @@ import chabernac.protocol.packet.AbstractTransferState.State;
 import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.RoutingTable;
 
-public class AsyncTransferProtocol extends Protocol {
+public class AsyncTransferProtocol extends Protocol implements iTransferContainer{
   private static final Logger LOGGER = Logger.getLogger(AsyncTransferException.class);
 
   public static final String ID = "ATP";
 
   private Map<String, AbstractTransferState> myTransferStates = new HashMap< String, AbstractTransferState >();
 
+  //local instance of state change listener which will announce the new state to the remote peer
   private iStateChangeListener myStateChangeListener = new StateChangeListener();
 
   private static enum Command{SETUP_TRANSFER, STATE_CHANGE};
@@ -92,7 +96,7 @@ public class AsyncTransferProtocol extends Protocol {
         String theRemotePeer = theParams[5];
         AbstractTransferState theReceiveTransferState = FileTransferState.createForReceive( getPacketProtocol(), theTransferId, new File(theFile), theRemotePeer, theNrOfPackets, thePacketSize);
         theReceiveTransferState.addStateChangeListener( myStateChangeListener );
-        addTransfer( theReceiveTransferState );
+        addTransfer( theReceiveTransferState, true );
         return Response.OK.name();
       }catch(Exception e){
         LOGGER.error("Unable to setup file transfer", e);
@@ -102,10 +106,10 @@ public class AsyncTransferProtocol extends Protocol {
     return Response.UNKNOWN_COMMAND.name();
   }
   
-  private void addTransfer(AbstractTransferState aTransfer){
+  private void addTransfer(AbstractTransferState aTransfer, boolean isIncoming){
     myTransferStates.put(aTransfer.getTransferId(), aTransfer);
     for(iTransferListener theListener : myTransferListener){
-      theListener.incomingTransfer( aTransfer );
+      theListener.newTransfer( aTransfer, isIncoming );
     }
   }
 
@@ -121,7 +125,7 @@ public class AsyncTransferProtocol extends Protocol {
       FileTransferState theFileTransfeState = FileTransferState.createForSend( getPacketProtocol(), theTransferId, aFile, aPeer, aPacketSize, anOutstandingPackets );
       theFileTransfeState.addStateChangeListener( myStateChangeListener );
       
-      addTransfer( theFileTransfeState );
+      addTransfer( theFileTransfeState, false );
       String theResponse = sendMessage( Command.SETUP_TRANSFER + ";" + theTransferId + ";" + theFileTransfeState.getNrOfPackets() + ";" + aPacketSize + ";" + aFile.getName() + ";" + getRoutingTable().getLocalPeerId(), aPeer );
       if(!Response.OK.name().equalsIgnoreCase( theResponse )) throw new AsyncTransferException("an error occured while setting up transfer with id '" + theTransferId + "'");
       
@@ -155,6 +159,16 @@ public class AsyncTransferProtocol extends Protocol {
         LOGGER.error("Unable to announce state changed", e);
       }
     }
+  }
+
+  @Override
+  public Set< AbstractTransferState > getTransferStates() {
+    return Collections.unmodifiableSet(  new LinkedHashSet< AbstractTransferState >(myTransferStates.values()));
+  }
+
+  @Override
+  public AbstractTransferState getTransferState( String aTransferId ) {
+    return myTransferStates.get(aTransferId);
   }
 
 }
