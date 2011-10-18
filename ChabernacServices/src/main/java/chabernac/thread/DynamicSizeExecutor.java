@@ -11,6 +11,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
+import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -27,7 +28,12 @@ public class DynamicSizeExecutor implements ExecutorService{
 
 
   public DynamicSizeExecutor(int aCoreSize, int aMaxPoolSize, int aQueueSize){
-    myExecutor = new ThreadPoolExecutor( aCoreSize, aMaxPoolSize, 10, TimeUnit.SECONDS, new OfferBlockingQueue<Runnable>(aQueueSize) );
+    if(aQueueSize == 0){
+      myExecutor = new ThreadPoolExecutor( aCoreSize, aMaxPoolSize, 10, TimeUnit.SECONDS, new SynchronousQueue< Runnable >() );
+    } else {
+      myExecutor = new ThreadPoolExecutor( aCoreSize, aMaxPoolSize, 10, TimeUnit.SECONDS, new OfferBlockingQueue<Runnable>(aQueueSize) );
+    }
+    
   }
   
   public DynamicSizeExecutor(int aCoreSize, int aMaxPoolSize){
