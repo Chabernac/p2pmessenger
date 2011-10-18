@@ -31,6 +31,7 @@ import chabernac.protocol.message.MessageArchive;
 import chabernac.protocol.message.MessageIndicator;
 import chabernac.protocol.message.MultiPeerMessage;
 import chabernac.protocol.message.iMultiPeerMessageListener;
+import chabernac.protocol.packet.iTransferListener;
 import chabernac.protocol.userinfo.UserInfo.Status;
 import chabernac.thread.DynamicSizeExecutor;
 
@@ -47,7 +48,7 @@ public class ChatMediator {
   private iMessageDialog myMessageDialog = null;
   private iChatFrame myChatFrame = null;
   private SystemTrayMenu mySystemTrayMenu = null;
-  private iAsyncFileTransferHandler myFileHandler = null;
+  private iTransferListener myFileHandler = null;
 
   private ExecutorService myExecutorService = DynamicSizeExecutor.getTinyInstance();
 
@@ -74,7 +75,7 @@ public class ChatMediator {
   
   private void setupFileHandler() throws P2PFacadeException{
     myFileHandler = new AsyncFileHandler(this);
-    myP2PFacade.setAsyncFileHandler( myFileHandler );
+    myP2PFacade.getAsyncFileTransferContainer().addTransferListener( myFileHandler );
   }
   
   private void addPreferenceListener(){

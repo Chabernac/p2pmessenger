@@ -4,20 +4,15 @@
  */
 package chabernac.p2pclient.gui;
 
-import java.io.File;
-
 import org.apache.log4j.Logger;
 
-import chabernac.protocol.asyncfiletransfer.AcceptFileResponse;
-import chabernac.protocol.asyncfiletransfer.iAsyncFileTransferHandler;
-import chabernac.protocol.asyncfiletransfer.iTransferController;
-import chabernac.protocol.asyncfiletransfer.AcceptFileResponse.Response;
 import chabernac.protocol.facade.P2PFacadeException;
-import chabernac.protocol.filetransfer.FileTransferException;
+import chabernac.protocol.packet.AbstractTransferState;
+import chabernac.protocol.packet.FileTransferState;
+import chabernac.protocol.packet.iTransferListener;
 import chabernac.protocol.userinfo.UserInfo;
-import chabernac.tools.Percentage;
 
-public class AsyncFileHandler implements iAsyncFileTransferHandler {
+public class AsyncFileHandler implements iTransferListener {
   private static Logger LOGGER = Logger.getLogger(AsyncFileHandler.class);
   private final ChatMediator myMediator;
 
@@ -26,29 +21,27 @@ public class AsyncFileHandler implements iAsyncFileTransferHandler {
   }
 
   @Override
-  public AcceptFileResponse acceptFile( String aPeerId, String aFileName, String aTransferId, iTransferController aController ) {
+  public void newTransfer( AbstractTransferState aTransfer, boolean isIncoming ) {
+    // TODO Auto-generated method stub
+    if(aTransfer instanceof FileTransferState && isIncoming){
+      FileTransferState theFileTransfer = ((FileTransferState)aTransfer);
+    
     try{
-      UserInfo theUserInfo = myMediator.getP2PFacade().getUserInfo().get(aPeerId);
-      String theFrom = aPeerId;
+      UserInfo theUserInfo = myMediator.getP2PFacade().getUserInfo().get(aTransfer.getRemotePeer());
+      String theFrom = aTransfer.getRemotePeer();
       if(theUserInfo != null){
         theFrom = theUserInfo.getName();
       }
 
-      myMediator.sendSystemMessage( aPeerId, theFrom + " wenst u een file te sturen, klik op <a href='download:" + aTransferId + ":" + aFileName+ "'>" + aFileName + "</a> om de file te ontvangen" );
+      myMediator.sendSystemMessage( aTransfer.getRemotePeer(), theFrom + " wenst u een file te sturen, klik op <a href='download:" + aTransfer.getTransferId() + ":" + theFileTransfer.getTransferDescription()+ "'>" + theFileTransfer.getFile().getName() + "</a> om de file te ontvangen" );
     }catch(P2PFacadeException e){
       LOGGER.error( "An error occured while sending system message", e );
     }
-    return new AcceptFileResponse(aTransferId, Response.PENDING, null);
+    }
   }
 
   @Override
-  public void fileTransfer( String aFileName, String aFileId, Percentage aPercentageComplete ) {
+  public void transferRemoved( AbstractTransferState aTransfer ) {
     // TODO Auto-generated method stub
   }
-
-  @Override
-  public void fileSaved( File aFile ) throws FileTransferException {
-    // TODO Auto-generated method stub
-  }
-
 }
