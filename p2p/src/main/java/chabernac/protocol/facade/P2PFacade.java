@@ -31,11 +31,7 @@ import chabernac.protocol.iP2PServer;
 import chabernac.protocol.iProtocolDelegate;
 import chabernac.protocol.application.ApplicationProtocol;
 import chabernac.protocol.asyncfiletransfer.AsyncFileTransferProtocol;
-import chabernac.protocol.asyncfiletransfer.FileTransferHandler;
-import chabernac.protocol.asyncfiletransfer.FileTransferOverviewFrame;
-import chabernac.protocol.asyncfiletransfer.FileTransferOverviewPanel;
 import chabernac.protocol.asyncfiletransfer.iAsyncFileTransferHandler;
-import chabernac.protocol.asyncfiletransfer.iTransferController;
 import chabernac.protocol.cam.CamProtocol;
 import chabernac.protocol.cam.CamProtocolException;
 import chabernac.protocol.cam.iCamListener;
@@ -51,6 +47,11 @@ import chabernac.protocol.message.MultiPeerMessage;
 import chabernac.protocol.message.MultiPeerMessageProtocol;
 import chabernac.protocol.message.iDeliverReportListener;
 import chabernac.protocol.message.iMultiPeerMessageListener;
+import chabernac.protocol.packet.AbstractTransferState;
+import chabernac.protocol.packet.AsyncTransferProtocol;
+import chabernac.protocol.packet.TransferOverviewFrame;
+import chabernac.protocol.packet.TransferOverviewPanel;
+import chabernac.protocol.packet.iTransferContainer;
 import chabernac.protocol.pipe.IPipeListener;
 import chabernac.protocol.pipe.Pipe;
 import chabernac.protocol.pipe.PipeProtocol;
@@ -107,8 +108,8 @@ public class P2PFacade {
   private Integer myAJPPort = null;
   private URL myWebURL = null;
   private Set<String> mySupportedProtocols = null;
-  private FileTransferOverviewPanel myFileTransferOverview = null; 
-  private FileTransferOverviewFrame myFileTransferOverviewFrame = null;
+  private TransferOverviewPanel myFileTransferOverview = null; 
+  private TransferOverviewFrame myFileTransferOverviewFrame = null;
   private AutoUserInfoStatusDector myAutoUserInfoStatusDetector = null;
   private boolean isAutoUserStatusEnabled = false;
 
@@ -228,10 +229,10 @@ public class P2PFacade {
     }
   }
 
-  public FileTransferHandler sendFileAsync(File aFile, String aPeerId) throws P2PFacadeException{
+  public AbstractTransferState sendFileAsync(File aFile, String aPeerId, int aPacketSize, int anOutstandingPackets) throws P2PFacadeException{
     if(!isStarted()) throw new P2PFacadeException("Can not execute this action when the server is not started");
     try {
-      return ((AsyncFileTransferProtocol)myContainer.getProtocol( AsyncFileTransferProtocol.ID )).sendFile( aFile, aPeerId );
+      return ((AsyncTransferProtocol)myContainer.getProtocol( AsyncTransferProtocol.ID )).startFileTransfer( aFile, aPeerId, aPacketSize, anOutstandingPackets);
     } catch ( Exception e ) {
       throw new P2PFacadeException("An error occured while sending file", e);
     }
@@ -261,20 +262,20 @@ public class P2PFacade {
     return this;
   }
 
-  public iTransferController getAsyncFileTransferController() throws P2PFacadeException{
+  public iTransferContainer getAsyncFileTransferContainer() throws P2PFacadeException{
     if(!isStarted()) throw new P2PFacadeException("Can not execute this action when the server is not started");
     try {
-      return ((AsyncFileTransferProtocol)myContainer.getProtocol( AsyncFileTransferProtocol.ID ));
+      return ((AsyncTransferProtocol)myContainer.getProtocol( AsyncTransferProtocol.ID ));
     } catch ( Exception e ) {
       throw new P2PFacadeException("An error occured while sending file", e);
     }
   }
 
-  public FileTransferOverviewPanel getFileTransferOverview() throws P2PFacadeException{
+  public TransferOverviewPanel getFileTransferOverview() throws P2PFacadeException{
     if(!isStarted()) throw new P2PFacadeException("Can not execute this action when the server is not started");
 
     if(myFileTransferOverview == null) {
-      myFileTransferOverview = new FileTransferOverviewPanel( getAsyncFileTransferController() );
+      myFileTransferOverview = new TransferOverviewPanel( getAsyncFileTransferContainer() );
     }
 
     return myFileTransferOverview;
@@ -283,7 +284,7 @@ public class P2PFacade {
   public void showFileTransferOverView() throws P2PFacadeException{
     if(!isStarted()) throw new P2PFacadeException("Can not execute this action when the server is not started");
     if(myFileTransferOverviewFrame == null){
-      myFileTransferOverviewFrame = new FileTransferOverviewFrame( getAsyncFileTransferController() );
+      myFileTransferOverviewFrame = new TransferOverviewFrame( getAsyncFileTransferContainer() );
     }
     myFileTransferOverviewFrame.setVisible( true );
   }

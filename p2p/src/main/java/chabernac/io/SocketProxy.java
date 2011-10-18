@@ -41,7 +41,7 @@ public class SocketProxy {
     if(mySocket != null) return;
 
     Socket theSocket = new Socket();
-    theSocket.setReuseAddress( true );
+//    theSocket.setReuseAddress( true );
     //theSocket.setSoLinger( true, 0 );
     theSocket.connect( myAddress );
     myConnectTime = new Date();
@@ -107,8 +107,12 @@ public class SocketProxy {
     if(mySocket != null){
       try {
         mySocket.getOutputStream().flush();
-        mySocket.close();
       } catch ( IOException e ) {
+        LOGGER.error( "Unable to flush socket", e);
+      }
+      try{
+        mySocket.close();
+      }catch(IOException e){
         LOGGER.error( "Unable to close socket", e);
       }
     }

@@ -136,7 +136,7 @@ public class TestAsyncTransferProtocolTest extends AbstractProtocolTest {
     }
 
     @Override
-    public void incomingTransfer( AbstractTransferState aTransfer ) {
+    public void newTransfer( AbstractTransferState aTransfer, boolean isIncoming ) {
       try {
         myTransferState = aTransfer;
         myLatch.countDown();
@@ -150,6 +150,11 @@ public class TestAsyncTransferProtocolTest extends AbstractProtocolTest {
       myLatch.await(5, TimeUnit.SECONDS);
       return myTransferState;
     }
+
+    @Override
+    public void transferRemoved( AbstractTransferState aTransfer ) {
+      
+    }
   }
   
   private class RefuseTransferListener implements iTransferListener {
@@ -157,7 +162,7 @@ public class TestAsyncTransferProtocolTest extends AbstractProtocolTest {
     private AbstractTransferState myTransferState;
 
     @Override
-    public void incomingTransfer( AbstractTransferState aTransfer ) {
+    public void newTransfer( AbstractTransferState aTransfer, boolean isIncoming  ) {
       try {
         myTransferState = aTransfer;
         myLatch.countDown();
@@ -170,6 +175,11 @@ public class TestAsyncTransferProtocolTest extends AbstractProtocolTest {
     public AbstractTransferState getTransferState() throws InterruptedException{
       myLatch.await(5, TimeUnit.SECONDS);
       return myTransferState;
+    }
+
+    @Override
+    public void transferRemoved( AbstractTransferState aTransfer ) {
+      
     }
   }
 }

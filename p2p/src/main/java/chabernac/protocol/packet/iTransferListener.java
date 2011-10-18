@@ -5,5 +5,6 @@
 package chabernac.protocol.packet;
 
 public interface iTransferListener {
-  public void incomingTransfer(AbstractTransferState aTransfer);
+  public void newTransfer(AbstractTransferState aTransfer, boolean isInComing);
+  public void transferRemoved(AbstractTransferState aTransfer);
 }
