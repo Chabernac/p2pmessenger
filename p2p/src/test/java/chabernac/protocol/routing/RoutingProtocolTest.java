@@ -23,6 +23,7 @@ import chabernac.protocol.AbstractProtocolTest;
 import chabernac.protocol.ProtocolContainer;
 import chabernac.protocol.ProtocolException;
 import chabernac.protocol.ProtocolServer;
+import chabernac.protocol.ProtocolWebServer;
 import chabernac.tools.SimpleNetworkInterface;
 
 public class RoutingProtocolTest extends AbstractProtocolTest {
@@ -892,16 +893,16 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
       try{
         assertTrue( theServer1.start() );
 
-        Context root = new Context(theWebServer,"/p2p",Context.SESSIONS);
+        Context root = new Context(theWebServer,ProtocolWebServer.CONTEXT,Context.SESSIONS);
         CometServlet theCometServlet= new CometServlet();
         ServletHolder theCometHolder = new ServletHolder(theCometServlet);
         theCometHolder.setInitOrder(1);
-        root.addServlet(theCometHolder, "/comet");
+        root.addServlet(theCometHolder, ProtocolWebServer.COMET);
         ProtocolServlet theProtocolServlet = new ProtocolServlet();
         ServletHolder theProtocolHolder = new ServletHolder(theProtocolServlet);
-        theProtocolHolder.setInitParameter( "serverurl", "http://localhost:9090/p2p" );
+        theProtocolHolder.setInitParameter( "serverurl", "http://localhost:9090" + ProtocolWebServer.CONTEXT );
         theProtocolHolder.setInitOrder(2);
-        root.addServlet(theProtocolHolder, "/protocol");
+        root.addServlet(theProtocolHolder, ProtocolWebServer.PROTOCOL);
 
         theWebServer.start();
         assertTrue(theWebServer.isStarted());

@@ -405,6 +405,7 @@ public class RoutingProtocol extends Protocol {
   }
   
   public RoutingTable getInspectedRoutingTable(String aSessionId){
+    if(myRoutingTableInspector == null) return myRoutingTable;
 	  return myRoutingTableInspector.inspectRoutingTable(aSessionId, myRoutingTable);
   }
 

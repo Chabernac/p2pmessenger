@@ -17,6 +17,7 @@ public class P2PSettings {
   public P2PSettings(){
     BasicSocketPool theSocketPool = new BasicSocketPool();
     theSocketPool.setSocketReuse( true );
+    //TODO disable
     mySocketPool = new SocketPoolCleanUpDecorator( theSocketPool, 30, TimeUnit.SECONDS);
   }
   

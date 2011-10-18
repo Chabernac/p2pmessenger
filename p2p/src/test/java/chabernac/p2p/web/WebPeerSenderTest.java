@@ -15,6 +15,7 @@ import chabernac.comet.CometEvent;
 import chabernac.comet.CometServlet;
 import chabernac.comet.EndPointContainer;
 import chabernac.p2p.io.WebToPeerSender;
+import chabernac.protocol.ProtocolWebServer;
 import chabernac.protocol.routing.SocketPeer;
 import chabernac.protocol.routing.WebPeer;
 
@@ -28,8 +29,8 @@ public class WebPeerSenderTest extends TestCase {
     Server theServer = new Server(9090);
     ExecutorService theService = Executors.newCachedThreadPool();
     try{
-      Context root = new Context(theServer,"/p2p",Context.SESSIONS);
-      root.addServlet(new ServletHolder(new CometServlet()), "/comet");
+      Context root = new Context(theServer,ProtocolWebServer.CONTEXT,Context.SESSIONS);
+      root.addServlet(new ServletHolder(new CometServlet()), ProtocolWebServer.COMET);
       theServer.start();
 
       final WebPeer theWebPeer = new WebPeer("1", new URL("http://localhost:9090"));
