@@ -101,8 +101,8 @@ public class ProtocolServlet extends HttpServlet {
 				theURL = theURL.substring(0, theURL.indexOf("/", 7) + 1);
 				getSessionData().putProperty(theSession, "requestor.ip", aRequest.getRemoteAddr());
 				getSessionData().putProperty(theSession, "requestor.url", theURL);
-				LOGGER.debug("Remote ip '" + getSessionData().getProperty(theSession, "requestor.ip" + "'"));
-				LOGGER.debug("Remote url '" + getSessionData().getProperty(theSession, "requestor.url" + "'"));
+				LOGGER.debug("Remote ip '" + getSessionData().getProperty(theSession, "requestor.ip") + "'");
+				LOGGER.debug("Remote url '" + getSessionData().getProperty(theSession, "requestor.url") + "'");
 			}
 
 			if("exchange".equalsIgnoreCase( theInput ) ){

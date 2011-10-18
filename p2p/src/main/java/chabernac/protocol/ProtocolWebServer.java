@@ -20,12 +20,12 @@ public class ProtocolWebServer implements iP2PServer {
   private Integer myAJPPort = null;
   private Server myServer = null;
   
-  public static String CONTEXT = "/p2p";
-  public static String COMET = "/comet";
-  public static String PROTOCOL = "/protocol";
+  public static String CONTEXT = "/pp";
+  public static String COMET = "/com";
+  public static String PROTOCOL = "/prot";
   
-  public static String CONTEXT_PROTOCOL = "p2p/protocol";
-  public static String CONTEXT_COMET = "p2p/comet";
+  public static String CONTEXT_PROTOCOL = "pp/prot";
+  public static String CONTEXT_COMET = "pp/com";
 
   public ProtocolWebServer(ProtocolContainer anProtocolContainer, int aPort, URL anURL) {
     super();

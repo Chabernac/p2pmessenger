@@ -356,7 +356,7 @@ public class RoutingProtocol extends Protocol {
         //another peer requested my peer id, send it to him, this is also used
         //to check if I'm still alive and kicking
         try{
-          RoutingTableEntry theEntryForLocalPeer = myRoutingTable.getEntryForLocalPeer();
+          RoutingTableEntry theEntryForLocalPeer = getInspectedRoutingTable( aSessionId ).getEntryForLocalPeer();
           return myPeerConverter.toString(theEntryForLocalPeer.getPeer());
         }catch(Exception e){
           LOGGER.error( "Could not obtain entry for local peer", e );
