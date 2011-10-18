@@ -607,7 +607,7 @@ public class P2PFacadeTest extends TestCase {
     try{
       theFacade2.stop();
 
-      Thread.sleep( 3000 );
+      Thread.sleep( 10000 );
 
       assertFalse( theFacade1.getRoutingTable().getEntryForPeer( thePeerId2 ).isReachable() );
 

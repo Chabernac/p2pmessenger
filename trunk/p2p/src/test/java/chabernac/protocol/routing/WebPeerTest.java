@@ -24,6 +24,7 @@ import chabernac.comet.EndPoint;
 import chabernac.comet.EndPointContainer;
 import chabernac.p2p.web.ProtocolServlet;
 import chabernac.protocol.ProtocolException;
+import chabernac.protocol.ProtocolWebServer;
 import chabernac.protocol.echo.EchoProtocol;
 import chabernac.protocol.userinfo.UserInfoProtocol;
 
@@ -37,17 +38,17 @@ public class WebPeerTest extends TestCase {
     ExecutorService theService = Executors.newCachedThreadPool();
 
     try{
-      Context root = new Context(theServer,"/p2p",Context.SESSIONS);
+      Context root = new Context(theServer,ProtocolWebServer.CONTEXT,Context.SESSIONS);
       
       CometServlet theCometServlet = new CometServlet();
       ServletHolder theCometServletHolder = new ServletHolder(theCometServlet);
       theCometServletHolder.setInitOrder(1);
-      root.addServlet(theCometServletHolder, "/comet");
+      root.addServlet(theCometServletHolder, ProtocolWebServer.COMET);
 
       ProtocolServlet theProtocolServlet = new ProtocolServlet();
       ServletHolder theProtocolHolder = new ServletHolder(theProtocolServlet);
       theProtocolHolder.setInitOrder(2);
-      root.addServlet(theProtocolHolder, "/protocol");
+      root.addServlet(theProtocolHolder, ProtocolWebServer.PROTOCOL);
       theProtocolHolder.setInitParameter( "serverurl", "http://localhost:9090" );
       
       theServer.start();

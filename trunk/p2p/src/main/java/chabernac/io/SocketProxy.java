@@ -41,6 +41,7 @@ public class SocketProxy {
     if(mySocket != null) return;
 
     Socket theSocket = new Socket();
+    //TODO reenable
 //    theSocket.setReuseAddress( true );
     //theSocket.setSoLinger( true, 0 );
     theSocket.connect( myAddress );

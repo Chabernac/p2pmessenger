@@ -20,6 +20,7 @@ import chabernac.p2p.web.ProtocolServlet;
 import chabernac.protocol.AbstractProtocolTest;
 import chabernac.protocol.ProtocolContainer;
 import chabernac.protocol.ProtocolServer;
+import chabernac.protocol.ProtocolWebServer;
 import chabernac.protocol.message.Message;
 import chabernac.protocol.message.MessageProtocol;
 import chabernac.protocol.message.iMessageListener;
@@ -60,16 +61,16 @@ public class WebPeerProtocolTest extends AbstractProtocolTest {
 
     assertTrue( theServer1.start() );
 
-    Context root = new Context(theWebServer,"/p2p",Context.SESSIONS);
+    Context root = new Context(theWebServer,ProtocolWebServer.CONTEXT,Context.SESSIONS);
     CometServlet theCometServlet= new CometServlet();
     ServletHolder theCometHolder = new ServletHolder(theCometServlet);
     theCometHolder.setInitOrder(1);
-    root.addServlet(theCometHolder, "/comet");
+    root.addServlet(theCometHolder, ProtocolWebServer.COMET);
     ProtocolServlet theProtocolServlet = new ProtocolServlet();
     ServletHolder theProtocolHolder = new ServletHolder(theProtocolServlet);
     theProtocolHolder.setInitOrder(2);
-    root.addServlet(theProtocolHolder, "/protocol");
-    theProtocolHolder.setInitParameter( "serverurl", "http://localhost:9090/p2p" );
+    root.addServlet(theProtocolHolder, ProtocolWebServer.PROTOCOL);
+    theProtocolHolder.setInitParameter( "serverurl", "http://localhost:9090" + ProtocolWebServer.CONTEXT );
 
     theWebServer.start();
 
@@ -82,7 +83,7 @@ public class WebPeerProtocolTest extends AbstractProtocolTest {
     new ScanWebSystem(myRoutingProtocol1, new URL("http://localhost:9090/")).run();
     new ScanWebSystem(theRoutingProtocol2, new URL("http://localhost:9090/")).run();
 
-    Thread.sleep( 2000 );
+    Thread.sleep( 5000 );
 
     //after the webpeer has been added, entries must be present in the comet servlet endpoints
     assertTrue( theCometServlet.getEndPointContainer().containsEndPointFor( "1"));
