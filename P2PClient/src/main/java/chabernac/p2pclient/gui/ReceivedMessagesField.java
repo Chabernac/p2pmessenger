@@ -118,9 +118,9 @@ public class ReceivedMessagesField extends GPanel implements iReceivedMessagesPr
       try {
         if(theReturn == JFileChooser.APPROVE_OPTION){
           myMediator.getP2PFacade().showFileTransferOverView();
-          myMediator.getP2PFacade().getAsyncFileTransferController().setFileTransferResponse( new AcceptFileResponse( theTransferId, Response.ACCEPT, myFileChooser.getSelectedFile() ) );
+          myMediator.getP2PFacade().getAsyncFileTransferContainer().getTransferState( theTransferId ).start();
         } else {
-          myMediator.getP2PFacade().getAsyncFileTransferController().setFileTransferResponse( new AcceptFileResponse( theTransferId, Response.REFUSED, null ) );
+          myMediator.getP2PFacade().getAsyncFileTransferContainer().getTransferState( theTransferId ).cancel();
         }
       } catch ( Exception e ) {
         logger.error( "An error occured while setting accept file response", e);

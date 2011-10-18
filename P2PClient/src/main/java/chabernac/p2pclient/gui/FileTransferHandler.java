@@ -40,7 +40,7 @@ public class FileTransferHandler extends TransferHandler {
           List theList = (List)t.getTransferData(DataFlavor.javaFileListFlavor);
           for(int j=0;j<theList.size();j++){
             try {
-              myFacade.sendFileAsync( (File)theList.get(j), myPeerId);
+              myFacade.sendFileAsync( (File)theList.get(j), myPeerId, 32768, 5);
               myFacade.showFileTransferOverView();
             } catch ( P2PFacadeException e ) {
               LOGGER.error("could not send file", e);
