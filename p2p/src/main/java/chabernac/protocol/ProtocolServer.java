@@ -117,7 +117,7 @@ public class ProtocolServer implements Runnable, iP2PServer{
       myServerInfo.setServerPort( myServerSocket.getLocalPort() );
       myProtocol.setServerInfo( myServerInfo );
 
-      myClientHandlerService = new DynamicSizeExecutor( 10, 256 );
+      myClientHandlerService = new DynamicSizeExecutor( 10, myNumberOfThreads, 0 );
 
       LOGGER.debug( "Starting protocol server at port '" + myServerSocket.getLocalPort() + "'" );
       
