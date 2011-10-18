@@ -42,7 +42,7 @@ public class SocketProxy {
 
     Socket theSocket = new Socket();
     //TODO reenable
-//    theSocket.setReuseAddress( true );
+    theSocket.setReuseAddress( true );
     //theSocket.setSoLinger( true, 0 );
     theSocket.connect( myAddress );
     myConnectTime = new Date();
