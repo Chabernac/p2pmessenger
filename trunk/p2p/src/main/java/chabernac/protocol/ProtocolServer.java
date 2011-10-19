@@ -117,10 +117,10 @@ public class ProtocolServer implements Runnable, iP2PServer{
       myServerInfo.setServerPort( myServerSocket.getLocalPort() );
       myProtocol.setServerInfo( myServerInfo );
 
-      myClientHandlerService = new DynamicSizeExecutor( 10, myNumberOfThreads, 0 );
+      myClientHandlerService = new DynamicSizeExecutor( 10, 255, 0 );
 
       LOGGER.debug( "Starting protocol server at port '" + myServerSocket.getLocalPort() + "'" );
-      
+
       synchronized ( LOCK ) {
         isStarted = true;
         LOCK.notify();
@@ -129,9 +129,9 @@ public class ProtocolServer implements Runnable, iP2PServer{
       while(true){ 
         synchronized(this){
           Socket theClientSocket = myServerSocket.accept();
-//        LOGGER.debug("Client accepted, current number of clients: " + mySimultanousThreads.get());
+          LOGGER.debug("Client accepted, current number of clients: " + mySimultanousThreads.get());
 
-          killOldestSocket();
+//          killOldestSocket();
           myRunningSockets.add( theClientSocket );
 
           ClientSocketHandler theHandler = new ClientSocketHandler(theClientSocket);
@@ -212,9 +212,9 @@ public class ProtocolServer implements Runnable, iP2PServer{
 
         String theLine = null;
         while( (theLine = theReader.readLine()) != null){
-//          LOGGER.debug("Line received: '" + theLine + "'");
+          //          LOGGER.debug("Line received: '" + theLine + "'");
           String  theResult = myProtocol.handleCommand( UUID.randomUUID().toString(), theLine );
-//          LOGGER.debug("Sending result: '" + theResult + "'");
+          //          LOGGER.debug("Sending result: '" + theResult + "'");
           theWriter.println( theResult );
           theWriter.flush();
         }
