@@ -58,7 +58,7 @@ public abstract class Protocol implements IProtocol{
   
   public ExecutorService getExecutorService(){
     ProtocolContainer theContainer = findProtocolContainer();
-    if(theContainer == null) return DynamicSizeExecutor.getSmallInstance();
+    if(theContainer == null) return new DynamicSizeExecutor(5, 256,0);
     return theContainer.getExecutorService();
   }
   
