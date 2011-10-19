@@ -4,7 +4,7 @@
 	<groupId>chabernac</groupId>
 	<artifactId>services</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	
+
 	<build>
 		<plugins>
 			<plugin>
@@ -19,25 +19,25 @@
 
 		<extensions>
 			<extension>
-				<groupId>org.apache.maven.wagon</groupId>
-				<artifactId>wagon-webdav</artifactId>
-				<version>1.0-beta-2</version>
+				<groupId>com.google.code.maven-svn-wagon</groupId>
+				<artifactId>maven-svn-wagon</artifactId>
+				<version>1.4</version>
 			</extension>
 		</extensions>
 	</build>
-	
+
 	<distributionManagement>
 		<repository>
 			<id>googlecode.bzb.repo</id>
-			<url>dav:https://p2pmessenger.googlecode.com/svn/maven-repository/</url>
+			<url>svn:https://p2pmessenger.googlecode.com/svn/maven-repository/</url>
 		</repository>
 		<snapshotRepository>
 			<id>googlecode.bzb.snapshotrepo</id>
-			<url>dav:https://p2pmessenger.googlecode.com/svn/maven-snapshot-repository/</url>
+			<url>svn:https://p2pmessenger.googlecode.com/svn/maven-snapshot-repository/</url>
 			<uniqueVersion>false</uniqueVersion>
 		</snapshotRepository>
 	</distributionManagement>
-	
+
 	<repositories>
 		<repository>
 			<id>maven2</id>
@@ -73,8 +73,21 @@
 			</snapshots>
 		</repository>
 	</repositories>
-	
-	
+
+	<pluginRepositories>
+		<pluginRepository>
+			<id>maven2</id>
+			<url>http://repo1.maven.org/maven2</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+		</pluginRepository>
+	</pluginRepositories>
+
+
 	<dependencies>
 		<dependency>
 			<groupId>javax.mail</groupId>
