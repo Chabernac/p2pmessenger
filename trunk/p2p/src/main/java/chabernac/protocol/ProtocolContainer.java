@@ -11,6 +11,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -32,7 +33,7 @@ public class ProtocolContainer implements IProtocol {
 
   private iProtocolFactory myProtocolFactory = null;
   private ServerInfo myServerInfo = null;
-  
+
   private boolean isKeepHistory = false;
 
   private final Set<String> mySupportedProtocols;
@@ -125,14 +126,24 @@ public class ProtocolContainer implements IProtocol {
   public synchronized void stop() {
     ExecutorService theExecutorService = Executors.newCachedThreadPool();
     //let's stop each protocol in a seperate thread to speed it up.
+    final CountDownLatch theLatch = new CountDownLatch(myProtocolMap.values().size());
     for(final IProtocol theProtocol : myProtocolMap.values()){
       if(theProtocol != this){
         theExecutorService.execute( new Runnable(){
           public void run(){
-            theProtocol.stop();
+            try{
+              theProtocol.stop();
+            }finally{
+              theLatch.countDown();
+            }
           }
         });
       }
+    }
+    try {
+      theLatch.await(5, TimeUnit.SECONDS);
+    } catch (InterruptedException e) {
+      LOGGER.error("Could not wait", e);
     }
     //now stop after 5 seconds, we don't want to block the entire system.
     try {
@@ -140,19 +151,19 @@ public class ProtocolContainer implements IProtocol {
       theExecutorService.awaitTermination( 5, TimeUnit.SECONDS );
     } catch ( InterruptedException e ) {
     }
-    
+
     myExecutor.shutdownNow();
   }
 
   public synchronized IProtocol getProtocol(String anId) throws ProtocolException{
     return getProtocol( anId, false );
   }
-  
+
   public synchronized IProtocol getProtocol(String anId, boolean isIgnoreSupportedProtocols) throws ProtocolException{
     if(myProtocolMap.containsKey( anId )){
       return myProtocolMap.get( anId );
     }
-    
+
     if(!isIgnoreSupportedProtocols && mySupportedProtocols != null && 
         mySupportedProtocols.size() > 0 &&
         !mySupportedProtocols.contains( anId )){
@@ -166,7 +177,7 @@ public class ProtocolContainer implements IProtocol {
         theProtocol.setServerInfo( myServerInfo );
       }
     }
-    
+
     IProtocol theProtocol = myProtocolMap.get( anId );
 
     return theProtocol;
@@ -198,15 +209,15 @@ public class ProtocolContainer implements IProtocol {
   public Set< String > getSupportedProtocols() {
     return mySupportedProtocols;
   }
-  
+
   public void setKeepHistory(boolean isKeepHistory){
     this.isKeepHistory = isKeepHistory;
   }
-  
+
   public void clearHistory(){
     myMessageHistory.clear();
   }
-  
+
   public ExecutorService getExecutorService(){
     return myExecutor;
   }
