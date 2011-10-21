@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -36,6 +37,8 @@ public class PacketSender extends AbstractPacketTransfer{
 
   private List<String> mySuccessPackets = new ArrayList< String >();
   private List<String> myFailedPackets = new ArrayList< String >();
+  
+  private ExecutorService mySendThread = Executors.newSingleThreadExecutor();
 
   public PacketSender ( iDataPacketProvider aPacketProvider , String aDestination , PacketProtocol aPacketProtocol ,
       String aTransferId, int anOutstandingPackets ) {
@@ -97,18 +100,22 @@ public class PacketSender extends AbstractPacketTransfer{
   private synchronized void sendPacketsUntillSlotsFull(){
     if(stop) return;
 
-    try{
-      while(mySendPackets.size() < myOutstandingPackets && myPacketProvider.hasNextPacket()){
-        sendPacket( myPacketProvider.getNextPacket() );
+    mySendThread.execute(new Runnable(){
+      public void run(){
+        try{
+          while(mySendPackets.size() < myOutstandingPackets && myPacketProvider.hasNextPacket()){
+            sendPacket( myPacketProvider.getNextPacket() );
+          }
+          
+          //resend the failed packets
+          while(mySendPackets.size() < myOutstandingPackets &&  myFailedPackets.size() > 0){
+            sendPacket( myPacketProvider.getPacket( myFailedPackets.remove( 0 ) ));
+          }
+        }catch(IOException e){
+          LOGGER.error("Unable to read packet", e);
+        }
       }
-
-      //resend the failed packets
-      while(mySendPackets.size() < myOutstandingPackets &&  myFailedPackets.size() > 0){
-        sendPacket( myPacketProvider.getPacket( myFailedPackets.remove( 0 ) ));
-      }
-    }catch(IOException e){
-      LOGGER.error("Unable to read packet", e);
-    }
+    });
   }
 
   private class PacketListener implements iPacketListener {
