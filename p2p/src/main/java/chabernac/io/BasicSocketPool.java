@@ -26,12 +26,24 @@ public class BasicSocketPool implements iSocketPool{
   private Object LOCK = new Object();
 
   private int myMaxAllowSocketsPerSocketAddress = 2;
+  private int myMaxPeekSocketsPerAddress = 5;
 
   private boolean isSocketReuse = true;
 
   @Override
   public SocketProxy checkOut( SocketAddress anAddress ) throws IOException{
+    LOGGER.debug("Trying to checkout connection for '" + anAddress + "'");
+    LOGGER.debug("Socket for this address checked out " + countProxyForSocketAddressInPool( myCheckedOutPool, anAddress ));
     synchronized(LOCK){
+      while(countProxyForSocketAddressInPool( myCheckedOutPool, anAddress ) >= myMaxPeekSocketsPerAddress){
+        try {
+          LOGGER.debug("Waiting for free socket " + countProxyForSocketAddressInPool( myCheckedOutPool, anAddress ));
+          LOCK.wait();
+        } catch (InterruptedException e) {
+          LOGGER.error("Could not wait", e);
+        }
+      }
+      
       SocketProxy theProxy = searchProxyForSocketAddressInPool( myCheckedInPool, anAddress);
       if(theProxy != null){
         theProxy.connect();
@@ -41,16 +53,19 @@ public class BasicSocketPool implements iSocketPool{
             theProxy.isInputShutdown() ||
             theProxy.isOutputShutdown()){
           close( theProxy );
+          LOGGER.debug("Closing socket "  + theProxy.getSocketAddress());
         } else {
           myCheckedInPool.remove( theProxy );
           myCheckedOutPool.add( theProxy );
           //this is a socket that will be shortly used so update the connect time
           theProxy.setConnectTime( new Date() );
+          LOGGER.debug("returning existing socket " + theProxy.getSocketAddress());
           return theProxy;
         }
       }
     }
 
+    LOGGER.debug("creating new socket " + anAddress);
     SocketProxy theSocket = new SocketProxy(anAddress);
 
     synchronized(LOCK){
@@ -107,10 +122,13 @@ public class BasicSocketPool implements iSocketPool{
 
         if(theProxiesForSocketAddress >= 2){
           //only allow 2 sockets to be stored in the pool per address
+          LOGGER.debug("Closing socket because max 2 entries can be stored in checked in pool " + aSocket.getSocketAddress());
           aSocket.close();
         } else {
           myCheckedInPool.add( aSocket );
         }
+        
+        LOCK.notifyAll();
       }
     }
   }
@@ -119,10 +137,12 @@ public class BasicSocketPool implements iSocketPool{
   public void close( SocketProxy aSocket ) {
     if(aSocket == null) return;
 
+    LOGGER.debug("Closing socket " + aSocket);
     aSocket.close();
     synchronized(LOCK){
       myCheckedOutPool.remove( aSocket );
       myCheckedInPool.remove(aSocket);
+      LOCK.notifyAll();
     }
   }
 
