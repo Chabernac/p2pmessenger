@@ -26,7 +26,7 @@ public class BasicSocketPool implements iSocketPool{
   private Object LOCK = new Object();
 
   private int myMaxAllowSocketsPerSocketAddress = 2;
-  private int myMaxPeekSocketsPerAddress = 5;
+  private int myMaxPeekSocketsPerAddress = 2;
 
   private boolean isSocketReuse = true;
 
@@ -43,7 +43,7 @@ public class BasicSocketPool implements iSocketPool{
           LOGGER.error("Could not wait", e);
         }
       }
-      
+
       SocketProxy theProxy = searchProxyForSocketAddressInPool( myCheckedInPool, anAddress);
       if(theProxy != null){
         theProxy.connect();
@@ -118,17 +118,19 @@ public class BasicSocketPool implements iSocketPool{
       synchronized(LOCK){
         int theProxiesForSocketAddress = countProxyForSocketAddressInPool( myCheckedInPool, aSocket.getSocketAddress() );
 
-        myCheckedOutPool.remove( aSocket );
+        try{
+          myCheckedOutPool.remove( aSocket );
 
-        if(theProxiesForSocketAddress >= 2){
-          //only allow 2 sockets to be stored in the pool per address
-          LOGGER.debug("Closing socket because max 2 entries can be stored in checked in pool " + aSocket.getSocketAddress());
-          aSocket.close();
-        } else {
-          myCheckedInPool.add( aSocket );
+          if(theProxiesForSocketAddress >= 2){
+            //only allow 2 sockets to be stored in the pool per address
+            LOGGER.debug("Closing socket because max 2 entries can be stored in checked in pool " + aSocket.getSocketAddress());
+            aSocket.close();
+          } else {
+            myCheckedInPool.add( aSocket );
+          }
+        }finally{
+          LOCK.notifyAll();
         }
-        
-        LOCK.notifyAll();
       }
     }
   }
@@ -140,18 +142,25 @@ public class BasicSocketPool implements iSocketPool{
     LOGGER.debug("Closing socket " + aSocket);
     aSocket.close();
     synchronized(LOCK){
-      myCheckedOutPool.remove( aSocket );
-      myCheckedInPool.remove(aSocket);
-      LOCK.notifyAll();
+      try{
+        myCheckedOutPool.remove( aSocket );
+        myCheckedInPool.remove(aSocket);
+      }finally{
+        LOCK.notifyAll();
+      }
     }
   }
 
   private void clean(List<SocketProxy> aPool){
     synchronized (LOCK) {
-      for(SocketProxy theSocket : aPool){
-        theSocket.close();
+      try{
+        for(SocketProxy theSocket : aPool){
+          theSocket.close();
+        }
+        aPool.clear();
+      }finally{
+        LOCK.notifyAll();
       }
-      aPool.clear();
     }
   }
 
@@ -165,13 +174,17 @@ public class BasicSocketPool implements iSocketPool{
   @Override
   public void cleanUpOlderThan( long aTimestamp ) {
     synchronized(LOCK){
-      for(Iterator< SocketProxy > i = myCheckedInPool.iterator();i.hasNext();){
-        SocketProxy theProxy = i.next();
-        if(theProxy.getConnectTime().getTime() < aTimestamp){
-          LOGGER.debug( "Cleaning up socket '"  + theProxy + "'");
-          theProxy.close();
-          i.remove();
+      try{
+        for(Iterator< SocketProxy > i = myCheckedInPool.iterator();i.hasNext();){
+          SocketProxy theProxy = i.next();
+          if(theProxy.getConnectTime().getTime() < aTimestamp){
+            LOGGER.debug( "Cleaning up socket '"  + theProxy + "'");
+            theProxy.close();
+            i.remove();
+          }
         }
+      }finally{
+        LOCK.notifyAll();
       }
     }
   }
@@ -206,13 +219,13 @@ public class BasicSocketPool implements iSocketPool{
   public void setSocketReuse( boolean aSocketReuse ) {
     isSocketReuse = aSocketReuse;
   }
-  
+
   public void addObserver(Observer anObserver){
     myCheckedInPool.addObserver( anObserver );
     myCheckedOutPool.addObserver( anObserver );
     myConnectingPool.addObserver( anObserver );
   }
-  
+
   public void deleteObserver(Observer anObserver){
     myCheckedInPool.deleteObserver( anObserver );
     myCheckedOutPool.deleteObserver( anObserver );
