@@ -25,6 +25,7 @@ import chabernac.protocol.IProtocol;
 import chabernac.protocol.Protocol;
 import chabernac.protocol.ProtocolContainer;
 import chabernac.protocol.ProtocolException;
+import chabernac.protocol.message.AsyncMessageProcotol;
 import chabernac.protocol.message.Message;
 import chabernac.protocol.message.MessageProtocol;
 import chabernac.protocol.routing.AbstractPeer;
@@ -232,7 +233,7 @@ public class UserInfoProtocol extends Protocol {
       theMessage.setSource( getRoutingTable().getEntryForLocalPeer().getPeer() );
       theMessage.setMessage( createMessage( Command.GET.name() ) );
       theMessage.setProtocolMessage( true );
-      String theResult = ((MessageProtocol)findProtocolContainer().getProtocol( MessageProtocol.ID )).sendMessage( theMessage );
+      String theResult = ((AsyncMessageProcotol)findProtocolContainer().getProtocol( AsyncMessageProcotol.ID )).sendAndWaitForResponse(theMessage );
       LOGGER.debug("User info retrieved: '" + theResult + "'");
       return myConverter.getObject( theResult );
     }catch(Exception e){
@@ -249,7 +250,7 @@ public class UserInfoProtocol extends Protocol {
         theMessage.setSource( getRoutingTable().getEntryForLocalPeer().getPeer() );
         theMessage.setMessage( createMessage( Command.PUT.name() + ";" + getRoutingTable().getLocalPeerId() + ";" + myConverter.toString( myPersonalUserInfo )));
         theMessage.setProtocolMessage( true );
-        String theResult = ((MessageProtocol)findProtocolContainer().getProtocol( MessageProtocol.ID )).sendMessage( theMessage );
+        String theResult = ((AsyncMessageProcotol)findProtocolContainer().getProtocol( AsyncMessageProcotol.ID )).sendAndWaitForResponse(theMessage );
         if(!theResult.equals( Response.OK.name() )){
           throw new UserInfoException("Could not send user info to peer '" + aPeerId + "' response: '" + theResult + "'");
         }
@@ -274,7 +275,7 @@ public class UserInfoProtocol extends Protocol {
           String theStatusMessage = Command.STATUS + ";" + aStatus.name();
           if(aStatusMessage != null && !"".equals( aStatusMessage )) theStatusMessage += ";" + aStatusMessage;
           theMessage.setMessage( createMessage( theStatusMessage ));
-          String theResult = ((MessageProtocol)findProtocolContainer().getProtocol( MessageProtocol.ID )).sendMessage( theMessage );
+          String theResult = ((AsyncMessageProcotol)findProtocolContainer().getProtocol( AsyncMessageProcotol.ID )).sendAndWaitForResponse( theMessage );
           if(!theResult.equalsIgnoreCase( Response.OK.name() )){
             throw new UserInfoException("Invalid result received when changing status '" + theResult + "'");
           }

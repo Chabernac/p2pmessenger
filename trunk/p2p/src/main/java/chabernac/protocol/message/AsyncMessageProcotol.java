@@ -25,6 +25,7 @@ import chabernac.protocol.routing.iPeerSender;
 
 public class AsyncMessageProcotol extends AbstractMessageProtocol {
   public static final String ID = "AMP";
+  public static final int DEFAULT_WAIT_TIME = 15;
 
   private iObjectStringConverter< Message > myMessageConverter = new Base64ObjectStringConverter< Message >();
   //  private ExecutorService mySenderService = DynamicSizeExecutor.getSmallInstance();
@@ -132,6 +133,10 @@ public class AsyncMessageProcotol extends AbstractMessageProtocol {
   public void sendMessage(Message aMessage) throws MessageException{
     inspectMessage(aMessage);
     handleMessage( UUID.randomUUID().toString(), aMessage );
+  }
+  
+  public String sendAndWaitForResponse(Message aMessage) throws MessageException{
+    return sendAndWaitForResponse(aMessage, DEFAULT_WAIT_TIME, TimeUnit.SECONDS);
   }
 
   public String sendAndWaitForResponse(Message aMesage, long aTimeout, TimeUnit aTimeUnit) throws MessageException{

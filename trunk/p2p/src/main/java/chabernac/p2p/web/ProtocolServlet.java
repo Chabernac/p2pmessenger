@@ -55,7 +55,6 @@ public class ProtocolServlet extends HttpServlet {
 
 				Set<String> theSupportedProtocols = new HashSet< String >();
 				theSupportedProtocols.add( RoutingProtocol.ID );
-				theSupportedProtocols.add( MessageProtocol.ID );
 				theSupportedProtocols.add( EchoProtocol.ID );
 
 				ProtocolContainer theProtocolContainer = new ProtocolContainer(new ProtocolFactory(thePropertyMap), theSupportedProtocols);
