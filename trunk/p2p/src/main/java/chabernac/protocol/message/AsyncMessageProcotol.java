@@ -21,6 +21,7 @@ import chabernac.protocol.ProtocolException;
 import chabernac.protocol.routing.AbstractPeer;
 import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.RoutingTable;
+import chabernac.protocol.routing.RoutingTableEntry;
 import chabernac.protocol.routing.iPeerSender;
 
 public class AsyncMessageProcotol extends AbstractMessageProtocol {
@@ -42,6 +43,10 @@ public class AsyncMessageProcotol extends AbstractMessageProtocol {
   @Override
   public String getDescription() {
     return "Asynchronous message protocol";
+  }
+  
+  public int getImportance(){
+    return 2;
   }
 
   public RoutingTable getRoutingTable() throws ProtocolException{
@@ -83,8 +88,6 @@ public class AsyncMessageProcotol extends AbstractMessageProtocol {
       LOGGER.error("Unable to send delivery status", e);
     }
   }
-
-
 
   @Override
   public void stop() {
@@ -172,6 +175,13 @@ public class AsyncMessageProcotol extends AbstractMessageProtocol {
 
       AbstractPeer theDestination = myMessage.getDestination();
       try {
+        //see if the peer exists in the routing table, if not add it so that a route back is created so that responses can be send
+        AbstractPeer theLastHop = myMessage.getLastHop();
+        if( theLastHop != null ){
+          getRoutingTable().addRoutingTableEntry(new RoutingTableEntry(myMessage.getSource(), myMessage.getHops(), theLastHop, System.currentTimeMillis()));
+        }
+        
+        
         myProcessingMessages.add(myMessage.getMessageId());
         if(theDestination.getPeerId().equals( getRoutingTable().getLocalPeerId() )){
           if("DeliveryStatus".equalsIgnoreCase( myMessage.getHeader( "TYPE" ))){

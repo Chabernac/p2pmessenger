@@ -29,7 +29,7 @@ public class ProtocolContainer implements IProtocol {
   private Map<String, IProtocol> myProtocolMap = null;
   private List< ProtocolMessageEntry > myMessageHistory = Collections.synchronizedList( new ArrayList< ProtocolMessageEntry >() );
   private List<iProtocolMessageListener> myListeners = new ArrayList< iProtocolMessageListener >();
-  private ExecutorService myExecutor = DynamicSizeExecutor.getMediumInstance();
+  private ExecutorService myExecutor = new DynamicSizeExecutor(5, 256,0);
 
   private iProtocolFactory myProtocolFactory = null;
   private ServerInfo myServerInfo = null;
@@ -117,6 +117,10 @@ public class ProtocolContainer implements IProtocol {
   public String getId() {
     return "MAS";
   }
+  
+  public int getImportance(){
+    return 1;
+  }
 
   @Override
   public void setMasterProtocol( IProtocol aProtocol ) {
@@ -127,17 +131,21 @@ public class ProtocolContainer implements IProtocol {
     ExecutorService theExecutorService = Executors.newCachedThreadPool();
     //let's stop each protocol in a seperate thread to speed it up.
     final CountDownLatch theLatch = new CountDownLatch(myProtocolMap.values().size());
-    for(final IProtocol theProtocol : myProtocolMap.values()){
+    List<IProtocol> mySortedProtocols = new ArrayList<IProtocol>(myProtocolMap.values());
+    Collections.sort(mySortedProtocols, new ProtocolSorter());
+    for(final IProtocol theProtocol : mySortedProtocols){
       if(theProtocol != this){
-        theExecutorService.execute( new Runnable(){
-          public void run(){
+//        theExecutorService.execute( new Runnable(){
+//          public void run(){
             try{
+              LOGGER.debug("Stopping protocol '" + theProtocol.getClass().getName() + "'");
               theProtocol.stop();
             }finally{
               theLatch.countDown();
+              LOGGER.debug("Protocol '" + theProtocol.getClass().getName() + "' stopped protocols " + theLatch.getCount() + " remaining");
             }
-          }
-        });
+//          }
+//        });
       }
     }
     try {

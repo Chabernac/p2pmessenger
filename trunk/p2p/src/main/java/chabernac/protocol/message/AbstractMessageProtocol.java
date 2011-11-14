@@ -33,6 +33,7 @@ public abstract class AbstractMessageProtocol extends Protocol {
   
   protected iObjectStringConverter< Message > myMessageConverter = new Base64ObjectStringConverter< Message >();
   
+  
   protected List<UUID> myProcessingMessages = Collections.synchronizedList(new ArrayList<UUID>());
   protected Set<UUID> myProcessedMessages = Collections.synchronizedSet(new HashSet<UUID>());
   
@@ -78,6 +79,8 @@ public abstract class AbstractMessageProtocol extends Protocol {
       if(!theEntry.isReachable()) return Response.UNDELIVERABLE.name() + " the peer with peer id: '" + theEntry.getPeer().getPeerId() + "' is not reachable";
 
       AbstractPeer theGateway = getRoutingTable().getGatewayForPeer( aMessage.getDestination() );
+      
+      aMessage.setLastHop(getRoutingTable().getEntryForLocalPeer().getPeer());
 
       AbstractPeer theLocalPeer = getRoutingTable().getEntryForLocalPeer().getPeer();
       if(!theGateway.isSameEndPointAs( theLocalPeer )){

@@ -12,6 +12,8 @@ import java.net.MalformedURLException;
 import java.net.Socket;
 import java.net.URL;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
@@ -26,6 +28,7 @@ import org.apache.log4j.Logger;
 
 import chabernac.io.SocketProxy;
 import chabernac.protocol.message.DeliveryReport;
+import chabernac.protocol.message.Message;
 import chabernac.protocol.message.MessageArchive;
 import chabernac.protocol.message.MultiPeerMessage;
 import chabernac.protocol.message.iDeliverReportListener;
@@ -80,12 +83,11 @@ public class P2PFacadeTest extends TestCase {
     System.out.println("testP2PSendMessage Peer id: " + theFacade1.getPeerId());
     System.out.println("testP2PSendMessage Peer id: " + theFacade2.getPeerId());
 
-    Thread.sleep( 2000 );
-
-    assertTrue( theFacade1.getRoutingTable().containsEntryForPeer( theFacade2.getPeerId() ) );
-    assertTrue( theFacade2.getRoutingTable().containsEntryForPeer( theFacade1.getPeerId() ) );
+    Thread.sleep( 3000 );
 
     try{
+      assertTrue( theFacade1.getRoutingTable().containsEntryForPeer( theFacade2.getPeerId() ) );
+      assertTrue( theFacade2.getRoutingTable().containsEntryForPeer( theFacade1.getPeerId() ) );
       MessageCollector theMessageCollector = new MessageCollector();
       theFacade2.addMessageListener( theMessageCollector );
 
@@ -279,8 +281,8 @@ public class P2PFacadeTest extends TestCase {
     .setUserInfoProvider( new UserInfoProvider("Leslie", "leslie.torreele@gmail.com") )
     .start( 20 );
 
-    System.out.println("testUserInfo Peer id: " + theFacade1.getPeerId());
-    System.out.println("testUserInfo Peer id: " + theFacade2.getPeerId());
+    LOGGER.debug("Peer 1 id: " + theFacade1.getPeerId());
+    LOGGER.debug("Peer 2 id: " + theFacade2.getPeerId());
 
     Thread.sleep( 2000 );
 
@@ -290,6 +292,9 @@ public class P2PFacadeTest extends TestCase {
 
       assertEquals( "Leslie", theFacade2.getPersonalInfo().getName());
       assertEquals( "leslie.torreele@gmail.com", theFacade2.getPersonalInfo().getEMail());
+      
+      assertTrue(theFacade2.getRoutingTable().containsEntryForPeer(theFacade1.getPeerId()));
+      assertTrue(theFacade1.getRoutingTable().containsEntryForPeer(theFacade2.getPeerId()));
 
       UserInfo theUserInfoOfFacade1 = theFacade2.getUserInfo().get( theFacade1.getPeerId() );
       assertEquals( "Guy", theUserInfoOfFacade1.getName() );
@@ -320,9 +325,6 @@ public class P2PFacadeTest extends TestCase {
     .setPersist( false )
     .start( 20 );
 
-    DeliveryReportCollector theDeliveryReportCollector = new DeliveryReportCollector();
-    theFacade1.addDeliveryReportListener( theDeliveryReportCollector );
-
     P2PFacade theFacade2 = new P2PFacade()
     .setExchangeDelay( 300 )
     .setPersist( false )
@@ -339,15 +341,23 @@ public class P2PFacadeTest extends TestCase {
     try{
 
       int times = 10;
+      CountDownLatch theLatch = new CountDownLatch(times);
+      MyDeliveryReportCollector theDeliveryReportCollector = new MyDeliveryReportCollector(theLatch);
+      theFacade1.addDeliveryReportListener( theDeliveryReportCollector );
+      
+      List<MultiPeerMessage> theMessages = new ArrayList<MultiPeerMessage>();
+
       for(int i=0;i<times;i++){
         MultiPeerMessage theMessage = MultiPeerMessage.createMessage( "test message" )
         .addDestination( theFacade2.getPeerId() );
 
-        theMessage = theFacade1.sendEncryptedMessage( theMessage, Executors.newFixedThreadPool( 1 ) ).get();
-        assertNotNull( theMessage );
-
-        Thread.sleep( 3000 );
-
+        theMessages.add(theFacade1.sendEncryptedMessage( theMessage, Executors.newFixedThreadPool( 1 ) ).get());
+      }
+      
+      theLatch.await(20, TimeUnit.SECONDS);
+      assertEquals(0, theLatch.getCount());
+      
+      for(MultiPeerMessage theMessage : theMessages){
         Map<String, DeliveryReport> theReports = theArchive1.getDeliveryReportsForMultiPeerMessage( theMessage );
         //we only send to 1 peer and it should only contain the latest delivery report, so the size must be 1
         assertEquals( 1, theReports.size() );
@@ -898,6 +908,21 @@ public class P2PFacadeTest extends TestCase {
       }
     }
 
+  }
+  
+  private class MyDeliveryReportCollector implements iDeliverReportListener{
+    private final CountDownLatch myLatch;
+    
+    public MyDeliveryReportCollector(CountDownLatch aLatch){
+      myLatch = aLatch;
+    }
+
+    @Override
+    public void acceptDeliveryReport(DeliveryReport aDeliverReport) {
+      if(aDeliverReport.getDeliveryStatus() == DeliveryReport.Status.DELIVERED){
+        myLatch.countDown();
+      }
+    }
   }
 
 

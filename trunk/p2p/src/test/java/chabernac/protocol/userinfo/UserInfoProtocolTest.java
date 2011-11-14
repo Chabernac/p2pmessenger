@@ -66,6 +66,9 @@ public class UserInfoProtocolTest extends AbstractProtocolTest {
       theRoutingProtocol1.exchangeRoutingTable();
       theRoutingProtocol2.exchangeRoutingTable();
       
+      assertTrue(theRoutingTable1.containsEntryForPeer("2"));
+      assertTrue(theRoutingTable2.containsEntryForPeer("1"));
+      
       UserInfo theUserInfo = theUserInfoProtocol.getUserInfoForPeer( theRoutingProtocol1.getRoutingTable().getEntryForPeer( "2" ).getPeer().getPeerId() );
       
       assertNotNull( theUserInfo );

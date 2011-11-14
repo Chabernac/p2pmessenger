@@ -25,6 +25,7 @@ import chabernac.protocol.ProtocolFactory;
 import chabernac.protocol.ServerInfo;
 import chabernac.protocol.ServerInfo.Type;
 import chabernac.protocol.echo.EchoProtocol;
+import chabernac.protocol.message.AsyncMessageProcotol;
 import chabernac.protocol.message.MessageProtocol;
 import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.SessionData;
@@ -56,6 +57,8 @@ public class ProtocolServlet extends HttpServlet {
 				Set<String> theSupportedProtocols = new HashSet< String >();
 				theSupportedProtocols.add( RoutingProtocol.ID );
 				theSupportedProtocols.add( EchoProtocol.ID );
+				theSupportedProtocols.add( MessageProtocol.ID );
+				theSupportedProtocols.add( AsyncMessageProcotol.ID );
 
 				ProtocolContainer theProtocolContainer = new ProtocolContainer(new ProtocolFactory(thePropertyMap), theSupportedProtocols);
 
@@ -88,20 +91,20 @@ public class ProtocolServlet extends HttpServlet {
 		String theSession = aRequest.getParameter( "session" );
 		String thePeerId = aRequest.getParameter("peerid");
 
-		LOGGER.debug( "Received message from peer '" + thePeerId + "' in session '" + theSession + "': " + theInput + "'" + " at remote ip '" + aRequest.getRemoteAddr() + "'" );
+//		LOGGER.debug( "Received message from peer '" + thePeerId + "' in session '" + theSession + "': " + theInput + "'" + " at remote ip '" + aRequest.getRemoteAddr() + "'" );
 		//TODO remove when logging correctly enabled on server
 		//    System.out.println("Received message from peer '" + thePeerId + "' in session '" + theSession + "': " + theInput + "'" );
 
 		try {
-			LOGGER.debug( "Concurrent requests in ProtocolServlet: "  + myConcurrentRequestCounter.incrementAndGet());
+//			LOGGER.debug( "Concurrent requests in ProtocolServlet: "  + myConcurrentRequestCounter.incrementAndGet());
 
 			if(theSession != null && !"".equals( theSession )){
 				String theURL = aRequest.getRequestURL().toString();
 				theURL = theURL.substring(0, theURL.indexOf("/", 7) + 1);
 				getSessionData().putProperty(theSession, "requestor.ip", aRequest.getRemoteAddr());
 				getSessionData().putProperty(theSession, "requestor.url", theURL);
-				LOGGER.debug("Remote ip '" + getSessionData().getProperty(theSession, "requestor.ip") + "'");
-				LOGGER.debug("Remote url '" + getSessionData().getProperty(theSession, "requestor.url") + "'");
+//				LOGGER.debug("Remote ip '" + getSessionData().getProperty(theSession, "requestor.ip") + "'");
+//				LOGGER.debug("Remote url '" + getSessionData().getProperty(theSession, "requestor.url") + "'");
 			}
 
 			if("exchange".equalsIgnoreCase( theInput ) ){

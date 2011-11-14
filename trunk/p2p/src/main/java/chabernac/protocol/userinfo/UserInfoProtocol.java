@@ -27,7 +27,6 @@ import chabernac.protocol.ProtocolContainer;
 import chabernac.protocol.ProtocolException;
 import chabernac.protocol.message.AsyncMessageProcotol;
 import chabernac.protocol.message.Message;
-import chabernac.protocol.message.MessageProtocol;
 import chabernac.protocol.routing.AbstractPeer;
 import chabernac.protocol.routing.IRoutingTableListener;
 import chabernac.protocol.routing.RoutingProtocol;
@@ -217,7 +216,9 @@ public class UserInfoProtocol extends Protocol {
   public void stop() {
     try {
       getPersonalInfo().setStatus( Status.OFFLINE );
-    } catch ( UserInfoException e ) {
+      //TODO not so clean find another way to wait for status update to be send
+      Thread.sleep(2000);
+    } catch ( Exception e ) {
       LOGGER.error( "Error occured while stopping user info protocol", e );
     }
   }
@@ -227,14 +228,14 @@ public class UserInfoProtocol extends Protocol {
       AbstractPeer thePeer = getRoutingTable().getEntryForPeer( aPeerId ).getPeer();
       if(!thePeer.isProtocolSupported( ID )) throw new UserInfoException("The user info protocol is not supported by peer '" + thePeer.getPeerId() + "'");
 
-      LOGGER.debug("Trying to retrieve user info for peer: '" + aPeerId + "'");
+      LOGGER.debug(getRoutingTable().getLocalPeerId() +  " Trying to retrieve user info for peer: '" + aPeerId + "'");
       Message theMessage = new Message(  );
       theMessage.setDestination( getRoutingTable().getEntryForPeer( aPeerId ).getPeer());
       theMessage.setSource( getRoutingTable().getEntryForLocalPeer().getPeer() );
       theMessage.setMessage( createMessage( Command.GET.name() ) );
       theMessage.setProtocolMessage( true );
       String theResult = ((AsyncMessageProcotol)findProtocolContainer().getProtocol( AsyncMessageProcotol.ID )).sendAndWaitForResponse(theMessage );
-      LOGGER.debug("User info retrieved: '" + theResult + "'");
+      LOGGER.debug(getRoutingTable().getLocalPeerId() +  " User info retrieved: '" + theResult + "'");
       return myConverter.getObject( theResult );
     }catch(Exception e){
       throw new UserInfoException("Could not retrieve user info for peer '" + aPeerId + "'", e);
@@ -250,10 +251,10 @@ public class UserInfoProtocol extends Protocol {
         theMessage.setSource( getRoutingTable().getEntryForLocalPeer().getPeer() );
         theMessage.setMessage( createMessage( Command.PUT.name() + ";" + getRoutingTable().getLocalPeerId() + ";" + myConverter.toString( myPersonalUserInfo )));
         theMessage.setProtocolMessage( true );
-        String theResult = ((AsyncMessageProcotol)findProtocolContainer().getProtocol( AsyncMessageProcotol.ID )).sendAndWaitForResponse(theMessage );
-        if(!theResult.equals( Response.OK.name() )){
-          throw new UserInfoException("Could not send user info to peer '" + aPeerId + "' response: '" + theResult + "'");
-        }
+        ((AsyncMessageProcotol)findProtocolContainer().getProtocol( AsyncMessageProcotol.ID )).sendMessage(theMessage);
+//        if(!theResult.equals( Response.OK.name() )){
+//          throw new UserInfoException("Could not send user info to peer '" + aPeerId + "' response: '" + theResult + "'");
+//        }
       }
     }catch(Exception e){
       throw new UserInfoException("Could not send user info to peer '" + aPeerId + "'", e);

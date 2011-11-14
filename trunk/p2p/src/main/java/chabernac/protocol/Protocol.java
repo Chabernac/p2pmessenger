@@ -25,6 +25,10 @@ public abstract class Protocol implements IProtocol{
     return myId;
   }
   
+  public int getImportance(){
+    return 100;
+  }
+  
   public abstract String getDescription();
   
    /**
