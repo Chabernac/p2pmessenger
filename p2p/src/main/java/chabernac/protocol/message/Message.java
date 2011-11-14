@@ -19,6 +19,7 @@ public class Message implements Serializable{
   private static final long serialVersionUID = -8695593402222208110L;
   private AbstractPeer mySource = null;
   private AbstractPeer myDestination = null;
+  private AbstractPeer myLastHop = null;
   private String myMessage = null;
   private Map<String, String> myHeaders = null;
   private List<MessageIndicator> myIndicators = null;
@@ -36,6 +37,7 @@ public class Message implements Serializable{
   private byte[] myBytes = null;
   
   private int myTTL = TTL;
+  private int myHops = 0;
   
   public AbstractPeer getSource() {
     return mySource;
@@ -46,6 +48,13 @@ public class Message implements Serializable{
   public AbstractPeer getDestination() {
     return myDestination;
   }
+  public AbstractPeer getLastHop() {
+    return myLastHop;
+  }
+  public void setLastHop(AbstractPeer aLastHop) {
+    myLastHop = aLastHop;
+  }
+  
   public void setDestination( AbstractPeer anDestination ) {
     if(isLocked) throw new ConcurrentModificationException("Can not modify message when it is locked");
     myDestination = anDestination;
@@ -139,9 +148,15 @@ public class Message implements Serializable{
     myIndicators = anIndicators;
 //    myMessageId = UUID.randomUUID();
   }
+  
   public int getTTL() {
     return myTTL;
   }
+  
+  public int getHops(){
+    return myHops;
+  }
+  
   public void setTTL( int anTtl ) {
     if(isLocked) throw new ConcurrentModificationException("Can not modify message when it is locked");
     myTTL = anTtl;
@@ -152,6 +167,7 @@ public class Message implements Serializable{
     if(isLocked) throw new ConcurrentModificationException("Can not modify message when it is locked");
     if(myTTL > 0){
       myTTL--;
+      myHops++;
     }
   }
   public boolean isEndOfTTL() {
@@ -176,6 +192,7 @@ public class Message implements Serializable{
   public void resetTTL(){
     if(isLocked) throw new ConcurrentModificationException("Can not modify message when it is locked");
     myTTL = TTL;
+    myHops = 0;
   }
   public boolean isLocked() {
     return isLocked;

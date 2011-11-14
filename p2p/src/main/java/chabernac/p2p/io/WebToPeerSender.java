@@ -17,15 +17,16 @@ public class WebToPeerSender {
   private Map<String, AtomicInteger> myPendingMessagesForPeer = Collections.synchronizedMap( new HashMap<String, AtomicInteger>());
 
 
-  public String sendMessageTo(WebPeer aSendingPeer, AbstractPeer aPeer, String aMessage, int aTimeoutInSeconds) throws IOException{
+  //TODO currently only 1 endpoint is allowed, so we make this method synchronized because otherwise
+  //it might be that no endpoint is available
+  public synchronized String sendMessageTo(WebPeer aSendingPeer, AbstractPeer aPeer, String aMessage, int aTimeoutInSeconds) throws IOException{
     if(aSendingPeer.getEndPointContainer() == null) throw new IOException("No endpoints available in webpeer '" + aSendingPeer.getPeerId() + "'");
-
     
     try{
       int thePendingMessages = incrementCounter(aPeer.getPeerId());
       
       EndPoint theEndPoint = aSendingPeer.getEndPointContainer().getEndPointFor( aPeer.getPeerId(), aTimeoutInSeconds, TimeUnit.SECONDS );
-      if(theEndPoint == null) throw new IOException("No end point available for peer '" + aPeer.getPeerId() + "' in webpeer '" + aSendingPeer.getPeerId() + "'");
+      if(theEndPoint == null) throw new IOException("No end point available for peer '" + aPeer.getPeerId() + "' in webpeer '" + aSendingPeer.getPeerId() + "' after " + aTimeoutInSeconds + " seconds");
       UUID theUID = UUID.randomUUID();
       CometEvent theCometEvent = new CometEvent(theUID.toString(), aMessage);
       theCometEvent.setPendingEvents( thePendingMessages - 1);

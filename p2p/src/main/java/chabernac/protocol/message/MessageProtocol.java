@@ -43,6 +43,10 @@ public class MessageProtocol extends AbstractMessageProtocol {
   public String getDescription() {
     return "Message protocol";
   }
+  
+  public int getImportance(){
+    return 2;
+  }
 
   @Override
   public String handleCommand( String aSessionId, String anInput ) {

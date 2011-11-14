@@ -10,4 +10,5 @@ public interface IProtocol {
   public void setMasterProtocol(IProtocol aProtocol);
   public void stop();
   public void setServerInfo(ServerInfo aServerInfo) throws ProtocolException;
+  public int getImportance();
 }

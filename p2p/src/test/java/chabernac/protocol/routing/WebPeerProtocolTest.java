@@ -43,68 +43,73 @@ public class WebPeerProtocolTest extends AbstractProtocolTest {
   }
 
   public void setUp() throws Exception{
-    ProtocolContainer theProtocol1 = getProtocolContainer( -1, false, "1" );
-    theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT, 5);
-    myRoutingProtocol1 = (RoutingProtocol)theProtocol1.getProtocol( RoutingProtocol.ID );
-    myMessageProtocol1 = (MessageProtocol)theProtocol1.getProtocol( MessageProtocol.ID );
-    myRoutingProtocol1.getLocalUnreachablePeerIds().add("2");
-    theProtocol1.getProtocol( WebPeerProtocol.ID );
+    try{
+      ProtocolContainer theProtocol1 = getProtocolContainer( -1, false, "1" );
+      theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT, 5);
+      myRoutingProtocol1 = (RoutingProtocol)theProtocol1.getProtocol( RoutingProtocol.ID );
+      myMessageProtocol1 = (MessageProtocol)theProtocol1.getProtocol( MessageProtocol.ID );
+      myRoutingProtocol1.getLocalUnreachablePeerIds().add("2");
+      theProtocol1.getProtocol( WebPeerProtocol.ID );
 
-    ProtocolContainer theProtocol2 = getProtocolContainer( -1, false, "2" );
-    theServer2 = new ProtocolServer(theProtocol2, RoutingProtocol.START_PORT + 1, 5);
-    RoutingProtocol theRoutingProtocol2 = (RoutingProtocol)theProtocol2.getProtocol( RoutingProtocol.ID );
-    myMessageProtocol2 = (MessageProtocol)theProtocol2.getProtocol( MessageProtocol.ID );
-    theRoutingProtocol2.getLocalUnreachablePeerIds().add("1");
-    theProtocol2.getProtocol( WebPeerProtocol.ID );
+      ProtocolContainer theProtocol2 = getProtocolContainer( -1, false, "2" );
+      theServer2 = new ProtocolServer(theProtocol2, RoutingProtocol.START_PORT + 1, 5);
+      RoutingProtocol theRoutingProtocol2 = (RoutingProtocol)theProtocol2.getProtocol( RoutingProtocol.ID );
+      myMessageProtocol2 = (MessageProtocol)theProtocol2.getProtocol( MessageProtocol.ID );
+      theRoutingProtocol2.getLocalUnreachablePeerIds().add("1");
+      theProtocol2.getProtocol( WebPeerProtocol.ID );
 
-    theWebServer = new Server(9090);
+      theWebServer = new Server(9090);
 
-    assertTrue( theServer1.start() );
+      assertTrue( theServer1.start() );
 
-    Context root = new Context(theWebServer,ProtocolWebServer.CONTEXT,Context.SESSIONS);
-    CometServlet theCometServlet= new CometServlet();
-    ServletHolder theCometHolder = new ServletHolder(theCometServlet);
-    theCometHolder.setInitOrder(1);
-    root.addServlet(theCometHolder, ProtocolWebServer.COMET);
-    ProtocolServlet theProtocolServlet = new ProtocolServlet();
-    ServletHolder theProtocolHolder = new ServletHolder(theProtocolServlet);
-    theProtocolHolder.setInitOrder(2);
-    root.addServlet(theProtocolHolder, ProtocolWebServer.PROTOCOL);
-    theProtocolHolder.setInitParameter( "serverurl", "http://localhost:9090" + ProtocolWebServer.CONTEXT );
+      Context root = new Context(theWebServer,ProtocolWebServer.CONTEXT,Context.SESSIONS);
+      CometServlet theCometServlet= new CometServlet();
+      ServletHolder theCometHolder = new ServletHolder(theCometServlet);
+      theCometHolder.setInitOrder(1);
+      root.addServlet(theCometHolder, ProtocolWebServer.COMET);
+      ProtocolServlet theProtocolServlet = new ProtocolServlet();
+      ServletHolder theProtocolHolder = new ServletHolder(theProtocolServlet);
+      theProtocolHolder.setInitOrder(2);
+      root.addServlet(theProtocolHolder, ProtocolWebServer.PROTOCOL);
+      theProtocolHolder.setInitParameter( "serverurl", "http://localhost:9090" + ProtocolWebServer.CONTEXT );
 
-    theWebServer.start();
+      theWebServer.start();
 
-    theServer1.start();
-    theServer2.start();
-    Thread.sleep( 1000 );
-    
-    assertTrue( theWebServer.isRunning() );
+      theServer1.start();
+      theServer2.start();
+      Thread.sleep( 1000 );
 
-    new ScanWebSystem(myRoutingProtocol1, new URL("http://localhost:9090/")).run();
-    new ScanWebSystem(theRoutingProtocol2, new URL("http://localhost:9090/")).run();
+      assertTrue( theWebServer.isRunning() );
 
-    Thread.sleep( 5000 );
+      new ScanWebSystem(myRoutingProtocol1, new URL("http://localhost:9090/")).run();
+      new ScanWebSystem(theRoutingProtocol2, new URL("http://localhost:9090/")).run();
 
-    //after the webpeer has been added, entries must be present in the comet servlet endpoints
-    assertTrue( theCometServlet.getEndPointContainer().containsEndPointFor( "1"));
-    assertTrue( theCometServlet.getEndPointContainer().containsEndPointFor( "2"));
+      Thread.sleep( 5000 );
 
-    RoutingProtocol theWebPeerRoutingProtocol = (RoutingProtocol)theProtocolServlet.getProtocolContainer().getProtocol(RoutingProtocol.ID);
-    String theWebPeerId = theWebPeerRoutingProtocol.getRoutingTable().getLocalPeerId();
-    theWebPeerRoutingProtocol.getRoutingTable().setKeepHistory(true);
+      //after the webpeer has been added, entries must be present in the comet servlet endpoints
+      assertTrue( theCometServlet.getEndPointContainer().containsEndPointFor( "1"));
+      assertTrue( theCometServlet.getEndPointContainer().containsEndPointFor( "2"));
+
+      RoutingProtocol theWebPeerRoutingProtocol = (RoutingProtocol)theProtocolServlet.getProtocolContainer().getProtocol(RoutingProtocol.ID);
+      String theWebPeerId = theWebPeerRoutingProtocol.getRoutingTable().getLocalPeerId();
+      theWebPeerRoutingProtocol.getRoutingTable().setKeepHistory(true);
 
 
-    for(int i=0;i<3;i++){
-      myRoutingProtocol1.exchangeRoutingTable();
-      theRoutingProtocol2.exchangeRoutingTable();
+      for(int i=0;i<3;i++){
+        myRoutingProtocol1.exchangeRoutingTable();
+        theRoutingProtocol2.exchangeRoutingTable();
+      }
+
+      Thread.sleep( 1000 );
+
+      assertTrue(myRoutingProtocol1.getRoutingTable().containsEntryForPeer(theWebPeerId));
+      assertEquals(1, myRoutingProtocol1.getRoutingTable().getEntryForPeer(theWebPeerId).getHopDistance());
+      assertEquals(2, myRoutingProtocol1.getRoutingTable().getEntryForPeer("2").getHopDistance());
+      assertEquals(theWebPeerId, myRoutingProtocol1.getRoutingTable().getEntryForPeer("2").getGateway().getPeerId());
+    }catch(Exception e){
+      tearDown();
+      throw e;
     }
-
-    Thread.sleep( 1000 );
-
-    assertTrue(myRoutingProtocol1.getRoutingTable().containsEntryForPeer(theWebPeerId));
-    assertEquals(1, myRoutingProtocol1.getRoutingTable().getEntryForPeer(theWebPeerId).getHopDistance());
-    assertEquals(2, myRoutingProtocol1.getRoutingTable().getEntryForPeer("2").getHopDistance());
-    assertEquals(theWebPeerId, myRoutingProtocol1.getRoutingTable().getEntryForPeer("2").getGateway().getPeerId());
   }
 
   public void tearDown(){
@@ -157,7 +162,7 @@ public class WebPeerProtocolTest extends AbstractProtocolTest {
         }
       });
     }
-    
+
     theLatch.await( 20, TimeUnit.SECONDS );
 
     assertEquals(times, theCollector.getMessages().size());

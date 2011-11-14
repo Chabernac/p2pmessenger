@@ -1,5 +1,4 @@
 /**
- * Copyright (c) 2010 Axa Holding Belgium, SA. All rights reserved.
  * This software is the confidential and proprietary information of the AXA Group.
  */
 package chabernac.protocol.routing;
@@ -44,7 +43,6 @@ import chabernac.protocol.ProtocolException;
 import chabernac.protocol.ServerInfo;
 import chabernac.protocol.ServerInfo.Type;
 import chabernac.tools.IOTools;
-import chabernac.tools.NetTools;
 import chabernac.tools.SimpleNetworkInterface;
 import chabernac.tools.TestTools;
 
@@ -297,6 +295,10 @@ public class RoutingProtocol extends Protocol {
   public String getDescription() {
     return "Routing protocol";
   }
+  
+  public int getImportance(){
+    return 1;
+  }
 
   public List< String > getLocalUnreachablePeerIds() {
     return myUnreachablePeers;
@@ -471,15 +473,17 @@ public class RoutingProtocol extends Protocol {
 
   public void scanLocalSystem(){
     if(myRoutingProtocolMonitor != null) myRoutingProtocolMonitor.localSystemScanStarted();
-    try{
+//    try{
       LOGGER.debug( "Scanning local system" );
-      List<String> theLocalHosts = NetTools.getLocalExposedIpAddresses();
+//      List<String> theLocalHosts = NetTools.getLocalExposedIpAddresses();
+      List<String> theLocalHosts = new ArrayList<String>();
+      theLocalHosts.add("localhost");
       for(int i=START_PORT;i<=END_PORT;i++){
         getExecutorService().execute( new ScanSystem(this, theLocalHosts, i, myUnreachablePeers));
       }
-    }catch(SocketException e){
-      LOGGER.error( "Could not get local ip addressed", e );
-    }  
+//    }catch(SocketException e){
+//      LOGGER.error( "Could not get local ip addressed", e );
+//    }  
   }
 
   /**
@@ -600,7 +604,8 @@ public class RoutingProtocol extends Protocol {
       //only exchange with peers which are not reachable if there are no reachable peers
       //otherwise only try to exchange with peers which are reachable
       //by doing this we will hopefully avoid too much sockets to be created to peers which are not available
-      //a new peer will still integrate in the network because of the condition theNumberOfNeighbours == 0 
+      //a new peer will still integrate in the network because of the condition theNumberOfNeighbours == 0
+//      if(theEntry.getHopDistance() < RoutingTableEntry.MAX_HOP_DISTANCE){
       if(theNumberOfNeighbours == 0 || theEntry.getHopDistance() < RoutingTableEntry.MAX_HOP_DISTANCE){
         sendAnnouncementWithReply(theEntry);
       }

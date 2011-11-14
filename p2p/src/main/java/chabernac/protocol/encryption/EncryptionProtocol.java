@@ -5,7 +5,6 @@
 package chabernac.protocol.encryption;
 
 import java.io.File;
-import java.io.IOException;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.MessageDigest;
@@ -102,8 +101,9 @@ public class EncryptionProtocol extends Protocol {
       }
     } else if(anInput.startsWith( Command.GET_PUBLIC_KEY.name() )){
       try {
+        LOGGER.debug("Returning public key with hash '" + convertBytesToString(calculateHash(myKeyPair.getPublic().getEncoded())));
         return Response.OK +  " " + myPublicKeyConverter.toString(myKeyPair.getPublic());
-      } catch (IOException e) {
+      } catch (Exception e) {
         LOGGER.error("Unable to convert public key to string", e);
         return Response.NOK.name();
       }
@@ -260,7 +260,9 @@ public class EncryptionProtocol extends Protocol {
         //calculate a hash of the original message which the receiver can use to verify the message
         aMessage.addHeader("MESSAGE_HASH", convertBytesToString(calculateHash(aMessage.getMessage().getBytes())));
         //add a hash of the public key used so that the receiver can verify if the correct public key was used
-        aMessage.addHeader("PUBLIC_KEY_HASH", convertBytesToString(calculateHash(thePublicKey.getEncoded())));
+        String theHashOfPublicKey = convertBytesToString(calculateHash(thePublicKey.getEncoded()));
+//        LOGGER.debug("Adding hash of public key to message '" + theHashOfPublicKey + "'");
+        aMessage.addHeader("PUBLIC_KEY_HASH", theHashOfPublicKey);
 
         //now encrypt the message using the secret key
         aMessage.setMessage(convertBytesToString(encryptUsingSecretKey(theSecretKey, aMessage.getMessage().getBytes())));
@@ -289,6 +291,7 @@ public class EncryptionProtocol extends Protocol {
         String theMyPublicKey = convertBytesToString(calculateHash(myKeyPair.getPublic().getEncoded()));
         if(!theMyPublicKey.equals(aMessage.getHeader("PUBLIC_KEY_HASH"))){
           sendPublicKeyTo(aMessage.getSource());
+          LOGGER.error("The hash of the public key used for encryption of the secret key '" + aMessage.getHeader("PUBLIC_KEY_HASH") + "' is not the same as the local hash of the pulic key '" + theMyPublicKey + "'");
           throw new EncryptionException(Reason.ENCRYPTED_USING_BAD_PUBLIC_KEY, "The message was encrypted using a bad or old public key");
         }
 
