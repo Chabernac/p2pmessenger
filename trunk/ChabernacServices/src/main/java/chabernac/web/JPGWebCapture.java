@@ -35,34 +35,34 @@ import com.sun.jna.platform.win32.W32API.HWND;
 
 public class JPGWebCapture {
   private final static ColorModel DEFAULT_COLOR_MODEL =
-    new ComponentColorModel(
-    ColorSpace.getInstance(ColorSpace.CS_sRGB),
-    new int[] { 8, 8, 8 },
-    false, false,
-    Transparency.OPAQUE,
-    DataBuffer.TYPE_BYTE);
-  
+      new ComponentColorModel(
+          ColorSpace.getInstance(ColorSpace.CS_sRGB),
+          new int[] { 8, 8, 8 },
+          false, false,
+          Transparency.OPAQUE,
+          DataBuffer.TYPE_BYTE);
+
   private final static Point ZERO_POINT = new Point(0, 0);
-  
+
   private VideoCaptureDevice myCaptureDevice;
   private Pointer myFramePointer;
   private Dimension myDimension;
   private float myQuality;
   private boolean isFlip = true;
-  
+
   private SampleModel mySampleModel = null;
-  
+
   private final static int BAND_OFFSETS[] = new int[] {
     2 /* offset to Blue */,
     1 /* offset to Green */,
     0 /* offset to Red */
-    }; // BAND_OFFSETS.length represents # of bands
+  }; // BAND_OFFSETS.length represents # of bands
 
 
   public JPGWebCapture(){
     init();
   }
-  
+
   private void createSampleModel(){
     mySampleModel = new PixelInterleavedSampleModel(
         DataBuffer.TYPE_BYTE /* data type for storing samples */,
@@ -89,11 +89,11 @@ public class JPGWebCapture {
 
     theTestFrame.setVisible(false);
   }
-  
+
   public boolean isReady(){
     return myCaptureDevice != null;
   }
-  
+
   private void setDimensions(Dimension aDimension){
     if(myDimension == null || !myDimension.equals(aDimension)){
       myDimension = aDimension;
@@ -107,16 +107,16 @@ public class JPGWebCapture {
         Raster.createWritableRaster(mySampleModel, new DataBufferByte(aBytes,
             myDimension.width * myDimension.height * 3, 0), ZERO_POINT),
             false, null);
-    
-//    if(isFlip){
-//      theBufferedImage = flip( theBufferedImage );
-//    }
-    
+
+    //    if(isFlip){
+    //      theBufferedImage = flip( theBufferedImage );
+    //    }
+
     IIOImage outputImage = new IIOImage(theBufferedImage, null, null);
 
     ByteArrayOutputStream theByteArrayOutputStream = new ByteArrayOutputStream();
     MemoryCacheImageOutputStream theOutput = new MemoryCacheImageOutputStream( theByteArrayOutputStream );
-    
+
     ImageWriter writer = ImageIO.getImageWritersByFormatName("jpeg").next();        
     writer.setOutput(theOutput);
     ImageWriteParam writeParam = writer.getDefaultWriteParam();
@@ -128,11 +128,11 @@ public class JPGWebCapture {
 
   public synchronized byte[] capture(int aWidth, int aHeight, float aQuality) throws WCException{
     if(myCaptureDevice == null) throw new WCException("No capture device");
-    
+
     setDimensions( new Dimension(aWidth, aHeight) );
     myQuality = aQuality;
-    
-    
+
+
     final ArrayBlockingQueue<byte[]> theJPGQueue = new ArrayBlockingQueue<byte[]>(1);
 
     myCaptureDevice.setFrameRate( 1 );
@@ -149,19 +149,19 @@ public class JPGWebCapture {
     } catch ( InterruptedException e ) {
       throw new WCException("Could not wait for image bytes", e);
     }
-    
+
     if(theBytes.length == 0) throw new WCException("Could not capture image");
-    
+
     return theBytes;
   }
-  
+
   public BufferedImage flip(BufferedImage anImage){
     AffineTransform tx = AffineTransform.getScaleInstance(1, -1);
     tx.translate(0, -anImage.getHeight(null));
     AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
     return op.filter(anImage, null);
   }
-  
+
   public boolean isFlip() {
     return isFlip;
   }
@@ -175,7 +175,7 @@ public class JPGWebCapture {
   private class VideoFrameProcessor implements IVideoFrameProcessor{
     private int myCounter = 0;
     private final ArrayBlockingQueue<byte[]> myQueue;
-    
+
     public VideoFrameProcessor( ArrayBlockingQueue<byte[]> aQueue ) {
       super();
       myQueue = aQueue;
@@ -194,14 +194,16 @@ public class JPGWebCapture {
       }
     }
   }
-  
+
   public void stop(){
-    myCaptureDevice.stopVideoCapture();
-    //give the system some time to execute the previous command
-    //if we do not sleep and the jvm is closed it will exit with a dirty crash
-    try {
-      Thread.sleep( 1000 );
-    } catch ( InterruptedException e ) {
+    if(myCaptureDevice != null){
+      myCaptureDevice.stopVideoCapture();
+      //give the system some time to execute the previous command
+      //if we do not sleep and the jvm is closed it will exit with a dirty crash
+      try {
+        Thread.sleep( 1000 );
+      } catch ( InterruptedException e ) {
+      }
     }
   }
 }

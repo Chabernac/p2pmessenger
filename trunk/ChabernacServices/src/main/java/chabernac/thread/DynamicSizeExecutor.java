@@ -30,6 +30,7 @@ public class DynamicSizeExecutor implements ExecutorService{
   public DynamicSizeExecutor(int aCoreSize, int aMaxPoolSize, int aQueueSize){
     if(aQueueSize == 0){
       myExecutor = new ThreadPoolExecutor( aCoreSize, aMaxPoolSize, 10, TimeUnit.SECONDS, new SynchronousQueue< Runnable >() );
+      myExecutor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
     } else {
       myExecutor = new ThreadPoolExecutor( aCoreSize, aMaxPoolSize, 10, TimeUnit.SECONDS, new OfferBlockingQueue<Runnable>(aQueueSize) );
     }
