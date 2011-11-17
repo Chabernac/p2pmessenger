@@ -44,7 +44,7 @@ public class NetstatMonitor extends JFrame {
 
   private void startTimer(){
     ScheduledExecutorService theService = Executors.newScheduledThreadPool( 1 );
-    theService.scheduleAtFixedRate( new RetrieveNrOfSocktes(), 1, SECONDS_PER_SAMPLE, TimeUnit.SECONDS );
+    theService.scheduleWithFixedDelay( new RetrieveNrOfSocktes(), 1, SECONDS_PER_SAMPLE, TimeUnit.SECONDS );
   }
 
   private void drawAxes(Graphics g){
