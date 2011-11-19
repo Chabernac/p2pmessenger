@@ -13,7 +13,6 @@ import chabernac.protocol.AbstractProtocolTest;
 import chabernac.protocol.ProtocolContainer;
 import chabernac.protocol.ProtocolException;
 import chabernac.protocol.ProtocolServer;
-import chabernac.protocol.message.AbstractMessageProtocol.Response;
 import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.RoutingTable;
 import chabernac.protocol.routing.UnknownPeerException;
@@ -86,7 +85,7 @@ public class AsyncMessageProcotolTest extends AbstractProtocolTest {
     AsyncMessageProcotol theMessageProtocol1 = (AsyncMessageProcotol)theProtocol1.getProtocol( AsyncMessageProcotol.ID );
 
     RoutingProtocol theRoutingProtocol2 = (RoutingProtocol)theProtocol2.getProtocol( RoutingProtocol.ID );
-    AsyncMessageProcotol theMessageProtocol2 = (AsyncMessageProcotol)theProtocol2.getProtocol( AsyncMessageProcotol.ID );
+//    AsyncMessageProcotol theMessageProtocol2 = (AsyncMessageProcotol)theProtocol2.getProtocol( AsyncMessageProcotol.ID );
 
     try{
       assertTrue( theServer1.start() );
@@ -103,10 +102,11 @@ public class AsyncMessageProcotolTest extends AbstractProtocolTest {
       theMessage.setMessage( "BLPTest" );
       theMessageProtocol1.sendMessage( theMessage );
       theMessageProtocol1.cancelResponse( theMessage.getMessageId().toString() );
-      assertEquals( Response.MESSAGE_REJECTED.name(), theMessageProtocol1.getResponse( theMessage.getMessageId().toString(), 1, TimeUnit.SECONDS ));
-
-
-      
+      try{
+      theMessageProtocol1.getResponse( theMessage.getMessageId().toString(), 1, TimeUnit.SECONDS );
+        fail("Should not get here get response must have thrown exception");
+      }catch(Exception e){
+      }
     } finally {
       theServer1.stop();
       theServer2.stop();

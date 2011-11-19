@@ -14,6 +14,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import javax.jdo.annotations.PersistenceCapable;
@@ -45,15 +46,15 @@ public class RoutingTable implements Iterable< RoutingTableEntry >, Serializable
 
   public synchronized void removeRoutingTableEntry(RoutingTableEntry anEntry){
     inspectRoutingTableEntryHistory();
-    
+
     if(isKeepHistory){
       myRoutingTableEntryHistory.add( new RoutingTableEntryHistory(anEntry,RoutingTableEntryHistory.Action.DELETE) );
     }
 
     myRoutingTable.remove(anEntry.getPeer().getPeerId());
-    
+
     checkIntegrityForEntry( anEntry.derivedEntry( RoutingTableEntry.MAX_HOP_DISTANCE ) );
-    
+
     notifyListenersOfRoutingTableEntryRemoval( anEntry );
   }
 
@@ -67,10 +68,10 @@ public class RoutingTable implements Iterable< RoutingTableEntry >, Serializable
   public synchronized void addEntry(RoutingTableEntry anEntry){
     myRoutingTable.put(anEntry.getPeer().getPeerId(), anEntry);
   }
-  
+
   public synchronized void addRoutingTableEntry(RoutingTableEntry anEntry){
     inspectRoutingTableEntryHistory();
-    
+
     RoutingTableEntryHistory theHistoryRow =  null;
     if(isKeepHistory){
       theHistoryRow = new RoutingTableEntryHistory(anEntry,RoutingTableEntryHistory.Action.ADD );
@@ -80,21 +81,21 @@ public class RoutingTable implements Iterable< RoutingTableEntry >, Serializable
     if(anEntry.getPeer().getPeerId() == null || anEntry.getPeer().getPeerId().equals( "" )){
       throw new IllegalArgumentException("Received routing table entry with no peer id");
     }
-    
+
     //ignore entries which have as gateway our selfs, this might create loops in the routing table hierarchy
     if(!anEntry.getPeer().getPeerId().equals( myLocalPeerId ) && anEntry.getGateway().getPeerId().equals( myLocalPeerId )){
       return;
     }
-   
+
     if(!isValidPeer(anEntry.getPeer())){
       return;
     }
-    
-//    LOGGER.error(anEntry.getPeer().getPeerId() + " test=" + anEntry.getPeer().isTestPeer()  + " is a valid peer according to " + myPeerInspector);
-    
+
+    //    LOGGER.error(anEntry.getPeer().getPeerId() + " test=" + anEntry.getPeer().isTestPeer()  + " is a valid peer according to " + myPeerInspector);
+
     if(anEntry.getHopDistance() == RoutingTableEntry.MAX_HOP_DISTANCE && 
-       !containsEntryForPeer( anEntry.getPeer().getPeerId() ) &&
-       !anEntry.getGateway().getPeerId().equals( myLocalPeerId )){
+        !containsEntryForPeer( anEntry.getPeer().getPeerId() ) &&
+        !anEntry.getGateway().getPeerId().equals( myLocalPeerId )){
       //there is no need for adding peer entries of peers received from another peer which can not be reached
       return;
     }
@@ -113,10 +114,10 @@ public class RoutingTable implements Iterable< RoutingTableEntry >, Serializable
 
     if(!anEntry.getPeer().isValidEndPoint()){
       LOGGER.error("Can not add a peer with an invalid end point '" + anEntry.getPeer().toString() + "'");
-//      throw new IllegalArgumentException("Can not add a peer with an invalid end point");
+      //      throw new IllegalArgumentException("Can not add a peer with an invalid end point");
     }
-    
-//    removeEntriesOlderThanAndOnTheSameSocketAs(anEntry);
+
+    //    removeEntriesOlderThanAndOnTheSameSocketAs(anEntry);
 
     if(myRoutingTable.containsKey( anEntry.getPeer().getPeerId() )){
       RoutingTableEntry thePeerEntry = myRoutingTable.get( anEntry.getPeer().getPeerId() );
@@ -160,22 +161,22 @@ public class RoutingTable implements Iterable< RoutingTableEntry >, Serializable
       notifyAll();
     }
   }
-  
+
   public void removeInvalidPeers(){
     List<RoutingTableEntry> theEntriesToRemove = new ArrayList<RoutingTableEntry>();
-    
+
     for(RoutingTableEntry theEntry : getEntries()){
       if(!isValidPeer( theEntry.getPeer() )){
         theEntriesToRemove.add( theEntry );
       }
     }
-    
+
     for(RoutingTableEntry theEntry : theEntriesToRemove){
       LOGGER.debug( "Removing invalid peer '" + theEntry.getPeer().getPeerId() + "'" );
       removeRoutingTableEntry( theEntry );
     }
   }
-  
+
   private boolean isValidPeer(AbstractPeer anPeer) {
     return getPeerInspector().isValidPeer(anPeer);
   }
@@ -192,12 +193,12 @@ public class RoutingTable implements Iterable< RoutingTableEntry >, Serializable
       }
     }
   }
-  
+
   private void inspectRoutingTableEntryHistory() {
     if(myRoutingTableEntryHistory == null){
       myRoutingTableEntryHistory = new ArrayList< RoutingTableEntryHistory >();
     }
-    
+
   }
 
   /**
@@ -205,19 +206,19 @@ public class RoutingTable implements Iterable< RoutingTableEntry >, Serializable
    * Sometimes different routing tables are added with peers which reside on the same host and port
    * this is of course not possible.  So we remove the older peer entries which are on the same host and port
    */
-//  private void removeEntriesOlderThanAndOnTheSameSocketAs(RoutingTableEntry anEntry){
-//    List<RoutingTableEntry> theEntriesToRemove = new ArrayList<RoutingTableEntry>();
-//    for(RoutingTableEntry theEntry : myRoutingTable.values()){
-//      if(theEntry.getPeer().isSameEndPointAs(anEntry.getPeer()) && theEntry.getCreationTime() < anEntry.getCreationTime()){
-//        theEntriesToRemove.add(theEntry);
-//      }
-//    }
-//    for(RoutingTableEntry theEntry : theEntriesToRemove){
-//      LOGGER.error("Removing entry with peer id: '" + theEntry.getPeer().getPeerId() + "' because it is on the same host and port as the new entry: '" + anEntry.getPeer().getPeerId() + "'");
-//      removeRoutingTableEntry(theEntry);
-//    }
-//  }
-  
+  //  private void removeEntriesOlderThanAndOnTheSameSocketAs(RoutingTableEntry anEntry){
+  //    List<RoutingTableEntry> theEntriesToRemove = new ArrayList<RoutingTableEntry>();
+  //    for(RoutingTableEntry theEntry : myRoutingTable.values()){
+  //      if(theEntry.getPeer().isSameEndPointAs(anEntry.getPeer()) && theEntry.getCreationTime() < anEntry.getCreationTime()){
+  //        theEntriesToRemove.add(theEntry);
+  //      }
+  //    }
+  //    for(RoutingTableEntry theEntry : theEntriesToRemove){
+  //      LOGGER.error("Removing entry with peer id: '" + theEntry.getPeer().getPeerId() + "' because it is on the same host and port as the new entry: '" + anEntry.getPeer().getPeerId() + "'");
+  //      removeRoutingTableEntry(theEntry);
+  //    }
+  //  }
+
   private void inspectListeners(){
     if(myRoutingTableListeners == null){
       myRoutingTableListeners = new HashSet< IRoutingTableListener >();
@@ -226,14 +227,14 @@ public class RoutingTable implements Iterable< RoutingTableEntry >, Serializable
 
   private void notifyListenersOfRoutingTableEntryChange(RoutingTableEntry anEntry){
     inspectListeners();
-    for(IRoutingTableListener theListener : myRoutingTableListeners){
+    for(IRoutingTableListener theListener : new HashSet<IRoutingTableListener>(myRoutingTableListeners)){
       theListener.routingTableEntryChanged( anEntry );
     }
   }
-  
+
   private void notifyListenersOfRoutingTableEntryRemoval(RoutingTableEntry anEntry){
     inspectListeners();
-    for(IRoutingTableListener theListener : myRoutingTableListeners){
+    for(IRoutingTableListener theListener : new HashSet<IRoutingTableListener>(myRoutingTableListeners)){
       theListener.routingTableEntryRemoved( anEntry );
     }
   }
@@ -265,21 +266,21 @@ public class RoutingTable implements Iterable< RoutingTableEntry >, Serializable
         addRoutingTableEntry(theEntry.entryForNextPeer( anotherRoutingTable.getEntryForLocalPeer().getPeer() ) );
       }
     }
-    
-//    List<RoutingTableEntry> theEntriesToRemove = new ArrayList<RoutingTableEntry>();
-//    //now delete the entries of the local routing table which have the other peer as a gateway and which are not present in the other routing table
-//    for(Iterator< RoutingTableEntry > i = iterator(); i.hasNext();){
-//      RoutingTableEntry theEntry = i.next();
-//      if(theEntry.getGateway().getPeerId().equals(anotherRoutingTable.getLocalPeerId()) && 
-//         !anotherRoutingTable.containsEntryForPeer(theEntry.getPeer().getPeerId())){
-//        theEntriesToRemove.add(theEntry);
-//      }
-//    }
-//    
-//    for(RoutingTableEntry theEntry : theEntriesToRemove){
-//      removeRoutingTableEntry(theEntry);
-//    }
-    
+
+    //    List<RoutingTableEntry> theEntriesToRemove = new ArrayList<RoutingTableEntry>();
+    //    //now delete the entries of the local routing table which have the other peer as a gateway and which are not present in the other routing table
+    //    for(Iterator< RoutingTableEntry > i = iterator(); i.hasNext();){
+    //      RoutingTableEntry theEntry = i.next();
+    //      if(theEntry.getGateway().getPeerId().equals(anotherRoutingTable.getLocalPeerId()) && 
+    //         !anotherRoutingTable.containsEntryForPeer(theEntry.getPeer().getPeerId())){
+    //        theEntriesToRemove.add(theEntry);
+    //      }
+    //    }
+    //    
+    //    for(RoutingTableEntry theEntry : theEntriesToRemove){
+    //      removeRoutingTableEntry(theEntry);
+    //    }
+
   }
 
   public List<RoutingTableEntry> getEntries(){
@@ -299,7 +300,7 @@ public class RoutingTable implements Iterable< RoutingTableEntry >, Serializable
   public void setRoutingTable( Map< String, RoutingTableEntry > anRoutingTable ) {
     myRoutingTable = anRoutingTable;
   }
-  
+
   private Map< String, RoutingTableEntry > copyOfRoutingTable(){
     return new HashMap< String, RoutingTableEntry >(myRoutingTable);
   }
@@ -317,6 +318,36 @@ public class RoutingTable implements Iterable< RoutingTableEntry >, Serializable
     }
     return copyOfRoutingTable().get( aPeerId );
   }
+
+  public RoutingTableEntry getEntryForLocalPeer(int aTimeOutInSeconds) throws UnknownPeerException{
+    final CountDownLatch theLatch = new CountDownLatch(1);
+    IRoutingTableListener theListener = new IRoutingTableListener() {
+      @Override
+      public void routingTableEntryRemoved(RoutingTableEntry anEntry) {
+      }
+
+      @Override
+      public void routingTableEntryChanged(RoutingTableEntry anEntry) {
+        if(copyOfRoutingTable().containsKey(getLocalPeerId())) theLatch.countDown();
+      }
+    };
+
+    addRoutingTableListener(theListener);
+
+    try{
+      if(copyOfRoutingTable().containsKey(getLocalPeerId())) return getEntryForLocalPeer();
+
+      try {
+        theLatch.await(aTimeOutInSeconds, TimeUnit.SECONDS);
+      } catch (InterruptedException e) {
+      }
+
+      return getEntryForLocalPeer();
+    }finally{
+      removeRoutingTableListener(theListener);
+    }
+  }
+
 
   public RoutingTableEntry getEntryForLocalPeer( ) throws UnknownPeerException {
     if(!copyOfRoutingTable().containsKey( getLocalPeerId() )){
@@ -364,10 +395,10 @@ public class RoutingTable implements Iterable< RoutingTableEntry >, Serializable
       }
     }
   }
-  
+
   public synchronized void removeEntriesOlderThan(int aNumber, TimeUnit aTimeUnit){
     long theOldestTime = System.currentTimeMillis() - aTimeUnit.toMillis( aNumber );
-    
+
     for(Iterator< RoutingTableEntry > i = myRoutingTable.values().iterator();i.hasNext();){
       RoutingTableEntry theEntry = i.next();
       System.out.println(theEntry.getPeer().getPeerId() + " " + theEntry.getLastOnlineTime() + " <? " + theOldestTime);
@@ -386,7 +417,7 @@ public class RoutingTable implements Iterable< RoutingTableEntry >, Serializable
     }
     return theCounter;
   }
-  
+
   public int getNrOfDirectNeighbours(){
     int theCounter = 0;
     for(RoutingTableEntry theEntry : getEntries()){
@@ -426,7 +457,7 @@ public class RoutingTable implements Iterable< RoutingTableEntry >, Serializable
     inspectRoutingTableEntryHistory();
     myRoutingTableEntryHistory.clear();
   }
-  
+
   public RoutingTable copyWithoutUnreachablePeers(){
     RoutingTable theRoutingTable = new RoutingTable(myLocalPeerId);
     for(RoutingTableEntry theEntry : copyOfRoutingTable().values()){
@@ -436,7 +467,7 @@ public class RoutingTable implements Iterable< RoutingTableEntry >, Serializable
     }
     return theRoutingTable;
   }
-  
+
   public String toString(){
     StringBuilder theS = new StringBuilder();
     for(RoutingTableEntry theEntry : myRoutingTable.values()){

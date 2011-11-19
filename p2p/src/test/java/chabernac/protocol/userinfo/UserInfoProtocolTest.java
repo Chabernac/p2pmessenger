@@ -292,15 +292,15 @@ public class UserInfoProtocolTest extends AbstractProtocolTest {
     try{
       ProtocolContainer theProtocol1 = getProtocolContainer( -1, false, "1" );
       theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT, 5);
-      RoutingProtocol myRoutingProtocol1 = (RoutingProtocol)theProtocol1.getProtocol( RoutingProtocol.ID );
-      MessageProtocol myMessageProtocol1 = (MessageProtocol)theProtocol1.getProtocol( MessageProtocol.ID );
-      myRoutingProtocol1.getLocalUnreachablePeerIds().add("2");
+      RoutingProtocol theRoutingProtocol1 = (RoutingProtocol)theProtocol1.getProtocol( RoutingProtocol.ID );
+      UserInfoProtocol theUserInfoProtocol1 = (UserInfoProtocol)theProtocol1.getProtocol( UserInfoProtocol.ID );
+      theRoutingProtocol1.getLocalUnreachablePeerIds().add("2");
       theProtocol1.getProtocol( WebPeerProtocol.ID );
 
       ProtocolContainer theProtocol2 = getProtocolContainer( -1, false, "2" );
       theServer2 = new ProtocolServer(theProtocol2, RoutingProtocol.START_PORT + 1, 5);
       RoutingProtocol theRoutingProtocol2 = (RoutingProtocol)theProtocol2.getProtocol( RoutingProtocol.ID );
-      MessageProtocol myMessageProtocol2 = (MessageProtocol)theProtocol2.getProtocol( MessageProtocol.ID );
+      UserInfoProtocol theUserInfoProtocol2 = (UserInfoProtocol)theProtocol2.getProtocol( UserInfoProtocol.ID );
       theRoutingProtocol2.getLocalUnreachablePeerIds().add("1");
       theProtocol2.getProtocol( WebPeerProtocol.ID );
 
@@ -325,7 +325,7 @@ public class UserInfoProtocolTest extends AbstractProtocolTest {
 
       assertTrue( theWebServer.isRunning() );
 
-      new ScanWebSystem(myRoutingProtocol1, new URL("http://localhost:9090/")).run();
+      new ScanWebSystem(theRoutingProtocol1, new URL("http://localhost:9090/")).run();
       new ScanWebSystem(theRoutingProtocol2, new URL("http://localhost:9090/")).run();
 
       Thread.sleep( 5000 );
@@ -340,16 +340,29 @@ public class UserInfoProtocolTest extends AbstractProtocolTest {
 
 
       for(int i=0;i<3;i++){
-        myRoutingProtocol1.exchangeRoutingTable();
+        theRoutingProtocol1.exchangeRoutingTable();
         theRoutingProtocol2.exchangeRoutingTable();
       }
 
       Thread.sleep( 1000 );
 
-      assertTrue(myRoutingProtocol1.getRoutingTable().containsEntryForPeer(theWebPeerId));
-      assertEquals(1, myRoutingProtocol1.getRoutingTable().getEntryForPeer(theWebPeerId).getHopDistance());
-      assertEquals(2, myRoutingProtocol1.getRoutingTable().getEntryForPeer("2").getHopDistance());
-      assertEquals(theWebPeerId, myRoutingProtocol1.getRoutingTable().getEntryForPeer("2").getGateway().getPeerId());
+      assertTrue(theRoutingProtocol1.getRoutingTable().containsEntryForPeer(theWebPeerId));
+      assertEquals(1, theRoutingProtocol1.getRoutingTable().getEntryForPeer(theWebPeerId).getHopDistance());
+      assertEquals(2, theRoutingProtocol1.getRoutingTable().getEntryForPeer("2").getHopDistance());
+      assertEquals(theWebPeerId, theRoutingProtocol1.getRoutingTable().getEntryForPeer("2").getGateway().getPeerId());
+      
+      UserInfo theUserInfo = theUserInfoProtocol1.getUserInfoForPeer( theRoutingProtocol1.getRoutingTable().getEntryForPeer( "2" ).getPeer().getPeerId() );
+
+      assertNotNull( theUserInfo );
+      assertNotNull( theUserInfo.getId() );
+      assertTrue( theUserInfo.getId().length() > 0 );
+
+
+      UserInfo theUserInfo2 = theUserInfoProtocol2.getUserInfo().get( theRoutingProtocol2.getRoutingTable().getEntryForPeer( "1" ).getPeer().getPeerId() );
+
+      assertNotNull( theUserInfo2 );
+      assertNotNull( theUserInfo2.getId() );
+      assertTrue( theUserInfo2.getId().length() > 0 );
     }finally{
       if(theServer1 != null) theServer1.stop();
       if(theServer2 != null) theServer2.stop();

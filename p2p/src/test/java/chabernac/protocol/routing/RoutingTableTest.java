@@ -7,6 +7,7 @@ package chabernac.protocol.routing;
 import java.net.SocketException;
 import java.text.SimpleDateFormat;
 import java.util.GregorianCalendar;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import junit.framework.TestCase;
@@ -224,6 +225,41 @@ public class RoutingTableTest extends TestCase {
     assertTrue( theRoutingTable.containsEntryForPeer( "2" ) );
     assertTrue( theRoutingTable.containsEntryForPeer( "3" ) );
     assertFalse( theRoutingTable.containsEntryForPeer( "invalid4" ) );
+  }
+  
+  public void testGetEntryForLocalPeerWithTimeout() throws UnknownPeerException{
+    final RoutingTable theRoutingTable = new RoutingTable( "1" );
+    
+    Executors.newSingleThreadExecutor().execute(new Runnable(){
+      public void run(){
+        try {
+          Thread.sleep(2000);
+          //add the entry for the local peer after 2 seconds
+          theRoutingTable.addRoutingTableEntry(new RoutingTableEntry(new DummyPeer("1"), 0, new DummyPeer("1"), System.currentTimeMillis()));
+        } catch (InterruptedException e) {
+        }
+      }
+    });
+    
+    //first assert that the entry was not found
+    try{
+      theRoutingTable.getEntryForLocalPeer();
+      fail("Should not come here");
+    }catch(UnknownPeerException e){
+    }
+    
+    
+    RoutingTableEntry theEntry = theRoutingTable.getEntryForLocalPeer(5);
+    assertNotNull(theEntry);
+    assertEquals("1", theEntry.getPeer().getPeerId());
+    
+    theEntry = theRoutingTable.getEntryForLocalPeer(5000);
+    assertNotNull(theEntry);
+    assertEquals("1", theEntry.getPeer().getPeerId());
+    
+    theEntry = theRoutingTable.getEntryForLocalPeer();
+    assertNotNull(theEntry);
+    assertEquals("1", theEntry.getPeer().getPeerId());
   }
   
   private class MyPeerInspector implements iPeerInspector{

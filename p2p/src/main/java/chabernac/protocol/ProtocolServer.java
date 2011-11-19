@@ -218,6 +218,11 @@ public class ProtocolServer implements Runnable, iP2PServer{
           theWriter.println( theResult );
           theWriter.flush();
         }
+      }catch(SocketException e){
+        //if the socket was closed by the remote client we should not log anything this is normal
+        if(!e.getMessage().equalsIgnoreCase("socket closed")) {
+          LOGGER.error("Socket exception occured " + e.toString(), e);
+        }
       }catch(Throwable e){
         LOGGER.error( "Io exception occured in protocol server", e );
       } finally {

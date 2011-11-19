@@ -108,7 +108,7 @@ public class UserInfoProtocol extends Protocol {
     LOGGER.debug( "Doing full retrieval of user info based on routing table" );
     try{
       RoutingTable theTable = getRoutingTable();
-      AbstractPeer theLocalPeer = theTable.getEntryForLocalPeer().getPeer();
+      AbstractPeer theLocalPeer = theTable.getEntryForLocalPeer(10).getPeer();
       for(RoutingTableEntry theEntry : theTable){
         if(theEntry.isReachable()){
           AbstractPeer thePeer = theEntry.getPeer();
@@ -131,7 +131,7 @@ public class UserInfoProtocol extends Protocol {
 
     try{
       RoutingTable theTable = getRoutingTable();
-      AbstractPeer theLocalPeer = theTable.getEntryForLocalPeer().getPeer();
+      AbstractPeer theLocalPeer = theTable.getEntryForLocalPeer(5).getPeer();
 
       for(RoutingTableEntry theEntry : theTable){
         if(theEntry.isReachable() && 
@@ -231,7 +231,7 @@ public class UserInfoProtocol extends Protocol {
       LOGGER.debug(getRoutingTable().getLocalPeerId() +  " Trying to retrieve user info for peer: '" + aPeerId + "'");
       Message theMessage = new Message(  );
       theMessage.setDestination( getRoutingTable().getEntryForPeer( aPeerId ).getPeer());
-      theMessage.setSource( getRoutingTable().getEntryForLocalPeer().getPeer() );
+      theMessage.setSource( getRoutingTable().getEntryForLocalPeer(5).getPeer() );
       theMessage.setMessage( createMessage( Command.GET.name() ) );
       theMessage.setProtocolMessage( true );
       String theResult = ((AsyncMessageProcotol)findProtocolContainer().getProtocol( AsyncMessageProcotol.ID )).sendAndWaitForResponse(theMessage );
@@ -248,7 +248,7 @@ public class UserInfoProtocol extends Protocol {
       if(theDestination.isProtocolSupported( ID )){
         Message theMessage = new Message(  );
         theMessage.setDestination( theDestination );
-        theMessage.setSource( getRoutingTable().getEntryForLocalPeer().getPeer() );
+        theMessage.setSource( getRoutingTable().getEntryForLocalPeer(5).getPeer() );
         theMessage.setMessage( createMessage( Command.PUT.name() + ";" + getRoutingTable().getLocalPeerId() + ";" + myConverter.toString( myPersonalUserInfo )));
         theMessage.setProtocolMessage( true );
         ((AsyncMessageProcotol)findProtocolContainer().getProtocol( AsyncMessageProcotol.ID )).sendMessage(theMessage);
@@ -351,7 +351,7 @@ public class UserInfoProtocol extends Protocol {
     public void routingTableEntryChanged( RoutingTableEntry anEntry ) {
       try{
         if(!myUserInfo.containsKey( anEntry.getPeer().getPeerId() ) || myUserInfo.get(anEntry.getPeer().getPeerId()).getStatus() == Status.OFFLINE){
-          if(anEntry.getPeer().isProtocolSupported( UserInfoProtocol.ID ) && anEntry.isReachable() && anEntry.getPeer().isOnSameChannel(getRoutingTable().getEntryForLocalPeer().getPeer())){
+          if(anEntry.getPeer().isProtocolSupported( UserInfoProtocol.ID ) && anEntry.isReachable() && anEntry.getPeer().isOnSameChannel(getRoutingTable().getEntryForLocalPeer(5).getPeer())){
             getExecutorService().execute( new UserInfoRetriever(anEntry.getPeer().getPeerId()) );
           }
         } else {
