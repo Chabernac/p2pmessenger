@@ -106,9 +106,10 @@ public class WebPeerProtocolTest extends AbstractProtocolTest {
       assertEquals(1, myRoutingProtocol1.getRoutingTable().getEntryForPeer(theWebPeerId).getHopDistance());
       assertEquals(2, myRoutingProtocol1.getRoutingTable().getEntryForPeer("2").getHopDistance());
       assertEquals(theWebPeerId, myRoutingProtocol1.getRoutingTable().getEntryForPeer("2").getGateway().getPeerId());
-    }catch(Exception e){
+    }catch(Throwable e){
       tearDown();
-      throw e;
+      if(e instanceof Exception) throw (Exception)e;
+      if(e instanceof Error) throw (Error)e;
     }
   }
 
