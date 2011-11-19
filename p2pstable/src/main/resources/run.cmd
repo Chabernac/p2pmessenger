@@ -1,1 +1,0 @@
-java -classpath p2pmesenger-0.0.1-SNAPSHOT.jar;log4j-1.2.14.jar chabernac.protocol.routing.RoutingFrame
