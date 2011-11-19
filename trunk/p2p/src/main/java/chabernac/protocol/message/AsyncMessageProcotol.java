@@ -115,9 +115,9 @@ public class AsyncMessageProcotol extends AbstractMessageProtocol {
     try {
       String theResponse = getBlockingQueueForMessage( aMessageId ).poll( aTimeout, aTimeUnit );
       if(theResponse == null){
-        return Response.NO_CONFIRMATION_RECEIVED.name();
+        throw new MessageException("No response received for message with id '" + aMessageId + "'");
       } else if(CANCEL.equals( theResponse )){
-        return Response.MESSAGE_REJECTED.name();
+        throw new MessageException("Waiting for message with id '" + aMessageId +  "' has been cancelled");
       }
       return inspectResult( theResponse );
     } catch ( InterruptedException e ) {

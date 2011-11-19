@@ -11,7 +11,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -117,7 +116,7 @@ public class ProtocolContainer implements IProtocol {
   public String getId() {
     return "MAS";
   }
-  
+
   public int getImportance(){
     return 1;
   }
@@ -130,29 +129,19 @@ public class ProtocolContainer implements IProtocol {
   public synchronized void stop() {
     ExecutorService theExecutorService = Executors.newCachedThreadPool();
     //let's stop each protocol in a seperate thread to speed it up.
-    final CountDownLatch theLatch = new CountDownLatch(myProtocolMap.values().size());
     List<IProtocol> mySortedProtocols = new ArrayList<IProtocol>(myProtocolMap.values());
     Collections.sort(mySortedProtocols, new ProtocolSorter());
     for(final IProtocol theProtocol : mySortedProtocols){
       if(theProtocol != this){
-//        theExecutorService.execute( new Runnable(){
-//          public void run(){
-            try{
-              LOGGER.debug("Stopping protocol '" + theProtocol.getClass().getName() + "'");
-              theProtocol.stop();
-            }finally{
-              theLatch.countDown();
-              LOGGER.debug("Protocol '" + theProtocol.getClass().getName() + "' stopped protocols " + theLatch.getCount() + " remaining");
-            }
-//          }
-//        });
+        try{
+          LOGGER.debug("Stopping protocol '" + theProtocol.getClass().getName() + "'");
+          theProtocol.stop();
+        }finally{
+          LOGGER.debug("Protocol '" + theProtocol.getClass().getName() + "' stopped ");
+        }
       }
     }
-    try {
-      theLatch.await(5, TimeUnit.SECONDS);
-    } catch (InterruptedException e) {
-      LOGGER.error("Could not wait", e);
-    }
+
     //now stop after 5 seconds, we don't want to block the entire system.
     try {
       theExecutorService.shutdown();
