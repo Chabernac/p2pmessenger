@@ -37,7 +37,7 @@ private final int myScanIntervalTimeoutInSeconds;
   
   private void startRefresh(){
     ScheduledExecutorService theService = Executors.newScheduledThreadPool(1);
-    theService.scheduleAtFixedRate(myWhoIs, 1, myScanIntervalTimeoutInSeconds, TimeUnit.SECONDS);
+    theService.scheduleWithFixedDelay( myWhoIs, 1, myScanIntervalTimeoutInSeconds, TimeUnit.SECONDS);
   }
   
   private void buildGUI(){

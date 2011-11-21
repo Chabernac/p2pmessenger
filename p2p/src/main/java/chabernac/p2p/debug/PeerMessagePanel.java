@@ -63,7 +63,7 @@ public class PeerMessagePanel extends JPanel {
     add(buildBandWithPanel(), BorderLayout.SOUTH);
     
     ScheduledExecutorService theService = Executors.newScheduledThreadPool( 1 );
-    theService.scheduleAtFixedRate( new Runnable(){
+    theService.scheduleWithFixedDelay( new Runnable(){
       public void run(){
         calculateBandWith();
       }
