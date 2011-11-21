@@ -24,7 +24,7 @@ public class SocketPoolCleanUpDecorator implements iSocketPool {
   
   private void scheduleCleanUp(final long aTimeout, final TimeUnit aTimeUnit){
     ScheduledExecutorService theService = Executors.newScheduledThreadPool( 1 );
-    theService.scheduleAtFixedRate( new Runnable(){
+    theService.scheduleWithFixedDelay( new Runnable(){
       public void run(){
         cleanUpOlderThan( System.currentTimeMillis() - aTimeUnit.toMillis( aTimeout ) );
       }
