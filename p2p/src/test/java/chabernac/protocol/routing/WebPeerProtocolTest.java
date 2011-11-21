@@ -60,8 +60,6 @@ public class WebPeerProtocolTest extends AbstractProtocolTest {
 
       theWebServer = new Server(9090);
 
-      assertTrue( theServer1.start() );
-
       Context root = new Context(theWebServer,ProtocolWebServer.CONTEXT,Context.SESSIONS);
       CometServlet theCometServlet= new CometServlet();
       ServletHolder theCometHolder = new ServletHolder(theCometServlet);
