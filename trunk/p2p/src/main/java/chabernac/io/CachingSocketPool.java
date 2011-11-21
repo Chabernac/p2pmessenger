@@ -37,7 +37,7 @@ public class CachingSocketPool extends Observable implements iSocketPool{
     if(aCleanUpTimeoutInSeconds > 0){
       myCleanUpTimeoutInSeconds = aCleanUpTimeoutInSeconds;
       myService = Executors.newScheduledThreadPool(1);
-      myService.scheduleAtFixedRate( 
+      myService.scheduleWithFixedDelay(  
                                     new Runnable(){
                                       public void run(){
                                         cleanUp();
