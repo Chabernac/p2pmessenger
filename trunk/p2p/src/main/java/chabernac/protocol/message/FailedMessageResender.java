@@ -64,7 +64,7 @@ public class FailedMessageResender {
     //peer is indicated as being reachable, just retry every x minutes
     
     myService = Executors.newScheduledThreadPool( 1 );
-    myService.scheduleAtFixedRate( new Resender(), 1, 1, TimeUnit.MINUTES );
+    myService.scheduleWithFixedDelay( new Resender(), 1, 1, TimeUnit.MINUTES );
   }
 
   public void resend(){
