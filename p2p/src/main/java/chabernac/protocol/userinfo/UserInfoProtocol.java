@@ -93,7 +93,7 @@ public class UserInfoProtocol extends Protocol {
     super.setMasterProtocol( aProtocol );
 
     try{
-      myService.scheduleAtFixedRate( new Runnable(){
+      myService.scheduleWithFixedDelay( new Runnable(){
         public void run(){
           fullRetrieval();
         }
@@ -229,6 +229,11 @@ public class UserInfoProtocol extends Protocol {
       if(!thePeer.isProtocolSupported( ID )) throw new UserInfoException("The user info protocol is not supported by peer '" + thePeer.getPeerId() + "'");
 
       LOGGER.debug(getRoutingTable().getLocalPeerId() +  " Trying to retrieve user info for peer: '" + aPeerId + "'");
+      
+      //TODO remove
+//      RoutingTableEntry  theEntry = getRoutingTable().getEntryForPeer( aPeerId );
+//      LOGGER.debug(getRoutingTable().getLocalPeerId() +  " Trying to retrieve user info for peer with entry '" + theEntry + "'");
+      
       Message theMessage = new Message(  );
       theMessage.setDestination( getRoutingTable().getEntryForPeer( aPeerId ).getPeer());
       theMessage.setSource( getRoutingTable().getEntryForLocalPeer(5).getPeer() );
