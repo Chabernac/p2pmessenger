@@ -55,7 +55,7 @@ public class PacketSender extends AbstractPacketTransfer{
     stop = false;
     sendPacketsUntillSlotsFull();
     myTimeOutService = Executors.newScheduledThreadPool( 1 );
-    myTimeOutService.scheduleAtFixedRate( new CheckPacketSendTimeout(), 5, 5, TimeUnit.SECONDS);
+    myTimeOutService.scheduleWithFixedDelay( new CheckPacketSendTimeout(), 5, 5, TimeUnit.SECONDS);
   }
 
   public synchronized void stop(){
