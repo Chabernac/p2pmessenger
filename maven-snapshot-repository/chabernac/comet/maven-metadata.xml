@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?><metadata>
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
   <groupId>chabernac</groupId>
   <artifactId>comet</artifactId>
   <version>0.0.1-SNAPSHOT</version>
@@ -6,6 +7,6 @@
     <versions>
       <version>0.0.1-SNAPSHOT</version>
     </versions>
-    <lastUpdated>20110912213827</lastUpdated>
+    <lastUpdated>20111125220741</lastUpdated>
   </versioning>
 </metadata>
