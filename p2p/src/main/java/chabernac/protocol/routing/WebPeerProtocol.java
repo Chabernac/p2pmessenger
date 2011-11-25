@@ -138,7 +138,7 @@ public class WebPeerProtocol extends Protocol{
 //        while(!stop && theErrors < MAX_ERRORS && (isContinue || isDeamon)){
         while(!stop && theErrors < MAX_ERRORS ){
           try{
-            LOGGER.debug("Waiting for event from '" + myWebPeer.getPeerId() + "'");
+//            LOGGER.debug("Waiting for event from '" + myWebPeer.getPeerId() + "'");
             CometEvent theEvent = myWebPeer.waitForEvent(getRoutingTable().getLocalPeerId());
 //            LOGGER.debug( "Pending events '" + theEvent.getPendingEvents() + "' + threads '" + myConcurrentThreads.get() + "'" );
             
@@ -149,7 +149,7 @@ public class WebPeerProtocol extends Protocol{
 //            }
             
             if(!theEvent.getInput().equals( CometServlet.Responses.NO_DATA.name() )){
-              LOGGER.debug("Received event from '" + myWebPeer.getPeerId() + "' " + theEvent.getInput()); 
+//              LOGGER.debug("Received event from '" + myWebPeer.getPeerId() + "' " + theEvent.getInput()); 
               String theResult = handleCommand(UUID.randomUUID().toString(), Input.EVENT.name() + " " + theEvent.getInput());
               theEvent.setOutput( theResult );
               
