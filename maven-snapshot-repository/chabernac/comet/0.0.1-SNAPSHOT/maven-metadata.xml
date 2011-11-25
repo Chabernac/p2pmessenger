@@ -1,11 +1,12 @@
-<?xml version="1.0" encoding="UTF-8"?><metadata>
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
   <groupId>chabernac</groupId>
   <artifactId>comet</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <versioning>
     <snapshot>
-      <buildNumber>29</buildNumber>
+      <buildNumber>30</buildNumber>
     </snapshot>
-    <lastUpdated>20110912213829</lastUpdated>
+    <lastUpdated>20111125220743</lastUpdated>
   </versioning>
 </metadata>
