@@ -37,7 +37,7 @@ public class CometServletTest extends TestCase {
     theServletTester.setContextPath("/context");
     ServletHolder theCometServletHolder = theServletTester.addServlet(CometServlet.class, "/servlet/comet");
     theServletTester.start();
-    Map<String, CometEvent> theCometEvents = ((CometServlet)theCometServletHolder.getServlet()).getCometEvents();
+    CometEventContainer theCometEvents = ((CometServlet)theCometServletHolder.getServlet()).getCometEvents();
     
     
 
@@ -97,11 +97,11 @@ public class CometServletTest extends TestCase {
     theEndPoint.setEvent(theCometEvent);
     Thread.sleep(1000);
     assertEquals(1, theEndPointContainer.size() );
-    assertTrue(theCometEvents.containsKey("event1"));
+    assertTrue(theCometEvents.containsEvent("event1"));
     theLatch.countDown();
     assertEquals( "output", theCometEvent.getOutput( 5000 ));
 //    Thread.sleep(1000);
-    assertFalse(theCometEvents.containsKey("event1"));
+    assertFalse(theCometEvents.containsEvent("event1"));
   }
 
   public void testCorruptedEndPoints() throws Exception{
