@@ -7,11 +7,16 @@ package chabernac.gui.tray;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
+
 import chabernac.p2pclient.gui.ChatMediator;
+import chabernac.protocol.facade.P2PFacadeException;
 import chabernac.protocol.userinfo.UserInfo;
 import chabernac.protocol.userinfo.iUserInfoListener;
 
 public class NewUserTrayIconDisplayer extends TrayIconAnimator{
+  private static Logger LOGGER = Logger.getLogger(NewUserTrayIconDisplayer.class);
+  
   NewUserTrayIconDisplayer(){
   }
 
@@ -28,10 +33,10 @@ public class NewUserTrayIconDisplayer extends TrayIconAnimator{
 
   public void setLatestUserInfo( Map<String, UserInfo> aLatestUserInfo ) {
     //we should take a copy of the map otherwise we do not see differences between the newly given map and the previous version
-    
+
     myLatestUserInfo.clear();
     for(String theUser : aLatestUserInfo.keySet()){
-     myLatestUserInfo.put( theUser, aLatestUserInfo.get( theUser ).getStatus() ); 
+      myLatestUserInfo.put( theUser, aLatestUserInfo.get( theUser ).getStatus() ); 
     }
   }
 
@@ -52,14 +57,23 @@ public class NewUserTrayIconDisplayer extends TrayIconAnimator{
   }
 
   boolean isAnimationRequired(Map<String, UserInfo> aFullUserInfoList){
+    UserInfo theLocalUser = null;
+    try {
+      theLocalUser = myMediator.getP2PFacade().getPersonalInfo();
+    } catch ( P2PFacadeException e ) {
+      LOGGER.error("Could not get local user info", e);
+    }
+    
     for(String theUserId : aFullUserInfoList.keySet()){
-      UserInfo theNewUserInfo = aFullUserInfoList.get(theUserId);
-      //only if the new user info changed to an online status
-      if(theNewUserInfo.getStatus() != UserInfo.Status.OFFLINE) {
-        //only if the user was not known yet or the status was previously offline
-        if(!myLatestUserInfo.containsKey( theUserId ) || myLatestUserInfo.get( theUserId ) == UserInfo.Status.OFFLINE){
-          //if we have detected one user change stop further processing
-          return true;
+      if(theLocalUser == null || !theLocalUser.getId().equals( theUserId )){
+        UserInfo theNewUserInfo = aFullUserInfoList.get(theUserId);
+        //only if the new user info changed to an online status
+        if(theNewUserInfo.getStatus() != UserInfo.Status.OFFLINE) {
+          //only if the user was not known yet or the status was previously offline
+          if(!myLatestUserInfo.containsKey( theUserId ) || myLatestUserInfo.get( theUserId ) == UserInfo.Status.OFFLINE){
+            //if we have detected one user change stop further processing
+            return true;
+          }
         }
       }
     }
