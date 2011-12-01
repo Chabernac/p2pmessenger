@@ -28,11 +28,9 @@ import org.apache.log4j.Logger;
 
 import chabernac.io.SocketProxy;
 import chabernac.protocol.message.DeliveryReport;
-import chabernac.protocol.message.Message;
 import chabernac.protocol.message.MessageArchive;
 import chabernac.protocol.message.MultiPeerMessage;
 import chabernac.protocol.message.iDeliverReportListener;
-import chabernac.protocol.message.iMultiPeerMessageListener;
 import chabernac.protocol.pipe.Pipe;
 import chabernac.protocol.routing.AbstractPeer;
 import chabernac.protocol.routing.UnknownPeerException;
@@ -59,6 +57,7 @@ public class P2PFacadeTest extends TestCase {
     P2PFacade theFacade1 = new P2PFacade()
     .setExchangeDelay( 300 )
     .setPersist( false )
+    .setPeerId("P2P1")
     .start( 20 );
 
     Thread.sleep(1000);
@@ -78,6 +77,7 @@ public class P2PFacadeTest extends TestCase {
     P2PFacade theFacade2 = new P2PFacade()
     .setExchangeDelay( 300 )
     .setPersist( false )
+    .setPeerId("P2P2")
     .start( 20 );
 
     System.out.println("testP2PSendMessage Peer id: " + theFacade1.getPeerId());
@@ -88,7 +88,8 @@ public class P2PFacadeTest extends TestCase {
     try{
       assertTrue( theFacade1.getRoutingTable().containsEntryForPeer( theFacade2.getPeerId() ) );
       assertTrue( theFacade2.getRoutingTable().containsEntryForPeer( theFacade1.getPeerId() ) );
-      MessageCollector theMessageCollector = new MessageCollector();
+      CountDownLatch theReceiveLatch = new CountDownLatch(1);
+      MessageCollector theMessageCollector = new MessageCollector(theReceiveLatch);
       theFacade2.addMessageListener( theMessageCollector );
 
       MultiPeerMessage theMessage = MultiPeerMessage.createMessage( "test message" )
@@ -97,7 +98,8 @@ public class P2PFacadeTest extends TestCase {
       assertNotNull(  theFacade1.sendEncryptedMessage( theMessage, Executors.newFixedThreadPool( 1 ) ).get() );
 
       theCountDown.await(20, TimeUnit.SECONDS);
-
+      theReceiveLatch.await(10, TimeUnit.SECONDS);
+      
       assertEquals( 2, theDeliveryReportCollector.getDeliveryReports().size() );
       assertEquals( DeliveryReport.Status.IN_PROGRESS, theDeliveryReportCollector.getDeliveryReports().get( 0 ).getDeliveryStatus());
       assertEquals( DeliveryReport.Status.DELIVERED, theDeliveryReportCollector.getDeliveryReports().get( 1 ).getDeliveryStatus());
@@ -600,7 +602,8 @@ public class P2PFacadeTest extends TestCase {
 
     String thePeerId2 = theFacade2.getPeerId();
 
-    MessageCollector theCollector = new MessageCollector();
+    CountDownLatch theReceiveLatch = new CountDownLatch(1);
+    MessageCollector theCollector = new MessageCollector(theReceiveLatch);
     theFacade2.addMessageListener( theCollector );
 
     DeliveryReportCollector theDeliveryReportCollector = new DeliveryReportCollector();
@@ -642,7 +645,7 @@ public class P2PFacadeTest extends TestCase {
 
       theFacade2.addMessageListener( theCollector );
 
-      Thread.sleep( 3000 );
+      theReceiveLatch.await(5, TimeUnit.SECONDS);
 
       //the message resender should be informed that peer 2 has come online and try to resend the message
 
@@ -744,14 +747,8 @@ public class P2PFacadeTest extends TestCase {
       
       final CountDownLatch theLatch = new CountDownLatch(times);
       
-      MessageCollector theCollector = new MessageCollector();
+      MessageCollector theCollector = new MessageCollector(theLatch);
       theSocketPeer.addMessageListener( theCollector );
-      theSocketPeer.addMessageListener(new iMultiPeerMessageListener(){
-        @Override
-        public void messageReceived(MultiPeerMessage aMessage) {
-          theLatch.countDown();
-        }
-      });
       theSocketPeer.addMessageListener(new MessagePrinter());
 
       ExecutorService theSendService = Executors.newSingleThreadExecutor();

@@ -622,14 +622,14 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
       assertFalse(theRoutingTable2.containsEntryForPeer( "1" ) );
       
       //now send an udp announcement packet, it should be detected by peer 2
-      theRoutingProtocol1.sendUDPAnnouncement();
+      theRoutingProtocol1.sendUDPAnnouncement(false);
       
       Thread.sleep( 1000 );
       //peer 2 now has peer 1 in its routing table
       assertTrue(theRoutingTable2.containsEntryForPeer( "1" ) );
       
       //now send an udp announcement packet, it should be detected by peer 2
-      theRoutingProtocol2.sendUDPAnnouncement();
+      theRoutingProtocol2.sendUDPAnnouncement(false);
       
       Thread.sleep( 1000 );
       
