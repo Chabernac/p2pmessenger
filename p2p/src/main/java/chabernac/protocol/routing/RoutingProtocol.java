@@ -854,6 +854,8 @@ public class RoutingProtocol extends Protocol {
               }
 
               myRoutingTable.addRoutingTableEntry( theEntry );
+              //we have received an announcement with upd send one back.
+              sendUDPAnnouncement(true);
             }
           }
         }
@@ -867,9 +869,9 @@ public class RoutingProtocol extends Protocol {
     }
   }
 
-  public void sendUDPAnnouncement(){
+  public void sendUDPAnnouncement(boolean isForce){
     //if we are already integrated in the network the udp announcement is not necessar
-    if(myRoutingTable.getNrOfDirectNeighbours() > 0) return;
+    if(!isForce && myRoutingTable.getNrOfDirectNeighbours() > 0) return;
 
     refreshLocalEntry();
 
@@ -897,7 +899,7 @@ public class RoutingProtocol extends Protocol {
 
     @Override
     public void run() {
-      sendUDPAnnouncement();
+      sendUDPAnnouncement(false);
     }
   } 
 

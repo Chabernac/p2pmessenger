@@ -6,20 +6,25 @@ package chabernac.testingutils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
 import chabernac.protocol.message.MultiPeerMessage;
 import chabernac.protocol.message.iMultiPeerMessageListener;
 
 public class MessageCollector implements iMultiPeerMessageListener {
-  private List< MultiPeerMessage > myMultiPeerMessages = new ArrayList< MultiPeerMessage >();
+	private List< MultiPeerMessage > myMultiPeerMessages = new ArrayList< MultiPeerMessage >();
+	private final CountDownLatch myLatch;
 
-  @Override
-  public void messageReceived( MultiPeerMessage aMessage ) {
-    myMultiPeerMessages.add(aMessage);
-  }
-  
-  public List<MultiPeerMessage> getMessages(){
-    return myMultiPeerMessages;
-  }
+	public MessageCollector(CountDownLatch aLatch){
+		myLatch = aLatch;  
+	}
+	@Override
+	public void messageReceived( MultiPeerMessage aMessage ) {
+		myLatch.countDown();
+		myMultiPeerMessages.add(aMessage);
+	}
 
+	public List<MultiPeerMessage> getMessages(){
+		return myMultiPeerMessages;
+	}
 }
