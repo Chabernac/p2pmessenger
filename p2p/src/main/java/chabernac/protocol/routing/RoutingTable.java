@@ -15,6 +15,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import javax.jdo.annotations.PersistenceCapable;
@@ -35,7 +37,8 @@ public class RoutingTable implements Iterable< RoutingTableEntry >, Serializable
   private transient Set<IRoutingTableListener> myRoutingTableListeners = null;
   private transient List<RoutingTableEntryHistory> myRoutingTableEntryHistory = null;
   private transient iPeerInspector myPeerInspector = null;
-
+  private transient ExecutorService myListenerService = Executors.newCachedThreadPool();
+  
   public RoutingTable(String aLocalPeerId){
     myLocalPeerId = aLocalPeerId;
   }
@@ -107,7 +110,7 @@ public class RoutingTable implements Iterable< RoutingTableEntry >, Serializable
         if(getUUIDForPeer(anEntry.getPeer()).compareTo(getUUIDForPeer(getEntryForLocalPeer().getPeer())) < 0){
           throw new Error("Stopping application immediately because this peer id is already registered");
         }
-      }catch(UnknownPeerException e){
+      }catch(Exception e){
       }
       return;
     }
@@ -225,10 +228,15 @@ public class RoutingTable implements Iterable< RoutingTableEntry >, Serializable
     }
   }
 
-  private void notifyListenersOfRoutingTableEntryChange(RoutingTableEntry anEntry){
+  private void notifyListenersOfRoutingTableEntryChange(final RoutingTableEntry anEntry){
     inspectListeners();
     for(IRoutingTableListener theListener : new HashSet<IRoutingTableListener>(myRoutingTableListeners)){
-      theListener.routingTableEntryChanged( anEntry );
+      final IRoutingTableListener theList = theListener;
+      myListenerService.execute(new Runnable(){
+        public void run(){
+          theList.routingTableEntryChanged( anEntry );
+        }
+      });
     }
   }
 

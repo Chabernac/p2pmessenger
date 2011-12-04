@@ -7,12 +7,21 @@ package chabernac.protocol.routing;
 import java.net.SocketException;
 import java.text.SimpleDateFormat;
 import java.util.GregorianCalendar;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+
+import org.apache.log4j.BasicConfigurator;
 
 import junit.framework.TestCase;
 
 public class RoutingTableTest extends TestCase {
+  
+  static{
+    BasicConfigurator.resetConfiguration();
+    BasicConfigurator.configure();
+  }
 
   public void testRoutingTable() throws SocketException, NoAvailableNetworkAdapterException, UnknownPeerException{
     RoutingTable theTable = new RoutingTable("1");
@@ -260,6 +269,43 @@ public class RoutingTableTest extends TestCase {
     theEntry = theRoutingTable.getEntryForLocalPeer();
     assertNotNull(theEntry);
     assertEquals("1", theEntry.getPeer().getPeerId());
+  }
+  
+  public void testRoutingtableDeadlock() throws InterruptedException{
+    final RoutingTable theRoutingTable = new RoutingTable("0");
+    theRoutingTable.addRoutingTableListener(new IRoutingTableListener() {
+      
+      @Override
+      public void routingTableEntryRemoved(RoutingTableEntry anEntry) {
+      }
+      
+      @Override
+      public void routingTableEntryChanged(RoutingTableEntry anEntry) {
+        final CountDownLatch theLatch = new CountDownLatch(1);
+        Executors.newSingleThreadExecutor().execute(new Runnable(){
+          public void run(){
+            theRoutingTable.addRoutingTableEntry(new RoutingTableEntry(new DummyPeer("2"), 1, new DummyPeer("2"), System.currentTimeMillis()));
+            theLatch.countDown();
+          }
+        });
+        try {
+          theLatch.await(10, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+        }
+      }
+    });
+    
+    final CountDownLatch theLatch = new CountDownLatch(1);
+    Executors.newSingleThreadExecutor().execute(new Runnable(){
+      public void run(){
+       theRoutingTable.addRoutingTableEntry(new RoutingTableEntry(new DummyPeer("1"), 1, new DummyPeer("1"), System.currentTimeMillis()));
+       theLatch.countDown();
+      }
+    });
+    
+    theLatch.await(2, TimeUnit.SECONDS);
+    assertEquals(0, theLatch.getCount());
+    
   }
   
   private class MyPeerInspector implements iPeerInspector{
