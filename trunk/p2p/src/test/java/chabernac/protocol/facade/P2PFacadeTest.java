@@ -642,10 +642,13 @@ public class P2PFacadeTest extends TestCase {
       .setPeerId( thePeerId2 )
       .setMessageResenderActivated( true )
       .start( 20 );
-
+      
       theFacade2.addMessageListener( theCollector );
 
-      theReceiveLatch.await(5, TimeUnit.SECONDS);
+      theReceiveLatch.await(10, TimeUnit.SECONDS);
+      
+      assertTrue( theFacade1.getRoutingTable().containsEntryForPeer( theFacade2.getPeerId() ));
+      assertTrue( theFacade1.getRoutingTable().getEntryForPeer(theFacade2.getPeerId()).isReachable());
 
       //the message resender should be informed that peer 2 has come online and try to resend the message
 
