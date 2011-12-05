@@ -917,7 +917,7 @@ public class P2PFacadeTest extends TestCase {
     
     List<P2PFacade> theFacades = new ArrayList<P2PFacade>();
     try{
-      int nr = 2;
+      int nr = 10;
       for(int i=0;i<nr;i++){
         P2PFacade theFacade = new P2PFacade()
         .setExchangeDelay( 300 )
@@ -927,7 +927,7 @@ public class P2PFacadeTest extends TestCase {
         theFacade.showRoutingTable();
       }
 
-      Thread.sleep(500000);
+      Thread.sleep(10000);
       System.out.println("Start testing");
       for(int i=0;i<nr;i++){
         System.out.println("Testing facade " + i);
