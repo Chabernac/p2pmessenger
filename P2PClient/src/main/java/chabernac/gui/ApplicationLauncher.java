@@ -194,6 +194,8 @@ public class ApplicationLauncher {
     .setMessageResenderActivated( true )
     .setAutoUserStatusDetectionEnabled( true )
     .start( 256 );
+    
+    if("true".equalsIgnoreCase( anInterPreter.getKeyValue( "routingtable" ) )) myFacade.showRoutingTable();
   }
 
   private static void addRun2Startup(){
