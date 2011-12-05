@@ -37,7 +37,7 @@ public class AsyncMessageProcotol extends AbstractMessageProtocol {
   private ExecutorService myListenerService = Executors.newCachedThreadPool();
 
   private final String CANCEL = UUID.randomUUID().toString();
-  
+
   public AsyncMessageProcotol( ) {
     super( ID );
   }
@@ -46,13 +46,17 @@ public class AsyncMessageProcotol extends AbstractMessageProtocol {
   public String getDescription() {
     return "Asynchronous message protocol";
   }
-  
+
   public int getImportance(){
     return 2;
   }
 
   public RoutingTable getRoutingTable() throws ProtocolException{
     return ((RoutingProtocol)findProtocolContainer().getProtocol( RoutingProtocol.ID )).getRoutingTable();
+  }
+
+  public RoutingProtocol getRoutingProtocol() throws ProtocolException{
+    return ((RoutingProtocol)findProtocolContainer().getProtocol( RoutingProtocol.ID ));
   }
 
   public iPeerSender getPeerSender() throws ProtocolException{
@@ -102,7 +106,7 @@ public class AsyncMessageProcotol extends AbstractMessageProtocol {
 
     return myStatusQueues.get( aMessageId );
   }
-  
+
   private void informListeners(final Message aMessage){
     for(iMessageListener theListener : myHistoryListeners) {
       final iMessageListener theList = theListener;
@@ -114,14 +118,24 @@ public class AsyncMessageProcotol extends AbstractMessageProtocol {
     }
   }
 
-  private void handleDeliveryStatus( final Message aMessage ) throws InterruptedException {
-    if(isKeepHistory){
-      myHistory.remove(aMessage.getMessageId().toString());
-      MessageAndResponse theMR = myHistory.get(aMessage.getHeader( "MESSAGE-ID" ));
-      theMR.setResponse(aMessage.getHeader("STATUS"));
-      informListeners( aMessage );
+  private void updateHistoryForDeliveryStatus(Message aMessage){
+    try{
+      if(isKeepHistory){
+        myHistory.remove(aMessage.getMessageId().toString());
+        MessageAndResponse theMR = myHistory.get(aMessage.getHeader( "MESSAGE-ID" ));
+        if(theMR != null){
+          theMR.setResponse(aMessage.getHeader("STATUS"));
+          informListeners( aMessage );
+        }
+      }
+    }catch(Exception e){
+      LOGGER.error("Error occured while updating history", e);
     }
-    
+  }
+
+  private void handleDeliveryStatus( final Message aMessage ) throws InterruptedException {
+    updateHistoryForDeliveryStatus(aMessage);
+
     getBlockingQueueForMessage( aMessage.getHeader( "MESSAGE-ID" ) ).put( aMessage.getHeader( "STATUS" ) );
     myQueueCleanupService.schedule( new Runnable(){
       public void run(){
@@ -147,7 +161,7 @@ public class AsyncMessageProcotol extends AbstractMessageProtocol {
       myStatusQueues.remove( aMessageId );
     }
   }
-  
+
   public void cancelResponse( String aMessageId ) throws InterruptedException {
     getBlockingQueueForMessage( aMessageId ).put( CANCEL );
   }
@@ -157,7 +171,7 @@ public class AsyncMessageProcotol extends AbstractMessageProtocol {
     inspectMessage(aMessage);
     handleMessage( UUID.randomUUID().toString(), aMessage );
   }
-  
+
   public String sendAndWaitForResponse(Message aMessage) throws MessageException{
     return sendAndWaitForResponse(aMessage, DEFAULT_WAIT_TIME, TimeUnit.SECONDS);
   }
@@ -166,14 +180,19 @@ public class AsyncMessageProcotol extends AbstractMessageProtocol {
     sendMessage( aMesage );
     return getResponse( aMesage.getMessageId().toString(), aTimeout, aTimeUnit );
   }
-  
+
   private boolean handleMessage(String aSessionId, Message aMessage){
     MessageAndResponse theHistoryItem = new MessageAndResponse( aMessage );
-    if(isKeepHistory && !"DeliveryStatus".equals( aMessage.getHeader( "TYPE" ) )){
-      myHistory.put(aMessage.getMessageId().toString(), theHistoryItem);
-      informListeners( aMessage );
+
+    try{
+      if(isKeepHistory && !"DeliveryStatus".equals( aMessage.getHeader( "TYPE" ) )){
+        myHistory.put(aMessage.getMessageId().toString(), theHistoryItem);
+        informListeners( aMessage );
+      }
+    }catch(Exception e){
+      LOGGER.error("Error occured while updating history", e);
     }
-    
+
     try{
       getExecutorService().execute( new MessageProcessor( aSessionId, aMessage ) );
       return true;
@@ -204,21 +223,23 @@ public class AsyncMessageProcotol extends AbstractMessageProtocol {
         //see if the peer exists in the routing table, if not add it so that a route back is created so that responses can be send
         AbstractPeer theLastHop = myMessage.getLastHop();
         if( theLastHop != null ){
-          getRoutingTable().addRoutingTableEntry(new RoutingTableEntry(myMessage.getSource(), myMessage.getHops(), theLastHop, System.currentTimeMillis()));
+          if(!getRoutingProtocol().getLocalUnreachablePeerIds().contains(myMessage.getSource().getPeerId())){
+            getRoutingTable().addRoutingTableEntry(new RoutingTableEntry(myMessage.getSource(), myMessage.getHops(), theLastHop, System.currentTimeMillis()));
+          }
         }
-        
+
         myProcessingMessages.add(myMessage.getMessageId());
         if(theDestination.getPeerId().equals( getRoutingTable().getLocalPeerId() )){
           if("DeliveryStatus".equalsIgnoreCase( myMessage.getHeader( "TYPE" ))){
             handleDeliveryStatus(myMessage);
           } else {
             String theResponse = handleMessageForUs(mySessionId, myMessage);
-            
+
             if(isKeepHistory){
               myHistory.get( myMessage.getMessageId().toString() ).setResponse( theResponse );
               informListeners( myMessage );
             }
-            
+
             //wathever the response is of the local processing, we want to send it back to the sender
             sendDeliveryStatus( myMessage.getSource().getPeerId(), myMessage.getMessageId().toString(), theResponse );
           }

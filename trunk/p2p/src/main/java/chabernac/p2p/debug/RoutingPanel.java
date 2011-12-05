@@ -9,12 +9,15 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.concurrent.ExecutorService;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -36,6 +39,7 @@ public class RoutingPanel extends JPanel {
   private ExecutorService myExecutorService = DynamicSizeExecutor.getTinyInstance();
   private JTextArea myInfoArea = new JTextArea();
   private RoutingTableModel myModel = null;
+  private JTable myTable = null;
   
   public RoutingPanel(RoutingProtocol aRoutingProtocol){
     myRoutingProtocol = aRoutingProtocol;
@@ -63,12 +67,13 @@ public class RoutingPanel extends JPanel {
 
   private void buildCenterPanel() {
     myModel = new RoutingTableModel(myRoutingProtocol.getRoutingTable());
-    JTable theTable =new JTable(myModel); 
+    myTable = new JTable(myModel); 
     ColorRenderer theRenderer = new ColorRenderer();
-    theTable.setDefaultRenderer(String.class, theRenderer);
-    theTable.setDefaultRenderer(Integer.class, theRenderer);
-    JScrollPane theScrollPane = new JScrollPane(theTable);
+    myTable.setDefaultRenderer(String.class, theRenderer);
+    myTable.setDefaultRenderer(Integer.class, theRenderer);
+    JScrollPane theScrollPane = new JScrollPane(myTable);
     add(theScrollPane, BorderLayout.CENTER);
+    myTable.addMouseListener(new BlockPeerMouseListener());
   }
 
   private void buildNorthPanel() {
@@ -334,6 +339,21 @@ public class RoutingPanel extends JPanel {
       setText(anValue.toString());
       
       return this;
+    }
+  }
+  
+  private class BlockPeerMouseListener extends MouseAdapter{
+    @Override
+    public void mouseReleased(MouseEvent anEvent) {
+      if(anEvent.getButton() == MouseEvent.BUTTON3){
+        RoutingTableEntry theEntry = myModel.getRoutingTableEntryAtRow(myTable.getSelectedRow());
+        int theResult = JOptionPane.showConfirmDialog(null, "Remove peer with id '" + theEntry.getPeer().getPeerId() + "' ?");
+        if(theResult == JOptionPane.OK_OPTION){
+          myRoutingProtocol.getLocalUnreachablePeerIds().add(theEntry.getPeer().getPeerId());
+          //now put the hop distance to the max so that a new route is calculated
+          myRoutingProtocol.getRoutingTable().removeRoutingTableEntry(theEntry);
+        }
+      }
     }
   }
 

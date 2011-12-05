@@ -653,6 +653,9 @@ public class RoutingProtocol extends Protocol {
       } catch ( Exception e ) {
         //LOGGER.error( "Could not contact peer '" + thePeer.getPeerId() + "'", e );
         LOGGER.error( "Could not contact peer '" + thePeer.getPeerId() + "'" );
+        //set the peer entry itself to the max hop distance, only if the peer was previously direct reachable
+        if(aRoutingTableEntry.getHopDistance() == 1) myRoutingTable.addRoutingTableEntry(aRoutingTableEntry.derivedEntry(RoutingTableEntry.MAX_HOP_DISTANCE));
+        
         //update all peers which have this peer as gateway to the max hop distance
         for(RoutingTableEntry theEntry2 : myRoutingTable.getEntries()){
           if(theEntry2.getGateway().getPeerId().equals( aRoutingTableEntry.getPeer().getPeerId())){
