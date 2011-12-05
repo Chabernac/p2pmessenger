@@ -42,6 +42,13 @@ public class RoutingTable implements Iterable< RoutingTableEntry >, Serializable
   public RoutingTable(String aLocalPeerId){
     myLocalPeerId = aLocalPeerId;
   }
+  
+  private ExecutorService getListenerService(){
+    if(myListenerService == null){
+      myListenerService = Executors.newCachedThreadPool();
+    }
+    return myListenerService;
+  }
 
   private UUID getUUIDForPeer(AbstractPeer aPeer){
     return new UUID(aPeer.getPeerId());
@@ -232,7 +239,7 @@ public class RoutingTable implements Iterable< RoutingTableEntry >, Serializable
     inspectListeners();
     for(IRoutingTableListener theListener : new HashSet<IRoutingTableListener>(myRoutingTableListeners)){
       final IRoutingTableListener theList = theListener;
-      myListenerService.execute(new Runnable(){
+      getListenerService().execute(new Runnable(){
         public void run(){
           theList.routingTableEntryChanged( anEntry );
         }

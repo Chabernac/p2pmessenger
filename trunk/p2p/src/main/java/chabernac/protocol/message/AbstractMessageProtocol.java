@@ -42,7 +42,7 @@ public abstract class AbstractMessageProtocol extends Protocol {
   protected List<iMessageListener> myListeners = new ArrayList< iMessageListener >();
   
   protected boolean isKeepHistory = false;
-  protected Map<String, MessageAndResponse > myHistory = new LinkedHashMap<String, MessageAndResponse >();
+  protected LinkedHashMap<String, MessageAndResponse > myHistory = new LinkedHashMap<String, MessageAndResponse >();
   protected List< iMessageListener > myHistoryListeners = new ArrayList< iMessageListener >();
   
   public static enum Response {
@@ -187,8 +187,8 @@ public abstract class AbstractMessageProtocol extends Protocol {
     myHistory.clear();
   }
 
-  public Map<String, MessageAndResponse> getHistory(){
-    return Collections.unmodifiableMap( myHistory );
+  public List<MessageAndResponse> getHistory(){
+    return Collections.unmodifiableList( new ArrayList< MessageAndResponse >( myHistory.values()) );
   }
   
   public void addMessageListener(iMessageListener aListener){
