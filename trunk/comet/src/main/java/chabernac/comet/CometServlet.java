@@ -120,6 +120,7 @@ public class CometServlet extends HttpServlet {
       theEvent = theEndPoint.getEvent();
       theEvent.addExpirationListener(myExpirationListener);
       getCometEvents().addCommetEvent(theEvent);
+      LOGGER.debug("Sending comet event '" + theEvent.getId() + "' to peer '" + theId + "'");
       aResponse.getWriter().println( myCometEventConverter.toString(theEvent) );
       aResponse.getWriter().flush();
     }catch(Exception e){
