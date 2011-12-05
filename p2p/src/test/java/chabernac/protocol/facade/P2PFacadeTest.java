@@ -27,12 +27,14 @@ import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 
 import chabernac.io.SocketProxy;
+import chabernac.p2p.debug.RoutingFrame;
 import chabernac.protocol.message.DeliveryReport;
 import chabernac.protocol.message.MessageArchive;
 import chabernac.protocol.message.MultiPeerMessage;
 import chabernac.protocol.message.iDeliverReportListener;
 import chabernac.protocol.pipe.Pipe;
 import chabernac.protocol.routing.AbstractPeer;
+import chabernac.protocol.routing.RoutingTable;
 import chabernac.protocol.routing.UnknownPeerException;
 import chabernac.protocol.routing.WebPeer;
 import chabernac.protocol.userinfo.UserInfo;
@@ -63,7 +65,7 @@ public class P2PFacadeTest extends TestCase {
     Thread.sleep(1000);
 
     final CountDownLatch theCountDown = new CountDownLatch(2);
-    
+
     DeliveryReportCollector theDeliveryReportCollector = new DeliveryReportCollector();
     theFacade1.addDeliveryReportListener( theDeliveryReportCollector );
     theFacade1.addDeliveryReportListener(new iDeliverReportListener(){
@@ -93,13 +95,13 @@ public class P2PFacadeTest extends TestCase {
       theFacade2.addMessageListener( theMessageCollector );
 
       MultiPeerMessage theMessage = MultiPeerMessage.createMessage( "test message" )
-      .addDestination( theFacade2.getPeerId() );
+          .addDestination( theFacade2.getPeerId() );
 
       assertNotNull(  theFacade1.sendEncryptedMessage( theMessage, Executors.newFixedThreadPool( 1 ) ).get() );
 
       theCountDown.await(20, TimeUnit.SECONDS);
       theReceiveLatch.await(10, TimeUnit.SECONDS);
-      
+
       assertEquals( 2, theDeliveryReportCollector.getDeliveryReports().size() );
       assertEquals( DeliveryReport.Status.IN_PROGRESS, theDeliveryReportCollector.getDeliveryReports().get( 0 ).getDeliveryStatus());
       assertEquals( DeliveryReport.Status.DELIVERED, theDeliveryReportCollector.getDeliveryReports().get( 1 ).getDeliveryStatus());
@@ -117,7 +119,7 @@ public class P2PFacadeTest extends TestCase {
     .setPersist( false );
 
     MultiPeerMessage theMessage = MultiPeerMessage.createMessage( "test message" )
-    .addDestination( "99" );
+        .addDestination( "99" );
 
     try {
       theFacade1.sendEncryptedMessage( theMessage, Executors.newFixedThreadPool( 1 ) ).get() ;
@@ -149,7 +151,7 @@ public class P2PFacadeTest extends TestCase {
       theFacade1.addDeliveryReportListener( theDeliveryReportCollector );
 
       MultiPeerMessage theMessage = MultiPeerMessage.createMessage( "test message" )
-      .addDestination( "99" );
+          .addDestination( "99" );
 
       assertNotNull( theFacade1.sendEncryptedMessage( theMessage, Executors.newFixedThreadPool( 1 ) ).get() );
 
@@ -294,7 +296,7 @@ public class P2PFacadeTest extends TestCase {
 
       assertEquals( "Leslie", theFacade2.getPersonalInfo().getName());
       assertEquals( "leslie.torreele@gmail.com", theFacade2.getPersonalInfo().getEMail());
-      
+
       assertTrue(theFacade2.getRoutingTable().containsEntryForPeer(theFacade1.getPeerId()));
       assertTrue(theFacade1.getRoutingTable().containsEntryForPeer(theFacade2.getPeerId()));
 
@@ -346,19 +348,19 @@ public class P2PFacadeTest extends TestCase {
       CountDownLatch theLatch = new CountDownLatch(times);
       MyDeliveryReportCollector theDeliveryReportCollector = new MyDeliveryReportCollector(theLatch);
       theFacade1.addDeliveryReportListener( theDeliveryReportCollector );
-      
+
       List<MultiPeerMessage> theMessages = new ArrayList<MultiPeerMessage>();
 
       for(int i=0;i<times;i++){
         MultiPeerMessage theMessage = MultiPeerMessage.createMessage( "test message" )
-        .addDestination( theFacade2.getPeerId() );
+            .addDestination( theFacade2.getPeerId() );
 
         theMessages.add(theFacade1.sendEncryptedMessage( theMessage, Executors.newFixedThreadPool( 1 ) ).get());
       }
-      
+
       theLatch.await(20, TimeUnit.SECONDS);
       assertEquals(0, theLatch.getCount());
-      
+
       for(MultiPeerMessage theMessage : theMessages){
         Map<String, DeliveryReport> theReports = theArchive1.getDeliveryReportsForMultiPeerMessage( theMessage );
         //we only send to 1 peer and it should only contain the latest delivery report, so the size must be 1
@@ -418,7 +420,7 @@ public class P2PFacadeTest extends TestCase {
       if(theFacade2 != null) theFacade2.stop();
     }
   }
-  
+
   public void testStopWhenAlreadyRunning2() throws P2PFacadeException, InterruptedException, ExecutionException{
     LOGGER.debug("Executing test " + new Exception().getStackTrace()[0].getMethodName());
     P2PFacade theFacade1 = null;
@@ -437,10 +439,10 @@ public class P2PFacadeTest extends TestCase {
       .setStopWhenAlreadyRunning(true)
       .setPeerId( "2" )
       .start( 20 );
-      
+
       theFacade1.stop();
       theFacade2.stop();
-      
+
       //restart but now in reverse order
       //the port numbers will be switched but we must not get an already running exception
       theFacade2 = new P2PFacade()
@@ -449,7 +451,7 @@ public class P2PFacadeTest extends TestCase {
       .setStopWhenAlreadyRunning(true)
       .setPeerId( "2" )
       .start( 20 );
-      
+
       theFacade1 = new P2PFacade()
       .setExchangeDelay( 300 )
       .setPersist( true )
@@ -625,7 +627,7 @@ public class P2PFacadeTest extends TestCase {
       assertFalse( theFacade1.getRoutingTable().getEntryForPeer( thePeerId2 ).isReachable() );
 
       MultiPeerMessage theMessage = MultiPeerMessage.createMessage( "test" )
-      .addDestination( thePeerId2 );
+          .addDestination( thePeerId2 );
 
       assertTrue( theFacade1.sendMessage( theMessage, Executors.newFixedThreadPool( 1 ) ).get() );
 
@@ -642,11 +644,11 @@ public class P2PFacadeTest extends TestCase {
       .setPeerId( thePeerId2 )
       .setMessageResenderActivated( true )
       .start( 20 );
-      
+
       theFacade2.addMessageListener( theCollector );
 
       theReceiveLatch.await(10, TimeUnit.SECONDS);
-      
+
       assertTrue( theFacade1.getRoutingTable().containsEntryForPeer( theFacade2.getPeerId() ));
       assertTrue( theFacade1.getRoutingTable().getEntryForPeer(theFacade2.getPeerId()).isReachable());
 
@@ -747,9 +749,9 @@ public class P2PFacadeTest extends TestCase {
       assertTrue( theWebPeer.getRoutingTable().containsEntryForPeer( theSocketPeer.getRoutingTable().getLocalPeerId() ));
 
       int times = 300;
-      
+
       final CountDownLatch theLatch = new CountDownLatch(times);
-      
+
       MessageCollector theCollector = new MessageCollector(theLatch);
       theSocketPeer.addMessageListener( theCollector );
       theSocketPeer.addMessageListener(new MessagePrinter());
@@ -759,10 +761,10 @@ public class P2PFacadeTest extends TestCase {
 
       for(int i=0;i<times;i++){
         MultiPeerMessage theMessage = MultiPeerMessage.createMessage( "test" + i )
-        .addDestination( theSocketPeer.getPeerId() );
+            .addDestination( theSocketPeer.getPeerId() );
         theWebPeer.sendMessage( theMessage, theSendService );
       }
-      
+
       theLatch.await(20, TimeUnit.SECONDS);
 
       assertEquals( times, theCollector.getMessages().size() );
@@ -838,7 +840,7 @@ public class P2PFacadeTest extends TestCase {
       theFacade.stop();
     }
   }
-  
+
   public void testSetAJPPort() throws P2PFacadeException, UnknownHostException, IOException{
     P2PFacade theFacade = new P2PFacade()
     .setWebNode( true )
@@ -848,12 +850,12 @@ public class P2PFacadeTest extends TestCase {
     .setWebURL( new URL("http://localhost:8080/") )
     .start();
 
-    
+
     //test if the AJP port is effectively open
-    
+
     Socket theSocket = new Socket( "localhost", 9090 );
     assertTrue( theSocket.isBound() );
-    
+
     try{
       theFacade.setAJPPort( 9091 );
       fail("An exception must have been thrown");
@@ -909,10 +911,45 @@ public class P2PFacadeTest extends TestCase {
     }
 
   }
-  
+
+  public void testManyPeers() throws P2PFacadeException, UnknownPeerException, InterruptedException{
+    BasicConfigurator.resetConfiguration();
+    
+    List<P2PFacade> theFacades = new ArrayList<P2PFacade>();
+    try{
+      int nr = 2;
+      for(int i=0;i<nr;i++){
+        P2PFacade theFacade = new P2PFacade()
+        .setExchangeDelay( 300 )
+        .setPersist( false )
+        .start( );
+        theFacades.add(theFacade);
+        theFacade.showRoutingTable();
+      }
+
+      Thread.sleep(500000);
+      System.out.println("Start testing");
+      for(int i=0;i<nr;i++){
+        System.out.println("Testing facade " + i);
+        P2PFacade theFacade = theFacades.get(i);
+        RoutingTable theTable = theFacade.getRoutingTable();
+        for(int j=0;j<nr;j++){
+          assertTrue(theTable.containsEntryForPeer(theFacades.get(j).getPeerId()));
+          assertTrue(theTable.getEntryForPeer(theFacades.get(j).getPeerId()).isReachable());
+          if(j!=i) assertEquals(1, theTable.getEntryForPeer(theFacades.get(j).getPeerId()).getHopDistance());
+        }
+      }
+    }finally{
+      System.out.println("Stopping facades");
+      for(P2PFacade theFacade : theFacades){
+        theFacade.stop();
+      }
+    }
+  }
+
   private class MyDeliveryReportCollector implements iDeliverReportListener{
     private final CountDownLatch myLatch;
-    
+
     public MyDeliveryReportCollector(CountDownLatch aLatch){
       myLatch = aLatch;
     }

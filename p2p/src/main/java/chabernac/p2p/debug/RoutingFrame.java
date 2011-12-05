@@ -32,6 +32,7 @@ import chabernac.protocol.iP2PServer;
 import chabernac.protocol.infoexchange.InfoExchangeProtocol;
 import chabernac.protocol.infoexchange.InfoObject;
 import chabernac.protocol.infoexchange.InfoObjectPanel;
+import chabernac.protocol.message.AsyncMessageProcotol;
 import chabernac.protocol.message.MessageArchivePanel;
 import chabernac.protocol.message.MessagePanel;
 import chabernac.protocol.message.MessageProtocol;
@@ -91,6 +92,7 @@ public class RoutingFrame extends JFrame {
     getRoutingTable().setKeepHistory(true);
     SocketProxy.setTraceEnabled(true);
     ((MessageProtocol)myProtocolContainer.getProtocol( MessageProtocol.ID )).setKeepHistory( true );
+    ((AsyncMessageProcotol)myProtocolContainer.getProtocol( AsyncMessageProcotol.ID )).setKeepHistory( true );
     getPeerSender().setKeepHistory(true);
     myProtocolContainer.setKeepHistory( true );
   }
@@ -121,6 +123,10 @@ public class RoutingFrame extends JFrame {
 
     MessageProtocol theMessageProtocol = (MessageProtocol)myProtocolContainer.getProtocol( MessageProtocol.ID );
     thePane.add("Messages", new MessagePanel(theMessageProtocol));
+    
+    AsyncMessageProcotol theAsyncMessageProtocol = (AsyncMessageProcotol)myProtocolContainer.getProtocol( AsyncMessageProcotol.ID );
+    thePane.add("AsyncMessages", new MessagePanel(theAsyncMessageProtocol));
+    
     thePane.add("Protocol", new ProtocolMessagePanel(myProtocolContainer));
 
     InfoExchangeProtocol<InfoObject> theInfoExchangeProtocol = (InfoExchangeProtocol< InfoObject >)myProtocolContainer.getProtocol( InfoExchangeProtocol.ID );
@@ -167,6 +173,8 @@ public class RoutingFrame extends JFrame {
       try {
         ((MessageProtocol)myProtocolContainer.getProtocol( MessageProtocol.ID )).setKeepHistory( false );
         ((MessageProtocol)myProtocolContainer.getProtocol( MessageProtocol.ID )).clearHistory();
+        ((AsyncMessageProcotol)myProtocolContainer.getProtocol( AsyncMessageProcotol.ID )).setKeepHistory( false );
+        ((AsyncMessageProcotol)myProtocolContainer.getProtocol( AsyncMessageProcotol.ID )).clearHistory();
       } catch ( ProtocolException e ) {
       }
 

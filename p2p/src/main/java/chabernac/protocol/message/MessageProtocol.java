@@ -29,12 +29,6 @@ public class MessageProtocol extends AbstractMessageProtocol {
   private static Logger LOGGER = Logger.getLogger( MessageProtocol.class );
   public static final String ID = "MSG";
 
-  private boolean isKeepHistory = false;
-
-  private List< MessageAndResponse > myHistory = new ArrayList< MessageAndResponse >();
-
-  private List<iMessageListener> myHistoryListeners = new ArrayList< iMessageListener >();
-
   public MessageProtocol ( ) {
     super( ID );
   }
@@ -63,7 +57,7 @@ public class MessageProtocol extends AbstractMessageProtocol {
   public String handleMessage(String aSessionId, Message aMessage){
     MessageAndResponse theHistoryItem = new MessageAndResponse( aMessage );
     if(isKeepHistory){
-      myHistory.add(theHistoryItem);
+      myHistory.put(aMessage.getMessageId().toString(), theHistoryItem);
       for(iMessageListener theListener : myHistoryListeners) theListener.messageReceived( aMessage );
     }
 
@@ -154,30 +148,6 @@ public class MessageProtocol extends AbstractMessageProtocol {
     }
 
     return false;
-  }
-
-  public void addMessageHistoryListener(iMessageListener aListener){
-    myHistoryListeners.add( aListener );
-  }
-
-  public void removeMessageHistoryListener(iMessageListener aListener){
-    myHistoryListeners.remove( aListener );
-  }
-
-  public List<MessageAndResponse> getHistory(){
-    return Collections.unmodifiableList( myHistory );
-  }
-
-  public boolean isKeepHistory() {
-    return isKeepHistory;
-  }
-
-  public void setKeepHistory( boolean anKeepHistory ) {
-    isKeepHistory = anKeepHistory;
-  }
-
-  public void clearHistory(){
-    myHistory.clear();
   }
 
   @Override

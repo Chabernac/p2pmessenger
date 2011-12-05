@@ -15,6 +15,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 import javax.swing.table.TableCellRenderer;
 
 import chabernac.protocol.routing.PeerMessage;
@@ -155,16 +156,21 @@ public class PeerMessagePanel extends JPanel {
   }
 
   private void calculateBandWith(){
-    myBytesReceived.setText( Long.toString( myPeerSender.getBytesReceived() ));
-    myBytesSend.setText( Long.toString(myPeerSender.getBytesSend() ));
-
-    float theTime = System.currentTimeMillis() - myPeerSender.getInitTime();
-
-    float theKBPerSecUp = (float)myPeerSender.getBytesSend() / theTime;
-    float theKBPerSecDown = (float)myPeerSender.getBytesReceived() / theTime;
-
-    myBandWithUp.setText( FORMAT.format( theKBPerSecUp ) );
-    myBandWithDown.setText( FORMAT.format( theKBPerSecDown ) );  
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        myBytesReceived.setText( Long.toString( myPeerSender.getBytesReceived() ));
+        myBytesSend.setText( Long.toString(myPeerSender.getBytesSend() ));
+        
+        float theTime = System.currentTimeMillis() - myPeerSender.getInitTime();
+        
+        float theKBPerSecUp = (float)myPeerSender.getBytesSend() / theTime;
+        float theKBPerSecDown = (float)myPeerSender.getBytesReceived() / theTime;
+        
+        myBandWithUp.setText( FORMAT.format( theKBPerSecUp ) );
+        myBandWithDown.setText( FORMAT.format( theKBPerSecDown ) );  
+      }
+    });
   }
 
   public class BandWithCalculator implements iPeerSenderListener {

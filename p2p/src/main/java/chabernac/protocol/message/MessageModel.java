@@ -17,12 +17,12 @@ import chabernac.tools.StringTools;
 
 public class MessageModel implements TableModel {
 
-  private final MessageProtocol myProtocol;
+  private final AbstractMessageProtocol myProtocol;
   private final List< TableModelListener > myListeners = new ArrayList< TableModelListener >();
-  
+
   private static final SimpleDateFormat FORMAT = new SimpleDateFormat("HH:mm:ss");
 
-  public MessageModel ( MessageProtocol anProtocol ) {
+  public MessageModel ( AbstractMessageProtocol anProtocol ) {
     super();
     myProtocol = anProtocol;
     anProtocol.addMessageHistoryListener( new MessageListener() );
@@ -40,7 +40,7 @@ public class MessageModel implements TableModel {
 
   @Override
   public int getColumnCount() {
-    return 8;
+    return 11;
   }
 
   @Override
@@ -53,6 +53,9 @@ public class MessageModel implements TableModel {
     if(anColumnIndex == 5) return "Protocol";
     if(anColumnIndex == 6) return "Message";
     if(anColumnIndex == 7) return "Response";
+    if(anColumnIndex == 8) return "Header Type";
+    if(anColumnIndex == 9) return "Message id";
+    if(anColumnIndex == 10) return "Status";
     return "";
   }
 
@@ -60,9 +63,9 @@ public class MessageModel implements TableModel {
   public int getRowCount() {
     return myProtocol.getHistory().size();
   }
-  
+
   public MessageAndResponse getMessageAtRow(int aRow){
-    return myProtocol.getHistory().get( aRow );
+    return new ArrayList<MessageAndResponse>(myProtocol.getHistory().values()).get(aRow);
   }
 
   @Override
@@ -77,9 +80,15 @@ public class MessageModel implements TableModel {
     if(anColumnIndex == 2) return theMessage.getMessage().getSource().getPeerId();
     if(anColumnIndex == 3) return theMessage.getMessage().getDestination().getPeerId();
     if(anColumnIndex == 4) return theMessage.getMessage().getTTL();
-    if(anColumnIndex == 5) return theMessage.getMessage().getMessage().substring( 0,3 );
-    if(anColumnIndex == 6) return theMessage.getMessage().getMessage().substring( 3 );
+    if(theMessage.getMessage() != null && theMessage.getMessage().getMessage() != null){
+      if(anColumnIndex == 5) return theMessage.getMessage().getMessage().substring( 0,3 );
+      if(anColumnIndex == 6) return theMessage.getMessage().getMessage().substring( 3 );
+    }
     if(anColumnIndex == 7) return theMessage.getResponse();
+    if(anColumnIndex == 8 && theMessage.getMessage().containsHeader("TYPE")) return theMessage.getMessage().getHeader("TYPE");
+    if(anColumnIndex == 9 && theMessage.getMessage().containsHeader("MESSAGE-ID")) return StringTools.convertToLocalUniqueId(theMessage.getMessage().getHeader("MESSAGE-ID"));
+    if(anColumnIndex == 10 && theMessage.getMessage().containsHeader("STATUS")) return theMessage.getMessage().getHeader("STATUS");
+    
     return null;
   }
 
@@ -96,14 +105,14 @@ public class MessageModel implements TableModel {
   @Override
   public void setValueAt( Object aValue, int anRowIndex, int anColumnIndex ) {
   }
-  
+
   private void fireTableModelEvent(){
     for(TableModelListener theListener : myListeners){
       theListener.tableChanged( new TableModelEvent(MessageModel.this) );
     }
-    
+
   }
-  
+
   private class MessageListener implements iMessageListener {
 
     @Override

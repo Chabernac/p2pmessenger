@@ -23,7 +23,7 @@ public class MessagePanel extends JPanel {
   private MessageModel myModel;
   private String myPeerId;
 
-  public MessagePanel(MessageProtocol aProtocol){
+  public MessagePanel(AbstractMessageProtocol aProtocol){
     try {
       myPeerId = aProtocol.getRoutingTable().getLocalPeerId();
     } catch ( ProtocolException e ) {
@@ -32,7 +32,7 @@ public class MessagePanel extends JPanel {
     buildGUI(aProtocol);
   }
   
-  private void buildGUI(MessageProtocol aProtocol){
+  private void buildGUI(AbstractMessageProtocol aProtocol){
     setLayout( new BorderLayout() );
   
     myModel = new MessageModel(aProtocol);
