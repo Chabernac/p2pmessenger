@@ -927,7 +927,7 @@ public class P2PFacadeTest extends TestCase {
         theFacade.showRoutingTable();
       }
 
-      Thread.sleep(1000000);
+      Thread.sleep(5000);
       System.out.println("Start testing");
       for(int i=0;i<nr;i++){
         System.out.println("Testing facade " + i);
