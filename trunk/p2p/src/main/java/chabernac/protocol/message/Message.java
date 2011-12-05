@@ -121,6 +121,7 @@ public class Message implements Serializable{
   }
   
   public boolean containsHeader(String aHeader){
+    if(myHeaders == null) return false;
     return myHeaders.containsKey(aHeader);
   }
                           

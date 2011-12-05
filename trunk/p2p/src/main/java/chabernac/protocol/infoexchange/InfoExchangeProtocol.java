@@ -50,7 +50,7 @@ public class InfoExchangeProtocol<T extends Observable & Serializable> extends P
 
 //  private ExecutorService myService = DynamicSizeExecutor.getSmallInstance();
 
-  private enum Command{PUT};
+  private enum Command{PUT, GET};
   private enum Response{OK, NOK, UNKNOWN_COMMAND};
 
   public InfoExchangeProtocol ( T anInformationObject ) {
@@ -82,6 +82,8 @@ public class InfoExchangeProtocol<T extends Observable & Serializable> extends P
         T theInfoObject = (T)myObjectPersister.getObject( theParts[1] );
         storeInfo(thePeerId, theInfoObject);
         return Response.OK.name();
+      } else if(anInput.startsWith(Command.GET.name())){
+        return myObjectPersister.toString(myInformationObject);
       }
     }catch(Exception e){
       LOGGER.error("An error occured while handling command", e);
@@ -158,6 +160,38 @@ public class InfoExchangeProtocol<T extends Observable & Serializable> extends P
     }
   }
 
+  private class GetInfoFromPeer implements Runnable{
+    private final String myPeerId;
+    
+    public GetInfoFromPeer(String aPeerId){
+      myPeerId = aPeerId;
+    }
+    
+    public void run(){
+      if(!myInfoMap.containsKey(myPeerId)){
+        try{
+          RoutingTableEntry theEntry = getRoutingTable().getEntryForPeer( myPeerId );
+
+          if(theEntry.isReachable() && 
+              theEntry.getPeer().isOnSameChannel(getRoutingTable().getEntryForLocalPeer().getPeer()) &&
+              theEntry.getPeer().isProtocolSupported( ID )            
+              ){
+            Message theMessage = new Message();
+            theMessage.setDestination( theEntry.getPeer() );
+            theMessage.setSource( getRoutingTable().getEntryForLocalPeer().getPeer() );
+            theMessage.setProtocolMessage( true );
+            theMessage.setMessage( createMessage( Command.GET.name() ));
+            String theResult = ((MessageProtocol)findProtocolContainer().getProtocol( MessageProtocol.ID )).sendMessage( theMessage );
+            T theInfoObject = myObjectPersister.getObject(theResult);
+            storeInfo(myPeerId, theInfoObject);
+          }
+        }catch(Exception e){
+          LOGGER.error("An error occured while sending message to peer '" + myPeerId + "'", e);
+        }
+      }
+    }
+  }
+  
   private class SendInfoToPeer implements Runnable{
     private final String myPeerId;
 
@@ -196,7 +230,8 @@ public class InfoExchangeProtocol<T extends Observable & Serializable> extends P
     public void routingTableEntryChanged( final RoutingTableEntry anEntry ) {
       //TODO it might be that this is not a new entry, but just changed, in that case we 
       //should not have send the information, nevertheless we can not know that at the moment
-      getExecutorService().execute( new SendInfoToPeer(anEntry.getPeer().getPeerId()));
+//      getExecutorService().execute( new SendInfoToPeer(anEntry.getPeer().getPeerId()));
+      getExecutorService().execute(new GetInfoFromPeer(anEntry.getPeer().getPeerId()));
     }
 
     @Override

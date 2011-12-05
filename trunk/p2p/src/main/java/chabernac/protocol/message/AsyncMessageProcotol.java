@@ -102,6 +102,13 @@ public class AsyncMessageProcotol extends AbstractMessageProtocol {
   }
 
   private void handleDeliveryStatus( final Message aMessage ) throws InterruptedException {
+    if(isKeepHistory){
+      myHistory.remove(aMessage.getMessageId().toString());
+      MessageAndResponse theMR = myHistory.get(aMessage.getHeader( "MESSAGE-ID" ));
+      theMR.setResponse(aMessage.getHeader("STATUS"));
+      for(iMessageListener theListener : myHistoryListeners) theListener.messageReceived( aMessage );
+    }
+    
     getBlockingQueueForMessage( aMessage.getHeader( "MESSAGE-ID" ) ).put( aMessage.getHeader( "STATUS" ) );
     myQueueCleanupService.schedule( new Runnable(){
       public void run(){
@@ -146,8 +153,14 @@ public class AsyncMessageProcotol extends AbstractMessageProtocol {
     sendMessage( aMesage );
     return getResponse( aMesage.getMessageId().toString(), aTimeout, aTimeUnit );
   }
-
+  
   private boolean handleMessage(String aSessionId, Message aMessage){
+    MessageAndResponse theHistoryItem = new MessageAndResponse( aMessage );
+    if(isKeepHistory){
+      myHistory.put(aMessage.getMessageId().toString(), theHistoryItem);
+      for(iMessageListener theListener : myHistoryListeners) theListener.messageReceived( aMessage );
+    }
+    
     try{
       getExecutorService().execute( new MessageProcessor( aSessionId, aMessage ) );
       return true;

@@ -9,7 +9,9 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -38,6 +40,10 @@ public abstract class AbstractMessageProtocol extends Protocol {
   protected Set<UUID> myProcessedMessages = Collections.synchronizedSet(new HashSet<UUID>());
   
   protected List<iMessageListener> myListeners = new ArrayList< iMessageListener >();
+  
+  protected boolean isKeepHistory = false;
+  protected Map<String, MessageAndResponse > myHistory = new LinkedHashMap<String, MessageAndResponse >();
+  protected List< iMessageListener > myHistoryListeners = new ArrayList< iMessageListener >();
   
   public static enum Response {
     UNKNOWN_PEER, 
@@ -169,6 +175,22 @@ public abstract class AbstractMessageProtocol extends Protocol {
     throw new MessageException("Message could not be delivered return code: '" + aResult + "'", Response.valueOf(aResult.split(" ")[0]));  
   }
   
+  public boolean isKeepHistory() {
+    return isKeepHistory;
+  }
+
+  public void setKeepHistory(boolean aKeepHistory) {
+    isKeepHistory = aKeepHistory;
+  }
+  
+  public void clearHistory(){
+    myHistory.clear();
+  }
+
+  public Map<String, MessageAndResponse> getHistory(){
+    return Collections.unmodifiableMap( myHistory );
+  }
+  
   public void addMessageListener(iMessageListener aListener){
     myListeners.add( aListener );
   }
@@ -177,6 +199,11 @@ public abstract class AbstractMessageProtocol extends Protocol {
     myListeners.remove( aListener );
   }
 
+  public void addMessageHistoryListener(iMessageListener aListener){
+    myHistoryListeners.add( aListener );
+  }
 
-
+  public void removeMessageHistoryListener(iMessageListener aListener){
+    myHistoryListeners.remove( aListener );
+  }
 }
