@@ -40,7 +40,7 @@ public class MessageModel implements TableModel {
 
   @Override
   public int getColumnCount() {
-    return 11;
+    return 12;
   }
 
   @Override
@@ -56,6 +56,7 @@ public class MessageModel implements TableModel {
     if(anColumnIndex == 8) return "Header Type";
     if(anColumnIndex == 9) return "Message id";
     if(anColumnIndex == 10) return "Status";
+    if(anColumnIndex == 11) return "Response Time";
     return "";
   }
 
@@ -88,6 +89,7 @@ public class MessageModel implements TableModel {
     if(anColumnIndex == 8 && theMessage.getMessage().containsHeader("TYPE")) return theMessage.getMessage().getHeader("TYPE");
     if(anColumnIndex == 9 && theMessage.getMessage().containsHeader("MESSAGE-ID")) return StringTools.convertToLocalUniqueId(theMessage.getMessage().getHeader("MESSAGE-ID"));
     if(anColumnIndex == 10 && theMessage.getMessage().containsHeader("STATUS")) return theMessage.getMessage().getHeader("STATUS");
+    if(anColumnIndex == 11) return theMessage.getResponseTime();
     
     return null;
   }

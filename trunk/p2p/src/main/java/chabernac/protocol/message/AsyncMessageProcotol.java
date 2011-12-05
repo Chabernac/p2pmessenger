@@ -156,7 +156,7 @@ public class AsyncMessageProcotol extends AbstractMessageProtocol {
   
   private boolean handleMessage(String aSessionId, Message aMessage){
     MessageAndResponse theHistoryItem = new MessageAndResponse( aMessage );
-    if(isKeepHistory){
+    if(isKeepHistory && !"DeliveryStatus".equals( aMessage.getHeader( "TYPE" ) )){
       myHistory.put(aMessage.getMessageId().toString(), theHistoryItem);
       for(iMessageListener theListener : myHistoryListeners) theListener.messageReceived( aMessage );
     }
@@ -201,6 +201,11 @@ public class AsyncMessageProcotol extends AbstractMessageProtocol {
             handleDeliveryStatus(myMessage);
           } else {
             String theResponse = handleMessageForUs(mySessionId, myMessage);
+            
+            if(isKeepHistory){
+              myHistory.get( myMessage.getMessageId().toString() ).setResponse( theResponse );
+            }
+            
             //wathever the response is of the local processing, we want to send it back to the sender
             sendDeliveryStatus( myMessage.getSource().getPeerId(), myMessage.getMessageId().toString(), theResponse );
           }
