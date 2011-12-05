@@ -8,14 +8,16 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.log4j.Logger;
+
 import chabernac.comet.CometEvent;
 import chabernac.comet.EndPoint;
 import chabernac.protocol.routing.AbstractPeer;
 import chabernac.protocol.routing.WebPeer;
 
 public class WebToPeerSender {
+  private static Logger LOGGER = Logger.getLogger(WebToPeerSender.class);
   private Map<String, AtomicInteger> myPendingMessagesForPeer = Collections.synchronizedMap( new HashMap<String, AtomicInteger>());
-
 
   //TODO currently only 1 endpoint is allowed, so we make this method synchronized because otherwise
   //it might be that no endpoint is available
@@ -30,6 +32,7 @@ public class WebToPeerSender {
       UUID theUID = UUID.randomUUID();
       CometEvent theCometEvent = new CometEvent(theUID.toString(), aMessage);
       theCometEvent.setPendingEvents( thePendingMessages - 1);
+      LOGGER.debug("Setting event '" + theCometEvent.getId() + "' for end point '" + theEndPoint.getId() + "'");
       theEndPoint.setEvent( theCometEvent );
       return theCometEvent.getOutput(5000).replaceAll("\\{plus\\}", "+");
     }catch(Exception e){
