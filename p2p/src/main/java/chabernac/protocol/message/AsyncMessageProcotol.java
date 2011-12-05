@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
@@ -33,6 +34,7 @@ public class AsyncMessageProcotol extends AbstractMessageProtocol {
   private Map<String, ArrayBlockingQueue<String>> myStatusQueues = new HashMap<String, ArrayBlockingQueue<String>> ();
 
   private ScheduledExecutorService myQueueCleanupService = Executors.newScheduledThreadPool( 1 );
+  private ExecutorService myListenerService = Executors.newCachedThreadPool();
 
   private final String CANCEL = UUID.randomUUID().toString();
   
@@ -100,13 +102,24 @@ public class AsyncMessageProcotol extends AbstractMessageProtocol {
 
     return myStatusQueues.get( aMessageId );
   }
+  
+  private void informListeners(final Message aMessage){
+    for(iMessageListener theListener : myHistoryListeners) {
+      final iMessageListener theList = theListener;
+      myListenerService.execute( new Runnable(){
+        public void run(){
+          theList.messageReceived( aMessage ); 
+        }
+      });
+    }
+  }
 
   private void handleDeliveryStatus( final Message aMessage ) throws InterruptedException {
     if(isKeepHistory){
       myHistory.remove(aMessage.getMessageId().toString());
       MessageAndResponse theMR = myHistory.get(aMessage.getHeader( "MESSAGE-ID" ));
       theMR.setResponse(aMessage.getHeader("STATUS"));
-      for(iMessageListener theListener : myHistoryListeners) theListener.messageReceived( aMessage );
+      informListeners( aMessage );
     }
     
     getBlockingQueueForMessage( aMessage.getHeader( "MESSAGE-ID" ) ).put( aMessage.getHeader( "STATUS" ) );
@@ -158,7 +171,7 @@ public class AsyncMessageProcotol extends AbstractMessageProtocol {
     MessageAndResponse theHistoryItem = new MessageAndResponse( aMessage );
     if(isKeepHistory && !"DeliveryStatus".equals( aMessage.getHeader( "TYPE" ) )){
       myHistory.put(aMessage.getMessageId().toString(), theHistoryItem);
-      for(iMessageListener theListener : myHistoryListeners) theListener.messageReceived( aMessage );
+      informListeners( aMessage );
     }
     
     try{
@@ -194,7 +207,6 @@ public class AsyncMessageProcotol extends AbstractMessageProtocol {
           getRoutingTable().addRoutingTableEntry(new RoutingTableEntry(myMessage.getSource(), myMessage.getHops(), theLastHop, System.currentTimeMillis()));
         }
         
-        
         myProcessingMessages.add(myMessage.getMessageId());
         if(theDestination.getPeerId().equals( getRoutingTable().getLocalPeerId() )){
           if("DeliveryStatus".equalsIgnoreCase( myMessage.getHeader( "TYPE" ))){
@@ -204,6 +216,7 @@ public class AsyncMessageProcotol extends AbstractMessageProtocol {
             
             if(isKeepHistory){
               myHistory.get( myMessage.getMessageId().toString() ).setResponse( theResponse );
+              informListeners( myMessage );
             }
             
             //wathever the response is of the local processing, we want to send it back to the sender

@@ -66,7 +66,7 @@ public class MessageModel implements TableModel {
   }
 
   public MessageAndResponse getMessageAtRow(int aRow){
-    return new ArrayList<MessageAndResponse>(myProtocol.getHistory().values()).get(aRow);
+    return myProtocol.getHistory().get(aRow);
   }
 
   @Override
