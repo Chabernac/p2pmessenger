@@ -7,7 +7,6 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -24,6 +23,8 @@ import org.mortbay.jetty.testing.ServletTester;
 
 import chabernac.io.Base64ObjectStringConverter;
 import chabernac.io.iObjectStringConverter;
+import chabernac.newcomet.EndPoint2;
+import chabernac.newcomet.EndPointContainer2;
 
 public class CometServletTest extends TestCase {
   static{
@@ -87,14 +88,14 @@ public class CometServletTest extends TestCase {
 
     Thread.sleep(2000);
 
-    EndPointContainer theEndPointContainer = (EndPointContainer)theServletTester.getContext().getServletContext().getAttribute("EndPoints");
+    EndPointContainer2 theEndPointContainer = (EndPointContainer2)theServletTester.getContext().getServletContext().getAttribute("EndPoints");
     assertEquals(1, theEndPointContainer.size() );
 
-    EndPoint theEndPoint = theEndPointContainer.getEndPointFor( "1", 5, TimeUnit.SECONDS);
+    EndPoint2 theEndPoint = theEndPointContainer.getEndPoint( "1" );
     assertNotNull(theEndPoint);
     
     CometEvent theCometEvent = new CometEvent("event1", "input"); 
-    theEndPoint.setEvent(theCometEvent);
+    theEndPoint.addCometEvent(theCometEvent);
     Thread.sleep(1000);
     assertEquals(1, theEndPointContainer.size() );
     assertTrue(theCometEvents.containsEvent("event1"));
@@ -153,8 +154,8 @@ public class CometServletTest extends TestCase {
       CometEvent theEvent= new CometEvent("1", "input");
       //this end point is in fact invalid because the url connection has been closed
       //the comet servlet must now delegate the response to another end point
-      EndPoint theEndPoint = theCometServlet.getEndPointContainer().getEndPointFor("1", 1, TimeUnit.SECONDS);
-      theEndPoint.setEvent(theEvent);
+      EndPoint2 theEndPoint = theCometServlet.getEndPointContainer().getEndPoint("1");
+      theEndPoint.addCometEvent(theEvent);
       
       URLConnection theConnection2 = theCometURL.openConnection();
       theConnection2.setDoOutput(true);
