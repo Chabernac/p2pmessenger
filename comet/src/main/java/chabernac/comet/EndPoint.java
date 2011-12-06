@@ -14,7 +14,8 @@ import java.util.concurrent.BlockingQueue;
 
 public class EndPoint {
   private final String myId;
-  private BlockingQueue<CometEvent> myEventQueue = new ArrayBlockingQueue<CometEvent>(1);
+  private BlockingQueue<CometEvent> myEventQueue = new ArrayBlockingQueue<CometEvent>(128);
+  private boolean isClosed = false;
   
   public EndPoint ( String anId) {
     super();
@@ -24,9 +25,18 @@ public class EndPoint {
   public String getId() {
     return myId;
   }
-  
-  
+
+  public boolean isClosed() {
+    return isClosed;
+  }
+
+  public void setClosed( boolean aClosed ) {
+    isClosed = aClosed;
+  }
+
   public void setEvent(CometEvent anEvent) throws CometException{
+    if(isClosed()) throw new CometException("This end point has been closed");
+    
     try {
       myEventQueue.put(anEvent);
     } catch (InterruptedException e) {
@@ -44,6 +54,14 @@ public class EndPoint {
     } catch (InterruptedException e) {
       throw new CometException("No event available", e);
     }
+  }
+  
+  public boolean hasEvent(){
+    return !myEventQueue.isEmpty();
+  }
+  
+  public CometEvent getFirstEvent(){
+    return myEventQueue.poll();
   }
   
  public void destroy(){
