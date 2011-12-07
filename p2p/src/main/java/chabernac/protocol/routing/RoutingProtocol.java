@@ -858,7 +858,7 @@ public class RoutingProtocol extends Protocol {
 
               myRoutingTable.addRoutingTableEntry( theEntry );
               //we have received an announcement with upd send one back.
-              sendUDPAnnouncement(true);
+//              sendUDPAnnouncement(true);
             }
           }
         }

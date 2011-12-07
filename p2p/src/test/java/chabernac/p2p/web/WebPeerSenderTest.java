@@ -1,6 +1,7 @@
 package chabernac.p2p.web;
 
 import java.net.URL;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -13,7 +14,7 @@ import org.mortbay.jetty.servlet.ServletHolder;
 
 import chabernac.comet.CometEvent;
 import chabernac.comet.CometServlet;
-import chabernac.comet.EndPointContainer;
+import chabernac.newcomet.EndPointContainer2;
 import chabernac.p2p.io.WebToPeerSender;
 import chabernac.protocol.ProtocolWebServer;
 import chabernac.protocol.routing.SocketPeer;
@@ -38,8 +39,10 @@ public class WebPeerSenderTest extends TestCase {
         public void run(){
           try {
             while(true){
-              CometEvent theEvent = theWebPeer.waitForEvent("2");
-              theEvent.setOutput( "output" );
+              List<CometEvent> theEvents = theWebPeer.waitForEvents("2");
+              for(CometEvent theEvent : theEvents){
+                theEvent.setOutput( "output" );
+              }
             }
           } catch ( Exception e ) {
             e.printStackTrace();
@@ -49,7 +52,7 @@ public class WebPeerSenderTest extends TestCase {
 
       Thread.sleep( 2000 );
 
-      EndPointContainer theEndPointContainer =  (EndPointContainer)root.getServletContext().getAttribute( "EndPoints" );
+      EndPointContainer2 theEndPointContainer =  (EndPointContainer2)root.getServletContext().getAttribute( "EndPoints" );
       theWebPeer.setEndPointContainer( theEndPointContainer );
       
       assertNotNull( theEndPointContainer );

@@ -13,25 +13,27 @@ import chabernac.comet.CometEvent;
 import chabernac.comet.CometException;
 import chabernac.comet.EndPoint;
 import chabernac.comet.EndPointContainer;
+import chabernac.newcomet.EndPoint2;
+import chabernac.newcomet.EndPointContainer2;
 import chabernac.protocol.routing.SocketPeer;
 import chabernac.protocol.routing.WebPeer;
 
 public class WebToPeerSenderTest extends TestCase {
   public void testWebToPeerSender() throws InterruptedException, IOException, CometException{
-    EndPointContainer theContainer = new EndPointContainer();
+    EndPointContainer2 theContainer = new EndPointContainer2();
 
     WebPeer theSendingPeer = new WebPeer("1", new URL("http://brol"));
     theSendingPeer.setEndPointContainer( theContainer );
 
     SocketPeer theReceivingPeer = new SocketPeer( "2" );
 
-    final EndPoint theEndPoint = new EndPoint("2");
-    theContainer.addEndPoint( theEndPoint );
+    final EndPoint2 theEndPoint = theContainer.getEndPoint("2");
 
     Executors.newSingleThreadExecutor().execute( new Runnable(){
       public void run(){
         try{
-          CometEvent theEvent = theEndPoint.getEvent();
+          theEndPoint.waitForEvent();
+          CometEvent theEvent = theEndPoint.getFirstEvent();
           assertEquals( "input", theEvent.getInput());
           theEvent.setOutput( "reply" );
         }catch(Exception e){
@@ -46,7 +48,7 @@ public class WebToPeerSenderTest extends TestCase {
   }
   
   public void testWebToPeerSenderNoEndPoint() throws IOException{
-    EndPointContainer theContainer = new EndPointContainer();
+    EndPointContainer2 theContainer = new EndPointContainer2();
 
     WebPeer theSendingPeer = new WebPeer("1", new URL("http://brol"));
     theSendingPeer.setEndPointContainer( theContainer );

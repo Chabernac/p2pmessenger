@@ -1,7 +1,6 @@
 package chabernac.p2p.io;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.net.URLEncoder;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;

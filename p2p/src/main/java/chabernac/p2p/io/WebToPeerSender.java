@@ -5,13 +5,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.log4j.Logger;
 
 import chabernac.comet.CometEvent;
-import chabernac.comet.EndPoint;
+import chabernac.newcomet.EndPoint2;
 import chabernac.protocol.routing.AbstractPeer;
 import chabernac.protocol.routing.WebPeer;
 
@@ -27,13 +26,13 @@ public class WebToPeerSender {
     try{
       int thePendingMessages = incrementCounter(aPeer.getPeerId());
       
-      EndPoint theEndPoint = aSendingPeer.getEndPointContainer().getEndPointFor( aPeer.getPeerId(), aTimeoutInSeconds, TimeUnit.SECONDS );
+      EndPoint2 theEndPoint = aSendingPeer.getEndPointContainer().getEndPoint( aPeer.getPeerId() );
       if(theEndPoint == null) throw new IOException("No end point available for peer '" + aPeer.getPeerId() + "' in webpeer '" + aSendingPeer.getPeerId() + "' after " + aTimeoutInSeconds + " seconds");
       UUID theUID = UUID.randomUUID();
       CometEvent theCometEvent = new CometEvent(theUID.toString(), aMessage);
       theCometEvent.setPendingEvents( thePendingMessages - 1);
       LOGGER.debug("Setting event '" + theCometEvent.getId() + "' for end point '" + theEndPoint.getId() + "'");
-      theEndPoint.setEvent( theCometEvent );
+      theEndPoint.addCometEvent(theCometEvent );
       return theCometEvent.getOutput(5000).replaceAll("\\{plus\\}", "+");
     }catch(Exception e){
       throw new IOException("Could not send message to peer '" + aPeer.getPeerId() + "' from webpeer '" + aSendingPeer.getPeerId() + "'", e);

@@ -214,6 +214,8 @@ public class AsyncMessageProcotol extends AbstractMessageProtocol {
 
     @Override
     public void run() {
+      LOGGER.debug("Handling message " + myMessage);
+      
       if(myProcessingMessages.contains(myMessage.getMessageId())){
         sendDeliveryStatus( myMessage.getSource().getPeerId(), myMessage.getMessageId().toString(), Response.MESSAGE_LOOP_DETECTED.name()); 
       }
