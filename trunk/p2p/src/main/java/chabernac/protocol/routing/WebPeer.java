@@ -2,6 +2,8 @@ package chabernac.protocol.routing;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -14,6 +16,7 @@ import chabernac.comet.EndPointContainer;
 import chabernac.io.Base64ObjectStringConverter;
 import chabernac.io.URLConnectionHelper;
 import chabernac.io.iObjectStringConverter;
+import chabernac.newcomet.EndPointContainer2;
 import chabernac.protocol.ProtocolWebServer;
 
 public class WebPeer extends AbstractPeer {
@@ -25,7 +28,7 @@ public class WebPeer extends AbstractPeer {
   private transient iObjectStringConverter< CometEvent > myObjectStringConverter = new Base64ObjectStringConverter< CometEvent >();
 
   private transient ExecutorService myService = Executors.newCachedThreadPool();
-  private transient EndPointContainer myEndPointContainer = null;
+  private transient EndPointContainer2 myEndPointContainer = null;
 
   public WebPeer(){
     this(null);
@@ -71,26 +74,29 @@ public class WebPeer extends AbstractPeer {
     return myURL != null;
   }
 
-  public EndPointContainer getEndPointContainer() {
+  public EndPointContainer2 getEndPointContainer() {
     return myEndPointContainer;
   }
 
-  public void setEndPointContainer( EndPointContainer aEndPointContainer ) {
+  public void setEndPointContainer( EndPointContainer2 aEndPointContainer ) {
     myEndPointContainer = aEndPointContainer;
   }
   
-  public CometEvent waitForEvent(String aLocalPeerId) throws IOException{
+  public List<CometEvent> waitForEvents(String aLocalPeerId) throws IOException{
     URLConnectionHelper theConnectionHelper = new URLConnectionHelper( myURL, ProtocolWebServer.CONTEXT_COMET );
     try{
       theConnectionHelper.connectInputOutput();
       theConnectionHelper.scheduleClose(TIMEOUT_IN_MINUTES, TimeUnit.MINUTES);
       theConnectionHelper.write( "id", aLocalPeerId );
       theConnectionHelper.flush();
-      String theEvent = theConnectionHelper.readLine();
-      if(theEvent == null) throw new IOException("Empty response received from webnode at '" + myURL + "'");
-      CometEvent theCometEvent = getCometStringConverter().getObject( theEvent );
-      getExecutorService().execute( new CometEventResponseSender(theCometEvent) );
-      return theCometEvent;
+      List<CometEvent> theEvents= new ArrayList<CometEvent>();
+      String theEvent = null;
+      while((theEvent = theConnectionHelper.readLine()) != null){
+        CometEvent theCometEvent = getCometStringConverter().getObject( theEvent );
+        getExecutorService().execute( new CometEventResponseSender(theCometEvent) );
+        theEvents.add(theCometEvent);
+      }
+      return theEvents;
     } finally {
       theConnectionHelper.close();
     }

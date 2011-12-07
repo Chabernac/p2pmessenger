@@ -221,4 +221,8 @@ public class Message implements Serializable{
     theMessage.setBytes(getBytes());
     return theMessage;
   }
+  
+  public String toString(){
+    return "<Message from='" + mySource.getPeerId() + "' to='" + myDestination.getPeerId() + "'/>";
+  }
 }

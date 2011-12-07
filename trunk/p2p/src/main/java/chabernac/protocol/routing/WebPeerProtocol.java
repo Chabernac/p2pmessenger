@@ -3,6 +3,7 @@ package chabernac.protocol.routing;
 import java.net.SocketException;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
@@ -11,7 +12,6 @@ import java.util.concurrent.Executors;
 import org.apache.log4j.Logger;
 
 import chabernac.comet.CometEvent;
-import chabernac.comet.CometServlet;
 import chabernac.protocol.IProtocol;
 import chabernac.protocol.Protocol;
 import chabernac.protocol.ProtocolContainer;
@@ -131,32 +131,14 @@ public class WebPeerProtocol extends Protocol{
     public void run() {
       int theErrors = 0;
       myListeners.put(myWebPeer, this);
-//      boolean isDeamon = myConcurrentThreads.get() == 0;
       try{
-//        myConcurrentThreads.incrementAndGet();
-//        boolean isContinue = myConcurrentThreads.get() <= MAX_THREADS_PER_PEER;
-//        while(!stop && theErrors < MAX_ERRORS && (isContinue || isDeamon)){
         while(!stop && theErrors < MAX_ERRORS ){
           try{
-//            LOGGER.debug("Waiting for event from '" + myWebPeer.getPeerId() + "'");
-            CometEvent theEvent = myWebPeer.waitForEvent(getRoutingTable().getLocalPeerId());
-//            LOGGER.debug( "Pending events '" + theEvent.getPendingEvents() + "' + threads '" + myConcurrentThreads.get() + "'" );
+            List<CometEvent> theEvents = myWebPeer.waitForEvents(getRoutingTable().getLocalPeerId());
             
-//            if(theEvent.getPendingEvents() > 0 && myConcurrentThreads.get() < MAX_THREADS_PER_PEER){
-//              myWebPeerListenerService.execute( this );
-//            } else if(theEvent.getPendingEvents() == 0 && myConcurrentThreads.get() > 1){
-//              isContinue = false;
-//            }
-            
-            if(!theEvent.getInput().equals( CometServlet.Responses.NO_DATA.name() )){
-//              LOGGER.debug("Received event from '" + myWebPeer.getPeerId() + "' " + theEvent.getInput()); 
+            for(CometEvent theEvent : theEvents){
               String theResult = handleCommand(UUID.randomUUID().toString(), Input.EVENT.name() + " " + theEvent.getInput());
               theEvent.setOutput( theResult );
-              
-              //a successfull communication has happened, reset the error counter
-              theErrors = 0;
-            } else {
-              LOGGER.debug("Comet servlet timed out, waiting for new request...");
             }
           }catch(SocketException e){
             LOGGER.debug("Socket for peer '" + myWebPeer.getPeerId() + "' timed out");
@@ -170,9 +152,7 @@ public class WebPeerProtocol extends Protocol{
           }
         }
       } finally {
-//        myConcurrentThreads.decrementAndGet();
         myListeners.remove(myWebPeer);
-//        LOGGER.debug( "Concurrent webpeereventlisteners '" + myConcurrentThreads.get() + "'" );
       }
     }
   }

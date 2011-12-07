@@ -7,6 +7,7 @@ package chabernac.protocol.routing;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -21,7 +22,8 @@ import org.mortbay.jetty.servlet.ServletHolder;
 import chabernac.comet.CometEvent;
 import chabernac.comet.CometServlet;
 import chabernac.comet.EndPoint;
-import chabernac.comet.EndPointContainer;
+import chabernac.newcomet.EndPoint2;
+import chabernac.newcomet.EndPointContainer2;
 import chabernac.p2p.web.ProtocolServlet;
 import chabernac.protocol.ProtocolException;
 import chabernac.protocol.ProtocolWebServer;
@@ -61,8 +63,10 @@ public class WebPeerTest extends TestCase {
           try {
             while(true){
               System.out.println("wait for event");
-              CometEvent theEvent = theWebPeer.waitForEvent("2");
-              theEvent.setOutput( "output" );
+              List<CometEvent> theEvents = theWebPeer.waitForEvents("2");
+              for(CometEvent theEvent : theEvents){
+                theEvent.setOutput( "output" );
+              }
             }
           } catch ( Exception e ) {
             e.printStackTrace();
@@ -72,18 +76,18 @@ public class WebPeerTest extends TestCase {
       
       Thread.sleep( 2000 );
 
-      EndPointContainer theEndPoints =  (EndPointContainer)root.getServletContext().getAttribute( "EndPoints" );
+      EndPointContainer2 theEndPoints =  (EndPointContainer2)root.getServletContext().getAttribute( "EndPoints" );
       assertNotNull( theEndPoints );
       assertTrue( theEndPoints.containsEndPointFor( "2" ) );
 
-      EndPoint theEndPoint = theEndPoints.getEndPointFor( "2", 5, TimeUnit.SECONDS);
+      EndPoint2 theEndPoint = theEndPoints.getEndPoint( "2" );
       CometEvent theServerToClientEvent = new CometEvent("event1", "input");
-      theEndPoint.setEvent( theServerToClientEvent );
+      theEndPoint.addCometEvent(theServerToClientEvent );
       assertEquals( "output", theServerToClientEvent.getOutput( 2000 ));
       
-      theEndPoint = theEndPoints.getEndPointFor( "2", 5, TimeUnit.SECONDS);
+      theEndPoint = theEndPoints.getEndPoint( "2");
       theServerToClientEvent = new CometEvent("event2", "input");
-      theEndPoint.setEvent( theServerToClientEvent );
+      theEndPoint.addCometEvent(theServerToClientEvent );
       assertEquals( "output", theServerToClientEvent.getOutput( 2000 ));
 
       

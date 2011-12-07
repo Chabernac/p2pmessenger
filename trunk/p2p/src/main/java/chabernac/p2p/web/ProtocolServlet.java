@@ -18,7 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 
-import chabernac.comet.EndPointContainer;
+import chabernac.newcomet.EndPointContainer2;
 import chabernac.protocol.ProtocolContainer;
 import chabernac.protocol.ProtocolException;
 import chabernac.protocol.ProtocolFactory;
@@ -71,7 +71,7 @@ public class ProtocolServlet extends HttpServlet {
 			getProtocolContainer().setServerInfo(theServerInfo);
 
 			WebPeer theWebPeer = (WebPeer)((RoutingProtocol)getProtocolContainer().getProtocol( RoutingProtocol.ID )).getRoutingTable().getEntryForLocalPeer().getPeer();
-			theWebPeer.setEndPointContainer( (EndPointContainer)getServletContext().getAttribute( "EndPoints" ) );
+			theWebPeer.setEndPointContainer( (EndPointContainer2)getServletContext().getAttribute( "EndPoints" ) );
 
 			try{
 				RoutingProtocol theRoutingProtocol = (RoutingProtocol)getProtocolContainer().getProtocol(RoutingProtocol.ID);

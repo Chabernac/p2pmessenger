@@ -51,12 +51,13 @@ public class MessageModel implements TableModel {
     if(anColumnIndex == 3) return "To";
     if(anColumnIndex == 4) return "TTL";
     if(anColumnIndex == 5) return "Protocol";
-    if(anColumnIndex == 6) return "Message";
-    if(anColumnIndex == 7) return "Response";
-    if(anColumnIndex == 8) return "Header Type";
-    if(anColumnIndex == 9) return "Message id";
-    if(anColumnIndex == 10) return "Status";
-    if(anColumnIndex == 11) return "Response Time";
+    if(anColumnIndex == 6) return "Indicators";
+    if(anColumnIndex == 7) return "Message";
+    if(anColumnIndex == 8) return "Response";
+    if(anColumnIndex == 9) return "Header Type";
+    if(anColumnIndex == 10) return "Message id";
+    if(anColumnIndex == 11) return "Status";
+    if(anColumnIndex == 12) return "Response Time";
     return "";
   }
 
@@ -81,15 +82,18 @@ public class MessageModel implements TableModel {
     if(anColumnIndex == 2) return theMessage.getMessage().getSource().getPeerId();
     if(anColumnIndex == 3) return theMessage.getMessage().getDestination().getPeerId();
     if(anColumnIndex == 4) return theMessage.getMessage().getTTL();
-    if(theMessage.getMessage() != null && theMessage.getMessage().getMessage() != null){
-      if(anColumnIndex == 5) return theMessage.getMessage().getMessage().substring( 0,3 );
-      if(anColumnIndex == 6) return theMessage.getMessage().getMessage().substring( 3 );
+    if(anColumnIndex == 6) {
+      return theMessage.getMessage().getIndicators().toString();
     }
-    if(anColumnIndex == 7) return theMessage.getResponse();
-    if(anColumnIndex == 8 && theMessage.getMessage().containsHeader("TYPE")) return theMessage.getMessage().getHeader("TYPE");
-    if(anColumnIndex == 9 && theMessage.getMessage().containsHeader("MESSAGE-ID")) return StringTools.convertToLocalUniqueId(theMessage.getMessage().getHeader("MESSAGE-ID"));
-    if(anColumnIndex == 10 && theMessage.getMessage().containsHeader("STATUS")) return theMessage.getMessage().getHeader("STATUS");
-    if(anColumnIndex == 11) return theMessage.getResponseTime();
+    if(theMessage.getMessage() != null && theMessage.getMessage().getMessage() != null && !theMessage.getMessage().getIndicators().contains(MessageIndicator.ENCRYPTED)){
+      if(anColumnIndex == 5) return theMessage.getMessage().getMessage().substring( 0,3 );
+      if(anColumnIndex == 7) return theMessage.getMessage().getMessage().substring( 3 );
+    }
+    if(anColumnIndex == 8) return theMessage.getResponse();
+    if(anColumnIndex == 9 && theMessage.getMessage().containsHeader("TYPE")) return theMessage.getMessage().getHeader("TYPE");
+    if(anColumnIndex == 10 && theMessage.getMessage().containsHeader("MESSAGE-ID")) return StringTools.convertToLocalUniqueId(theMessage.getMessage().getHeader("MESSAGE-ID"));
+    if(anColumnIndex == 11 && theMessage.getMessage().containsHeader("STATUS")) return theMessage.getMessage().getHeader("STATUS");
+    if(anColumnIndex == 12) return theMessage.getResponseTime();
     
     return null;
   }

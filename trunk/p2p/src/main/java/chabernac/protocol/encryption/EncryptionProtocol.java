@@ -250,6 +250,7 @@ public class EncryptionProtocol extends Protocol {
       aMessage.addHeader( "session", theSession );
       aMessage.setMessage( new String(Base64.encodeBase64( encryptUsingSecretKey( theSecretKey, aMessage.getMessage().getBytes() ), false)));
       aMessage.addMessageIndicator( MessageIndicator.ENCRYPTED );
+      aMessage.removeMessageIndicator(MessageIndicator.TO_BE_ENCRYPTED);
     } else {
       //using the public key of this peer encrypt a secret key and store it in the header of the message
       try{
@@ -267,6 +268,7 @@ public class EncryptionProtocol extends Protocol {
         //now encrypt the message using the secret key
         aMessage.setMessage(convertBytesToString(encryptUsingSecretKey(theSecretKey, aMessage.getMessage().getBytes())));
         aMessage.addMessageIndicator( MessageIndicator.ENCRYPTED );
+        aMessage.removeMessageIndicator(MessageIndicator.TO_BE_ENCRYPTED);
       }catch(Exception e){
         LOGGER.error("An error occured while encrypting message", e);
         throw new EncryptionException("Could not encrypt message", e);
