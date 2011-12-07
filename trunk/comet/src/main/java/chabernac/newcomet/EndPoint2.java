@@ -50,7 +50,7 @@ public class EndPoint2 {
     return !myEvents.isEmpty();
   }
   
-  public CometEvent getFirstEvent(){
+  public synchronized CometEvent getFirstEvent(){
     if(hasEvents()){
       return myEvents.remove(0);
     }
