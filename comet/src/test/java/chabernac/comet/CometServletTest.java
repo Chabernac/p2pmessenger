@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.io.StringReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
@@ -30,7 +31,7 @@ public class CometServletTest extends TestCase {
   static{
     BasicConfigurator.configure();
   }
-  
+
   public void testCometServlet() throws Exception{
     final iObjectStringConverter<CometEvent> theConverter = new Base64ObjectStringConverter<CometEvent>();
 
@@ -39,16 +40,16 @@ public class CometServletTest extends TestCase {
     ServletHolder theCometServletHolder = theServletTester.addServlet(CometServlet.class, "/servlet/comet");
     theServletTester.start();
     CometEventContainer theCometEvents = ((CometServlet)theCometServletHolder.getServlet()).getCometEvents();
-    
-    
+
+
 
 
     final CountDownLatch theLatch = new CountDownLatch(1);
-    
+
     final String theRequest=
-      "GET /context/servlet/comet?id=1 HTTP/1.1\r\n"+
-      "Host: tester\r\n"+
-      "\r\n";     
+        "GET /context/servlet/comet?id=1 HTTP/1.1\r\n"+
+            "Host: tester\r\n"+
+            "\r\n";     
 
     ExecutorService theService = Executors.newFixedThreadPool(1);
     theService.execute(new Runnable(){
@@ -58,9 +59,16 @@ public class CometServletTest extends TestCase {
           response.parse(theServletTester.getResponses(theRequest));
           assertEquals(200, response.getStatus());
           String theContent = response.getContent();
-          CometEvent theEvent = theConverter.getObject(theContent);
-          assertEquals("event1", theEvent.getId());
-          assertEquals("input", theEvent.getInput());
+
+          BufferedReader theReader = new BufferedReader(new StringReader(theContent));
+          int i=1;
+          String theLine = null;
+          while((theLine = theReader.readLine()) != null){
+            CometEvent theEvent = theConverter.getObject(theLine);
+            assertEquals("event" + i++, theEvent.getId());
+            assertEquals("input", theEvent.getInput());
+          }
+          assertEquals(3, i);
 
           theLatch.await();
           HttpTester theNewInput = new HttpTester();
@@ -93,15 +101,21 @@ public class CometServletTest extends TestCase {
 
     EndPoint2 theEndPoint = theEndPointContainer.getEndPoint( "1" );
     assertNotNull(theEndPoint);
-    
+
     CometEvent theCometEvent = new CometEvent("event1", "input"); 
     theEndPoint.addCometEvent(theCometEvent);
+
+    CometEvent theCometEvent2 = new CometEvent("event2", "input"); 
+    theEndPoint.addCometEvent(theCometEvent2);
+
+    
     Thread.sleep(1000);
     assertEquals(1, theEndPointContainer.size() );
     assertTrue(theCometEvents.containsEvent("event1"));
+    assertTrue(theCometEvents.containsEvent("event2"));
     theLatch.countDown();
     assertEquals( "output", theCometEvent.getOutput( 5000 ));
-//    Thread.sleep(1000);
+    //    Thread.sleep(1000);
     assertFalse(theCometEvents.containsEvent("event1"));
   }
 
@@ -126,16 +140,16 @@ public class CometServletTest extends TestCase {
       OutputStreamWriter theWriter = new OutputStreamWriter(theConnection.getOutputStream());
       theWriter.write("id=1");
       theWriter.flush();
-      
+
       System.out.println("connection closing");
       Executors.newScheduledThreadPool(1).schedule(new Runnable(){
         public void run(){
-         ((HttpURLConnection)theConnection).disconnect();
-         try {
-          theConnection.getInputStream().close();
-          System.out.println("connection closed");
-        } catch (IOException e) {
-        }
+          ((HttpURLConnection)theConnection).disconnect();
+          try {
+            theConnection.getInputStream().close();
+            System.out.println("connection closed");
+          } catch (IOException e) {
+          }
         }
       }, 1, TimeUnit.SECONDS);
 
@@ -143,9 +157,9 @@ public class CometServletTest extends TestCase {
         theConnection.getInputStream();
       }catch(Exception e){
       }
-      
-//      BufferedReader theReader = new BufferedReader(new InputStreamReader(theConnection.getInputStream()));
-//      String theEvent = theReader.readLine();
+
+      //      BufferedReader theReader = new BufferedReader(new InputStreamReader(theConnection.getInputStream()));
+      //      String theEvent = theReader.readLine();
 
       //at this point an endpoint must have been created
 
@@ -156,7 +170,7 @@ public class CometServletTest extends TestCase {
       //the comet servlet must now delegate the response to another end point
       EndPoint2 theEndPoint = theCometServlet.getEndPointContainer().getEndPoint("1");
       theEndPoint.addCometEvent(theEvent);
-      
+
       URLConnection theConnection2 = theCometURL.openConnection();
       theConnection2.setDoOutput(true);
       theWriter = new OutputStreamWriter(theConnection2.getOutputStream());
@@ -165,7 +179,7 @@ public class CometServletTest extends TestCase {
       BufferedReader theReader = new BufferedReader(new InputStreamReader(theConnection2.getInputStream()));
       String theREvent = theReader.readLine();
       CometEvent theCometEvent = new Base64ObjectStringConverter<CometEvent>().getObject( theREvent );
-      
+
       assertEquals("1", theCometEvent.getInput());
     } finally {
       theServer.stop();

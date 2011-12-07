@@ -88,4 +88,8 @@ public class CometEvent implements Serializable{
   public boolean isExpired() {
     return isExpired;
   }
+
+  public void setExpired(boolean isExpired) {
+    this.isExpired = isExpired;
+  }
 }

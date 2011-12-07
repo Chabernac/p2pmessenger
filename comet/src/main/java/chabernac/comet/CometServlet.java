@@ -101,9 +101,10 @@ public class CometServlet extends HttpServlet {
     try{
       theEndPoint.waitForEvent();
       
-      while(theEndPoint.hasEvents()){
+      CometEvent theEvent = null;
+      while((theEvent = theEndPoint.getFirstEvent())!=null){
         Thread.yield();
-        handleEvent( theEndPoint.getFirstEvent(), aResponse );
+        handleEvent( theEvent, aResponse );
       }
       aResponse.getWriter().flush();
     }catch(Exception e){
