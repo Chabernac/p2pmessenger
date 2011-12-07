@@ -223,6 +223,6 @@ public class Message implements Serializable{
   }
   
   public String toString(){
-    return "<Message from='" + mySource.getPeerId() + "' to='" + myDestination.getPeerId() + "'/>";
+    return "<Message id='" + myMessageId.toString() + "' from='" + mySource.getPeerId() + "' to='" + myDestination.getPeerId() + "'/>";
   }
 }

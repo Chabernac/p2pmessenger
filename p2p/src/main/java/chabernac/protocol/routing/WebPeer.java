@@ -93,6 +93,8 @@ public class WebPeer extends AbstractPeer {
       String theEvent = null;
       while((theEvent = theConnectionHelper.readLine()) != null){
         CometEvent theCometEvent = getCometStringConverter().getObject( theEvent );
+        //the comet event can not yet be expired at this time, 
+        theCometEvent.setExpired(false);
         getExecutorService().execute( new CometEventResponseSender(theCometEvent) );
         theEvents.add(theCometEvent);
       }
