@@ -31,7 +31,7 @@ public class WebToPeerSender {
       UUID theUID = UUID.randomUUID();
       CometEvent theCometEvent = new CometEvent(theUID.toString(), aMessage);
       theCometEvent.setPendingEvents( thePendingMessages - 1);
-      LOGGER.debug("Setting event '" + theCometEvent.getId() + "' for end point '" + theEndPoint.getId() + "'");
+      LOGGER.debug("Setting event '" + theCometEvent.getId() + "' for end point '" + theEndPoint.getId() + "' endpointactive '" + theEndPoint.isActive() + "'");
       theEndPoint.addCometEvent(theCometEvent );
       return theCometEvent.getOutput(5000).replaceAll("\\{plus\\}", "+");
     }catch(Exception e){

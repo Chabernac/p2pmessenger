@@ -225,7 +225,8 @@ public class AsyncMessageProcotol extends AbstractMessageProtocol {
         //see if the peer exists in the routing table, if not add it so that a route back is created so that responses can be send
         AbstractPeer theLastHop = myMessage.getLastHop();
         if( theLastHop != null ){
-          if(myMessage.getHops() > 1 || !getRoutingProtocol().getLocalUnreachablePeerIds().contains(myMessage.getSource().getPeerId())){
+          if(myMessage.getHops() > 1 && !getRoutingProtocol().getLocalUnreachablePeerIds().contains(myMessage.getSource().getPeerId())){
+            LOGGER.debug("Adding routing table entry for '" + myMessage.getSource() + " hops='" + myMessage.getHops() + "' lasthop='"  + theLastHop  + "'");
             getRoutingTable().addRoutingTableEntry(new RoutingTableEntry(myMessage.getSource(), myMessage.getHops(), theLastHop, System.currentTimeMillis()));
           }
         }
