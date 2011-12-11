@@ -431,7 +431,7 @@ public class RoutingProtocol extends Protocol {
     if(!myRoutingTable.containsEntryForPeer( aPeer.getPeerId() )){
       getExecutorService().execute( new Runnable(){
         public void run(){
-          contactPeer( aPeer, myUnreachablePeers, false );
+          contactPeer( aPeer, myUnreachablePeers, true );
         }
       });
     }
