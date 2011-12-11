@@ -333,8 +333,8 @@ public class RoutingTable implements Iterable< RoutingTableEntry >, Serializable
     }
     return copyOfRoutingTable().get( aPeerId );
   }
-
-  public RoutingTableEntry getEntryForLocalPeer(int aTimeOutInSeconds) throws UnknownPeerException{
+  
+  public RoutingTableEntry getEntryForPeer(final String aPeerId, int aTimeOutInSeconds) throws UnknownPeerException{
     final CountDownLatch theLatch = new CountDownLatch(1);
     IRoutingTableListener theListener = new IRoutingTableListener() {
       @Override
@@ -343,24 +343,28 @@ public class RoutingTable implements Iterable< RoutingTableEntry >, Serializable
 
       @Override
       public void routingTableEntryChanged(RoutingTableEntry anEntry) {
-        if(copyOfRoutingTable().containsKey(getLocalPeerId())) theLatch.countDown();
+        if(copyOfRoutingTable().containsKey(aPeerId)) theLatch.countDown();
       }
     };
 
     addRoutingTableListener(theListener);
 
     try{
-      if(copyOfRoutingTable().containsKey(getLocalPeerId())) return getEntryForLocalPeer();
+      if(copyOfRoutingTable().containsKey(aPeerId)) return getEntryForPeer(aPeerId);
 
       try {
         theLatch.await(aTimeOutInSeconds, TimeUnit.SECONDS);
       } catch (InterruptedException e) {
       }
 
-      return getEntryForLocalPeer();
+      return getEntryForPeer(aPeerId);
     }finally{
       removeRoutingTableListener(theListener);
     }
+  }
+
+  public RoutingTableEntry getEntryForLocalPeer(int aTimeOutInSeconds) throws UnknownPeerException{
+    return getEntryForPeer(getLocalPeerId(), aTimeOutInSeconds);
   }
 
 
