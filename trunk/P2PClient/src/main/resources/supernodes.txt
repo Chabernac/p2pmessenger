@@ -7,4 +7,3 @@
 10.240.221.112
 10.240.221.73
 http://guyenleslie.dyndns-server.com/
-http://oo.sytes.net/
