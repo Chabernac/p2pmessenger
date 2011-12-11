@@ -20,6 +20,7 @@ public class CometEvent implements Serializable{
   private final long myCreationTime = System.currentTimeMillis();
   private transient List<iCometEventExpirationListener> myExpirationListeners = new ArrayList<iCometEventExpirationListener>();
   private boolean isExpired = false;
+  private boolean isDelivered = false;
   private int myPendingEvents;
 
   public CometEvent(String anId, String anInput) {
@@ -43,7 +44,7 @@ public class CometEvent implements Serializable{
     isExpired = true;
     notifyExpired();
     if(myOutputException != null) throw myOutputException;
-    if(myOutput == null) throw new CometException("No output available");
+    if(myOutput == null) throw new CometException("No output available for comet event with id '" + myId + "' deliver='" + isDelivered + "'");
     return myOutput;
   }
   public synchronized void setOutput(String anOutput) throws CometException {
@@ -88,8 +89,16 @@ public class CometEvent implements Serializable{
   public boolean isExpired() {
     return isExpired;
   }
-
+  
   public void setExpired(boolean isExpired) {
     this.isExpired = isExpired;
+  }
+
+  public boolean isDelivered() {
+    return isDelivered;
+  }
+
+  public void setDelivered(boolean aDelivered) {
+    isDelivered = aDelivered;
   }
 }

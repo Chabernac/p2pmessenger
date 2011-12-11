@@ -118,6 +118,7 @@ public class CometServlet extends HttpServlet {
     anEvent.addExpirationListener(myExpirationListener);
     getCometEvents().addCommetEvent(anEvent);
     aResponse.getWriter().println( myCometEventConverter.toString(anEvent) );
+    anEvent.setDelivered(true);
   }
 
   private void showEndPoints(HttpServletResponse aResponse) throws IOException{

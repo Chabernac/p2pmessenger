@@ -8,6 +8,8 @@ import java.io.StringReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -40,9 +42,6 @@ public class CometServletTest extends TestCase {
     ServletHolder theCometServletHolder = theServletTester.addServlet(CometServlet.class, "/servlet/comet");
     theServletTester.start();
     CometEventContainer theCometEvents = ((CometServlet)theCometServletHolder.getServlet()).getCometEvents();
-
-
-
 
     final CountDownLatch theLatch = new CountDownLatch(1);
 
@@ -108,7 +107,7 @@ public class CometServletTest extends TestCase {
     CometEvent theCometEvent2 = new CometEvent("event2", "input"); 
     theEndPoint.addCometEvent(theCometEvent2);
 
-    
+
     Thread.sleep(1000);
     assertEquals(1, theEndPointContainer.size() );
     assertTrue(theCometEvents.containsEvent("event1"));
@@ -117,6 +116,72 @@ public class CometServletTest extends TestCase {
     assertEquals( "output", theCometEvent.getOutput( 5000 ));
     //    Thread.sleep(1000);
     assertFalse(theCometEvents.containsEvent("event1"));
+  }
+
+  public void testMultipleEndCometEvents() throws Exception{
+    final iObjectStringConverter<CometEvent> theConverter = new Base64ObjectStringConverter<CometEvent>();
+
+    final ServletTester theServletTester = new ServletTester();
+    theServletTester.setContextPath("/context");
+    ServletHolder theCometHolder = theServletTester.addServlet(CometServlet.class, "/servlet/comet");
+    
+    theServletTester.start();
+    
+    Thread.sleep(1000);
+
+    EndPointContainer2 theEndPointContainer = ((CometServlet)theCometHolder.getServlet()).getEndPointContainer();
+    
+    EndPoint2 theEndPoint = theEndPointContainer.getEndPoint("1");
+
+    List<CometEvent> theSavedCometEvents = new ArrayList<CometEvent>();
+
+    for(int i=0;i<100;i++){
+      CometEvent theEvent = new CometEvent(Integer.toString(i), "input" + i);
+      theEndPoint.addCometEvent(theEvent);
+      theSavedCometEvents.add(theEvent);
+    }
+
+    final String theRequest=
+        "GET /context/servlet/comet?id=1 HTTP/1.1\r\n"+
+            "Host: tester\r\n"+
+            "\r\n";     
+
+    HttpTester response = new HttpTester();
+    response.parse(theServletTester.getResponses(theRequest));
+    assertEquals(200, response.getStatus());
+    String theContent = response.getContent();
+
+    BufferedReader theReader = new BufferedReader(new StringReader(theContent));
+    int i=0;
+    String theLine = null;
+    while((theLine = theReader.readLine()) != null){
+      CometEvent theEvent = theConverter.getObject(theLine);
+      assertEquals(Integer.toString(i), theEvent.getId());
+      assertEquals("input"  + i, theEvent.getInput());
+
+      HttpTester theNewInput = new HttpTester();
+      theNewInput.setMethod("GET");
+      theNewInput.setHeader("Host","tester");
+      theNewInput.setURI("/context/servlet/comet?eventid=" + theEvent.getId() + "&eventoutput=output" + i);
+      theNewInput.setVersion("HTTP/1.0");
+      //        theNewInput.setContent( "");
+      String theNewReplyString = theServletTester.getResponses( theNewInput.generate() );
+
+      HttpTester theNewReply = new HttpTester();
+      theNewReply.parse( theNewReplyString );
+      assertEquals(200, theNewReply.getStatus());
+      theContent = theNewReply.getContent();
+      System.out.println("Content: '" + theContent + "'");
+      assertTrue( theContent.startsWith("OK"));
+      
+      i++;
+    }
+    
+    for(int j=0;j<theSavedCometEvents.size();j++){
+      CometEvent theEvent = theSavedCometEvents.get(j);
+      System.out.println("output: " + theEvent.getOutput(3000));
+      assertEquals("output" + j, theEvent.getOutput(3000));
+    }
   }
 
   public void testCorruptedEndPoints() throws Exception{
