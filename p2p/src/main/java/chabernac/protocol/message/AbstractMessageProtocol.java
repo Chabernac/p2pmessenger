@@ -176,6 +176,22 @@ public abstract class AbstractMessageProtocol extends Protocol {
     throw new MessageException("Message could not be delivered return code: '" + aResult + "'", Response.valueOf(aResult.split(" ")[0]));  
   }
   
+  /**
+   * in this method we ask the routing protocol to check the sending peer.
+   * When the peer is not yet in the routing table, the routing protocol will try to contact the peer
+   * and update the routing table
+   * @param anMessage
+   */
+  protected void checkMessage( Message anMessage ) {
+    try{
+      RoutingProtocol theProtocol = ((RoutingProtocol)findProtocolContainer().getProtocol( RoutingProtocol.ID ));
+      theProtocol.checkPeer( anMessage.getSource() );
+      if(anMessage.getLastHop() != null) theProtocol.checkPeer( anMessage.getLastHop() );
+    }catch(Exception e){
+      LOGGER.error("An error occured while checking for peer ", e);
+    }
+  }
+  
   public boolean isKeepHistory() {
     return isKeepHistory;
   }

@@ -391,7 +391,7 @@ public class MessageProtocolTest extends AbstractProtocolTest {
 
       Thread.sleep( SLEEP_AFTER_SCAN );
 
-      //peer 1 should now peer 2
+      //peer 1 should know peer 2
       assertTrue( theRoutingTable1.containsEntryForPeer( theRoutingProtocol2.getLocalPeerId() ) );
       //but peer 2 should not know peer 1
       if(theRoutingTable2.containsEntryForPeer( theRoutingProtocol1.getLocalPeerId() )){

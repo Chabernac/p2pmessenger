@@ -6,9 +6,6 @@ package chabernac.protocol.message;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.UUID;
 
 import org.apache.log4j.Logger;
@@ -108,21 +105,6 @@ public class MessageProtocol extends AbstractMessageProtocol {
     }
   }
 
-
-  /**
-   * in this method we ask the routing protocol to check the sending peer.
-   * When the peer is not yet in the routing table, the routing protocol will try to contact the peer
-   * and update the routing table
-   * @param anMessage
-   */
-  private void checkMessage( Message anMessage ) {
-    try{
-      RoutingProtocol theProtocol = ((RoutingProtocol)findProtocolContainer().getProtocol( RoutingProtocol.ID ));
-      theProtocol.checkPeer( anMessage.getSource() );
-    }catch(Exception e){
-      LOGGER.error("An error occured while checking for peer ", e);
-    }
-  }
 
   public String sendMessage(Message aMessage) throws MessageException{
     int theRetries = 0;

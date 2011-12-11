@@ -217,21 +217,15 @@ public class AsyncMessageProcotol extends AbstractMessageProtocol {
       LOGGER.debug("Handling message " + myMessage);
       
       if(myProcessingMessages.contains(myMessage.getMessageId())){
-        sendDeliveryStatus( myMessage.getSource().getPeerId(), myMessage.getMessageId().toString(), Response.MESSAGE_LOOP_DETECTED.name()); 
+        sendDeliveryStatus( myMessage.getSource().getPeerId(), myMessage.getMessageId().toString(), Response.MESSAGE_LOOP_DETECTED.name());
+        return;
       }
 
+      checkMessage(myMessage);
+      
       AbstractPeer theDestination = myMessage.getDestination();
       try {
-        //see if the peer exists in the routing table, if not add it so that a route back is created so that responses can be send
-        AbstractPeer theLastHop = myMessage.getLastHop();
-        if( theLastHop != null ){
-          if(myMessage.getHops() > 1 && !getRoutingProtocol().getLocalUnreachablePeerIds().contains(myMessage.getSource().getPeerId())){
-            LOGGER.debug("Adding routing table entry for '" + myMessage.getSource() + " hops='" + myMessage.getHops() + "' lasthop='"  + theLastHop  + "'");
-            getRoutingTable().addRoutingTableEntry(new RoutingTableEntry(myMessage.getSource(), myMessage.getHops(), theLastHop, System.currentTimeMillis()));
-          }
-        }
-
-        myProcessingMessages.add(myMessage.getMessageId());
+               myProcessingMessages.add(myMessage.getMessageId());
         if(theDestination.getPeerId().equals( getRoutingTable().getLocalPeerId() )){
           if("DeliveryStatus".equalsIgnoreCase( myMessage.getHeader( "TYPE" ))){
             handleDeliveryStatus(myMessage);
@@ -242,6 +236,11 @@ public class AsyncMessageProcotol extends AbstractMessageProtocol {
               myHistory.get( myMessage.getMessageId().toString() ).setResponse( theResponse );
               informListeners( myMessage );
             }
+            
+            //it might be that the routing table does not yet contain an entry for the peer from which the message comes
+            //the entry should be put there any time from now becaus of the previous call to checkMessage
+            //lets just wait max 10 seconds untill the entry is there
+            getRoutingProtocol().getRoutingTable().getEntryForPeer(myMessage.getSource().getPeerId(), 10);
 
             //wathever the response is of the local processing, we want to send it back to the sender
             sendDeliveryStatus( myMessage.getSource().getPeerId(), myMessage.getMessageId().toString(), theResponse );
