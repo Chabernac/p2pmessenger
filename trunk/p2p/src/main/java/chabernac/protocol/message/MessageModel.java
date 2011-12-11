@@ -40,7 +40,7 @@ public class MessageModel implements TableModel {
 
   @Override
   public int getColumnCount() {
-    return 12;
+    return 13;
   }
 
   @Override
