@@ -5,10 +5,14 @@
 package chabernac.io;
 
 import java.io.IOException;
-
-import org.apache.log4j.BasicConfigurator;
+import java.net.InetAddress;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.UnknownHostException;
 
 import junit.framework.TestCase;
+
+import org.apache.log4j.BasicConfigurator;
 
 public class URLConnectionHelperTest extends TestCase {
   static{
@@ -22,6 +26,15 @@ public class URLConnectionHelperTest extends TestCase {
       System.out.println(theTimes);
       readFromURL( "http://www.axa.be/" );
     }
+  }
+  
+  public void testResolveURL() throws UnknownHostException, MalformedURLException{
+    URL theURL = new URL("http://guyenleslie.dyndns-server.com/pp/prot");
+    System.out.println(theURL);
+    InetAddress inet = InetAddress.getByName(theURL.getHost());
+    System.out.println(inet.getHostAddress());
+    URL theNewURL = new URL(new URL("http://" + inet.getHostAddress()), theURL.getPath());
+    System.out.println(theNewURL.toString());
   }
   
   private void readFromURL(String aURL) throws IOException{
