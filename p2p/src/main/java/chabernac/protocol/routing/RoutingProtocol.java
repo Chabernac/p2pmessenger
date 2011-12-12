@@ -629,6 +629,9 @@ public class RoutingProtocol extends Protocol {
           //simulate that we cannot contact the peer
           throw new Exception("Simulate that we can not contact peer: " + thePeer.getPeerId());
         }
+        
+        LOGGER.debug("Sending announcement to peer '" + thePeer.getPeerId() + "'");
+        
         String theCMD = createMessage( Command.ANNOUNCEMENT_WITH_REPLY.name() + " "  + myRoutingTableEntryConverter.toString( myRoutingTable.getEntryForLocalPeer() ));
         String theTable = getPeerSender().send(thePeer, theCMD) ;
         //          String theTable = thePeer.send( createMessage( Command.REQUEST_TABLE.name() ));
