@@ -308,6 +308,18 @@ public class RoutingTableTest extends TestCase {
     
   }
   
+  public void testNrOfDirectRemoteNeighbours(){
+    RoutingTable theTable = new RoutingTable("1");
+    theTable.addEntry(new RoutingTableEntry(new SocketPeer("2", "localhost", 12800)));
+    theTable.addEntry(new RoutingTableEntry(new SocketPeer("3", "127.0.0.1", 12801)));
+    theTable.addEntry(new RoutingTableEntry(new SocketPeer("4", "10.1.1.1", 12801), 2, new SocketPeer("4", "127.0.0.1", 12801), System.currentTimeMillis()));
+    theTable.addEntry(new RoutingTableEntry(new SocketPeer("5", "10.1.1.2", 12801), 2, new SocketPeer("5", "127.0.0.1", 12802), System.currentTimeMillis()));
+    theTable.addEntry(new RoutingTableEntry(new SocketPeer("6", "10.1.1.3", 12801), 1, new SocketPeer("6", "10.1.1.3", 12801), System.currentTimeMillis()));
+    
+    assertEquals(1, theTable.getNrOfDirectRemoteNeighbours());
+    
+  }
+  
   private class MyPeerInspector implements iPeerInspector{
 
     @Override

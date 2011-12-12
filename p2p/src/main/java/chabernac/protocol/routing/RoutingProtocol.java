@@ -493,7 +493,7 @@ public class RoutingProtocol extends Protocol {
    */
   public void scanRemoteSystem(boolean isExcludeLocal){
     //if we are already integrated in the network the scan remote system not necessar
-    if(myRoutingTable.getNrOfDirectNeighbours() > 0) return;
+    if(myRoutingTable.getNrOfDirectRemoteNeighbours() > 2) return;
 
 
     if(myRoutingProtocolMonitor != null) myRoutingProtocolMonitor.remoteSystemScanStarted();
@@ -535,7 +535,7 @@ public class RoutingProtocol extends Protocol {
    */
   public void detectRemoteSystem(){
     //if we are already integrated in the network the scan remote system not necessar
-    if(myRoutingTable.getNrOfDirectNeighbours() > 0) return;
+    if(myRoutingTable.getNrOfDirectRemoteNeighbours() > 2) return;
 
 
     if(myRoutingProtocolMonitor != null) myRoutingProtocolMonitor.detectingRemoteSystemStarted();
@@ -595,7 +595,9 @@ public class RoutingProtocol extends Protocol {
   public void exchangeRoutingTable(){
     refreshLocalEntry();
 
-    int theNumberOfNeighbours = myRoutingTable.getNrOfDirectNeighbours();
+    int theNumberOfNeighbours = myRoutingTable.getNrOfDirectRemoteNeighbours();
+    
+    if(theNumberOfNeighbours > 2) return;
 
     if(myRoutingProtocolMonitor != null) myRoutingProtocolMonitor.exchangingRoutingTables();
     LOGGER.debug("Exchanging routing table for peer: " + myRoutingTable.getLocalPeerId());
@@ -606,9 +608,9 @@ public class RoutingProtocol extends Protocol {
       //by doing this we will hopefully avoid too much sockets to be created to peers which are not available
       //a new peer will still integrate in the network because of the condition theNumberOfNeighbours == 0
 //      if(theEntry.getHopDistance() < RoutingTableEntry.MAX_HOP_DISTANCE){
-      if(theNumberOfNeighbours == 0 || theEntry.getHopDistance() < RoutingTableEntry.MAX_HOP_DISTANCE){
+//      if(theNumberOfNeighbours == 0 || theEntry.getHopDistance() < RoutingTableEntry.MAX_HOP_DISTANCE){
         sendAnnouncementWithReply(theEntry);
-      }
+//      }
     }
 
     myExchangeCounter.incrementAndGet();
@@ -857,8 +859,6 @@ public class RoutingProtocol extends Protocol {
               }
 
               myRoutingTable.addRoutingTableEntry( theEntry );
-              //we have received an announcement with upd send one back.
-//              sendUDPAnnouncement(true);
             }
           }
         }
@@ -874,7 +874,7 @@ public class RoutingProtocol extends Protocol {
 
   public void sendUDPAnnouncement(boolean isForce){
     //if we are already integrated in the network the udp announcement is not necessar
-    if(!isForce && myRoutingTable.getNrOfDirectNeighbours() > 0) return;
+    if(!isForce && myRoutingTable.getNrOfDirectRemoteNeighbours() > 2) return;
 
     refreshLocalEntry();
 

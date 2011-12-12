@@ -83,7 +83,7 @@ public class WebPeer extends AbstractPeer {
   }
   
   public List<CometEvent> waitForEvents(String aLocalPeerId) throws IOException{
-    URLConnectionHelper theConnectionHelper = new URLConnectionHelper( myURL, ProtocolWebServer.CONTEXT_COMET );
+    URLConnectionHelper theConnectionHelper = new URLConnectionHelper( myURL, ProtocolWebServer.CONTEXT_COMET, true );
     try{
       theConnectionHelper.connectInputOutput();
       theConnectionHelper.scheduleClose(TIMEOUT_IN_MINUTES, TimeUnit.MINUTES);
@@ -116,7 +116,7 @@ public class WebPeer extends AbstractPeer {
 
   private boolean sendResponseForCometEvent( CometEvent anEvent ) throws IOException
   {
-    URLConnectionHelper theConnectionHelper = new URLConnectionHelper( myURL, ProtocolWebServer.CONTEXT_COMET );
+    URLConnectionHelper theConnectionHelper = new URLConnectionHelper( myURL, ProtocolWebServer.CONTEXT_COMET, true );
     try{
       theConnectionHelper.connectInputOutput();
       theConnectionHelper.scheduleClose(TIMEOUT_IN_MINUTES, TimeUnit.MINUTES);
