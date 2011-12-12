@@ -9,9 +9,11 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
+import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.UnknownHostException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -34,14 +36,22 @@ public class URLConnectionHelper {
     super();
     myURL = new URL( aURL );
   }
-  
+
   public URLConnectionHelper( URL aURL) throws MalformedURLException {
     super();
     myURL = aURL;
   }
-  
-  public URLConnectionHelper( URL aBaseURL, String aRelativeURL) throws MalformedURLException {
+
+  public URLConnectionHelper( URL aBaseURL, String aRelativeURL, boolean isResolveURL) throws MalformedURLException {
     super();
+    if(isResolveURL){
+      try{
+        InetAddress theInetAddress = InetAddress.getByName(aBaseURL.getHost());
+        aBaseURL = new URL("http://" + theInetAddress.getHostAddress());
+      }catch(UnknownHostException e){
+        LOGGER.error("Unable to resolve url '"  + aBaseURL  + "' using url as it is");
+      }
+    }
     myURL = new URL( aBaseURL, aRelativeURL );
   }
 
@@ -56,7 +66,7 @@ public class URLConnectionHelper {
   public void connectInputOutput() throws IOException{
     connect( true, true );
   }
-  
+
   public void connectOutput() throws IOException{
     connect( false, true );
   }
@@ -65,7 +75,7 @@ public class URLConnectionHelper {
     myConnection = myURL.openConnection();
     myConnection.setDoInput( isDoInput );
     myConnection.setDoOutput( isDoOutput );
-    
+
   }
 
   private BufferedReader getReader() throws IOException{
@@ -155,14 +165,14 @@ public class URLConnectionHelper {
       }catch(IOException e){
         LOGGER.error( "Could not flush outputstream", e );
       }
-      
+
       try{
         myOutputStream.close();
       }catch(IOException e){
         LOGGER.error( "Could not close outputstream", e );
       }
     }
-    
+
     //only if the input stream is null we connect the url connection
     //otherwise a deadlock might arise on waiting for the input stream
     if(myInputStream == null){
