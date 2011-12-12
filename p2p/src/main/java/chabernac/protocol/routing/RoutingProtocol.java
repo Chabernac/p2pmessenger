@@ -57,6 +57,8 @@ import chabernac.tools.TestTools;
 
 public class RoutingProtocol extends Protocol {
   public static String ID = "ROU";
+  
+  private final static int MIN_PEERS_REQUIRED_FOR_SKIP = 2;
 
   private static Logger LOGGER = Logger.getLogger( RoutingProtocol.class );
 
@@ -493,7 +495,7 @@ public class RoutingProtocol extends Protocol {
    */
   public void scanRemoteSystem(boolean isExcludeLocal){
     //if we are already integrated in the network the scan remote system not necessar
-    if(myRoutingTable.getNrOfDirectRemoteNeighbours() > 2) return;
+    if(myRoutingTable.getNrOfDirectRemoteNeighbours() >= MIN_PEERS_REQUIRED_FOR_SKIP) return;
 
 
     if(myRoutingProtocolMonitor != null) myRoutingProtocolMonitor.remoteSystemScanStarted();
@@ -535,13 +537,13 @@ public class RoutingProtocol extends Protocol {
    */
   public void detectRemoteSystem(){
     //if we are already integrated in the network the scan remote system not necessar
-    if(myRoutingTable.getNrOfDirectRemoteNeighbours() > 2) return;
+    if(myRoutingTable.getNrOfDirectRemoteNeighbours() >= MIN_PEERS_REQUIRED_FOR_SKIP) return;
 
 
     if(myRoutingProtocolMonitor != null) myRoutingProtocolMonitor.detectingRemoteSystemStarted();
     try{
       InetAddresIterator theIterator = new InetAddresIterator(InetAddress.getLocalHost(), 24);
-      while(myRoutingTable.getNrOfReachablePeers() <= 1 && theIterator.hasNext()){
+      while(myRoutingTable.getNrOfReachablePeers() <= MIN_PEERS_REQUIRED_FOR_SKIP && theIterator.hasNext()){
         ScanSystem theScanSystem = new ScanSystem(this, theIterator.next(), START_PORT);
         theScanSystem.setCondition( new NrOfPeersSmallerThenCondition(myRoutingTable, 1) );
         getExecutorService().execute( theScanSystem );
@@ -597,19 +599,23 @@ public class RoutingProtocol extends Protocol {
 
     int theNumberOfNeighbours = myRoutingTable.getNrOfDirectRemoteNeighbours();
     
-    if(theNumberOfNeighbours > 2) return;
+    if(theNumberOfNeighbours > MIN_PEERS_REQUIRED_FOR_SKIP) return;
 
     if(myRoutingProtocolMonitor != null) myRoutingProtocolMonitor.exchangingRoutingTables();
     LOGGER.debug("Exchanging routing table for peer: " + myRoutingTable.getLocalPeerId());
 
-    for(RoutingTableEntry theEntry : myRoutingTable.getEntries()){
+    for(final RoutingTableEntry theEntry : myRoutingTable.getEntries()){
       //only exchange with peers which are not reachable if there are no reachable peers
       //otherwise only try to exchange with peers which are reachable
       //by doing this we will hopefully avoid too much sockets to be created to peers which are not available
       //a new peer will still integrate in the network because of the condition theNumberOfNeighbours == 0
 //      if(theEntry.getHopDistance() < RoutingTableEntry.MAX_HOP_DISTANCE){
 //      if(theNumberOfNeighbours == 0 || theEntry.getHopDistance() < RoutingTableEntry.MAX_HOP_DISTANCE){
-        sendAnnouncementWithReply(theEntry);
+       getExecutorService().execute(new Runnable(){
+         public void run(){
+           sendAnnouncementWithReply(theEntry);
+         }
+       });
 //      }
     }
 
@@ -623,6 +629,8 @@ public class RoutingProtocol extends Protocol {
   private void sendAnnouncementWithReply(RoutingTableEntry aRoutingTableEntry){
     AbstractPeer thePeer = aRoutingTableEntry.getPeer();
 
+    LOGGER.debug("Entering send announcement for peer '" + thePeer.getPeerId() + "' contactable: '" + thePeer.isContactable() + "'");
+    
     if(thePeer.isContactable() && !thePeer.getPeerId().equals(myRoutingTable.getLocalPeerId())){
       try {
         if(myUnreachablePeers.contains( thePeer.getPeerId())){
@@ -877,7 +885,7 @@ public class RoutingProtocol extends Protocol {
 
   public void sendUDPAnnouncement(boolean isForce){
     //if we are already integrated in the network the udp announcement is not necessar
-    if(!isForce && myRoutingTable.getNrOfDirectRemoteNeighbours() > 2) return;
+    if(!isForce && myRoutingTable.getNrOfDirectRemoteNeighbours() >= MIN_PEERS_REQUIRED_FOR_SKIP) return;
 
     refreshLocalEntry();
 
