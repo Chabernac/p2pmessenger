@@ -437,10 +437,12 @@ public class RoutingTable implements Iterable< RoutingTableEntry >, Serializable
     return theCounter;
   }
 
-  public int getNrOfDirectNeighbours(){
+  public int getNrOfDirectRemoteNeighbours(){
     int theCounter = 0;
     for(RoutingTableEntry theEntry : getEntries()){
-      if(theEntry.getHopDistance() == 1){
+      if(theEntry.getHopDistance() == 1 && 
+          !theEntry.getPeer().getEndPointRepresentation().contains("localhost") &&
+          !theEntry.getPeer().getEndPointRepresentation().contains("127.0.0.1")){
         theCounter ++;
       }
     }

@@ -17,7 +17,7 @@ public class PeerToWebSender {
 
   public String sendMessageTo(AbstractPeer aSendingPeer, WebPeer aWebPeer, String aMessage, int aTimeoutInSeconds) throws IOException{
     
-    URLConnectionHelper theConnectionHelper = new URLConnectionHelper( aWebPeer.getURL(), ProtocolWebServer.CONTEXT_PROTOCOL );
+    URLConnectionHelper theConnectionHelper = new URLConnectionHelper( aWebPeer.getURL(), ProtocolWebServer.CONTEXT_PROTOCOL, true );
     theConnectionHelper.scheduleClose( aTimeoutInSeconds, TimeUnit.SECONDS );
     try{
       theConnectionHelper.connectInputOutput();

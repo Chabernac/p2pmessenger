@@ -27,6 +27,11 @@ public class RoutingTableEntry implements Serializable{
 	
 	private final long myLastOnlineTime;
 	
+	//create a routing table entry for this peer which is directly reachable
+	public RoutingTableEntry ( AbstractPeer anHost ){
+	  this(anHost, 1, anHost, System.currentTimeMillis());
+	}
+	
 	public RoutingTableEntry ( AbstractPeer anHost , int anHopDistance , AbstractPeer anGateway, long aLastOnlineTime ) {
 		super();
 		myPeer = anHost;
