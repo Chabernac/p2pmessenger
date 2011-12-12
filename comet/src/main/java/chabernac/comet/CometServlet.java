@@ -99,12 +99,15 @@ public class CometServlet extends HttpServlet {
     EndPoint2 theEndPoint = getEndPointContainer().getEndPoint( theId );
     theEndPoint.setActive( true );
     try{
+      
       theEndPoint.waitForEvent();
       
       CometEvent theEvent = null;
       while((theEvent = theEndPoint.getFirstEvent())!=null){
         Thread.yield();
-        handleEvent( theEvent, aResponse );
+        if(theEvent.getId() != null){
+          handleEvent( theEvent, aResponse );
+        }
       }
       aResponse.getWriter().flush();
     }catch(Exception e){

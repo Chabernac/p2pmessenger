@@ -46,6 +46,11 @@ public class EndPoint2 {
     }
   }
   
+  public void unlock(){
+    myEvents.add(new CometEvent(null, null));
+    LOCK.notifyAll();
+  }
+  
   public boolean hasEvents(){
     return !myEvents.isEmpty();
   }
