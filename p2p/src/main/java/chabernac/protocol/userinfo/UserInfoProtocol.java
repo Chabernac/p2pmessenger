@@ -355,8 +355,10 @@ public class UserInfoProtocol extends Protocol {
     @Override
     public void routingTableEntryChanged( RoutingTableEntry anEntry ) {
       try{
+        LOGGER.debug("Routing table entry change detected for peer '" + anEntry.getPeer().getPeerId() + "'");
         if(!myUserInfo.containsKey( anEntry.getPeer().getPeerId() ) || myUserInfo.get(anEntry.getPeer().getPeerId()).getStatus() == Status.OFFLINE){
           if(anEntry.getPeer().isProtocolSupported( UserInfoProtocol.ID ) && anEntry.isReachable() && anEntry.getPeer().isOnSameChannel(getRoutingTable().getEntryForLocalPeer(5).getPeer())){
+            LOGGER.debug("Trying to retrieve user info for peer '" + anEntry.getPeer().getPeerId() + "'");
             getExecutorService().execute( new UserInfoRetriever(anEntry.getPeer().getPeerId()) );
           }
         } else {
