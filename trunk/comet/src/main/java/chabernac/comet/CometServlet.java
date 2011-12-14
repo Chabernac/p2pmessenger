@@ -45,7 +45,7 @@ public class CometServlet extends HttpServlet {
 
     Executors.newScheduledThreadPool(1).scheduleAtFixedRate(new Runnable(){
       public void run(){
-//        resetAllEndPoints();
+        //        resetAllEndPoints();
       }
     }, TIMEOUT_MINUTES, TIMEOUT_MINUTES, TimeUnit.MINUTES);
   }
@@ -55,11 +55,11 @@ public class CometServlet extends HttpServlet {
    */
   protected void doGet(HttpServletRequest aRequest, HttpServletResponse aResponse) throws ServletException, IOException {
     try{
-//      LOGGER.debug( "Incrementing counter");
-//      LOGGER.debug( "Concurrent requests in CometServlet: "  + myConcurrentRequestCounter.incrementAndGet());
+      //      LOGGER.debug( "Incrementing counter");
+      //      LOGGER.debug( "Concurrent requests in CometServlet: "  + myConcurrentRequestCounter.incrementAndGet());
       getCometEvents().removeOldEvents();
       if(aRequest.getParameter("clean") != null){
-//        resetAllEndPoints();
+        //        resetAllEndPoints();
       } if(aRequest.getParameter(  "show" ) != null){
         showEndPoints(aResponse);
       } else if(aRequest.getParameterMap().containsKey("eventid")){
@@ -73,8 +73,8 @@ public class CometServlet extends HttpServlet {
       aResponse.getWriter().println(myCometEventConverter.toString(new CometEvent("-1", Responses.NO_DATA.name())));
     } finally {
       myConcurrentRequestCounter.decrementAndGet();
-//      LOGGER.debug( "Decrementing counter");
-//      LOGGER.debug( "Concurrent requests in CometServlet: "  + myConcurrentRequestCounter.get());
+      //      LOGGER.debug( "Decrementing counter");
+      //      LOGGER.debug( "Concurrent requests in CometServlet: "  + myConcurrentRequestCounter.get());
     }
 
   }
@@ -99,9 +99,8 @@ public class CometServlet extends HttpServlet {
     EndPoint2 theEndPoint = getEndPointContainer().getEndPoint( theId );
     theEndPoint.setActive( true );
     try{
-      
-      theEndPoint.waitForEvent();
-      
+      theEndPoint.waitForEvent(this);
+
       CometEvent theEvent = null;
       while((theEvent = theEndPoint.getFirstEvent())!=null){
         Thread.yield();
@@ -110,13 +109,12 @@ public class CometServlet extends HttpServlet {
         }
       }
       aResponse.getWriter().flush();
+      theEndPoint.setActive( false );
     }catch(Exception e){
       LOGGER.error("Could not send comet event to endpoint", e);
-    } finally {
-      theEndPoint.setActive( false );
-    }
+    } 
   }
-  
+
   private void handleEvent(CometEvent anEvent, HttpServletResponse aResponse) throws IOException{
     anEvent.addExpirationListener(myExpirationListener);
     getCometEvents().addCommetEvent(anEvent);
