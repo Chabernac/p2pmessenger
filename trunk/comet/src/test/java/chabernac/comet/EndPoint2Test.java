@@ -43,7 +43,7 @@ public class EndPoint2Test extends TestCase{
       });
     }
     
-    theLatch.await(5, TimeUnit.SECONDS);
+    theLatch.await(3, TimeUnit.SECONDS);
     assertEquals(0, theLatch.getCount());
     
     //now fire one event
@@ -51,7 +51,7 @@ public class EndPoint2Test extends TestCase{
       theEndPoint.addCometEvent(new CometEvent(Integer.toString(i), "input" + i));
     }
     
-    theExceptionCounter.await(10, TimeUnit.SECONDS);
+    theExceptionCounter.await(2, TimeUnit.SECONDS);
     theEventCounter.await(1, TimeUnit.SECONDS);
 
     
