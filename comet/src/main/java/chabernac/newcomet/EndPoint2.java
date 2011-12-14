@@ -18,6 +18,8 @@ public class EndPoint2 {
   
   private boolean isActive = false;
   
+  private Object myOwner = null;
+  
   public EndPoint2 ( String aId ) {
     super();
     myId = aId;
@@ -35,20 +37,26 @@ public class EndPoint2 {
     isActive = aActive;
   }
 
+  private void setOwner(Object aOwner) {
+    synchronized(LOCK){
+      myOwner = aOwner;
+      LOCK.notifyAll();
+    }
+  }
+
   public void addCometEvent(CometEvent anEvent){
     myEvents.add(anEvent);
     synchronized(LOCK) { LOCK.notifyAll(); }
   }
   
-  public void waitForEvent() throws InterruptedException{
+  public void waitForEvent(Object anOwner) throws InterruptedException{
+    setOwner(anOwner);
     while(!hasEvents()){
-      synchronized ( LOCK ) { LOCK.wait();  }
+      synchronized ( LOCK ) { 
+        LOCK.wait();  
+        if(myOwner != anOwner) throw new InterruptedException("Waiting interrupted because endpoint owner has changed");
+      }
     }
-  }
-  
-  public void unlock(){
-    myEvents.add(new CometEvent(null, null));
-    LOCK.notifyAll();
   }
   
   public boolean hasEvents(){
