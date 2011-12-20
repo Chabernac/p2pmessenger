@@ -58,7 +58,7 @@ public class WebPeerProtocolTest extends AbstractProtocolTest {
       theRoutingProtocol2.getLocalUnreachablePeerIds().add("1");
       theProtocol2.getProtocol( WebPeerProtocol.ID );
 
-      theWebServer = new Server(9090);
+      theWebServer = new Server(9091);
 
       Context root = new Context(theWebServer,ProtocolWebServer.CONTEXT,Context.SESSIONS);
       CometServlet theCometServlet= new CometServlet();
@@ -69,7 +69,7 @@ public class WebPeerProtocolTest extends AbstractProtocolTest {
       ServletHolder theProtocolHolder = new ServletHolder(theProtocolServlet);
       theProtocolHolder.setInitOrder(2);
       root.addServlet(theProtocolHolder, ProtocolWebServer.PROTOCOL);
-      theProtocolHolder.setInitParameter( "serverurl", "http://localhost:9090" + ProtocolWebServer.CONTEXT );
+      theProtocolHolder.setInitParameter( "serverurl", "http://localhost:9091" + ProtocolWebServer.CONTEXT );
 
       theWebServer.start();
 
@@ -79,8 +79,8 @@ public class WebPeerProtocolTest extends AbstractProtocolTest {
 
       assertTrue( theWebServer.isRunning() );
 
-      new ScanWebSystem(myRoutingProtocol1, new URL("http://localhost:9090/")).run();
-      new ScanWebSystem(theRoutingProtocol2, new URL("http://localhost:9090/")).run();
+      new ScanWebSystem(myRoutingProtocol1, new URL("http://localhost:9091/")).run();
+      new ScanWebSystem(theRoutingProtocol2, new URL("http://localhost:9091/")).run();
 
       Thread.sleep( 5000 );
 
