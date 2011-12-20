@@ -32,7 +32,7 @@ public class WebToPeerSenderTest extends TestCase {
     Executors.newSingleThreadExecutor().execute( new Runnable(){
       public void run(){
         try{
-          theEndPoint.waitForEvent();
+          theEndPoint.waitForEvent(this);
           CometEvent theEvent = theEndPoint.getFirstEvent();
           assertEquals( "input", theEvent.getInput());
           theEvent.setOutput( "reply" );

@@ -85,10 +85,11 @@ public class WebPeer extends AbstractPeer {
   public List<CometEvent> waitForEvents(String aLocalPeerId) throws IOException{
     URLConnectionHelper theConnectionHelper = new URLConnectionHelper( myURL, ProtocolWebServer.CONTEXT_COMET, true );
     try{
+      LOGGER.debug("Waiting for event from webpeer '" + getPeerId() + "'");
       theConnectionHelper.connectInputOutput();
       theConnectionHelper.scheduleClose(TIMEOUT_IN_MINUTES, TimeUnit.MINUTES);
       theConnectionHelper.write( "id", aLocalPeerId );
-      theConnectionHelper.flush();
+      theConnectionHelper.endInput();
       List<CometEvent> theEvents= new ArrayList<CometEvent>();
       String theEvent = null;
       while((theEvent = theConnectionHelper.readLine()) != null){
@@ -98,6 +99,7 @@ public class WebPeer extends AbstractPeer {
         getExecutorService().execute( new CometEventResponseSender(theCometEvent) );
         theEvents.add(theCometEvent);
       }
+      LOGGER.debug("Got '" + theEvents.size() + "' events from webpeer");
       return theEvents;
     } finally {
       theConnectionHelper.close();
@@ -123,7 +125,7 @@ public class WebPeer extends AbstractPeer {
       theConnectionHelper.write( "id", getPeerId() );
       theConnectionHelper.write( "eventid", anEvent.getId() );
       theConnectionHelper.write( "eventoutput", anEvent.getOutput( 0 ).replaceAll("\\+", "{plus}") );
-      theConnectionHelper.flush();
+      theConnectionHelper.endInput();
       
       return theConnectionHelper.readLine().equalsIgnoreCase( "OK" );
     }catch(CometException e){

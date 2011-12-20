@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.log4j.Logger;
 
@@ -28,6 +29,8 @@ public class WebPeerProtocol extends Protocol{
 
   private Map<WebPeer, WebPeerEventListener> myListeners = Collections.synchronizedMap(new HashMap<WebPeer, WebPeerEventListener>());
   private ExecutorService myWebPeerListenerService = Executors.newCachedThreadPool();
+  
+  private AtomicInteger myListenerCounter = new AtomicInteger(0);
 
   public WebPeerProtocol() throws ProtocolException {
     super(ID);
@@ -37,15 +40,20 @@ public class WebPeerProtocol extends Protocol{
     for(RoutingTableEntry theEntry : getRoutingTable()){
       if(theEntry.getPeer() instanceof WebPeer){
         WebPeer theWebPeer = (WebPeer)theEntry.getPeer();
-        if(theEntry.getHopDistance() == 1  && !myListeners.containsKey(theWebPeer)){
-          myWebPeerListenerService.execute(new WebPeerEventListener(theWebPeer));
-        } else if(theEntry.getHopDistance() > 1 && myListeners.containsKey(theWebPeer)){
-          WebPeerEventListener theWebPeerEventListener = myListeners.get(theWebPeer);
-          theWebPeerEventListener.stop();
-        }
+        checkWebPeerListenerForWebPeer(theWebPeer, theEntry.getHopDistance());
       }
     }
-
+  }
+  
+  private synchronized void checkWebPeerListenerForWebPeer(WebPeer aWebPeer, int aHopDistance){
+    if(aHopDistance == 1  && !myListeners.containsKey(aWebPeer)){
+      WebPeerEventListener theListener = new WebPeerEventListener(aWebPeer);
+      myListeners.put(aWebPeer, theListener);
+      myWebPeerListenerService.execute(theListener);
+    } else if(aHopDistance > 1 && myListeners.containsKey(aWebPeer)){
+      WebPeerEventListener theWebPeerEventListener = myListeners.get(aWebPeer);
+      theWebPeerEventListener.stop();
+    }
   }
 
   public void setMasterProtocol(IProtocol aProtocol){
@@ -129,8 +137,11 @@ public class WebPeerProtocol extends Protocol{
 
     @Override
     public void run() {
+      myListenerCounter.incrementAndGet();
+      LOGGER.debug("Nr of web peer listeners: '"  + myListenerCounter.get()  + "'");
+      
       int theErrors = 0;
-      myListeners.put(myWebPeer, this);
+      
       try{
         while(!stop && theErrors < MAX_ERRORS ){
           try{
