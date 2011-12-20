@@ -44,7 +44,7 @@ public class URLConnectionHelper {
 
   public URLConnectionHelper( URL aBaseURL, String aRelativeURL, boolean isResolveURL) throws MalformedURLException {
     super();
-    if(isResolveURL){
+    if(isResolveURL && !isLocal(aBaseURL)){
       try{
         InetAddress theInetAddress = InetAddress.getByName(aBaseURL.getHost());
         aBaseURL = new URL("http://" + theInetAddress.getHostAddress());
@@ -53,6 +53,11 @@ public class URLConnectionHelper {
       }
     }
     myURL = new URL( aBaseURL, aRelativeURL );
+  }
+  
+  private static boolean isLocal(URL aURL){
+    if(aURL.getHost().toLowerCase().contains("localhost")) return true;
+    return false;
   }
 
   public void scheduleClose(int aTimeout, TimeUnit aTimeUnit){
@@ -75,7 +80,17 @@ public class URLConnectionHelper {
     myConnection = myURL.openConnection();
     myConnection.setDoInput( isDoInput );
     myConnection.setDoOutput( isDoOutput );
-
+  }
+  
+  public void endInput(){
+    if(myOutputStream != null) {
+      try {
+        myOutputStream.flush();
+        myOutputStream.close();
+      } catch (IOException e) {
+        LOGGER.error("Could not close input stream", e);
+      }
+    }
   }
 
   private BufferedReader getReader() throws IOException{
@@ -93,6 +108,7 @@ public class URLConnectionHelper {
   }
 
   public String readLine() throws IOException{
+    if(myConnection == null) throw new IOException("Can not read line when not connected!");
     try{
       return getReader().readLine();
     }catch(IOException e){
@@ -102,16 +118,32 @@ public class URLConnectionHelper {
   }
 
   public void write(String aKey, String aValue) throws IOException{
+    long t1 = System.currentTimeMillis();
     try{
       if(!isFirstKey) {
         getWriter().write( "&" );
       }
       getWriter().write( aKey + "=" + aValue );
       isFirstKey = false;
+      long t2 = System.currentTimeMillis();
+      LOGGER.debug("Writing key value '" + aKey  + "'='" + aValue + "' took " + (t2 - t1) + " ms");
+    }catch(IOException e){
+      handleIOException( e );
+      throw e;
+    } 
+  }
+  
+  public void write(String aText) throws IOException{
+    try{
+      getWriter().write( aText );
     }catch(IOException e){
       handleIOException( e );
       throw e;
     }
+  }
+  
+  public void endLine() throws IOException{
+    write("\r\n");
   }
 
   public void flush() throws IOException{
@@ -159,6 +191,7 @@ public class URLConnectionHelper {
       }
     }
 
+    /*
     if(myOutputStream != null){
       try{
         myOutputStream.flush();
@@ -172,12 +205,13 @@ public class URLConnectionHelper {
         LOGGER.error( "Could not close outputstream", e );
       }
     }
+    */
 
     //only if the input stream is null we connect the url connection
     //otherwise a deadlock might arise on waiting for the input stream
-    if(myInputStream == null){
-      ((HttpURLConnection)myConnection).disconnect();
-    }
+//    if(myInputStream == null){
+//      ((HttpURLConnection)myConnection).disconnect();
+//    }
   }
 
   public void disconnect(){

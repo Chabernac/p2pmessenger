@@ -28,6 +28,15 @@ public class URLConnectionHelperTest extends TestCase {
     }
   }
   
+  public void testExceptionOnReadLine() throws MalformedURLException{
+    URLConnectionHelper theManager = new URLConnectionHelper( "http://www.google.com" );
+    try{
+      theManager.readLine();
+      fail("should not come here");
+    }catch(Exception e){
+    }
+  }
+  
   public void testResolveURL() throws UnknownHostException, MalformedURLException{
     URL theURL = new URL("http://guyenleslie.dyndns-server.com/pp/prot");
     System.out.println(theURL);
