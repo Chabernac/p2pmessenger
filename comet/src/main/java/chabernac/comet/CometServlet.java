@@ -2,10 +2,8 @@ package chabernac.comet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
@@ -37,7 +35,8 @@ public class CometServlet extends HttpServlet {
 
   private AtomicLong myConcurrentRequestCounter = new AtomicLong(0);
 
-  private static long TIMEOUT_MINUTES = 15;
+  private static long TIMEOUT_MINUTES = 60;
+  
 
   public void init() throws ServletException{
     super.init();
@@ -45,7 +44,7 @@ public class CometServlet extends HttpServlet {
 
     Executors.newScheduledThreadPool(1).scheduleAtFixedRate(new Runnable(){
       public void run(){
-        //        resetAllEndPoints();
+        resetAllEndPoints();
       }
     }, TIMEOUT_MINUTES, TIMEOUT_MINUTES, TimeUnit.MINUTES);
   }
@@ -57,9 +56,11 @@ public class CometServlet extends HttpServlet {
     try{
       //      LOGGER.debug( "Incrementing counter");
       //      LOGGER.debug( "Concurrent requests in CometServlet: "  + myConcurrentRequestCounter.incrementAndGet());
+      myConcurrentRequestCounter.incrementAndGet();
+      
       getCometEvents().removeOldEvents();
       if(aRequest.getParameter("clean") != null){
-        //        resetAllEndPoints();
+        resetAllEndPoints();
       } if(aRequest.getParameter(  "show" ) != null){
         showEndPoints(aResponse);
       } else if(aRequest.getParameterMap().containsKey("eventid")){
@@ -77,6 +78,19 @@ public class CometServlet extends HttpServlet {
       //      LOGGER.debug( "Concurrent requests in CometServlet: "  + myConcurrentRequestCounter.get());
     }
 
+  }
+  
+  public long getConcurrentRequests(){
+    return myConcurrentRequestCounter.get();
+  }
+  
+  private void resetAllEndPoints(){
+    List<EndPoint2> theEndPoints = new ArrayList<EndPoint2>(getEndPointContainer().getEndPoints());
+    Object theDummyOwner = new Object();
+    for(EndPoint2 theEndPoint : theEndPoints){
+      //set a dummy owner to the endpoint
+      theEndPoint.setOwner(theDummyOwner);
+    }
   }
 
   private void processEventResponse(HttpServletRequest aRequest, HttpServletResponse aResponse) throws CometException, IOException{
@@ -99,7 +113,8 @@ public class CometServlet extends HttpServlet {
     EndPoint2 theEndPoint = getEndPointContainer().getEndPoint( theId );
     theEndPoint.setActive( true );
     try{
-      theEndPoint.waitForEvent(this);
+      LOGGER.debug("Waiting for events for endpoint with id '" + theId  + "'");
+      theEndPoint.waitForEvent(aRequest);
 
       CometEvent theEvent = null;
       while((theEvent = theEndPoint.getFirstEvent())!=null){
@@ -112,7 +127,9 @@ public class CometServlet extends HttpServlet {
       theEndPoint.setActive( false );
     }catch(Exception e){
       LOGGER.error("Could not send comet event to endpoint", e);
-    } 
+    } finally {
+      LOGGER.debug("Stop waiting for events for endpoint with id '" + theId + "'");
+    }
   }
 
   private void handleEvent(CometEvent anEvent, HttpServletResponse aResponse) throws IOException{

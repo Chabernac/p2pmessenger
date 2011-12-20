@@ -25,6 +25,7 @@ import org.mortbay.jetty.testing.HttpTester;
 import org.mortbay.jetty.testing.ServletTester;
 
 import chabernac.io.Base64ObjectStringConverter;
+import chabernac.io.URLConnectionHelper;
 import chabernac.io.iObjectStringConverter;
 import chabernac.newcomet.EndPoint2;
 import chabernac.newcomet.EndPointContainer2;
@@ -124,13 +125,13 @@ public class CometServletTest extends TestCase {
     final ServletTester theServletTester = new ServletTester();
     theServletTester.setContextPath("/context");
     ServletHolder theCometHolder = theServletTester.addServlet(CometServlet.class, "/servlet/comet");
-    
+
     theServletTester.start();
-    
+
     Thread.sleep(1000);
 
     EndPointContainer2 theEndPointContainer = ((CometServlet)theCometHolder.getServlet()).getEndPointContainer();
-    
+
     EndPoint2 theEndPoint = theEndPointContainer.getEndPoint("1");
 
     List<CometEvent> theSavedCometEvents = new ArrayList<CometEvent>();
@@ -173,14 +174,63 @@ public class CometServletTest extends TestCase {
       theContent = theNewReply.getContent();
       System.out.println("Content: '" + theContent + "'");
       assertTrue( theContent.startsWith("OK"));
-      
+
       i++;
     }
-    
+
     for(int j=0;j<theSavedCometEvents.size();j++){
       CometEvent theEvent = theSavedCometEvents.get(j);
       System.out.println("output: " + theEvent.getOutput(3000));
       assertEquals("output" + j, theEvent.getOutput(3000));
+    }
+  }
+
+  public void testMultipleEndPointsWithSameId() throws Exception{
+    Server theServer  = new Server(8080);
+
+    try{
+      Context root = new Context(theServer,"/p2p",Context.SESSIONS);
+
+      CometServlet theCometServlet = new CometServlet();
+      ServletHolder theCometHolder = new ServletHolder(theCometServlet);
+      theCometHolder.setInitOrder( 1 );
+      root.addServlet(theCometHolder, "/comet");
+      theServer.start();
+
+      Thread.sleep(1000);
+
+      EndPointContainer2 theEndPointContainer = ((CometServlet)theCometHolder.getServlet()).getEndPointContainer();
+
+      ExecutorService theService =  Executors.newCachedThreadPool();
+      int count = 5;
+      final CountDownLatch theCountDownLatch = new CountDownLatch(count - 1);
+      for(int i=0;i<count;i++){
+        theService.execute(new Runnable() {
+          @Override
+          public void run() {
+            try{
+
+              URLConnectionHelper theHelper  = new URLConnectionHelper("http://localhost:8080/p2p/comet");
+              theHelper.connectInputOutput();
+              theHelper.write("id", "1");
+              theHelper.endInput();
+              System.out.println("out: '" + theHelper.readLine() + "'");
+              theCountDownLatch.countDown();
+            }catch(Exception e){
+              e.printStackTrace();
+            }
+          }
+        });
+      }
+
+      theCountDownLatch.await(5, TimeUnit.SECONDS);
+      Thread.sleep(3000);
+
+      assertEquals(0, theCountDownLatch.getCount());
+      assertEquals(1, ((CometServlet)theCometHolder.getServlet()).getConcurrentRequests());
+      assertEquals(1, theEndPointContainer.getEndPoints().size());
+    }finally{
+      theServer.stop();
     }
   }
 
