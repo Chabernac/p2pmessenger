@@ -37,7 +37,7 @@ public class EndPoint2 {
     isActive = aActive;
   }
 
-  private void setOwner(Object aOwner) {
+  public void setOwner(Object aOwner) {
     synchronized(LOCK){
       myOwner = aOwner;
       LOCK.notifyAll();
