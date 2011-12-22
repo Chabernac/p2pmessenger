@@ -9,7 +9,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.log4j.Logger;
 
 import chabernac.io.AbstractURLConnectionHelper;
-import chabernac.io.ApacheURLConnectionHelper;
+import chabernac.io.URLConnectionHelper;
 import chabernac.protocol.ProtocolWebServer;
 import chabernac.protocol.routing.AbstractPeer;
 import chabernac.protocol.routing.WebPeer;
@@ -21,7 +21,8 @@ public class PeerToWebSender {
   public String sendMessageTo(AbstractPeer aSendingPeer, WebPeer aWebPeer, String aMessage, int aTimeoutInSeconds) throws IOException{
     long t1 = System.currentTimeMillis();
     LOGGER.debug("Entering peer to web sender for message '" + aMessage + "' logcounter: " + LOGCOUNTER++);
-    AbstractURLConnectionHelper theConnectionHelper = new ApacheURLConnectionHelper( new URL(aWebPeer.getURL(), ProtocolWebServer.CONTEXT_PROTOCOL), true );
+//    AbstractURLConnectionHelper theConnectionHelper = new ApacheURLConnectionHelper( new URL(aWebPeer.getURL(), ProtocolWebServer.CONTEXT_PROTOCOL), true );
+    AbstractURLConnectionHelper theConnectionHelper = new URLConnectionHelper( new URL(aWebPeer.getURL(), ProtocolWebServer.CONTEXT_PROTOCOL), true );
     theConnectionHelper.scheduleClose( 30, TimeUnit.SECONDS );
     try{
       theConnectionHelper.connectInputOutput();
@@ -29,7 +30,8 @@ public class PeerToWebSender {
       LOGGER.debug("Connecting to '" + aWebPeer.getURL()  + "' took " + (t2 - t1) + " ms");
       theConnectionHelper.write( "session", UUID.randomUUID().toString() );
       theConnectionHelper.write( "peerid", aSendingPeer.getPeerId() );
-      theConnectionHelper.write( "input", aMessage );
+//      theConnectionHelper.write( "input", aMessage );
+      theConnectionHelper.write( "input", URLEncoder.encode(aMessage, "UTF-8") );
       long t3 = System.currentTimeMillis();
       LOGGER.debug("Writing to outputstream of '" + aWebPeer.getURL() + "' took " + (t3-t2) +  " ms");
 //      theConnectionHelper.endLine();
