@@ -12,9 +12,9 @@ import org.apache.log4j.Logger;
 
 import chabernac.comet.CometEvent;
 import chabernac.comet.CometException;
-import chabernac.comet.EndPointContainer;
+import chabernac.io.AbstractURLConnectionHelper;
+import chabernac.io.ApacheURLConnectionHelper;
 import chabernac.io.Base64ObjectStringConverter;
-import chabernac.io.URLConnectionHelper;
 import chabernac.io.iObjectStringConverter;
 import chabernac.newcomet.EndPointContainer2;
 import chabernac.protocol.ProtocolWebServer;
@@ -83,7 +83,7 @@ public class WebPeer extends AbstractPeer {
   }
   
   public List<CometEvent> waitForEvents(String aLocalPeerId) throws IOException{
-    URLConnectionHelper theConnectionHelper = new URLConnectionHelper( myURL, ProtocolWebServer.CONTEXT_COMET, true );
+    AbstractURLConnectionHelper theConnectionHelper = new ApacheURLConnectionHelper( new URL(myURL, ProtocolWebServer.CONTEXT_COMET), true );
     try{
       LOGGER.debug("Waiting for event from webpeer '" + getPeerId() + "'");
       theConnectionHelper.connectInputOutput();
@@ -118,7 +118,7 @@ public class WebPeer extends AbstractPeer {
 
   private boolean sendResponseForCometEvent( CometEvent anEvent ) throws IOException
   {
-    URLConnectionHelper theConnectionHelper = new URLConnectionHelper( myURL, ProtocolWebServer.CONTEXT_COMET, true );
+    AbstractURLConnectionHelper theConnectionHelper = new ApacheURLConnectionHelper( new URL(myURL, ProtocolWebServer.CONTEXT_COMET), true );
     try{
       theConnectionHelper.connectInputOutput();
       theConnectionHelper.scheduleClose(TIMEOUT_IN_MINUTES, TimeUnit.MINUTES);

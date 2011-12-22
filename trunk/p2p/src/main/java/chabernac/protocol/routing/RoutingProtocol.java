@@ -19,11 +19,14 @@ import java.net.SocketException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -100,6 +103,7 @@ public class RoutingProtocol extends Protocol {
   //  private List<String> myRemoteUnreachablePeers = new ArrayList< String >();
 
   private ScheduledExecutorService mySheduledService = null;
+  private ExecutorService myExecutorService = null;
 
   private iObjectPersister< RoutingTable > myRoutingTablePersister = new RoutingTableObjectPersister();
 
@@ -119,7 +123,7 @@ public class RoutingProtocol extends Protocol {
 
   private boolean isPeerIdInFile = false;
 
-  private Set<String> mySuperNodes = new HashSet<String>();
+  private Set<String> mySuperNodes = new TreeSet<String>(new SuperNodeSorter());
 
   private ServerInfo myServerInfo = null;
   private final String myChannel;
@@ -285,11 +289,11 @@ public class RoutingProtocol extends Protocol {
     mySheduledService.scheduleWithFixedDelay( new ExchangeRoutingTable(), 2, myExchangeDelay, TimeUnit.SECONDS);
 
     if(myServerInfo.getServerType() == Type.SOCKET){
-      mySheduledService.scheduleWithFixedDelay( new ScanLocalSystem(), 1, myExchangeDelay, TimeUnit.SECONDS);
-      mySheduledService.scheduleWithFixedDelay( new SendUDPAnnouncement(), 4, myExchangeDelay, TimeUnit.SECONDS);
+//      mySheduledService.scheduleWithFixedDelay( new ScanLocalSystem(), 1, myExchangeDelay, TimeUnit.SECONDS);
+//      mySheduledService.scheduleWithFixedDelay( new SendUDPAnnouncement(), 4, myExchangeDelay, TimeUnit.SECONDS);
       mySheduledService.scheduleWithFixedDelay( new ScanFixedIpList(), 10, myExchangeDelay, TimeUnit.SECONDS);
-      mySheduledService.scheduleWithFixedDelay( new ScanRemoteSystem(), 20 , 4 * myExchangeDelay, TimeUnit.SECONDS);
-      mySheduledService.scheduleWithFixedDelay( new DetectRemoteSystem(), 100, 10 * myExchangeDelay, TimeUnit.SECONDS);
+//      mySheduledService.scheduleWithFixedDelay( new ScanRemoteSystem(), 20 , 4 * myExchangeDelay, TimeUnit.SECONDS);
+//      mySheduledService.scheduleWithFixedDelay( new DetectRemoteSystem(), 100, 10 * myExchangeDelay, TimeUnit.SECONDS);
     }
   }
 
@@ -564,6 +568,11 @@ public class RoutingProtocol extends Protocol {
       scanRemoteSystem(false);
     }
   }
+  
+//  public ExecutorService getExecutorService(){
+//    if(myExecutorService == null) myExecutorService = Executors.newFixedThreadPool(10);
+//    return myExecutorService;
+//  }
 
   public void scanSuperNodes(){
     if(myRoutingProtocolMonitor != null) myRoutingProtocolMonitor.scanningSuperNodes();
@@ -573,7 +582,7 @@ public class RoutingProtocol extends Protocol {
           if(theIp.startsWith("http:")){
             getExecutorService().execute( new ScanWebSystem(RoutingProtocol.this, new URL(theIp)));
           } else {
-            getExecutorService().execute( new ScanSystem(RoutingProtocol.this, theIp, START_PORT, myUnreachablePeers));
+//            getExecutorService().execute( new ScanSystem(RoutingProtocol.this, theIp, START_PORT, myUnreachablePeers));
           }
         }
       }
@@ -665,7 +674,7 @@ public class RoutingProtocol extends Protocol {
         }
       } catch ( Exception e ) {
         //LOGGER.error( "Could not contact peer '" + thePeer.getPeerId() + "'", e );
-        LOGGER.error( "Could not contact peer '" + thePeer.getPeerId() + "'" );
+        LOGGER.error( "Could not contact peer '" + thePeer.getPeerId() + "'", e );
         //set the peer entry itself to the max hop distance, only if the peer was previously direct reachable
         if(aRoutingTableEntry.getHopDistance() == 1) myRoutingTable.addRoutingTableEntry(aRoutingTableEntry.derivedEntry(RoutingTableEntry.MAX_HOP_DISTANCE));
         
