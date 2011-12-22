@@ -27,7 +27,7 @@ import chabernac.protocol.routing.iPeerSender;
 
 public class AsyncMessageProcotol extends AbstractMessageProtocol {
   public static final String ID = "AMP";
-  public static final int DEFAULT_WAIT_TIME = 15;
+  public static final int DEFAULT_WAIT_TIME = 30;
 
   private iObjectStringConverter< Message > myMessageConverter = new Base64ObjectStringConverter< Message >();
   //  private ExecutorService mySenderService = DynamicSizeExecutor.getSmallInstance();
