@@ -16,6 +16,7 @@ import org.apache.http.HttpVersion;
 import org.apache.http.NameValuePair;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.Credentials;
+import org.apache.http.auth.NTCredentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.auth.params.AuthPNames;
 import org.apache.http.client.ClientProtocolException;
@@ -42,11 +43,11 @@ public class ApacheURLConnectionHelper extends AbstractURLConnectionHelper {
   static{
     detectProxy();
   }
-  
+
   public ApacheURLConnectionHelper(URL anUrL, boolean isResolveURL) {
     super(anUrL, isResolveURL);
   }
-  
+
   private static void detectProxy(){
     String theProxy = "iproxy.axa.be";
     try{
@@ -67,7 +68,7 @@ public class ApacheURLConnectionHelper extends AbstractURLConnectionHelper {
   @Override
   public void connect(boolean isDoInput, boolean isDoOutput) throws IOException {
     HttpParams theHttpParams = new BasicHttpParams();
-    
+
     if(myProxy != null) {
       theHttpParams.setParameter(ConnRoutePNames.DEFAULT_PROXY, myProxy);
       LOGGER.debug("Using proxy '" + myProxy + "'");
@@ -76,11 +77,12 @@ public class ApacheURLConnectionHelper extends AbstractURLConnectionHelper {
     myClient = new DefaultHttpClient(theHttpParams);
 
     if(myProxy != null && System.getProperty( "user.name" ).equalsIgnoreCase("dgch804")){
-      Credentials theCredentials = new UsernamePasswordCredentials("dgch804", "8411D02k");
+      Credentials theCredentials = new NTCredentials("dgch804", "8411D02k", "X22P0212", "AXA-BE");
+//      Credentials theCredentials = new NTCredentials("NTLM TlRMTVNTUAADAAAAGAAYAHIAAAAYABgAigAAAAwADABIAAAADgAOAFQAAAAQABAAYgAAAAAAAACiAAAABYKIogUBKAoAAAAPQQBYAEEALQBCAEUARABHAEMASAA4ADAANABYADIAMgBQADAAMgAxADIAVOhpvoDAX+sAAAAAAAAAAAAAAAAAAAAALa/tdDv3Lposo8Y5B0rM7v9ePxFjLMTG");
       LOGGER.debug("Setting proxy authentication");
       myClient.getCredentialsProvider().setCredentials(AuthScope.ANY, theCredentials);
-      
-      
+
+
 //      List<String> authtypes = new ArrayList<String>();
 //      authtypes.add(AuthPolicy.NTLM);
 //      authtypes.add(AuthPolicy.BASIC);
@@ -90,14 +92,16 @@ public class ApacheURLConnectionHelper extends AbstractURLConnectionHelper {
 //      myClient.getParams().setParameter(AuthPNames.TARGET_AUTH_PREF,
 //              authtypes);
     }
-     
-    
-    if(isDoInput){
-      try {
+
+
+    try {
+      if(isDoInput){
         myPost = new HttpPost(myURL.toURI());
-      } catch (URISyntaxException e) {
-        throw new IOException("Could not create post", e);
+      } else {
+        myGet = new HttpGet( myURL.toURI());
       }
+    } catch (URISyntaxException e) {
+      throw new IOException("Could not create post or get", e);
     }
   }
 
@@ -107,7 +111,7 @@ public class ApacheURLConnectionHelper extends AbstractURLConnectionHelper {
       myPost.setEntity(new UrlEncodedFormEntity(myParams, "UTF-8"));
     }
   }
-  
+
   private void execute() throws ClientProtocolException, IOException{
     if(myResponse == null){
       if(myPost != null) myResponse = myClient.execute(myPost);
