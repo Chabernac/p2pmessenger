@@ -37,8 +37,8 @@ public class URLConnectionHelper extends AbstractURLConnectionHelper{
     super(aURL, false);
   }
 
-  public URLConnectionHelper( URL aBaseURL, String aRelativeURL, boolean isResolveURL) throws MalformedURLException {
-    super(new URL(aBaseURL, aRelativeURL), isResolveURL);
+  public URLConnectionHelper( URL aBaseURL, boolean isResolveURL) throws MalformedURLException {
+    super(aBaseURL, isResolveURL);
   }
   
   public void scheduleClose(int aTimeout, TimeUnit aTimeUnit){

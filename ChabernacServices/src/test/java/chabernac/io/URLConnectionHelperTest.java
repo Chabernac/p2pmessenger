@@ -86,7 +86,7 @@ public class URLConnectionHelperTest extends TestCase {
     Thread.sleep(3000);
     
     long t1 = System.currentTimeMillis();
-    URLConnectionHelper theConnectionHelper = new URLConnectionHelper( new URL("http://guyenleslie.dyndns-server.com"), "pp/prot", true );
+    URLConnectionHelper theConnectionHelper = new URLConnectionHelper( new URL("http://guyenleslie.dyndns-server.com/pp/prot"), true );
     theConnectionHelper.connectInputOutput();
     theConnectionHelper.write( "session", UUID.randomUUID().toString() );
     theConnectionHelper.write( "peerid", "0" );
