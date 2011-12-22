@@ -17,13 +17,10 @@ import org.apache.http.NameValuePair;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.Credentials;
 import org.apache.http.auth.NTCredentials;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.auth.params.AuthPNames;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.params.AuthPolicy;
 import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
@@ -74,11 +71,14 @@ public class ApacheURLConnectionHelper extends AbstractURLConnectionHelper {
       LOGGER.debug("Using proxy '" + myProxy + "'");
     }
     theHttpParams.setParameter(CoreProtocolPNames.PROTOCOL_VERSION, HttpVersion.HTTP_1_1);
+    
     myClient = new DefaultHttpClient(theHttpParams);
 
     if(myProxy != null && System.getProperty( "user.name" ).equalsIgnoreCase("dgch804")){
+      
       Credentials theCredentials = new NTCredentials("dgch804", "8411D02k", "X22P0212", "AXA-BE");
 //      Credentials theCredentials = new NTCredentials("NTLM TlRMTVNTUAADAAAAGAAYAHIAAAAYABgAigAAAAwADABIAAAADgAOAFQAAAAQABAAYgAAAAAAAACiAAAABYKIogUBKAoAAAAPQQBYAEEALQBCAEUARABHAEMASAA4ADAANABYADIAMgBQADAAMgAxADIAVOhpvoDAX+sAAAAAAAAAAAAAAAAAAAAALa/tdDv3Lposo8Y5B0rM7v9ePxFjLMTG");
+//      Credentials theCredentials = new NTCredentials("NTLM TlRMTVNTUAADAAAAGAAYAEAAAACGAIYAWAAAAAwADADeAAAADgAOAOoAAAAQABAA+AAAAAAAAAAIAQAANQIIINBgy8kWBnlx8WVNeh0AJXOJWc3p/pr/bi2MxgHp8GufIb6RpTjk/jgBAQAAAAAAADBA7LK2wMwBiVnN6f6a/24AAAAAAgAMAEEAWABBAC0AQgBFAAEAEABUADAAMQBQAFIAWAAwADIABAAMAGEAeABhAC4AYgBlAAMAHgB0ADAAMQBwAHIAeAAwADIALgBhAHgAYQAuAGIAZQAAAAAAQQBYAEEALQBCAEUAZABnAGMAaAA4ADAANABYADIAMgBQADAAMgAxADIA");
       LOGGER.debug("Setting proxy authentication");
       myClient.getCredentialsProvider().setCredentials(AuthScope.ANY, theCredentials);
 
