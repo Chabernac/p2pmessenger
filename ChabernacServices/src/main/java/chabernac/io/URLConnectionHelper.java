@@ -9,21 +9,18 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
-import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.net.UnknownHostException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 
-public class URLConnectionHelper {
+public class URLConnectionHelper extends AbstractURLConnectionHelper{
   private static Logger LOGGER = Logger.getLogger( URLConnectionHelper.class );
 
-  private final URL myURL;
 
   private BufferedReader myInputStream = null;
   private OutputStreamWriter myOutputStream = null;
@@ -33,47 +30,23 @@ public class URLConnectionHelper {
   private ScheduledExecutorService myClosingService = null;
 
   public URLConnectionHelper( String aURL ) throws MalformedURLException {
-    super();
-    myURL = new URL( aURL );
+    super(new URL(aURL), false);
   }
 
   public URLConnectionHelper( URL aURL) throws MalformedURLException {
-    super();
-    myURL = aURL;
+    super(aURL, false);
   }
 
   public URLConnectionHelper( URL aBaseURL, String aRelativeURL, boolean isResolveURL) throws MalformedURLException {
-    super();
-    if(isResolveURL && !isLocal(aBaseURL)){
-      try{
-        InetAddress theInetAddress = InetAddress.getByName(aBaseURL.getHost());
-        aBaseURL = new URL("http://" + theInetAddress.getHostAddress());
-      }catch(UnknownHostException e){
-        LOGGER.error("Unable to resolve url '"  + aBaseURL  + "' using url as it is");
-      }
-    }
-    myURL = new URL( aBaseURL, aRelativeURL );
+    super(new URL(aBaseURL, aRelativeURL), isResolveURL);
   }
   
-  private static boolean isLocal(URL aURL){
-    if(aURL.getHost().toLowerCase().contains("localhost")) return true;
-    return false;
-  }
-
   public void scheduleClose(int aTimeout, TimeUnit aTimeUnit){
     if(myClosingService != null){
       myClosingService.shutdownNow();
     }
     myClosingService = Executors.newScheduledThreadPool( 1 );
     myClosingService.schedule( new CloseCommand(), aTimeout, aTimeUnit );
-  }
-
-  public void connectInputOutput() throws IOException{
-    connect( true, true );
-  }
-
-  public void connectOutput() throws IOException{
-    connect( false, true );
   }
 
   public void connect(boolean isDoInput, boolean isDoOutput) throws IOException{
