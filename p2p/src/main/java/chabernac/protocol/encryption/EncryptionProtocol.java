@@ -30,9 +30,9 @@ import chabernac.io.iObjectStringConverter;
 import chabernac.protocol.Protocol;
 import chabernac.protocol.ProtocolException;
 import chabernac.protocol.encryption.EncryptionException.Reason;
+import chabernac.protocol.message.AsyncMessageProcotol;
 import chabernac.protocol.message.Message;
 import chabernac.protocol.message.MessageIndicator;
-import chabernac.protocol.message.MessageProtocol;
 import chabernac.protocol.routing.AbstractPeer;
 import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.RoutingTable;
@@ -128,8 +128,8 @@ public class EncryptionProtocol extends Protocol {
       theMessage.setDestination( aPeer );
       theMessage.setMessage( createMessage( Command.GENERATE_SECRET_KEY.name() + " " + aSession +  " " + myPublicKeyConverter.toString( myKeyPair.getPublic() )) );
       theMessage.setProtocolMessage( true );
-      MessageProtocol theMessageProtocol = (MessageProtocol)findProtocolContainer().getProtocol( MessageProtocol.ID );
-      String theResult = theMessageProtocol.sendMessage( theMessage );
+      AsyncMessageProcotol theMessageProtocol = (AsyncMessageProcotol)findProtocolContainer().getProtocol( AsyncMessageProcotol.ID );
+      String theResult = theMessageProtocol.sendAndWaitForResponse( theMessage );
       if(theResult.startsWith( Response.OK.name() )){
         byte[] theBase64EncryptedSecretKey = theResult.split( " " )[1].getBytes();
         byte[] theEncryptedSecretKey = Base64.decodeBase64( theBase64EncryptedSecretKey );
@@ -202,8 +202,8 @@ public class EncryptionProtocol extends Protocol {
         theMessage.setDestination( aPeer );
         theMessage.setMessage( createMessage( Command.GET_PUBLIC_KEY.name() ));
         theMessage.setProtocolMessage( true );
-        MessageProtocol theMessageProtocol = (MessageProtocol)findProtocolContainer().getProtocol( MessageProtocol.ID );
-        String theResult = theMessageProtocol.sendMessage( theMessage );
+        AsyncMessageProcotol theMessageProtocol = (AsyncMessageProcotol)findProtocolContainer().getProtocol( AsyncMessageProcotol.ID );
+        String theResult = theMessageProtocol.sendAndWaitForResponse(theMessage );
         if(theResult.startsWith( Response.OK.name() )){
           myPublicKeys.storeKey( aPeer.getPeerId(), myPublicKeyConverter.getObject(theResult.split(" ")[1]));
         }
@@ -223,8 +223,8 @@ public class EncryptionProtocol extends Protocol {
                                             getRoutingTable().getEntryForLocalPeer().getPeer().getPeerId() + " " + 
                                             myPublicKeyConverter.toString( myKeyPair.getPublic() )));
       theMessage.setProtocolMessage( true );
-      MessageProtocol theMessageProtocol = (MessageProtocol)findProtocolContainer().getProtocol( MessageProtocol.ID );
-      String theResult = theMessageProtocol.sendMessage( theMessage );
+      AsyncMessageProcotol theMessageProtocol = (AsyncMessageProcotol)findProtocolContainer().getProtocol( AsyncMessageProcotol.ID );
+      String theResult = theMessageProtocol.sendAndWaitForResponse(theMessage );
       if(!theResult.startsWith( Response.OK.name() )){
         throw new EncryptionException("Invalid response received on send public key '" + theResult + "'");
       }
