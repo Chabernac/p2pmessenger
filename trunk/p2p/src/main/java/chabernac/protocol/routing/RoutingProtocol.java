@@ -582,7 +582,7 @@ public class RoutingProtocol extends Protocol {
           if(theIp.startsWith("http:")){
             getExecutorService().execute( new ScanWebSystem(RoutingProtocol.this, new URL(theIp)));
           } else {
-//            getExecutorService().execute( new ScanSystem(RoutingProtocol.this, theIp, START_PORT, myUnreachablePeers));
+            getExecutorService().execute( new ScanSystem(RoutingProtocol.this, theIp, START_PORT, myUnreachablePeers));
           }
         }
       }
