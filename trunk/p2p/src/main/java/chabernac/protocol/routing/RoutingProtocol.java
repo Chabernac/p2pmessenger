@@ -608,8 +608,6 @@ public class RoutingProtocol extends Protocol {
 
     int theNumberOfNeighbours = myRoutingTable.getNrOfDirectRemoteNeighbours();
     
-    if(theNumberOfNeighbours > MIN_PEERS_REQUIRED_FOR_SKIP) return;
-
     if(myRoutingProtocolMonitor != null) myRoutingProtocolMonitor.exchangingRoutingTables();
     LOGGER.debug("Exchanging routing table for peer: " + myRoutingTable.getLocalPeerId());
 
@@ -618,14 +616,13 @@ public class RoutingProtocol extends Protocol {
       //otherwise only try to exchange with peers which are reachable
       //by doing this we will hopefully avoid too much sockets to be created to peers which are not available
       //a new peer will still integrate in the network because of the condition theNumberOfNeighbours == 0
-//      if(theEntry.getHopDistance() < RoutingTableEntry.MAX_HOP_DISTANCE){
-//      if(theNumberOfNeighbours == 0 || theEntry.getHopDistance() < RoutingTableEntry.MAX_HOP_DISTANCE){
+      if(theEntry.getHopDistance() < RoutingTableEntry.MAX_HOP_DISTANCE || theNumberOfNeighbours < MIN_PEERS_REQUIRED_FOR_SKIP ){
        getExecutorService().execute(new Runnable(){
          public void run(){
            sendAnnouncementWithReply(theEntry);
          }
        });
-//      }
+      }
     }
 
     myExchangeCounter.incrementAndGet();
