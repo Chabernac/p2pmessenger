@@ -115,18 +115,18 @@ public class MessageProtocol extends AbstractMessageProtocol {
       Message theMessage = aMessage.copy();
       inspectMessage(theMessage);
       theResult = handleMessage( UUID.randomUUID().toString(), theMessage );
-      isRetry = isRetryResponse( theResult ) && theRetries++ < 3;
+      isRetry = isRetryResponse( theMessage, theResult ) && theRetries++ < 3;
     }
     return inspectResult(theResult);
   }
 
 
-  private boolean isRetryResponse(String aResponse){
+  private boolean isRetryResponse(Message aMessage, String aResponse){
     //if the encryption protocol was not able to decrypt the message it probably meant that the sender encoded the message with an old
     //public key, by now the encryption protocol will have send the new public key to the sending peer.  The sending peer can now retry
     //sending the encrypted message
     if(aResponse.startsWith( Response.COULD_NOT_DECRYPT.name() )) {
-      return true;
+      if(obtainPublicKey(aMessage.getDestination())) return true;
     }
 
     return false;

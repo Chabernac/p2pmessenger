@@ -79,7 +79,7 @@ public class CamProtocol extends Protocol {
       String theResponse = getMessageProtocol().sendMessage(theMessage);
       if(!theResponse.equalsIgnoreCase( Response.SNAPSHOT_SEND.name() )){
         LOGGER.error( "Snapshot failed '" + theResponse + "'" );
-        throw new CamProtocolException("Taking snaphsot failed + '" + theResponse + "'");
+        throw new CamProtocolException("Taking snaphsot failed '" + theResponse + "'");
       }
     }catch(Exception e){
       throw new CamProtocolException( "Could not send message", e );

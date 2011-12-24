@@ -135,6 +135,17 @@ public abstract class AbstractMessageProtocol extends Protocol {
     }
   }
   
+  protected boolean obtainPublicKey(AbstractPeer aPeer){
+    try{
+      EncryptionProtocol theEncryptionProtocol = ((EncryptionProtocol)findProtocolContainer().getProtocol( EncryptionProtocol.ID ));
+      return theEncryptionProtocol.getPublicKeyFor(aPeer, true) != null;
+      
+    }catch(Exception e){
+      LOGGER.error("Unable to obtain public key for peer '" + aPeer.getPeerId() + "'", e);
+      return false;
+    }
+  }
+  
   protected void inspectMessage(Message aMessage) throws MessageException{
     try {
       aMessage.setSource(getRoutingTable().getEntryForLocalPeer().getPeer());
