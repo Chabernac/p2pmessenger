@@ -19,6 +19,8 @@ import java.util.concurrent.TimeUnit;
 import chabernac.io.Base64ObjectStringConverter;
 import chabernac.io.iObjectStringConverter;
 import chabernac.protocol.ProtocolException;
+import chabernac.protocol.encryption.EncryptionException;
+import chabernac.protocol.message.AbstractMessageProtocol.Response;
 import chabernac.protocol.routing.AbstractPeer;
 import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.RoutingTable;
@@ -139,7 +141,7 @@ public class AsyncMessageProcotol extends AbstractMessageProtocol {
     getBlockingQueueForMessage( aMessage.getHeader( "MESSAGE-ID" ) ).put( aMessage.getHeader( "STATUS" ) );
     myQueueCleanupService.schedule( new Runnable(){
       public void run(){
-        //when no one picked up the status for this message, remove it after 2 minutes so that it does not stay cached for ever
+        //when no one picked up the status for this message, remove it after 5 minutes so that it does not stay cached for ever
         myStatusQueues.remove( aMessage.getHeader( "MESSAGE-ID" ) );
       }
     }, 5, TimeUnit.MINUTES);
@@ -258,6 +260,8 @@ public class AsyncMessageProcotol extends AbstractMessageProtocol {
             sendDeliveryStatus( myMessage.getSource().getPeerId(), myMessage.getMessageId().toString(), theResponse ); 
           }
         }
+      } catch(EncryptionException e){
+        sendDeliveryStatus( myMessage.getSource().getPeerId(), myMessage.getMessageId().toString(), Response.COULD_NOT_DECRYPT.name() + " " + e.getReason().name());
       } catch(Exception e){
         LOGGER.error( "Unable to process message", e );
         sendDeliveryStatus( myMessage.getSource().getPeerId(), myMessage.getMessageId().toString(), Response.UNDELIVERABLE.name() );

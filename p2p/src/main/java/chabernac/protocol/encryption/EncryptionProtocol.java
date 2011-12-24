@@ -195,9 +195,9 @@ public class EncryptionProtocol extends Protocol {
     return keyGen.generateKey();
   }
 
-  private PublicKey getPublicKeyFor(AbstractPeer aPeer) throws EncryptionException{
+  public PublicKey getPublicKeyFor(AbstractPeer aPeer, boolean isForceUpdate) throws EncryptionException{
     try{
-      if(!myPublicKeys.containsKeyFor( aPeer.getPeerId())){
+      if(isForceUpdate || !myPublicKeys.containsKeyFor( aPeer.getPeerId())){
         Message theMessage = new Message();
         theMessage.setDestination( aPeer );
         theMessage.setMessage( createMessage( Command.GET_PUBLIC_KEY.name() ));
@@ -241,7 +241,7 @@ public class EncryptionProtocol extends Protocol {
   }
 
   public void encryptMessage(Message aMessage) throws EncryptionException{
-    PublicKey thePublicKey = getPublicKeyFor(aMessage.getDestination());
+    PublicKey thePublicKey = getPublicKeyFor(aMessage.getDestination(), false);
 
     if(thePublicKey == null){
       //this peer does not use the new way of encryption yet, fall back to the old one
@@ -292,7 +292,7 @@ public class EncryptionProtocol extends Protocol {
         //first check if the public key used was the correct one
         String theMyPublicKey = convertBytesToString(calculateHash(myKeyPair.getPublic().getEncoded()));
         if(!theMyPublicKey.equals(aMessage.getHeader("PUBLIC_KEY_HASH"))){
-          sendPublicKeyTo(aMessage.getSource());
+//          sendPublicKeyTo(aMessage.getSource());
           LOGGER.error("The hash of the public key used for encryption of the secret key '" + aMessage.getHeader("PUBLIC_KEY_HASH") + "' is not the same as the local hash of the pulic key '" + theMyPublicKey + "'");
           throw new EncryptionException(Reason.ENCRYPTED_USING_BAD_PUBLIC_KEY, "The message was encrypted using a bad or old public key");
         }
