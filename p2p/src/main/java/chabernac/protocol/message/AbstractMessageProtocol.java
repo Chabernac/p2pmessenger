@@ -36,8 +36,8 @@ public abstract class AbstractMessageProtocol extends Protocol {
   protected iObjectStringConverter< Message > myMessageConverter = new Base64ObjectStringConverter< Message >();
   
   
-  protected List<UUID> myProcessingMessages = Collections.synchronizedList(new ArrayList<UUID>());
-  protected Set<UUID> myProcessedMessages = Collections.synchronizedSet(new HashSet<UUID>());
+  protected List<String> myProcessingMessages = Collections.synchronizedList(new ArrayList<String>());
+  protected Set<String> myProcessedMessages = Collections.synchronizedSet(new HashSet<String>());
   
   protected List<iMessageListener> myListeners = new ArrayList< iMessageListener >();
   
@@ -106,11 +106,11 @@ public abstract class AbstractMessageProtocol extends Protocol {
   protected String handleMessageForUs(String aSessionId, Message aMessage) throws EncryptionException{
     checkEnctryption(aMessage);
     
-    if(myProcessedMessages.contains(aMessage.getMessageId())){
+    if(myProcessedMessages.contains(aMessage.getUniqueId())){
       return Response.MESSAGE_ALREADY_RECEIVED.name();
     }
     
-    myProcessedMessages.add(aMessage.getMessageId());
+    myProcessedMessages.add(aMessage.getUniqueId());
     
     if(aMessage.isProtocolMessage()){
       //reoffer the content of the message to the handle method

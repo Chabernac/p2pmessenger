@@ -32,6 +32,7 @@ public class AsyncMessageProcotol extends AbstractMessageProtocol {
   private iObjectStringConverter< Message > myMessageConverter = new Base64ObjectStringConverter< Message >();
   //  private ExecutorService mySenderService = DynamicSizeExecutor.getSmallInstance();
   private Map<String, ArrayBlockingQueue<String>> myStatusQueues = new HashMap<String, ArrayBlockingQueue<String>> ();
+  private Map<String, Message> mySendMessages = new HashMap<String, Message>();
 
   private ScheduledExecutorService myQueueCleanupService = Executors.newScheduledThreadPool( 1 );
   private ExecutorService myListenerService = Executors.newCachedThreadPool();
@@ -136,7 +137,30 @@ public class AsyncMessageProcotol extends AbstractMessageProtocol {
   private void handleDeliveryStatus( final Message aMessage ) throws InterruptedException {
     updateHistoryForDeliveryStatus(aMessage);
 
-    getBlockingQueueForMessage( aMessage.getHeader( "MESSAGE-ID" ) ).put( aMessage.getHeader( "STATUS" ) );
+    String theMessageId = aMessage.getHeader( "MESSAGE-ID" );
+    String theStatus  = aMessage.getHeader( "STATUS" );
+
+    if(theStatus.startsWith(Response.COULD_NOT_DECRYPT.name()) && mySendMessages.containsKey(theMessageId)){
+      LOGGER.debug("Message could no be decrypted by receiver, reobtaining public key from '" + aMessage.getSource()  + "'");
+      if(obtainPublicKey(aMessage.getSource())){
+        LOGGER.debug("Public key was obtained resending message");
+        try {
+          Message theMessage = mySendMessages.get(theMessageId);
+          sendMessage(theMessage);
+          //the message was successfully resend after reobtaining the public key we should not set the delivery status now so we return
+          return;
+        } catch (MessageException e) {
+          LOGGER.error("Could not resend message", e);
+        }
+      } 
+    } 
+    
+    putDeliveryStatus(aMessage, theStatus);
+  }
+  
+  private void putDeliveryStatus( final Message aMessage, String aStatus) throws InterruptedException{
+    String theMessageId = aMessage.getHeader( "MESSAGE-ID" );
+    getBlockingQueueForMessage(  theMessageId ).put( aStatus );
     myQueueCleanupService.schedule( new Runnable(){
       public void run(){
         //when no one picked up the status for this message, remove it after 5 minutes so that it does not stay cached for ever
@@ -168,8 +192,15 @@ public class AsyncMessageProcotol extends AbstractMessageProtocol {
 
 
   public void sendMessage(Message aMessage) throws MessageException{
-    inspectMessage(aMessage);
-    handleMessage( UUID.randomUUID().toString(), aMessage );
+    aMessage.increaseInstanceCounter();
+    LOGGER.debug("Sening message with unique id: '" + aMessage.getUniqueId() + "'");
+    Message theMessage = aMessage.copy();
+    inspectMessage(theMessage);
+    theMessage.setMessageId(aMessage.getMessageId());
+    //keep a reference to the send message, we need this because the delivery status might indicate that the message could not be 
+    //decrypted in that case the public key of the receiver needs to be reoptained and the message needs to be recent.
+    mySendMessages.put(theMessage.getMessageId().toString(), aMessage);
+    handleMessage( UUID.randomUUID().toString(), theMessage);
   }
 
   public String sendAndWaitForResponse(Message aMessage) throws MessageException{
@@ -214,9 +245,12 @@ public class AsyncMessageProcotol extends AbstractMessageProtocol {
 
     @Override
     public void run() {
-      LOGGER.debug("Handling message " + myMessage);
+      try {
+        LOGGER.debug("Local peer '" + getRoutingTable().getLocalPeerId() + "' Handling message " + myMessage);
+      } catch (ProtocolException e1) {
+      }
 
-      if(myProcessingMessages.contains(myMessage.getMessageId())){
+      if(myProcessingMessages.contains(myMessage.getUniqueId())){
         sendDeliveryStatus( myMessage.getSource().getPeerId(), myMessage.getMessageId().toString(), Response.MESSAGE_LOOP_DETECTED.name());
         return;
       }
@@ -225,7 +259,7 @@ public class AsyncMessageProcotol extends AbstractMessageProtocol {
 
       AbstractPeer theDestination = myMessage.getDestination();
       try {
-        myProcessingMessages.add(myMessage.getMessageId());
+        myProcessingMessages.add(myMessage.getUniqueId());
         if(theDestination.getPeerId().equals( getRoutingTable().getLocalPeerId() )){
           if("DeliveryStatus".equalsIgnoreCase( myMessage.getHeader( "TYPE" ))){
             handleDeliveryStatus(myMessage);

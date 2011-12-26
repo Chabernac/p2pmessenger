@@ -76,7 +76,7 @@ public class MessageProtocol extends AbstractMessageProtocol {
 
     AbstractPeer theDestination = aMessage.getDestination();
     try {
-      myProcessingMessages.add(aMessage.getMessageId());
+      myProcessingMessages.add(aMessage.getUniqueId());
       if(theDestination.getPeerId().equals( getRoutingTable().getLocalPeerId() )){
         return handleMessageForUs(aSessionId, aMessage);
       } else {

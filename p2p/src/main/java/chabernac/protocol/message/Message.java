@@ -28,6 +28,7 @@ public class Message implements Serializable{
   private long myCreationTime = System.currentTimeMillis();
   private transient boolean isLocked = false;
   private int myMessageTimeoutInSeconds = 5;
+  private long myInstanceCounter = 0;
   
   private static int TTL = 8;
   
@@ -55,10 +56,16 @@ public class Message implements Serializable{
     myLastHop = aLastHop;
   }
   
+  public long getInstanceCounter() {
+    return myInstanceCounter;
+  }
+  public void setInstanceCounter(long aInstanceCounter) {
+    myInstanceCounter = aInstanceCounter;
+  }
   public void setDestination( AbstractPeer anDestination ) {
     if(isLocked) throw new ConcurrentModificationException("Can not modify message when it is locked");
     myDestination = anDestination;
-    myMessageId = UUID.randomUUID();
+//    myMessageId = UUID.randomUUID();
   }
   public String getMessage() {
     return myMessage;
@@ -83,6 +90,10 @@ public class Message implements Serializable{
     }
     myIndicators.add( anIndicator );
 //    myMessageId = UUID.randomUUID();
+  }
+  
+  public void increaseInstanceCounter(){
+    myInstanceCounter++;
   }
   
   public void removeMessageIndicator(MessageIndicator anIndicator){
@@ -177,6 +188,10 @@ public class Message implements Serializable{
   public UUID getMessageId() {
     return myMessageId;
   }
+  public String getUniqueId(){
+    return myMessageId.toString() + myInstanceCounter;
+  }
+  
   public void setMessageId( UUID anMessageId ) {
     if(isLocked) throw new ConcurrentModificationException("Can not modify message when it is locked");
     myMessageId = anMessageId;
@@ -219,6 +234,7 @@ public class Message implements Serializable{
     theMessage.setProtocolMessage(isProtocolMessage);
     theMessage.setTTL(getTTL());
     theMessage.setBytes(getBytes());
+    theMessage.setInstanceCounter(getInstanceCounter());
     return theMessage;
   }
   
