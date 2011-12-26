@@ -52,15 +52,14 @@ public class PipeProtocolTest extends AbstractProtocolTest {
       assertTrue( theServer2.start() );
       assertTrue( theServer3.start() );
 
-      Thread.sleep( 3000 );
       
       //after a local system scan we must at least know our selfs
-      assertNotNull( theRoutingProtocol1.getRoutingTable().getEntryForLocalPeer() );
-      assertNotNull( theRoutingProtocol3.getRoutingTable().getEntryForLocalPeer() );
+      assertNotNull( theRoutingProtocol1.getRoutingTable().getEntryForLocalPeer(5) );
+      assertNotNull( theRoutingProtocol3.getRoutingTable().getEntryForLocalPeer(5) );
 
 
       //open a pipe from peer 1 to peer 3, it should traverse peer 2
-      Pipe thePipe = new Pipe((SocketPeer)theRoutingProtocol1.getRoutingTable().getEntryForPeer("3").getPeer());
+      Pipe thePipe = new Pipe((SocketPeer)theRoutingProtocol1.getRoutingTable().getEntryForPeer("3", 5).getPeer());
       thePipe.setPipeDescription("Test pipe description");
       
       LOGGER.debug( "opening pipe" );

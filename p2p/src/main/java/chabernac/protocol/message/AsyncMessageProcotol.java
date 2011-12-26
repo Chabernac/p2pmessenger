@@ -20,11 +20,9 @@ import chabernac.io.Base64ObjectStringConverter;
 import chabernac.io.iObjectStringConverter;
 import chabernac.protocol.ProtocolException;
 import chabernac.protocol.encryption.EncryptionException;
-import chabernac.protocol.message.AbstractMessageProtocol.Response;
 import chabernac.protocol.routing.AbstractPeer;
 import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.RoutingTable;
-import chabernac.protocol.routing.RoutingTableEntry;
 import chabernac.protocol.routing.iPeerSender;
 
 public class AsyncMessageProcotol extends AbstractMessageProtocol {
@@ -217,17 +215,17 @@ public class AsyncMessageProcotol extends AbstractMessageProtocol {
     @Override
     public void run() {
       LOGGER.debug("Handling message " + myMessage);
-      
+
       if(myProcessingMessages.contains(myMessage.getMessageId())){
         sendDeliveryStatus( myMessage.getSource().getPeerId(), myMessage.getMessageId().toString(), Response.MESSAGE_LOOP_DETECTED.name());
         return;
       }
 
       checkMessage(myMessage);
-      
+
       AbstractPeer theDestination = myMessage.getDestination();
       try {
-               myProcessingMessages.add(myMessage.getMessageId());
+        myProcessingMessages.add(myMessage.getMessageId());
         if(theDestination.getPeerId().equals( getRoutingTable().getLocalPeerId() )){
           if("DeliveryStatus".equalsIgnoreCase( myMessage.getHeader( "TYPE" ))){
             handleDeliveryStatus(myMessage);
@@ -238,7 +236,7 @@ public class AsyncMessageProcotol extends AbstractMessageProtocol {
               myHistory.get( myMessage.getMessageId().toString() ).setResponse( theResponse );
               informListeners( myMessage );
             }
-            
+
             //it might be that the routing table does not yet contain an entry for the peer from which the message comes
             //the entry should be put there any time from now becaus of the previous call to checkMessage
             //lets just wait max 10 seconds untill the entry is there

@@ -722,7 +722,7 @@ public class P2PFacadeTest extends TestCase {
     }
   }
 
-  public void testStressWebToPeer() throws P2PFacadeException, MalformedURLException, InterruptedException{
+  public void testStressWebToPeer() throws P2PFacadeException, MalformedURLException, InterruptedException, UnknownPeerException{
 
     P2PFacade theWebPeer = new P2PFacade()
     .setExchangeDelay( 300 )
@@ -742,11 +742,10 @@ public class P2PFacadeTest extends TestCase {
 
     theSocketPeer.scanSuperNodes();
 
-    Thread.sleep( 2000 );
 
     try{
-      assertTrue( theSocketPeer.getRoutingTable().containsEntryForPeer( theWebPeer.getRoutingTable().getLocalPeerId() ));
-      assertTrue( theWebPeer.getRoutingTable().containsEntryForPeer( theSocketPeer.getRoutingTable().getLocalPeerId() ));
+      assertNotNull(theSocketPeer.getRoutingTable().getEntryForPeer(theWebPeer.getRoutingTable().getLocalPeerId(), 5));
+      assertNotNull(theWebPeer.getRoutingTable().getEntryForPeer(theSocketPeer.getRoutingTable().getLocalPeerId(), 5));
 
       int times = 300;
 
