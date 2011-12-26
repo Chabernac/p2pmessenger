@@ -74,6 +74,8 @@ public class CamProtocolTest extends AbstractProtocolTest {
       
       theLatch.await( 2000, TimeUnit.SECONDS );
       assertNotNull( theCamListener.getImage() );
+    }catch(CamProtocolException e){
+      if(e.getReason() != CamProtocolException.Reason.NO_CAPTURE_DEVICE) throw e;
     }  finally {
       theServer1.stop();
       theServer2.stop();

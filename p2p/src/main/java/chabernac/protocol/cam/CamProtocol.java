@@ -36,7 +36,7 @@ public class CamProtocol extends Protocol {
   private List<iCamListener> myCamListeners = new ArrayList<iCamListener>();
 
   private static enum Command {CAPTURE};
-  private static enum Response{SNAPSHOT_SEND, SNAPSHOT_FAILED, UNKNOWN_COMMAND};
+  private static enum Response{SNAPSHOT_SEND, NO_CAPTURE_DEVICE, SNAPSHOT_FAILED, UNKNOWN_COMMAND};
 
   private ExecutorService myExecutorService = Executors.newSingleThreadExecutor();
 
@@ -79,9 +79,10 @@ public class CamProtocol extends Protocol {
       String theResponse = getMessageProtocol().sendMessage(theMessage);
       if(!theResponse.equalsIgnoreCase( Response.SNAPSHOT_SEND.name() )){
         LOGGER.error( "Snapshot failed '" + theResponse + "'" );
-        throw new CamProtocolException("Taking snaphsot failed '" + theResponse + "'");
+        throw new CamProtocolException("Taking snaphsot failed '" + theResponse + "'", CamProtocolException.Reason.valueOf(theResponse));
       }
     }catch(Exception e){
+      if(e instanceof CamProtocolException) throw (CamProtocolException)e;
       throw new CamProtocolException( "Could not send message", e );
     }
   }
@@ -96,7 +97,7 @@ public class CamProtocol extends Protocol {
       final float theQuality = Float.parseFloat(theParams[4]);
 
       if(!myCapture.isReady()){
-        return Response.SNAPSHOT_FAILED.name() + " device not ready or unavailable";
+        return Response.NO_CAPTURE_DEVICE.name();
       }
       
       myExecutorService.execute( new Runnable(){
