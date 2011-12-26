@@ -14,7 +14,6 @@ import chabernac.protocol.ProtocolContainer;
 import chabernac.protocol.ProtocolException;
 import chabernac.protocol.encryption.EncryptionException;
 import chabernac.protocol.routing.AbstractPeer;
-import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.UnknownPeerException;
 
 /**
