@@ -94,13 +94,13 @@ public class MultiPeerMessageProtocol extends Protocol{
     }
   }
 
-  private MessageProtocol getMessageProtocol() throws ProtocolException{
-    return (MessageProtocol)findProtocolContainer().getProtocol( MessageProtocol.ID);
-  }
-  
-//  private AsyncMessageProcotol getMessageProtocol() throws ProtocolException{
-//    return (AsyncMessageProcotol)findProtocolContainer().getProtocol( AsyncMessageProcotol.ID);
+//  private MessageProtocol getMessageProtocol() throws ProtocolException{
+//    return (MessageProtocol)findProtocolContainer().getProtocol( MessageProtocol.ID);
 //  }
+  
+  private AsyncMessageProcotol getMessageProtocol() throws ProtocolException{
+    return (AsyncMessageProcotol)findProtocolContainer().getProtocol( AsyncMessageProcotol.ID);
+  }
 
   public RoutingTable getRoutingTable() throws ProtocolException{
     return ((RoutingProtocol)findProtocolContainer().getProtocol( RoutingProtocol.ID)).getRoutingTable();
@@ -160,8 +160,8 @@ public class MultiPeerMessageProtocol extends Protocol{
       try {
 //        LOGGER.error("Sending in progress delivery report");
         sendDeliveryReport( new DeliveryReport(myMultiPeerMessage, Status.IN_PROGRESS, myMessage) );
-//        String theResult = getMessageProtocol().sendAndWaitForResponse( myMessage );
-        String theResult = getMessageProtocol().sendMessage(myMessage );
+        String theResult = getMessageProtocol().sendAndWaitForResponse( myMessage );
+//        String theResult = getMessageProtocol().sendMessage(myMessage );
         if(theResult.equalsIgnoreCase( STATUS_MESSAGE.DELIVERED.name() )){
           sendDeliveryReport( new DeliveryReport(myMultiPeerMessage, Status.DELIVERED, myMessage));
         } else {

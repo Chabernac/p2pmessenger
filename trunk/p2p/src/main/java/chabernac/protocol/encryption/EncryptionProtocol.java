@@ -241,6 +241,7 @@ public class EncryptionProtocol extends Protocol {
   }
 
   public void encryptMessage(Message aMessage) throws EncryptionException{
+    UUID theMessageId = aMessage.getMessageId();
     PublicKey thePublicKey = getPublicKeyFor(aMessage.getDestination(), false);
 
     if(thePublicKey == null){
@@ -274,10 +275,12 @@ public class EncryptionProtocol extends Protocol {
         throw new EncryptionException("Could not encrypt message", e);
       }
     }
+    aMessage.setMessageId(theMessageId);
   }
 
 
   public void decryptMessage(Message aMessage) throws EncryptionException{
+    UUID theMessageId = aMessage.getMessageId();
     if(aMessage.getHeader("SECRET_KEY") == null){
       //the message was encrypted using the old way
       String theSession = aMessage.getHeader( "session" );
@@ -318,6 +321,7 @@ public class EncryptionProtocol extends Protocol {
         throw new EncryptionException("Could not decrypt message", e);
       }
     }
+    aMessage.setMessageId( theMessageId );
   }
 
   void setPublicKeyFor(String aPeer, PublicKey aKey){
