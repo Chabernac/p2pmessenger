@@ -9,13 +9,10 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.Logger;
 
 import chabernac.protocol.AbstractProtocolTest;
 import chabernac.protocol.ProtocolContainer;
 import chabernac.protocol.ProtocolServer;
-import chabernac.protocol.packet.PacketProtocol;
-import chabernac.protocol.packet.PacketProtocolTest;
 import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.RoutingTable;
 
@@ -32,8 +29,6 @@ import chabernac.protocol.routing.RoutingTable;
  * @author <a href="mailto:guy.chauliac@axa.be"> Guy Chauliac </a>
  */
 public class CamProtocolTest extends AbstractProtocolTest {
-  private static Logger LOGGER = Logger.getLogger(PacketProtocolTest.class);
-  
   static{
     BasicConfigurator.resetConfiguration();
     BasicConfigurator.configure();
@@ -48,7 +43,6 @@ public class CamProtocolTest extends AbstractProtocolTest {
 
     RoutingProtocol theRoutingProtocol1 = (RoutingProtocol)theProtocol1.getProtocol( RoutingProtocol.ID );
     RoutingTable theRoutingTable1 = theRoutingProtocol1.getRoutingTable();
-    PacketProtocol thePacketProtocol1 = (PacketProtocol)theProtocol1.getProtocol( PacketProtocol.ID );
     CamProtocol theCamProtocol1 = (CamProtocol)theProtocol1.getProtocol( CamProtocol.ID );
 
     RoutingProtocol theRoutingProtocol2 = (RoutingProtocol)theProtocol2.getProtocol( RoutingProtocol.ID );

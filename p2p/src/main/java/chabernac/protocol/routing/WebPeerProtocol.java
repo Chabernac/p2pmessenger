@@ -22,7 +22,7 @@ public class WebPeerProtocol extends Protocol{
   private static Logger LOGGER = Logger.getLogger(WebPeerProtocol.class);
   public static final String ID = "WPP";
   private static final int MAX_ERRORS = 10;
-  private static final int MAX_THREADS_PER_PEER = 1;
+//  private static final int MAX_THREADS_PER_PEER = 1;
 
   public static enum Input{EVENT};
   public static enum Response{UNKNOWN_COMMAND};

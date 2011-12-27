@@ -31,7 +31,6 @@ public class PacketSenderReceiverTest extends AbstractProtocolTest {
   private ProtocolContainer myProtocolContainer1;
   private ProtocolServer myServer1;
   private PacketProtocol myPacketProtocl1;
-  private String myPeerId1;
 
   private ProtocolContainer myProtocolContainer2;
   private ProtocolServer myServer2;
@@ -78,7 +77,6 @@ public class PacketSenderReceiverTest extends AbstractProtocolTest {
     assertNotNull( thePeer2.getPeer() );
     assertTrue(thePeer2.isReachable());
 
-    myPeerId1 = theRoutingTable1.getLocalPeerId();
     myPeerId2 = theRoutingTable2.getLocalPeerId();
   }
 

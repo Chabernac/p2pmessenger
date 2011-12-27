@@ -21,14 +21,12 @@ public class WhoIsRunningPanel extends JPanel {
 	 */
 	private static final long serialVersionUID = 7577814509143406576L;
 private final int myScanIntervalTimeoutInSeconds;
-  private final String myHost;
   private final WhoIsRunningTableModel myTableModel;
   private final WhoIsRunning myWhoIs;
   
-  public WhoIsRunningPanel(int anScanIntervalTimeoutInSeconds, String anHost) {
+  public WhoIsRunningPanel(int anScanIntervalTimeoutInSeconds) {
     super();
     myScanIntervalTimeoutInSeconds = anScanIntervalTimeoutInSeconds;
-    myHost = anHost;
     myTableModel = new WhoIsRunningTableModel(RoutingProtocol.START_PORT, RoutingProtocol.END_PORT);
     myWhoIs = new WhoIsRunning(myTableModel, "localhost", RoutingProtocol.START_PORT, RoutingProtocol.END_PORT);
     buildGUI();

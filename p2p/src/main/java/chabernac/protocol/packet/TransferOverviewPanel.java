@@ -13,15 +13,13 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.border.TitledBorder;
 
-import org.apache.log4j.Logger;
-
 import chabernac.command.AbstractCommand;
 import chabernac.gui.CommandButton;
 import chabernac.protocol.packet.PacketTransferState.Direction;
 
 public class TransferOverviewPanel extends JPanel implements iTransferListener {
   private static final long serialVersionUID = 3820389600984173704L;
-  private static Logger LOGGER = Logger.getLogger(TransferOverviewPanel.class);
+//  private static Logger LOGGER = Logger.getLogger(TransferOverviewPanel.class);
   private final iTransferContainer myTransferController;
 
   private Map<String, TransferPanel> myTransferPanels = new HashMap<String, TransferPanel>();

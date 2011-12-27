@@ -4,12 +4,7 @@
  */
 package chabernac.protocol;
 
-import java.io.IOException;
 import java.util.Collection;
-
-import org.apache.log4j.Logger;
-import org.apache.log4j.RollingFileAppender;
-import org.apache.log4j.TTCCLayout;
 
 import chabernac.protocol.application.ApplicationProtocol;
 import chabernac.protocol.asyncfiletransfer.AsyncFileTransferProtocol;
@@ -43,21 +38,14 @@ import chabernac.tools.PropertyMap;
 
 public class ProtocolFactory implements iProtocolFactory{
   private PropertyMap myProtocolProperties = null;
-  private static Logger LOGGER = Logger.getLogger(ProtocolFactory.class);
-
+  
   public ProtocolFactory(PropertyMap aProtocolProperties){
     myProtocolProperties = aProtocolProperties;
   }
 
   @Override
   public Protocol createProtocol( String aProtocolId ) throws ProtocolException {
-    Protocol theProtocol = createProt( aProtocolId );
-//    try {
-//      setupLogging( theProtocol );
-//    } catch ( Throwable e ) {
-//      LOGGER.error( "Could not setup logging for protocol '" + theProtocol.getClass().getName() + "'" );
-//    }
-    return theProtocol;
+    return createProt( aProtocolId );
   }
 
   private Protocol createProt( String aProtocolId ) throws ProtocolException {
@@ -176,15 +164,4 @@ public class ProtocolFactory implements iProtocolFactory{
 
     throw new ProtocolException("The protocol with id '" + aProtocolId + "' is not known");
   }
-  
-  private void setupLogging(Protocol aProtocol) throws IOException{
-    Logger theLogger = Logger.getLogger( aProtocol.getClass().getName() );
-    theLogger.setLevel( Logger.getRootLogger().getLevel() );
-//    DailyRollingFileAppender theFileAppender = new DailyRollingFileAppender(new TTCCLayout("dd-MM-yyyy HH:mm:ss SSS") ,aProtocol.getClass().getName() + ".log", "'.'yyyy-MM-dd'.log'" );
-    RollingFileAppender theFileAppender = new RollingFileAppender(new TTCCLayout("dd-MM-yyyy HH:mm:ss SSS") ,aProtocol.getClass().getName() + ".log" );
-    theFileAppender.setMaxBackupIndex( 5 );
-    theFileAppender.setMaxFileSize( "200KB" );
-    theLogger.addAppender( theFileAppender );
-  }
-
 }

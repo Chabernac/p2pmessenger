@@ -10,7 +10,6 @@ import javax.swing.JFrame;
 
 public class PacketTransferVisualizerFrame extends JFrame implements iPacketTransferListener{
   private static final long serialVersionUID = 8477681824036423333L;
-  private PacketTransferState myState;
   private PacketTransferVisualizerPanel myPanel = new PacketTransferVisualizerPanel( );
   
   public PacketTransferVisualizerFrame(){
@@ -30,7 +29,6 @@ public class PacketTransferVisualizerFrame extends JFrame implements iPacketTran
 
   @Override
   public void transferUpdated( PacketTransferState aPacketTransferState ) {
-    myState = aPacketTransferState;
     myPanel.transferUpdated( aPacketTransferState );
   }
 }
