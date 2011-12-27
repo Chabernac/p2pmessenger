@@ -68,7 +68,7 @@ public class MessageProtocol extends AbstractMessageProtocol {
   }
 
   public String handleMessageInternal(String aSessionId, Message aMessage){
-    if(myProcessingMessages.contains(aMessage.getMessageId())){
+    if(myProcessingMessages.contains(aMessage.getUniqueId())){
       return Response.MESSAGE_LOOP_DETECTED.name();
     } 
 

@@ -11,9 +11,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 
 import org.apache.log4j.Logger;
 
@@ -31,7 +29,7 @@ import chabernac.protocol.routing.UnknownPeerException;
 import chabernac.protocol.routing.iPeerSender;
 
 public abstract class AbstractMessageProtocol extends Protocol {
-  protected static Logger LOGGER = Logger.getLogger( MessageProtocol.class );
+  protected static Logger LOGGER = Logger.getLogger( AbstractMessageProtocol.class );
   
   protected iObjectStringConverter< Message > myMessageConverter = new Base64ObjectStringConverter< Message >();
   

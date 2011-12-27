@@ -15,8 +15,8 @@ import org.apache.log4j.Logger;
 import chabernac.protocol.IProtocol;
 import chabernac.protocol.Protocol;
 import chabernac.protocol.ProtocolException;
+import chabernac.protocol.message.AsyncMessageProcotol;
 import chabernac.protocol.message.Message;
-import chabernac.protocol.message.MessageProtocol;
 import chabernac.protocol.routing.IRoutingTableListener;
 import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.RoutingTable;
@@ -124,7 +124,7 @@ public class VersionProtocol extends Protocol {
           theMessage.setSource( getRoutingTable().getEntryForLocalPeer().getPeer() );
           theMessage.setProtocolMessage( true );
           theMessage.setMessage( createMessage( Command.VERSION.name() ) );
-          String theResult = ((MessageProtocol)findProtocolContainer().getProtocol( MessageProtocol.ID )).sendMessage( theMessage );
+          String theResult = ((AsyncMessageProcotol)findProtocolContainer().getProtocol( AsyncMessageProcotol.ID )).sendAndWaitForResponse( theMessage );
           if(theResult.startsWith( Response.OK.name() )){
             Version theVersion = new Version(theResult.substring( Response.OK.name().length() ));
             myVersions.put(aPeerId, theVersion);

@@ -7,6 +7,7 @@ package chabernac.protocol.application;
 import chabernac.protocol.Protocol;
 import chabernac.protocol.ProtocolException;
 import chabernac.protocol.iProtocolDelegate;
+import chabernac.protocol.message.AsyncMessageProcotol;
 import chabernac.protocol.message.Message;
 import chabernac.protocol.message.MessageProtocol;
 import chabernac.protocol.routing.RoutingProtocol;
@@ -60,7 +61,7 @@ public class ApplicationProtocol extends Protocol {
       theMessage.setSource( getRoutingTable().getEntryForLocalPeer().getPeer() );
       theMessage.setMessage( createMessage( aMessage ));
       theMessage.setProtocolMessage( true );
-      return ((MessageProtocol)findProtocolContainer().getProtocol( MessageProtocol.ID )).sendMessage( theMessage );
+      return ((AsyncMessageProcotol)findProtocolContainer().getProtocol( AsyncMessageProcotol.ID )).sendAndWaitForResponse( theMessage );
     }catch(Exception e){
       throw new ApplicationProtocolException("Could not send user info to peer '" + aPeerId + "'", e);
     }
