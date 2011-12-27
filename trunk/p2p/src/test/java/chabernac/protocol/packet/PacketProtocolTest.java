@@ -95,7 +95,6 @@ public class PacketProtocolTest extends AbstractProtocolTest {
     ProtocolServer theServer2 = new ProtocolServer(theProtocol2, RoutingProtocol.START_PORT + 1, 5);
 
     RoutingProtocol theRoutingProtocol1 = (RoutingProtocol)theProtocol1.getProtocol( RoutingProtocol.ID );
-    RoutingTable theRoutingTable1 = theRoutingProtocol1.getRoutingTable();
     PacketProtocol thePacketProtocol1 = (PacketProtocol)theProtocol1.getProtocol( PacketProtocol.ID );
 
     RoutingProtocol theRoutingProtocol2 = (RoutingProtocol)theProtocol2.getProtocol( RoutingProtocol.ID );

@@ -6,23 +6,18 @@ package chabernac.protocol.asyncfiletransfer;
 
 import java.awt.Color;
 import java.awt.Graphics;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 
 import javax.swing.JPanel;
 
 public class FilePacketVisualizerPanel extends JPanel {
   private static final long serialVersionUID = -3590938754899429749L;
 
-  private ScheduledExecutorService myService;
-  
   private final FileTransferHandler myIO;
   private int myCellSize = 10;
 
   public FilePacketVisualizerPanel( FileTransferHandler aIO ) {
     super();
     myIO = aIO;
-    myService = Executors.newScheduledThreadPool( 1 );
     addListeners();
   }
   

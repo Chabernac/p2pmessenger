@@ -14,7 +14,6 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicLong;
@@ -29,8 +28,6 @@ import chabernac.util.concurrent.iRunnableListener;
 
 public class ProtocolServer implements Runnable, iP2PServer{
   private static Logger LOGGER = Logger.getLogger(ProtocolServer.class);
-
-  private Random myRandom = new Random();
 
   private int myPort;
   private int myNumberOfThreads;

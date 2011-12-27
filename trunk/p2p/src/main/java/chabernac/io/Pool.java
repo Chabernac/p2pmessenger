@@ -51,11 +51,11 @@ public class Pool<T> implements Iterable< T >{
     return theList;
   }
   
-  private class PoolItem<T>{
+  private class PoolItem<E>{
     long myTimestamp = System.currentTimeMillis();
-    T myObject;
+    E myObject;
     
-    public PoolItem (T anObject ) {
+    public PoolItem (E anObject ) {
       super();
       myObject = anObject;
     }

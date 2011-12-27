@@ -17,7 +17,7 @@ public class WhoIsFrame extends JFrame {
   private void buildGUI(){
     setTitle("Who is");
     setLayout( new BorderLayout());
-    add(new WhoIsRunningPanel(1, "localhost"), BorderLayout.CENTER);
+    add(new WhoIsRunningPanel(1), BorderLayout.CENTER);
     setSize(400, 400);
   }
   

@@ -19,8 +19,6 @@ public class FileTransferPanel extends JPanel implements iFileTransferListener{
   private static final long serialVersionUID = 1937364427569729273L;
   private static Logger LOGGER = Logger.getLogger(FileTransferPanel.class);
   private final FileTransferHandler myHandler;
-  private AbstractCommand myStartStopCommand = null;
-  private AbstractCommand myCancelCommand = null;
   private JPopupMenu myPopupMenu = null;
 
   public FileTransferPanel(FileTransferHandler aHandler){
@@ -31,13 +29,6 @@ public class FileTransferPanel extends JPanel implements iFileTransferListener{
   private void buildGUI(){
     setLayout(new BorderLayout());
     add(new FileTransferProgressPanel(myHandler), BorderLayout.CENTER);
-
-    //    myStartStopCommand = new StartStopAction();
-    //    JPanel theButtonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-    //    theButtonPanel.add(new CommandButton(myStartStopCommand, 70));
-    //    myCancelCommand = new CancelCommand();
-    //    theButtonPanel.add(new CommandButton(myCancelCommand, 80));
-    //    add(theButtonPanel, BorderLayout.EAST);
 
     addListeners();
   }

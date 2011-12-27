@@ -43,8 +43,6 @@ public class CamFrame extends JFrame {
     FORMAT.setMaximumFractionDigits(2);
   }
   
-  private BufferedImage myImage = null;
-  
   private final P2PFacade myFacade;
   private String myUserId;
   

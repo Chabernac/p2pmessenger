@@ -2,7 +2,6 @@ package chabernac.protocol.asyncfiletransfer;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
@@ -31,7 +30,6 @@ public class FileSender extends AbstractFileIO{
   private boolean isFailed = false;
   private boolean isPending = false;
   private Percentage myPercentageCompleted = new Percentage( 0, 0 );
-  private ArrayBlockingQueue<Boolean> myEventQueue = new ArrayBlockingQueue<Boolean>( 1 );
   private Future<Boolean> myTransferComplete;
   private final boolean[] mySendPackets;
   private String myPendingMessage = null;

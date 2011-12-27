@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -101,7 +100,7 @@ public class RoutingProtocol extends Protocol {
   //  private List<String> myRemoteUnreachablePeers = new ArrayList< String >();
 
   private ScheduledExecutorService mySheduledService = null;
-  private ExecutorService myExecutorService = null;
+//  private ExecutorService myExecutorService = null;
 
   private iObjectPersister< RoutingTable > myRoutingTablePersister = new RoutingTableObjectPersister();
 

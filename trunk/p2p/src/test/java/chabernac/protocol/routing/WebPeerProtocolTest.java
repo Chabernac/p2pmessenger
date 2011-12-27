@@ -10,7 +10,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.Logger;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.ServletHolder;
@@ -26,8 +25,6 @@ import chabernac.protocol.message.MessageProtocol;
 import chabernac.protocol.message.iMessageListener;
 
 public class WebPeerProtocolTest extends AbstractProtocolTest {
-  private static Logger LOGGER = Logger.getLogger(RoutingProtocolTest.class);
-
   private ProtocolServer theServer1;
   private RoutingProtocol myRoutingProtocol1;
   private MessageProtocol myMessageProtocol1;
