@@ -10,8 +10,6 @@ import java.net.URL;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-
 import junit.framework.TestCase;
 
 import org.apache.log4j.BasicConfigurator;
@@ -21,7 +19,6 @@ import org.mortbay.jetty.servlet.ServletHolder;
 
 import chabernac.comet.CometEvent;
 import chabernac.comet.CometServlet;
-import chabernac.comet.EndPoint;
 import chabernac.newcomet.EndPoint2;
 import chabernac.newcomet.EndPointContainer2;
 import chabernac.p2p.web.ProtocolServlet;

@@ -9,7 +9,6 @@ import chabernac.protocol.ProtocolException;
 import chabernac.protocol.iProtocolDelegate;
 import chabernac.protocol.message.AsyncMessageProcotol;
 import chabernac.protocol.message.Message;
-import chabernac.protocol.message.MessageProtocol;
 import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.RoutingTable;
 

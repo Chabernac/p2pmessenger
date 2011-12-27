@@ -17,7 +17,6 @@ import org.apache.log4j.Logger;
 
 import chabernac.command.AbstractCommand;
 import chabernac.gui.CommandButton;
-import chabernac.protocol.asyncfiletransfer.AsyncFileTransferException;
 import chabernac.protocol.packet.PacketTransferState.Direction;
 
 public class TransferOverviewPanel extends JPanel implements iTransferListener {

@@ -11,8 +11,6 @@ import java.util.concurrent.Executors;
 import junit.framework.TestCase;
 import chabernac.comet.CometEvent;
 import chabernac.comet.CometException;
-import chabernac.comet.EndPoint;
-import chabernac.comet.EndPointContainer;
 import chabernac.newcomet.EndPoint2;
 import chabernac.newcomet.EndPointContainer2;
 import chabernac.protocol.routing.SocketPeer;

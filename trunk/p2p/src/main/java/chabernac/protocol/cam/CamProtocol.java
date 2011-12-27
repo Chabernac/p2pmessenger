@@ -20,7 +20,6 @@ import chabernac.protocol.Protocol;
 import chabernac.protocol.ProtocolException;
 import chabernac.protocol.message.AsyncMessageProcotol;
 import chabernac.protocol.message.Message;
-import chabernac.protocol.message.MessageProtocol;
 import chabernac.protocol.packet.Packet;
 import chabernac.protocol.packet.PacketProtocol;
 import chabernac.protocol.packet.iPacketListener;
