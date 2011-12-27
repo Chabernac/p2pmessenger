@@ -19,6 +19,7 @@ import chabernac.io.iObjectStringConverter;
 import chabernac.protocol.IProtocol;
 import chabernac.protocol.Protocol;
 import chabernac.protocol.ProtocolException;
+import chabernac.protocol.message.AsyncMessageProcotol;
 import chabernac.protocol.message.Message;
 import chabernac.protocol.message.MessageProtocol;
 import chabernac.protocol.routing.IRoutingTableListener;
@@ -181,7 +182,7 @@ public class InfoExchangeProtocol<T extends Observable & Serializable> extends P
             theMessage.setSource( getRoutingTable().getEntryForLocalPeer().getPeer() );
             theMessage.setProtocolMessage( true );
             theMessage.setMessage( createMessage( Command.GET.name() ));
-            String theResult = ((MessageProtocol)findProtocolContainer().getProtocol( MessageProtocol.ID )).sendMessage( theMessage );
+            String theResult = ((AsyncMessageProcotol)findProtocolContainer().getProtocol( AsyncMessageProcotol.ID )).sendAndWaitForResponse(theMessage );
             T theInfoObject = myObjectPersister.getObject(theResult);
             storeInfo(myPeerId, theInfoObject);
           }
@@ -213,7 +214,7 @@ public class InfoExchangeProtocol<T extends Observable & Serializable> extends P
           theMessage.setSource( getRoutingTable().getEntryForLocalPeer().getPeer() );
           theMessage.setProtocolMessage( true );
           theMessage.setMessage( createMessage( Command.PUT.name() + " " + getRoutingTable().getLocalPeerId() + " " + myObjectPersister.toString( myInformationObject ) ));
-          String theResult = ((MessageProtocol)findProtocolContainer().getProtocol( MessageProtocol.ID )).sendMessage( theMessage );
+          String theResult = ((AsyncMessageProcotol)findProtocolContainer().getProtocol( AsyncMessageProcotol.ID )).sendAndWaitForResponse( theMessage );
           if(!theResult.equalsIgnoreCase( Response.OK.name() )){
             LOGGER.error("Could not send information to peer '" + myPeerId + "' result '" + theResult + "'");
           }

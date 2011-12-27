@@ -18,6 +18,7 @@ import org.apache.log4j.Logger;
 import chabernac.protocol.IProtocol;
 import chabernac.protocol.Protocol;
 import chabernac.protocol.ProtocolException;
+import chabernac.protocol.message.AsyncMessageProcotol;
 import chabernac.protocol.message.Message;
 import chabernac.protocol.message.MessageProtocol;
 import chabernac.protocol.packet.Packet;
@@ -57,8 +58,8 @@ public class CamProtocol extends Protocol {
     getPacketProtocol().addPacketListenr( ID, new PacketListener() );
   }
 
-  private MessageProtocol getMessageProtocol() throws ProtocolException{
-    return (MessageProtocol)findProtocolContainer().getProtocol(MessageProtocol.ID);
+  private AsyncMessageProcotol getMessageProtocol() throws ProtocolException{
+    return (AsyncMessageProcotol)findProtocolContainer().getProtocol(AsyncMessageProcotol.ID);
   }
   
   private PacketProtocol getPacketProtocol() throws ProtocolException{
@@ -76,7 +77,7 @@ public class CamProtocol extends Protocol {
       theMessage.setDestination(getRoutingTable().getEntryForPeer(aPeerId).getPeer());
       theMessage.setProtocolMessage( true );
       theMessage.setMessage(createMessage(Command.CAPTURE.name() + ";"  + getRoutingTable().getLocalPeerId() + ";" + aWidth + ";" + aHeight + ";" + aQuality ));
-      String theResponse = getMessageProtocol().sendMessage(theMessage);
+      String theResponse = getMessageProtocol().sendAndWaitForResponse(theMessage);
       if(!theResponse.equalsIgnoreCase( Response.SNAPSHOT_SEND.name() )){
         LOGGER.error( "Snapshot failed '" + theResponse + "'" );
         throw new CamProtocolException("Taking snaphsot failed '" + theResponse + "'", CamProtocolException.Reason.valueOf(theResponse));
