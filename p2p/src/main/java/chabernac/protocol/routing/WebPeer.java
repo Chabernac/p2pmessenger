@@ -13,7 +13,6 @@ import org.apache.log4j.Logger;
 import chabernac.comet.CometEvent;
 import chabernac.comet.CometException;
 import chabernac.io.AbstractURLConnectionHelper;
-import chabernac.io.ApacheURLConnectionHelper;
 import chabernac.io.Base64ObjectStringConverter;
 import chabernac.io.URLConnectionHelper;
 import chabernac.io.iObjectStringConverter;
