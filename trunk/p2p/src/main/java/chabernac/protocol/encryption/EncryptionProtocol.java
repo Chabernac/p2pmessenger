@@ -46,7 +46,7 @@ public class EncryptionProtocol extends Protocol {
   private iObjectStringConverter<PublicKey> myPublicKeyConverter = new Base64ObjectStringConverter< PublicKey >();
 
   private Map< String, SecretKey > myGeneratedKeysForSession = Collections.synchronizedMap( new HashMap< String, SecretKey> ());
-  
+
   private PublicKeyStore myPublicKeys = new PublicKeyStore( new File("publicKeyStore.bin"), true);
 
   private KeyPair myKeyPair = null;
@@ -68,7 +68,7 @@ public class EncryptionProtocol extends Protocol {
       throw new EncryptionException("Could not generate key pair", e);
     }
   }
-  
+
   private void loadKeyStore(){
     myPublicKeys.load();
   }
@@ -196,22 +196,25 @@ public class EncryptionProtocol extends Protocol {
   }
 
   public PublicKey getPublicKeyFor(AbstractPeer aPeer, boolean isForceUpdate) throws EncryptionException{
-    try{
-      if(isForceUpdate || !myPublicKeys.containsKeyFor( aPeer.getPeerId())){
-        Message theMessage = new Message();
-        theMessage.setDestination( aPeer );
-        theMessage.setMessage( createMessage( Command.GET_PUBLIC_KEY.name() ));
-        theMessage.setProtocolMessage( true );
-        AsyncMessageProcotol theMessageProtocol = (AsyncMessageProcotol)findProtocolContainer().getProtocol( AsyncMessageProcotol.ID );
-        String theResult = theMessageProtocol.sendAndWaitForResponse(theMessage );
-        if(theResult.startsWith( Response.OK.name() )){
-          myPublicKeys.storeKey( aPeer.getPeerId(), myPublicKeyConverter.getObject(theResult.split(" ")[1]));
+    //synchronize on the peer id so that we do not try to obtain the public key while it is already being requested
+    synchronized(aPeer.getPeerId()){
+      try{
+        if(isForceUpdate || !myPublicKeys.containsKeyFor( aPeer.getPeerId())){
+          Message theMessage = new Message();
+          theMessage.setDestination( aPeer );
+          theMessage.setMessage( createMessage( Command.GET_PUBLIC_KEY.name() ));
+          theMessage.setProtocolMessage( true );
+          AsyncMessageProcotol theMessageProtocol = (AsyncMessageProcotol)findProtocolContainer().getProtocol( AsyncMessageProcotol.ID );
+          String theResult = theMessageProtocol.sendAndWaitForResponse(theMessage );
+          if(theResult.startsWith( Response.OK.name() )){
+            myPublicKeys.storeKey( aPeer.getPeerId(), myPublicKeyConverter.getObject(theResult.split(" ")[1]));
+          }
         }
+        return myPublicKeys.getKey( aPeer.getPeerId());
+      }catch(Exception e){
+        LOGGER.error("An error occured while getting public key for peer '" + aPeer.getPeerId() + "'", e);
+        throw new EncryptionException("Could not get public key for peer '" + aPeer.getPeerId() + "'", e);
       }
-      return myPublicKeys.getKey( aPeer.getPeerId());
-    }catch(Exception e){
-      LOGGER.error("An error occured while getting public key for peer '" + aPeer.getPeerId() + "'", e);
-      throw new EncryptionException("Could not get public key for peer '" + aPeer.getPeerId() + "'", e);
     }
   }
 
@@ -220,8 +223,8 @@ public class EncryptionProtocol extends Protocol {
       Message theMessage = new Message();
       theMessage.setDestination( aPeer );
       theMessage.setMessage( createMessage( Command.PUT_PUBLIC_KEY.name() + " " + 
-                                            getRoutingTable().getEntryForLocalPeer().getPeer().getPeerId() + " " + 
-                                            myPublicKeyConverter.toString( myKeyPair.getPublic() )));
+          getRoutingTable().getEntryForLocalPeer().getPeer().getPeerId() + " " + 
+          myPublicKeyConverter.toString( myKeyPair.getPublic() )));
       theMessage.setProtocolMessage( true );
       AsyncMessageProcotol theMessageProtocol = (AsyncMessageProcotol)findProtocolContainer().getProtocol( AsyncMessageProcotol.ID );
       String theResult = theMessageProtocol.sendAndWaitForResponse(theMessage );
@@ -263,7 +266,7 @@ public class EncryptionProtocol extends Protocol {
         aMessage.addHeader("MESSAGE_HASH", convertBytesToString(calculateHash(aMessage.getMessage().getBytes())));
         //add a hash of the public key used so that the receiver can verify if the correct public key was used
         String theHashOfPublicKey = convertBytesToString(calculateHash(thePublicKey.getEncoded()));
-//        LOGGER.debug("Adding hash of public key to message '" + theHashOfPublicKey + "'");
+        //        LOGGER.debug("Adding hash of public key to message '" + theHashOfPublicKey + "'");
         aMessage.addHeader("PUBLIC_KEY_HASH", theHashOfPublicKey);
 
         //now encrypt the message using the secret key
@@ -295,7 +298,7 @@ public class EncryptionProtocol extends Protocol {
         //first check if the public key used was the correct one
         String theMyPublicKey = convertBytesToString(calculateHash(myKeyPair.getPublic().getEncoded()));
         if(!theMyPublicKey.equals(aMessage.getHeader("PUBLIC_KEY_HASH"))){
-//          sendPublicKeyTo(aMessage.getSource());
+          //          sendPublicKeyTo(aMessage.getSource());
           LOGGER.error("The hash of the public key used for encryption of the secret key '" + aMessage.getHeader("PUBLIC_KEY_HASH") + "' is not the same as the local hash of the pulic key '" + theMyPublicKey + "'");
           throw new EncryptionException(Reason.ENCRYPTED_USING_BAD_PUBLIC_KEY, "The message was encrypted using a bad or old public key");
         }
