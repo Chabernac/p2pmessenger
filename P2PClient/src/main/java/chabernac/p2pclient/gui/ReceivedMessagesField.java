@@ -30,6 +30,8 @@ import chabernac.protocol.message.DeliveryReport;
 import chabernac.protocol.message.MultiPeerMessage;
 import chabernac.protocol.message.iDeliverReportListener;
 import chabernac.protocol.message.iMultiPeerMessageListener;
+import chabernac.protocol.packet.AbstractTransferState;
+import chabernac.protocol.packet.FileTransferState;
 import chabernac.tools.HTMLTools;
 import chabernac.tools.SmileyTools;
 import chabernac.tools.Tools;
@@ -118,7 +120,9 @@ public class ReceivedMessagesField extends GPanel implements iReceivedMessagesPr
       try {
         if(theReturn == JFileChooser.APPROVE_OPTION){
           myMediator.getP2PFacade().showFileTransferOverView();
-          myMediator.getP2PFacade().getAsyncFileTransferContainer().getTransferState( theTransferId ).start();
+          
+          FileTransferState theFileTransferState =  (FileTransferState)myMediator.getP2PFacade().getAsyncFileTransferContainer().getTransferState( theTransferId );
+          theFileTransferState.start(myFileChooser.getSelectedFile());
         } else {
           myMediator.getP2PFacade().getAsyncFileTransferContainer().getTransferState( theTransferId ).cancel();
         }
