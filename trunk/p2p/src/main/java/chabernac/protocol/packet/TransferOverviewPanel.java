@@ -15,11 +15,11 @@ import javax.swing.border.TitledBorder;
 
 import chabernac.command.AbstractCommand;
 import chabernac.gui.CommandButton;
-import chabernac.protocol.packet.PacketTransferState.Direction;
+import chabernac.protocol.packet.AbstractTransferState.Direction;
 
 public class TransferOverviewPanel extends JPanel implements iTransferListener {
   private static final long serialVersionUID = 3820389600984173704L;
-//  private static Logger LOGGER = Logger.getLogger(TransferOverviewPanel.class);
+  //  private static Logger LOGGER = Logger.getLogger(TransferOverviewPanel.class);
   private final iTransferContainer myTransferController;
 
   private Map<String, TransferPanel> myTransferPanels = new HashMap<String, TransferPanel>();
@@ -74,13 +74,15 @@ public class TransferOverviewPanel extends JPanel implements iTransferListener {
   }
 
   private void populate(AbstractTransferState aTransfer){
-    Direction theDirection = aTransfer.getPacketTransferState().getDirection();
-    TransferPanel theTransferPanel = new TransferPanel(aTransfer);
-    myTransferPanels.put(aTransfer.getTransferId(), theTransferPanel);
-    if(theDirection == Direction.RECEIVING){
-      myIncomingTransferPanel.add(theTransferPanel);
-    } else if(theDirection == Direction.SENDING){
-      myOutgoingTransferPanel.add(theTransferPanel);
+    if(!myTransferPanels.containsKey(aTransfer.getTransferId())){
+      Direction theDirection = aTransfer.getTransferState().getDirection();
+      TransferPanel theTransferPanel = new TransferPanel(aTransfer);
+      myTransferPanels.put(aTransfer.getTransferId(), theTransferPanel);
+      if(theDirection == Direction.RECEIVE){
+        myIncomingTransferPanel.add(theTransferPanel);
+      } else if(theDirection == Direction.SEND){
+        myOutgoingTransferPanel.add(theTransferPanel);
+      }
     }
   }
 

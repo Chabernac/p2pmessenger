@@ -12,6 +12,7 @@ import java.util.concurrent.TimeUnit;
 
 public abstract class AbstractTransferState {
   public static enum State{PENDING, RUNNING, STOPPED, CANCELLED, DONE, FAILED};
+  public static enum Direction{SEND, RECEIVE};
   
   private final String myTransferId;
   private State myState = State.PENDING;
@@ -22,17 +23,21 @@ public abstract class AbstractTransferState {
   
   private final PacketTransferListener myPacketTransferListener = new PacketTransferListener();
   
-  public AbstractTransferState ( String aTransferId, String aRemotePeer ) {
+  private PacketTransferStateAdapterListener myAdapterListener = null;
+  private final Direction myDirection;
+  
+  public AbstractTransferState ( String aTransferId, String aRemotePeer, Direction aDirection ) {
     super();
     myTransferId = aTransferId;
     myRemotePeer = aRemotePeer;
+    myDirection = aDirection;
   }
   
   public void start() throws StateChangeException{
     startInternal( true );
   }
 
-  public void startInternal(boolean isFireStateChange) throws StateChangeException{
+  private void startInternal(boolean isFireStateChange) throws StateChangeException{
     //we can only start if the current state is pending or stopped
     
     if(myState == State.PENDING || myState == State.STOPPED){
@@ -86,9 +91,9 @@ public abstract class AbstractTransferState {
   
   public void changeToState(State aState) throws StateChangeException{
     if(myState == aState) return;
-    if(aState == State.RUNNING) startInternal(false);
-    else if(aState == State.STOPPED) stopInternal(false);
-    else if(aState == State.CANCELLED) cancelInternal(false);
+    if(aState == State.RUNNING) startInternal(true);
+    else if(aState == State.STOPPED) stopInternal(true);
+    else if(aState == State.CANCELLED) cancelInternal(true);
   }
   
   private void changeState(State aNewState, boolean isFireStatChangeEvent){
@@ -107,8 +112,17 @@ public abstract class AbstractTransferState {
     return myState;
   }
   
-  public PacketTransferState getPacketTransferState(){
+  public PacketTransferState getPacketTransferState() throws TransferStateException{
+    if(myTransfer == null) throw new TransferStateException("Transfer has not yet been started");
     return myTransfer.getTransferState();
+  }
+  
+  public TransferState getTransferState(){
+    try {
+      return new TransferState(myTransferId, myDirection, myState, myTransfer == null ? null : getPacketTransferState());
+    } catch (TransferStateException e) {
+      return null;
+    }
   }
   
   public boolean waitForState(State aState, int aTimeout, TimeUnit aTimeUnit) throws InterruptedException{
@@ -134,6 +148,17 @@ public abstract class AbstractTransferState {
   
   public void addPacketTransferListener(iPacketTransferListener aPacketTransferListener){
     myTransfer.addPacketTransferListener( aPacketTransferListener );
+  }
+  
+  public synchronized void addTransferStateListener(iTransferStateListener aListener){
+    if(myAdapterListener == null) myAdapterListener = new PacketTransferStateAdapterListener(this);
+    myAdapterListener.addTransferStateListener(aListener);
+  }
+  
+  public void removeTransferStateListener(iTransferStateListener aListener){
+    if(myAdapterListener != null){
+      myAdapterListener.removeTransferStateListener(aListener);
+    }
   }
   
   public String getRemotePeer(){
