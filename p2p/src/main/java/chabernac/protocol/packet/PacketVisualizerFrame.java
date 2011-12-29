@@ -25,6 +25,6 @@ public class PacketVisualizerFrame extends JFrame {
     add(thePanel, BorderLayout.CENTER);
     add(new TransferPanel( myIO ), BorderLayout.SOUTH);
     setVisible( true );
-    setTitle(myIO.getPacketTransferState().getDirection() .name() + " " + myIO.getTransferDescription());
+    setTitle(myIO.getTransferState().getDirection().name() + " " + myIO.getTransferDescription());
   }
 }

@@ -8,8 +8,6 @@ import java.io.File;
 import java.io.IOException;
 
 public class FileTransferState extends AbstractTransferState{
-  public static enum Direction{SEND, RECEIVE};
-  
   private final Direction myDirection;
   private File myFile;
   private final PacketProtocol myPacketProtocl;
@@ -20,7 +18,7 @@ public class FileTransferState extends AbstractTransferState{
   private FileDataPacketProvider myFileDataPacketProvider = null;
 
   private FileTransferState ( PacketProtocol aPacketProtocol, String aTransferId, File aFile, Direction aDirection, String aRemotePeer, int aNrOfPackets, int aPacketSize, int anOutstandingPacktes ) throws IOException {
-    super( aTransferId, aRemotePeer );
+    super( aTransferId, aRemotePeer, aDirection );
     myDirection = aDirection;
     myFile = aFile;
     myPacketProtocl = aPacketProtocol;

@@ -4,14 +4,14 @@
  */
 package chabernac.protocol.packet;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public abstract class AbstractPacketTransfer implements iPacketTransfer {
-  private List< iPacketTransferListener > myTransferListeners = new ArrayList< iPacketTransferListener >();
+  private Set< iPacketTransferListener > myTransferListeners = new HashSet< iPacketTransferListener >();
   
   private ExecutorService myListenerService = Executors.newFixedThreadPool( 1 );
 
@@ -25,8 +25,8 @@ public abstract class AbstractPacketTransfer implements iPacketTransfer {
     myTransferListeners.remove( myTransferListeners );
   }
   
-  private synchronized List<iPacketTransferListener> getPacketTransferListeners(){
-    return Collections.unmodifiableList( myTransferListeners );
+  private synchronized Set<iPacketTransferListener> getPacketTransferListeners(){
+    return Collections.unmodifiableSet( myTransferListeners );
   }
   
   protected void notifyListeners(){

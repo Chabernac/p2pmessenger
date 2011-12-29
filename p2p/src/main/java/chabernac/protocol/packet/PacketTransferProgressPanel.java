@@ -15,12 +15,15 @@ import java.text.NumberFormat;
 
 import javax.swing.JPanel;
 
+import org.apache.log4j.Logger;
+
 import chabernac.protocol.packet.AbstractTransferState.State;
 import chabernac.tools.Percentage;
 
 public class PacketTransferProgressPanel extends JPanel {
+  private static Logger LOGGER = Logger.getLogger(PacketTransferProgressPanel.class);
   private static final long serialVersionUID = -2109149737877351501L;
-  private final AbstractTransferState myHandler;
+  private final AbstractTransferState myTransferState;
   final static int HEIGHT = 25;
   private final static int CELLS = 20;
   private final static int ROUNDING_RADIUS = 5;
@@ -35,12 +38,12 @@ public class PacketTransferProgressPanel extends JPanel {
 
   public PacketTransferProgressPanel( AbstractTransferState aHandler ) {
     super();
-    myHandler = aHandler;
+    myTransferState = aHandler;
     addListeners();
   }
 
   private void addListeners(){
-    myHandler.addPacketTransferListener( new PacketTransferListener() );
+    myTransferState.addTransferStateListener(new PacketTransferListener() );
   }
 
 
@@ -60,36 +63,36 @@ public class PacketTransferProgressPanel extends JPanel {
 
     double theCellWidth = Math.floor((double)theWidth / (double)CELLS);
 
-    AbstractTransferState.State theState = myHandler.getState();
+    AbstractTransferState.State theState = myTransferState.getState();
 
     Percentage thePercentage = new Percentage( 0, 0 );
-    if(theState != State.PENDING || theState != State.CANCELLED){
-      thePercentage = myHandler.getPacketTransferState().getPercentageComplete();  
-    }
-    
-
-    double theNrOfCompletedCells = (double)CELLS * (double)thePercentage.getDenominator() / (double)thePercentage.getDivisor();
-    int theIntNrOfCompletedCells = (int)Math.floor(theNrOfCompletedCells);
-    int theHeightOfCurrentCell = (int)Math.floor((theNrOfCompletedCells - theIntNrOfCompletedCells) * (HEIGHT - 2));
-
-    for(int i=0;i<CELLS;i++){
-      if(i<theIntNrOfCompletedCells){
-        g.setColor( CELL_COLOR );
-        g.fillRoundRect( (int)Math.floor(i * theCellWidth + 1), 1, (int)Math.floor(theCellWidth - 2), HEIGHT - 2, ROUNDING_RADIUS, ROUNDING_RADIUS);
-      } else if(i==theIntNrOfCompletedCells){
-        g.setColor( CELL_COLOR );
-        g.fillRoundRect( (int)Math.floor(i * theCellWidth + 1), HEIGHT - 2 - theHeightOfCurrentCell, (int)Math.floor(theCellWidth - 2), theHeightOfCurrentCell, ROUNDING_RADIUS, ROUNDING_RADIUS);
-
-      }
-      g.setColor( Color.gray );
-      g.drawRoundRect( (int)Math.floor( i * theCellWidth + 1), 1, (int)Math.floor(theCellWidth - 2), HEIGHT - 2, ROUNDING_RADIUS, ROUNDING_RADIUS);
-    }
-
     try {
+      if(theState != State.PENDING && theState != State.CANCELLED){
+        thePercentage = myTransferState.getPacketTransferState().getPercentageComplete();  
+      }
+
+      double theNrOfCompletedCells = (double)CELLS * (double)thePercentage.getDenominator() / (double)thePercentage.getDivisor();
+      int theIntNrOfCompletedCells = (int)Math.floor(theNrOfCompletedCells);
+      int theHeightOfCurrentCell = (int)Math.floor((theNrOfCompletedCells - theIntNrOfCompletedCells) * (HEIGHT - 2));
+
+      for(int i=0;i<CELLS;i++){
+        if(i<theIntNrOfCompletedCells){
+          g.setColor( CELL_COLOR );
+          g.fillRoundRect( (int)Math.floor(i * theCellWidth + 1), 1, (int)Math.floor(theCellWidth - 2), HEIGHT - 2, ROUNDING_RADIUS, ROUNDING_RADIUS);
+        } else if(i==theIntNrOfCompletedCells){
+          g.setColor( CELL_COLOR );
+          g.fillRoundRect( (int)Math.floor(i * theCellWidth + 1), HEIGHT - 2 - theHeightOfCurrentCell, (int)Math.floor(theCellWidth - 2), theHeightOfCurrentCell, ROUNDING_RADIUS, ROUNDING_RADIUS);
+
+        }
+        g.setColor( Color.gray );
+        g.drawRoundRect( (int)Math.floor( i * theCellWidth + 1), 1, (int)Math.floor(theCellWidth - 2), HEIGHT - 2, ROUNDING_RADIUS, ROUNDING_RADIUS);
+      }
+
+
       g.setColor( Color.black );
       g.setFont( FONT );
 
-      String theString = myHandler.getTransferDescription() + " " + FORMAT.format( thePercentage.getPercentage() * 100) + " %";
+      String theString = myTransferState.getTransferDescription() + " " + FORMAT.format( thePercentage.getPercentage() * 100) + " %";
 
       theString += " " + theState.name();
 
@@ -103,6 +106,7 @@ public class PacketTransferProgressPanel extends JPanel {
 
       g.drawString( theString, 10, HEIGHT - 4 );
     } catch ( Exception e ) {
+      LOGGER.error("an error occured while painting transfer progress panel", e);
     }
 
     if(theState == State.STOPPED){
@@ -117,30 +121,31 @@ public class PacketTransferProgressPanel extends JPanel {
     float data[] = { 0.0625f, 0.125f, 0.0625f,
         0.125f , 0.25f , 0.125f,
         0.0625f, 0.125f, 0.0625f };
-//    float data[] = { 0.120f, 0.120f, 0.120f,
-//                     0.120f , 0.165f , 0.120f,
-//                     0.120f, 0.120f, 0.120f };
+    //    float data[] = { 0.120f, 0.120f, 0.120f,
+    //                     0.120f , 0.165f , 0.120f,
+    //                     0.120f, 0.120f, 0.120f };
 
     Kernel kernel = new Kernel(3, 3, data);
     ConvolveOp convolve = new ConvolveOp(kernel, ConvolveOp.EDGE_NO_OP, null);
     return convolve.filter(anImage, null);
   }
 
-//  private class FilePacketVisualizer extends MouseAdapter {
-//    private FilePacketVisualizerFrame myVisualizer = null;
-//
-//    @Override
-//    public void mouseClicked( MouseEvent aE ) {
-//      if(myVisualizer == null){
-//        myVisualizer =new FilePacketVisualizerFrame( myHandler );
-//      }
-//      myVisualizer.setVisible( true );
-//    }
-//  }
-  
-  private class PacketTransferListener implements iPacketTransferListener {
+  //  private class FilePacketVisualizer extends MouseAdapter {
+  //    private FilePacketVisualizerFrame myVisualizer = null;
+  //
+  //    @Override
+  //    public void mouseClicked( MouseEvent aE ) {
+  //      if(myVisualizer == null){
+  //        myVisualizer =new FilePacketVisualizerFrame( myHandler );
+  //      }
+  //      myVisualizer.setVisible( true );
+  //    }
+  //  }
+
+  private class PacketTransferListener implements iTransferStateListener {
+
     @Override
-    public void transferUpdated( PacketTransferState aPacketTransferState ) {
+    public void transferStateChanged(TransferState aState) {
       repaint();
     }
   }

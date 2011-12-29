@@ -13,15 +13,12 @@ import javax.swing.SwingUtilities;
 import org.apache.log4j.Logger;
 
 import chabernac.command.AbstractCommand;
-import chabernac.protocol.packet.AbstractTransferState.State;
 import chabernac.tools.SystemTools;
 
-public class TransferPanel extends JPanel implements iStateChangeListener{
+public class TransferPanel extends JPanel{
   private static final long serialVersionUID = 1937364427569729273L;
   private static Logger LOGGER = Logger.getLogger(TransferPanel.class);
   private final AbstractTransferState myHandler;
-  private AbstractCommand myStartStopCommand = null;
-  private AbstractCommand myCancelCommand = null;
   private JPopupMenu myPopupMenu = null;
 
   public TransferPanel(AbstractTransferState aHandler){
@@ -32,20 +29,10 @@ public class TransferPanel extends JPanel implements iStateChangeListener{
   private void buildGUI(){
     setLayout(new BorderLayout());
     add(new PacketTransferProgressPanel(myHandler), BorderLayout.CENTER);
-
-    //    myStartStopCommand = new StartStopAction();
-    //    JPanel theButtonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-    //    theButtonPanel.add(new CommandButton(myStartStopCommand, 70));
-    //    myCancelCommand = new CancelCommand();
-    //    theButtonPanel.add(new CommandButton(myCancelCommand, 80));
-    //    add(theButtonPanel, BorderLayout.EAST);
-
     addListeners();
   }
 
   private void addListeners(){
-    myHandler.addStateChangeListener( this );
-
     addMouseListener(new ShowPopupMenuListener());
   }
 
@@ -144,11 +131,4 @@ public class TransferPanel extends JPanel implements iStateChangeListener{
       }
     }
   }
-
-  @Override
-  public void stateChanged( String aTransferId, State anOldState, State aNewState ) {
-    myCancelCommand.notifyObs();
-    myStartStopCommand.notifyObs();
-  }
-
 }
