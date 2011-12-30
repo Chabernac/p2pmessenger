@@ -62,10 +62,20 @@ public class PacketSender extends AbstractPacketTransfer{
     stop = true;
     myTimeOutService.shutdownNow();
     myTimeOutService = null;
+    closePacketProvider();
   }
   
   public synchronized void done(){
+    stop();
     myPacketProtocol.removePacketListener( myTransferId );
+  }
+  
+  private void closePacketProvider(){
+    try {
+      myPacketProvider.close();
+    } catch ( IOException e ) {
+      LOGGER.error( "An error occured while closing packet provicer", e );
+    }
   }
 
   public synchronized boolean isFinished(){
@@ -111,6 +121,8 @@ public class PacketSender extends AbstractPacketTransfer{
           while(mySendPackets.size() < myOutstandingPackets &&  myFailedPackets.size() > 0){
             sendPacket( myPacketProvider.getPacket( myFailedPackets.remove( 0 ) ));
           }
+          
+          if(isFinished()) done();
         }catch(IOException e){
           LOGGER.error("Unable to read packet", e);
         }
