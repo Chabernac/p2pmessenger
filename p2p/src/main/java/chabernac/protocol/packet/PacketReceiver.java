@@ -38,10 +38,21 @@ public class PacketReceiver extends AbstractPacketTransfer{
 
   public void stop(){
     stop = true;
+    closePacketPersister();
   }
+  
   
   public void done(){
     myPacketProtocol.removePacketListener( myTransferId );
+    closePacketPersister();
+  }
+  
+  private void closePacketPersister(){
+    try {
+      myDataPacketPersister.close();
+    } catch ( IOException e ) {
+      LOGGER.debug( "Unable to close packet persister", e );
+    }
   }
   
   private class PacketListener implements iPacketListener {

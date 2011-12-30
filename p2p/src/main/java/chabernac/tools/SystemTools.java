@@ -7,7 +7,7 @@ public class SystemTools {
   public static void openFile(File aFile) throws IOException{
     Runtime theRuntime = Runtime.getRuntime();
     //TODO make OS generic
-    theRuntime.exec("cmd /c " + aFile.getAbsolutePath());
+    theRuntime.exec("cmd /c \"" + aFile.getAbsolutePath() + "\"");
   }
   
   public static void openDirectory(File aFile) throws IOException{
