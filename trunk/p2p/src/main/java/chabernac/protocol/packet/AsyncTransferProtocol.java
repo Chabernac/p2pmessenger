@@ -37,7 +37,8 @@ public class AsyncTransferProtocol extends Protocol implements iTransferContaine
 
   private static enum Command{SETUP_TRANSFER, STATE_CHANGE};
   private static enum Response{TRANSFER_ID_NOT_FOUND, UNKNOWN_COMMAND, NOK, OK};
-  
+  private static enum TransferType{FILE, AUDIO};
+
   private List<iTransferListener> myTransferListener = new ArrayList< iTransferListener >();
 
   public AsyncTransferProtocol ( ) {
@@ -60,15 +61,15 @@ public class AsyncTransferProtocol extends Protocol implements iTransferContaine
   private RoutingTable getRoutingTable() throws ProtocolException{
     return ((RoutingProtocol)findProtocolContainer().getProtocol( RoutingProtocol.ID)).getRoutingTable();
   }
-  
+
   public void addTransferListener(iTransferListener aTransferListener){
     myTransferListener.add( aTransferListener );
   }
-  
+
   public void removeTransferListener(iTransferListener aTransferListener){
     myTransferListener.remove( aTransferListener );
   }
-  
+
   @Override
   public String handleCommand( String aSessionId, String anInput ) {
     if(anInput.startsWith( Command.STATE_CHANGE.name() )){
@@ -89,12 +90,22 @@ public class AsyncTransferProtocol extends Protocol implements iTransferContaine
     } else if(anInput.startsWith( Command.SETUP_TRANSFER.name() )){
       try{
         String[] theParams = anInput.split( ";" );
-        String theTransferId = theParams[1];
-        int theNrOfPackets = Integer.parseInt( theParams[2] );
-        int thePacketSize = Integer.parseInt( theParams[3] );
-        String theFile = theParams[4];
-        String theRemotePeer = theParams[5];
-        AbstractTransferState theReceiveTransferState = FileTransferState.createForReceive( getPacketProtocol(), theTransferId, new File(theFile), theRemotePeer, theNrOfPackets, thePacketSize);
+        TransferType theTransferType = TransferType.valueOf(theParams[1]);
+        AbstractTransferState theReceiveTransferState = null;
+        if(theTransferType == TransferType.FILE){
+          String theTransferId = theParams[2];
+          int theNrOfPackets = Integer.parseInt( theParams[3] );
+          int thePacketSize = Integer.parseInt( theParams[4] );
+          String theFile = theParams[5];
+          String theRemotePeer = theParams[6];
+          theReceiveTransferState = FileTransferState.createForReceive( getPacketProtocol(), theTransferId, new File(theFile), theRemotePeer, theNrOfPackets, thePacketSize);
+        } else if(theTransferType == TransferType.AUDIO){
+          String theTransferId = theParams[2];
+          String theRemotePeer = theParams[3];
+          int theSamplesPerSeconds = Integer.parseInt(theParams[4]);
+          int theBits = Integer.parseInt(theParams[5]);
+          theReceiveTransferState = AudioTransferState.createForReceive( getPacketProtocol(), theTransferId, theRemotePeer, theSamplesPerSeconds, theBits);
+        }
         theReceiveTransferState.addStateChangeListener( myStateChangeListener );
         addTransfer( theReceiveTransferState, true );
         return Response.OK.name();
@@ -105,7 +116,7 @@ public class AsyncTransferProtocol extends Protocol implements iTransferContaine
     }
     return Response.UNKNOWN_COMMAND.name();
   }
-  
+
   private void addTransfer(AbstractTransferState aTransfer, boolean isIncoming){
     myTransferStates.put(aTransfer.getTransferId(), aTransfer);
     for(iTransferListener theListener : myTransferListener){
@@ -124,11 +135,27 @@ public class AsyncTransferProtocol extends Protocol implements iTransferContaine
       String theTransferId = UUID.randomUUID().toString();
       FileTransferState theFileTransfeState = FileTransferState.createForSend( getPacketProtocol(), theTransferId, aFile, aPeer, aPacketSize, anOutstandingPackets );
       theFileTransfeState.addStateChangeListener( myStateChangeListener );
-      
+
       addTransfer( theFileTransfeState, false );
-      String theResponse = sendMessage( Command.SETUP_TRANSFER + ";" + theTransferId + ";" + theFileTransfeState.getNrOfPackets() + ";" + aPacketSize + ";" + aFile.getName() + ";" + getRoutingTable().getLocalPeerId(), aPeer );
+      String theResponse = sendMessage( Command.SETUP_TRANSFER + ";" + TransferType.FILE +  ";" + theTransferId + ";" + theFileTransfeState.getNrOfPackets() + ";" + aPacketSize + ";" + aFile.getName() + ";" + getRoutingTable().getLocalPeerId(), aPeer );
       if(!Response.OK.name().equalsIgnoreCase( theResponse )) throw new AsyncTransferException("an error occured while setting up transfer with id '" + theTransferId + "'");
-      
+
+      return theFileTransfeState;
+    }catch(Exception e){
+      throw new AsyncTransferException("Could not start transfer", e);
+    }
+  }
+  
+  public AbstractTransferState startAudioTransfer(String aPeer, int aSamplesPerSecond, int aBits) throws AsyncTransferException{
+    try{
+      String theTransferId = UUID.randomUUID().toString();
+      AbstractTransferState theFileTransfeState = AudioTransferState.createForSend( getPacketProtocol(), theTransferId, aPeer, aSamplesPerSecond, aBits);
+      theFileTransfeState.addStateChangeListener( myStateChangeListener );
+
+      addTransfer( theFileTransfeState, false );
+      String theResponse = sendMessage( Command.SETUP_TRANSFER + ";" + TransferType.AUDIO +  ";" +  theTransferId + ";" + getRoutingTable().getLocalPeerId()  + ";" + aSamplesPerSecond + ";" + aBits, aPeer); 
+      if(!Response.OK.name().equalsIgnoreCase( theResponse )) throw new AsyncTransferException("an error occured while setting up transfer with id '" + theTransferId + "'");
+
       return theFileTransfeState;
     }catch(Exception e){
       throw new AsyncTransferException("Could not start transfer", e);
