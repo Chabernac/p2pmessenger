@@ -8,15 +8,16 @@ import org.apache.log4j.Logger;
 
 import chabernac.protocol.facade.P2PFacadeException;
 import chabernac.protocol.packet.AbstractTransferState;
+import chabernac.protocol.packet.AudioTransferState;
 import chabernac.protocol.packet.FileTransferState;
 import chabernac.protocol.packet.iTransferListener;
 import chabernac.protocol.userinfo.UserInfo;
 
-public class AsyncFileHandler implements iTransferListener {
-  private static Logger LOGGER = Logger.getLogger(AsyncFileHandler.class);
+public class AsyncTransferHandler implements iTransferListener {
+  private static Logger LOGGER = Logger.getLogger(AsyncTransferHandler.class);
   private final ChatMediator myMediator;
 
-  public AsyncFileHandler(ChatMediator aMediator){
+  public AsyncTransferHandler(ChatMediator aMediator){
     myMediator = aMediator;
   }
 
@@ -37,6 +38,19 @@ public class AsyncFileHandler implements iTransferListener {
     }catch(P2PFacadeException e){
       LOGGER.error( "An error occured while sending system message", e );
     }
+    } else if(aTransfer instanceof AudioTransferState && isIncoming){
+      AudioTransferState theAudioTransfer = ((AudioTransferState)aTransfer);
+      try{
+        UserInfo theUserInfo = myMediator.getP2PFacade().getUserInfo().get(aTransfer.getRemotePeer());
+        String theFrom = aTransfer.getRemotePeer();
+        if(theUserInfo != null){
+          theFrom = theUserInfo.getName();
+        }
+
+        myMediator.sendSystemMessage( aTransfer.getRemotePeer(), theFrom + " wenst met u te bellen, klik op <a href='audio:" + aTransfer.getTransferId() + "'>" + theAudioTransfer.getTransferDescription() + "</a> om de audio stream te starten" );
+      }catch(P2PFacadeException e){
+        LOGGER.error( "An error occured while sending system message", e );
+      }
     }
   }
 

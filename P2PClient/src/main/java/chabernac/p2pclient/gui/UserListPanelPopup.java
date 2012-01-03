@@ -68,6 +68,9 @@ public class UserListPanelPopup extends GPanelPopupMenu {
     if("true".equalsIgnoreCase( ApplicationPreferences.getInstance().getProperty( "snap.enabled" ))){
       add(new CommandMenuItem(new CaptureCommand()));
     }
+    if("true".equalsIgnoreCase(ApplicationPreferences.getInstance().getProperty("audio.enabled"))){
+      add(new CommandMenuItem(new AudioTransferCommand()));
+    }
   }
 
   private void buildGroups(){
@@ -262,6 +265,29 @@ public class UserListPanelPopup extends GPanelPopupMenu {
       myCamFrame.setUserId( theUser );
       myCamFrame.setVisible( true );
     }
+  }
+  
+  private class AudioTransferCommand extends AbstractCommand {
+    @Override
+    public String getName() {
+      return "Bellen";
+    }
 
+    @Override
+    public boolean isEnabled() {
+      return true;
+    }
+
+    @Override
+    public void execute() {
+      if(!(getSelectedComponent() instanceof StatusCheckBox)) return;
+      StatusCheckBox theStatusCheckBox = (StatusCheckBox)getSelectedComponent();
+      String theUser = myPanel.getUserForCheckBox( theStatusCheckBox );
+      try {
+        myMediator.getP2PFacade().startAudioTransfer(theUser, 8000, 8);
+      } catch (P2PFacadeException e) {
+        logger.error("Could not start audio transfer", e);
+      }
+    }
   }
 }

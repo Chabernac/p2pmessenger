@@ -23,14 +23,12 @@ import javax.swing.event.HyperlinkListener;
 import org.apache.log4j.Logger;
 
 import chabernac.gui.GPanel;
-import chabernac.protocol.asyncfiletransfer.AcceptFileResponse;
-import chabernac.protocol.asyncfiletransfer.AcceptFileResponse.Response;
 import chabernac.protocol.facade.P2PFacadeException;
 import chabernac.protocol.message.DeliveryReport;
 import chabernac.protocol.message.MultiPeerMessage;
 import chabernac.protocol.message.iDeliverReportListener;
 import chabernac.protocol.message.iMultiPeerMessageListener;
-import chabernac.protocol.packet.AbstractTransferState;
+import chabernac.protocol.packet.AudioTransferState;
 import chabernac.protocol.packet.FileTransferState;
 import chabernac.tools.HTMLTools;
 import chabernac.tools.SmileyTools;
@@ -85,10 +83,12 @@ public class ReceivedMessagesField extends GPanel implements iReceivedMessagesPr
 
   public class HyperlinkActivator implements HyperlinkListener{
     private JFileChooser myFileChooser = new JFileChooser();
-    
+
     public void hyperlinkUpdate(HyperlinkEvent e){ 
       if(e.getEventType()==HyperlinkEvent.EventType.ACTIVATED){
-        if(e.getDescription().startsWith( "download:")){
+        if(e.getDescription().startsWith("audio:")){
+          activateAudioStream(e.getDescription());
+        } else if(e.getDescription().startsWith( "download:")){
           activateDownload(e.getDescription());
         } else {
           String theURL = e.getURL().toString().replaceAll("file:/", "");
@@ -109,6 +109,18 @@ public class ReceivedMessagesField extends GPanel implements iReceivedMessagesPr
       } 
     }
 
+    private void activateAudioStream(String aURL){
+      String[] theParts = aURL.split( ":" );
+      String theTransferId = theParts[1];
+
+      try {
+        AudioTransferState theAudioTransferState =  (AudioTransferState)myMediator.getP2PFacade().getAsyncFileTransferContainer().getTransferState( theTransferId );
+        theAudioTransferState.start();
+      } catch (Exception e) {
+        logger.error("Unable to start audio stream", e);
+      }
+    }
+
     private void activateDownload(String aURL){
       String[] theParts = aURL.split( ":" );
       String theTransferId = theParts[1];
@@ -120,7 +132,7 @@ public class ReceivedMessagesField extends GPanel implements iReceivedMessagesPr
       try {
         if(theReturn == JFileChooser.APPROVE_OPTION){
           myMediator.getP2PFacade().showFileTransferOverView();
-          
+
           FileTransferState theFileTransferState =  (FileTransferState)myMediator.getP2PFacade().getAsyncFileTransferContainer().getTransferState( theTransferId );
           theFileTransferState.start(myFileChooser.getSelectedFile());
         } else {
