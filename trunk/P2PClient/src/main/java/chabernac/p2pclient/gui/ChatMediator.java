@@ -74,7 +74,7 @@ public class ChatMediator {
   }
   
   private void setupFileHandler() throws P2PFacadeException{
-    myFileHandler = new AsyncFileHandler(this);
+    myFileHandler = new AsyncTransferHandler(this);
     myP2PFacade.getAsyncFileTransferContainer().addTransferListener( myFileHandler );
   }
   
