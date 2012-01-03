@@ -237,6 +237,15 @@ public class P2PFacade {
       throw new P2PFacadeException("An error occured while sending file", e);
     }
   }
+  
+  public AbstractTransferState startAudioTransfer(String aPeerId, int aSamplesPerSecond, int aBits) throws P2PFacadeException{
+    if(!isStarted()) throw new P2PFacadeException("Can not execute this action when the server is not started");
+    try {
+      return ((AsyncTransferProtocol)myContainer.getProtocol( AsyncTransferProtocol.ID )).startAudioTransfer(aPeerId, aSamplesPerSecond, aBits);
+    } catch ( Exception e ) {
+      throw new P2PFacadeException("An error occured while starting audio transfer", e);
+    }
+  }
 
   public P2PFacade setFileHandler(iFileHandler aFileHandler) throws P2PFacadeException{
     myProperties.setProperty( "chabernac.protocol.filetransfer.iFileHandler", aFileHandler );

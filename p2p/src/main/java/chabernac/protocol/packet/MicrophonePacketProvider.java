@@ -25,7 +25,9 @@ public class MicrophonePacketProvider implements iDataPacketProvider{
   @Override
   public DataPacket getNextPacket() throws IOException {
     byte[] theByte = new byte[myBufferSize];
+    myDataLine.read(theByte, 0, myBufferSize);
     DataPacket thePacket = new DataPacket(Integer.toString(myCurrentPacket), theByte);
+    System.out.println("Returning packet " + myCurrentPacket);
     myCurrentPacket++;
     return thePacket;
   }

@@ -14,17 +14,17 @@ public abstract class AbstractTransferState {
   public static enum State{PENDING, RUNNING, STOPPED, CANCELLED, DONE, FAILED};
   public static enum Direction{SEND, RECEIVE};
   
-  private final String myTransferId;
+  protected final String myTransferId;
   private State myState = State.PENDING;
   private iPacketTransfer myTransfer;
-  private final String myRemotePeer;
+  protected final String myRemotePeer;
   
   private List< iStateChangeListener > myStateChangeListeners = new ArrayList< iStateChangeListener >();
   
   private final PacketTransferListener myPacketTransferListener = new PacketTransferListener();
   
   private PacketTransferStateAdapterListener myAdapterListener = null;
-  private final Direction myDirection;
+  protected final Direction myDirection;
   
   public AbstractTransferState ( String aTransferId, String aRemotePeer, Direction aDirection ) {
     super();
