@@ -12,6 +12,7 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.ResourceBundle;
 
+import javax.sound.sampled.AudioFormat;
 import javax.swing.JOptionPane;
 
 import org.apache.log4j.Logger;
@@ -284,7 +285,7 @@ public class UserListPanelPopup extends GPanelPopupMenu {
       StatusCheckBox theStatusCheckBox = (StatusCheckBox)getSelectedComponent();
       String theUser = myPanel.getUserForCheckBox( theStatusCheckBox );
       try {
-        myMediator.getP2PFacade().startAudioTransfer(theUser, 8000, 8);
+        myMediator.getP2PFacade().startAudioTransfer(theUser, AudioFormat.Encoding.ALAW, 8000, 8);
       } catch (P2PFacadeException e) {
         logger.error("Could not start audio transfer", e);
       }
