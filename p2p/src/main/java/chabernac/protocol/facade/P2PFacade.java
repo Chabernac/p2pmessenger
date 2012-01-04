@@ -17,6 +17,8 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
+import javax.sound.sampled.AudioFormat;
+
 import chabernac.io.BasicSocketPool;
 import chabernac.io.CachingSocketPool;
 import chabernac.io.iSocketPool;
@@ -63,10 +65,10 @@ import chabernac.protocol.routing.SocketPeer;
 import chabernac.protocol.routing.WebPeerProtocol;
 import chabernac.protocol.userinfo.AutoUserInfoStatusDector;
 import chabernac.protocol.userinfo.UserInfo;
+import chabernac.protocol.userinfo.UserInfo.Status;
 import chabernac.protocol.userinfo.UserInfoProtocol;
 import chabernac.protocol.userinfo.iUserInfoListener;
 import chabernac.protocol.userinfo.iUserInfoProvider;
-import chabernac.protocol.userinfo.UserInfo.Status;
 import chabernac.protocol.version.Version;
 import chabernac.protocol.version.VersionProtocol;
 import chabernac.tools.PropertyMap;
@@ -238,10 +240,10 @@ public class P2PFacade {
     }
   }
   
-  public AbstractTransferState startAudioTransfer(String aPeerId, int aSamplesPerSecond, int aBits) throws P2PFacadeException{
+  public AbstractTransferState startAudioTransfer(String aPeerId, AudioFormat.Encoding anEncoding,int aSamplesPerSecond, int aBits) throws P2PFacadeException{
     if(!isStarted()) throw new P2PFacadeException("Can not execute this action when the server is not started");
     try {
-      return ((AsyncTransferProtocol)myContainer.getProtocol( AsyncTransferProtocol.ID )).startAudioTransfer(aPeerId, aSamplesPerSecond, aBits);
+      return ((AsyncTransferProtocol)myContainer.getProtocol( AsyncTransferProtocol.ID )).startAudioTransfer(aPeerId, anEncoding, aSamplesPerSecond, aBits);
     } catch ( Exception e ) {
       throw new P2PFacadeException("An error occured while starting audio transfer", e);
     }

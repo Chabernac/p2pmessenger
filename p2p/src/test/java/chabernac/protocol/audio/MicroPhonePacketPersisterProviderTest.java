@@ -3,6 +3,7 @@ package chabernac.protocol.audio;
 import java.io.IOException;
 import java.util.concurrent.ArrayBlockingQueue;
 
+import javax.sound.sampled.AudioFormat.Encoding;
 import javax.sound.sampled.LineUnavailableException;
 
 import chabernac.protocol.packet.DataPacket;
@@ -16,8 +17,8 @@ public class MicroPhonePacketPersisterProviderTest {
    * @throws LineUnavailableException 
    */
   public static void main(String[] args) throws LineUnavailableException {
-    final MicrophonePacketProvider theProvider = new MicrophonePacketProvider(8000, 8);
-    final MicrophonePacketPersister thePersister = new MicrophonePacketPersister(8000, 8);
+    final MicrophonePacketProvider theProvider = new MicrophonePacketProvider(Encoding.ALAW, 8000, 8);
+    final MicrophonePacketPersister thePersister = new MicrophonePacketPersister(Encoding.ALAW, 8000, 8);
 
     final ArrayBlockingQueue<DataPacket> theAudioQueue = new ArrayBlockingQueue<DataPacket>(10);
 
