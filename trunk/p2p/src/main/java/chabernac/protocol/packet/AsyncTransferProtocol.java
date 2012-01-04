@@ -15,6 +15,8 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+import javax.sound.sampled.AudioFormat;
+
 import org.apache.log4j.Logger;
 
 import chabernac.protocol.Protocol;
@@ -102,9 +104,10 @@ public class AsyncTransferProtocol extends Protocol implements iTransferContaine
         } else if(theTransferType == TransferType.AUDIO){
           String theTransferId = theParams[2];
           String theRemotePeer = theParams[3];
-          int theSamplesPerSeconds = Integer.parseInt(theParams[4]);
-          int theBits = Integer.parseInt(theParams[5]);
-          theReceiveTransferState = AudioTransferState.createForReceive( getPacketProtocol(), theTransferId, theRemotePeer, theSamplesPerSeconds, theBits);
+          AudioFormat.Encoding theEncoding = new AudioFormat.Encoding(theParams[4]);
+          int theSamplesPerSeconds = Integer.parseInt(theParams[5]);
+          int theBits = Integer.parseInt(theParams[6]);
+          theReceiveTransferState = AudioTransferState.createForReceive( getPacketProtocol(), theTransferId, theRemotePeer, theEncoding, theSamplesPerSeconds, theBits);
         }
         theReceiveTransferState.addStateChangeListener( myStateChangeListener );
         addTransfer( theReceiveTransferState, true );
@@ -146,10 +149,10 @@ public class AsyncTransferProtocol extends Protocol implements iTransferContaine
     }
   }
   
-  public AbstractTransferState startAudioTransfer(String aPeer, int aSamplesPerSecond, int aBits) throws AsyncTransferException{
+  public AbstractTransferState startAudioTransfer(String aPeer, AudioFormat.Encoding anEncoding, int aSamplesPerSecond, int aBits) throws AsyncTransferException{
     try{
       String theTransferId = UUID.randomUUID().toString();
-      AbstractTransferState theFileTransfeState = AudioTransferState.createForSend( getPacketProtocol(), theTransferId, aPeer, aSamplesPerSecond, aBits);
+      AbstractTransferState theFileTransfeState = AudioTransferState.createForSend( getPacketProtocol(), theTransferId, aPeer, anEncoding, aSamplesPerSecond, aBits);
       theFileTransfeState.addStateChangeListener( myStateChangeListener );
 
       addTransfer( theFileTransfeState, false );

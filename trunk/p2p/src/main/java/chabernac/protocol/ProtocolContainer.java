@@ -19,6 +19,7 @@ import org.apache.log4j.Logger;
 
 import chabernac.protocol.ProtocolMessageEntry.Status;
 import chabernac.thread.DynamicSizeExecutor;
+import chabernac.utils.LimitedListDecorator;
 
 public class ProtocolContainer implements IProtocol {
   private static final Logger LOGGER = Logger.getLogger( ProtocolContainer.class );
@@ -26,7 +27,7 @@ public class ProtocolContainer implements IProtocol {
   public static enum Response {UNKNOWN_COMMAND, UNKNOWN_PROTOCOL, INVALID_PROTOCOL, NOT_SUPPORTED};
 
   private Map<String, IProtocol> myProtocolMap = null;
-  private List< ProtocolMessageEntry > myMessageHistory = Collections.synchronizedList( new ArrayList< ProtocolMessageEntry >() );
+  private List< ProtocolMessageEntry > myMessageHistory = Collections.synchronizedList( new LimitedListDecorator<ProtocolMessageEntry>(100, new ArrayList< ProtocolMessageEntry >() ));
   private List<iProtocolMessageListener> myListeners = new ArrayList< iProtocolMessageListener >();
   private ExecutorService myExecutor = new DynamicSizeExecutor(5, 256,0);
 

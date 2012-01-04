@@ -3,6 +3,7 @@ package chabernac.protocol.packet;
 import java.io.IOException;
 
 import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioFormat.Encoding;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.TargetDataLine;
@@ -14,8 +15,8 @@ public class MicrophonePacketProvider implements iDataPacketProvider{
   private final int myBufferSize;
   private int myCurrentPacket = 0;
   
-  public MicrophonePacketProvider(float aSamplesPerSecond, int aBitSize) throws LineUnavailableException{
-    myAudioFormat = new AudioFormat(aSamplesPerSecond, aBitSize, 1, true, true);
+  public MicrophonePacketProvider(Encoding anEncoding, float aSamplesPerSecond, int aBitSize) throws LineUnavailableException{
+    myAudioFormat = new AudioFormat(anEncoding, aSamplesPerSecond, aBitSize, 1, (aBitSize + 7) / 8, aSamplesPerSecond, false);
     myDataLine = AudioSystem.getTargetDataLine(myAudioFormat);
     myDataLine.open();
     myDataLine.start();

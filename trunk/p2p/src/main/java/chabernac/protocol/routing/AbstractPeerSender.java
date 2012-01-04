@@ -10,6 +10,7 @@ import java.util.Collections;
 import java.util.List;
 
 import chabernac.protocol.routing.PeerMessage.State;
+import chabernac.utils.LimitedListDecorator;
 
 public abstract class AbstractPeerSender implements iPeerSender {
   private long myBytesSend = 0;
@@ -19,7 +20,7 @@ public abstract class AbstractPeerSender implements iPeerSender {
   private MessageListenerDelegate myListenerDelegate = new MessageListenerDelegate();
 
   private boolean isKeepHistory = false;
-  private List<PeerMessage> myHistory = new ArrayList<PeerMessage>();
+  private List<PeerMessage> myHistory = new LimitedListDecorator<PeerMessage>(100,new ArrayList<PeerMessage>());
 
   @Override
   public final String send( AbstractPeer aPeer, String aMessage ) throws IOException {
