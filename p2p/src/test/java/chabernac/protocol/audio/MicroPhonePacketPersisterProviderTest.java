@@ -16,9 +16,9 @@ public class MicroPhonePacketPersisterProviderTest {
    * @param args
    * @throws LineUnavailableException 
    */
-  public static void main(String[] args) throws LineUnavailableException {
-    final MicrophonePacketProvider theProvider = new MicrophonePacketProvider(Encoding.ULAW, 8000, 8);
-    final MicrophonePacketPersister thePersister = new MicrophonePacketPersister(Encoding.ULAW, 8000, 8);
+  public static void main(String[] args) throws LineUnavailableException{
+    final MicrophonePacketProvider theProvider = new MicrophonePacketProvider(Encoding.PCM_SIGNED, 32000, 16, 8);
+    final MicrophonePacketPersister thePersister = new MicrophonePacketPersister(Encoding.PCM_SIGNED, 32000, 16, 8);
 
     final ArrayBlockingQueue<DataPacket> theAudioQueue = new ArrayBlockingQueue<DataPacket>(10);
 

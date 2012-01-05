@@ -240,10 +240,10 @@ public class P2PFacade {
     }
   }
   
-  public AbstractTransferState startAudioTransfer(String aPeerId, AudioFormat.Encoding anEncoding,int aSamplesPerSecond, int aBits) throws P2PFacadeException{
+  public AbstractTransferState startAudioTransfer(String aPeerId, AudioFormat.Encoding anEncoding,int aSamplesPerSecond, int aBits, int aSpeexQuality) throws P2PFacadeException{
     if(!isStarted()) throw new P2PFacadeException("Can not execute this action when the server is not started");
     try {
-      return ((AsyncTransferProtocol)myContainer.getProtocol( AsyncTransferProtocol.ID )).startAudioTransfer(aPeerId, anEncoding, aSamplesPerSecond, aBits);
+      return ((AsyncTransferProtocol)myContainer.getProtocol( AsyncTransferProtocol.ID )).startAudioTransfer(aPeerId, anEncoding, aSamplesPerSecond, aBits, aSpeexQuality);
     } catch ( Exception e ) {
       throw new P2PFacadeException("An error occured while starting audio transfer", e);
     }
