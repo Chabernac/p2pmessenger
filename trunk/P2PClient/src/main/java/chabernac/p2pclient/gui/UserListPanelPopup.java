@@ -285,7 +285,7 @@ public class UserListPanelPopup extends GPanelPopupMenu {
       StatusCheckBox theStatusCheckBox = (StatusCheckBox)getSelectedComponent();
       String theUser = myPanel.getUserForCheckBox( theStatusCheckBox );
       try {
-        myMediator.getP2PFacade().startAudioTransfer(theUser, AudioFormat.Encoding.ALAW, 8000, 8);
+        myMediator.getP2PFacade().startAudioTransfer(theUser, AudioFormat.Encoding.PCM_SIGNED, 32000, 16);
       } catch (P2PFacadeException e) {
         logger.error("Could not start audio transfer", e);
       }
