@@ -91,15 +91,15 @@ public class URLConnectionHelper extends AbstractURLConnectionHelper{
   }
 
   public void write(String aKey, String aValue) throws IOException{
-    long t1 = System.currentTimeMillis();
+//    long t1 = System.currentTimeMillis();
     try{
       if(!isFirstKey) {
         getWriter().write( "&" );
       }
       getWriter().write( aKey + "=" + aValue );
       isFirstKey = false;
-      long t2 = System.currentTimeMillis();
-      LOGGER.debug("Writing key value '" + aKey  + "'='" + aValue + "' took " + (t2 - t1) + " ms");
+//      long t2 = System.currentTimeMillis();
+//      LOGGER.debug("Writing key value '" + aKey  + "'='" + aValue + "' took " + (t2 - t1) + " ms");
     }catch(IOException e){
       handleIOException( e );
       throw e;
