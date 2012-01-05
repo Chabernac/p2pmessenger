@@ -102,11 +102,11 @@ public class AsyncTransferProtocol extends Protocol implements iTransferContaine
           String theRemotePeer = theParams[6];
           theReceiveTransferState = FileTransferState.createForReceive( getPacketProtocol(), theTransferId, new File(theFile), theRemotePeer, theNrOfPackets, thePacketSize);
         } else if(theTransferType == TransferType.AUDIO){
-          String theTransferId = theParams[2];
-          String theRemotePeer = theParams[3];
-          AudioFormat.Encoding theEncoding = new AudioFormat.Encoding(theParams[4]);
-          int theSamplesPerSeconds = Integer.parseInt(theParams[5]);
-          int theBits = Integer.parseInt(theParams[6]);
+          AudioFormat.Encoding theEncoding = new AudioFormat.Encoding(theParams[2]);
+          int theSamplesPerSeconds = Integer.parseInt(theParams[3]);
+          int theBits = Integer.parseInt(theParams[4]);
+          String theTransferId = theParams[5];
+          String theRemotePeer = theParams[6];
           theReceiveTransferState = AudioTransferState.createForReceive( getPacketProtocol(), theTransferId, theRemotePeer, theEncoding, theSamplesPerSeconds, theBits);
         }
         theReceiveTransferState.addStateChangeListener( myStateChangeListener );
@@ -156,7 +156,7 @@ public class AsyncTransferProtocol extends Protocol implements iTransferContaine
       theFileTransfeState.addStateChangeListener( myStateChangeListener );
 
       addTransfer( theFileTransfeState, false );
-      String theResponse = sendMessage( Command.SETUP_TRANSFER + ";" + TransferType.AUDIO +  ";" +  theTransferId + ";" + getRoutingTable().getLocalPeerId()  + ";" + aSamplesPerSecond + ";" + aBits, aPeer); 
+      String theResponse = sendMessage( Command.SETUP_TRANSFER + ";" + TransferType.AUDIO  + ";" + anEncoding.toString() + ";" + aSamplesPerSecond + ";" + aBits + ";" + theTransferId + ";" +  getRoutingTable().getLocalPeerId(), aPeer); 
       if(!Response.OK.name().equalsIgnoreCase( theResponse )) throw new AsyncTransferException("an error occured while setting up transfer with id '" + theTransferId + "'");
 
       return theFileTransfeState;
