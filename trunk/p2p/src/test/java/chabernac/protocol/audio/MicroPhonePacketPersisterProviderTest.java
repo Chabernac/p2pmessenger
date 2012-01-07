@@ -17,8 +17,8 @@ public class MicroPhonePacketPersisterProviderTest {
    * @throws LineUnavailableException 
    */
   public static void main(String[] args) throws LineUnavailableException{
-    final MicrophonePacketProvider theProvider = new MicrophonePacketProvider(Encoding.PCM_SIGNED, 32000, 16, 8);
-    final MicrophonePacketPersister thePersister = new MicrophonePacketPersister(Encoding.PCM_SIGNED, 32000, 16, 8);
+    final MicrophonePacketProvider theProvider = new MicrophonePacketProvider(Encoding.PCM_SIGNED, 16000, 16, 8, 20);
+    final MicrophonePacketPersister thePersister = new MicrophonePacketPersister(Encoding.PCM_SIGNED, 16000, 16, 8, 20);
 
     final ArrayBlockingQueue<DataPacket> theAudioQueue = new ArrayBlockingQueue<DataPacket>(10);
 
@@ -28,6 +28,7 @@ public class MicroPhonePacketPersisterProviderTest {
             while(true)
               try {
                 theAudioQueue.put(theProvider.getNextPacket());
+                Thread.yield();
               } catch (InterruptedException e) {
               } catch (IOException e) {
                 e.printStackTrace();
@@ -41,6 +42,7 @@ public class MicroPhonePacketPersisterProviderTest {
             while(true)
               try {
                 thePersister.persistDataPacket(theAudioQueue.take());
+                Thread.yield();
               } catch (IOException e) {
                 e.printStackTrace();
               } catch (InterruptedException e) {
