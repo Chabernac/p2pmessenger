@@ -16,18 +16,18 @@ public class MicrophonePacketProvider implements iDataPacketProvider{
   private final AudioFormat myAudioFormat;
   private TargetDataLine myDataLine;
   private int myCurrentPacket = 0;
-//  private final SpeexEncoder mySpeexEncoder;
   private final int myMaxBytes;
+  private final SpeexEncoder mySpeexEncoder;
+  private final int myMaxSpeexBytes;
   
   public MicrophonePacketProvider(Encoding anEncoding, int aSamplesPerSecond, int aBitSize, int aSpeexQuality, int aFramesPerSecond) throws LineUnavailableException{
     myAudioFormat = new AudioFormat(anEncoding, aSamplesPerSecond, aBitSize, 1, (aBitSize + 7) / 8, aSamplesPerSecond, false);
-//    mySpeexEncoder = new SpeexEncoder();
-//    mySpeexEncoder.init(SPEEX_MODE_WIDEBAND, aSpeexQuality, aSamplesPerSecond, 1);
-//    myMaxBytes = mySpeexEncoder.getEncoder().getFrameSize() * 2;
+    mySpeexEncoder = new SpeexEncoder();
+    mySpeexEncoder.init(SPEEX_MODE_WIDEBAND, aSpeexQuality, aSamplesPerSecond, 1);
+    myMaxSpeexBytes = myDataLine.getBufferSize() / 2;
     myDataLine = AudioSystem.getTargetDataLine(myAudioFormat);
     myDataLine.open();
     myDataLine.start();
-//    myMaxBytes = myDataLine.getBufferSize() / 2;
     myMaxBytes = aSamplesPerSecond * (aBitSize / 8) / aFramesPerSecond;
   }
 
@@ -38,13 +38,25 @@ public class MicrophonePacketProvider implements iDataPacketProvider{
     System.out.println("packet size " + theByte.length);
     myDataLine.read(theByte, 0, theByte.length);
 
-//    mySpeexEncoder.processData(theByte, 0, theByte.length);
-//    byte[] theEncodedBytes = new byte[mySpeexEncoder.getProcessedDataByteSize()];
-//    mySpeexEncoder.getProcessedData(theEncodedBytes, 0);
+    byte[] theProcessedBytes = new byte[myMaxBytes];
     
-//    System.out.println("Speex reduced packet size from '" + theByte.length + "' to " + theEncodedBytes.length  + "' " + (100 * (float)theEncodedBytes.length / (float)theByte.length) + " % compression");
+    int theCurrentByte = 0;
+    int theCurrentSpeexByte = 0;
+    while(theCurrentByte < myMaxBytes){
+      mySpeexEncoder.processData(theByte, theCurrentByte, myMaxSpeexBytes);
+      mySpeexEncoder.getProcessedData(theProcessedBytes, theCurrentSpeexByte);
+      theCurrentByte += myMaxBytes;
+      theCurrentSpeexByte += mySpeexEncoder.getProcessedDataByteSize();
+    }
+    
+    //now trim the byte array
+    byte[] theEncodedBytes = new byte[theCurrentSpeexByte];
+    
+    System.arraycopy( theProcessedBytes, 0, theEncodedBytes, 0, theCurrentSpeexByte );
+    
+    System.out.println("Speex reduced packet size from '" + theByte.length + "' to " + theEncodedBytes.length  + "' " + (100 * (float)theEncodedBytes.length / (float)theByte.length) + " % compression");
     System.out.println("returning packet " + myCurrentPacket);
-    DataPacket thePacket = new DataPacket(Integer.toString(myCurrentPacket), theByte);
+    DataPacket thePacket = new DataPacket(Integer.toString(myCurrentPacket), theEncodedBytes);
     
     myCurrentPacket++;
     return thePacket;
