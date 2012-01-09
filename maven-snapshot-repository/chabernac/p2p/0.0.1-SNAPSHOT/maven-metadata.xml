@@ -1,12 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<metadata>
+<metadata modelVersion="1.1.0">
   <groupId>chabernac</groupId>
   <artifactId>p2p</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <versioning>
     <snapshot>
-      <buildNumber>48</buildNumber>
+      <timestamp>20120109.233042</timestamp>
+      <buildNumber>49</buildNumber>
     </snapshot>
-    <lastUpdated>20120105202252</lastUpdated>
+    <lastUpdated>20120109233042</lastUpdated>
+    <snapshotVersions>
+      <snapshotVersion>
+        <extension>jar</extension>
+        <value>0.0.1-20120109.233042-49</value>
+        <updated>20120109233042</updated>
+      </snapshotVersion>
+      <snapshotVersion>
+        <extension>pom</extension>
+        <value>0.0.1-20120109.233042-49</value>
+        <updated>20120109233042</updated>
+      </snapshotVersion>
+    </snapshotVersions>
   </versioning>
 </metadata>

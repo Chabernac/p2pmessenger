@@ -2,11 +2,10 @@
 <metadata>
   <groupId>chabernac</groupId>
   <artifactId>p2p</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
   <versioning>
     <versions>
       <version>0.0.1-SNAPSHOT</version>
     </versions>
-    <lastUpdated>20120105202233</lastUpdated>
+    <lastUpdated>20120109233121</lastUpdated>
   </versioning>
 </metadata>
