@@ -31,7 +31,6 @@ public class StreamSplitter {
     myInputOutputHandler = aInputOutputHandler;
     myInputStream = new BufferedReader(new InputStreamReader(aInputStream));
     myOutputStream = new PrintWriter(new OutputStreamWriter(aOutputStream));
-    
   }
   
   public void close(){
