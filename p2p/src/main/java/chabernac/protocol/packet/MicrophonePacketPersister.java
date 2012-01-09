@@ -1,17 +1,19 @@
 package chabernac.protocol.packet;
 
 import java.io.IOException;
+import java.io.StreamCorruptedException;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.AudioFormat.Encoding;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
+import javax.sound.sampled.AudioFormat.Encoding;
 
 import org.apache.log4j.Logger;
+import org.xiph.speex.SpeexDecoder;
 
 import chabernac.utils.Buffer;
 
@@ -27,7 +29,8 @@ public class MicrophonePacketPersister implements iDataPacketPersister {
   private Buffer<DataPacket> mySortedPackets = null;
   private ExecutorService myPlayerThread = null;
   private boolean stop = false;
-//  private final SpeexDecoder mySpeexDecoder;
+  private final SpeexDecoder mySpeexDecoder;
+  private final int myMaxSpeexBytes;
 
 
   public MicrophonePacketPersister(Encoding anEncoding, int aSamplesPerSecond, int aBitSize, int aSpeexQuality, int aPacketsPerSecond) throws LineUnavailableException{
@@ -41,11 +44,12 @@ public class MicrophonePacketPersister implements iDataPacketPersister {
     
     int theDataLineBufferSize = DATA_LINE_BUFFER * aSamplesPerSecond  * (aBitSize / 2) / 1000;
     
-//    mySpeexDecoder = new SpeexDecoder();
-//    mySpeexDecoder.init(SPEEX_MODE_WIDEBAND, aSamplesPerSecond, 1, true);
+    mySpeexDecoder = new SpeexDecoder();
+    mySpeexDecoder.init(SPEEX_MODE_WIDEBAND, aSamplesPerSecond, 1, true);
     myDataLine = (SourceDataLine)AudioSystem.getSourceDataLine(myAudioFormat);
     myDataLine.open(myAudioFormat, theDataLineBufferSize);
     myDataLine.start();
+    myMaxSpeexBytes = myDataLine.getBufferSize() / 2;
     System.out.println("data line buffer: " + myDataLine.getBufferSize());
     myPlayerThread = Executors.newSingleThreadExecutor();
     myPlayerThread.execute(new AudioPlayer());
@@ -94,16 +98,18 @@ public class MicrophonePacketPersister implements iDataPacketPersister {
         byte[] theBytes = thePacket.getBytes();
         myPacketCounter++;
         System.out.println("Playing packet " + thePacket.getId()  + " buffer size: " + mySortedPackets.size() + " bytes " + theBytes.length + " " + (float)(1000 * myPacketCounter) / (float)(System.currentTimeMillis() - myStartTime) + " packets/second");
-
-//        try{
-//          mySpeexDecoder.processData(theBytes, 0, theBytes.length);
-//          byte[] theDecodedBytes = new byte[mySpeexDecoder.getProcessedDataByteSize()];
-//          mySpeexDecoder.getProcessedData(theDecodedBytes, 0);
-
-          myDataLine.write(theBytes, 0, theBytes.length);
-//        }catch(StreamCorruptedException e){
-//          LOGGER.error("Audio packet corrupted", e);
-//        }
+        try{
+          int theCurrentSpeexByte = 0;
+          while(theCurrentSpeexByte < theBytes.length){
+            mySpeexDecoder.processData(theBytes, theCurrentSpeexByte, myMaxSpeexBytes);
+            byte[] theDecodedBytes = new byte[mySpeexDecoder.getProcessedDataByteSize()];
+            mySpeexDecoder.getProcessedData(theDecodedBytes, 0);
+            myDataLine.write(theDecodedBytes, 0, theDecodedBytes.length);
+            theCurrentSpeexByte += myMaxSpeexBytes;
+          }
+        }catch(StreamCorruptedException e){
+          LOGGER.error("Audio packet corrupted", e);
+        }
       }
     }
   }
