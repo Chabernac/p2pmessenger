@@ -19,8 +19,9 @@ public class MicrophonePacketProvider implements iDataPacketProvider{
   private final int myMaxBytes;
   private final SpeexEncoder mySpeexEncoder;
   private final int myMaxSpeexBytes;
+  private final int myPacketsPerSecond;
   
-  public MicrophonePacketProvider(Encoding anEncoding, int aSamplesPerSecond, int aBitSize, int aSpeexQuality, int aFramesPerSecond) throws LineUnavailableException{
+  public MicrophonePacketProvider(Encoding anEncoding, int aSamplesPerSecond, int aBitSize, int aSpeexQuality, int aPacketsPerSecond) throws LineUnavailableException{
     myAudioFormat = new AudioFormat(anEncoding, aSamplesPerSecond, aBitSize, 1, (aBitSize + 7) / 8, aSamplesPerSecond, false);
     mySpeexEncoder = new SpeexEncoder();
     mySpeexEncoder.init(SPEEX_MODE_WIDEBAND, aSpeexQuality, aSamplesPerSecond, 1);
@@ -28,18 +29,24 @@ public class MicrophonePacketProvider implements iDataPacketProvider{
     myDataLine.open();
     myDataLine.start();
     myMaxSpeexBytes = mySpeexEncoder.getFrameSize() * 2;
-    int theMaxBytes = aSamplesPerSecond * (aBitSize / 8) / aFramesPerSecond;
+    int theMaxBytes = aSamplesPerSecond * (aBitSize / 8) / aPacketsPerSecond;
     //myMaxBytes should be a multiple of my max speex bytes
-    int theMultiply = Math.round((float)theMaxBytes / (float)myMaxSpeexBytes);
+    int theMultiply = (int)Math.floor((float)theMaxBytes / (float)myMaxSpeexBytes);
     if(theMultiply <= 0) theMultiply = 1;
     myMaxBytes = theMultiply * myMaxSpeexBytes;
+    
+    myPacketsPerSecond =  aSamplesPerSecond * (aBitSize / 8) / myMaxBytes;
+  }
+  
+  public int getPacketsPerSecond(){
+    return myPacketsPerSecond;
   }
 
   @Override
   public DataPacket getNextPacket() throws IOException {
     byte[] theByte = new byte[myMaxBytes];
 //    System.out.println("packet size " + theByte.length + " " + mySpeexEncoder.getEncoder().getFrameSize());
-    System.out.println("packet size " + theByte.length);
+//    System.out.println("packet size " + theByte.length);
     myDataLine.read(theByte, 0, theByte.length);
 
     byte[] theProcessedBytes = new byte[myMaxBytes];
@@ -62,8 +69,8 @@ public class MicrophonePacketProvider implements iDataPacketProvider{
     
     System.arraycopy( theProcessedBytes, 0, theEncodedBytes, 0, theCurrentSpeexByte );
     
-    System.out.println("Speex reduced packet size from '" + theByte.length + "' to " + theEncodedBytes.length  + "' " + (100 * (float)theEncodedBytes.length / (float)theByte.length) + " % compression");
-    System.out.println("returning packet " + myCurrentPacket);
+//    System.out.println("Speex reduced packet size from '" + theByte.length + "' to " + theEncodedBytes.length  + "' " + (100 * (float)theEncodedBytes.length / (float)theByte.length) + " % compression");
+//    System.out.println("returning packet " + myCurrentPacket + " " + theEncodedBytes.length);
     DataPacket thePacket = new DataPacket(Integer.toString(myCurrentPacket), theEncodedBytes);
     
     myCurrentPacket++;

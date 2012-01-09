@@ -17,9 +17,11 @@ public class MicroPhonePacketPersisterProviderTest {
    * @throws LineUnavailableException 
    */
   public static void main(String[] args) throws LineUnavailableException{
-    final MicrophonePacketProvider theProvider = new MicrophonePacketProvider(Encoding.PCM_SIGNED, 16000, 16, 8, 20);
-    final MicrophonePacketPersister thePersister = new MicrophonePacketPersister(Encoding.PCM_SIGNED, 16000, 16, 8, 20);
+    final MicrophonePacketProvider theProvider = new MicrophonePacketProvider(Encoding.PCM_SIGNED, 32000, 16, 8, 40);
+    final MicrophonePacketPersister thePersister = new MicrophonePacketPersister(Encoding.PCM_SIGNED, 32000, 16, 8, theProvider.getPacketsPerSecond());
 
+    System.out.println("Updated packets per second " + theProvider.getPacketsPerSecond());
+    
     final ArrayBlockingQueue<DataPacket> theAudioQueue = new ArrayBlockingQueue<DataPacket>(10);
 
     new Thread(
