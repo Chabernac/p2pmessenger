@@ -24,11 +24,15 @@ public class MicrophonePacketProvider implements iDataPacketProvider{
     myAudioFormat = new AudioFormat(anEncoding, aSamplesPerSecond, aBitSize, 1, (aBitSize + 7) / 8, aSamplesPerSecond, false);
     mySpeexEncoder = new SpeexEncoder();
     mySpeexEncoder.init(SPEEX_MODE_WIDEBAND, aSpeexQuality, aSamplesPerSecond, 1);
-    myMaxSpeexBytes = myDataLine.getBufferSize() / 2;
     myDataLine = AudioSystem.getTargetDataLine(myAudioFormat);
     myDataLine.open();
     myDataLine.start();
-    myMaxBytes = aSamplesPerSecond * (aBitSize / 8) / aFramesPerSecond;
+    myMaxSpeexBytes = mySpeexEncoder.getFrameSize() * 2;
+    int theMaxBytes = aSamplesPerSecond * (aBitSize / 8) / aFramesPerSecond;
+    //myMaxBytes should be a multiple of my max speex bytes
+    int theMultiply = Math.round((float)theMaxBytes / (float)myMaxSpeexBytes);
+    if(theMultiply <= 0) theMultiply = 1;
+    myMaxBytes = theMultiply * myMaxSpeexBytes;
   }
 
   @Override
@@ -42,11 +46,15 @@ public class MicrophonePacketProvider implements iDataPacketProvider{
     
     int theCurrentByte = 0;
     int theCurrentSpeexByte = 0;
+    int theNrOfBytesToRead = theByte.length < myMaxSpeexBytes ? theByte.length : myMaxSpeexBytes; 
     while(theCurrentByte < myMaxBytes){
-      mySpeexEncoder.processData(theByte, theCurrentByte, myMaxSpeexBytes);
+      int theRemainingBytes = theByte.length - theCurrentByte;
+      int theBytesToRead = theRemainingBytes < theNrOfBytesToRead ? theRemainingBytes : theNrOfBytesToRead;
+      mySpeexEncoder.processData(theByte, theCurrentByte, theBytesToRead);
+      int theProcessedDataByteSize = mySpeexEncoder.getProcessedDataByteSize();
       mySpeexEncoder.getProcessedData(theProcessedBytes, theCurrentSpeexByte);
-      theCurrentByte += myMaxBytes;
-      theCurrentSpeexByte += mySpeexEncoder.getProcessedDataByteSize();
+      theCurrentSpeexByte += theProcessedDataByteSize;
+      theCurrentByte += theBytesToRead;
     }
     
     //now trim the byte array
