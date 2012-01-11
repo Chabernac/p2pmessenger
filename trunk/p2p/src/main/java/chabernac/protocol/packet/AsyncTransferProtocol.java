@@ -154,7 +154,7 @@ public class AsyncTransferProtocol extends Protocol implements iTransferContaine
   public AbstractTransferState startAudioTransfer(String aPeer, AudioFormat.Encoding anEncoding, int aSamplesPerSecond, int aBits, int aSpeexQuality, int aPacketsPerSecond) throws AsyncTransferException{
     try{
       String theTransferId = UUID.randomUUID().toString();
-      AbstractTransferState theFileTransfeState = AudioTransferState.createForSend( getPacketProtocol(), theTransferId, aPeer, anEncoding, aSamplesPerSecond, aBits, aSpeexQuality, aPacketsPerSecond);
+      AudioTransferState theFileTransfeState = AudioTransferState.createForSend( getPacketProtocol(), theTransferId, aPeer, anEncoding, aSamplesPerSecond, aBits, aSpeexQuality, aPacketsPerSecond);
       theFileTransfeState.addStateChangeListener( myStateChangeListener );
 
       addTransfer( theFileTransfeState, false );
