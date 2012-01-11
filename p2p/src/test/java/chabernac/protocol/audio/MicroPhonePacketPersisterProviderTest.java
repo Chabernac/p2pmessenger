@@ -20,7 +20,7 @@ public class MicroPhonePacketPersisterProviderTest {
     final MicrophonePacketProvider theProvider = new MicrophonePacketProvider(Encoding.PCM_SIGNED, 16000, 16, 8, 10);
     final MicrophonePacketPersister thePersister = new MicrophonePacketPersister(Encoding.PCM_SIGNED, 16000, 16, theProvider.getPacketsPerSecond());
 
-    System.out.println("Updated packets per second " + theProvider.getPacketsPerSecond());
+    System.out.println("Updated packets per second " + theProvider.getPacketsPerSecond() + " nr of speech packets " + theProvider.getNrOfSpeechPackets());
     
     final ArrayBlockingQueue<DataPacket> theAudioQueue = new ArrayBlockingQueue<DataPacket>(10);
 

@@ -7,13 +7,12 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioFormat.Encoding;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
-import javax.sound.sampled.AudioFormat.Encoding;
 
 import org.apache.log4j.Logger;
-import org.xiph.speex.Bits;
 import org.xiph.speex.SpeexDecoder;
 
 import chabernac.utils.Buffer;
@@ -23,7 +22,7 @@ public class MicrophonePacketPersister implements iDataPacketPersister {
   private final int SPEEX_MODE_WIDEBAND = 1;
   private final int LOWER_LIMIT_BUFFER_TIME = 40; //100 ms under buffer
   private final int UPPER_BUFFER_TIME = 100; //300 ms upper buffer
-  private final int DATA_LINE_BUFFER = 50; //50 ms data line buffer
+  private final int DATA_LINE_BUFFER = 20; //50 ms data line buffer
 
   private final AudioFormat myAudioFormat;
   private final SourceDataLine myDataLine;
@@ -44,7 +43,7 @@ public class MicrophonePacketPersister implements iDataPacketPersister {
 
     int theDataLineBufferSize =  DATA_LINE_BUFFER * aSamplesPerSecond  * (aBitSize / 2) / 1000;
     System.out.println("Data line buffer " + theDataLineBufferSize);
-//    int theDataLineBufferSize = 4000;
+    //    int theDataLineBufferSize = 4000;
 
     mySpeexDecoder = new SpeexDecoder();
     mySpeexDecoder.init(SPEEX_MODE_WIDEBAND, aSamplesPerSecond, 1, true);
@@ -58,7 +57,8 @@ public class MicrophonePacketPersister implements iDataPacketPersister {
 
   @Override
   public void persistDataPacket(DataPacket aPacket) throws IOException {
-    mySortedPackets.put(aPacket);
+//    mySortedPackets.put(aPacket);
+    playPacket(aPacket);
   }
 
   @Override
@@ -88,6 +88,26 @@ public class MicrophonePacketPersister implements iDataPacketPersister {
     return false;
   }
 
+  private void playPacket(DataPacket aPacket){
+    byte[] theBytes = aPacket.getBytes();
+
+    //the first byte is the number of speech packets
+    int theSpeechPacketLength = (theBytes.length - 1) / theBytes[0];
+    try{
+      int theCurrentSpeexByte = 1;
+      while(theCurrentSpeexByte < theBytes.length){
+        mySpeexDecoder.processData(theBytes, theCurrentSpeexByte, theSpeechPacketLength);
+        int theProcessedBytes = mySpeexDecoder.getProcessedDataByteSize();
+        byte[] theDecodedBytes = new byte[theProcessedBytes];
+        mySpeexDecoder.getProcessedData(theDecodedBytes, 0);
+        myDataLine.write(theDecodedBytes, 0, theDecodedBytes.length);
+        theCurrentSpeexByte += theSpeechPacketLength;
+      }
+    }catch(StreamCorruptedException e){
+      LOGGER.error("Audio packet corrupted", e);
+    }
+  }
+
   private class AudioPlayer implements Runnable{
     private long myStartTime;
     private int myPacketCounter;
@@ -95,28 +115,10 @@ public class MicrophonePacketPersister implements iDataPacketPersister {
     public void run() {
       myStartTime = System.currentTimeMillis();
       while(!stop){
+        myPacketCounter++;
         DataPacket thePacket = mySortedPackets.get();
-        byte[] theBytes = thePacket.getBytes();
-        try{
-//          mySpeexDecoder.processData(theBytes, 0, theBytes.length);
-//          byte[] theDecodedBytes = new byte[mySpeexDecoder.getProcessedDataByteSize()];
-//          mySpeexDecoder.getProcessedData ( theDecodedBytes, 0); 
-//          myDataLine.write(theDecodedBytes, 0, theDecodedBytes.length);
-          myPacketCounter++;
-          System.out.println("Playing packet " + thePacket.getId()  + " buffer size: " + mySortedPackets.size() + " bytes " + theBytes.length + " "  + (float)(1000 * myPacketCounter) / (float)(System.currentTimeMillis() - myStartTime) + " packets/second");
-          int theCurrentSpeexByte = 0;
-          while(theCurrentSpeexByte < theBytes.length){
-            int theBytesToWrite = Math.min( theBytes.length - theCurrentSpeexByte, Bits.DEFAULT_BUFFER_SIZE );
-            mySpeexDecoder.processData(theBytes, theCurrentSpeexByte, theBytesToWrite);
-            int theProcessedBytes = mySpeexDecoder.getProcessedDataByteSize();
-            byte[] theDecodedBytes = new byte[theProcessedBytes];
-            mySpeexDecoder.getProcessedData(theDecodedBytes, 0);
-            myDataLine.write(theDecodedBytes, 0, theDecodedBytes.length);
-            theCurrentSpeexByte += theProcessedBytes;
-          }
-        }catch(StreamCorruptedException e){
-          LOGGER.error("Audio packet corrupted", e);
-        }
+        System.out.println("Playing packet " + thePacket.getId()  + " buffer size: " + mySortedPackets.size() +  (float)(1000 * myPacketCounter) / (float)(System.currentTimeMillis() - myStartTime) + " packets/second");
+        playPacket(thePacket);
       }
     }
   }

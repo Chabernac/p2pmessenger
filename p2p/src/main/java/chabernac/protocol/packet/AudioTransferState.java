@@ -11,7 +11,7 @@ public class AudioTransferState extends AbstractTransferState {
   private final int myBits;
   private final Encoding myEncoding;
   private final int mySpeexQuality;
-  private final int myPacketsPerSecond; 
+  private final int myPacketsPerSecond;
 
   public AudioTransferState(PacketProtocol aPacketProtocol, String aTransferId, String aRemotePeer, Direction aDirection, Encoding anEncoding, int aSamplesPerSecond, int aBits, int aSpeexQuality, int aPacketsPerSecond) {
     super(aTransferId, aRemotePeer, aDirection);
@@ -24,11 +24,11 @@ public class AudioTransferState extends AbstractTransferState {
   }
   
   public static AudioTransferState createForReceive(PacketProtocol aPacketProtocol, String aTransferId, String aRemotePeer, Encoding anEncoding, int aSamplesPerSeconds, int aBits, int aSpeexQuality, int aPacketsPerSecond){
-    return new AudioTransferState(aPacketProtocol, aTransferId, aRemotePeer, Direction.SEND, anEncoding, aSamplesPerSeconds, aBits, aSpeexQuality, aPacketsPerSecond);
+    return new AudioTransferState(aPacketProtocol, aTransferId, aRemotePeer, Direction.RECEIVE, anEncoding, aSamplesPerSeconds, aBits, aSpeexQuality, aPacketsPerSecond);
   }
   
   public static AudioTransferState createForSend(PacketProtocol aPacketProtocol, String aTransferId, String aRemotePeer, Encoding anEncoding, int aSamplesPerSecond, int aBits, int aSpeexQuality, int aPacketsPerSecond){
-    return new AudioTransferState(aPacketProtocol, aTransferId, aRemotePeer, Direction.RECEIVE, anEncoding, aSamplesPerSecond, aBits, aSpeexQuality, aPacketsPerSecond);
+    return new AudioTransferState(aPacketProtocol, aTransferId, aRemotePeer, Direction.SEND, anEncoding, aSamplesPerSecond, aBits, aSpeexQuality, aPacketsPerSecond);
   }
 
   @Override
