@@ -22,7 +22,7 @@ public class MicrophonePacketPersister implements iDataPacketPersister {
   private final int SPEEX_MODE_WIDEBAND = 1;
   private final int LOWER_LIMIT_BUFFER_TIME = 40; //100 ms under buffer
   private final int UPPER_BUFFER_TIME = 100; //300 ms upper buffer
-  private final int DATA_LINE_BUFFER = 20; //50 ms data line buffer
+  private final int DATA_LINE_BUFFER = 50; //50 ms data line buffer
 
   private final AudioFormat myAudioFormat;
   private final SourceDataLine myDataLine;
@@ -57,8 +57,8 @@ public class MicrophonePacketPersister implements iDataPacketPersister {
 
   @Override
   public void persistDataPacket(DataPacket aPacket) throws IOException {
-//    mySortedPackets.put(aPacket);
-    playPacket(aPacket);
+    mySortedPackets.put(aPacket);
+//    playPacket(aPacket);
   }
 
   @Override
