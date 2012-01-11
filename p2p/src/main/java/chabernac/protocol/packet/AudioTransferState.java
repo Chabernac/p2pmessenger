@@ -35,7 +35,7 @@ public class AudioTransferState extends AbstractTransferState {
   protected iPacketTransfer createPacketTransfer() throws IOException {
     try{
       if(myDirection == Direction.RECEIVE){
-        return new PacketReceiver(myPacketProtocol, myTransferId, new MicrophonePacketPersister(myEncoding, mySamplesPerSecond, myBits, mySpeexQuality, myPacketsPerSecond));
+        return new PacketReceiver(myPacketProtocol, myTransferId, new MicrophonePacketPersister(myEncoding, mySamplesPerSecond, myBits, myPacketsPerSecond));
       } else {
         return new AsyncPacketSender(myPacketProtocol, myTransferId, myRemotePeer, new MicrophonePacketProvider(myEncoding, mySamplesPerSecond, myBits, mySpeexQuality, myPacketsPerSecond));
       }

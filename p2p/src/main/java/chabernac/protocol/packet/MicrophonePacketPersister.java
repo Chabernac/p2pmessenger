@@ -33,7 +33,7 @@ public class MicrophonePacketPersister implements iDataPacketPersister {
   private final SpeexDecoder mySpeexDecoder;
 
 
-  public MicrophonePacketPersister(Encoding anEncoding, int aSamplesPerSecond, int aBitSize, int aSpeexQuality, int aPacketsPerSecond) throws LineUnavailableException{
+  public MicrophonePacketPersister(Encoding anEncoding, int aSamplesPerSecond, int aBitSize, int aPacketsPerSecond) throws LineUnavailableException{
     myAudioFormat = new AudioFormat(anEncoding, aSamplesPerSecond, aBitSize, 1, (aBitSize + 7) / 8, aSamplesPerSecond, false);
 
     float theMSPerPacket = 1000 / (float)aPacketsPerSecond;
