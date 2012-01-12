@@ -416,7 +416,8 @@ bg=blue</panel_attributes>
       <h>387</h>
     </coordinates>
     <panel_attributes>State Handling
-bg=green</panel_attributes>
+bg=green
+</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
