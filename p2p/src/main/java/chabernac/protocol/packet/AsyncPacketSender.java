@@ -36,8 +36,9 @@ public class AsyncPacketSender extends AbstractPacketTransfer {
     mySenderService.execute(new Runnable() {
       @Override
       public void run() {
+        ExecutorService theExecutorService = mySenderService;
         try{
-          while(myDataPacketProvider.hasNextPacket()){
+          while(myDataPacketProvider.hasNextPacket() && theExecutorService == mySenderService){
             isSending = true;
             isFailed = false;
             DataPacket thePacket = myDataPacketProvider.getNextPacket();
