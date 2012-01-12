@@ -95,7 +95,7 @@ public class SocketPeer extends AbstractPeer implements Serializable {
     } catch ( SocketException e ) {
       throw new NoAvailableNetworkAdapterException("Could not detect local network adapter", e);
     }
-    
+
     if(myHost.size() == 0){
       try{
         SimpleNetworkInterface theLoopBackInterface = NetTools.getLoopBackInterface();
@@ -105,7 +105,7 @@ public class SocketPeer extends AbstractPeer implements Serializable {
         throw new NoAvailableNetworkAdapterException("Could not detect local network adapter", f);
       }
     }
-    
+
     if(myHost.size() == 0){
       throw new NoAvailableNetworkAdapterException("There is no available network adapter on this system");
     }
@@ -130,7 +130,7 @@ public class SocketPeer extends AbstractPeer implements Serializable {
    * @param aPort
    * @return
    */
-  public synchronized SocketProxy createSocket(int aPort){
+  public SocketProxy createSocket(int aPort){
     iSocketPool theSocketPool = P2PSettings.getInstance().getSocketPool();
 
     for(Iterator< SimpleNetworkInterface > i = new ArrayList<SimpleNetworkInterface>(myHost).iterator(); i.hasNext();){
@@ -138,8 +138,10 @@ public class SocketPeer extends AbstractPeer implements Serializable {
       try{
         for(String theIp : theHost.getIp()){
           SocketProxy theSocket = theSocketPool.checkOut(new InetSocketAddress(theIp, aPort));
-          myHost.remove( theHost );
-          myHost.add( 0, theHost);
+          synchronized(this){
+            myHost.remove( theHost );
+            myHost.add( 0, theHost);
+          }
           return theSocket;
         }
       }catch(Exception e){
