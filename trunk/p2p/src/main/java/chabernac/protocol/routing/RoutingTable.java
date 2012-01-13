@@ -24,6 +24,8 @@ import javax.jdo.annotations.PersistenceCapable;
 import org.apache.log4j.Logger;
 import org.doomdark.uuid.UUID;
 
+import chabernac.utils.LimitedListDecorator;
+
 @PersistenceCapable
 public class RoutingTable implements Iterable< RoutingTableEntry >, Serializable{
 
@@ -206,7 +208,7 @@ public class RoutingTable implements Iterable< RoutingTableEntry >, Serializable
 
   private void inspectRoutingTableEntryHistory() {
     if(myRoutingTableEntryHistory == null){
-      myRoutingTableEntryHistory = new ArrayList< RoutingTableEntryHistory >();
+      myRoutingTableEntryHistory = new LimitedListDecorator< RoutingTableEntryHistory >( 100, new ArrayList< RoutingTableEntryHistory >());
     }
 
   }
