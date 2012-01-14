@@ -37,6 +37,7 @@ import chabernac.protocol.asyncfiletransfer.iAsyncFileTransferHandler;
 import chabernac.protocol.cam.CamProtocol;
 import chabernac.protocol.cam.CamProtocolException;
 import chabernac.protocol.cam.iCamListener;
+import chabernac.protocol.encryption.EncryptionProtocol;
 import chabernac.protocol.filetransfer.FileTransferProtocol;
 import chabernac.protocol.filetransfer.iFileHandler;
 import chabernac.protocol.infoexchange.InfoExchangeProtocol;
@@ -818,6 +819,9 @@ public InfoObject getInfoObject() throws P2PFacadeException{
       if(mySupportedProtocols == null || mySupportedProtocols.contains( WebPeerProtocol.ID)) myContainer.getProtocol( WebPeerProtocol.ID );
 
       if(mySupportedProtocols == null || mySupportedProtocols.contains( InfoExchangeProtocol.ID)) myContainer.getProtocol( InfoExchangeProtocol.ID );
+      
+      //load the encryption protocol immediatly, generating the public/private key pair takes some time
+      if(mySupportedProtocols == null || mySupportedProtocols.contains( EncryptionProtocol.ID)) myContainer.getProtocol( EncryptionProtocol.ID );
 
       iSocketPool theSocketPool = P2PSettings.getInstance().getSocketPool();
       if(theSocketPool instanceof CachingSocketPool){

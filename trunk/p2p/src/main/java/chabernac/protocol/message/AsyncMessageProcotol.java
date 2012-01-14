@@ -193,13 +193,16 @@ public class AsyncMessageProcotol extends AbstractMessageProtocol {
 
   public void sendMessage(Message aMessage) throws MessageException{
     aMessage.increaseInstanceCounter();
-    LOGGER.debug("Sening message with unique id: '" + aMessage.getUniqueId() + "'");
+    LOGGER.debug("Sending message with unique id: '" + aMessage.getUniqueId() + "'");
     Message theMessage = aMessage.copy();
+    LOGGER.debug("Inspecting message");
     inspectMessage(theMessage);
+    LOGGER.debug("End Inspecting message");
     theMessage.setMessageId(aMessage.getMessageId());
     //keep a reference to the send message, we need this because the delivery status might indicate that the message could not be 
     //decrypted in that case the public key of the receiver needs to be reoptained and the message needs to be recent.
     mySendMessages.put(theMessage.getMessageId().toString(), aMessage);
+    LOGGER.debug("handling message");
     handleMessage( UUID.randomUUID().toString(), theMessage);
   }
 

@@ -158,7 +158,6 @@ public class MultiPeerMessageProtocol extends Protocol{
     @Override
     public void run() {
       try {
-//        LOGGER.error("Sending in progress delivery report");
         sendDeliveryReport( new DeliveryReport(myMultiPeerMessage, Status.IN_PROGRESS, myMessage) );
         String theResult = getMessageProtocol().sendAndWaitForResponse( myMessage );
 //        String theResult = getMessageProtocol().sendMessage(myMessage );

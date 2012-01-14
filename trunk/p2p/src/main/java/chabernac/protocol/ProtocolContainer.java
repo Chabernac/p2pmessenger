@@ -153,7 +153,7 @@ public class ProtocolContainer implements IProtocol {
     myExecutor.shutdownNow();
   }
 
-  public synchronized IProtocol getProtocol(String anId) throws ProtocolException{
+  public IProtocol getProtocol(String anId) throws ProtocolException{
     return getProtocol( anId, false );
   }
 
