@@ -6,17 +6,23 @@ package chabernac.protocol.message;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Logger;
 
 import chabernac.protocol.AbstractProtocolTest;
 import chabernac.protocol.ProtocolContainer;
 import chabernac.protocol.ProtocolException;
 import chabernac.protocol.ProtocolServer;
+import chabernac.protocol.encryption.EncryptionProtocol;
 import chabernac.protocol.message.DeliveryReport.Status;
 import chabernac.protocol.routing.RoutingProtocol;
 
 public class MultiPeerMessageProtocolTest extends AbstractProtocolTest {
+  private static Logger LOGGER = Logger.getLogger(MultiPeerMessageProtocolTest.class);
+  
   static{
     BasicConfigurator.resetConfiguration();
     BasicConfigurator.configure();
@@ -34,12 +40,17 @@ public class MultiPeerMessageProtocolTest extends AbstractProtocolTest {
     
     RoutingProtocol theRoutingProtocol1 = (RoutingProtocol)theProtocol1.getProtocol( RoutingProtocol.ID );
     MultiPeerMessageProtocol theMessageProtocol1 = (MultiPeerMessageProtocol)theProtocol1.getProtocol( MultiPeerMessageProtocol.ID );
+    theProtocol1.getProtocol(EncryptionProtocol.ID);
     
     RoutingProtocol theRoutingProtocol2 = (RoutingProtocol)theProtocol2.getProtocol( RoutingProtocol.ID );
     MultiPeerMessageProtocol theMessageProtocol2 = (MultiPeerMessageProtocol)theProtocol2.getProtocol( MultiPeerMessageProtocol.ID );
+    theProtocol2.getProtocol(EncryptionProtocol.ID);
     
     RoutingProtocol theRoutingProtocol3 = (RoutingProtocol)theProtocol3.getProtocol( RoutingProtocol.ID );
     MultiPeerMessageProtocol theMessageProtocol3 = (MultiPeerMessageProtocol)theProtocol3.getProtocol( MultiPeerMessageProtocol.ID );
+    theProtocol3.getProtocol(EncryptionProtocol.ID);
+    
+    
     
     try{
       assertTrue( theServer1.start() );
@@ -53,7 +64,8 @@ public class MultiPeerMessageProtocolTest extends AbstractProtocolTest {
       //scanning the local system might take a small time
       Thread.sleep( SLEEP_AFTER_SCAN );
       
-      DeliverReportCollector theDeliveryReportCollector = new DeliverReportCollector();
+      CountDownLatch theLath = new CountDownLatch(4);
+      DeliverReportCollector theDeliveryReportCollector = new DeliverReportCollector(theLath);
       theMessageProtocol1.addDeliveryReportListener( theDeliveryReportCollector );
       
       MessageCollector theMessageCollector2 = new MessageCollector();
@@ -67,9 +79,9 @@ public class MultiPeerMessageProtocolTest extends AbstractProtocolTest {
       .addDestination( "z" )
       .addMessageIndicator( MessageIndicator.TO_BE_ENCRYPTED );
       
+      LOGGER.debug("Sending multipeer message");
       theMessageProtocol1.sendMessage( theMessage );
-      
-      Thread.sleep( 2000 );
+      theLath.await(5, TimeUnit.SECONDS);
       
       //TODO why do we have to wait 5 seconds, what's causing the timeout?
       
@@ -109,11 +121,19 @@ public class MultiPeerMessageProtocolTest extends AbstractProtocolTest {
   }
   
   private class DeliverReportCollector implements iDeliverReportListener{
+    private final CountDownLatch myLatch;
     private List<DeliveryReport> myDeliveryReports = new ArrayList< DeliveryReport >();
+
+    
+    public DeliverReportCollector(CountDownLatch myLatch) {
+      super();
+      this.myLatch = myLatch;
+    }
 
     @Override
     public void acceptDeliveryReport( DeliveryReport aDeliverReport ) {
       myDeliveryReports.add(aDeliverReport);
+      myLatch.countDown();
     }
     
     public List<DeliveryReport> getDeliveryReports(){
