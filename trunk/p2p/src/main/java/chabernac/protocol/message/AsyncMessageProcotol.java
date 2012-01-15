@@ -187,7 +187,9 @@ public class AsyncMessageProcotol extends AbstractMessageProtocol {
   }
 
   public void cancelResponse( String aMessageId ) throws InterruptedException {
-    getBlockingQueueForMessage( aMessageId ).put( CANCEL );
+    if(myStatusQueues.containsKey(aMessageId) && getBlockingQueueForMessage(aMessageId).isEmpty()){
+      getBlockingQueueForMessage( aMessageId ).put( CANCEL );
+    }
   }
 
 
