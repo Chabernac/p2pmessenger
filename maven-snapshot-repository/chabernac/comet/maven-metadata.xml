@@ -2,11 +2,10 @@
 <metadata>
   <groupId>chabernac</groupId>
   <artifactId>comet</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
   <versioning>
     <versions>
       <version>0.0.1-SNAPSHOT</version>
     </versions>
-    <lastUpdated>20111230101203</lastUpdated>
+    <lastUpdated>20120116210427</lastUpdated>
   </versioning>
 </metadata>
