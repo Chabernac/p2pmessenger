@@ -16,7 +16,7 @@ public class EndPoint {
   private final String myId;
   private BlockingQueue<CometEvent> myEventQueue = new ArrayBlockingQueue<CometEvent>(128);
   private boolean isClosed = false;
-  
+
   public EndPoint ( String anId) {
     super();
     myId = anId;
@@ -36,6 +36,13 @@ public class EndPoint {
 
   public void setEvent(CometEvent anEvent) throws CometException{
     if(isClosed()) throw new CometException("This end point has been closed");
+
+    anEvent.addExpirationListener(new iCometEventExpirationListener() {
+      @Override
+      public void cometEventExpired(CometEvent anEvent) {
+       myEventQueue.remove(anEvent);
+      }
+    });
     
     try {
       myEventQueue.put(anEvent);
@@ -43,7 +50,7 @@ public class EndPoint {
       throw new CometException("Unable to store event", e);
     }
   }
-  
+
   public CometEvent getEvent() throws CometException{
     try {
       CometEvent theEvent = myEventQueue.take();
@@ -55,27 +62,32 @@ public class EndPoint {
       throw new CometException("No event available", e);
     }
   }
-  
+
   public boolean hasEvent(){
     return !myEventQueue.isEmpty();
   }
-  
+
   public CometEvent getFirstEvent(){
     return myEventQueue.poll();
   }
-  
- public void destroy(){
-   try {
-    myEventQueue.put(new EndPointDestroyedCometEvent());
-  } catch (InterruptedException e) {
-  }
- }
- 
- private class EndPointDestroyedCometEvent extends CometEvent{
 
-  public EndPointDestroyedCometEvent() {
-    super(null, null);
+  public void destroy(){
+    try {
+      myEventQueue.put(new EndPointDestroyedCometEvent());
+    } catch (InterruptedException e) {
+    }
   }
-   
- }
+  
+  public boolean containsEvent(CometEvent anEvent){
+    return myEventQueue.contains(anEvent);
+  }
+
+  private class EndPointDestroyedCometEvent extends CometEvent{
+    private static final long serialVersionUID = 5673639232344865324L;
+
+    public EndPointDestroyedCometEvent() {
+      super(null, null);
+    }
+
+  }
 }

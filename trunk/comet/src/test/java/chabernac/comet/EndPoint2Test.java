@@ -43,7 +43,7 @@ public class EndPoint2Test extends TestCase{
       });
     }
     
-    theLatch.await(3, TimeUnit.SECONDS);
+    theLatch.await(10, TimeUnit.SECONDS);
     assertEquals(0, theLatch.getCount());
     
     //now fire one event
@@ -54,11 +54,30 @@ public class EndPoint2Test extends TestCase{
     theExceptionCounter.await(2, TimeUnit.SECONDS);
     theEventCounter.await(1, TimeUnit.SECONDS);
 
-    
     //there can only be one owner of the endpoint, so we should have had times - 1 exceptions and 1 successfull get
-    
     assertEquals(0, theExceptionCounter.getCount());
     assertEquals(0, theEventCounter.getCount());
     assertEquals(theNrOfCometEvents, theEventContainer.size());
+  }
+  
+  public void testEndPoint2EventOrder(){
+    EndPoint2 theEndPoint = new EndPoint2("1");
+    int events = 1000;
+    for(int i=0;i<events;i++){
+        theEndPoint.addCometEvent(new CometEvent(Integer.toString(i), null));
+    }
+    for(int i=0;i<events;i++){
+      assertEquals(Integer.toString(i), theEndPoint.getFirstEvent().getId());
+    }
+  }
+  
+  public void testRemoveEventAfterExpiration() throws CometException{
+    EndPoint2 theEndPoint = new EndPoint2("A");
+    CometEvent theEvent = new CometEvent("1", "input");
+    theEndPoint.addCometEvent(theEvent);
+    try{
+    theEvent.getOutput(1);
+    }catch(Exception e){}
+    assertFalse(theEndPoint.containsEvent(theEvent));
   }
 }
