@@ -7,6 +7,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -26,6 +28,7 @@ public class StreamSplitter {
   
   private ExecutorService myExecutorService = null;
   
+  private List<iStreamListener> myStreamListeners = new ArrayList<iStreamListener>();
   public StreamSplitter(InputStream aInputStream, OutputStream aOutputStream, iInputOutputHandler aInputOutputHandler) {
     super();
     myInputOutputHandler = aInputOutputHandler;
@@ -33,7 +36,22 @@ public class StreamSplitter {
     myOutputStream = new PrintWriter(new OutputStreamWriter(aOutputStream));
   }
   
+  public void addStreamListener(iStreamListener aListener){
+    myStreamListeners.add(aListener);
+  }
+  
+  private void notifyListeners(){
+    for(iStreamListener theListener : myStreamListeners){
+      theListener.streamClosed();
+    }
+  }
+  
   public void close(){
+    try {
+      myInputStream.close();
+    } catch (IOException e) {
+    }
+    myOutputStream.close();
     myExecutorService.shutdownNow();
   }
 
@@ -77,6 +95,8 @@ public class StreamSplitter {
       }
       }catch(Exception e){
         LOGGER.error("Error occured while reading stream", e);
+      } finally {
+        notifyListeners();
       }
     }
   }
