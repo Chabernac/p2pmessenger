@@ -22,12 +22,11 @@ public class StreamSplitterTest extends TestCase {
     final CountDownLatch theLatch1 = new CountDownLatch(runs);
     final CountDownLatch theLatch2 = new CountDownLatch(runs);
     
-    CountDownLatch theCloseLatch1 = new CountDownLatch(runs);
-    CountDownLatch theCloseLatch2 = new CountDownLatch(runs);
+    CountDownLatch theCloseLatch1 = new CountDownLatch(1);
+    CountDownLatch theCloseLatch2 = new CountDownLatch(1);
 
-    final StreamListener theListener1 = new StreamListener(theLatch1);
-    final StreamListener theListener2 = new StreamListener(theLatch2);
-    
+    final StreamListener theListener1 = new StreamListener(theCloseLatch1);
+    final StreamListener theListener2 = new StreamListener(theCloseLatch2);
     
     ExecutorService theService =  Executors.newFixedThreadPool(2);
     theService.execute(new Runnable(){
@@ -40,6 +39,8 @@ public class StreamSplitterTest extends TestCase {
           assertEquals("test2", theSplitter.readLine());
           theSplitter.startSplitting();
           testStreamSplitter(theSplitter, runs, theFactor2, theLatch1);
+          theLatch1.await(5, TimeUnit.SECONDS);
+          theLatch2.await(5, TimeUnit.SECONDS);
           theSplitter.close();
         }catch(Exception e){
           e.printStackTrace();
@@ -57,6 +58,8 @@ public class StreamSplitterTest extends TestCase {
           assertEquals("test1", theSplitter.readLine());
           theSplitter.startSplitting();
           testStreamSplitter(theSplitter, runs, theFactor1, theLatch2);
+          theLatch1.await(5, TimeUnit.SECONDS);
+          theLatch2.await(5, TimeUnit.SECONDS);
           theSplitter.close();
         }catch(Exception e){
           e.printStackTrace();
@@ -68,8 +71,8 @@ public class StreamSplitterTest extends TestCase {
     theLatch2.await(5, TimeUnit.SECONDS);
     assertEquals(0, theLatch1.getCount());
     assertEquals(0, theLatch2.getCount());
-    theCloseLatch1.await(5, TimeUnit.SECONDS);
-    theCloseLatch2.await(5, TimeUnit.SECONDS);
+    theCloseLatch1.await(10, TimeUnit.SECONDS);
+    theCloseLatch2.await(10, TimeUnit.SECONDS);
     assertEquals(0, theCloseLatch1.getCount());
     assertEquals(0, theCloseLatch2.getCount());
   }
