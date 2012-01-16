@@ -50,4 +50,14 @@ public class EndPointTest extends TestCase {
     }
     assertEquals(0, theCounter.intValue());
   }
+  
+  public void testRemoveEventAfterExpiration() throws CometException{
+    EndPoint theEndPoint = new EndPoint("A");
+    CometEvent theEvent = new CometEvent("1", "input");
+    theEndPoint.setEvent(theEvent);
+    try{
+    theEvent.getOutput(1);
+    }catch(Exception e){}
+    assertFalse(theEndPoint.containsEvent(theEvent));
+  }
 }

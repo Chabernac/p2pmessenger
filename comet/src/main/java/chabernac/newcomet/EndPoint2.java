@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import chabernac.comet.CometEvent;
+import chabernac.comet.iCometEventExpirationListener;
 
 public class EndPoint2 {
   private final String myId;
@@ -45,6 +46,13 @@ public class EndPoint2 {
   }
 
   public void addCometEvent(CometEvent anEvent){
+    anEvent.addExpirationListener(new iCometEventExpirationListener() {
+      @Override
+      public void cometEventExpired(CometEvent anEvent) {
+       myEvents.remove(anEvent);
+      }
+    });
+
     myEvents.add(anEvent);
     synchronized(LOCK) { LOCK.notifyAll(); }
   }
@@ -79,5 +87,9 @@ public class EndPoint2 {
   
   public String toString(){
     return "<Endpoint id='" + myId + "' isactive='" + isActive + "' events='" + myEvents.size() + "'/>";
+  }
+
+  public boolean containsEvent(CometEvent anEvent) {
+    return myEvents.contains(anEvent);
   }
 }
