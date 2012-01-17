@@ -18,6 +18,8 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 
+import chabernac.utils.NamedRunnable;
+
 public class URLConnectionHelper extends AbstractURLConnectionHelper{
   private static Logger LOGGER = Logger.getLogger( URLConnectionHelper.class );
 
@@ -193,9 +195,9 @@ public class URLConnectionHelper extends AbstractURLConnectionHelper{
     }
   }
 
-  public class CloseCommand implements Runnable {
+  private class CloseCommand extends NamedRunnable{
     @Override
-    public void run() {
+    public void doRun() {
       close();
     }
   }
