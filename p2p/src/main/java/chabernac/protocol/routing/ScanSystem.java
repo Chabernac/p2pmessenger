@@ -10,8 +10,9 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import chabernac.tools.SimpleNetworkInterface;
+import chabernac.utils.NamedRunnable;
 
-public class ScanSystem implements Runnable{
+public class ScanSystem extends NamedRunnable{
   private static Logger LOGGER = Logger.getLogger(ScanSystem.class);
   
   private List<String> myHosts;
@@ -45,7 +46,7 @@ public class ScanSystem implements Runnable{
   }
 
   @Override
-  public void run() {
+  public void doRun() {
     if(myCondition == null || myCondition.isConditionFullFilled()){
       LOGGER.debug( "Scanning system '" + new ArrayList< String >(myHosts) + "': '" + myPort + "'" );
       SocketPeer thePeer = new SocketPeer(null, new SimpleNetworkInterface(myHosts), myPort);

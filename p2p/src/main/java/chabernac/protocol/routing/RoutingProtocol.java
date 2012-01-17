@@ -45,6 +45,7 @@ import chabernac.protocol.ServerInfo.Type;
 import chabernac.tools.IOTools;
 import chabernac.tools.SimpleNetworkInterface;
 import chabernac.tools.TestTools;
+import chabernac.utils.NamedRunnable;
 
 /**
  *  the routing protocol will do the following
@@ -554,14 +555,14 @@ public class RoutingProtocol extends Protocol {
     }
   }
 
-  private class ScanLocalSystem implements Runnable{
-    public void run(){
+  private class ScanLocalSystem extends NamedRunnable{
+    public void doRun(){
       scanLocalSystem();
     }
   }
 
-  private class ScanRemoteSystem implements Runnable{
-    public void run(){
+  private class ScanRemoteSystem extends NamedRunnable{
+    public void doRun(){
       scanRemoteSystem(false);
     }
   }
@@ -936,10 +937,10 @@ public class RoutingProtocol extends Protocol {
     myRoutingProtocolMonitor = anRoutingProtocolMonitor;
   }
 
-  public class ScanFixedIpList implements Runnable {
+  public class ScanFixedIpList extends NamedRunnable {
 
     @Override
-    public void run() {
+    public void doRun() {
       scanSuperNodes();
     }
   }
