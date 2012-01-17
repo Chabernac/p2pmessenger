@@ -24,6 +24,7 @@ import chabernac.protocol.routing.AbstractPeer;
 import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.RoutingTable;
 import chabernac.protocol.routing.iPeerSender;
+import chabernac.utils.NamedRunnable;
 
 public class AsyncMessageProcotol extends AbstractMessageProtocol {
   public static final String ID = "AMP";
@@ -161,8 +162,8 @@ public class AsyncMessageProcotol extends AbstractMessageProtocol {
   private void putDeliveryStatus( final Message aMessage, String aStatus) throws InterruptedException{
     String theMessageId = aMessage.getHeader( "MESSAGE-ID" );
     getBlockingQueueForMessage(  theMessageId ).put( aStatus );
-    myQueueCleanupService.schedule( new Runnable(){
-      public void run(){
+    myQueueCleanupService.schedule( new NamedRunnable("message cleanup '" + theMessageId + "'") {
+      public void doRun(){
         //when no one picked up the status for this message, remove it after 5 minutes so that it does not stay cached for ever
         myStatusQueues.remove( aMessage.getHeader( "MESSAGE-ID" ) );
       }

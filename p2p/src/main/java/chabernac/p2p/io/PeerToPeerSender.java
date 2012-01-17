@@ -14,6 +14,7 @@ import chabernac.p2p.settings.P2PSettings;
 import chabernac.protocol.routing.PeerMessage;
 import chabernac.protocol.routing.SocketPeer;
 import chabernac.protocol.routing.PeerMessage.State;
+import chabernac.utils.NamedRunnable;
 
 public class PeerToPeerSender {
   
@@ -77,7 +78,7 @@ public class PeerToPeerSender {
     throw new IOException("Could not send message");
   }
   
-  private class SocketCloser implements Runnable{
+  private class SocketCloser extends NamedRunnable{
     private final SocketProxy mySocket;
     private final RetryDecider myRetryDecider;
 
@@ -87,7 +88,7 @@ public class PeerToPeerSender {
       myRetryDecider = aRetryDecier;
     }
 
-    public void run(){
+    public void doRun(){
       myRetryDecider.timeoutOccured();
       P2PSettings.getInstance().getSocketPool().close(  mySocket );
     }
