@@ -33,6 +33,7 @@ import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.RoutingTable;
 import chabernac.protocol.routing.RoutingTableEntry;
 import chabernac.protocol.userinfo.UserInfo.Status;
+import chabernac.utils.NamedRunnable;
 
 public class UserInfoProtocol extends Protocol {
   private static Logger LOGGER = Logger.getLogger(UserInfoProtocol.class);
@@ -93,8 +94,8 @@ public class UserInfoProtocol extends Protocol {
     super.setMasterProtocol( aProtocol );
 
     try{
-      myService.scheduleWithFixedDelay( new Runnable(){
-        public void run(){
+      myService.scheduleWithFixedDelay( new NamedRunnable("User info full retrieval"){
+        public void doRun(){
           fullRetrieval();
         }
       }, 1, 60, TimeUnit.SECONDS);

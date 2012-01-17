@@ -20,6 +20,7 @@ import org.apache.log4j.Logger;
 
 import chabernac.protocol.packet.PacketTransferState.Direction;
 import chabernac.protocol.packet.PacketTransferState.State;
+import chabernac.utils.NamedRunnable;
 
 public class PacketSender extends AbstractPacketTransfer{
   private static final Logger LOGGER = Logger.getLogger(PacketSender.class);
@@ -176,9 +177,9 @@ public class PacketSender extends AbstractPacketTransfer{
     }
   }
 
-  private class CheckPacketSendTimeout implements Runnable {
+  private class CheckPacketSendTimeout extends NamedRunnable {
     @Override
-    public void run() {
+    public void doRun() {
       synchronized(PacketSender.this){
         //make a copy of the sendpackets to avoid concurrent modification exception
         List<PacketContainer> theSendPackets = new ArrayList< PacketContainer >(mySendPackets.values());

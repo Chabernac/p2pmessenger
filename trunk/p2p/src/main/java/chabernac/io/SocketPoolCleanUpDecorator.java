@@ -12,6 +12,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import chabernac.utils.NamedRunnable;
+
 public class SocketPoolCleanUpDecorator implements iSocketPool {
 
   private final iSocketPool mySocketPool;
@@ -24,8 +26,8 @@ public class SocketPoolCleanUpDecorator implements iSocketPool {
   
   private void scheduleCleanUp(final long aTimeout, final TimeUnit aTimeUnit){
     ScheduledExecutorService theService = Executors.newScheduledThreadPool( 1 );
-    theService.scheduleWithFixedDelay( new Runnable(){
-      public void run(){
+    theService.scheduleWithFixedDelay( new NamedRunnable("Socket pool cleanup") {
+      public void doRun(){
         cleanUpOlderThan( System.currentTimeMillis() - aTimeUnit.toMillis( aTimeout ) );
       }
     }, 0, aTimeout, aTimeUnit);

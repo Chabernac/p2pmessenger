@@ -17,6 +17,8 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 
+import chabernac.utils.NamedRunnable;
+
 /**
  * This class detects if a new local ip address has been added or removed
  * and warn the listeners of it  
@@ -116,9 +118,9 @@ public class LocalIPCollecter {
   }
   
   
-  public class Detect implements Runnable {
+  public class Detect extends NamedRunnable {
     @Override
-    public void run() {
+    public void doRun() {
       try {
         detectIPs();
       } catch ( SocketException e ) {

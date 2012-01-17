@@ -13,6 +13,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import chabernac.utils.NamedRunnable;
+
 public class CachingSocketPool extends Observable implements iSocketPool{
   private Pool< SocketProxy > myCheckedInPool = new Pool< SocketProxy >();
   private Pool< SocketProxy > myCheckedOutPool = new Pool< SocketProxy >();
@@ -38,8 +40,9 @@ public class CachingSocketPool extends Observable implements iSocketPool{
       myCleanUpTimeoutInSeconds = aCleanUpTimeoutInSeconds;
       myService = Executors.newScheduledThreadPool(1);
       myService.scheduleWithFixedDelay(  
-                                    new Runnable(){
-                                      public void run(){
+                                    new NamedRunnable("Socket pool cleanup") {
+                                      @Override
+                                      protected void doRun() {
                                         cleanUp();
                                       }
                                     }, 
