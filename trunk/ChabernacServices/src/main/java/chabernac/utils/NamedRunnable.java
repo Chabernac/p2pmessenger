@@ -5,15 +5,27 @@
 package chabernac.utils;
 
 public abstract class NamedRunnable implements Runnable {
+  private final String myName;
+  
+  public NamedRunnable(){
+    this(null);
+  }
+  
+  public NamedRunnable(String aName){
+    if(aName == null){
+      myName = getClass().getName(); 
+    } else {
+      myName = aName;
+    }
+  }
 
   @Override
   public void run() {
     String[] theName = Thread.currentThread().getName().split( "\\[" );
     
-    String theClassName = getClass().getName();
-    Thread.currentThread().setName( theName[0].trim() + "[" + theClassName + "] start" );
+    Thread.currentThread().setName( theName[0].trim() + " [" + myName + "] start" );
     doRun();
-    Thread.currentThread().setName( theName[0].trim() + "[" + theClassName + "] end" );
+    Thread.currentThread().setName( theName[0].trim() + " [" + myName + "] end" );
   }
   
   protected abstract void doRun();

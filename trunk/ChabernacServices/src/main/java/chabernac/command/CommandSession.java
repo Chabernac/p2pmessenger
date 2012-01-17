@@ -12,6 +12,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 
 import chabernac.util.concurrent.MonitorrableRunnableDelegate;
 import chabernac.util.concurrent.iRunnableListener;
+import chabernac.utils.NamedRunnable;
 
 /**
  *
@@ -86,16 +87,16 @@ public class CommandSession {
   public void execute(final Command aCommand) throws CommandException{
     if(inspectMode()) {
       Runnable theRunnable =
-        new Runnable() {
-        @Override
-        public void run() {
-          //LOGGER.debug( "Executing command '" + aCommand.getClass() + "'" );
-          aCommand.execute();
-          if(aCommand instanceof UndoableCommand){
-            myUndoableCommands.add((UndoableCommand)aCommand);
+        new NamedRunnable("CommandSession execute command '" + aCommand.getClass().getName()  + "'") {
+          @Override
+          protected void doRun() {
+            aCommand.execute();
+            if(aCommand instanceof UndoableCommand){
+              myUndoableCommands.add((UndoableCommand)aCommand);
+            }
+            
           }
-        }
-      };
+        };
       
       if(myRunnableListener != null){
         MonitorrableRunnableDelegate theMonitorrableRunnable = new MonitorrableRunnableDelegate(theRunnable);
