@@ -15,6 +15,8 @@ import java.util.concurrent.Executors;
 
 import org.apache.log4j.Logger;
 
+import chabernac.utils.NamedRunnable;
+
 public class StreamSplitter {
   private final Logger LOGGER = Logger.getLogger(StreamSplitter.class);
   private final String IN = "I:";
@@ -78,8 +80,8 @@ public class StreamSplitter {
     myOutputStream.flush();
   }
   
-  private class InputHandler implements Runnable{
-    public void run(){
+  private class InputHandler extends NamedRunnable{
+    public void doRun(){
       String theLine = null;
       try{
       while((theLine = myInputStream.readLine()) != null){
