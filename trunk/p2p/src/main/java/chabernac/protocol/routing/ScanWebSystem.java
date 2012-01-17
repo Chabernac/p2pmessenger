@@ -6,7 +6,9 @@ package chabernac.protocol.routing;
 
 import java.net.URL;
 
-public class ScanWebSystem implements Runnable{
+import chabernac.utils.NamedRunnable;
+
+public class ScanWebSystem extends NamedRunnable{
   private RoutingProtocol myRoutingProtocol = null;
   private final URL myEndPoint;
 
@@ -17,7 +19,7 @@ public class ScanWebSystem implements Runnable{
 
 
   @Override
-  public void run() {
+  public void doRun() {
     WebPeer thePeer = new WebPeer(myEndPoint);
     if(myRoutingProtocol.getRoutingProtocolMonitor() != null) myRoutingProtocol.getRoutingProtocolMonitor().scanStarted( thePeer );
     boolean result = myRoutingProtocol.contactPeer( thePeer, null, true );
