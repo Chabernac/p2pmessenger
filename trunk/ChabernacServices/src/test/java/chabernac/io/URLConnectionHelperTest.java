@@ -7,12 +7,8 @@ package chabernac.io;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
-import java.net.Socket;
 import java.net.URL;
 import java.net.UnknownHostException;
-import java.util.UUID;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import junit.framework.TestCase;
 
@@ -63,6 +59,7 @@ public class URLConnectionHelperTest extends TestCase {
     }
   }
 
+  /*
   public void testPost() throws IOException, InterruptedException{
     int theSockets = 20;
 
@@ -97,4 +94,5 @@ public class URLConnectionHelperTest extends TestCase {
     long t2 = System.currentTimeMillis();
     assertTrue((t2-t1)<2000);
   }
+  */
 }
