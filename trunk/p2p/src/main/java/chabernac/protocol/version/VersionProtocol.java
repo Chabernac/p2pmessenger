@@ -21,6 +21,7 @@ import chabernac.protocol.routing.IRoutingTableListener;
 import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.RoutingTable;
 import chabernac.protocol.routing.RoutingTableEntry;
+import chabernac.utils.NamedRunnable;
 
 public class VersionProtocol extends Protocol {
   private static Logger LOGGER = Logger.getLogger(VersionProtocol.class);
@@ -114,8 +115,8 @@ public class VersionProtocol extends Protocol {
   }
 
   private void getVersionForPeer(final String aPeerId){
-    getExecutorService().execute( new Runnable(){
-      public void run(){
+    getExecutorService().execute( new NamedRunnable("Get version for peer '" + aPeerId + "'"){
+      public void doRun(){
         try{
           RoutingTableEntry theEntry = getRoutingTable().getEntryForPeer( aPeerId );
 

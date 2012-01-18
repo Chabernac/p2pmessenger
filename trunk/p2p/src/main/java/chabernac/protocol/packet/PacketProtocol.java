@@ -16,6 +16,7 @@ import chabernac.protocol.routing.RoutingTable;
 import chabernac.protocol.routing.RoutingTableEntry;
 import chabernac.protocol.routing.UnknownPeerException;
 import chabernac.protocol.routing.iPeerSender;
+import chabernac.utils.NamedRunnable;
 
 public class PacketProtocol extends Protocol {
   private static final Logger LOGGER = Logger.getLogger(PacketProtocol.class);
@@ -102,8 +103,8 @@ public class PacketProtocol extends Protocol {
   public String handleCommand( String aSessionId, final String anInput ) {
     final Packet thePacket = myConverter.getObject( anInput ).decreaseHopDistance();
 
-    getExecutorService().execute( new Runnable(){
-      public void run(){
+    getExecutorService().execute( new NamedRunnable("Handling packet") {
+      public void doRun(){
         try{
           if(getRoutingTable().getLocalPeerId().equals( thePacket.getTo() )){
             processCommandForLocalPeer(thePacket);

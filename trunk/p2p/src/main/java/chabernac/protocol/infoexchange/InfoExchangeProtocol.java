@@ -13,6 +13,7 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.Set;
 import org.apache.log4j.Logger;
+import org.w3c.dom.NamedNodeMap;
 
 import chabernac.io.Base64ObjectStringConverter;
 import chabernac.io.iObjectStringConverter;
@@ -25,6 +26,7 @@ import chabernac.protocol.routing.IRoutingTableListener;
 import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.RoutingTable;
 import chabernac.protocol.routing.RoutingTableEntry;
+import chabernac.utils.NamedRunnable;
 
 /**
  *
@@ -160,14 +162,14 @@ public class InfoExchangeProtocol<T extends Observable & Serializable> extends P
     }
   }
 
-  private class GetInfoFromPeer implements Runnable{
+  private class GetInfoFromPeer extends NamedRunnable{
     private final String myPeerId;
     
     public GetInfoFromPeer(String aPeerId){
       myPeerId = aPeerId;
     }
     
-    public void run(){
+    public void doRun(){
       if(!myInfoMap.containsKey(myPeerId)){
         try{
           RoutingTableEntry theEntry = getRoutingTable().getEntryForPeer( myPeerId );
@@ -192,7 +194,7 @@ public class InfoExchangeProtocol<T extends Observable & Serializable> extends P
     }
   }
   
-  private class SendInfoToPeer implements Runnable{
+  private class SendInfoToPeer extends NamedRunnable{
     private final String myPeerId;
 
     public SendInfoToPeer(String aPeerId){
@@ -200,7 +202,7 @@ public class InfoExchangeProtocol<T extends Observable & Serializable> extends P
     }
 
     @Override
-    public void run() {
+    public void doRun() {
       try{
         RoutingTableEntry theEntry = getRoutingTable().getEntryForPeer( myPeerId );
 
