@@ -20,6 +20,7 @@ import chabernac.protocol.message.DeliveryReport.Status;
 import chabernac.protocol.routing.DummyPeer;
 import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.RoutingTable;
+import chabernac.utils.NamedRunnable;
 
 public class MultiPeerMessageProtocol extends Protocol{
   private static Logger LOGGER = Logger.getLogger( MultiPeerMessageProtocol.class );
@@ -146,7 +147,7 @@ public class MultiPeerMessageProtocol extends Protocol{
 //    mySendService.shutdownNow();
   }
 
-  private class MessageSender implements Runnable{
+  private class MessageSender extends NamedRunnable{
     private final MultiPeerMessage myMultiPeerMessage;
     private final Message myMessage;
 
@@ -156,7 +157,7 @@ public class MultiPeerMessageProtocol extends Protocol{
     }
 
     @Override
-    public void run() {
+    public void doRun() {
       try {
         sendDeliveryReport( new DeliveryReport(myMultiPeerMessage, Status.IN_PROGRESS, myMessage) );
         String theResult = getMessageProtocol().sendAndWaitForResponse( myMessage );

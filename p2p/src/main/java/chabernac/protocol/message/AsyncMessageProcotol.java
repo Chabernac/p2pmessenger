@@ -239,7 +239,7 @@ public class AsyncMessageProcotol extends AbstractMessageProtocol {
     }
   }
 
-  private class MessageProcessor implements Runnable{
+  private class MessageProcessor extends NamedRunnable{
     private final Message myMessage;
     private final String mySessionId;
 
@@ -250,7 +250,7 @@ public class AsyncMessageProcotol extends AbstractMessageProtocol {
     }
 
     @Override
-    public void run() {
+    public void doRun() {
       try {
         LOGGER.debug("Local peer '" + getRoutingTable().getLocalPeerId() + "' Handling message " + myMessage);
       } catch (ProtocolException e1) {

@@ -310,7 +310,7 @@ public class UserInfoProtocol extends Protocol {
     myListeners.remove( aListener );
   }
 
-  private class UserInfoRetriever implements Runnable{
+  private class UserInfoRetriever extends NamedRunnable{
     private String myPeerId;
 
     public UserInfoRetriever(String aPeerId){
@@ -318,7 +318,7 @@ public class UserInfoProtocol extends Protocol {
     }
 
     @Override
-    public void run() {
+    public void doRun() {
       try{
         UserInfo theUserInfo = getUserInfoForPeer( myPeerId );
         myUserInfo.put(myPeerId, theUserInfo);
@@ -335,7 +335,7 @@ public class UserInfoProtocol extends Protocol {
     }
   }
 
-  private class UserInfoSender implements Runnable{
+  private class UserInfoSender extends NamedRunnable{
     private String myPeerId;
 
     public UserInfoSender(String aPeerId){
@@ -343,7 +343,7 @@ public class UserInfoProtocol extends Protocol {
     }
 
     @Override
-    public void run() {
+    public void doRun() {
       try{
         sendUserInfoToPeer( myPeerId );
       }catch(Exception e){

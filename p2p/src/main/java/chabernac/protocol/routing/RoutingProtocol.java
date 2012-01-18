@@ -433,8 +433,8 @@ public class RoutingProtocol extends Protocol {
 
   public void checkPeer(final AbstractPeer aPeer){
     if(!myRoutingTable.containsEntryForPeer( aPeer.getPeerId() )){
-      getExecutorService().execute( new Runnable(){
-        public void run(){
+      getExecutorService().execute( new NamedRunnable("checking peer '" + aPeer.getPeerId() + "'"){
+        public void doRun(){
           contactPeer( aPeer, myUnreachablePeers, true );
         }
       });
@@ -615,8 +615,8 @@ public class RoutingProtocol extends Protocol {
       //by doing this we will hopefully avoid too much sockets to be created to peers which are not available
       //a new peer will still integrate in the network because of the condition theNumberOfNeighbours == 0
       if(theEntry.getHopDistance() < RoutingTableEntry.MAX_HOP_DISTANCE || theNumberOfNeighbours < MIN_PEERS_REQUIRED_FOR_SKIP ){
-       getExecutorService().execute(new Runnable(){
-         public void run(){
+       getExecutorService().execute(new NamedRunnable("Announcement with reply"){
+         public void doRun(){
            sendAnnouncementWithReply(theEntry);
          }
        });
@@ -834,14 +834,14 @@ public class RoutingProtocol extends Protocol {
     }
   }
 
-  private class SendAnnouncement implements Runnable{
+  private class SendAnnouncement extends NamedRunnable{
     private RoutingTableEntry myEntry = null;
 
     public SendAnnouncement(RoutingTableEntry anEntry){
       myEntry = anEntry;
     }
 
-    public void run(){
+    public void doRun(){
       sendAnnoucement(myEntry); 
     }
   }
@@ -852,9 +852,9 @@ public class RoutingProtocol extends Protocol {
     return true;
   }
 
-  private class MulticastServerThread implements Runnable{
+  private class MulticastServerThread extends NamedRunnable{
     @Override
-    public void run() {
+    public void doRun() {
       try{
         myServerMulticastSocket = new MulticastSocket(MULTICAST_PORT);
         InetAddress theGroup = InetAddress.getByName(MULTICAST_ADDRESS);
