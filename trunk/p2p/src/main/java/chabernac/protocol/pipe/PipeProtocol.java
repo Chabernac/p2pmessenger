@@ -29,7 +29,7 @@ import chabernac.protocol.routing.UnknownPeerException;
 import chabernac.protocol.routing.iPeerSender;
 import chabernac.thread.DynamicSizeExecutor;
 import chabernac.tools.IOTools;
-import chabernac.tools.NetTools;
+import chabernac.utils.NetTools;
 
 /**
  * The pipe protocol will be able to open a pipe between 2 peers.
