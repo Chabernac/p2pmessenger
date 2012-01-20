@@ -72,4 +72,14 @@ public class NetTools {
     }
   }
   
+  public static ServerSocket openServerSocket(int aFromPort) throws IOException{
+    while(aFromPort < 65000){
+      try {
+        return new ServerSocket(aFromPort++);
+      } catch (IOException e) {
+      }
+    }
+    throw new IOException("Server socket could not be openend");
+  }
+  
 }
