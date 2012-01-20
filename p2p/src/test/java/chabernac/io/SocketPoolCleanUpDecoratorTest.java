@@ -10,7 +10,7 @@ import java.net.ServerSocket;
 import java.util.concurrent.TimeUnit;
 
 import junit.framework.TestCase;
-import chabernac.tools.NetTools;
+import chabernac.utils.NetTools;
 
 public class SocketPoolCleanUpDecoratorTest extends TestCase {
   public void testSocketPoolCleanUpDecorator() throws IOException, InterruptedException{

@@ -20,7 +20,7 @@ import org.apache.log4j.BasicConfigurator;
 
 import chabernac.nserver.EchoProtocol;
 import chabernac.nserver.Server;
-import chabernac.tools.NetTools;
+import chabernac.utils.NetTools;
 
 public class SocketPoolTest extends TestCase {
   

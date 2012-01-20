@@ -22,9 +22,9 @@ import org.apache.log4j.Logger;
 
 import chabernac.protocol.ServerInfo.Type;
 import chabernac.thread.DynamicSizeExecutor;
-import chabernac.tools.NetTools;
 import chabernac.util.concurrent.MonitorrableRunnable;
 import chabernac.util.concurrent.iRunnableListener;
+import chabernac.utils.NetTools;
 
 public class ProtocolServer implements Runnable, iP2PServer{
   private static Logger LOGGER = Logger.getLogger(ProtocolServer.class);
