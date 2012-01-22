@@ -55,7 +55,7 @@ public class StreamSplitterPoolTest extends TestCase {
         try{
           Socket theSocket = myServerSocket.accept();
           StreamSplitter theSplitter = new StreamSplitter(theSocket.getInputStream(), theSocket.getOutputStream(), new MultiplyHandler(theFactor1));
-          thePool1.add( theSplitter );
+          assertEquals("2", thePool1.add( theSplitter ));
           testStreamSplitter(thePool1, "2", runs, theFactor2, theLatch1);
           theLatch1.await(5, TimeUnit.SECONDS);
           theLatch2.await(5, TimeUnit.SECONDS);
@@ -70,7 +70,7 @@ public class StreamSplitterPoolTest extends TestCase {
         try{
           Socket theSocket = new Socket("localhost", 21305);
           StreamSplitter theSplitter = new StreamSplitter(theSocket.getInputStream(), theSocket.getOutputStream(), new MultiplyHandler(theFactor2));
-          thePool2.add( theSplitter );
+          assertEquals("1",thePool2.add( theSplitter ));
           testStreamSplitter(thePool2, "1", runs, theFactor1, theLatch2);
           theLatch1.await(5, TimeUnit.SECONDS);
           theLatch2.await(5, TimeUnit.SECONDS);
