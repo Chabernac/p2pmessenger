@@ -60,6 +60,17 @@ public class StreamSplittingServer {
       LOGGER.error("An error occured while adding socket", e);
     }
   }
+  
+  public void send(String anId, String aHost, int aPort, String aMessage) throws IOException{
+    synchronized(anId){
+      if(!myPool.contains( anId )){
+        addSocket( new Socket(aHost, aPort) );
+      }
+      if(myPool.contains( anId )){
+        myPool.send( anId, aMessage );
+      }
+    }
+  }
 
   private class ServerThread extends NamedRunnable{
     private final ExecutorService myCurrentExecutorService;
