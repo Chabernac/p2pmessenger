@@ -10,15 +10,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class StreamSplitterPool {
-  private final Map< String, StreamSplitter > myStreamSplitters = new HashMap< String, StreamSplitter >();
-  private final String myId;
+  protected final Map< String, StreamSplitter > myStreamSplitters = new HashMap< String, StreamSplitter >();
+  protected final String myId;
   
   public StreamSplitterPool ( String aId ) {
     super();
     myId = aId;
   }
   
-  public synchronized void add(StreamSplitter aSplitter) throws IOException{
+  public synchronized String add(StreamSplitter aSplitter) throws IOException{
     if(myStreamSplitters.values().contains( aSplitter )) throw new IOException("The pool alredy contains this streamsplitter");
     //write our own id
     aSplitter.sendWithoutReply( myId );
@@ -26,6 +26,7 @@ public class StreamSplitterPool {
     myStreamSplitters.put(theRemoteId, aSplitter);
     aSplitter.addStreamListener( new StreamClosedListener( theRemoteId ) );
     aSplitter.startSplitting();
+    return theRemoteId;
   }
   
   public String send(String aRemoteId, String aMessage) throws IOException{
@@ -46,6 +47,10 @@ public class StreamSplitterPool {
         myStreamSplitters.get(aRemoteId).close();
       }
     }
+  }
+  
+  public boolean contains(String anId){
+    return myStreamSplitters.containsKey( anId );
   }
   
   public void closeAll(){
