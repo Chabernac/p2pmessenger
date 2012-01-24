@@ -15,7 +15,7 @@ import chabernac.thread.DynamicSizeExecutor;
 import chabernac.utils.NamedRunnable;
 import chabernac.utils.NetTools;
 
-public class StreamSplittingServer {
+public class StreamSplittingServer implements iSocketSender{
   private static final Logger LOGGER = Logger.getLogger(StreamSplittingServer.class);
   private final iInputOutputHandler myInputOutputHandler;
   private ExecutorService myExecutorService = null;
