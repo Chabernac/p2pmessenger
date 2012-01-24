@@ -32,14 +32,23 @@ public class StreamSplittingServer {
     myPool = new StreamSplitterPool( anId );
   }
 
-  public void start(){
+  public synchronized void start(){
     myExecutorService = new DynamicSizeExecutor( 1, 128);
     myExecutorService.execute( new ServerThread(myExecutorService) );
   }
 
-  public void close(){
-    myExecutorService.shutdownNow();
+  public synchronized void close(){
+    if(myServerSocket != null){
+      try{
+        myServerSocket.close();
+      }catch(Exception e){
+        LOGGER.error("An error occured while closing server socket", e);
+      }
+    }
+    if(myExecutorService != null)  myExecutorService.shutdownNow();
     myExecutorService = null;
+    
+    myPool.closeAll();
   }
   
   private void addSocket(final Socket aSocket){
@@ -61,14 +70,15 @@ public class StreamSplittingServer {
     }
   }
   
-  public void send(String anId, String aHost, int aPort, String aMessage) throws IOException{
+  public String send(String anId, String aHost, int aPort, String aMessage) throws IOException{
     synchronized(anId){
       if(!myPool.contains( anId )){
         addSocket( new Socket(aHost, aPort) );
       }
       if(myPool.contains( anId )){
-        myPool.send( anId, aMessage );
+        return myPool.send( anId, aMessage );
       }
+      throw new IOException("No socket present for id '" + anId + "'");
     }
   }
 

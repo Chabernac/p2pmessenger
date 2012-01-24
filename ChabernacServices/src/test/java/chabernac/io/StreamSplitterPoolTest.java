@@ -106,18 +106,4 @@ public class StreamSplitterPoolTest extends TestCase {
       }
     }
   }
-  
-  private class MultiplyHandler implements iInputOutputHandler{
-    private final int myFactor;
-
-    public MultiplyHandler(int aFactor) {
-      super();
-      myFactor = aFactor;
-    }
-
-    @Override
-    public String handle(String anInput) {
-      return Integer.toString(Integer.parseInt(anInput) * myFactor);
-    }
-  }
 }
