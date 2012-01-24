@@ -20,6 +20,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.log4j.Logger;
 
+import chabernac.io.StreamSplitter;
 import chabernac.protocol.ServerInfo.Type;
 import chabernac.thread.DynamicSizeExecutor;
 import chabernac.util.concurrent.MonitorrableRunnable;
@@ -210,6 +211,8 @@ public class ProtocolServer implements Runnable, iP2PServer{
         String theLine = null;
         while( (theLine = theReader.readLine()) != null){
           //          LOGGER.debug("Line received: '" + theLine + "'");
+          //the following line is just to ease the transition to using the stream splitter
+          if(theLine.startsWith( StreamSplitter.IN )) theLine = theLine.substring( StreamSplitter.IN.length() );
           String  theResult = myProtocol.handleCommand( UUID.randomUUID().toString(), theLine );
           //          LOGGER.debug("Sending result: '" + theResult + "'");
           theWriter.println( theResult );
