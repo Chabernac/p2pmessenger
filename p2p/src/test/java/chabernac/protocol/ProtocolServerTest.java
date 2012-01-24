@@ -14,6 +14,7 @@ import java.net.UnknownHostException;
 
 import org.apache.log4j.BasicConfigurator;
 
+import chabernac.io.StreamSplitter;
 import chabernac.protocol.ping.PingProtocol;
 import chabernac.protocol.routing.NoAvailableNetworkAdapterException;
 import chabernac.protocol.routing.RoutingProtocol;
@@ -42,6 +43,31 @@ public class ProtocolServerTest extends AbstractProtocolTest {
       PrintWriter theWriter = new PrintWriter(new OutputStreamWriter(theClientSocket.getOutputStream()));
 
       theWriter.println( PingProtocol.ID + "ping" );
+      theWriter.flush();
+
+      BufferedReader theReader = new BufferedReader(new InputStreamReader(theClientSocket.getInputStream()));
+
+      assertEquals( PingProtocol.Response.PONG.name(), theReader.readLine() );
+    }finally{
+      theServer.stop();
+    }
+  }
+  
+  public void testProtocolServerStreamSplitterCompatibility() throws UnknownHostException, IOException{
+    ProtocolContainer theMasterProtocol = new ProtocolContainer(new ProtocolFactory(new PropertyMap()));
+
+    int thePort = 12026;
+
+    ProtocolServer theServer = new ProtocolServer(theMasterProtocol, thePort, 5);
+
+    try{
+      assertTrue( theServer.start() );
+
+      Socket theClientSocket = new Socket("localhost", thePort);
+
+      PrintWriter theWriter = new PrintWriter(new OutputStreamWriter(theClientSocket.getOutputStream()));
+
+      theWriter.println( StreamSplitter.IN + PingProtocol.ID + "ping" );
       theWriter.flush();
 
       BufferedReader theReader = new BufferedReader(new InputStreamReader(theClientSocket.getInputStream()));
