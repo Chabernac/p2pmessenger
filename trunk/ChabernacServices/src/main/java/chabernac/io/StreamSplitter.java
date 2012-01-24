@@ -19,8 +19,8 @@ import chabernac.utils.NamedRunnable;
 
 public class StreamSplitter {
   private final Logger LOGGER = Logger.getLogger(StreamSplitter.class);
-  private final String IN = "I:";
-  private final String OUT = "O:";
+  public static final String IN = "I:";
+  public static final String OUT = "O:";
   
   private final BufferedReader myInputStream;
   private final PrintWriter myOutputStream;
