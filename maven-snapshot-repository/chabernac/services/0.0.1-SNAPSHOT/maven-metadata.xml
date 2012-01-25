@@ -1,12 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<metadata>
+<metadata modelVersion="1.1.0">
   <groupId>chabernac</groupId>
   <artifactId>services</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <versioning>
     <snapshot>
-      <buildNumber>26</buildNumber>
+      <timestamp>20120125.172306</timestamp>
+      <buildNumber>27</buildNumber>
     </snapshot>
-    <lastUpdated>20120105220553</lastUpdated>
+    <lastUpdated>20120125172306</lastUpdated>
+    <snapshotVersions>
+      <snapshotVersion>
+        <extension>jar</extension>
+        <value>0.0.1-20120125.172306-27</value>
+        <updated>20120125172306</updated>
+      </snapshotVersion>
+      <snapshotVersion>
+        <extension>pom</extension>
+        <value>0.0.1-20120125.172306-27</value>
+        <updated>20120125172306</updated>
+      </snapshotVersion>
+    </snapshotVersions>
   </versioning>
 </metadata>

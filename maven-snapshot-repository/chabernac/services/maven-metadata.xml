@@ -2,11 +2,10 @@
 <metadata>
   <groupId>chabernac</groupId>
   <artifactId>services</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
   <versioning>
     <versions>
       <version>0.0.1-SNAPSHOT</version>
     </versions>
-    <lastUpdated>20120105220543</lastUpdated>
+    <lastUpdated>20120125172402</lastUpdated>
   </versioning>
 </metadata>
