@@ -21,7 +21,7 @@ public class LocalIPCollecterTest extends TestCase {
       theCollector.addIPListener( new LoggingIPListener() );
       theCollector.start();
 
-      Thread.sleep(5000);
+      Thread.sleep(500000);
     }finally{
       theCollector.stop();
     }
