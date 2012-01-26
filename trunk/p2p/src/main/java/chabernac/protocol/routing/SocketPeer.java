@@ -41,7 +41,8 @@ public class SocketPeer extends AbstractPeer implements Serializable {
   }
 
   public void addLocalIpListener(){
-    new LocalIPCollecter( null, 1000 * 60 * 1 ).addIPListener( new iIPListener(){
+    LocalIPCollecter theCollector = new LocalIPCollecter( null, 60 * 1 );
+    theCollector.addIPListener( new iIPListener(){
       @Override
       public void newIPBound( InetAddress anAddress ) {
         try{
@@ -60,6 +61,7 @@ public class SocketPeer extends AbstractPeer implements Serializable {
         }
       }
     });
+    theCollector.start();
   }
 
   public SocketPeer(String aPeerId,  int aPort, List<SimpleNetworkInterface> aHosts){
