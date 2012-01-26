@@ -20,8 +20,8 @@ public class MessageCollector implements iMultiPeerMessageListener {
 	}
 	@Override
 	public void messageReceived( MultiPeerMessage aMessage ) {
+	  myMultiPeerMessages.add(aMessage);
 		myLatch.countDown();
-		myMultiPeerMessages.add(aMessage);
 	}
 
 	public List<MultiPeerMessage> getMessages(){
