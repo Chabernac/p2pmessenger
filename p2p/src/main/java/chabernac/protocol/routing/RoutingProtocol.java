@@ -189,6 +189,7 @@ public class RoutingProtocol extends Protocol {
 
       @Override
       public void IPRemoved( InetAddress anAddress ) {
+        LOGGER.debug("Ip address removed, exchanging routing tables");
       }
     });
   }
