@@ -63,7 +63,6 @@ public class LocalIPCollecter {
   }
 
   public synchronized void detectIPs() throws SocketException {
-    LOGGER.debug("checking for new ip's");
     List<InetAddress> theIpList = new ArrayList<InetAddress>();
     Enumeration<NetworkInterface> theInterfaces = NetworkInterface.getNetworkInterfaces();
     while(theInterfaces.hasMoreElements()){
