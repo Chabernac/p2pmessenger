@@ -183,6 +183,7 @@ public class RoutingProtocol extends Protocol {
     myLocalIpCollector.addIPListener( new iIPListener(){
       @Override
       public void newIPBound( InetAddress anAddress ) {
+        LOGGER.debug("New ip address found, exchanging routing tables");
         exchangeRoutingTable();
       }
 
