@@ -175,6 +175,7 @@ public class RoutingProtocol extends Protocol {
 	
 	public void addLocalIpListener(){
 	  try {
+	    //detect the ip's before adding the listeners, the current bound addresses will not trigger the listener
       myLocalIpCollector.detectIPs();
     } catch (SocketException e) {
       LOGGER.error("Error occured while detecting ip addresses");
