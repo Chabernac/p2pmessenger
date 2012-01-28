@@ -643,12 +643,12 @@ public class P2PFacadeTest extends TestCase {
       .setInfoObject( "test", "test2" )
       .setPersist( false )
       .setPeerId( thePeerId2 )
-      .setMessageResenderActivated( true )
-      .start( 20 );
-
+      .setMessageResenderActivated( true );
       theFacade2.addMessageListener( theCollector );
+      theFacade2.start( 20 );
 
       theReceiveLatch.await(10, TimeUnit.SECONDS);
+      assertEquals(0, theReceiveLatch.getCount());
 
       assertTrue( theFacade1.getRoutingTable().containsEntryForPeer( theFacade2.getPeerId() ));
       assertTrue( theFacade1.getRoutingTable().getEntryForPeer(theFacade2.getPeerId()).isReachable());
