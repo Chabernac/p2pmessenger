@@ -106,7 +106,7 @@ OUT</panel_attributes>
       <h>70</h>
     </coordinates>
     <panel_attributes>lt=&lt;-
-0:IN 1:OUT:</panel_attributes>
+I:IN O:OUT:</panel_attributes>
     <additional_attributes>240;50;30;50</additional_attributes>
   </element>
   <element>
@@ -118,7 +118,7 @@ OUT</panel_attributes>
       <h>70</h>
     </coordinates>
     <panel_attributes>lt=&lt;-
-0:IN 1:OUT</panel_attributes>
+I:IN O:OUT</panel_attributes>
     <additional_attributes>30;50;240;50</additional_attributes>
   </element>
   <element>
