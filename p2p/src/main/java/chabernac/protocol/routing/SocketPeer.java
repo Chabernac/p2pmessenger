@@ -28,6 +28,7 @@ public class SocketPeer extends AbstractPeer implements Serializable {
   private static final long serialVersionUID = 7852961137229337616L;
   private List<SimpleNetworkInterface> myHost = null;
   private int myPort;
+  private boolean isStreamSplittingSupported = false;
 
   public SocketPeer (){
     super(null);
@@ -38,6 +39,7 @@ public class SocketPeer extends AbstractPeer implements Serializable {
     myPort = aPort;
     detectLocalInterfaces();
     addLocalIpListener();
+    isStreamSplittingSupported = true;
   }
 
   public void addLocalIpListener(){
@@ -124,6 +126,10 @@ public class SocketPeer extends AbstractPeer implements Serializable {
   }
   public void setPort( int anPort ) {
     myPort = anPort;
+  }
+
+  public boolean isStreamSplittingSupported() {
+    return isStreamSplittingSupported;
   }
 
   /**

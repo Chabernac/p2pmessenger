@@ -2,7 +2,9 @@ package chabernac.protocol.routing;
 
 import java.io.IOException;
 
+import chabernac.io.iSocketSender;
 import chabernac.p2p.io.PeerToPeerSender;
+import chabernac.p2p.io.PeerToPeerSplitSender;
 import chabernac.p2p.io.PeerToWebSender;
 import chabernac.p2p.io.WebToPeerSender;
 
@@ -11,10 +13,12 @@ public class PeerSender extends AbstractPeerSender{
 
   private final WebToPeerSender myWebToPeerSender = new WebToPeerSender();
   private final PeerToPeerSender myPeerToPeerSender = new PeerToPeerSender();
+  private final PeerToPeerSplitSender myPeerToPeerSplitSender;
   private final PeerToWebSender myPeerToWebSender = new PeerToWebSender();
 
-  public PeerSender(RoutingTable aRoutingTable){
+  public PeerSender(iSocketSender aSocketSender, RoutingTable aRoutingTable){
     myRoutingTable = aRoutingTable;
+    myPeerToPeerSplitSender = new PeerToPeerSplitSender(aSocketSender);
   }
   
   protected String doSend(PeerMessage aMessage, int aTimeoutInSeconds) throws IOException{
@@ -29,7 +33,9 @@ public class PeerSender extends AbstractPeerSender{
       } else if(theFrom instanceof WebPeer){
         return myWebToPeerSender.sendMessageTo( (WebPeer)theFrom, theTo, aMessage.getMessage(), aTimeoutInSeconds ); 
       } else if(theTo instanceof SocketPeer){
-        return myPeerToPeerSender.sendMessageTo(aMessage, (SocketPeer)theTo, aMessage.getMessage(), aTimeoutInSeconds );
+        SocketPeer theSocketPeer = (SocketPeer)theTo;
+        if(theSocketPeer.isStreamSplittingSupported()) return myPeerToPeerSplitSender.sendMessageTo(aMessage, (SocketPeer)theTo, aMessage.getMessage(), aTimeoutInSeconds );
+        else return myPeerToPeerSender.sendMessageTo(aMessage, (SocketPeer)theTo, aMessage.getMessage(), aTimeoutInSeconds );
       }
     }catch(Exception e){
       throw new IOException("Could not send message", e);

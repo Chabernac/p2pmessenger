@@ -6,6 +6,7 @@ package chabernac.protocol;
 
 import java.util.Collection;
 
+import chabernac.io.iSocketSender;
 import chabernac.protocol.application.ApplicationProtocol;
 import chabernac.protocol.asyncfiletransfer.AsyncFileTransferProtocol;
 import chabernac.protocol.asyncfiletransfer.iAsyncFileTransferHandler;
@@ -55,12 +56,14 @@ public class ProtocolFactory implements iProtocolFactory{
       boolean isStopWhenAlreadyRunning = Boolean.parseBoolean(myProtocolProperties.getProperty( "routingprotocol.stopwhenalreadyrunning",  "false").toString());
       String thePeerId = myProtocolProperties.getProperty( "peerid", "" ).toString();
       Collection<String> theSuperNodes = (Collection<String>)myProtocolProperties.getProperty( "routingprotocol.supernodes", null);
+      iSocketSender theSocketSender = (iSocketSender)myProtocolProperties.getProperty("routingprotocol.socketsender", null);
       return new RoutingProtocol(thePeerId, 
           theExchangeDelay, 
           isPersistRoutingTable, 
           theSuperNodes, 
           isStopWhenAlreadyRunning, 
-          myProtocolProperties.getProperty( "routingprotocol.channel",  "default").toString()); 
+          myProtocolProperties.getProperty( "routingprotocol.channel",  "default").toString(),
+          theSocketSender); 
     }
     
     if(ApplicationProtocol.ID.equalsIgnoreCase( aProtocolId )) {
