@@ -11,10 +11,10 @@ import chabernac.protocol.routing.PeerMessage;
 import chabernac.protocol.routing.SocketPeer;
 import chabernac.tools.SimpleNetworkInterface;
 
-public class PeerToPeerSender2 {
+public class PeerToPeerSplitSender {
   private final iSocketSender mySocketSender;
 
-  public PeerToPeerSender2 ( iSocketSender aSocketSender ) {
+  public PeerToPeerSplitSender ( iSocketSender aSocketSender ) {
     super();
     mySocketSender = aSocketSender;
   }

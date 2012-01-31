@@ -37,6 +37,7 @@ import chabernac.io.ClassPathResource;
 import chabernac.io.FileResource;
 import chabernac.io.iObjectPersister;
 import chabernac.io.iObjectStringConverter;
+import chabernac.io.iSocketSender;
 import chabernac.protocol.AlreadyRunningException;
 import chabernac.protocol.Protocol;
 import chabernac.protocol.ProtocolException;
@@ -136,6 +137,7 @@ public class RoutingProtocol extends Protocol {
 
 	private iRoutingTableInspector myRoutingTableInspector = null;
 	private final LocalIPCollecter myLocalIpCollector = new LocalIPCollecter(null, 5);
+	private final iSocketSender mySocketSender;
 
 	/**
 	 * 
@@ -148,11 +150,13 @@ public class RoutingProtocol extends Protocol {
 			boolean isPersistRoutingTable, 
 			Collection<String> aSuperNodes, 
 			boolean isStopWhenAlreadyRunning, 
-			String aChannel) throws ProtocolException{
+			String aChannel,
+			iSocketSender aSocketSender) throws ProtocolException{
 		super( ID );
 		myLocalPeerId = aLocalPeerId;
 		myExchangeDelay = anExchangeDelay;
 		myChannel = aChannel;
+		mySocketSender = aSocketSender;
 		this.isPersistRoutingTable = isPersistRoutingTable;
 		this.isStopWhenAlreadyRunning = isStopWhenAlreadyRunning;
 
@@ -984,7 +988,7 @@ public class RoutingProtocol extends Protocol {
 
 	public iPeerSender getPeerSender() {
 		if(myPeerSender == null){
-			myPeerSender = new PeerSender( getRoutingTable() );
+			myPeerSender = new PeerSender( mySocketSender, getRoutingTable() );
 		}
 		return myPeerSender;
 	}
