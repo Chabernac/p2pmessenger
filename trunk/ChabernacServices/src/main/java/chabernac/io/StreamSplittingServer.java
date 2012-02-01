@@ -23,6 +23,7 @@ public class StreamSplittingServer implements iSocketSender{
   private final boolean isFindUnusedPort;
   private ServerSocket myServerSocket;
   private final StreamSplitterPool myPool;
+  private boolean isRunning = false;
 
   public StreamSplittingServer ( iInputOutputHandler aInputOutputHandler, int aPort, boolean isFindUnusedPort, String anId ) {
     super();
@@ -32,9 +33,12 @@ public class StreamSplittingServer implements iSocketSender{
     myPool = new StreamSplitterPool( anId );
   }
 
-  public synchronized void start(){
+  public synchronized boolean start(){
+    if(isRunning) return false;
+    isRunning = true;
     myExecutorService = new DynamicSizeExecutor( 1, 128);
     myExecutorService.execute( new ServerThread(myExecutorService) );
+    return true;
   }
 
   public synchronized void close(){
@@ -49,6 +53,14 @@ public class StreamSplittingServer implements iSocketSender{
     myExecutorService = null;
     
     myPool.closeAll();
+  }
+  
+  public boolean containsSocketForId(String anId){
+    return myPool.contains(anId);
+  }
+  
+  public boolean isStarted(){
+    return isRunning;
   }
   
   private void addSocket(final Socket aSocket){
@@ -107,6 +119,8 @@ public class StreamSplittingServer implements iSocketSender{
         }
       }catch(Exception e){
         LOGGER.error("Error occured in server thread", e);
+      } finally {
+        isRunning = false;
       }
     }
   }

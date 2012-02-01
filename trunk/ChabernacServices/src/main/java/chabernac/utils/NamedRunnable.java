@@ -41,7 +41,7 @@ public abstract class NamedRunnable implements Runnable {
       Thread.currentThread().setName( theName[0].trim() + " [" + myName + "] end" );
       Thread.yield();
       myRunnableCounter.decrementAndGet();
-      LOGGER.error("Number of named runnables: '" + myRunnableCounter.get() + "'");
+      LOGGER.debug("Number of named runnables: '" + myRunnableCounter.get() + "'");
     }
   }
   
