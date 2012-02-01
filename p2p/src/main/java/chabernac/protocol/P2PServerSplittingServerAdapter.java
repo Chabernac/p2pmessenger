@@ -18,8 +18,7 @@ public class P2PServerSplittingServerAdapter implements iP2PServer {
 
   @Override
   public boolean isStarted() {
-    // TODO Auto-generated method stub
-    return false;
+    return myServer.isStarted();
   }
 
   @Override
