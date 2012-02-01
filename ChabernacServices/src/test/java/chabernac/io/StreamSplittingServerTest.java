@@ -16,13 +16,15 @@ public class StreamSplittingServerTest extends TestCase {
     BasicConfigurator.configure();
   }
   
-  public void testStreamSplittingServer() throws IOException{
+  public void testStreamSplittingServer() throws IOException, InterruptedException{
     
     StreamSplittingServer theServer1 = new StreamSplittingServer( new MultiplyHandler( 2 ), 13000, false, "1" );
     StreamSplittingServer theServer2 = new StreamSplittingServer( new MultiplyHandler( 3 ), 13001, false, "2" );
     theServer1.start();
     theServer2.start();
-
+    assertTrue(theServer1.isStarted());
+    assertTrue(theServer2.isStarted());
+    
     try{
     int times = 10000;
     for(int i=0;i<times;i++){
@@ -32,6 +34,9 @@ public class StreamSplittingServerTest extends TestCase {
     }finally{
       theServer1.close();
       theServer2.close();
+      Thread.sleep(1000);
+      assertFalse(theServer1.isStarted());
+      assertFalse(theServer2.isStarted());
     }
   }
 }

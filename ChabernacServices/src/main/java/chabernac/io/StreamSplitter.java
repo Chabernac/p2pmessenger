@@ -31,6 +31,7 @@ public class StreamSplitter {
   private ExecutorService myExecutorService = null;
   
   private List<iStreamListener> myStreamListeners = new ArrayList<iStreamListener>();
+  
   public StreamSplitter(InputStream aInputStream, OutputStream aOutputStream, iInputOutputHandler aInputOutputHandler) {
     super();
     myInputOutputHandler = aInputOutputHandler;
@@ -80,6 +81,11 @@ public class StreamSplitter {
     myOutputStream.flush();
   }
   
+  public void handleInput(String anInput){
+    String theOutput = myInputOutputHandler.handle(anInput);
+    sendWithoutReply(OUT + theOutput);
+  }
+  
   private class InputHandler extends NamedRunnable{
     public void doRun(){
       String theLine = null;
@@ -87,8 +93,7 @@ public class StreamSplitter {
       while((theLine = myInputStream.readLine()) != null){
         if(theLine.startsWith(IN)){
           String theInput = theLine.substring(IN.length());
-          String theOutput = myInputOutputHandler.handle(theInput);
-          sendWithoutReply(OUT + theOutput);
+          handleInput(theInput);
         } else {
           String theResponse = theLine;
           if(theResponse.startsWith(OUT)) theResponse = theResponse.substring(OUT.length());

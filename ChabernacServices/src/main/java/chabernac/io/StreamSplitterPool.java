@@ -12,6 +12,7 @@ import java.util.Map;
 public class StreamSplitterPool {
   protected final Map< String, StreamSplitter > myStreamSplitters = new HashMap< String, StreamSplitter >();
   protected final String myId;
+  private final static String ID_PREFIX = "ID:";
   
   public StreamSplitterPool ( String aId ) {
     super();
@@ -21,10 +22,15 @@ public class StreamSplitterPool {
   public synchronized String add(StreamSplitter aSplitter) throws IOException{
     if(myStreamSplitters.values().contains( aSplitter )) throw new IOException("The pool alredy contains this streamsplitter");
     //write our own id
-    aSplitter.sendWithoutReply( myId );
+    aSplitter.sendWithoutReply( ID_PREFIX + myId );
     String theRemoteId = aSplitter.readLine();
-    myStreamSplitters.put(theRemoteId, aSplitter);
-    aSplitter.addStreamListener( new StreamClosedListener( theRemoteId ) );
+    if(theRemoteId.startsWith(ID_PREFIX)){
+      theRemoteId = theRemoteId.substring(ID_PREFIX.length());
+      myStreamSplitters.put(theRemoteId, aSplitter);
+      aSplitter.addStreamListener( new StreamClosedListener( theRemoteId ) );
+    } else {
+      aSplitter.handleInput(theRemoteId);
+    }
     aSplitter.startSplitting();
     return theRemoteId;
   }
