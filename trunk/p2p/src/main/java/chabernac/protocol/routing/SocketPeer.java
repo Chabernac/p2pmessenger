@@ -39,7 +39,7 @@ public class SocketPeer extends AbstractPeer implements Serializable {
     myPort = aPort;
     detectLocalInterfaces();
     addLocalIpListener();
-    isStreamSplittingSupported = true;
+//    isStreamSplittingSupported = true;
   }
 
   public void addLocalIpListener(){

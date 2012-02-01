@@ -643,9 +643,10 @@ public class P2PFacadeTest extends TestCase {
       .setInfoObject( "test", "test2" )
       .setPersist( false )
       .setPeerId( thePeerId2 )
-      .setMessageResenderActivated( true );
+      .setMessageResenderActivated( true )
+      .start( 20 );
+      
       theFacade2.addMessageListener( theCollector );
-      theFacade2.start( 20 );
 
       theReceiveLatch.await(10, TimeUnit.SECONDS);
       assertEquals(0, theReceiveLatch.getCount());
