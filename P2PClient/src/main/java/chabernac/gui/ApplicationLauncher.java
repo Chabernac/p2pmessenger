@@ -189,7 +189,7 @@ public class ApplicationLauncher {
     .setChannel(anInterPreter.getKeyValue("channel", "default"))
     .setFileHandler( new FileHandlerDialogDispatcher() )
     .setInfoObject( "pom.info", new POMInfo() )
-    .setInfoObject( "version", "v2011.12.30" )
+    .setInfoObject( "version", "v2011.02.03" )
     .setSocketReuse( true )
     .setMessageResenderActivated( true )
     .setAutoUserStatusDetectionEnabled( true )
@@ -219,7 +219,8 @@ public class ApplicationLauncher {
 
   private static boolean activate(){
     try {
-      RoutingProtocol theRoutingProtocol = new RoutingProtocol(null, -1, true, null, false, "AXA");
+      //TODO need to check how we will send the message when using the streamsplitter
+      RoutingProtocol theRoutingProtocol = new RoutingProtocol(null, -1, true, null, false, "AXA", null);
       RoutingTableEntry theLocalEntry = theRoutingProtocol.getRoutingTable().getEntryForLocalPeer();
       return "ok".equals( theRoutingProtocol.getPeerSender().send( theLocalEntry.getPeer(), "APPactivate" ));
     } catch ( Exception e ) {
