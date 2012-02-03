@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionException;
@@ -33,7 +34,7 @@ public class AsyncMessageProcotol extends AbstractMessageProtocol {
   private iObjectStringConverter< Message > myMessageConverter = new Base64ObjectStringConverter< Message >();
   //  private ExecutorService mySenderService = DynamicSizeExecutor.getSmallInstance();
   private Map<String, ArrayBlockingQueue<String>> myStatusQueues = new HashMap<String, ArrayBlockingQueue<String>> ();
-  private Map<String, Message> mySendMessages = new HashMap<String, Message>();
+  private Map<String, Message> mySendMessages = new ConcurrentHashMap<String, Message>();
 
   private ScheduledExecutorService myQueueCleanupService = Executors.newScheduledThreadPool( 1 );
   private ExecutorService myListenerService = Executors.newCachedThreadPool();
