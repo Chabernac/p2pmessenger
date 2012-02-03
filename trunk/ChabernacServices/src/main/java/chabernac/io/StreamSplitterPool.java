@@ -12,7 +12,7 @@ import java.util.Map;
 public class StreamSplitterPool {
   protected final Map< String, StreamSplitter > myStreamSplitters = new HashMap< String, StreamSplitter >();
   protected final String myId;
-  private final static String ID_PREFIX = "ID:";
+  public final static String ID_PREFIX = "ID:";
   
   public StreamSplitterPool ( String aId ) {
     super();
