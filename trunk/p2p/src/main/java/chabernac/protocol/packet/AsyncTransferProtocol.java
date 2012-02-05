@@ -7,12 +7,12 @@ package chabernac.protocol.packet;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 import javax.sound.sampled.AudioFormat;
@@ -32,7 +32,7 @@ public class AsyncTransferProtocol extends Protocol implements iTransferContaine
 
   public static final String ID = "ATP";
 
-  private Map<String, AbstractTransferState> myTransferStates = new HashMap< String, AbstractTransferState >();
+  private Map<String, AbstractTransferState> myTransferStates = new ConcurrentHashMap<String, AbstractTransferState >();
 
   //local instance of state change listener which will announce the new state to the remote peer
   private iStateChangeListener myStateChangeListener = new StateChangeListener();
