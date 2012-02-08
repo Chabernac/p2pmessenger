@@ -21,14 +21,18 @@ import javax.sound.sampled.AudioFormat;
 
 import chabernac.io.BasicSocketPool;
 import chabernac.io.CachingSocketPool;
+import chabernac.io.StreamSplittingServer;
 import chabernac.io.iSocketPool;
 import chabernac.p2p.debug.RoutingFrame;
 import chabernac.p2p.settings.P2PSettings;
+import chabernac.protocol.InputOutputProtocolAdapter;
+import chabernac.protocol.P2PServerSplittingServerAdapter;
 import chabernac.protocol.ProtocolContainer;
 import chabernac.protocol.ProtocolException;
 import chabernac.protocol.ProtocolFactory;
 import chabernac.protocol.ProtocolServer;
 import chabernac.protocol.ProtocolWebServer;
+import chabernac.protocol.StreamSplittingServerListener;
 import chabernac.protocol.iP2PServer;
 import chabernac.protocol.iProtocolDelegate;
 import chabernac.protocol.application.ApplicationProtocol;
@@ -66,10 +70,10 @@ import chabernac.protocol.routing.SocketPeer;
 import chabernac.protocol.routing.WebPeerProtocol;
 import chabernac.protocol.userinfo.AutoUserInfoStatusDector;
 import chabernac.protocol.userinfo.UserInfo;
-import chabernac.protocol.userinfo.UserInfo.Status;
 import chabernac.protocol.userinfo.UserInfoProtocol;
 import chabernac.protocol.userinfo.iUserInfoListener;
 import chabernac.protocol.userinfo.iUserInfoProvider;
+import chabernac.protocol.userinfo.UserInfo.Status;
 import chabernac.protocol.version.Version;
 import chabernac.protocol.version.VersionProtocol;
 import chabernac.tools.PropertyMap;
@@ -99,14 +103,16 @@ import chabernac.tools.PropertyMap;
  */
 
 public class P2PFacade {
+  public static enum ServerMode{SOCKET, WEB, SPLITTING_SOCKET, BOTH};
+
+  private ServerMode myServerMode = ServerMode.SOCKET;
   private ProtocolContainer myContainer = null;
-  private iP2PServer myProtocolServer = null;
+  private List<iP2PServer> myProtocolServers = new ArrayList< iP2PServer >();
   private PropertyMap myProperties = new PropertyMap();
   private MessageArchive myMessageArchive = null;
   private boolean myIsKeepHistory = false;
   private FailedMessageResender myMessageResender = null;
   private boolean isActivateMessageResender = false;
-  private boolean isWebNode = false;
   private int myWebPort = 8080;
   private Integer myAJPPort = null;
   private URL myWebURL = null;
@@ -240,7 +246,7 @@ public class P2PFacade {
       throw new P2PFacadeException("An error occured while sending file", e);
     }
   }
-  
+
   public AbstractTransferState startAudioTransfer(String aPeerId, AudioFormat.Encoding anEncoding,int aSamplesPerSecond, int aBits, int aSpeexQuality, int aPacketsPerSecond) throws P2PFacadeException{
     if(!isStarted()) throw new P2PFacadeException("Can not execute this action when the server is not started");
     try {
@@ -545,7 +551,7 @@ public class P2PFacade {
   }
 
   @SuppressWarnings("unchecked")
-public InfoObject getInfoObject() throws P2PFacadeException{
+  public InfoObject getInfoObject() throws P2PFacadeException{
     if(!isStarted()) {
       if(!myProperties.containsKey( "chabernac.protocol.infoexchange.InfoObject" )){
         myProperties.setProperty( "chabernac.protocol.infoexchange.InfoObject", new InfoObject() );
@@ -651,7 +657,7 @@ public InfoObject getInfoObject() throws P2PFacadeException{
     if(!isStarted()) throw new P2PFacadeException("Can not execute this action when the server is not started");
 
     try{
-      RoutingFrame theFrame = new RoutingFrame( myProtocolServer,  myContainer, false);
+      RoutingFrame theFrame = new RoutingFrame( myProtocolServers.get(0),  myContainer, false);
       theFrame.setVisible( true );
     }catch(Exception e){
       throw new P2PFacadeException("Could not show routing frame", e);
@@ -706,8 +712,8 @@ public InfoObject getInfoObject() throws P2PFacadeException{
   }
 
   public boolean isStarted(){
-    if(myProtocolServer == null) return false;
-    return myProtocolServer.isStarted();
+    if(myProtocolServers.isEmpty()) return false;
+    return myProtocolServers.get(0).isStarted();
   }
 
   public void forceProtocolStart(String aProtocolId) throws P2PFacadeException{
@@ -719,15 +725,15 @@ public InfoObject getInfoObject() throws P2PFacadeException{
     }
   }
 
-  public P2PFacade setWebNode(boolean anIsWebNode) throws P2PFacadeException {
+  public P2PFacade setServerMode(ServerMode aServerMode) throws P2PFacadeException {
     if(isStarted()) throw new P2PFacadeException("Can not set this property whern the server has been started");
-    isWebNode = anIsWebNode;
+    myServerMode = aServerMode;
     return this;
   }
 
   public P2PFacade setWebPort( int aWebPort ) throws P2PFacadeException {
     if(isStarted()) throw new P2PFacadeException("Can not set this property whern the server has been started");
-    if(!isWebNode)  throw new P2PFacadeException("Can only set this property on a webnode");
+    if(myServerMode != ServerMode.WEB && myServerMode != ServerMode.BOTH)  throw new P2PFacadeException("Can only set this property on a webnode");
     myWebPort = aWebPort;
     return this;
   }
@@ -735,22 +741,22 @@ public InfoObject getInfoObject() throws P2PFacadeException{
 
   public P2PFacade setAJPPort( Integer aAJPPort ) throws P2PFacadeException {
     if(isStarted()) throw new P2PFacadeException("Can not set this property whern the server has been started");
-    if(!isWebNode)  throw new P2PFacadeException("Can only set this property on a webnode");
+    if(myServerMode != ServerMode.SOCKET && myServerMode != ServerMode.SPLITTING_SOCKET && myServerMode != ServerMode.BOTH)  throw new P2PFacadeException("Can only set this property on a webnode");
     myAJPPort = aAJPPort;
     return this;
   }
 
   public P2PFacade setWebURL( URL aWebURL ) throws P2PFacadeException {
     if(isStarted()) throw new P2PFacadeException("Can not set this property whern the server has been started");
-    if(!isWebNode)  throw new P2PFacadeException("Can only set this property on a webnode");
+    if(myServerMode != ServerMode.WEB && myServerMode != ServerMode.BOTH)  throw new P2PFacadeException("Can only set this property on a webnode");
 
     myWebURL = aWebURL;
     return this;
   }
-  
+
   private CamProtocol getCamProtocol() throws P2PFacadeException{
     if(!isStarted()) throw new P2PFacadeException("Can not execute this action when the server is not started");
-    
+
     try{
       return ((CamProtocol)myContainer.getProtocol( CamProtocol.ID ));
     }catch(Exception e){
@@ -791,22 +797,33 @@ public InfoObject getInfoObject() throws P2PFacadeException{
       ProtocolFactory theFactory = new ProtocolFactory(myProperties);
       myContainer = new ProtocolContainer(theFactory, mySupportedProtocols);
 
-      if(isWebNode){
+      //we retrieve the routing protocol
+      //this way it is instantiated and will start exchanging routing information when the server is started
+      RoutingProtocol theRoutingProtocol = (RoutingProtocol)myContainer.getProtocol( RoutingProtocol.ID );
+      theRoutingProtocol.getRoutingTable().setKeepHistory( myIsKeepHistory );
+
+
+      if(myServerMode == ServerMode.WEB || myServerMode == ServerMode.BOTH){
         if(myWebURL == null) throw new P2PFacadeException( "Must set a web url before starting" );
         ProtocolWebServer theProtocolWebServer = new ProtocolWebServer( myContainer, myWebPort, myWebURL );
         theProtocolWebServer.setAJPPort( myAJPPort );
-        myProtocolServer = theProtocolWebServer;
-
-      } else {
-        myProtocolServer = new ProtocolServer(myContainer, RoutingProtocol.START_PORT, aNumberOfThreads, true);
+        myProtocolServers.add(theProtocolWebServer);
       }
 
-      if(!myProtocolServer.start()) throw new P2PFacadeException("Unable to start protocol server");
+      if(myServerMode == ServerMode.SOCKET) {
+        myProtocolServers.add(new ProtocolServer(myContainer, RoutingProtocol.START_PORT, aNumberOfThreads, true));
+      }
 
-      //we retrieve the routing protocol
-      //this way it is instantiated and start exchanging routing information
-      RoutingProtocol theRoutingProtocol = (RoutingProtocol)myContainer.getProtocol( RoutingProtocol.ID );
-      theRoutingProtocol.getRoutingTable().setKeepHistory( myIsKeepHistory );
+      if(myServerMode == ServerMode.SPLITTING_SOCKET || myServerMode == ServerMode.BOTH){
+        StreamSplittingServer theServer = new StreamSplittingServer( 
+            new InputOutputProtocolAdapter( myContainer ), RoutingProtocol.START_PORT, true, theRoutingProtocol.getLocalPeerId() );
+        theServer.addListener( new StreamSplittingServerListener( myContainer ) );
+        myProtocolServers.add(new P2PServerSplittingServerAdapter(theServer));
+      }
+
+      for(iP2PServer theServer : myProtocolServers){
+        if(!theServer.start()) throw new P2PFacadeException("Unable to start protocol server");
+      }
 
       //retrieve the user info protocol
       //this way it is instantiated and listens for routing table changes and retrieves user info of the changed peers
@@ -819,7 +836,7 @@ public InfoObject getInfoObject() throws P2PFacadeException{
       if(mySupportedProtocols == null || mySupportedProtocols.contains( WebPeerProtocol.ID)) myContainer.getProtocol( WebPeerProtocol.ID );
 
       if(mySupportedProtocols == null || mySupportedProtocols.contains( InfoExchangeProtocol.ID)) myContainer.getProtocol( InfoExchangeProtocol.ID );
-      
+
       //load the encryption protocol immediatly, generating the public/private key pair takes some time
       if(mySupportedProtocols == null || mySupportedProtocols.contains( EncryptionProtocol.ID)) myContainer.getProtocol( EncryptionProtocol.ID );
 
@@ -837,17 +854,16 @@ public InfoObject getInfoObject() throws P2PFacadeException{
 
       return this;
     }catch(ProtocolException e){
-      if(myProtocolServer != null){
-        myProtocolServer.stop();
-      }
+      stop();
       throw new P2PFacadeException("Could not start P2P Facade", e);
     }
   }
 
   public P2PFacade stop(){
-    if(myProtocolServer != null){
-      myProtocolServer.stop();
+    for(iP2PServer theServer : myProtocolServers){
+      theServer.stop();
     }
+
     P2PSettings.getInstance().getSocketPool().cleanUp();
     return this;
   }

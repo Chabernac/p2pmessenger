@@ -137,7 +137,7 @@ public class RoutingProtocol extends Protocol {
 
 	private iRoutingTableInspector myRoutingTableInspector = null;
 	private final LocalIPCollecter myLocalIpCollector = new LocalIPCollecter(null, 5);
-	private final iSocketSender mySocketSender;
+	private iSocketSender mySocketSender;
 
 	/**
 	 * 
@@ -176,6 +176,9 @@ public class RoutingProtocol extends Protocol {
 		addLocalIpListener();
 	}
 	
+	public void setSocketSender(iSocketSender aSocketSender){
+	  mySocketSender = aSocketSender;
+	}
 	
 	public void addLocalIpListener(){
 	  try {
@@ -244,9 +247,10 @@ public class RoutingProtocol extends Protocol {
 		//add the entry for the local peer based on the server info
 		if(myServerInfo != null){
 			AbstractPeer theLocalPeer = null;
-			if(myServerInfo.getServerType() == Type.SOCKET){
+			if(myServerInfo.getServerType() == Type.SOCKET || myServerInfo.getServerType() == Type.STREAM_SPLITTING_SOCKET){
 				try{
 					theLocalPeer = new SocketPeer(getLocalPeerId(), myServerInfo.getServerPort());
+					((SocketPeer)theLocalPeer).setStreamSplittingSupported( myServerInfo.getServerType() == Type.STREAM_SPLITTING_SOCKET );
 				}catch(NoAvailableNetworkAdapterException e){
 					//TODO we should do something when the network adapter becomes available again
 					LOGGER.error( "The local network adapter could not be located", e );
@@ -319,7 +323,7 @@ public class RoutingProtocol extends Protocol {
 
 		mySheduledService.scheduleWithFixedDelay( new ExchangeRoutingTable(), 2, myExchangeDelay, TimeUnit.SECONDS);
 
-		if(myServerInfo.getServerType() == Type.SOCKET){
+		if(myServerInfo.getServerType() == Type.SOCKET || myServerInfo.getServerType() == Type.STREAM_SPLITTING_SOCKET){
 			mySheduledService.scheduleWithFixedDelay( new ScanLocalSystem(), 1, myExchangeDelay, TimeUnit.SECONDS);
 			mySheduledService.scheduleWithFixedDelay( new SendUDPAnnouncement(), 4, myExchangeDelay, TimeUnit.SECONDS);
 			mySheduledService.scheduleWithFixedDelay( new ScanFixedIpList(), 10, myExchangeDelay, TimeUnit.SECONDS);
@@ -983,6 +987,9 @@ public class RoutingProtocol extends Protocol {
 	@Override
 	public void setServerInfo( ServerInfo aServerInfo ) throws ProtocolException {
 		myServerInfo = aServerInfo;
+		if(aServerInfo.getSocketSender() != null) {
+		  mySocketSender = aServerInfo.getSocketSender();
+		}
 		start();
 	}
 

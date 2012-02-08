@@ -24,6 +24,7 @@ import chabernac.tools.iIPListener;
 
 public class SocketPeer extends AbstractPeer implements Serializable {
   private static Logger LOGGER = Logger.getLogger( SocketPeer.class );
+  private static boolean STREAM_SPLITTING_SUPPORTED = true;
 
   private static final long serialVersionUID = 7852961137229337616L;
   private List<SimpleNetworkInterface> myHost = null;
@@ -39,7 +40,6 @@ public class SocketPeer extends AbstractPeer implements Serializable {
     myPort = aPort;
     detectLocalInterfaces();
     addLocalIpListener();
-//    isStreamSplittingSupported = true;
   }
 
   public void addLocalIpListener(){
@@ -130,6 +130,10 @@ public class SocketPeer extends AbstractPeer implements Serializable {
 
   public boolean isStreamSplittingSupported() {
     return isStreamSplittingSupported;
+  }
+  
+  public void setStreamSplittingSupported(boolean isSupported){
+    this.isStreamSplittingSupported = isSupported;
   }
 
   /**

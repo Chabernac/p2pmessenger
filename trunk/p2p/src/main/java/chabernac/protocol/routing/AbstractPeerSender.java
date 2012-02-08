@@ -9,10 +9,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import chabernac.protocol.routing.PeerMessage.State;
 import chabernac.utils.LimitedListDecorator;
 
 public abstract class AbstractPeerSender implements iPeerSender {
+  private static Logger LOGGER = Logger.getLogger( AbstractPeerSender.class );
   private long myBytesSend = 0;
   private long myBytesReceived = 0;
   private long myInitTime = System.currentTimeMillis();
@@ -50,6 +53,7 @@ public abstract class AbstractPeerSender implements iPeerSender {
       if(theResponse != null) myBytesReceived += (theResponse.toCharArray().length * 2);
       return theResponse;
     }catch(IOException e){
+      LOGGER.error("Error occured while sending message", e);
       theMessage.setState( State.NOK );
       throw e;
     }
