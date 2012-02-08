@@ -30,7 +30,7 @@ public class SocketPoolCleanUpDecorator implements iSocketPool {
       public void doRun(){
         cleanUpOlderThan( System.currentTimeMillis() - aTimeUnit.toMillis( aTimeout ) );
       }
-    }, 0, aTimeout, aTimeUnit);
+    }, aTimeout, aTimeout, aTimeUnit);
   }
 
   public SocketProxy checkOut( SocketAddress anAddress ) throws IOException {

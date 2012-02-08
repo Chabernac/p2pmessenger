@@ -4,8 +4,10 @@
  */
 package chabernac.protocol;
 
+import chabernac.io.iSocketSender;
+
 public class ServerInfo {
-  public static enum Type{WEB, SOCKET};
+  public static enum Type{WEB, SOCKET, STREAM_SPLITTING_SOCKET};
   
   private final Type myServerType;
   
@@ -15,6 +17,7 @@ public class ServerInfo {
   
   private int myServerPort;
   private String myServerURL;
+  private iSocketSender mySocketSender;
 
   public int getServerPort() {
     return myServerPort;
@@ -34,5 +37,13 @@ public class ServerInfo {
 
   public void setServerURL( String anServerURL ) {
     myServerURL = anServerURL;
+  }
+
+  public iSocketSender getSocketSender() {
+    return mySocketSender;
+  }
+
+  public void setSocketSender( iSocketSender aSocketSender ) {
+    mySocketSender = aSocketSender;
   }
 }

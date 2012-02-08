@@ -18,7 +18,7 @@ public class PeerSender extends AbstractPeerSender{
 
   public PeerSender(iSocketSender aSocketSender, RoutingTable aRoutingTable){
     myRoutingTable = aRoutingTable;
-    myPeerToPeerSplitSender = new PeerToPeerSplitSender(aSocketSender);
+    myPeerToPeerSplitSender = aSocketSender == null ? null :  new PeerToPeerSplitSender(aSocketSender);
   }
   
   protected String doSend(PeerMessage aMessage, int aTimeoutInSeconds) throws IOException{
@@ -34,7 +34,8 @@ public class PeerSender extends AbstractPeerSender{
         return myWebToPeerSender.sendMessageTo( (WebPeer)theFrom, theTo, aMessage.getMessage(), aTimeoutInSeconds ); 
       } else if(theTo instanceof SocketPeer){
         SocketPeer theSocketPeer = (SocketPeer)theTo;
-        if(theSocketPeer.isStreamSplittingSupported()) return myPeerToPeerSplitSender.sendMessageTo(aMessage, (SocketPeer)theTo, aMessage.getMessage(), aTimeoutInSeconds );
+        //only if both ends support stream splitting then use it
+        if(myPeerToPeerSplitSender != null &&  theSocketPeer.isStreamSplittingSupported()) return myPeerToPeerSplitSender.sendMessageTo(aMessage, (SocketPeer)theTo, aMessage.getMessage(), aTimeoutInSeconds );
         else return myPeerToPeerSender.sendMessageTo(aMessage, (SocketPeer)theTo, aMessage.getMessage(), aTimeoutInSeconds );
       }
     }catch(Exception e){

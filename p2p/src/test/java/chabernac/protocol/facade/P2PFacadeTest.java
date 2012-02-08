@@ -27,6 +27,7 @@ import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 
 import chabernac.io.SocketProxy;
+import chabernac.protocol.facade.P2PFacade.ServerMode;
 import chabernac.protocol.message.DeliveryReport;
 import chabernac.protocol.message.MessageArchive;
 import chabernac.protocol.message.MultiPeerMessage;
@@ -79,6 +80,130 @@ public class P2PFacadeTest extends TestCase {
     .setExchangeDelay( 300 )
     .setPersist( false )
     .setPeerId("P2P2")
+    .start( 20 );
+
+    System.out.println("testP2PSendMessage Peer id: " + theFacade1.getPeerId());
+    System.out.println("testP2PSendMessage Peer id: " + theFacade2.getPeerId());
+
+    Thread.sleep( 3000 );
+
+    try{
+      assertTrue( theFacade1.getRoutingTable().containsEntryForPeer( theFacade2.getPeerId() ) );
+      assertTrue( theFacade2.getRoutingTable().containsEntryForPeer( theFacade1.getPeerId() ) );
+      CountDownLatch theReceiveLatch = new CountDownLatch(1);
+      MessageCollector theMessageCollector = new MessageCollector(theReceiveLatch);
+      theFacade2.addMessageListener( theMessageCollector );
+
+      MultiPeerMessage theMessage = MultiPeerMessage.createMessage( "test message" )
+          .addDestination( theFacade2.getPeerId() );
+
+      assertNotNull(  theFacade1.sendEncryptedMessage( theMessage, Executors.newFixedThreadPool( 1 ) ).get() );
+
+      theCountDown.await(20, TimeUnit.SECONDS);
+      assertEquals(0, theCountDown.getCount());
+      theReceiveLatch.await(10, TimeUnit.SECONDS);
+      assertEquals(0, theReceiveLatch.getCount());
+
+      assertEquals( 2, theDeliveryReportCollector.getDeliveryReports().size() );
+      assertEquals( DeliveryReport.Status.IN_PROGRESS, theDeliveryReportCollector.getDeliveryReports().get( 0 ).getDeliveryStatus());
+      assertEquals( DeliveryReport.Status.DELIVERED, theDeliveryReportCollector.getDeliveryReports().get( 1 ).getDeliveryStatus());
+      assertEquals( 1, theMessageCollector.getMessages().size());
+    } finally{
+      theFacade1.stop();
+      theFacade2.stop();
+    }
+  }
+  
+  public void testP2PSendMessageBothSplitting() throws P2PFacadeException, InterruptedException, ExecutionException{
+    LOGGER.debug("Executing test " + new Exception().getStackTrace()[0].getMethodName());
+    P2PFacade theFacade1 = new P2PFacade()
+    .setExchangeDelay( 300 )
+    .setPersist( false )
+    .setPeerId("P2P1")
+    .setServerMode( ServerMode.SPLITTING_SOCKET )
+    .start( 20 );
+
+    Thread.sleep(1000);
+
+    final CountDownLatch theCountDown = new CountDownLatch(2);
+
+    DeliveryReportCollector theDeliveryReportCollector = new DeliveryReportCollector();
+    theFacade1.addDeliveryReportListener( theDeliveryReportCollector );
+    theFacade1.addDeliveryReportListener(new iDeliverReportListener(){
+
+      @Override
+      public void acceptDeliveryReport(DeliveryReport aDeliverReport) {
+        theCountDown.countDown();
+      }
+    });
+
+    P2PFacade theFacade2 = new P2PFacade()
+    .setExchangeDelay( 300 )
+    .setPersist( false )
+    .setPeerId("P2P2")
+    .setServerMode( ServerMode.SPLITTING_SOCKET )
+    .start( 20 );
+
+    System.out.println("testP2PSendMessage Peer id: " + theFacade1.getPeerId());
+    System.out.println("testP2PSendMessage Peer id: " + theFacade2.getPeerId());
+
+    Thread.sleep( 3000 );
+
+    try{
+      assertTrue( theFacade1.getRoutingTable().containsEntryForPeer( theFacade2.getPeerId() ) );
+      assertTrue( theFacade2.getRoutingTable().containsEntryForPeer( theFacade1.getPeerId() ) );
+      CountDownLatch theReceiveLatch = new CountDownLatch(1);
+      MessageCollector theMessageCollector = new MessageCollector(theReceiveLatch);
+      theFacade2.addMessageListener( theMessageCollector );
+
+      MultiPeerMessage theMessage = MultiPeerMessage.createMessage( "test message" )
+          .addDestination( theFacade2.getPeerId() );
+
+      assertNotNull(  theFacade1.sendEncryptedMessage( theMessage, Executors.newFixedThreadPool( 1 ) ).get() );
+
+      theCountDown.await(20, TimeUnit.SECONDS);
+      assertEquals(0, theCountDown.getCount());
+      theReceiveLatch.await(10, TimeUnit.SECONDS);
+      assertEquals(0, theReceiveLatch.getCount());
+
+      assertEquals( 2, theDeliveryReportCollector.getDeliveryReports().size() );
+      assertEquals( DeliveryReport.Status.IN_PROGRESS, theDeliveryReportCollector.getDeliveryReports().get( 0 ).getDeliveryStatus());
+      assertEquals( DeliveryReport.Status.DELIVERED, theDeliveryReportCollector.getDeliveryReports().get( 1 ).getDeliveryStatus());
+      assertEquals( 1, theMessageCollector.getMessages().size());
+    } finally{
+      theFacade1.stop();
+      theFacade2.stop();
+    }
+  }
+  
+  public void testP2PSendMessageOneSplitting() throws P2PFacadeException, InterruptedException, ExecutionException{
+    LOGGER.debug("Executing test " + new Exception().getStackTrace()[0].getMethodName());
+    P2PFacade theFacade1 = new P2PFacade()
+    .setExchangeDelay( 300 )
+    .setPersist( false )
+    .setPeerId("P2P1")
+    .setServerMode( ServerMode.SOCKET)
+    .start( 20 );
+
+    Thread.sleep(1000);
+
+    final CountDownLatch theCountDown = new CountDownLatch(2);
+
+    DeliveryReportCollector theDeliveryReportCollector = new DeliveryReportCollector();
+    theFacade1.addDeliveryReportListener( theDeliveryReportCollector );
+    theFacade1.addDeliveryReportListener(new iDeliverReportListener(){
+
+      @Override
+      public void acceptDeliveryReport(DeliveryReport aDeliverReport) {
+        theCountDown.countDown();
+      }
+    });
+
+    P2PFacade theFacade2 = new P2PFacade()
+    .setExchangeDelay( 300 )
+    .setPersist( false )
+    .setPeerId("P2P2")
+    .setServerMode( ServerMode.SPLITTING_SOCKET )
     .start( 20 );
 
     System.out.println("testP2PSendMessage Peer id: " + theFacade1.getPeerId());
@@ -729,7 +854,7 @@ public class P2PFacadeTest extends TestCase {
     P2PFacade theWebPeer = new P2PFacade()
     .setExchangeDelay( 300 )
     .setPersist( false )
-    .setWebNode( true) 
+    .setServerMode( ServerMode.WEB ) 
     .setWebPort( 8080 )
     .setWebURL( new URL("http://localhost:8080") )
     .start(20);
@@ -778,7 +903,7 @@ public class P2PFacadeTest extends TestCase {
 
   public void testSetWebURL() throws MalformedURLException, P2PFacadeException, UnknownPeerException{
     P2PFacade theFacade = new P2PFacade()
-    .setWebNode( true )
+    .setServerMode( ServerMode.WEB )
     .setWebPort( 8080 )
     .setPersist( false )
     .setWebURL( new URL("http://localhost:8080/") )
@@ -806,7 +931,7 @@ public class P2PFacadeTest extends TestCase {
 
     try{
       theFacade = new P2PFacade()
-      .setWebNode( false )
+      .setServerMode( ServerMode.SOCKET )
       .setWebURL( new URL("http://localhost:8080/") )
       .start();
       fail("An exception must have been thrown");
@@ -816,7 +941,7 @@ public class P2PFacadeTest extends TestCase {
 
   public void testSetWebPort() throws MalformedURLException, P2PFacadeException{
     P2PFacade theFacade = new P2PFacade()
-    .setWebNode( true )
+    .setServerMode( ServerMode.WEB )
     .setWebPort( 8080 )
     .setPersist( false )
     .setWebURL( new URL("http://localhost:8080/") )
@@ -830,7 +955,7 @@ public class P2PFacadeTest extends TestCase {
 
     try{
       theFacade = new P2PFacade()
-      .setWebNode( false )
+      .setServerMode( ServerMode.SOCKET )
       .setWebPort( 9090 )
       .start();
       fail("An exception must have been thrown");
@@ -844,7 +969,7 @@ public class P2PFacadeTest extends TestCase {
 
   public void testSetAJPPort() throws P2PFacadeException, UnknownHostException, IOException{
     P2PFacade theFacade = new P2PFacade()
-    .setWebNode( true )
+    .setServerMode( ServerMode.BOTH )
     .setWebPort( 8080 )
     .setAJPPort( 9090 )
     .setPersist( false )
@@ -865,7 +990,7 @@ public class P2PFacadeTest extends TestCase {
 
     try{
       theFacade = new P2PFacade()
-      .setWebNode( false )
+      .setServerMode( ServerMode.WEB )
       .setAJPPort( 9091 )
       .start();
       fail("An exception must have been thrown");
@@ -885,7 +1010,7 @@ public class P2PFacadeTest extends TestCase {
     .start( 20 );
 
     try{
-      theFacade.setWebNode( true );
+      theFacade.setServerMode( ServerMode.WEB );
       fail("An exception must have been thrown");
     } catch(Exception e){
     }finally{
@@ -895,7 +1020,7 @@ public class P2PFacadeTest extends TestCase {
     }
 
     theFacade = new P2PFacade()
-    .setWebNode( true )
+    .setServerMode( ServerMode.WEB )
     .setWebPort( 8080 )
     .setPersist( false )
     .setWebURL( new URL("http://localhost:8080/") )

@@ -9,15 +9,19 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.log4j.Logger;
+
 import chabernac.io.SocketProxy;
+import chabernac.io.StreamSplitter;
 import chabernac.io.StreamSplitterPool;
 import chabernac.p2p.settings.P2PSettings;
 import chabernac.protocol.routing.PeerMessage;
-import chabernac.protocol.routing.PeerMessage.State;
 import chabernac.protocol.routing.SocketPeer;
+import chabernac.protocol.routing.PeerMessage.State;
 import chabernac.utils.NamedRunnable;
 
 public class PeerToPeerSender {
+  private static final Logger LOGGER = Logger.getLogger(PeerToPeerSender.class);
 
   public String sendMessageTo(PeerMessage aPeerMessage, SocketPeer aPeer, String aMessage, int aTimeoutInSeconds) throws IOException {
     RetryDecider theRetryDecider = new RetryDecider(3);
@@ -41,7 +45,7 @@ public class PeerToPeerSender {
         if(aTimeoutInSeconds > 0) theService.schedule( new SocketCloser(theSocket, theRetryDecider), aTimeoutInSeconds, TimeUnit.SECONDS );
         theWriter = new PrintWriter(new OutputStreamWriter(theSocket.getOutputStream()));
         theReader = new BufferedReader(new InputStreamReader(theSocket.getInputStream()));
-        //        LOGGER.debug( "Sending message: '" + aMessage + "'" );
+        LOGGER.debug( "Sending message: '" + aMessage + "'" );
         theWriter.println(aMessage);
         theWriter.flush();
         //stop the socketcloser at this point, otherwise it might close the socket during the next statements
@@ -57,6 +61,7 @@ public class PeerToPeerSender {
 
         theRetryDecider.messageSend();
         String theReturnMessage = theReader.readLine();;
+        LOGGER.debug( "Reply for input '" + aMessage + "' reply: '" + theReturnMessage + "'" );
         //just some code to make peers not using a streamsplitter compatible with those who use one
         if(theReturnMessage.startsWith(StreamSplitterPool.ID_PREFIX)){
           theReturnMessage = theReader.readLine();
@@ -66,6 +71,10 @@ public class PeerToPeerSender {
         if(theReturnMessage == null || "".equals( theReturnMessage )) {
           //          theRetries = 1;
           throw new IOException("empty result, socket corrupt?");
+        }
+        
+        if(theReturnMessage.startsWith( StreamSplitter.OUT )){
+          theReturnMessage = theReturnMessage.substring( StreamSplitter.OUT.length() );
         }
 
         return theReturnMessage;

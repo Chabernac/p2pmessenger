@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
 import chabernac.protocol.facade.P2PFacade;
+import chabernac.protocol.facade.P2PFacade.ServerMode;
 import chabernac.protocol.message.AsyncMessageProcotol;
 import chabernac.protocol.message.MessageProtocol;
 import chabernac.protocol.packet.PacketProtocol;
@@ -36,7 +37,7 @@ public class WebNodeLauncher {
       URL theURL = new URL(theInterpreter.getKeyValue( "url" ));
       
       new P2PFacade()
-      .setWebNode( true )
+      .setServerMode( ServerMode.WEB )
       .setWebPort( Integer.parseInt( theInterpreter.getKeyValue( "port" )) )
       .setWebURL( theURL )
       .setExchangeDelay( 300 )
