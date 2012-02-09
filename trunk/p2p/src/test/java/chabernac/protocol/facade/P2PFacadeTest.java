@@ -50,8 +50,8 @@ public class P2PFacadeTest extends TestCase {
   private static Logger LOGGER = Logger.getLogger(P2PFacadeTest.class);
 
   static{
-    BasicConfigurator.resetConfiguration();
-    BasicConfigurator.configure();
+//    BasicConfigurator.resetConfiguration();
+//    BasicConfigurator.configure();
   }
 
   public void testP2PSendMessage() throws P2PFacadeException, InterruptedException, ExecutionException{
@@ -176,7 +176,7 @@ public class P2PFacadeTest extends TestCase {
     }
   }
   
-  public void testP2PSendMessageOneSplitting() throws P2PFacadeException, InterruptedException, ExecutionException{
+  public void testP2PSendMessageNonSplittingToSplitting() throws P2PFacadeException, InterruptedException, ExecutionException{
     LOGGER.debug("Executing test " + new Exception().getStackTrace()[0].getMethodName());
     P2PFacade theFacade1 = new P2PFacade()
     .setExchangeDelay( 300 )
@@ -221,6 +221,7 @@ public class P2PFacadeTest extends TestCase {
       MultiPeerMessage theMessage = MultiPeerMessage.createMessage( "test message" )
           .addDestination( theFacade2.getPeerId() );
 
+      System.out.println("Sending encrypted message");
       assertNotNull(  theFacade1.sendEncryptedMessage( theMessage, Executors.newFixedThreadPool( 1 ) ).get() );
 
       theCountDown.await(20, TimeUnit.SECONDS);
@@ -233,10 +234,76 @@ public class P2PFacadeTest extends TestCase {
       assertEquals( DeliveryReport.Status.DELIVERED, theDeliveryReportCollector.getDeliveryReports().get( 1 ).getDeliveryStatus());
       assertEquals( 1, theMessageCollector.getMessages().size());
     } finally{
+      System.out.println("ENDING TEST");
       theFacade1.stop();
       theFacade2.stop();
     }
   }
+  
+  public void testP2PSendMessageSplittingToNonSplitting() throws P2PFacadeException, InterruptedException, ExecutionException{
+    LOGGER.debug("Executing test " + new Exception().getStackTrace()[0].getMethodName());
+    P2PFacade theFacade1 = new P2PFacade()
+    .setExchangeDelay( 300 )
+    .setPersist( false )
+    .setPeerId("P2P1")
+    .setServerMode( ServerMode.SPLITTING_SOCKET)
+    .start( 20 );
+
+    Thread.sleep(1000);
+
+    final CountDownLatch theCountDown = new CountDownLatch(2);
+
+    DeliveryReportCollector theDeliveryReportCollector = new DeliveryReportCollector();
+    theFacade1.addDeliveryReportListener( theDeliveryReportCollector );
+    theFacade1.addDeliveryReportListener(new iDeliverReportListener(){
+
+      @Override
+      public void acceptDeliveryReport(DeliveryReport aDeliverReport) {
+        theCountDown.countDown();
+      }
+    });
+
+    P2PFacade theFacade2 = new P2PFacade()
+    .setExchangeDelay( 300 )
+    .setPersist( false )
+    .setPeerId("P2P2")
+    .setServerMode( ServerMode.SOCKET )
+    .start( 20 );
+
+    System.out.println("testP2PSendMessage Peer id: " + theFacade1.getPeerId());
+    System.out.println("testP2PSendMessage Peer id: " + theFacade2.getPeerId());
+
+    Thread.sleep( 3000 );
+
+    try{
+      assertTrue( theFacade1.getRoutingTable().containsEntryForPeer( theFacade2.getPeerId() ) );
+      assertTrue( theFacade2.getRoutingTable().containsEntryForPeer( theFacade1.getPeerId() ) );
+      CountDownLatch theReceiveLatch = new CountDownLatch(1);
+      MessageCollector theMessageCollector = new MessageCollector(theReceiveLatch);
+      theFacade2.addMessageListener( theMessageCollector );
+
+      MultiPeerMessage theMessage = MultiPeerMessage.createMessage( "test message" )
+          .addDestination( theFacade2.getPeerId() );
+
+      System.out.println("Sending encrypted message");
+      assertNotNull(  theFacade1.sendEncryptedMessage( theMessage, Executors.newFixedThreadPool( 1 ) ).get() );
+
+      theCountDown.await(20, TimeUnit.SECONDS);
+      assertEquals(0, theCountDown.getCount());
+      theReceiveLatch.await(10, TimeUnit.SECONDS);
+      assertEquals(0, theReceiveLatch.getCount());
+
+      assertEquals( 2, theDeliveryReportCollector.getDeliveryReports().size() );
+      assertEquals( DeliveryReport.Status.IN_PROGRESS, theDeliveryReportCollector.getDeliveryReports().get( 0 ).getDeliveryStatus());
+      assertEquals( DeliveryReport.Status.DELIVERED, theDeliveryReportCollector.getDeliveryReports().get( 1 ).getDeliveryStatus());
+      assertEquals( 1, theMessageCollector.getMessages().size());
+    } finally{
+      System.out.println("ENDING TEST");
+      theFacade1.stop();
+      theFacade2.stop();
+    }
+  }
+
 
   public void testSendMessageWhenServerNotStarted() throws P2PFacadeException{
     LOGGER.debug("Executing test " + new Exception().getStackTrace()[0].getMethodName());

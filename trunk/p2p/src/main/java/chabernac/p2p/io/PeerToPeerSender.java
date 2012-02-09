@@ -24,6 +24,11 @@ public class PeerToPeerSender {
   private static final Logger LOGGER = Logger.getLogger(PeerToPeerSender.class);
 
   public String sendMessageTo(PeerMessage aPeerMessage, SocketPeer aPeer, String aMessage, int aTimeoutInSeconds) throws IOException {
+    if(aPeer.isStreamSplittingSupported()){
+      //just to be compatible with the stream splitters
+      aMessage = StreamSplitter.IN + aMessage;
+    }
+    
     RetryDecider theRetryDecider = new RetryDecider(3);
 
     while(theRetryDecider.retry()){
@@ -46,6 +51,7 @@ public class PeerToPeerSender {
         theWriter = new PrintWriter(new OutputStreamWriter(theSocket.getOutputStream()));
         theReader = new BufferedReader(new InputStreamReader(theSocket.getInputStream()));
         LOGGER.debug( "Sending message: '" + aMessage + "'" );
+        System.out.println("SENDING MESSEGE IN PEERSENDER: '" + aMessage + "'");
         theWriter.println(aMessage);
         theWriter.flush();
         //stop the socketcloser at this point, otherwise it might close the socket during the next statements
@@ -60,7 +66,8 @@ public class PeerToPeerSender {
         //        theRetries = 0;
 
         theRetryDecider.messageSend();
-        String theReturnMessage = theReader.readLine();;
+        String theReturnMessage = theReader.readLine();
+        System.out.println("REPLY RECEIVED IN PEERSENDER: '" + theReturnMessage + "'");
         LOGGER.debug( "Reply for input '" + aMessage + "' reply: '" + theReturnMessage + "'" );
         //just some code to make peers not using a streamsplitter compatible with those who use one
         if(theReturnMessage.startsWith(StreamSplitterPool.ID_PREFIX)){
