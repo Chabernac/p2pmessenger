@@ -27,6 +27,8 @@ public class StreamSplittingServerTest extends TestCase {
     
     try{
     int times = 10000;
+    assertEquals( Integer.toString(5 * 3), theServer1.send( null, "localhost", 13001, Integer.toString(5) ));
+    assertEquals( Integer.toString(5 * 2), theServer2.send( null, "localhost", 13000, Integer.toString(5) ));
     for(int i=0;i<times;i++){
       assertEquals( Integer.toString(i * 3), theServer1.send( "2", "localhost", 13001, Integer.toString(i) ));
       assertEquals( Integer.toString(i * 2), theServer2.send( "1", "localhost", 13000, Integer.toString(i) ));
