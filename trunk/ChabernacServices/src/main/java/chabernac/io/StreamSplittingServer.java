@@ -7,6 +7,8 @@ package chabernac.io;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 
 import org.apache.log4j.Logger;
@@ -24,6 +26,7 @@ public class StreamSplittingServer implements iSocketSender{
   private ServerSocket myServerSocket;
   private final StreamSplitterPool myPool;
   private boolean isRunning = false;
+  private List<iStreamSplittingServerListener> myListeners = new ArrayList< iStreamSplittingServerListener >();
 
   public StreamSplittingServer ( iInputOutputHandler aInputOutputHandler, int aPort, boolean isFindUnusedPort, String anId ) {
     super();
@@ -31,6 +34,26 @@ public class StreamSplittingServer implements iSocketSender{
     myPort = aPort;
     this.isFindUnusedPort = isFindUnusedPort;
     myPool = new StreamSplitterPool( anId );
+  }
+  
+  public void addListener(iStreamSplittingServerListener aListener){
+    myListeners.add(aListener);
+  }
+  
+  public void removeListener(iStreamSplittingServerListener aListener){
+    myListeners.remove(aListener);
+  }
+  
+  public void notifyStarted(){
+    for(iStreamSplittingServerListener theListener : myListeners){
+      theListener.streamSplittingServerStarted( myServerSocket.getLocalPort(), this );
+    }
+  }
+  
+  public void notifyStopped(){
+    for(iStreamSplittingServerListener theListener : myListeners){
+      theListener.streamSplittingServerStopped();
+    }
   }
 
   public synchronized boolean start(){
@@ -63,8 +86,7 @@ public class StreamSplittingServer implements iSocketSender{
     return isRunning;
   }
   
-  private void addSocket(final Socket aSocket){
-    try{
+  private String addSocket(final Socket aSocket) throws IOException{
       StreamSplitter theSplitter = new StreamSplitter( aSocket.getInputStream(), aSocket.getOutputStream(), myInputOutputHandler );
       theSplitter.addStreamListener( new iStreamListener() {
         @Override
@@ -76,16 +98,16 @@ public class StreamSplittingServer implements iSocketSender{
           } 
         }
       });
-      myPool.add( theSplitter );
-    }catch(Exception e){
-      LOGGER.error("An error occured while adding socket", e);
-    }
+      return myPool.add( theSplitter );
   }
   
   public String send(String anId, String aHost, int aPort, String aMessage) throws IOException{
-    synchronized(anId){
-      if(!myPool.contains( anId )){
-        addSocket( new Socket(aHost, aPort) );
+    String theLock = anId;
+    if(theLock == null) theLock = aHost + ":" + aPort;
+    
+    synchronized(theLock){
+      if(anId == null || !myPool.contains( anId )){
+        anId = addSocket( new Socket(aHost, aPort) );
       }
       if(myPool.contains( anId )){
         return myPool.send( anId, aMessage );
@@ -112,6 +134,8 @@ public class StreamSplittingServer implements iSocketSender{
         } else {
           myServerSocket = new ServerSocket(myPort);
         }
+        
+        notifyStarted();
 
         while(myExecutorService == myCurrentExecutorService){
           Socket theSocket = myServerSocket.accept();
@@ -121,6 +145,7 @@ public class StreamSplittingServer implements iSocketSender{
         LOGGER.error("Error occured in server thread", e);
       } finally {
         isRunning = false;
+        notifyStopped();
       }
     }
   }
