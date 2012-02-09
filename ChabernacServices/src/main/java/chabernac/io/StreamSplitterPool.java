@@ -24,7 +24,7 @@ public class StreamSplitterPool {
     //write our own id
     aSplitter.sendWithoutReply( ID_PREFIX + myId );
     String theRemoteId = aSplitter.readLine();
-    if(theRemoteId.startsWith(ID_PREFIX)){
+    if(theRemoteId != null && theRemoteId.startsWith(ID_PREFIX)){
       theRemoteId = theRemoteId.substring(ID_PREFIX.length());
       myStreamSplitters.put(theRemoteId, aSplitter);
       aSplitter.addStreamListener( new StreamClosedListener( theRemoteId ) );
