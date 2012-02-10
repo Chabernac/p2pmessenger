@@ -52,7 +52,11 @@ public class CommandSession {
     if(myExecutorService != null){
       myExecutorService.shutdownNow();
     }
-    myExecutorService = Executors.newFixedThreadPool( aNumberOfThreads );
+    if(aNumberOfThreads > 0){
+      myExecutorService = Executors.newFixedThreadPool( aNumberOfThreads );
+    } else {
+      myExecutorService = null;
+    }
   }
   
   
