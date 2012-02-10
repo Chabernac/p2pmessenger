@@ -41,6 +41,7 @@ public class CommandSessionTest extends TestCase {
   public void setUp(){
     mySession = CommandSession.getInstance();
     mySession.setMode( Mode.NORMAL );
+    mySession.setNumberOfThreads(0);
   }
   
   public void testSession(){
