@@ -1036,7 +1036,7 @@ public class P2PFacadeTest extends TestCase {
 
   public void testSetAJPPort() throws P2PFacadeException, UnknownHostException, IOException{
     P2PFacade theFacade = new P2PFacade()
-    .setServerMode( ServerMode.BOTH )
+    .setServerMode( ServerMode.WEB)
     .setWebPort( 8080 )
     .setAJPPort( 9090 )
     .setPersist( false )

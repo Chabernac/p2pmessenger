@@ -741,7 +741,7 @@ public class P2PFacade {
 
   public P2PFacade setAJPPort( Integer aAJPPort ) throws P2PFacadeException {
     if(isStarted()) throw new P2PFacadeException("Can not set this property whern the server has been started");
-    if(myServerMode != ServerMode.SOCKET && myServerMode != ServerMode.SPLITTING_SOCKET && myServerMode != ServerMode.BOTH)  throw new P2PFacadeException("Can only set this property on a webnode");
+    if(myServerMode != ServerMode.WEB && myServerMode != ServerMode.BOTH)  throw new P2PFacadeException("Can only set this property on a webnode");
     myAJPPort = aAJPPort;
     return this;
   }
