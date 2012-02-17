@@ -59,7 +59,7 @@ public class StreamSplitterPool {
     return myStreamSplitters.containsKey( anId );
   }
   
-  public void closeAll(){
+  public synchronized void closeAll(){
     for(String theKey : myStreamSplitters.keySet()){
       close(theKey);
     }
@@ -79,7 +79,7 @@ public class StreamSplitterPool {
 
     @Override
     public void streamClosed() {
-      synchronized(myId){
+      synchronized(StreamSplitterPool.this){
         myStreamSplitters.remove( myId );
       }
     }
