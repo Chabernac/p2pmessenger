@@ -5,27 +5,19 @@
 package chabernac.protocol.routing;
 
 import java.io.Serializable;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.log4j.Logger;
-
 import chabernac.io.SocketProxy;
 import chabernac.io.iSocketPool;
 import chabernac.p2p.settings.P2PSettings;
-import chabernac.tools.LocalIPCollecter;
 import chabernac.tools.NetTools;
 import chabernac.tools.SimpleNetworkInterface;
-import chabernac.tools.iIPListener;
 
 public class SocketPeer extends AbstractPeer implements Serializable {
-  private static Logger LOGGER = Logger.getLogger( SocketPeer.class );
-  private static boolean STREAM_SPLITTING_SUPPORTED = true;
-
   private static final long serialVersionUID = 7852961137229337616L;
   private List<SimpleNetworkInterface> myHost = null;
   private int myPort;
@@ -39,31 +31,6 @@ public class SocketPeer extends AbstractPeer implements Serializable {
     super(aPeerId);
     myPort = aPort;
     detectLocalInterfaces();
-    addLocalIpListener();
-  }
-
-  public void addLocalIpListener(){
-    LocalIPCollecter theCollector = new LocalIPCollecter( null, 60 * 1 );
-    theCollector.addIPListener( new iIPListener(){
-      @Override
-      public void newIPBound( InetAddress anAddress ) {
-        try{
-          detectLocalInterfaces();
-        }catch(NoAvailableNetworkAdapterException e){
-          LOGGER.error( "There is no local ip currently available" );
-        }
-      }
-
-      @Override
-      public void IPRemoved( InetAddress anAddress ) {
-        try{
-          detectLocalInterfaces();
-        }catch(NoAvailableNetworkAdapterException e){
-          LOGGER.error( "There is no local ip currently available" );
-        }
-      }
-    });
-    theCollector.start();
   }
 
   public SocketPeer(String aPeerId,  int aPort, List<SimpleNetworkInterface> aHosts){
