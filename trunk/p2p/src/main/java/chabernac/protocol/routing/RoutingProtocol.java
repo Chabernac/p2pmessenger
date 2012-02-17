@@ -191,16 +191,29 @@ public class RoutingProtocol extends Protocol {
       @Override
       public void newIPBound( InetAddress anAddress ) {
         LOGGER.debug("New ip address found, exchanging routing tables");
+        updateIpOfLocalPeer();
         exchangeRoutingTable();
       }
 
       @Override
       public void IPRemoved( InetAddress anAddress ) {
         LOGGER.debug("Ip address removed, exchanging routing tables");
+        updateIpOfLocalPeer();
         exchangeRoutingTable();
       }
     });
   }
+	
+	private void updateIpOfLocalPeer(){
+	  try{
+	  RoutingTableEntry theEntryForLocalpeer =  myRoutingTable.getEntryForLocalPeer();
+	  if(theEntryForLocalpeer != null && theEntryForLocalpeer.getPeer() instanceof SocketPeer){
+	    ((SocketPeer)theEntryForLocalpeer.getPeer()).detectLocalInterfaces();
+	  }
+	  }catch(Exception e){
+	    LOGGER.error("An error occured while updating local interfaces for local peer", e);
+	  }
+	}
 
 	private void loadSuperNodes(){
 		//we do not load the super nodes present in the supernodes file
