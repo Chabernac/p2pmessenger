@@ -9,7 +9,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
+
 public class StreamSplitterPool {
+  private static Logger LOGGER = Logger.getLogger(StreamSplitterPool.class);
   protected final Map< String, StreamSplitter > myStreamSplitters = new HashMap< String, StreamSplitter >();
   protected final String myId;
   public final static String ID_PREFIX = "ID:";
@@ -19,20 +22,31 @@ public class StreamSplitterPool {
     myId = aId;
   }
   
-  public synchronized String add(StreamSplitter aSplitter) throws IOException{
+  public String add(StreamSplitter aSplitter) throws IOException{
     if(myStreamSplitters.values().contains( aSplitter )) throw new IOException("The pool alredy contains this streamsplitter");
     //write our own id
     aSplitter.sendWithoutReply( ID_PREFIX + myId );
     String theRemoteId = aSplitter.readLine();
     if(theRemoteId != null && theRemoteId.startsWith(ID_PREFIX)){
       theRemoteId = theRemoteId.substring(ID_PREFIX.length());
-      myStreamSplitters.put(theRemoteId, aSplitter);
-      aSplitter.addStreamListener( new StreamClosedListener( theRemoteId ) );
+      if(!addStreamSplitter( theRemoteId, aSplitter )){
+        LOGGER.debug("The pool already contains a splitter for id '" + theRemoteId + "', this splitter is ignored");
+        return theRemoteId;
+      }
     } else {
       aSplitter.handleInput(theRemoteId);
     }
     aSplitter.startSplitting();
     return theRemoteId;
+  }
+  
+  private boolean addStreamSplitter(String anId, StreamSplitter aStreamSplitter){
+    synchronized(anId){
+      if(myStreamSplitters.containsKey( anId )) return false;
+      myStreamSplitters.put(anId, aStreamSplitter);
+      aStreamSplitter.addStreamListener( new StreamClosedListener( anId ) );
+      return true;
+    }
   }
   
   public String send(String aRemoteId, String aMessage) throws IOException{
