@@ -18,4 +18,9 @@ public class MultiplyHandler implements iInputOutputHandler {
     return Integer.toString(Integer.parseInt(anInput) * myFactor);
   }
 
+  @Override
+  public void close() {
+    
+  }
+
 }

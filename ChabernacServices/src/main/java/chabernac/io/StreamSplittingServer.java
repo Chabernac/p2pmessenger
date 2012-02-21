@@ -35,21 +35,21 @@ public class StreamSplittingServer implements iSocketSender{
     this.isFindUnusedPort = isFindUnusedPort;
     myPool = new StreamSplitterPool( anId );
   }
-  
+
   public void addListener(iStreamSplittingServerListener aListener){
     myListeners.add(aListener);
   }
-  
+
   public void removeListener(iStreamSplittingServerListener aListener){
     myListeners.remove(aListener);
   }
-  
+
   public void notifyStarted(){
     for(iStreamSplittingServerListener theListener : myListeners){
       theListener.streamSplittingServerStarted( myServerSocket.getLocalPort(), this );
     }
   }
-  
+
   public void notifyStopped(){
     for(iStreamSplittingServerListener theListener : myListeners){
       theListener.streamSplittingServerStopped();
@@ -65,6 +65,12 @@ public class StreamSplittingServer implements iSocketSender{
   }
 
   public synchronized void close(){
+    try{
+      myInputOutputHandler.close();
+    }catch(Exception e){
+      LOGGER.error( "Error occured while closing input output handler", e );
+    }
+    
     if(myServerSocket != null){
       try{
         myServerSocket.close();
@@ -74,37 +80,37 @@ public class StreamSplittingServer implements iSocketSender{
     }
     if(myExecutorService != null)  myExecutorService.shutdownNow();
     myExecutorService = null;
-    
+
     myPool.closeAll();
   }
-  
+
   public boolean containsSocketForId(String anId){
     return myPool.contains(anId);
   }
-  
+
   public boolean isStarted(){
     return isRunning;
   }
-  
+
   private String addSocket(final Socket aSocket) throws IOException{
-      StreamSplitter theSplitter = new StreamSplitter( aSocket.getInputStream(), aSocket.getOutputStream(), myInputOutputHandler );
-      theSplitter.addStreamListener( new iStreamListener() {
-        @Override
-        public void streamClosed() {
-          try {
-            aSocket.close();
-          } catch ( IOException e ) {
-            LOGGER.error( "Could not close socket", e );
-          } 
-        }
-      });
-      return myPool.add( theSplitter );
+    StreamSplitter theSplitter = new StreamSplitter( aSocket.getInputStream(), aSocket.getOutputStream(), myInputOutputHandler );
+    theSplitter.addStreamListener( new iStreamListener() {
+      @Override
+      public void streamClosed() {
+        try {
+          aSocket.close();
+        } catch ( IOException e ) {
+          LOGGER.error( "Could not close socket", e );
+        } 
+      }
+    });
+    return myPool.add( theSplitter );
   }
-  
+
   public String send(String anId, String aHost, int aPort, String aMessage) throws IOException{
     String theLock = anId;
     if(theLock == null) theLock = aHost + ":" + aPort;
-    
+
     synchronized(theLock){
       if(anId == null || !myPool.contains( anId )){
         anId = addSocket( new Socket(aHost, aPort) );
@@ -134,7 +140,7 @@ public class StreamSplittingServer implements iSocketSender{
         } else {
           myServerSocket = new ServerSocket(myPort);
         }
-        
+
         notifyStarted();
 
         while(myExecutorService == myCurrentExecutorService){
