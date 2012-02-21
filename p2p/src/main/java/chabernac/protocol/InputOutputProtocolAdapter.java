@@ -14,6 +14,11 @@ public class InputOutputProtocolAdapter implements iInputOutputHandler{
   public String handle(String anInput) {
     return myProtocol.handleCommand(null, anInput);
   }
+
+  @Override
+  public void close() {
+    myProtocol.stop();
+  }
   
   
 }

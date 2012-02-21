@@ -569,6 +569,7 @@ public class P2PFacadeTest extends TestCase {
       }
 
       theLatch.await(20, TimeUnit.SECONDS);
+      LOGGER.debug( "End of sending message" );
       assertEquals(0, theLatch.getCount());
 
       for(MultiPeerMessage theMessage : theMessages){
