@@ -10,6 +10,13 @@ import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+
+import org.apache.log4j.Logger;
 
 import chabernac.io.SocketProxy;
 import chabernac.io.iSocketPool;
@@ -18,10 +25,13 @@ import chabernac.tools.NetTools;
 import chabernac.tools.SimpleNetworkInterface;
 
 public class SocketPeer extends AbstractPeer implements Serializable {
+  private static Logger LOGGER = Logger.getLogger(SocketPeer.class);
   private static final long serialVersionUID = 7852961137229337616L;
   private List<SimpleNetworkInterface> myHost = null;
   private int myPort;
   private boolean isStreamSplittingSupported = false;
+  
+  private static List<String> myIpOrder = new ArrayList<String>();
 
   public SocketPeer (){
     super(null);
@@ -102,6 +112,8 @@ public class SocketPeer extends AbstractPeer implements Serializable {
   public void setStreamSplittingSupported(boolean isSupported){
     this.isStreamSplittingSupported = isSupported;
   }
+  
+  
 
   /**
    * this method creates a socket by using the socket pool
@@ -109,20 +121,33 @@ public class SocketPeer extends AbstractPeer implements Serializable {
    * @param aPort
    * @return
    */
-  public SocketProxy createSocket(int aPort){
-    iSocketPool theSocketPool = P2PSettings.getInstance().getSocketPool();
+  public SocketProxy createSocket(final int aPort){
+    final iSocketPool theSocketPool = P2PSettings.getInstance().getSocketPool();
 
     for(Iterator< SimpleNetworkInterface > i = new ArrayList<SimpleNetworkInterface>(myHost).iterator(); i.hasNext();){
-      SimpleNetworkInterface theHost = i.next();
+      final SimpleNetworkInterface theHost = i.next();
       try{
-        for(String theIp : theHost.getIp()){
-          SocketProxy theSocket = theSocketPool.checkOut(new InetSocketAddress(theIp, aPort));
-          synchronized(this){
-            myHost.remove( theHost );
-            myHost.add( 0, theHost);
-          }
-          return theSocket;
+        ExecutorService theExecutorService =  Executors.newCachedThreadPool();
+        final BlockingQueue<SocketProxy> theSocketQueue = new ArrayBlockingQueue<SocketProxy>( 1 );
+        for(final String theIp : theHost.getIp()){
+          theExecutorService.execute( new Runnable(){
+            public void run(){
+              try{
+              theSocketQueue.put( theSocketPool.checkOut(new InetSocketAddress(theIp, aPort)));
+              synchronized(this){
+                myHost.remove( theHost );
+                myHost.add( 0, theHost);
+              }
+              }catch(Exception e){
+                LOGGER.error( "Error while checking out socket", e );
+              }
+            }
+          });
         }
+        
+        SocketProxy theSocket = theSocketQueue.poll( 5, TimeUnit.SECONDS );
+        theExecutorService.shutdownNow();
+        return theSocket;
       }catch(Exception e){
         //        LOGGER.error("Could not open connection to peer: " + myHost + ":" + myPort, e);
       }
