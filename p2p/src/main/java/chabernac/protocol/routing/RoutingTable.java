@@ -208,7 +208,7 @@ public class RoutingTable implements Iterable< RoutingTableEntry >, Serializable
 
   private void inspectRoutingTableEntryHistory() {
     if(myRoutingTableEntryHistory == null){
-      myRoutingTableEntryHistory = new LimitedListDecorator< RoutingTableEntryHistory >( 100, new ArrayList< RoutingTableEntryHistory >());
+      myRoutingTableEntryHistory = new LimitedListDecorator< RoutingTableEntryHistory >( 1000, new ArrayList< RoutingTableEntryHistory >());
     }
 
   }
