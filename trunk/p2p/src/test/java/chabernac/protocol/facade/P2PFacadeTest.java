@@ -55,7 +55,7 @@ public class P2PFacadeTest extends TestCase {
   }
   
   private ServerMode getSocketServerMode(){
-    return ServerMode.SPLITTING_SOCKET;
+    return ServerMode.SOCKET;
   }
   
 
@@ -1174,6 +1174,7 @@ public class P2PFacadeTest extends TestCase {
       for(P2PFacade theFacade : theFacades){
         theFacade.stop();
       }
+      System.out.println("Facades stopped");
     }
   }
 

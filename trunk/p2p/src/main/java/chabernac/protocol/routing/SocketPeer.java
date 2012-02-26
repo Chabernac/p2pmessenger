@@ -6,12 +6,14 @@ package chabernac.protocol.routing;
 
 import java.io.Serializable;
 import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -124,6 +126,7 @@ public class SocketPeer extends AbstractPeer implements Serializable {
   public SocketProxy createSocket(final int aPort){
     final iSocketPool theSocketPool = P2PSettings.getInstance().getSocketPool();
 
+    final CountDownLatch theCountDownLatch = new CountDownLatch(myHost.size());
     for(Iterator< SimpleNetworkInterface > i = new ArrayList<SimpleNetworkInterface>(myHost).iterator(); i.hasNext();){
       final SimpleNetworkInterface theHost = i.next();
       try{
@@ -135,11 +138,18 @@ public class SocketPeer extends AbstractPeer implements Serializable {
               try{
               theSocketQueue.put( theSocketPool.checkOut(new InetSocketAddress(theIp, aPort)));
               synchronized(this){
-                myHost.remove( theHost );
+                myHost.remove( theHost ); 
                 myHost.add( 0, theHost);
               }
               }catch(Exception e){
                 LOGGER.error( "Error while checking out socket", e );
+              }
+              theCountDownLatch.countDown();
+              if(theCountDownLatch.getCount() == 0){
+                try {
+                  theSocketQueue.put(new SocketProxy((SocketAddress)null));
+                } catch (InterruptedException e) {
+                }
               }
             }
           });
@@ -147,6 +157,7 @@ public class SocketPeer extends AbstractPeer implements Serializable {
         
         SocketProxy theSocket = theSocketQueue.poll( 5, TimeUnit.SECONDS );
         theExecutorService.shutdownNow();
+        if(theSocket.getSocketAddress() == null) return null;
         return theSocket;
       }catch(Exception e){
         //        LOGGER.error("Could not open connection to peer: " + myHost + ":" + myPort, e);
