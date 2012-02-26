@@ -50,8 +50,8 @@ public class PeerToPeerSender {
         if(aTimeoutInSeconds > 0) theService.schedule( new SocketCloser(theSocket, theRetryDecider), aTimeoutInSeconds, TimeUnit.SECONDS );
         theWriter = new PrintWriter(new OutputStreamWriter(theSocket.getOutputStream()));
         theReader = new BufferedReader(new InputStreamReader(theSocket.getInputStream()));
-        LOGGER.debug( "Sending message: '" + aMessage + "'" );
-        System.out.println("SENDING MESSEGE IN PEERSENDER: '" + aMessage + "'");
+//        LOGGER.debug( "Sending message: '" + aMessage + "'" );
+//        System.out.println("SENDING MESSEGE IN PEERSENDER: '" + aMessage + "'");
         theWriter.println(aMessage);
         theWriter.flush();
         //stop the socketcloser at this point, otherwise it might close the socket during the next statements
@@ -67,10 +67,10 @@ public class PeerToPeerSender {
 
         theRetryDecider.messageSend();
         String theReturnMessage = theReader.readLine();
-        System.out.println("REPLY RECEIVED IN PEERSENDER: '" + theReturnMessage + "'");
-        LOGGER.debug( "Reply for input '" + aMessage + "' reply: '" + theReturnMessage + "'" );
+//        System.out.println("REPLY RECEIVED IN PEERSENDER: '" + theReturnMessage + "'");
+//        LOGGER.debug( "Reply for input '" + aMessage + "' reply: '" + theReturnMessage + "'" );
         //just some code to make peers not using a streamsplitter compatible with those who use one
-        if(theReturnMessage.startsWith(StreamSplitterPool.ID_PREFIX)){
+        if(theReturnMessage != null && theReturnMessage.startsWith(StreamSplitterPool.ID_PREFIX)){
           theReturnMessage = theReader.readLine();
         }
         //        LOGGER.debug( "Message received: '" + theReturnMessage + "'" );
