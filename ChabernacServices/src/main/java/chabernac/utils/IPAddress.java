@@ -4,26 +4,48 @@
  */
 package chabernac.utils;
 
-public class IPAddress {
-  public static enum IPClass{ A, B, C};
-  private final int[] myParts = new int[4];
+import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+public class IPAddress {
+  public static enum IPClass{ A, B, C, UNKNOWN};
+  private final int[] myParts = new int[4];
+  private int myNetworkPrefixLength = -1;
+  private final Pattern myPattern = Pattern.compile( "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})(?:/(\\d{1,2}))?" );
+
+  public static IPAddress getLocalIPAddress() throws InvalidIpAddressException{
+    try{
+    InetAddress localHost = Inet4Address.getLocalHost();
+    NetworkInterface networkInterface = NetworkInterface.getByInetAddress(localHost);
+    return new IPAddress(localHost.getHostAddress() + "/" + networkInterface.getInterfaceAddresses().get(0).getNetworkPrefixLength());
+    }catch(Exception e){
+      throw new InvalidIpAddressException("Could not determine local ip address", e);
+    }
+  }
+  
   public IPAddress(String aString) throws InvalidIpAddressException{
     createParts(aString);
+    determineNetworkPrefixLength();
   }
 
   private void createParts(String aString) throws InvalidIpAddressException{
-    String[] theParts = aString.split( "\\." );
-    if(theParts.length != 4) throw new InvalidIpAddressException("This is not a valid ip address '" + aString + "'");
-    try{
-      for(int i=0;i<theParts.length;i++){
-        int theNumber = Integer.parseInt( theParts[i] );
-        if(theNumber < 0) throw new InvalidIpAddressException("Ip address number can not be < 0");
-        if(theNumber > 0) throw new InvalidIpAddressException("Ip address number can not be > 255");
-        myParts[i] = theNumber;
-      }
-    }catch(Exception e){
-      throw new InvalidIpAddressException("This is not a valid ip address '" + aString + "'", e);
+    Matcher theMatcher = myPattern.matcher( aString );
+    if(!theMatcher.matches()) throw new InvalidIpAddressException("This is not a valid ip address '" + aString + "'");
+    
+    for(int i=0;i<4;i++)
+    {
+      int thePart = Integer.parseInt(theMatcher.group( i+1 ));
+      if(thePart < 0) throw new InvalidIpAddressException("Number can not be < 0");
+      if(thePart > 255) throw new InvalidIpAddressException("Number can not be > 255");
+      myParts[i] = thePart;
+    }
+    
+    String theNetworkPrefixLength = theMatcher.group(5);
+    if(theNetworkPrefixLength != null){
+      myNetworkPrefixLength = Integer.parseInt(theNetworkPrefixLength);
     }
   }
   
@@ -38,5 +60,49 @@ public class IPAddress {
    if(myParts[0] >= 0 && myParts[0] <= 127) return IPClass.A;
    if(myParts[0] >= 128 && myParts[0] <= 191) return IPClass.B;
    if(myParts[0] >= 192 && myParts[0] <= 223) return IPClass.C;
+   return IPClass.UNKNOWN;
+  }
+  
+  private void determineNetworkPrefixLength(){
+    if(myNetworkPrefixLength == -1){
+      IPClass theClass = getIPClass();
+      if(theClass == IPClass.A) myNetworkPrefixLength = 8;
+      else if(theClass == IPClass.B) myNetworkPrefixLength = 16;
+      else if(theClass == IPClass.C) myNetworkPrefixLength = 24;
+    }
+  }
+  
+  public int getNetworkPrefixLength(){
+    return myNetworkPrefixLength;
+  }
+  
+  public String getBitRepresentation(){
+    String theBits = "";
+    for(int thePart : myParts){
+      theBits += toBitRepresentation( thePart );
+    }
+    return theBits;
+  }
+  
+  private String toBitRepresentation(int aNumber){
+    String theBits = Integer.toBinaryString( aNumber );
+    while(theBits.length() < 8) theBits = "0" + theBits;
+    return theBits;
+  }
+  
+  public String getNetworkBitRepresentation(){
+    return getBitRepresentation().substring( 0, getNetworkPrefixLength() );
+  }
+  
+  public String getHostBitRepresentation(){
+    return getBitRepresentation().substring( getNetworkPrefixLength() );
+  }
+  
+  public String toString(){
+    return myParts[0] + "." + myParts[1] + "." + myParts[2] + "." + myParts[3] + "/" + getNetworkPrefixLength();
+  }
+  
+  public boolean isOnSameNetwork(IPAddress anAddress){
+    return getNetworkBitRepresentation().equals( anAddress.getNetworkBitRepresentation() );
   }
 }
