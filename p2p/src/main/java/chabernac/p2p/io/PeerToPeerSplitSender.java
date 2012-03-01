@@ -7,8 +7,11 @@ package chabernac.p2p.io;
 import java.io.IOException;
 
 import chabernac.io.iSocketSender;
+import chabernac.protocol.ProtocolServer;
 import chabernac.protocol.routing.PeerMessage;
+import chabernac.protocol.routing.PeerSenderReply;
 import chabernac.protocol.routing.SocketPeer;
+import chabernac.tools.PropertyMap;
 import chabernac.tools.SimpleNetworkInterface;
 
 public class PeerToPeerSplitSender {
@@ -19,10 +22,13 @@ public class PeerToPeerSplitSender {
     mySocketSender = aSocketSender;
   }
   
-  public String sendMessageTo(PeerMessage aPeerMessage, SocketPeer aPeer, String aMessage, int aTimeoutInSeconds) throws IOException {
+  public PeerSenderReply sendMessageTo(PeerMessage aPeerMessage, SocketPeer aPeer, String aMessage, int aTimeoutInSeconds) throws IOException {
     for(SimpleNetworkInterface theHost : aPeer.getHosts()){
       for(String theIp : theHost.getIp()){
-        return mySocketSender.send( aPeer.getPeerId(), theIp, aPeer.getPort(), aMessage);
+        String theResponse = mySocketSender.send( aPeer.getPeerId(), theIp, aPeer.getPort(), aMessage);
+        PropertyMap theProperties = new PropertyMap();
+        theProperties.put( ProtocolServer.SOCKET, mySocketSender.getSocket( aPeer.getPeerId() ) );
+        return new PeerSenderReply( theResponse,  theProperties);
       }
     }
     throw new IOException("Could not send message to '" + aPeer.getPeerId() + "'");

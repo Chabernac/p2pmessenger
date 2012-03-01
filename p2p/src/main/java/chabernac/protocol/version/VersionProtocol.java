@@ -21,6 +21,7 @@ import chabernac.protocol.routing.IRoutingTableListener;
 import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.RoutingTable;
 import chabernac.protocol.routing.RoutingTableEntry;
+import chabernac.tools.PropertyMap;
 import chabernac.utils.NamedRunnable;
 
 public class VersionProtocol extends Protocol {
@@ -77,7 +78,7 @@ public class VersionProtocol extends Protocol {
   }
 
   @Override
-  public String handleCommand( String aSessionId, String anInput ) {
+  public String handleCommand( String aSessionId, PropertyMap aProperties, String anInput ) {
     if(anInput.equalsIgnoreCase( Command.VERSION.name() )){
       return Response.OK.name() + myVersion.toString();
     }

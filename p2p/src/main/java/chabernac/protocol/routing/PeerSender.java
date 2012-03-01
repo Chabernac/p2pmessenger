@@ -21,7 +21,7 @@ public class PeerSender extends AbstractPeerSender{
     myPeerToPeerSplitSender = aSocketSender == null ? null :  new PeerToPeerSplitSender(aSocketSender);
   }
   
-  protected String doSend(PeerMessage aMessage, int aTimeoutInSeconds) throws IOException{
+  protected PeerSenderReply doSend(PeerMessage aMessage, int aTimeoutInSeconds) throws IOException{
     try{
       AbstractPeer theFrom = myRoutingTable.getEntryForLocalPeer().getPeer();
       AbstractPeer theTo = aMessage.getPeer();
@@ -35,8 +35,11 @@ public class PeerSender extends AbstractPeerSender{
       } else if(theTo instanceof SocketPeer){
         SocketPeer theSocketPeer = (SocketPeer)theTo;
         //only if both ends support stream splitting then use it
-        if(myPeerToPeerSplitSender != null &&  theSocketPeer.isStreamSplittingSupported()) return myPeerToPeerSplitSender.sendMessageTo(aMessage, (SocketPeer)theTo, aMessage.getMessage(), aTimeoutInSeconds );
-        else return myPeerToPeerSender.sendMessageTo(aMessage, (SocketPeer)theTo, aMessage.getMessage(), aTimeoutInSeconds );
+        if(myPeerToPeerSplitSender != null &&  theSocketPeer.isStreamSplittingSupported()) {
+          return myPeerToPeerSplitSender.sendMessageTo(aMessage, (SocketPeer)theTo, aMessage.getMessage(), aTimeoutInSeconds );
+        }else { 
+          return myPeerToPeerSender.sendMessageTo(aMessage, (SocketPeer)theTo, aMessage.getMessage(), aTimeoutInSeconds );
+        }
       }
     }catch(Exception e){
       throw new IOException("Could not send message", e);

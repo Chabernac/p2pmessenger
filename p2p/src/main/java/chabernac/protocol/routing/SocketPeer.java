@@ -25,6 +25,7 @@ import chabernac.io.iSocketPool;
 import chabernac.p2p.settings.P2PSettings;
 import chabernac.tools.NetTools;
 import chabernac.tools.SimpleNetworkInterface;
+import chabernac.utils.IPAddress;
 
 public class SocketPeer extends AbstractPeer implements Serializable {
   private static Logger LOGGER = Logger.getLogger(SocketPeer.class);
@@ -32,7 +33,7 @@ public class SocketPeer extends AbstractPeer implements Serializable {
   private List<SimpleNetworkInterface> myHost = null;
   private int myPort;
   private boolean isStreamSplittingSupported = false;
-  
+
   private static List<String> myIpOrder = new ArrayList<String>();
 
   public SocketPeer (){
@@ -110,12 +111,12 @@ public class SocketPeer extends AbstractPeer implements Serializable {
   public boolean isStreamSplittingSupported() {
     return isStreamSplittingSupported;
   }
-  
+
   public void setStreamSplittingSupported(boolean isSupported){
     this.isStreamSplittingSupported = isSupported;
   }
-  
-  
+
+
 
   /**
    * this method creates a socket by using the socket pool
@@ -136,11 +137,12 @@ public class SocketPeer extends AbstractPeer implements Serializable {
           theExecutorService.execute( new Runnable(){
             public void run(){
               try{
-              theSocketQueue.put( theSocketPool.checkOut(new InetSocketAddress(theIp, aPort)));
-              synchronized(this){
-                myHost.remove( theHost ); 
-                myHost.add( 0, theHost);
-              }
+                IPAddress theIPAddress = new IPAddress(theIp);
+                theSocketQueue.put( theSocketPool.checkOut(new InetSocketAddress(theIPAddress.getIPAddressOnly(), aPort)));
+                synchronized(this){
+                  myHost.remove( theHost ); 
+                  myHost.add( 0, theHost);
+                }
               }catch(Exception e){
                 LOGGER.error( "Error while checking out socket", e );
               }
@@ -154,7 +156,7 @@ public class SocketPeer extends AbstractPeer implements Serializable {
             }
           });
         }
-        
+
         SocketProxy theSocket = theSocketQueue.poll( 5, TimeUnit.SECONDS );
         theExecutorService.shutdownNow();
         if(theSocket.getSocketAddress() == null) return null;

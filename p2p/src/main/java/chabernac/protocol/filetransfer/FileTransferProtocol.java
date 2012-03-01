@@ -27,6 +27,7 @@ import chabernac.protocol.routing.SocketPeer;
 import chabernac.protocol.routing.UnknownPeerException;
 import chabernac.protocol.routing.iPeerSender;
 import chabernac.tools.IOTools;
+import chabernac.tools.PropertyMap;
 import chabernac.tools.iTransferListener;
 
 /**
@@ -54,7 +55,7 @@ public class FileTransferProtocol extends Protocol {
   }
 
   @Override
-  public String handleCommand(String aSessionId, String anInput) {
+  public String handleCommand(String aSessionId, PropertyMap aProperties, String anInput) {
     if(anInput.startsWith( Command.FILE.name() )){
       //just get the pipe protocol to make sure it is there and to add the listener to it
       try{
@@ -163,7 +164,7 @@ public class FileTransferProtocol extends Protocol {
         IOTools.copyStream( theInputStream, thePipe.getSocket().getOutputStream());
         thePipeProtocol.closePipe( thePipe );
 
-        theResponse = getPeerSender().send( thePeer, createMessage( Command.WAIT_FOR_FILE.name() + " " + theFileId + " " + aFile.length()));
+        theResponse = getPeerSender().send( thePeer, createMessage( Command.WAIT_FOR_FILE.name() + " " + theFileId + " " + aFile.length())).getReply();
 
         if(theResponse.equalsIgnoreCase( Response.BAD_FILE_SIZE.name() )){
           throw new FileTransferException("Received file had bad file size");

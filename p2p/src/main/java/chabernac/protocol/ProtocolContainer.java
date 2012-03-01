@@ -19,6 +19,7 @@ import org.apache.log4j.Logger;
 
 import chabernac.protocol.ProtocolMessageEntry.Status;
 import chabernac.thread.DynamicSizeExecutor;
+import chabernac.tools.PropertyMap;
 import chabernac.utils.LimitedListDecorator;
 
 public class ProtocolContainer implements IProtocol {
@@ -49,7 +50,7 @@ public class ProtocolContainer implements IProtocol {
   }
 
   @Override
-  public String handleCommand( String aSessionId, String anInput ) {
+  public String handleCommand( String aSession, PropertyMap aProperties, String anInput ) {
     ProtocolMessageEntry theEntry = new ProtocolMessageEntry(anInput, Status.INPROGRESS);
     if(isKeepHistory) myMessageHistory.add( theEntry );
     notifyListeners();
@@ -63,7 +64,7 @@ public class ProtocolContainer implements IProtocol {
     IProtocol theProtocol;
     try {
       theProtocol = getProtocol( theID );
-      String theResult = theProtocol.handleCommand( aSessionId, anInput.substring( 3 ) );
+      String theResult = theProtocol.handleCommand( aSession, aProperties, anInput.substring( 3 ) );
       theEntry.setOutput( theResult );
       theEntry.setStatus(Status.FINISHED);
       notifyListeners();

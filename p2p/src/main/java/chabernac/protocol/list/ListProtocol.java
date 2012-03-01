@@ -6,6 +6,7 @@ package chabernac.protocol.list;
 
 import chabernac.protocol.Protocol;
 import chabernac.protocol.ProtocolContainer;
+import chabernac.tools.PropertyMap;
 
 public class ListProtocol extends Protocol {
   public static final String ID = "LTP";
@@ -22,7 +23,7 @@ public class ListProtocol extends Protocol {
   }
 
   @Override
-  public String handleCommand( String aSessionId, String anInput ) {
+  public String handleCommand( String aSessionId, PropertyMap aProperties, String anInput ) {
     if(Command.PROTOCOLS.name().equalsIgnoreCase( anInput.trim() )){
       return findProtocolContainer().getProtocolString();
     }

@@ -21,7 +21,7 @@ public class BlockingProtocol extends Protocol {
   }
 
   @Override
-  public String handleCommand( String aSessionId, String anInput ) {
+  public String handleCommand( String aSessionId, PropertyMap aProperties, String anInput ) {
     try {
       Thread.sleep( myTimeout );
     } catch ( InterruptedException e ) {

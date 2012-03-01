@@ -4,6 +4,7 @@
  */
 package chabernac.protocol;
 
+
 public interface iProtocolDelegate {
-  public String handleCommand(String aSessionId, String anInput);
+  public String handleCommand(String aSession, String anInput);
 }

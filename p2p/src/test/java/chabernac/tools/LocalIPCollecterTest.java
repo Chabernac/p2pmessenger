@@ -4,9 +4,9 @@
  */
 package chabernac.tools;
 
-import org.apache.log4j.BasicConfigurator;
-
 import junit.framework.TestCase;
+
+import org.apache.log4j.BasicConfigurator;
 
 public class LocalIPCollecterTest extends TestCase {
   static{

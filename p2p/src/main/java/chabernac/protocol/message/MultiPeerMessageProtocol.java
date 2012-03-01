@@ -20,6 +20,7 @@ import chabernac.protocol.message.DeliveryReport.Status;
 import chabernac.protocol.routing.DummyPeer;
 import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.RoutingTable;
+import chabernac.tools.PropertyMap;
 import chabernac.utils.NamedRunnable;
 
 public class MultiPeerMessageProtocol extends Protocol{
@@ -48,7 +49,7 @@ public class MultiPeerMessageProtocol extends Protocol{
   }
 
   @Override
-  public String handleCommand( String aSessionId, String anInput ) {
+  public String handleCommand( String aSessionId, PropertyMap aProperties, String anInput ) {
     try {
       MultiPeerMessage theMessage = myObjectStringConverter.getObject( anInput );
       notifyListeners(theMessage);

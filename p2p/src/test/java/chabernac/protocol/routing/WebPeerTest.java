@@ -147,7 +147,7 @@ public class WebPeerTest extends TestCase {
   private class MyPeerSender extends AbstractPeerSender{
 
     @Override
-    protected String doSend( PeerMessage aMessage, int aTimeout ) throws IOException {
+    protected PeerSenderReply doSend( PeerMessage aMessage, int aTimeout ) throws IOException {
       return null;
     }
   }

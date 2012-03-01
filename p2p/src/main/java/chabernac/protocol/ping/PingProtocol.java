@@ -5,6 +5,7 @@
 package chabernac.protocol.ping;
 
 import chabernac.protocol.Protocol;
+import chabernac.tools.PropertyMap;
 
 public class PingProtocol extends Protocol {
   public static final String ID = "PPG";  
@@ -22,7 +23,7 @@ public class PingProtocol extends Protocol {
   }
 
   @Override
-  public String handleCommand( String aSessionId, String anInput ) {
+  public String handleCommand( String aSessionId, PropertyMap aProperties, String anInput ) {
     String theCommand = new String(anInput);
     if(Command.PING.name().equalsIgnoreCase( theCommand )){
       return Response.PONG.name();
