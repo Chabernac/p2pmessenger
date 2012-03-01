@@ -12,7 +12,6 @@ import java.lang.management.ManagementFactory;
 import org.apache.log4j.Logger;
 
 import chabernac.protocol.Protocol;
-import chabernac.tools.PropertyMap;
 
 public class ProcessProtocol extends Protocol{
   private static Logger LOGGER = Logger.getLogger(ProcessProtocol.class);
@@ -56,7 +55,7 @@ public class ProcessProtocol extends Protocol{
   }
 
   @Override
-  public String handleCommand( String aSessionId, PropertyMap aProperties, String anInput ) {
+  public String handleCommand( String aSessionId, String anInput ) {
     try{
       if(anInput.startsWith( Input.FULL_STACK_TRACE.name() )){
         String theJStackCMD = "jstack -l";

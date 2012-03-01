@@ -24,7 +24,6 @@ import chabernac.protocol.routing.AbstractPeer;
 import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.RoutingTable;
 import chabernac.protocol.routing.iPeerSender;
-import chabernac.tools.PropertyMap;
 import chabernac.utils.NamedRunnable;
 
 public class AsyncMessageProcotol extends AbstractMessageProtocol {
@@ -67,7 +66,7 @@ public class AsyncMessageProcotol extends AbstractMessageProtocol {
   }
 
   @Override
-  public String handleCommand( String aSessionId, PropertyMap aProperties, String anInput ) {
+  public String handleCommand( String aSessionId, String anInput ) {
     Message theMessage;
     try {
       theMessage = myMessageConverter.getObject( anInput );
@@ -75,7 +74,7 @@ public class AsyncMessageProcotol extends AbstractMessageProtocol {
       return Response.UNCRECOGNIZED_MESSAGE.name();
     }
 
-    if(handleMessage( aSessionId, aProperties, theMessage )){
+    if(handleMessage( aSessionId, theMessage )){
       return Response.MESSAGE_PROCESSED.name();
     } else {
       return Response.MESSAGE_REJECTED.name();
@@ -92,7 +91,7 @@ public class AsyncMessageProcotol extends AbstractMessageProtocol {
       theMessage.addHeader( "TYPE", "DeliveryStatus" );
       theMessage.addHeader( "MESSAGE-ID", aMessageId );
       theMessage.addHeader( "STATUS", aResponse );
-      handleMessage( UUID.randomUUID().toString(), null, theMessage );
+      handleMessage( UUID.randomUUID().toString(), theMessage );
     }catch(Exception e){
       LOGGER.error("Unable to send delivery status", e);
     }
@@ -207,7 +206,7 @@ public class AsyncMessageProcotol extends AbstractMessageProtocol {
     //decrypted in that case the public key of the receiver needs to be reoptained and the message needs to be recent.
     mySendMessages.put(theMessage.getMessageId().toString(), aMessage);
     LOGGER.debug("handling message");
-    handleMessage( UUID.randomUUID().toString(), null, theMessage);
+    handleMessage( UUID.randomUUID().toString(), theMessage);
   }
 
   public String sendAndWaitForResponse(Message aMessage) throws MessageException{
@@ -219,7 +218,7 @@ public class AsyncMessageProcotol extends AbstractMessageProtocol {
     return getResponse( aMesage.getMessageId().toString(), aTimeout, aTimeUnit );
   }
 
-  private boolean handleMessage(String aSessionId, PropertyMap aProperties, Message aMessage){
+  private boolean handleMessage(String aSessionId, Message aMessage){
     MessageAndResponse theHistoryItem = new MessageAndResponse( aMessage );
 
     try{
@@ -232,7 +231,7 @@ public class AsyncMessageProcotol extends AbstractMessageProtocol {
     }
 
     try{
-      getExecutorService().execute( new MessageProcessor( aSessionId, aProperties, aMessage ) );
+      getExecutorService().execute( new MessageProcessor( aSessionId, aMessage ) );
       return true;
     } catch(RejectedExecutionException e){
       LOGGER.error("Message was rejected ", e);
@@ -243,13 +242,11 @@ public class AsyncMessageProcotol extends AbstractMessageProtocol {
   private class MessageProcessor extends NamedRunnable{
     private final Message myMessage;
     private final String mySessionId;
-    private final PropertyMap myPropertyMap;
 
-    public MessageProcessor( String aSessionId, PropertyMap aPropertyMap, Message aMessage ) {
+    public MessageProcessor( String aSessionId, Message aMessage ) {
       super();
       myMessage = aMessage;
       mySessionId = aSessionId;
-      myPropertyMap = aPropertyMap;
     }
 
     @Override
@@ -273,7 +270,7 @@ public class AsyncMessageProcotol extends AbstractMessageProtocol {
           if("DeliveryStatus".equalsIgnoreCase( myMessage.getHeader( "TYPE" ))){
             handleDeliveryStatus(myMessage);
           } else {
-            String theResponse = handleMessageForUs(mySessionId, myPropertyMap, myMessage);
+            String theResponse = handleMessageForUs(mySessionId, myMessage);
 
             if(isKeepHistory){
               myHistory.get( myMessage.getMessageId().toString() ).setResponse( theResponse );

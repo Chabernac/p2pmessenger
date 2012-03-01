@@ -33,7 +33,6 @@ import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.RoutingTable;
 import chabernac.protocol.routing.RoutingTableEntry;
 import chabernac.protocol.userinfo.UserInfo.Status;
-import chabernac.tools.PropertyMap;
 import chabernac.utils.NamedRunnable;
 
 public class UserInfoProtocol extends Protocol {
@@ -162,7 +161,7 @@ public class UserInfoProtocol extends Protocol {
   }
 
   @Override
-  public String handleCommand( String aSessionId, PropertyMap aProperties, String anInput ) {
+  public String handleCommand( String aSessionId, String anInput ) {
     if(Command.GET.name().equalsIgnoreCase( anInput )){
       try {
         return myConverter.toString( getPersonalInfo() );

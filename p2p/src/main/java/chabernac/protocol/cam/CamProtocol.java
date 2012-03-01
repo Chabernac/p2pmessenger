@@ -25,7 +25,6 @@ import chabernac.protocol.packet.PacketProtocol;
 import chabernac.protocol.packet.iPacketListener;
 import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.RoutingTable;
-import chabernac.tools.PropertyMap;
 import chabernac.web.JPGWebCapture;
 
 public class CamProtocol extends Protocol {
@@ -89,7 +88,7 @@ public class CamProtocol extends Protocol {
   }
 
   @Override
-  public String handleCommand(String aSessionId, PropertyMap aProperties, String anInput) {
+  public String handleCommand(String aSessionId, String anInput) {
     if(anInput.startsWith( Command.CAPTURE.name() )){
       String[] theParams = anInput.split( ";" );
       final String theFrom = theParams[1];

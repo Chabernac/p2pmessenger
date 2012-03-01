@@ -4,9 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import chabernac.tools.PropertyMap;
-
 import junit.framework.TestCase;
+import chabernac.protocol.routing.SessionData;
 
 public class ProtocolSorterTest extends TestCase {
   public void testProtocolSorter(){
@@ -36,7 +35,7 @@ public class ProtocolSorterTest extends TestCase {
     }
 
     @Override
-    public String handleCommand(String aSessionId, PropertyMap aProperties, String anInput) {
+    public String handleCommand(String aSessionId, String anInput) {
       return null;
     }
 
@@ -60,6 +59,12 @@ public class ProtocolSorterTest extends TestCase {
     @Override
     public int getImportance() {
       return myImportance;
+    }
+
+    @Override
+    public SessionData getSessionData() {
+      // TODO Auto-generated method stub
+      return null;
     }
     
   }

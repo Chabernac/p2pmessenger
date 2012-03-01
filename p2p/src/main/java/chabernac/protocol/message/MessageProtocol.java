@@ -15,7 +15,6 @@ import chabernac.protocol.ProtocolException;
 import chabernac.protocol.encryption.EncryptionException;
 import chabernac.protocol.routing.AbstractPeer;
 import chabernac.protocol.routing.UnknownPeerException;
-import chabernac.tools.PropertyMap;
 
 /**
  * This protocol will accept a message and route it to the correct peer based on the routing table.
@@ -40,7 +39,7 @@ public class MessageProtocol extends AbstractMessageProtocol {
   }
 
   @Override
-  public String handleCommand( String aSessionId, PropertyMap aProperties, String anInput ) {
+  public String handleCommand( String aSessionId, String anInput ) {
     Message theMessage;
     try {
       theMessage = myMessageConverter.getObject( anInput );
@@ -48,17 +47,17 @@ public class MessageProtocol extends AbstractMessageProtocol {
       return Response.UNCRECOGNIZED_MESSAGE.name();
     }
 
-    return  handleMessage( aSessionId, aProperties, theMessage );
+    return  handleMessage( aSessionId, theMessage );
   }
 
-  public String handleMessage(String aSessionId, PropertyMap aProperties, Message aMessage){
+  public String handleMessage(String aSessionId, Message aMessage){
     MessageAndResponse theHistoryItem = new MessageAndResponse( aMessage );
     if(isKeepHistory){
       myHistory.put(aMessage.getMessageId().toString(), theHistoryItem);
       for(iMessageListener theListener : myHistoryListeners) theListener.messageReceived( aMessage );
     }
 
-    String theResult = handleMessageInternal( aSessionId, aProperties, aMessage );
+    String theResult = handleMessageInternal( aSessionId, aMessage );
 
     if(isKeepHistory){
       theHistoryItem.setResponse( theResult );
@@ -68,7 +67,7 @@ public class MessageProtocol extends AbstractMessageProtocol {
     return theResult;
   }
 
-  public String handleMessageInternal(String aSessionId, PropertyMap aProperties, Message aMessage){
+  public String handleMessageInternal(String aSessionId, Message aMessage){
     if(myProcessingMessages.contains(aMessage.getUniqueId())){
       return Response.MESSAGE_LOOP_DETECTED.name();
     } 
@@ -79,7 +78,7 @@ public class MessageProtocol extends AbstractMessageProtocol {
     try {
       myProcessingMessages.add(aMessage.getUniqueId());
       if(theDestination.getPeerId().equals( getRoutingTable().getLocalPeerId() )){
-        return handleMessageForUs(aSessionId, aProperties, aMessage);
+        return handleMessageForUs(aSessionId, aMessage);
       } else {
         //the message is not intented for us, it needs to be sended further.
         //only send the message further if the time to live (TTL) is not yet 0.
@@ -114,7 +113,7 @@ public class MessageProtocol extends AbstractMessageProtocol {
     while(isRetry){
       Message theMessage = aMessage.copy();
       inspectMessage(theMessage);
-      theResult = handleMessage( UUID.randomUUID().toString(), null, theMessage );
+      theResult = handleMessage( UUID.randomUUID().toString(), theMessage );
       isRetry = isRetryResponse( theMessage, theResult ) && theRetries++ < 3;
     }
     return inspectResult(theResult);

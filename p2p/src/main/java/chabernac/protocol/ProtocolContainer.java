@@ -18,8 +18,8 @@ import java.util.concurrent.TimeUnit;
 import org.apache.log4j.Logger;
 
 import chabernac.protocol.ProtocolMessageEntry.Status;
+import chabernac.protocol.routing.SessionData;
 import chabernac.thread.DynamicSizeExecutor;
-import chabernac.tools.PropertyMap;
 import chabernac.utils.LimitedListDecorator;
 
 public class ProtocolContainer implements IProtocol {
@@ -34,6 +34,7 @@ public class ProtocolContainer implements IProtocol {
 
   private iProtocolFactory myProtocolFactory = null;
   private ServerInfo myServerInfo = null;
+  private SessionData mySessionData = null;
 
   private boolean isKeepHistory = false;
 
@@ -50,7 +51,7 @@ public class ProtocolContainer implements IProtocol {
   }
 
   @Override
-  public String handleCommand( String aSession, PropertyMap aProperties, String anInput ) {
+  public String handleCommand( String aSession, String anInput ) {
     ProtocolMessageEntry theEntry = new ProtocolMessageEntry(anInput, Status.INPROGRESS);
     if(isKeepHistory) myMessageHistory.add( theEntry );
     notifyListeners();
@@ -64,7 +65,7 @@ public class ProtocolContainer implements IProtocol {
     IProtocol theProtocol;
     try {
       theProtocol = getProtocol( theID );
-      String theResult = theProtocol.handleCommand( aSession, aProperties, anInput.substring( 3 ) );
+      String theResult = theProtocol.handleCommand( aSession, anInput.substring( 3 ) );
       theEntry.setOutput( theResult );
       theEntry.setStatus(Status.FINISHED);
       notifyListeners();
@@ -221,5 +222,10 @@ public class ProtocolContainer implements IProtocol {
 
   public ExecutorService getExecutorService(){
     return myExecutor;
+  }
+  
+  public SessionData getSessionData(){
+    if(mySessionData == null) mySessionData = new SessionData();
+    return mySessionData;
   }
 }

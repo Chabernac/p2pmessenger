@@ -12,8 +12,8 @@ import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Set;
+
 import org.apache.log4j.Logger;
-import org.w3c.dom.NamedNodeMap;
 
 import chabernac.io.Base64ObjectStringConverter;
 import chabernac.io.iObjectStringConverter;
@@ -26,7 +26,6 @@ import chabernac.protocol.routing.IRoutingTableListener;
 import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.RoutingTable;
 import chabernac.protocol.routing.RoutingTableEntry;
-import chabernac.tools.PropertyMap;
 import chabernac.utils.NamedRunnable;
 
 /**
@@ -72,7 +71,7 @@ public class InfoExchangeProtocol<T extends Observable & Serializable> extends P
   }
 
   @Override
-  public String handleCommand( String aSessionId, PropertyMap aProperties, String anInput ) {
+  public String handleCommand( String aSessionId, String anInput ) {
     try{
       if(anInput.startsWith( Command.PUT.name() )){
         String theParts[] = anInput.substring( Command.PUT.name().length() ).trim().split( " " );

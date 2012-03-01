@@ -27,7 +27,6 @@ import chabernac.protocol.routing.RoutingTable;
 import chabernac.protocol.routing.RoutingTableEntry;
 import chabernac.protocol.routing.UnknownPeerException;
 import chabernac.protocol.routing.iPeerSender;
-import chabernac.tools.PropertyMap;
 
 public abstract class AbstractMessageProtocol extends Protocol {
   protected static Logger LOGGER = Logger.getLogger( AbstractMessageProtocol.class );
@@ -102,7 +101,7 @@ public abstract class AbstractMessageProtocol extends Protocol {
     }
   }
   
-  protected String handleMessageForUs(String aSession, PropertyMap aProperties, Message aMessage) throws EncryptionException{
+  protected String handleMessageForUs(String aSession, Message aMessage) throws EncryptionException{
     checkEnctryption(aMessage);
     
     if(myProcessedMessages.contains(aMessage.getUniqueId())){
@@ -114,7 +113,7 @@ public abstract class AbstractMessageProtocol extends Protocol {
     if(aMessage.isProtocolMessage()){
       //reoffer the content of the message to the handle method
       //this will cause sub protocols to handle the message if they are present
-      return Response.DELIVERED.name() + getMasterProtocol().handleCommand( aSession, aProperties, aMessage.getMessage() );
+      return Response.DELIVERED.name() + getMasterProtocol().handleCommand( aSession, aMessage.getMessage() );
     } else {
       for(iMessageListener theListener : myListeners){
         theListener.messageReceived( aMessage );

@@ -219,9 +219,11 @@ public class ProtocolServer implements Runnable, iP2PServer{
           //          LOGGER.debug("Line received: '" + theLine + "'");
           //the following line is just to ease the transition to using the stream splitter
           if(theLine.startsWith( StreamSplitter.IN )) theLine = theLine.substring( StreamSplitter.IN.length() );
-          
-          String  theResult = myProtocol.handleCommand(UUID.randomUUID().toString(), myProperties, theLine );
+          String theSession = UUID.randomUUID().toString();
+          myProtocol.getSessionData().putProperty( theSession, SOCKET, mySocket );
+          String  theResult = myProtocol.handleCommand(theSession, theLine );
           //          LOGGER.debug("Sending result: '" + theResult + "'");
+          myProtocol.getSessionData().removeProperty( theSession, SOCKET );
           theWriter.println( theResult );
           theWriter.flush();
         }

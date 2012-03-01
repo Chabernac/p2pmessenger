@@ -29,7 +29,6 @@ import chabernac.protocol.routing.UnknownPeerException;
 import chabernac.protocol.routing.iPeerSender;
 import chabernac.thread.DynamicSizeExecutor;
 import chabernac.tools.IOTools;
-import chabernac.tools.PropertyMap;
 import chabernac.utils.NetTools;
 
 /**
@@ -75,7 +74,7 @@ public class PipeProtocol extends Protocol {
 
 
   @Override
-  public String handleCommand( String aSessionId, PropertyMap aProperties, String anInput ) {
+  public String handleCommand( String aSessionId, String anInput ) {
     if( anInput.startsWith( Command.OPEN_SOCKET.name() ) ){
       String[] theAttributes = anInput.substring( Command.OPEN_SOCKET.name().length() + 1 ).trim().split( ";" );
 

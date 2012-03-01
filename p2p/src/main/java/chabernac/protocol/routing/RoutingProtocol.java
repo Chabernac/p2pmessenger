@@ -45,7 +45,6 @@ import chabernac.protocol.ServerInfo;
 import chabernac.protocol.ServerInfo.Type;
 import chabernac.tools.IOTools;
 import chabernac.tools.LocalIPCollecter;
-import chabernac.tools.PropertyMap;
 import chabernac.tools.SimpleNetworkInterface;
 import chabernac.tools.TestTools;
 import chabernac.tools.iIPListener;
@@ -393,7 +392,7 @@ public class RoutingProtocol extends Protocol {
 	}
 
 	@Override
-	public String handleCommand( String aSessionId, PropertyMap aProperties, String anInput ) {
+	public String handleCommand( String aSessionId, String anInput ) {
 		if(!isInitialized){
 			return Response.NOT_INITIALIZED.name();
 		}
