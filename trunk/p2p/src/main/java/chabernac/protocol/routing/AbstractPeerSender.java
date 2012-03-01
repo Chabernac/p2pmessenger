@@ -26,12 +26,12 @@ public abstract class AbstractPeerSender implements iPeerSender {
   private List<PeerMessage> myHistory = new LimitedListDecorator<PeerMessage>(100,new ArrayList<PeerMessage>());
 
   @Override
-  public final String send( AbstractPeer aPeer, String aMessage ) throws IOException {
+  public final PeerSenderReply send( AbstractPeer aPeer, String aMessage ) throws IOException {
     return send(aPeer, aMessage, 5);
   }
 
   @Override
-  public final String send( AbstractPeer aTo, String aMessage, int aTimeout ) throws IOException {
+  public final PeerSenderReply send( AbstractPeer aTo, String aMessage, int aTimeout ) throws IOException {
     PeerMessage theMessage = new PeerMessage(aMessage, aTo);
     if(isKeepHistory){
       myHistory.add(theMessage);
@@ -44,13 +44,13 @@ public abstract class AbstractPeerSender implements iPeerSender {
       String theProtocol = aMessage.substring( 0, 3 );
       if(!aTo.isProtocolSupported( theProtocol )) throw new IOException("The protocol '" + theProtocol + "' is not supported by peer '" + aTo.getPeerId() + "'");
 
-      String theResponse = doSend(theMessage, aTimeout);
+      PeerSenderReply theResponse = doSend(theMessage, aTimeout);
 
-      theMessage.setResult( theResponse );
+      theMessage.setResult( theResponse.getReply() );
 
       //each char is 2 bytes char is a unicode value
       if(aMessage != null) myBytesSend += (aMessage.toCharArray().length * 2);
-      if(theResponse != null) myBytesReceived += (theResponse.toCharArray().length * 2);
+      if(theResponse != null) myBytesReceived += (theResponse.getReply().toCharArray().length * 2);
       return theResponse;
     }catch(IOException e){
       LOGGER.error("Error occured while sending message", e);
@@ -59,7 +59,7 @@ public abstract class AbstractPeerSender implements iPeerSender {
     }
   }
 
-  protected abstract String doSend( PeerMessage aMessage, int aTimeout ) throws IOException;
+  protected abstract PeerSenderReply doSend( PeerMessage aMessage, int aTimeout ) throws IOException;
 
   public long getBytesReceived() {
     return myBytesReceived;

@@ -29,6 +29,7 @@ import chabernac.protocol.routing.UnknownPeerException;
 import chabernac.protocol.routing.iPeerSender;
 import chabernac.thread.DynamicSizeExecutor;
 import chabernac.tools.IOTools;
+import chabernac.tools.PropertyMap;
 import chabernac.utils.NetTools;
 
 /**
@@ -74,7 +75,7 @@ public class PipeProtocol extends Protocol {
 
 
   @Override
-  public String handleCommand( String aSessionId, String anInput ) {
+  public String handleCommand( String aSessionId, PropertyMap aProperties, String anInput ) {
     if( anInput.startsWith( Command.OPEN_SOCKET.name() ) ){
       String[] theAttributes = anInput.substring( Command.OPEN_SOCKET.name().length() + 1 ).trim().split( ";" );
 
@@ -175,7 +176,7 @@ public class PipeProtocol extends Protocol {
 
   private SocketProxy openSocketToPeer(SocketPeer aFromPeer, SocketPeer aToPeer, String aPipeDescription) throws IOException, UnknownPeerException, ProtocolException{
     AbstractPeer theGateway = getRoutingTable().getGatewayForPeer(aToPeer);
-    String theResult = getPeerSender().send(theGateway, createMessage( Command.OPEN_SOCKET + ";" + aFromPeer.getPeerId()  + ";" + aToPeer.getPeerId() + ";" +  aPipeDescription) );
+    String theResult = getPeerSender().send(theGateway, createMessage( Command.OPEN_SOCKET + ";" + aFromPeer.getPeerId()  + ";" + aToPeer.getPeerId() + ";" +  aPipeDescription) ).getReply();
 
     if(!theResult.startsWith( Result.SOCKET_OPENED.name() )){
       LOGGER.error("Peer: " + getRoutingTable().getLocalPeerId() + " Socket with peer '" + aToPeer.getPeerId() +  "' could not be openend: " + theResult);

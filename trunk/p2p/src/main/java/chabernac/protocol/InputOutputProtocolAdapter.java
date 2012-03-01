@@ -12,7 +12,7 @@ public class InputOutputProtocolAdapter implements iInputOutputHandler{
 
   @Override
   public String handle(String anInput) {
-    return myProtocol.handleCommand(null, anInput);
+    return myProtocol.handleCommand(null, null, anInput);
   }
 
   @Override

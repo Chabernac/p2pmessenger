@@ -4,6 +4,8 @@
  */
 package chabernac.protocol;
 
+import chabernac.tools.PropertyMap;
+
 /**
  * @deprecated
  */
@@ -18,7 +20,7 @@ public class MasterProtocol extends Protocol {
   }
 
   @Override
-  public String handleCommand( String aSessionId, String anInput ) {
+  public String handleCommand( String aSessionId, PropertyMap aProperties, String anInput ) {
     String theCommand = new String(anInput);
     if(Command.PROTOCOLS.name().equalsIgnoreCase( theCommand )){
 //      return getProtocolsString();

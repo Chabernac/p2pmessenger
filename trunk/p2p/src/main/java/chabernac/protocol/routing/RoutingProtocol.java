@@ -45,6 +45,7 @@ import chabernac.protocol.ServerInfo;
 import chabernac.protocol.ServerInfo.Type;
 import chabernac.tools.IOTools;
 import chabernac.tools.LocalIPCollecter;
+import chabernac.tools.PropertyMap;
 import chabernac.tools.SimpleNetworkInterface;
 import chabernac.tools.TestTools;
 import chabernac.tools.iIPListener;
@@ -318,7 +319,7 @@ public class RoutingProtocol extends Protocol {
 	private boolean isAlreadyRunning(AbstractPeer aPeer) {
 		LOGGER.debug("Checking if we're already running");
 		try{
-			String theResponse = getPeerSender().send( aPeer, createMessage( Command.WHO_ARE_YOU.name() ));
+			String theResponse = getPeerSender().send( aPeer, createMessage( Command.WHO_ARE_YOU.name() )).getReply();
 			AbstractPeer theRemotePeer = myPeerConverter.getObject( theResponse );
 			return theRemotePeer.getPeerId().equals( aPeer.getPeerId() );
 		}catch(Exception e){
@@ -392,7 +393,7 @@ public class RoutingProtocol extends Protocol {
 	}
 
 	@Override
-	public String handleCommand( String aSessionId, String anInput ) {
+	public String handleCommand( String aSessionId, PropertyMap aProperties, String anInput ) {
 		if(!isInitialized){
 			return Response.NOT_INITIALIZED.name();
 		}
@@ -494,7 +495,7 @@ public class RoutingProtocol extends Protocol {
 	boolean contactPeer(AbstractPeer aPeer, List<String> anUnreachablePeers, boolean isRequestTableWhenPeerFound){
 		try{
 			LOGGER.debug("Sending message to '" + aPeer.getEndPointRepresentation() );
-			String theResponse = getPeerSender().send( aPeer, createMessage( Command.WHO_ARE_YOU.name() ));
+			String theResponse = getPeerSender().send( aPeer, createMessage( Command.WHO_ARE_YOU.name() )).getReply();
 			AbstractPeer theRemotePeer = myPeerConverter.getObject( theResponse );
 
 			if(anUnreachablePeers == null || !anUnreachablePeers.contains( theRemotePeer.getPeerId() )){
@@ -695,7 +696,7 @@ public class RoutingProtocol extends Protocol {
 				LOGGER.debug("Sending announcement to peer '" + thePeer.getPeerId() + "'");
 
 				String theCMD = createMessage( Command.ANNOUNCEMENT_WITH_REPLY.name() + " "  + myRoutingTableEntryConverter.toString( myRoutingTable.getEntryForLocalPeer() ));
-				String theTable = getPeerSender().send(thePeer, theCMD) ;
+				String theTable = getPeerSender().send(thePeer, theCMD).getReply();
 				//          String theTable = thePeer.send( createMessage( Command.REQUEST_TABLE.name() ));
 				RoutingTable theRemoteTable = myRoutingTableConverter.getObject( theTable );
 
@@ -759,7 +760,7 @@ public class RoutingProtocol extends Protocol {
 					!myUnreachablePeers.contains(thePeer.getPeerId())){
 				try {
 					LOGGER.debug("Sending announcement of peer '" + anEntry.getPeer().getPeerId() +  "' from peer '" + myLocalPeerId +  "' to peer '" + thePeer.getPeerId() + "' on '" + thePeer.getEndPointRepresentation() + "'");
-					String theResult = getPeerSender().send( thePeer, createMessage( Command.ANNOUNCEMENT.name() + " "  + myRoutingTableEntryConverter.toString( myRoutingTable.getEntryForLocalPeer()) + ";" + myRoutingTableEntryConverter.toString( anEntry ))) ;
+					String theResult = getPeerSender().send( thePeer, createMessage( Command.ANNOUNCEMENT.name() + " "  + myRoutingTableEntryConverter.toString( myRoutingTable.getEntryForLocalPeer()) + ";" + myRoutingTableEntryConverter.toString( anEntry ))).getReply() ;
 					if(!Response.OK.name().equals( theResult )){
 						throw new Exception("Unexpected result code '" + theResult + "'");
 					}

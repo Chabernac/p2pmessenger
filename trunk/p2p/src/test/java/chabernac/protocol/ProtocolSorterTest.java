@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import chabernac.tools.PropertyMap;
+
 import junit.framework.TestCase;
 
 public class ProtocolSorterTest extends TestCase {
@@ -34,7 +36,7 @@ public class ProtocolSorterTest extends TestCase {
     }
 
     @Override
-    public String handleCommand(String aSessionId, String anInput) {
+    public String handleCommand(String aSessionId, PropertyMap aProperties, String anInput) {
       return null;
     }
 

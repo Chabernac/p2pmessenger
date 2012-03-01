@@ -1,5 +1,6 @@
 package chabernac.protocol.echo;
 import chabernac.protocol.Protocol;
+import chabernac.tools.PropertyMap;
 
 /**
  * Copyright (c) 2010 Axa Holding Belgium, SA. All rights reserved.
@@ -19,7 +20,7 @@ public class EchoProtocol extends Protocol {
   }
 
   @Override
-  public String handleCommand( String aSessionId, String anInput ) {
+  public String handleCommand( String aSessionId, PropertyMap aProperties,  String anInput ) {
     return anInput;
   }
 

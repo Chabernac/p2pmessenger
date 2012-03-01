@@ -114,7 +114,7 @@ public class ProtocolServlet extends HttpServlet {
 			} else {
 				getPeerIpMap().put(thePeerId, aRequest.getRemoteAddr());
 
-				String theResult = getProtocolContainer().handleCommand(theSession , theInput );
+				String theResult = getProtocolContainer().handleCommand(theSession, null, theInput );
 				aResponse.getWriter().println(theResult);
 			}
 		} catch ( Exception e ) {

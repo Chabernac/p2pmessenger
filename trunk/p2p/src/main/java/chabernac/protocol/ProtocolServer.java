@@ -23,12 +23,15 @@ import org.apache.log4j.Logger;
 import chabernac.io.StreamSplitter;
 import chabernac.protocol.ServerInfo.Type;
 import chabernac.thread.DynamicSizeExecutor;
+import chabernac.tools.PropertyMap;
 import chabernac.util.concurrent.MonitorrableRunnable;
 import chabernac.util.concurrent.iRunnableListener;
 import chabernac.utils.NetTools;
 
 public class ProtocolServer implements Runnable, iP2PServer{
   private static Logger LOGGER = Logger.getLogger(ProtocolServer.class);
+  public static final String SESSION = "Session";
+  public static final String SOCKET = "Socket";
 
   private int myPort;
   private int myNumberOfThreads;
@@ -194,17 +197,20 @@ public class ProtocolServer implements Runnable, iP2PServer{
 
 
   private class ClientSocketHandler extends MonitorrableRunnable{
-    private Socket mySocket = null;
-
-
+    private final Socket mySocket;
+    private final PropertyMap myProperties;
+    
     public ClientSocketHandler(Socket aSocket){
       mySocket = aSocket;
+      myProperties = new PropertyMap();
+      myProperties.put(SOCKET, mySocket );
     }
 
     public void doRun(){
       BufferedReader theReader = null;
       PrintWriter theWriter = null;
       try{
+        LOGGER.debug( "Incoming socket on ip'" + mySocket.getLocalAddress()  + "'");
         theReader = new BufferedReader(new InputStreamReader(mySocket.getInputStream()));
         theWriter = new PrintWriter(new OutputStreamWriter(mySocket.getOutputStream()));
 
@@ -213,7 +219,8 @@ public class ProtocolServer implements Runnable, iP2PServer{
           //          LOGGER.debug("Line received: '" + theLine + "'");
           //the following line is just to ease the transition to using the stream splitter
           if(theLine.startsWith( StreamSplitter.IN )) theLine = theLine.substring( StreamSplitter.IN.length() );
-          String  theResult = myProtocol.handleCommand( UUID.randomUUID().toString(), theLine );
+          
+          String  theResult = myProtocol.handleCommand(UUID.randomUUID().toString(), myProperties, theLine );
           //          LOGGER.debug("Sending result: '" + theResult + "'");
           theWriter.println( theResult );
           theWriter.flush();

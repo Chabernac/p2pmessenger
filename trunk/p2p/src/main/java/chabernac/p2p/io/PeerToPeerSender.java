@@ -15,15 +15,18 @@ import chabernac.io.SocketProxy;
 import chabernac.io.StreamSplitter;
 import chabernac.io.StreamSplitterPool;
 import chabernac.p2p.settings.P2PSettings;
+import chabernac.protocol.ProtocolServer;
 import chabernac.protocol.routing.PeerMessage;
+import chabernac.protocol.routing.PeerSenderReply;
 import chabernac.protocol.routing.SocketPeer;
 import chabernac.protocol.routing.PeerMessage.State;
+import chabernac.tools.PropertyMap;
 import chabernac.utils.NamedRunnable;
 
 public class PeerToPeerSender {
   private static final Logger LOGGER = Logger.getLogger(PeerToPeerSender.class);
 
-  public String sendMessageTo(PeerMessage aPeerMessage, SocketPeer aPeer, String aMessage, int aTimeoutInSeconds) throws IOException {
+  public PeerSenderReply sendMessageTo(PeerMessage aPeerMessage, SocketPeer aPeer, String aMessage, int aTimeoutInSeconds) throws IOException {
     if(aPeer.isStreamSplittingSupported()){
       //just to be compatible with the stream splitters
       aMessage = StreamSplitter.IN + aMessage;
@@ -84,7 +87,9 @@ public class PeerToPeerSender {
           theReturnMessage = theReturnMessage.substring( StreamSplitter.OUT.length() );
         }
 
-        return theReturnMessage;
+        PropertyMap theProperties = new PropertyMap();
+        theProperties.put(ProtocolServer.SOCKET, theSocket);
+        return new PeerSenderReply( theReturnMessage, theProperties );
       }catch(IOException e){
         //for some reason the socket was corrupt just close the socket and retry untill retry counter is zero
         P2PSettings.getInstance().getSocketPool().close( theSocket );

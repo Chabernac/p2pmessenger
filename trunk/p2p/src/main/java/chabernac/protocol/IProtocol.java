@@ -4,8 +4,10 @@
  */
 package chabernac.protocol;
 
+import chabernac.tools.PropertyMap;
+
 public interface IProtocol {
-  public abstract String handleCommand(String aSessionId, String anInput);
+  public abstract String handleCommand(String aSession, PropertyMap aProperties, String anInput);
   public String getId();
   public void setMasterProtocol(IProtocol aProtocol);
   public void stop();
