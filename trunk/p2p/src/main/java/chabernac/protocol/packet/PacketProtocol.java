@@ -16,7 +16,6 @@ import chabernac.protocol.routing.RoutingTable;
 import chabernac.protocol.routing.RoutingTableEntry;
 import chabernac.protocol.routing.UnknownPeerException;
 import chabernac.protocol.routing.iPeerSender;
-import chabernac.tools.PropertyMap;
 import chabernac.utils.NamedRunnable;
 
 public class PacketProtocol extends Protocol {
@@ -94,14 +93,14 @@ public class PacketProtocol extends Protocol {
 
   public void sendPacket(Packet aPacket) throws PacketProtocolException{
     try {
-      handleCommand( null, null, myConverter.toString(aPacket.setFrom( getRoutingTable().getLocalPeerId() ) ));
+      handleCommand( null, myConverter.toString(aPacket.setFrom( getRoutingTable().getLocalPeerId() ) ));
     } catch ( ProtocolException e ) {
       throw new PacketProtocolException("Could not get local peer id", e);
     }
   }
 
   @Override
-  public String handleCommand( String aSessionId, PropertyMap aProperties, final String anInput ) {
+  public String handleCommand( String aSessionId, final String anInput ) {
     final Packet thePacket = myConverter.getObject( anInput ).decreaseHopDistance();
 
     getExecutorService().execute( new NamedRunnable("Handling packet") {

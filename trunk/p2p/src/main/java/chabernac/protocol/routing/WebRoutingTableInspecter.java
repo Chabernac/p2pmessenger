@@ -38,8 +38,8 @@ public class WebRoutingTableInspecter implements iRoutingTableInspector {
   public RoutingTable inspectRoutingTable( String aSessionId, RoutingTable aRoutingTable ) {
     if(!mySessionData.containsSession( aSessionId )) return aRoutingTable;
 
-    String theIPRequestor = mySessionData.getProperty( aSessionId, "requestor.ip" );
-    String theURLRequestor = mySessionData.getProperty( aSessionId, "requestor.url" );
+    String theIPRequestor = (String)mySessionData.getProperty( aSessionId, "requestor.ip" );
+    String theURLRequestor = (String)mySessionData.getProperty( aSessionId, "requestor.url" );
 
     LOGGER.debug("Inspecting routing table in session '" + aSessionId + "' for peer with remote ip '" + theIPRequestor + "' and requesting url '" + theURLRequestor + "'");
 

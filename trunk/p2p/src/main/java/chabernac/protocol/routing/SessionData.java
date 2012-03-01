@@ -7,27 +7,37 @@ package chabernac.protocol.routing;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
+
+import chabernac.tools.PropertyMap;
 
 public class SessionData {
-  private Map<String, Properties> mySessionData = Collections.synchronizedMap( new HashMap<String, Properties>());
+  private Map<String, PropertyMap> mySessionData = Collections.synchronizedMap( new HashMap<String, PropertyMap>());
   
-  public void putProperty(String aSession, String aKey, String aValue){
+  public void putProperty(String aSession, String aKey, Object aValue){
     if(aSession == null || aKey == null || aValue == null) return;
     
     if(!mySessionData.containsKey( aSession )){
-      mySessionData.put( aSession, new Properties() );
+      mySessionData.put( aSession, new PropertyMap() );
     }
     
     mySessionData.get( aSession ).setProperty( aKey, aValue );
   }
   
-  public String getProperty(String aSession, String aKey){
-   if(!mySessionData.containsKey( aSession )) return null;
-   return mySessionData.get( aSession ).getProperty( aKey );
+  public Object removeProperty(String aSession, String aKey){
+    if(aSession == null || aKey == null ) return null;
+    PropertyMap theProperties = mySessionData.get(aSession);
+    if(theProperties != null){
+      return theProperties.remove( aKey );
+    }
+    return null;
   }
   
-  public Properties clearSessionData(String aSession){
+  public Object getProperty(String aSession, String aKey){
+   if(!mySessionData.containsKey( aSession )) return null;
+   return mySessionData.get( aSession ).get( aKey );
+  }
+  
+  public PropertyMap clearSessionData(String aSession){
     return mySessionData.remove( aSession );
   }
   

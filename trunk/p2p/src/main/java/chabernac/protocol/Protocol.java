@@ -6,6 +6,7 @@ package chabernac.protocol;
 
 import java.util.concurrent.ExecutorService;
 
+import chabernac.protocol.routing.SessionData;
 import chabernac.thread.DynamicSizeExecutor;
 
 
@@ -14,7 +15,6 @@ public abstract class Protocol implements IProtocol{
   
   protected String myId;
   private ServerInfo myServerInfo;
-  
 
   public Protocol(String anId){
     if(anId.length() != 3) throw new IllegalArgumentException("Protocol identifier must be 3 bytes long");
@@ -73,5 +73,8 @@ public abstract class Protocol implements IProtocol{
   public void setServerInfo( ServerInfo anServerInfo ) throws ProtocolException {
     myServerInfo = anServerInfo;
   }
-
+  
+  public SessionData getSessionData(){
+    return findProtocolContainer().getSessionData();
+  }
 }

@@ -26,7 +26,6 @@ import chabernac.protocol.message.Message;
 import chabernac.protocol.packet.AbstractTransferState.State;
 import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.RoutingTable;
-import chabernac.tools.PropertyMap;
 
 public class AsyncTransferProtocol extends Protocol implements iTransferContainer{
   private static final Logger LOGGER = Logger.getLogger(AsyncTransferException.class);
@@ -74,7 +73,7 @@ public class AsyncTransferProtocol extends Protocol implements iTransferContaine
   }
 
   @Override
-  public String handleCommand( String aSessionId, PropertyMap aProperties, String anInput ) {
+  public String handleCommand( String aSessionId, String anInput ) {
     if(anInput.startsWith( Command.STATE_CHANGE.name() )){
       String[] theParams = anInput.split( ";" );
       String theTransferId = theParams[1];

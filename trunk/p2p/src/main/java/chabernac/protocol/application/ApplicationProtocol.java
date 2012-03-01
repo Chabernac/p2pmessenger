@@ -11,7 +11,6 @@ import chabernac.protocol.message.AsyncMessageProcotol;
 import chabernac.protocol.message.Message;
 import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.RoutingTable;
-import chabernac.tools.PropertyMap;
 
 public class ApplicationProtocol extends Protocol {
   public static final String ID = "APP";
@@ -30,7 +29,7 @@ public class ApplicationProtocol extends Protocol {
   }
 
   @Override
-  public String handleCommand( String aSession, PropertyMap aProperties, String anInput ) {
+  public String handleCommand( String aSession, String anInput ) {
     if(myDelegate != null){
       return myDelegate.handleCommand( aSession, anInput );
     }

@@ -4,13 +4,14 @@
  */
 package chabernac.protocol;
 
-import chabernac.tools.PropertyMap;
+import chabernac.protocol.routing.SessionData;
 
 public interface IProtocol {
-  public abstract String handleCommand(String aSession, PropertyMap aProperties, String anInput);
+  public abstract String handleCommand(String aSession, String anInput);
   public String getId();
   public void setMasterProtocol(IProtocol aProtocol);
   public void stop();
   public void setServerInfo(ServerInfo aServerInfo) throws ProtocolException;
+  public SessionData getSessionData();
   public int getImportance();
 }

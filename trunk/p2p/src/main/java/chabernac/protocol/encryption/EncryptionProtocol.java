@@ -36,7 +36,6 @@ import chabernac.protocol.message.MessageIndicator;
 import chabernac.protocol.routing.AbstractPeer;
 import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.RoutingTable;
-import chabernac.tools.PropertyMap;
 
 public class EncryptionProtocol extends Protocol {
   private static Logger LOGGER = Logger.getLogger(EncryptionProtocol.class);
@@ -84,7 +83,7 @@ public class EncryptionProtocol extends Protocol {
   }
 
   @Override
-  public String handleCommand( String aSessionId, PropertyMap aProperties, String anInput ) {
+  public String handleCommand( String aSessionId, String anInput ) {
     if(anInput.startsWith( Command.GENERATE_SECRET_KEY.name() )){
       try{
         String[] theParams = anInput.split( " " );

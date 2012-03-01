@@ -17,7 +17,6 @@ import chabernac.protocol.IProtocol;
 import chabernac.protocol.Protocol;
 import chabernac.protocol.ProtocolContainer;
 import chabernac.protocol.ProtocolException;
-import chabernac.tools.PropertyMap;
 
 public class WebPeerProtocol extends Protocol{
   private static Logger LOGGER = Logger.getLogger(WebPeerProtocol.class);
@@ -85,10 +84,10 @@ public class WebPeerProtocol extends Protocol{
   }
 
   @Override
-  public String handleCommand(String aSessionId, PropertyMap aProperties, String anInput) {
+  public String handleCommand(String aSessionId, String anInput) {
     if(anInput.startsWith(Input.EVENT.name())){
       String theProtocolPart = anInput.substring(Input.EVENT.name().length() + 1);
-      return getProtocolContainer().handleCommand(aSessionId, aProperties, theProtocolPart);
+      return getProtocolContainer().handleCommand(aSessionId, theProtocolPart);
     }
     return Response.UNKNOWN_COMMAND.name();
   }
@@ -149,7 +148,7 @@ public class WebPeerProtocol extends Protocol{
             List<CometEvent> theEvents = myWebPeer.waitForEvents(getRoutingTable().getLocalPeerId());
             
             for(CometEvent theEvent : theEvents){
-              String theResult = handleCommand(UUID.randomUUID().toString(), null, Input.EVENT.name() + " " + theEvent.getInput());
+              String theResult = handleCommand(UUID.randomUUID().toString(), Input.EVENT.name() + " " + theEvent.getInput());
               theEvent.setOutput( theResult );
             }
           }catch(SocketException e){
