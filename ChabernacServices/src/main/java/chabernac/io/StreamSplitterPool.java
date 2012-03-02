@@ -27,9 +27,9 @@ public class StreamSplitterPool {
     //write our own id
     aSplitter.sendWithoutReply( ID_PREFIX + myId );
     String theRemoteId = aSplitter.readLine();
-    aSplitter.setId( theRemoteId );
     if(theRemoteId != null && theRemoteId.startsWith(ID_PREFIX)){
       theRemoteId = theRemoteId.substring(ID_PREFIX.length());
+      aSplitter.setId( theRemoteId );
       if(!addStreamSplitter( theRemoteId, aSplitter )){
         LOGGER.debug("The pool already contains a splitter for id '" + theRemoteId + "', this splitter is ignored");
         return theRemoteId;
