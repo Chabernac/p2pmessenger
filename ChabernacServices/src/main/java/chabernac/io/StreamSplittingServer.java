@@ -8,7 +8,9 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 
 import org.apache.log4j.Logger;
@@ -27,6 +29,7 @@ public class StreamSplittingServer implements iSocketSender{
   private final StreamSplitterPool myPool;
   private boolean isRunning = false;
   private List<iStreamSplittingServerListener> myListeners = new ArrayList< iStreamSplittingServerListener >();
+  private Map<String, Socket> mySockets = new HashMap<String, Socket>();
 
   public StreamSplittingServer ( iInputOutputHandler aInputOutputHandler, int aPort, boolean isFindUnusedPort, String anId ) {
     super();
@@ -94,17 +97,23 @@ public class StreamSplittingServer implements iSocketSender{
 
   private String addSocket(final Socket aSocket) throws IOException{
     StreamSplitter theSplitter = new StreamSplitter( aSocket.getInputStream(), aSocket.getOutputStream(), myInputOutputHandler );
+    final String theId = myPool.add( theSplitter );
+    
     theSplitter.addStreamListener( new iStreamListener() {
       @Override
       public void streamClosed() {
         try {
           aSocket.close();
+          mySockets.remove(theId);
         } catch ( IOException e ) {
           LOGGER.error( "Could not close socket", e );
         } 
       }
     });
-    return myPool.add( theSplitter );
+    
+    mySockets.put( theId, aSocket );
+    return theId;
+    
   }
 
   public String send(String anId, String aHost, int aPort, String aMessage) throws IOException{
@@ -154,5 +163,10 @@ public class StreamSplittingServer implements iSocketSender{
         notifyStopped();
       }
     }
+  }
+
+  @Override
+  public Socket getSocket( String anId ) {
+    return mySockets.get(anId);
   }
 }

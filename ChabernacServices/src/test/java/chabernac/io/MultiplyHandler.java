@@ -14,7 +14,7 @@ public class MultiplyHandler implements iInputOutputHandler {
   }
 
   @Override
-  public String handle(String anInput) {
+  public String handle(String anId, String anInput) {
     return Integer.toString(Integer.parseInt(anInput) * myFactor);
   }
 

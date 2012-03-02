@@ -32,6 +32,8 @@ public class StreamSplitter {
   
   private List<iStreamListener> myStreamListeners = new ArrayList<iStreamListener>();
   
+  private String myId;
+  
   public StreamSplitter(InputStream aInputStream, OutputStream aOutputStream, iInputOutputHandler aInputOutputHandler) {
     super();
     myInputOutputHandler = aInputOutputHandler;
@@ -84,8 +86,16 @@ public class StreamSplitter {
     myOutputStream.flush();
   }
   
+  public String getId() {
+    return myId;
+  }
+
+  public void setId( String aId ) {
+    myId = aId;
+  }
+
   public void handleInput(String anInput){
-    String theOutput = myInputOutputHandler.handle(anInput);
+    String theOutput = myInputOutputHandler.handle(myId, anInput);
     sendWithoutReply(OUT + theOutput);
   }
   
