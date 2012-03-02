@@ -14,7 +14,7 @@ public class IPAddress {
   public static enum IPClass{ A, B, C, UNKNOWN};
   private final int[] myParts = new int[4];
   private int myNetworkPrefixLength = -1;
-  private final Pattern myPattern = Pattern.compile( "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})(?:/(\\d{1,2}))?" );
+  private final static Pattern PATTERN = Pattern.compile( "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})(?:/(\\d{1,2}))?" );
 
   public static IPAddress getLocalIPAddress() throws InvalidIpAddressException{
     try{
@@ -26,13 +26,17 @@ public class IPAddress {
     }
   }
   
+  public static boolean isIpAddress(String aString){
+    return PATTERN.matcher( aString ).matches();
+  }
+  
   public IPAddress(String aString) throws InvalidIpAddressException{
     createParts(aString);
     determineNetworkPrefixLength();
   }
 
   private void createParts(String aString) throws InvalidIpAddressException{
-    Matcher theMatcher = myPattern.matcher( aString );
+    Matcher theMatcher = PATTERN.matcher( aString );
     if(!theMatcher.matches()) throw new InvalidIpAddressException("This is not a valid ip address '" + aString + "'");
     
     for(int i=0;i<4;i++)
