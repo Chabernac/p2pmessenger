@@ -142,14 +142,17 @@ public class SocketPeer extends AbstractPeer implements Serializable {
           theExecutorService.execute( new Runnable(){
             public void run(){
               try{
-                IPAddress theIPAddress = new IPAddress(theIp);
-                theSocketQueue.put( theSocketPool.checkOut(new InetSocketAddress(theIPAddress.getIPAddressOnly(), aPort)));
+                String theHostIP = theIp;
+                if(IPAddress.isIpAddress( theIp )){
+                  theHostIP = new IPAddress(theIp).getIPAddressOnly();
+                }
+                theSocketQueue.put( theSocketPool.checkOut(new InetSocketAddress(theHostIP, aPort)));
                 synchronized(this){
                   myHost.remove( theHost ); 
                   myHost.add( 0, theHost);
                 }
               }catch(Exception e){
-                LOGGER.error( "Error while checking out socket", e );
+                LOGGER.error( "Error while checking out socket for ip '" + theIp + "'", e );
               }
               theCountDownLatch.countDown();
               if(theCountDownLatch.getCount() == 0){

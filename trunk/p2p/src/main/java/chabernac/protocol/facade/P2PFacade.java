@@ -820,8 +820,9 @@ public class P2PFacade {
         
         InputOutputProtocolAdapter theAdaptor = new InputOutputProtocolAdapter( myContainer );
         StreamSplittingServer theServer = new StreamSplittingServer( 
-            new InputOutputProtocolAdapter( myContainer ), RoutingProtocol.START_PORT, true, theRoutingProtocol.getLocalPeerId() );
+            theAdaptor, RoutingProtocol.START_PORT, true, theRoutingProtocol.getLocalPeerId() );
         theAdaptor.setStreamSplittingServer( theServer );
+        
         theServer.addListener( new StreamSplittingServerListener( myContainer ) );
         myProtocolServers.add(new P2PServerSplittingServerAdapter(theServer));
         theRoutingProtocol.setRoutingTableInspector( new SocketRoutingTableInspector(myContainer.getSessionData() ) );

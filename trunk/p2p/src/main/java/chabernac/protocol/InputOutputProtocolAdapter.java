@@ -24,7 +24,9 @@ public class InputOutputProtocolAdapter implements iInputOutputHandler{
   @Override
   public String handle(String anId, String anInput) {
     String theSessionId = UUID.randomUUID().toString();
-    mySessionData.putProperty( theSessionId, ProtocolServer.REMOTE_IP, myStreamSplittingServer.getSocket( anId ).getInetAddress().getHostAddress() );
+    if(anId != null){
+      mySessionData.putProperty( theSessionId, ProtocolServer.REMOTE_IP, myStreamSplittingServer.getSocket( anId ).getInetAddress().getHostAddress() );
+    }
     return myProtocol.handleCommand(theSessionId, anInput);
   }
 
@@ -32,6 +34,4 @@ public class InputOutputProtocolAdapter implements iInputOutputHandler{
   public void close() {
     myProtocol.stop();
   }
-  
-  
 }

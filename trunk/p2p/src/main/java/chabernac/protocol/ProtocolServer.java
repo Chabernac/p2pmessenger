@@ -23,7 +23,6 @@ import org.apache.log4j.Logger;
 import chabernac.io.StreamSplitter;
 import chabernac.protocol.ServerInfo.Type;
 import chabernac.thread.DynamicSizeExecutor;
-import chabernac.tools.PropertyMap;
 import chabernac.util.concurrent.MonitorrableRunnable;
 import chabernac.util.concurrent.iRunnableListener;
 import chabernac.utils.NetTools;
@@ -198,12 +197,9 @@ public class ProtocolServer implements Runnable, iP2PServer{
 
   private class ClientSocketHandler extends MonitorrableRunnable{
     private final Socket mySocket;
-    private final PropertyMap myProperties;
     
     public ClientSocketHandler(Socket aSocket){
       mySocket = aSocket;
-      myProperties = new PropertyMap();
-      myProperties.put(REMOTE_IP, mySocket.getInetAddress().getHostAddress() );
     }
 
     public void doRun(){
@@ -220,10 +216,10 @@ public class ProtocolServer implements Runnable, iP2PServer{
           //the following line is just to ease the transition to using the stream splitter
           if(theLine.startsWith( StreamSplitter.IN )) theLine = theLine.substring( StreamSplitter.IN.length() );
           String theSession = UUID.randomUUID().toString();
-          myProtocol.getSessionData().putProperty( theSession, REMOTE_IP, mySocket );
+          myProtocol.getSessionData().putProperty( theSession, REMOTE_IP, mySocket.getInetAddress().getHostAddress() );
           String  theResult = myProtocol.handleCommand(theSession, theLine );
           //          LOGGER.debug("Sending result: '" + theResult + "'");
-          myProtocol.getSessionData().removeProperty( theSession, REMOTE_IP );
+          myProtocol.getSessionData().clearSessionData( theSession );
           theWriter.println( theResult );
           theWriter.flush();
         }

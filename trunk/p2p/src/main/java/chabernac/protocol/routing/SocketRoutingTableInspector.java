@@ -29,6 +29,7 @@ public class SocketRoutingTableInspector implements iRoutingTableInspector {
   public RoutingTable inspectRoutingTable( String aSessionId, RoutingTable aRoutingTable ) {
     String theRemoteIpAddress = (String)mySessionData.getProperty( aSessionId, ProtocolServer.REMOTE_IP );
     if(theRemoteIpAddress == null) return aRoutingTable;
+    if("127.0.0.1".equals( theRemoteIpAddress )) return aRoutingTable;
     
     IPAddress theRemoteIp;
     try{
