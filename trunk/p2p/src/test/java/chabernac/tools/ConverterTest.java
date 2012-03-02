@@ -30,15 +30,15 @@ public class ConverterTest extends TestCase {
   public void testToXML() throws UnknownPeerException, IOException{
     RoutingTable theTable = new RoutingTable("1");
 
-    SocketPeer thePeer = new SocketPeer("2", "x20d1148", 1002);
+    SocketPeer thePeer = new SocketPeer("2", 1002, "x20d1148");
     RoutingTableEntry theEntry = new RoutingTableEntry(thePeer, 1, thePeer, 123456);
     long theLastOnlineTime2 = theEntry.getLastOnlineTime();
 
-    SocketPeer thePeer2 = new SocketPeer("3", "x01p0880", 1003);
+    SocketPeer thePeer2 = new SocketPeer("3", 1003, "x01p0880");
     RoutingTableEntry theEntry2 = new RoutingTableEntry(thePeer2, 2, thePeer, 654321);
     long theLastOnlineTime3 = theEntry2.getLastOnlineTime();
 
-    SocketPeer thePeer3 = new SocketPeer("4", "x01p0880", 1003);
+    SocketPeer thePeer3 = new SocketPeer("4", 1003, "x01p0880");
     RoutingTableEntry theEntry3 = new RoutingTableEntry(thePeer3, 1, thePeer3, 654321);
     
     WebPeer thePeer4 = new WebPeer("5", new URL("http://localhost:8080"));
@@ -61,19 +61,19 @@ public class ConverterTest extends TestCase {
 
     assertEquals(4, theTable2.getEntries().size());
 
-    assertEquals("x20d1148", ((SocketPeer)theTable2.getEntryForPeer( "2" ).getPeer()).getHosts().get( 0 ).getIp().get( 0 ));
+    assertEquals("x20d1148", ((SocketPeer)theTable2.getEntryForPeer( "2" ).getPeer()).getHosts().get( 0 ).getIp()[0]);
     assertEquals(1002, ((SocketPeer)theTable2.getEntryForPeer( "2" ).getPeer()).getPort());
     assertEquals("2", theTable2.getEntryForPeer( "2" ).getPeer().getPeerId());
     assertEquals(theLastOnlineTime2, theTable2.getEntryForPeer( "2" ).getLastOnlineTime());
     assertEquals(1, theTable2.getEntryForPeer( "2" ).getHopDistance());
 
-    assertEquals("x01p0880", ((SocketPeer)theTable2.getEntryForPeer( "3" ).getPeer()).getHosts().get( 0 ).getIp().get( 0 ));
+    assertEquals("x01p0880", ((SocketPeer)theTable2.getEntryForPeer( "3" ).getPeer()).getHosts().get( 0 ).getIp()[0]);
     assertEquals(1003, ((SocketPeer)theTable2.getEntryForPeer( "3" ).getPeer()).getPort());
     assertEquals("3", theTable2.getEntryForPeer( "3" ).getPeer().getPeerId());
     assertEquals(theLastOnlineTime3, theTable2.getEntryForPeer( "3" ).getLastOnlineTime());
     assertEquals(2, theTable2.getEntryForPeer( "3" ).getHopDistance());
 
-    assertEquals("x01p0880", ((SocketPeer)theTable2.getEntryForPeer( "4" ).getPeer()).getHosts().get( 0 ).getIp().get( 0 ));
+    assertEquals("x01p0880", ((SocketPeer)theTable2.getEntryForPeer( "4" ).getPeer()).getHosts().get( 0 ).getIp()[0]);
     assertEquals(1003, ((SocketPeer)theTable2.getEntryForPeer( "4" ).getPeer()).getPort());
     assertEquals("4", theTable2.getEntryForPeer( "4" ).getPeer().getPeerId());
     assertEquals(theLastOnlineTime4, theTable2.getEntryForPeer( "4" ).getLastOnlineTime());
@@ -90,7 +90,7 @@ public class ConverterTest extends TestCase {
   public void testPeerEntryToXML() throws IOException{
 
 
-    SocketPeer thePeer = new SocketPeer("2", "x20d1148", 1002);
+    SocketPeer thePeer = new SocketPeer("2", 1002, "x20d1148");
     RoutingTableEntry theEntry = new RoutingTableEntry(thePeer, 1, thePeer,123456);
     RoutingTableEntry theEntry2 = myRoutingTableEntryConverter.getObject( myRoutingTableEntryConverter.toString( theEntry ));
     assertEquals( theEntry.getPeer().getPeerId(), theEntry2.getPeer().getPeerId()); 

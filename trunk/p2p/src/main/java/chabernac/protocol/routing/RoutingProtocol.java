@@ -318,7 +318,7 @@ public class RoutingProtocol extends Protocol {
 	private boolean isAlreadyRunning(AbstractPeer aPeer) {
 		LOGGER.debug("Checking if we're already running");
 		try{
-			String theResponse = getPeerSender().send( aPeer, createMessage( Command.WHO_ARE_YOU.name() )).getReply();
+			String theResponse = getPeerSender().send( aPeer, createMessage( Command.WHO_ARE_YOU.name() ));
 			AbstractPeer theRemotePeer = myPeerConverter.getObject( theResponse );
 			return theRemotePeer.getPeerId().equals( aPeer.getPeerId() );
 		}catch(Exception e){
@@ -494,7 +494,7 @@ public class RoutingProtocol extends Protocol {
 	boolean contactPeer(AbstractPeer aPeer, List<String> anUnreachablePeers, boolean isRequestTableWhenPeerFound){
 		try{
 			LOGGER.debug("Sending message to '" + aPeer.getEndPointRepresentation() );
-			String theResponse = getPeerSender().send( aPeer, createMessage( Command.WHO_ARE_YOU.name() )).getReply();
+			String theResponse = getPeerSender().send( aPeer, createMessage( Command.WHO_ARE_YOU.name() ));
 			AbstractPeer theRemotePeer = myPeerConverter.getObject( theResponse );
 
 			if(anUnreachablePeers == null || !anUnreachablePeers.contains( theRemotePeer.getPeerId() )){
@@ -530,10 +530,8 @@ public class RoutingProtocol extends Protocol {
 		//    try{
 		LOGGER.debug( "Scanning local system" );
 		//      List<String> theLocalHosts = NetTools.getLocalExposedIpAddresses();
-		List<String> theLocalHosts = new ArrayList<String>();
-		theLocalHosts.add("localhost");
 		for(int i=START_PORT;i<=END_PORT;i++){
-			getExecutorService().execute( new ScanSystem(this, theLocalHosts, i, myUnreachablePeers));
+			getExecutorService().execute( new ScanSystem(this, i, myUnreachablePeers, "localhost"));
 		}
 		//    }catch(SocketException e){
 		//      LOGGER.error( "Could not get local ip addressed", e );
@@ -596,7 +594,7 @@ public class RoutingProtocol extends Protocol {
 		try{
 			InetAddresIterator theIterator = new InetAddresIterator(InetAddress.getLocalHost(), 24);
 			while(myRoutingTable.getNrOfReachablePeers() <= MIN_PEERS_REQUIRED_FOR_SKIP && theIterator.hasNext()){
-				ScanSystem theScanSystem = new ScanSystem(this, theIterator.next(), START_PORT);
+				ScanSystem theScanSystem = new ScanSystem(this, START_PORT, theIterator.next());
 				theScanSystem.setCondition( new NrOfPeersSmallerThenCondition(myRoutingTable, 1) );
 				getExecutorService().execute( theScanSystem );
 			}
@@ -630,7 +628,7 @@ public class RoutingProtocol extends Protocol {
 					if(theIp.startsWith("http:")){
 						getExecutorService().execute( new ScanWebSystem(RoutingProtocol.this, new URL(theIp)));
 					} else {
-						getExecutorService().execute( new ScanSystem(RoutingProtocol.this, theIp, START_PORT, myUnreachablePeers));
+						getExecutorService().execute( new ScanSystem(RoutingProtocol.this, START_PORT, myUnreachablePeers, theIp));
 					}
 				}
 			}
@@ -695,7 +693,7 @@ public class RoutingProtocol extends Protocol {
 				LOGGER.debug("Sending announcement to peer '" + thePeer.getPeerId() + "'");
 
 				String theCMD = createMessage( Command.ANNOUNCEMENT_WITH_REPLY.name() + " "  + myRoutingTableEntryConverter.toString( myRoutingTable.getEntryForLocalPeer() ));
-				String theTable = getPeerSender().send(thePeer, theCMD).getReply();
+				String theTable = getPeerSender().send(thePeer, theCMD);
 				//          String theTable = thePeer.send( createMessage( Command.REQUEST_TABLE.name() ));
 				RoutingTable theRemoteTable = myRoutingTableConverter.getObject( theTable );
 
@@ -759,7 +757,7 @@ public class RoutingProtocol extends Protocol {
 					!myUnreachablePeers.contains(thePeer.getPeerId())){
 				try {
 					LOGGER.debug("Sending announcement of peer '" + anEntry.getPeer().getPeerId() +  "' from peer '" + myLocalPeerId +  "' to peer '" + thePeer.getPeerId() + "' on '" + thePeer.getEndPointRepresentation() + "'");
-					String theResult = getPeerSender().send( thePeer, createMessage( Command.ANNOUNCEMENT.name() + " "  + myRoutingTableEntryConverter.toString( myRoutingTable.getEntryForLocalPeer()) + ";" + myRoutingTableEntryConverter.toString( anEntry ))).getReply() ;
+					String theResult = getPeerSender().send( thePeer, createMessage( Command.ANNOUNCEMENT.name() + " "  + myRoutingTableEntryConverter.toString( myRoutingTable.getEntryForLocalPeer()) + ";" + myRoutingTableEntryConverter.toString( anEntry ))) ;
 					if(!Response.OK.name().equals( theResult )){
 						throw new Exception("Unexpected result code '" + theResult + "'");
 					}

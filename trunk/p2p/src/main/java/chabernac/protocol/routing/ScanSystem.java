@@ -4,7 +4,6 @@
  */
 package chabernac.protocol.routing;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -15,7 +14,7 @@ import chabernac.utils.NamedRunnable;
 public class ScanSystem extends NamedRunnable{
   private static Logger LOGGER = Logger.getLogger(ScanSystem.class);
   
-  private List<String> myHosts;
+  private String[] myHosts;
   private int myPort;
   private List<String> myUnreachablePeers = null;
   private RoutingProtocol myRoutingProtocol = null;
@@ -23,21 +22,11 @@ public class ScanSystem extends NamedRunnable{
   //if not fullfilled skip the scan
   private iCondition myCondition = null;
 
-  public ScanSystem ( RoutingProtocol aProtocol, String aHosts, int anPort ){
-    this(aProtocol, aHosts, anPort, null);
+  public ScanSystem ( RoutingProtocol aProtocol, int anPort, String... aHosts ){
+    this(aProtocol, anPort, null, aHosts);
   }
 
-  public ScanSystem ( RoutingProtocol aProtocol, String aHosts, int anPort, List<String> anUnreachablePeers) {
-    super();
-    List<String> theList = new ArrayList< String >();
-    theList.add(aHosts);
-    myHosts = theList;
-    myPort = anPort;
-    myUnreachablePeers = anUnreachablePeers;
-    myRoutingProtocol = aProtocol;
-  }
-
-  public ScanSystem ( RoutingProtocol aProtocol, List<String> aHosts, int anPort, List<String> anUnreachablePeers) {
+  public ScanSystem ( RoutingProtocol aProtocol, int anPort, List<String> anUnreachablePeers, String... aHosts) {
     super();
     myHosts = aHosts;
     myPort = anPort;
@@ -48,8 +37,8 @@ public class ScanSystem extends NamedRunnable{
   @Override
   public void doRun() {
     if(myCondition == null || myCondition.isConditionFullFilled()){
-      LOGGER.debug( "Scanning system '" + new ArrayList< String >(myHosts) + "': '" + myPort + "'" );
-      SocketPeer thePeer = new SocketPeer(null, new SimpleNetworkInterface(myHosts), myPort);
+      LOGGER.debug( "Scanning system '" + myHosts + "': '" + myPort + "'" );
+      SocketPeer thePeer = new SocketPeer(null, SimpleNetworkInterface.createFromIpList( myHosts), myPort);
       if(myRoutingProtocol.getRoutingProtocolMonitor() != null) myRoutingProtocol.getRoutingProtocolMonitor().scanStarted( thePeer );
       boolean result = myRoutingProtocol.contactPeer( thePeer, myUnreachablePeers, true );
       if(result && myRoutingProtocol.getRoutingProtocolMonitor() != null) myRoutingProtocol.getRoutingProtocolMonitor().peerFoundWithScan( thePeer );

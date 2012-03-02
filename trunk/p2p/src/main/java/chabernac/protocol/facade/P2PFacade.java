@@ -67,13 +67,14 @@ import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.RoutingTable;
 import chabernac.protocol.routing.RoutingTableEntry;
 import chabernac.protocol.routing.SocketPeer;
+import chabernac.protocol.routing.SocketRoutingTableInspector;
 import chabernac.protocol.routing.WebPeerProtocol;
 import chabernac.protocol.userinfo.AutoUserInfoStatusDector;
 import chabernac.protocol.userinfo.UserInfo;
+import chabernac.protocol.userinfo.UserInfo.Status;
 import chabernac.protocol.userinfo.UserInfoProtocol;
 import chabernac.protocol.userinfo.iUserInfoListener;
 import chabernac.protocol.userinfo.iUserInfoProvider;
-import chabernac.protocol.userinfo.UserInfo.Status;
 import chabernac.protocol.version.Version;
 import chabernac.protocol.version.VersionProtocol;
 import chabernac.tools.PropertyMap;
@@ -812,13 +813,18 @@ public class P2PFacade {
 
       if(myServerMode == ServerMode.SOCKET) {
         myProtocolServers.add(new ProtocolServer(myContainer, RoutingProtocol.START_PORT, aNumberOfThreads, true));
+        theRoutingProtocol.setRoutingTableInspector( new SocketRoutingTableInspector(myContainer.getSessionData() ) );
       }
 
       if(myServerMode == ServerMode.SPLITTING_SOCKET || myServerMode == ServerMode.BOTH){
+        
+        InputOutputProtocolAdapter theAdaptor = new InputOutputProtocolAdapter( myContainer );
         StreamSplittingServer theServer = new StreamSplittingServer( 
             new InputOutputProtocolAdapter( myContainer ), RoutingProtocol.START_PORT, true, theRoutingProtocol.getLocalPeerId() );
+        theAdaptor.setStreamSplittingServer( theServer );
         theServer.addListener( new StreamSplittingServerListener( myContainer ) );
         myProtocolServers.add(new P2PServerSplittingServerAdapter(theServer));
+        theRoutingProtocol.setRoutingTableInspector( new SocketRoutingTableInspector(myContainer.getSessionData() ) );
       }
 
       for(iP2PServer theServer : myProtocolServers){

@@ -21,7 +21,7 @@ public class PeerSender extends AbstractPeerSender{
     myPeerToPeerSplitSender = aSocketSender == null ? null :  new PeerToPeerSplitSender(aSocketSender);
   }
   
-  protected PeerSenderReply doSend(PeerMessage aMessage, int aTimeoutInSeconds) throws IOException{
+  protected String doSend(PeerMessage aMessage, int aTimeoutInSeconds) throws IOException{
     try{
       AbstractPeer theFrom = myRoutingTable.getEntryForLocalPeer().getPeer();
       AbstractPeer theTo = aMessage.getPeer();

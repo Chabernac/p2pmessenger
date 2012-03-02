@@ -38,7 +38,7 @@ public class NetTools {
           theIpAddresses.add(theAddress.getHostAddress());
         }
         if(theIpAddresses.size() > 0){
-          theIpList.add( new SimpleNetworkInterface(theIpAddresses, theInterface.getHardwareAddress()) );
+          theIpList.add( new SimpleNetworkInterface(theInterface.getHardwareAddress(), theIpAddresses.toArray(new String[]{})) );
         }
       }
     }
@@ -56,7 +56,7 @@ public class NetTools {
           InetAddress theAddress = theAddresses.nextElement();
           theIpAddresses.add(theAddress.getHostAddress());
         }
-        return  new SimpleNetworkInterface(theIpAddresses, theInterface.getHardwareAddress());
+        return  new SimpleNetworkInterface(theInterface.getHardwareAddress(), theIpAddresses.toArray(new String[]{}));
       }
     }
     return null;

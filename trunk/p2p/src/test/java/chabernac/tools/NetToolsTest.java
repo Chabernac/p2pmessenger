@@ -32,6 +32,6 @@ public class NetToolsTest extends TestCase{
   public void testGetLoopbackInterface() throws SocketException{
     SimpleNetworkInterface theInterface = NetTools.getLoopBackInterface();
     assertNotNull( theInterface );
-    assertEquals( "127.0.0.1", theInterface.getIp().iterator().next());
+    assertEquals( "127.0.0.1", theInterface.getIp()[0]);
   }
 }

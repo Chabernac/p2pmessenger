@@ -12,14 +12,13 @@ import chabernac.io.AbstractURLConnectionHelper;
 import chabernac.io.URLConnectionHelper;
 import chabernac.protocol.ProtocolWebServer;
 import chabernac.protocol.routing.AbstractPeer;
-import chabernac.protocol.routing.PeerSenderReply;
 import chabernac.protocol.routing.WebPeer;
 
 public class PeerToWebSender {
   private static Logger LOGGER = Logger.getLogger(PeerToWebSender.class);
 //  private static int LOGCOUNTER = 0;
 
-  public PeerSenderReply sendMessageTo(AbstractPeer aSendingPeer, WebPeer aWebPeer, String aMessage, int aTimeoutInSeconds) throws IOException{
+  public String sendMessageTo(AbstractPeer aSendingPeer, WebPeer aWebPeer, String aMessage, int aTimeoutInSeconds) throws IOException{
     synchronized (aWebPeer.getPeerId()) {
 
 //      long t1 = System.currentTimeMillis();
@@ -44,7 +43,7 @@ public class PeerToWebSender {
 //        long t4 = System.currentTimeMillis();
 //        LOGGER.debug("Reading from '" + aWebPeer.getURL()  + "' took " + (t4-t3) +  " ms");
 
-        return new PeerSenderReply( theLine, null );
+        return theLine;
       }catch(IOException e){
         LOGGER.error("Could not send message to web peer at endpoint: '" + aWebPeer.getEndPointRepresentation() + "'", e);
         //LOGGER.error("Could not send message to web peer at endpoint: '" + aWebPeer.getEndPointRepresentation() + "'");

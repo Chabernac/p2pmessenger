@@ -25,7 +25,7 @@ public class RoutingTableTest extends TestCase {
   public void testRoutingTable() throws SocketException, NoAvailableNetworkAdapterException, UnknownPeerException{
     RoutingTable theTable = new RoutingTable("1");
 
-    SocketPeer thePeer = new SocketPeer("2", "localhost", 12800);
+    SocketPeer thePeer = new SocketPeer("2", 12800, "localhost");
     RoutingTableEntry theEntry = new RoutingTableEntry(thePeer, 1, thePeer, System.currentTimeMillis());
     RoutingTableEntry theEntry2 = new RoutingTableEntry(thePeer, 2, thePeer, System.currentTimeMillis());
 
@@ -37,10 +37,10 @@ public class RoutingTableTest extends TestCase {
     assertEquals( theEntry, theTable.getEntries().get( 0 ) );
 
     RoutingTable theTable2 = new RoutingTable("3");
-    SocketPeer thePeer4 = new SocketPeer("4", "x20d1148", 12801);
+    SocketPeer thePeer4 = new SocketPeer("4", 12801, "x20d1148");
     RoutingTableEntry theEntry4 = new RoutingTableEntry(thePeer4, 1, thePeer4, System.currentTimeMillis());
     theTable2.addRoutingTableEntry( theEntry4 );
-    SocketPeer thePeer3 = new SocketPeer("3", "x20d1148", 12802);
+    SocketPeer thePeer3 = new SocketPeer("3", 12802, "x20d1148");
     RoutingTableEntry theEntry3 = new RoutingTableEntry(thePeer3, 0, thePeer3, System.currentTimeMillis());
     theTable2.addRoutingTableEntry( theEntry3 );
 
@@ -58,7 +58,7 @@ public class RoutingTableTest extends TestCase {
   public void testRespondingEntry() throws UnknownPeerException{
     RoutingTable theTable = new RoutingTable("1");
 
-    SocketPeer thePeer = new SocketPeer("2", "localhost", 12800);
+    SocketPeer thePeer = new SocketPeer("2", 12800, "localhost");
     RoutingTableEntry theEntry = new RoutingTableEntry(thePeer, 1, thePeer, System.currentTimeMillis());
 
     RoutingTableEntry theEntry2 = new RoutingTableEntry(thePeer, RoutingTableEntry.MAX_HOP_DISTANCE, thePeer, System.currentTimeMillis());
@@ -75,7 +75,7 @@ public class RoutingTableTest extends TestCase {
     assertEquals(theEntry2, theTable.getEntries().get(0));
 
 
-    SocketPeer thePeer3 = new SocketPeer("3", "localhost", 12801);
+    SocketPeer thePeer3 = new SocketPeer("3", 12801, "localhost");
 
     RoutingTableEntry theEntry3 = new RoutingTableEntry(thePeer, 3, thePeer3, System.currentTimeMillis());
 
@@ -309,11 +309,11 @@ public class RoutingTableTest extends TestCase {
   
   public void testNrOfDirectRemoteNeighbours(){
     RoutingTable theTable = new RoutingTable("1");
-    theTable.addEntry(new RoutingTableEntry(new SocketPeer("2", "localhost", 12800)));
-    theTable.addEntry(new RoutingTableEntry(new SocketPeer("3", "127.0.0.1", 12801)));
-    theTable.addEntry(new RoutingTableEntry(new SocketPeer("4", "10.1.1.1", 12801), 2, new SocketPeer("4", "127.0.0.1", 12801), System.currentTimeMillis()));
-    theTable.addEntry(new RoutingTableEntry(new SocketPeer("5", "10.1.1.2", 12801), 2, new SocketPeer("5", "127.0.0.1", 12802), System.currentTimeMillis()));
-    theTable.addEntry(new RoutingTableEntry(new SocketPeer("6", "10.1.1.3", 12801), 1, new SocketPeer("6", "10.1.1.3", 12801), System.currentTimeMillis()));
+    theTable.addEntry(new RoutingTableEntry(new SocketPeer("2", 12800, "localhost")));
+    theTable.addEntry(new RoutingTableEntry(new SocketPeer("3", 12801, "127.0.0.1")));
+    theTable.addEntry(new RoutingTableEntry(new SocketPeer("4", 12801, "10.1.1.1"), 2, new SocketPeer("4", 12801, "127.0.0.1"), System.currentTimeMillis()));
+    theTable.addEntry(new RoutingTableEntry(new SocketPeer("5", 12801, "10.1.1.2"), 2, new SocketPeer("5", 12802, "127.0.0.1"), System.currentTimeMillis()));
+    theTable.addEntry(new RoutingTableEntry(new SocketPeer("6", 12801, "10.1.1.3"), 1, new SocketPeer("6", 12801, "10.1.1.3"), System.currentTimeMillis()));
     
     assertEquals(1, theTable.getNrOfDirectRemoteNeighbours());
     
