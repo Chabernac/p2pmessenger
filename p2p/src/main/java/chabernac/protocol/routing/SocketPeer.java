@@ -34,12 +34,21 @@ public class SocketPeer extends AbstractPeer implements Serializable {
   private int myPort;
   private boolean isStreamSplittingSupported = false;
 
-  private static List<String> myIpOrder = new ArrayList<String>();
-
   public SocketPeer (){
     super(null);
   }
 
+  public SocketPeer(SocketPeer aSocketPeer, List<SimpleNetworkInterface> aHosts){
+    super(aSocketPeer.getPeerId());
+    setChannel(aSocketPeer.getChannel());
+    setTemporaryPeer(aSocketPeer.isTemporaryPeer());
+    setTestPeer( aSocketPeer.isTestPeer() );
+    mySupportedProtocols.clear();
+    mySupportedProtocols.addAll(aSocketPeer.getSupportedProtocols());
+    myHost = aHosts;
+
+  }
+  
   public SocketPeer(String aPeerId, int aPort) throws NoAvailableNetworkAdapterException{
     super(aPeerId);
     myPort = aPort;
@@ -65,12 +74,8 @@ public class SocketPeer extends AbstractPeer implements Serializable {
     super(anPeerId);
   }
 
-  public SocketPeer ( String aPeerId , List< String > anHosts , int aPort ) {
-    this(aPeerId, new SimpleNetworkInterface(anHosts), aPort);
-  }
-
-  public SocketPeer ( String aPeerId , String anHosts , int aPort ) {
-    this(aPeerId, new SimpleNetworkInterface(anHosts, null), aPort);
+  public SocketPeer ( String aPeerId , int aPort, String... aHosts ) {
+    this(aPeerId, SimpleNetworkInterface.createFromIpList( aHosts ), aPort);
   }
 
   public synchronized void detectLocalInterfaces() throws NoAvailableNetworkAdapterException{

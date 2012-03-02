@@ -346,7 +346,7 @@ public class MessageProtocolTest extends AbstractProtocolTest {
       AbstractPeer thePeer1 = theRoutingTable1.getEntryForLocalPeer().getPeer();
       AbstractPeer thePeer2 = theRoutingTable2.getEntryForLocalPeer().getPeer();
 
-      SocketPeer thePeer3 = new SocketPeer("3","brol",124);
+      SocketPeer thePeer3 = new SocketPeer("3", 124, "brol");
       thePeer3.setChannel(thePeer1.getChannel());
 
       theRoutingTable1.addRoutingTableEntry(new RoutingTableEntry(thePeer3, 2, thePeer2, System.currentTimeMillis()));

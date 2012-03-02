@@ -12,7 +12,6 @@ import org.apache.log4j.Logger;
 import chabernac.comet.CometEvent;
 import chabernac.newcomet.EndPoint2;
 import chabernac.protocol.routing.AbstractPeer;
-import chabernac.protocol.routing.PeerSenderReply;
 import chabernac.protocol.routing.WebPeer;
 
 public class WebToPeerSender {
@@ -21,7 +20,7 @@ public class WebToPeerSender {
 
   //TODO currently only 1 endpoint is allowed, so we make this method synchronized because otherwise
   //it might be that no endpoint is available
-  public synchronized PeerSenderReply sendMessageTo(WebPeer aSendingPeer, AbstractPeer aPeer, String aMessage, int aTimeoutInSeconds) throws IOException{
+  public synchronized String sendMessageTo(WebPeer aSendingPeer, AbstractPeer aPeer, String aMessage, int aTimeoutInSeconds) throws IOException{
     if(aSendingPeer.getEndPointContainer() == null) throw new IOException("No endpoints available in webpeer '" + aSendingPeer.getPeerId() + "'");
     
     try{
@@ -34,8 +33,7 @@ public class WebToPeerSender {
       theCometEvent.setPendingEvents( thePendingMessages - 1);
       LOGGER.debug("Setting event '" + theCometEvent.getId() + "' for end point '" + theEndPoint.getId() + "' endpointactive '" + theEndPoint.isActive() + "'");
       theEndPoint.addCometEvent(theCometEvent );
-      String theOutput = theCometEvent.getOutput(5000).replaceAll("\\{plus\\}", "+");
-      return new PeerSenderReply(theOutput, null);
+      return theCometEvent.getOutput(5000).replaceAll("\\{plus\\}", "+");
     }catch(Exception e){
       throw new IOException("Could not send message to peer '" + aPeer.getPeerId() + "' from webpeer '" + aSendingPeer.getPeerId() + "'", e);
     }finally{

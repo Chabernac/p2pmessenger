@@ -5,45 +5,33 @@
 package chabernac.tools;
 
 import java.io.Serializable;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Formatter;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Locale;
 
 public class SimpleNetworkInterface implements Serializable{
   private static final long serialVersionUID = -2887291844821748090L;
   
-  private final List<String> myIp;
+  private final String[] myIp;
   private final String myMACAddress;
   
-  public SimpleNetworkInterface ( String anIp ){
-    this(anIp, null);
-  }
-  
-  public SimpleNetworkInterface ( String anIp , byte[] aMacAddress ) {
-    myIp = new ArrayList< String >();
-    myIp.add(anIp);
-    myMACAddress = getMACString( aMacAddress ); 
-  }
-  
-  public SimpleNetworkInterface ( List< String > anIp , byte[] aMacAddress ) {
+  public SimpleNetworkInterface ( byte[] aMacAddress, String... anIp ) {
     super();
     myIp = anIp;
     myMACAddress = getMACString( aMacAddress );
   }
   
-  public SimpleNetworkInterface ( List< String > anIp, String aMacAddress ) {
+  public SimpleNetworkInterface ( String aMacAddress , String...anIp ) {
     super();
     myIp = anIp;
     myMACAddress = aMacAddress;
   }
   
-  public SimpleNetworkInterface ( List< String > anIp ) {
-    this(anIp, (String)null);
+  public static SimpleNetworkInterface createFromIpList(String... anIpList){
+    return new SimpleNetworkInterface( (String)null, anIpList );
   }
 
-  public List< String > getIp() {
+  public String[] getIp() {
     return myIp;
   }
 
@@ -65,9 +53,9 @@ public class SimpleNetworkInterface implements Serializable{
     theBuilder.append( myMACAddress );
     
     theBuilder.append ( ": ");
-    for(Iterator<String> i = myIp.iterator();i.hasNext();){
-      theBuilder.append ( i.next() );
-      if(i.hasNext()) theBuilder.append ( ", ");
+    for(String theIp: myIp){
+      theBuilder.append(theIp);
+      theBuilder.append(", ");
     }
     return theBuilder.toString();
   }
@@ -80,7 +68,7 @@ public class SimpleNetworkInterface implements Serializable{
     } else {
       //compare ip addresses
       for(String theIp : myIp){
-        if(theInterface.getIp().contains( theIp )){
+        if(Arrays.binarySearch( theInterface.getIp(), theIp ) >= 0){
           return true;
         }
       }

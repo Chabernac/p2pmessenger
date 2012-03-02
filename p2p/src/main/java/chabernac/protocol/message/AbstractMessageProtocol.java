@@ -92,7 +92,7 @@ public abstract class AbstractMessageProtocol extends Protocol {
         aMessage.setLocked( true );
         String theText = myMessageConverter.toString( aMessage );
         aMessage.setLocked( false );
-        return getPeerSender().send(theGateway, createMessage( theText ), aMessage.getMessageTimeoutInSeconds()).getReply();
+        return getPeerSender().send(theGateway, createMessage( theText ), aMessage.getMessageTimeoutInSeconds());
       } else {
         //TODO we should not come in this situation
         LOGGER.error("Peer with id: '" + theGateway.getPeerId() + "' has same host and port as local peer: '" + theLocalPeer.getPeerId() + "'");
