@@ -66,28 +66,6 @@ public class IPAddressTest extends TestCase {
     System.out.println(IPAddress.getLocalIPAddress());
   }
   
-  public void testCreateInetAddress() throws IOException, InterruptedException{
-    final CountDownLatch theLatch = new CountDownLatch( 1 );
-    final ServerSocket theServerSocket = new ServerSocket( 9999 );
-    ExecutorService theService =  Executors.newCachedThreadPool();
-    theService.execute( new Runnable(){
-      public void run(){
-        try {
-          theServerSocket.accept();
-          theLatch.countDown();
-        } catch ( IOException e ) {
-        }
-      }
-    });
-    InetSocketAddress theSocketAddress = new InetSocketAddress( "127.0.0.1/24", 9999 );
-    Socket theSocket = new Socket();
-    theSocket.connect( theSocketAddress );
-    
-    theLatch.await( 5, TimeUnit.SECONDS );
-    assertEquals( 0, theLatch.getCount() );
-    theServerSocket.close();
-  }
-
   public void testPattern(){
     Pattern thePattern = Pattern.compile( "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})(?:/(\\d{1,2}))?" );
     assertTrue( thePattern.matcher( "192.168.1.150"  ).matches());
