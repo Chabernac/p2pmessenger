@@ -5,6 +5,7 @@
 package chabernac.io;
 
 import java.io.IOException;
+import java.net.Socket;
 
 public interface iSocketSender {
   
@@ -14,4 +15,5 @@ public interface iSocketSender {
    * anId: the id of the receiving host 
    */
   public String send(String anId, String aHost, int aPort, String aMessage) throws IOException;
+  public Socket getSocket(String anId);
 }

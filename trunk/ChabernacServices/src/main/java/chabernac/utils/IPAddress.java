@@ -98,8 +98,12 @@ public class IPAddress {
     return getBitRepresentation().substring( getNetworkPrefixLength() );
   }
   
-  public String toString(){
-    return myParts[0] + "." + myParts[1] + "." + myParts[2] + "." + myParts[3] + "/" + getNetworkPrefixLength();
+  public String getIpAddressWithNetworkPrefixLength(){
+    return getIPAddressOnly() + "/" + getNetworkPrefixLength();
+  }
+  
+  public String getIPAddressOnly(){
+    return myParts[0] + "." + myParts[1] + "." + myParts[2] + "." + myParts[3];
   }
   
   public boolean isOnSameNetwork(IPAddress anAddress){
