@@ -26,17 +26,18 @@ public class StreamSplittingServer implements iSocketSender{
   private final int myPort;
   private final boolean isFindUnusedPort;
   private ServerSocket myServerSocket;
-  private final StreamSplitterPool myPool;
+  private StreamSplitterPool myPool;
   private boolean isRunning = false;
   private List<iStreamSplittingServerListener> myListeners = new ArrayList< iStreamSplittingServerListener >();
   private Map<String, Socket> mySockets = new HashMap<String, Socket>();
+  private final String myId;
 
   public StreamSplittingServer ( iInputOutputHandler aInputOutputHandler, int aPort, boolean isFindUnusedPort, String anId ) {
     super();
     myInputOutputHandler = aInputOutputHandler;
     myPort = aPort;
     this.isFindUnusedPort = isFindUnusedPort;
-    myPool = new StreamSplitterPool( anId );
+    myId = anId;
   }
 
   public void addListener(iStreamSplittingServerListener aListener){
@@ -63,6 +64,7 @@ public class StreamSplittingServer implements iSocketSender{
     if(isRunning) return false;
     isRunning = true;
     myExecutorService = new DynamicSizeExecutor( 1, 128);
+    myPool = new StreamSplitterPool(myId, myExecutorService);
     myExecutorService.execute( new ServerThread(myExecutorService) );
     return true;
   }
@@ -117,6 +119,10 @@ public class StreamSplittingServer implements iSocketSender{
   }
 
   public String send(String anId, String aHost, int aPort, String aMessage) throws IOException{
+    if(anId != null && anId.equals(myPool.getId())){
+      return myInputOutputHandler.handle(anId, aMessage);
+    }
+    
     String theLock = anId;
     if(theLock == null) theLock = aHost + ":" + aPort;
 
@@ -153,8 +159,12 @@ public class StreamSplittingServer implements iSocketSender{
         notifyStarted();
 
         while(myExecutorService == myCurrentExecutorService){
+          try{
           Socket theSocket = myServerSocket.accept();
           addSocket( theSocket );
+          }catch(Exception e){
+            LOGGER.error("Could not add server socket", e);
+          }
         }
       }catch(Exception e){
         LOGGER.error("Error occured in server thread", e);

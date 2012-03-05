@@ -28,8 +28,6 @@ public class StreamSplitter {
   
   private final ArrayBlockingQueue<String> myOutputQueue = new ArrayBlockingQueue<String>(128);
   
-  private ExecutorService myExecutorService = null;
-  
   private List<iStreamListener> myStreamListeners = new ArrayList<iStreamListener>();
   
   private String myId;
@@ -57,14 +55,13 @@ public class StreamSplitter {
       myInputStream.close();
     } catch (IOException e) {
     }
-    myExecutorService.shutdownNow();
   }
 
   public String send(String anInput) throws InterruptedException{
-    System.out.println("SENDING INPUT: '" + anInput + "'");
+//    System.out.println("SENDING INPUT: '" + anInput + "'");
     sendWithoutReply(IN + anInput);
     String theReply = myOutputQueue.take();
-    System.out.println("RETURNING OUTPUT: '" + theReply + "'");
+//    System.out.println("RETURNING OUTPUT: '" + theReply + "'");
     return theReply;
   }
   
@@ -72,13 +69,8 @@ public class StreamSplitter {
     return myInputStream.readLine();
   }
   
-  public void startSplitting(){
-    myExecutorService = Executors.newSingleThreadExecutor();
-    myExecutorService.execute(new InputHandler());
-  }
-  
-  public void stopSplitting(){
-    if(myExecutorService != null) myExecutorService.shutdownNow();
+  public void startSplitting(ExecutorService anExecutorService){
+    anExecutorService.execute(new InputHandler());
   }
   
   public void sendWithoutReply(String anInput){
@@ -105,11 +97,11 @@ public class StreamSplitter {
       try{
       while((theLine = myInputStream.readLine()) != null){
         if(theLine.startsWith(IN)){
-          System.out.println("INPUT RECEIVED: '" + theLine + "'");
+//          System.out.println("INPUT RECEIVED: '" + theLine + "'");
           String theInput = theLine.substring(IN.length());
           handleInput(theInput);
         } else {
-          System.out.println("OUTPUT RECEIVED: '" + theLine + "'");
+//          System.out.println("OUTPUT RECEIVED: '" + theLine + "'");
           String theResponse = theLine;
           if(theResponse.startsWith(OUT)) theResponse = theResponse.substring(OUT.length());
           myOutputQueue.put(theResponse);

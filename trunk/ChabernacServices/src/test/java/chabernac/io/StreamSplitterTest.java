@@ -48,7 +48,7 @@ public class StreamSplitterTest extends TestCase {
     final StreamListener theListener1 = new StreamListener(theCloseLatch1);
     final StreamListener theListener2 = new StreamListener(theCloseLatch2);
     
-    ExecutorService theService =  Executors.newFixedThreadPool(2);
+    final ExecutorService theService =  Executors.newCachedThreadPool();
     theService.execute(new Runnable(){
       public void run(){
         try{
@@ -57,7 +57,7 @@ public class StreamSplitterTest extends TestCase {
           theSplitter.addStreamListener(theListener1);
           theSplitter.sendWithoutReply("test1");
           assertEquals("test2", theSplitter.readLine());
-          theSplitter.startSplitting();
+          theSplitter.startSplitting(theService);
           testStreamSplitter(theSplitter, runs, theFactor2, theLatch1);
           theLatch1.await(5, TimeUnit.SECONDS);
           theLatch2.await(5, TimeUnit.SECONDS);
@@ -76,7 +76,7 @@ public class StreamSplitterTest extends TestCase {
           theSplitter.addStreamListener(theListener2);
           theSplitter.sendWithoutReply("test2");
           assertEquals("test1", theSplitter.readLine());
-          theSplitter.startSplitting();
+          theSplitter.startSplitting(theService);
           testStreamSplitter(theSplitter, runs, theFactor1, theLatch2);
           theLatch1.await(5, TimeUnit.SECONDS);
           theLatch2.await(5, TimeUnit.SECONDS);

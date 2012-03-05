@@ -46,10 +46,11 @@ public class StreamSplitterPoolTest extends TestCase {
     final CountDownLatch theLatch1 = new CountDownLatch(runs);
     final CountDownLatch theLatch2 = new CountDownLatch(runs);
     
-    final StreamSplitterPool thePool1 = new StreamSplitterPool( "1" );
-    final StreamSplitterPool thePool2 = new StreamSplitterPool( "2" );
+    ExecutorService theService = Executors.newCachedThreadPool();
     
-    ExecutorService theService =  Executors.newFixedThreadPool(2);
+    final StreamSplitterPool thePool1 = new StreamSplitterPool( "1", theService );
+    final StreamSplitterPool thePool2 = new StreamSplitterPool( "2", theService );
+    
     theService.execute(new Runnable(){
       public void run(){
         try{
