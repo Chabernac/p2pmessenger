@@ -181,7 +181,7 @@ public class AsyncMessageProcotol extends AbstractMessageProtocol {
       return inspectResult( theResponse );
     } catch ( InterruptedException e ) {
       LOGGER.error("Could not wait for response", e);
-      return null;
+      throw new MessageException("Could not get response", e);
     } finally {
       myStatusQueues.remove( aMessageId );
     }
