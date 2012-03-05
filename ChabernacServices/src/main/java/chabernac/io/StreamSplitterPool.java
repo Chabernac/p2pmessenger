@@ -8,18 +8,26 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
 
 import org.apache.log4j.Logger;
 
 public class StreamSplitterPool {
+  public final static String ID_PREFIX = "ID:";
   private static Logger LOGGER = Logger.getLogger(StreamSplitterPool.class);
+  
   protected final Map< String, StreamSplitter > myStreamSplitters = new HashMap< String, StreamSplitter >();
   protected final String myId;
-  public final static String ID_PREFIX = "ID:";
+  private final ExecutorService myExecutorService;
   
-  public StreamSplitterPool ( String aId ) {
+  public StreamSplitterPool ( String aId, ExecutorService anExecutorService ) {
     super();
     myId = aId;
+    myExecutorService = anExecutorService;
+  }
+  
+  public String getId(){
+    return myId;
   }
   
   public String add(StreamSplitter aSplitter) throws IOException{
@@ -30,14 +38,18 @@ public class StreamSplitterPool {
     if(theRemoteId != null && theRemoteId.startsWith(ID_PREFIX)){
       theRemoteId = theRemoteId.substring(ID_PREFIX.length());
       aSplitter.setId( theRemoteId );
+      if(myId.equals(theRemoteId)){
+        throw new IOException("The stream that is being added has the same id as the local id, this is not allowed");
+      }
       if(!addStreamSplitter( theRemoteId, aSplitter )){
+//        throw new IOException("The pool already contains a splitter for id '" + theRemoteId + "', this splitter is ignored");
         LOGGER.debug("The pool already contains a splitter for id '" + theRemoteId + "', this splitter is ignored");
         return theRemoteId;
       }
     } else {
       aSplitter.handleInput(theRemoteId);
     }
-    aSplitter.startSplitting();
+    aSplitter.startSplitting(myExecutorService);
     return theRemoteId;
   }
   

@@ -21,7 +21,7 @@ public class URLConnectionHelperTest extends TestCase {
   }
 
   public void testURLConnectionManager() throws IOException{
-    int theTimes = 224;
+    int theTimes = 24;
     for(int i=0;i<theTimes;i++){
       System.out.println(theTimes);
       readFromURL( "http://www.axa.be/" );
