@@ -32,7 +32,7 @@ public class SocketPeer extends AbstractPeer implements Serializable {
   private static final long serialVersionUID = 7852961137229337616L;
   private List<SimpleNetworkInterface> myHost = null;
   private int myPort;
-  private boolean isStreamSplittingSupported = false;
+  private boolean isStreamSplittingSupported = true;
 
   public SocketPeer (){
     super(null);

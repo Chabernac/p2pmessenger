@@ -55,7 +55,7 @@ public class P2PFacadeTest extends TestCase {
   }
   
   private ServerMode getSocketServerMode(){
-    return ServerMode.SOCKET;
+    return ServerMode.SPLITTING_SOCKET;
   }
   
 
