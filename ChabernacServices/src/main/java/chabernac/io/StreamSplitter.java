@@ -58,10 +58,10 @@ public class StreamSplitter {
   }
 
   public String send(String anInput) throws InterruptedException{
-//    System.out.println("SENDING INPUT: '" + anInput + "'");
+    System.out.println(myId + ":SENDING INPUT: '" + anInput + "'");
     sendWithoutReply(IN + anInput);
     String theReply = myOutputQueue.take();
-//    System.out.println("RETURNING OUTPUT: '" + theReply + "'");
+    System.out.println(myId + ":RETURNING OUTPUT: '" + theReply + "'");
     return theReply;
   }
   
@@ -97,11 +97,11 @@ public class StreamSplitter {
       try{
       while((theLine = myInputStream.readLine()) != null){
         if(theLine.startsWith(IN)){
-//          System.out.println("INPUT RECEIVED: '" + theLine + "'");
+          System.out.println(myId +  ":INPUT RECEIVED: '" + theLine + "'");
           String theInput = theLine.substring(IN.length());
           handleInput(theInput);
         } else {
-//          System.out.println("OUTPUT RECEIVED: '" + theLine + "'");
+          System.out.println(myId + ":OUTPUT RECEIVED: '" + theLine + "'");
           String theResponse = theLine;
           if(theResponse.startsWith(OUT)) theResponse = theResponse.substring(OUT.length());
           myOutputQueue.put(theResponse);
