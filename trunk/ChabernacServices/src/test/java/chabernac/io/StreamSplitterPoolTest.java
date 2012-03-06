@@ -93,8 +93,48 @@ public class StreamSplitterPoolTest extends TestCase {
     Thread.sleep( 200 );
     assertEquals(0, thePool1.getStreamSplitters().size());
     assertEquals(0, thePool2.getStreamSplitters().size());
+  }
+  
+  public void testStreamSplitterNotAccepted() throws InterruptedException{
+    ExecutorService theService = Executors.newCachedThreadPool();
     
+    final StreamSplitterPool thePool1 = new StreamSplitterPool( "1", theService );
+    final StreamSplitterPool thePool2 = new StreamSplitterPool( "1", theService );
     
+    final CountDownLatch theLatch1 = new CountDownLatch(1);
+    final CountDownLatch theLatch2 = new CountDownLatch(1);
+    
+    theService.execute(new Runnable(){
+      public void run(){
+        try{
+          Socket theSocket = myServerSocket.accept();
+          StreamSplitter theSplitter = new StreamSplitter(theSocket.getInputStream(), theSocket.getOutputStream(), new MultiplyHandler(1));
+          thePool1.add( theSplitter );
+        }catch(Exception e){
+          e.printStackTrace();
+          theLatch1.countDown();
+        }
+      }
+    });
+    
+    theService.execute(new Runnable(){
+      public void run(){
+        try{
+          Socket theSocket = new Socket("localhost", 21305);
+          StreamSplitter theSplitter = new StreamSplitter(theSocket.getInputStream(), theSocket.getOutputStream(), new MultiplyHandler(1));
+          thePool2.add( theSplitter );
+        }catch(Exception e){
+          e.printStackTrace();
+          theLatch2.countDown();
+        }
+      }
+    });
+    
+    theLatch1.await( 3, TimeUnit.SECONDS );
+    theLatch2.await( 3, TimeUnit.SECONDS );
+    
+    assertEquals( 0, theLatch1.getCount() );
+    assertEquals( 0, theLatch2.getCount() );
   }
   
   private void testStreamSplitter(StreamSplitterPool aSplitterPool, String aDestination, int aRuns, int anExpectedFactor, CountDownLatch aLatch) throws InterruptedException, IOException{

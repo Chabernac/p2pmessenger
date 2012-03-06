@@ -105,8 +105,10 @@ public class StreamSplittingServer implements iSocketSender{
   }
 
   private String addSocket(final Socket aSocket) throws IOException{
+    System.out.println("adding socket in server with id '" + myId + "' trying to add stream splitter");
     StreamSplitter theSplitter = new StreamSplitter( aSocket.getInputStream(), aSocket.getOutputStream(), myInputOutputHandler );
     final String theId = myPool.add( theSplitter );
+    System.out.println("Stream splitter added in server with id '" + myId + "' for remote server with id '" + theId + "'");
 
     theSplitter.addStreamListener( new iStreamListener() {
       @Override
@@ -137,7 +139,9 @@ public class StreamSplittingServer implements iSocketSender{
       if(anId == null || !myPool.contains( anId )){
         anId = addSocket( new Socket(aHost, aPort) );
       }
-      if(myPool.contains( anId )){
+      if(anId.equals( myPool.getId() )){
+        return myInputOutputHandler.handle(anId, aMessage);
+      } else if(myPool.contains( anId )){
         return myPool.send( anId, aMessage );
       }
       throw new IOException("No socket present for id '" + anId + "'");
@@ -171,6 +175,7 @@ public class StreamSplittingServer implements iSocketSender{
         while(myExecutorService == myCurrentExecutorService){
           Socket theSocket = null;
           try{
+            System.out.println("Socket accepted in server with id '" + myId + "'");
             theSocket = myServerSocket.accept();
             addSocket( theSocket );
           }catch(Exception e){
