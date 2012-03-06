@@ -16,7 +16,7 @@ public class StreamSplitterPool {
   public final static String ID_PREFIX = "ID:";
   public final static String STATUS_PREFIX = "STATUS:";
   
-  public static enum Status {OK, NOT_ADDED};
+  public static enum Result {ADDED, ID_ALREADY_EXISTS, IS_OWN_ID };
   
   private static Logger LOGGER = Logger.getLogger(StreamSplitterPool.class);
 
@@ -34,7 +34,7 @@ public class StreamSplitterPool {
     return myId;
   }
 
-  public String add(StreamSplitter aSplitter) throws IOException{
+  public Result add(StreamSplitter aSplitter) throws IOException{
     if(myStreamSplitters.values().contains( aSplitter )) throw new IOException("The pool alredy contains this streamsplitter");
     //write our own id
     aSplitter.sendWithoutReply( ID_PREFIX + myId );
@@ -43,14 +43,14 @@ public class StreamSplitterPool {
     if(!theRemoteId.startsWith( ID_PREFIX )) throw new IOException("Expected id prefix but got '" + theRemoteId + "'");
     theRemoteId = theRemoteId.substring( ID_PREFIX.length() );
     
-    if(!addStreamSplitter( theRemoteId, aSplitter )){
+    Result theResult = addStreamSplitter( theRemoteId, aSplitter );
+    if(theResult != Result.ADDED){
       System.out.println("Stream splitter for remote id '" + theRemoteId + "' not added in server with id '" + myId + "'");
-      aSplitter.sendWithoutReply( STATUS_PREFIX + Status.NOT_ADDED.name() );
+      aSplitter.sendWithoutReply( STATUS_PREFIX + theResult.name() );
       aSplitter.close();
-      if(myStreamSplitters.containsKey( theRemoteId ) || theRemoteId.equals( myId )) return theRemoteId;
-      throw new IOException("The stream splitter was not accepted");
+      return theResult;
     } else {
-      aSplitter.sendWithoutReply( STATUS_PREFIX + Status.OK.name() );
+      aSplitter.sendWithoutReply( STATUS_PREFIX + theResult.name() );
     }
     
     aSplitter.setId( theRemoteId );
@@ -59,29 +59,29 @@ public class StreamSplitterPool {
     if(!theRemoteStatus.startsWith( STATUS_PREFIX )) throw new IOException("Expected status prefix but got '" + theRemoteStatus + "'");
     theRemoteStatus = theRemoteStatus.substring( STATUS_PREFIX.length() );
     
-    Status theStatus = Status.valueOf( theRemoteStatus );
+    Result theStatus = Result.valueOf( theRemoteStatus );
     
-    if(theStatus != Status.OK) throw new IOException("The stream splitter was not accepted by the remote peer '" + theStatus + "'");
+    if(theStatus != Result.ADDED) throw new IOException("The stream splitter was not accepted by the remote peer '" + theStatus + "'");
     
     System.out.println("Start splitting in server '" + myId + "' for remote server id '" + theRemoteId + "'");
     aSplitter.startSplitting(myExecutorService);
-    return theRemoteId;
+    return theResult;
   }
 
-  private boolean addStreamSplitter(String anId, StreamSplitter aStreamSplitter){
+  private Result addStreamSplitter(String anId, StreamSplitter aStreamSplitter){
     if(myId.equals( anId )) {
       LOGGER.error( "The given stream splitter has the same id '" + anId + "' as the local id '" + myId + "'" );
-      return false;
+      return Result.IS_OWN_ID;
     }
     
     synchronized(anId){
       if(myStreamSplitters.containsKey( anId )) {
         LOGGER.error( "The given stream splitter already exists '" + anId + "'" );
-        return false;
+        return Result.ID_ALREADY_EXISTS;
       }
       myStreamSplitters.put(anId, aStreamSplitter);
       aStreamSplitter.addStreamListener( new StreamClosedListener( anId ) );
-      return true;
+      return Result.ADDED;
     }
   }
 

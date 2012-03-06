@@ -110,9 +110,9 @@ public class StreamSplitterPoolTest extends TestCase {
           Socket theSocket = myServerSocket.accept();
           StreamSplitter theSplitter = new StreamSplitter(theSocket.getInputStream(), theSocket.getOutputStream(), new MultiplyHandler(1));
           thePool1.add( theSplitter );
+          theLatch1.countDown();
         }catch(Exception e){
           e.printStackTrace();
-          theLatch1.countDown();
         }
       }
     });

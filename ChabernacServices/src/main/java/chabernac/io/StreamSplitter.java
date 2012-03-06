@@ -31,6 +31,7 @@ public class StreamSplitter {
   private List<iStreamListener> myStreamListeners = new ArrayList<iStreamListener>();
 
   private String myId;
+  private boolean isClosed = false;
 
   public StreamSplitter(InputStream aInputStream, OutputStream aOutputStream, iInputOutputHandler aInputOutputHandler) {
     super();
@@ -50,11 +51,17 @@ public class StreamSplitter {
   }
 
   public void close(){
+    
     myOutputStream.close();
     try {
       myInputStream.close();
     } catch (IOException e) {
     }
+    isClosed = true;
+  }
+  
+  public boolean isClosed(){
+    return isClosed;
   }
 
   public String send(String anInput) throws InterruptedException{
