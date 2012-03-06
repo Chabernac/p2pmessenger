@@ -16,6 +16,7 @@ import java.util.concurrent.ExecutorService;
 
 import org.apache.log4j.Logger;
 
+import chabernac.io.StreamSplitterPool.Result;
 import chabernac.thread.DynamicSizeExecutor;
 import chabernac.utils.NamedRunnable;
 import chabernac.utils.NetTools;
@@ -106,24 +107,26 @@ public class StreamSplittingServer implements iSocketSender{
 
   private String addSocket(final Socket aSocket) throws IOException{
     System.out.println("adding socket in server with id '" + myId + "' trying to add stream splitter");
-    StreamSplitter theSplitter = new StreamSplitter( aSocket.getInputStream(), aSocket.getOutputStream(), myInputOutputHandler );
-    final String theId = myPool.add( theSplitter );
-    System.out.println("Stream splitter added in server with id '" + myId + "' for remote server with id '" + theId + "'");
+    final StreamSplitter theSplitter = new StreamSplitter( aSocket.getInputStream(), aSocket.getOutputStream(), myInputOutputHandler );
+    Result theResult = myPool.add( theSplitter );
+    System.out.println("Stream splitter added in server with id '" + myId + "' for remote server with id '" + theSplitter.getId() + "' result: " + theResult);
 
-    theSplitter.addStreamListener( new iStreamListener() {
-      @Override
-      public void streamClosed() {
-        try {
-          aSocket.close();
-          mySockets.remove(theId);
-        } catch ( IOException e ) {
-          LOGGER.error( "Could not close socket", e );
-        } 
-      }
-    });
+    if(theResult == Result.ADDED){
+      theSplitter.addStreamListener( new iStreamListener() {
+        @Override
+        public void streamClosed() {
+          try {
+            aSocket.close();
+            mySockets.remove(theSplitter.getId());
+          } catch ( IOException e ) {
+            LOGGER.error( "Could not close socket", e );
+          } 
+        }
+      });
 
-    mySockets.put( theId, aSocket );
-    return theId;
+      mySockets.put( theSplitter.getId(), aSocket );
+    }
+    return theSplitter.getId();
 
   }
 
