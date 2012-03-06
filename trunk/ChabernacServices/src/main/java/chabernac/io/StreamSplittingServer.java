@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 
 import org.apache.log4j.Logger;
@@ -65,8 +66,14 @@ public class StreamSplittingServer implements iSocketSender{
     isRunning = true;
     myExecutorService = new DynamicSizeExecutor( 1, 128);
     myPool = new StreamSplitterPool(myId, myExecutorService);
-    myExecutorService.execute( new ServerThread(myExecutorService) );
-    return true;
+    CountDownLatch theCountdownLatch = new CountDownLatch( 1 );
+    myExecutorService.execute( new ServerThread(theCountdownLatch, myExecutorService) );
+    try{
+      theCountdownLatch.await();
+    }catch(InterruptedException e){
+      LOGGER.error("Could not wait for countdown latch", e);
+    }
+    return isRunning;
   }
 
   public synchronized void close(){
@@ -75,7 +82,7 @@ public class StreamSplittingServer implements iSocketSender{
     }catch(Exception e){
       LOGGER.error( "Error occured while closing input output handler", e );
     }
-    
+
     if(myServerSocket != null){
       try{
         myServerSocket.close();
@@ -100,7 +107,7 @@ public class StreamSplittingServer implements iSocketSender{
   private String addSocket(final Socket aSocket) throws IOException{
     StreamSplitter theSplitter = new StreamSplitter( aSocket.getInputStream(), aSocket.getOutputStream(), myInputOutputHandler );
     final String theId = myPool.add( theSplitter );
-    
+
     theSplitter.addStreamListener( new iStreamListener() {
       @Override
       public void streamClosed() {
@@ -112,17 +119,17 @@ public class StreamSplittingServer implements iSocketSender{
         } 
       }
     });
-    
+
     mySockets.put( theId, aSocket );
     return theId;
-    
+
   }
 
   public String send(String anId, String aHost, int aPort, String aMessage) throws IOException{
     if(anId != null && anId.equals(myPool.getId())){
       return myInputOutputHandler.handle(anId, aMessage);
     }
-    
+
     String theLock = anId;
     if(theLock == null) theLock = aHost + ":" + aPort;
 
@@ -139,11 +146,13 @@ public class StreamSplittingServer implements iSocketSender{
 
   private class ServerThread extends NamedRunnable{
     private final ExecutorService myCurrentExecutorService;
+    private final CountDownLatch myServerThreadCounter;
 
 
-    public ServerThread ( ExecutorService aCurrentExecutorService ) {
+    public ServerThread ( CountDownLatch aCountDownLathc, ExecutorService aCurrentExecutorService ) {
       super();
       myCurrentExecutorService = aCurrentExecutorService;
+      myServerThreadCounter = aCountDownLathc;
     }
 
 
@@ -157,19 +166,25 @@ public class StreamSplittingServer implements iSocketSender{
         }
 
         notifyStarted();
+        myServerThreadCounter.countDown();
 
         while(myExecutorService == myCurrentExecutorService){
+          Socket theSocket = null;
           try{
-          Socket theSocket = myServerSocket.accept();
-          addSocket( theSocket );
+            theSocket = myServerSocket.accept();
+            addSocket( theSocket );
           }catch(Exception e){
             LOGGER.error("Could not add server socket", e);
+            if(theSocket != null){
+              theSocket.close();
+            }
           }
         }
       }catch(Exception e){
         LOGGER.error("Error occured in server thread", e);
       } finally {
         isRunning = false;
+        myServerThreadCounter.countDown();
         notifyStopped();
       }
     }
