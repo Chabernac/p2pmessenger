@@ -44,6 +44,7 @@ public class StreamSplitterPool {
     theRemoteId = theRemoteId.substring( ID_PREFIX.length() );
     
     if(!addStreamSplitter( theRemoteId, aSplitter )){
+      System.out.println("Stream splitter for remote id '" + theRemoteId + "' not added in server with id '" + myId + "'");
       aSplitter.sendWithoutReply( STATUS_PREFIX + Status.NOT_ADDED.name() );
       aSplitter.close();
       if(myStreamSplitters.containsKey( theRemoteId ) || theRemoteId.equals( myId )) return theRemoteId;
@@ -51,6 +52,8 @@ public class StreamSplitterPool {
     } else {
       aSplitter.sendWithoutReply( STATUS_PREFIX + Status.OK.name() );
     }
+    
+    aSplitter.setId( theRemoteId );
     
     String theRemoteStatus = aSplitter.readLine();
     if(!theRemoteStatus.startsWith( STATUS_PREFIX )) throw new IOException("Expected status prefix but got '" + theRemoteStatus + "'");
@@ -60,6 +63,7 @@ public class StreamSplitterPool {
     
     if(theStatus != Status.OK) throw new IOException("The stream splitter was not accepted by the remote peer '" + theStatus + "'");
     
+    System.out.println("Start splitting in server '" + myId + "' for remote server id '" + theRemoteId + "'");
     aSplitter.startSplitting(myExecutorService);
     return theRemoteId;
   }
