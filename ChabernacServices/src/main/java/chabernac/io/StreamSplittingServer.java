@@ -64,7 +64,7 @@ public class StreamSplittingServer implements iSocketSender{
   public synchronized boolean start(){
     if(isRunning) return false;
     isRunning = true;
-    myExecutorService = new DynamicSizeExecutor( 1, 128);
+    myExecutorService = new DynamicSizeExecutor( 1, 128, 0);
     myPool = new StreamSplitterPool(myId, myExecutorService);
     CountDownLatch theCountdownLatch = new CountDownLatch( 1 );
     myExecutorService.execute( new ServerThread(theCountdownLatch, myExecutorService) );
@@ -175,8 +175,8 @@ public class StreamSplittingServer implements iSocketSender{
         while(myExecutorService == myCurrentExecutorService){
           Socket theSocket = null;
           try{
-            System.out.println("Socket accepted in server with id '" + myId + "'");
             theSocket = myServerSocket.accept();
+            System.out.println("Socket accepted in server with id '" + myId + "'");
             addSocket( theSocket );
           }catch(Exception e){
             LOGGER.error("Could not add server socket", e);
