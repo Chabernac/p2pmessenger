@@ -7,6 +7,7 @@ import chabernac.p2p.io.PeerToPeerSender;
 import chabernac.p2p.io.PeerToPeerSplitSender;
 import chabernac.p2p.io.PeerToWebSender;
 import chabernac.p2p.io.WebToPeerSender;
+import chabernac.protocol.routing.SocketPeer.StreamSplitterSupport;
 
 public class PeerSender extends AbstractPeerSender{
   private final RoutingTable myRoutingTable;
@@ -34,8 +35,19 @@ public class PeerSender extends AbstractPeerSender{
         return myWebToPeerSender.sendMessageTo( (WebPeer)theFrom, theTo, aMessage.getMessage(), aTimeoutInSeconds ); 
       } else if(theTo instanceof SocketPeer){
         SocketPeer theSocketPeer = (SocketPeer)theTo;
+        if(myPeerToPeerSplitSender == null) theSocketPeer.setStreamSplittingSupported( false );
+        
+        if(theSocketPeer.isStreamSplittingSupported() == StreamSplitterSupport.UNKNOWN){
+          try{
+            theSocketPeer.setPeerId( myPeerToPeerSplitSender.getRemoteId( theSocketPeer ) );
+            theSocketPeer.setStreamSplittingSupported( true );
+          }catch(IOException e){
+            theSocketPeer.setStreamSplittingSupported( false );
+          }
+        }
+        
         //only if both ends support stream splitting then use it
-        if(myPeerToPeerSplitSender != null &&  theSocketPeer.isStreamSplittingSupported()) {
+        if(myPeerToPeerSplitSender != null &&  theSocketPeer.isStreamSplittingSupported() == StreamSplitterSupport.TRUE) {
           return myPeerToPeerSplitSender.sendMessageTo(aMessage, (SocketPeer)theTo, aMessage.getMessage(), aTimeoutInSeconds );
         }else { 
           return myPeerToPeerSender.sendMessageTo(aMessage, (SocketPeer)theTo, aMessage.getMessage(), aTimeoutInSeconds );
@@ -64,7 +76,7 @@ public class PeerSender extends AbstractPeerSender{
     if(aPeer instanceof SocketPeer){
       SocketPeer theSocketPeer = (SocketPeer)aPeer;
       //only if both ends support stream splitting then use it
-      if(myPeerToPeerSplitSender != null &&  theSocketPeer.isStreamSplittingSupported()){
+      if(myPeerToPeerSplitSender != null &&  theSocketPeer.isStreamSplittingSupported() == StreamSplitterSupport.TRUE){
         return true;
       }
     }

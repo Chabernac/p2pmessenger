@@ -47,7 +47,7 @@ public class SocketRoutingTableInspector implements iRoutingTableInspector {
         List<SimpleNetworkInterface> theHosts = thePeer.getHosts();
         List<SimpleNetworkInterface> theNewHosts = new ArrayList<SimpleNetworkInterface>();
         for(SimpleNetworkInterface theHost : theHosts){
-          String[] theIps = theHost.getIp();
+          List<String> theIps = theHost.getIp();
           List<String> theNewIps = new ArrayList<String>();
           for(String theIp: theIps){
             try{

@@ -18,7 +18,7 @@ public class PeerTest extends TestCase {
     
     List<SimpleNetworkInterface> theHosts = thePeer.getHosts();
     for(SimpleNetworkInterface theHost: theHosts){
-      assertFalse( "localhost".equals( theHost.getIp()[0] ));
+      assertFalse( "localhost".equals( theHost.getIp().get(0)));
     }
   }
   
