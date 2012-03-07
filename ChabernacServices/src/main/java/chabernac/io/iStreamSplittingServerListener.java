@@ -5,6 +5,6 @@
 package chabernac.io;
 
 public interface iStreamSplittingServerListener {
-  public void streamSplittingServerStarted(int aPort, iSocketSender aSocketSender);
+  public void streamSplittingServerStarted(int aPort, iSocketSender aSocketSender) throws StreamSplittingServerException;
   public void streamSplittingServerStopped();
 }
