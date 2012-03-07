@@ -42,6 +42,7 @@ public class EncryptionProtocol extends Protocol {
   public static final String ID = "ENC";
   public static enum Command{GENERATE_SECRET_KEY, GET_PUBLIC_KEY, PUT_PUBLIC_KEY};
   public static enum Response{OK, NOK, INVALID_COMMAND};
+  private final String LOCK_PREFIX = UUID.randomUUID().toString();
 
   private iObjectStringConverter<PublicKey> myPublicKeyConverter = new Base64ObjectStringConverter< PublicKey >();
 
@@ -197,7 +198,7 @@ public class EncryptionProtocol extends Protocol {
 
   public PublicKey getPublicKeyFor(AbstractPeer aPeer, boolean isForceUpdate) throws EncryptionException{
     //synchronize on the peer id so that we do not try to obtain the public key while it is already being requested
-    synchronized(aPeer.getPeerId()){
+    synchronized(LOCK_PREFIX + aPeer.getPeerId()){
       try{
         if(isForceUpdate || !myPublicKeys.containsKeyFor( aPeer.getPeerId())){
           Message theMessage = new Message();

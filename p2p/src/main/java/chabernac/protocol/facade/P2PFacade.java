@@ -308,21 +308,20 @@ public class P2PFacade {
     myFileTransferOverviewFrame.setVisible( true );
   }
 
-  public Future<Boolean> sendMessage(final MultiPeerMessage aMessage, ExecutorService aService){
-    return aService.submit(  new Callable< Boolean >(){
+  public Future<MultiPeerMessage> sendMessage(final MultiPeerMessage aMessage, ExecutorService aService){
+    return aService.submit(  new Callable< MultiPeerMessage >(){
 
       @Override
-      public Boolean call() throws Exception {
-        sendMessage( aMessage );
-        return Boolean.TRUE;
+      public MultiPeerMessage call() throws Exception {
+        return sendMessage( aMessage );
       }
     });
   }
 
-  private void sendMessage(MultiPeerMessage aMessage) throws P2PFacadeException{
+  private MultiPeerMessage sendMessage(MultiPeerMessage aMessage) throws P2PFacadeException{
     if(!isStarted()) throw new P2PFacadeException("Can not execute this action when the server is not started");
     try {
-      ((MultiPeerMessageProtocol)myContainer.getProtocol( MultiPeerMessageProtocol.ID )).sendMessage( aMessage );
+      return ((MultiPeerMessageProtocol)myContainer.getProtocol( MultiPeerMessageProtocol.ID )).sendMessage( aMessage );
     } catch ( Exception e ) {
       throw new P2PFacadeException("An error occured while sending multi peer message", e);
     }
