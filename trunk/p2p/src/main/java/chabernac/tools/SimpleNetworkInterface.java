@@ -7,23 +7,24 @@ package chabernac.tools;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Formatter;
+import java.util.List;
 import java.util.Locale;
 
 public class SimpleNetworkInterface implements Serializable{
   private static final long serialVersionUID = -2887291844821748090L;
   
-  private final String[] myIp;
+  private final List<String> myIp;
   private final String myMACAddress;
   
   public SimpleNetworkInterface ( byte[] aMacAddress, String... anIp ) {
     super();
-    myIp = anIp;
+    myIp = Arrays.asList( anIp );
     myMACAddress = getMACString( aMacAddress );
   }
   
   public SimpleNetworkInterface ( String aMacAddress , String...anIp ) {
     super();
-    myIp = anIp;
+    myIp = Arrays.asList( anIp );
     myMACAddress = aMacAddress;
   }
   
@@ -31,7 +32,7 @@ public class SimpleNetworkInterface implements Serializable{
     return new SimpleNetworkInterface( (String)null, anIpList );
   }
 
-  public String[] getIp() {
+  public List<String> getIp() {
     return myIp;
   }
 
@@ -68,7 +69,7 @@ public class SimpleNetworkInterface implements Serializable{
     } else {
       //compare ip addresses
       for(String theIp : myIp){
-        if(Arrays.binarySearch( theInterface.getIp(), theIp ) >= 0){
+        if(theInterface.getIp().contains( theIp )){
           return true;
         }
       }

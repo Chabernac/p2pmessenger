@@ -31,8 +31,8 @@ public class SocketRoutingTableInspectorTest extends TestCase {
     
     SocketPeer thePeer2 = (SocketPeer)theNewRoutingTable.getEntryForPeer( "2" ).getPeer();
     assertEquals( 1, thePeer2.getHosts().size() );
-    assertEquals( 1, thePeer2.getHosts().get(0).getIp().length);
-    assertEquals( "10.0.0.1", thePeer2.getHosts().get(0).getIp()[0]);
+    assertEquals( 1, thePeer2.getHosts().get(0).getIp().size());
+    assertEquals( "10.0.0.1", thePeer2.getHosts().get(0).getIp().get( 0 ));
   }
   
 }

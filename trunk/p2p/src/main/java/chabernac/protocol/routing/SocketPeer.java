@@ -32,7 +32,8 @@ public class SocketPeer extends AbstractPeer implements Serializable {
   private static final long serialVersionUID = 7852961137229337616L;
   private List<SimpleNetworkInterface> myHost = null;
   private int myPort;
-  private boolean isStreamSplittingSupported = true;
+  public static enum StreamSplitterSupport { TRUE, FALSE, UNKNOWN };
+  private StreamSplitterSupport myStreamSplittingSupported = StreamSplitterSupport.UNKNOWN;
 
   public SocketPeer (){
     super(null);
@@ -113,12 +114,12 @@ public class SocketPeer extends AbstractPeer implements Serializable {
     myPort = anPort;
   }
 
-  public boolean isStreamSplittingSupported() {
-    return isStreamSplittingSupported;
+  public StreamSplitterSupport isStreamSplittingSupported() {
+    return myStreamSplittingSupported;
   }
 
   public void setStreamSplittingSupported(boolean isSupported){
-    this.isStreamSplittingSupported = isSupported;
+    myStreamSplittingSupported = isSupported ? StreamSplitterSupport.TRUE : StreamSplitterSupport.FALSE;
   }
 
 

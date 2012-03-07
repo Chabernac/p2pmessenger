@@ -18,13 +18,14 @@ import chabernac.p2p.settings.P2PSettings;
 import chabernac.protocol.routing.PeerMessage;
 import chabernac.protocol.routing.PeerMessage.State;
 import chabernac.protocol.routing.SocketPeer;
+import chabernac.protocol.routing.SocketPeer.StreamSplitterSupport;
 import chabernac.utils.NamedRunnable;
 
 public class PeerToPeerSender {
   private static final Logger LOGGER = Logger.getLogger(PeerToPeerSender.class);
 
   public String sendMessageTo(PeerMessage aPeerMessage, SocketPeer aPeer, String aMessage, int aTimeoutInSeconds) throws IOException {
-    if(aPeer.isStreamSplittingSupported()){
+    if(aPeer.isStreamSplittingSupported() == StreamSplitterSupport.TRUE){
       //just to be compatible with the stream splitters
       aMessage = StreamSplitter.IN + aMessage;
     }
