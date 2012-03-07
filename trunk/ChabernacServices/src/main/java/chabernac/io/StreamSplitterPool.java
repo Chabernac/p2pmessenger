@@ -42,6 +42,7 @@ public class StreamSplitterPool {
     
     if(!theRemoteId.startsWith( ID_PREFIX )) throw new IOException("Expected id prefix but got '" + theRemoteId + "'");
     theRemoteId = theRemoteId.substring( ID_PREFIX.length() );
+    aSplitter.setId( theRemoteId );
     
     Result theResult = addStreamSplitter( theRemoteId, aSplitter );
     if(theResult != Result.ADDED){
@@ -52,8 +53,6 @@ public class StreamSplitterPool {
     } else {
       aSplitter.sendWithoutReply( STATUS_PREFIX + theResult.name() );
     }
-    
-    aSplitter.setId( theRemoteId );
     
     String theRemoteStatus = aSplitter.readLine();
     if(!theRemoteStatus.startsWith( STATUS_PREFIX )) throw new IOException("Expected status prefix but got '" + theRemoteStatus + "'");

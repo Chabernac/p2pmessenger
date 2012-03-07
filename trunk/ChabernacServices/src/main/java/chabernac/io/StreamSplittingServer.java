@@ -50,7 +50,7 @@ public class StreamSplittingServer implements iSocketSender{
     myListeners.remove(aListener);
   }
 
-  public void notifyStarted(){
+  public void notifyStarted() throws StreamSplittingServerException{
     for(iStreamSplittingServerListener theListener : myListeners){
       theListener.streamSplittingServerStarted( myServerSocket.getLocalPort(), this );
     }
@@ -129,6 +129,11 @@ public class StreamSplittingServer implements iSocketSender{
     return theSplitter.getId();
 
   }
+  
+  public String getRemoteId(String aHost, int aPort) throws IOException{
+    return addSocket( new Socket(aHost, aPort) );
+  }
+  
 
   public String send(String anId, String aHost, int aPort, String aMessage) throws IOException{
     if(anId != null && anId.equals(myPool.getId())){

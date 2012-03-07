@@ -15,5 +15,6 @@ public interface iSocketSender {
    * anId: the id of the receiving host 
    */
   public String send(String anId, String aHost, int aPort, String aMessage) throws IOException;
+  public String getRemoteId(String aHost, int aPort) throws IOException;
   public Socket getSocket(String anId);
 }
