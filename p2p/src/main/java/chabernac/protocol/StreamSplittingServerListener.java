@@ -6,6 +6,7 @@ package chabernac.protocol;
 
 import org.apache.log4j.Logger;
 
+import chabernac.io.StreamSplittingServerException;
 import chabernac.io.iSocketSender;
 import chabernac.io.iStreamSplittingServerListener;
 import chabernac.protocol.ServerInfo.Type;
@@ -20,7 +21,7 @@ public class StreamSplittingServerListener implements iStreamSplittingServerList
   }
 
   @Override
-  public void streamSplittingServerStarted( int aPort, iSocketSender aSocketSender ) {
+  public void streamSplittingServerStarted( int aPort, iSocketSender aSocketSender ) throws StreamSplittingServerException{
     ServerInfo theServerInfo = new ServerInfo(Type.STREAM_SPLITTING_SOCKET);
     theServerInfo.setServerPort( aPort );
     theServerInfo.setSocketSender( aSocketSender );
@@ -28,6 +29,7 @@ public class StreamSplittingServerListener implements iStreamSplittingServerList
       myProtocolContainer.setServerInfo( theServerInfo );
     }catch(ProtocolException e){
       LOGGER.error("An error occured while setting server info", e);
+      throw new StreamSplittingServerException( "An error occured while setting server info", e );
     }
   }
 

@@ -58,4 +58,23 @@ public class PeerSender extends AbstractPeerSender{
   public PeerToWebSender getPeerToWebSender() {
     return myPeerToWebSender;
   }
+
+  @Override
+  public boolean isRemoteIdRetrievalAvailable( AbstractPeer aPeer ) {
+    if(aPeer instanceof SocketPeer){
+      SocketPeer theSocketPeer = (SocketPeer)aPeer;
+      //only if both ends support stream splitting then use it
+      if(myPeerToPeerSplitSender != null &&  theSocketPeer.isStreamSplittingSupported()){
+        return true;
+      }
+    }
+    return false;
+  
+  }
+
+  @Override
+  public String getRemoteId( AbstractPeer aPeer ) throws IOException {
+    if(!isRemoteIdRetrievalAvailable( aPeer )) return null;
+    return myPeerToPeerSplitSender.getRemoteId( (SocketPeer )aPeer );
+  }
 }

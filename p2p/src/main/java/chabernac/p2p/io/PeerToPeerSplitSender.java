@@ -27,4 +27,14 @@ public class PeerToPeerSplitSender {
     }
     throw new IOException("Could not send message to '" + aPeer.getPeerId() + "'");
   }
+  
+  public String getRemoteId(SocketPeer aPeer) throws IOException{
+    for(SimpleNetworkInterface theHost : aPeer.getHosts()){
+      for(String theIp : theHost.getIp()){
+        return mySocketSender.getRemoteId( theIp, aPeer.getPort() );
+      }
+    }
+    throw new IOException("Could get remote id'" + aPeer.getPeerId() + "'");
+  }
+  
 }
