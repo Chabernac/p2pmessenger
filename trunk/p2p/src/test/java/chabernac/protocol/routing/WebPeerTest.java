@@ -150,5 +150,17 @@ public class WebPeerTest extends TestCase {
     protected String doSend( PeerMessage aMessage, int aTimeout ) throws IOException {
       return null;
     }
+
+    @Override
+    public boolean isRemoteIdRetrievalAvailable( AbstractPeer aPeer ) {
+      // TODO Auto-generated method stub
+      return false;
+    }
+
+    @Override
+    public String getRemoteId( AbstractPeer aPeer ) throws IOException {
+      // TODO Auto-generated method stub
+      return null;
+    }
   }
 }
