@@ -553,6 +553,8 @@ public class P2PFacadeTest extends TestCase {
     MessageArchive theArchive2 = theFacade2.getMessageArchive();
 
     try{
+      assertTrue( theFacade1.getRoutingTable().containsEntryForPeer( theFacade2.getPeerId() ) );
+      assertTrue( theFacade2.getRoutingTable().containsEntryForPeer( theFacade1.getPeerId() ) );
 
       int times = 10;
       CountDownLatch theLatch = new CountDownLatch(times);
@@ -854,7 +856,7 @@ public class P2PFacadeTest extends TestCase {
       MultiPeerMessage theMessage = MultiPeerMessage.createMessage( "test" )
           .addDestination( thePeerId2 );
 
-      assertTrue( theFacade1.sendMessage( theMessage, Executors.newFixedThreadPool( 1 ) ).get() );
+      assertNotNull( theFacade1.sendMessage( theMessage, Executors.newFixedThreadPool( 1 ) ).get() );
 
       //give the system some time to detect that the peer is unreachable and collect the message int the message resender
       Thread.sleep( 3000 );
@@ -868,6 +870,7 @@ public class P2PFacadeTest extends TestCase {
       .setPersist( false )
       .setPeerId( thePeerId2 )
       .setMessageResenderActivated( true )
+      .setServerMode( getSocketServerMode() )
       .start( 20 );
       
       theFacade2.addMessageListener( theCollector );

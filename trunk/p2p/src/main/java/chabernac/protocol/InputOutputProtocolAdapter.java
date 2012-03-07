@@ -1,5 +1,6 @@
 package chabernac.protocol;
 
+import java.net.Socket;
 import java.util.UUID;
 
 import chabernac.io.StreamSplittingServer;
@@ -25,7 +26,10 @@ public class InputOutputProtocolAdapter implements iInputOutputHandler{
   public String handle(String anId, String anInput) {
     String theSessionId = UUID.randomUUID().toString();
     if(anId != null){
-      mySessionData.putProperty( theSessionId, ProtocolServer.REMOTE_IP, myStreamSplittingServer.getSocket( anId ).getInetAddress().getHostAddress() );
+      Socket theSocket = myStreamSplittingServer.getSocket( anId );
+      if(theSocket != null){
+        mySessionData.putProperty( theSessionId, ProtocolServer.REMOTE_IP, myStreamSplittingServer.getSocket( anId ).getInetAddress().getHostAddress() );
+      }
     }
     return myProtocol.handleCommand(theSessionId, anInput);
   }
