@@ -318,9 +318,13 @@ public class RoutingProtocol extends Protocol {
 	private boolean isAlreadyRunning(AbstractPeer aPeer) {
 		LOGGER.debug("Checking if we're already running");
 		try{
-			String theResponse = getPeerSender().send( aPeer, createMessage( Command.WHO_ARE_YOU.name() ));
-			AbstractPeer theRemotePeer = myPeerConverter.getObject( theResponse );
-			return theRemotePeer.getPeerId().equals( aPeer.getPeerId() );
+		  if(getPeerSender().isRemoteIdRetrievalAvailable( aPeer )){
+		    return getPeerSender().getRemoteId( aPeer ).equals( aPeer.getPeerId() );
+		  } else {
+  			String theResponse = getPeerSender().send( aPeer, createMessage( Command.WHO_ARE_YOU.name() ));
+  			AbstractPeer theRemotePeer = myPeerConverter.getObject( theResponse );
+  			return theRemotePeer.getPeerId().equals( aPeer.getPeerId() );
+		  }
 		}catch(Exception e){
 			return false;
 		}
