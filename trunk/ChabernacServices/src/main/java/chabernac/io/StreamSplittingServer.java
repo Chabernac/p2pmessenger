@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 
@@ -33,6 +34,7 @@ public class StreamSplittingServer implements iSocketSender{
   private List<iStreamSplittingServerListener> myListeners = new ArrayList< iStreamSplittingServerListener >();
   private Map<String, Socket> mySockets = new HashMap<String, Socket>();
   private final String myId;
+  private final String LOCK_PREFIX = UUID.randomUUID().toString();
 
   public StreamSplittingServer ( iInputOutputHandler aInputOutputHandler, int aPort, boolean isFindUnusedPort, String anId ) {
     super();
@@ -140,8 +142,8 @@ public class StreamSplittingServer implements iSocketSender{
       return myInputOutputHandler.handle(anId, aMessage);
     }
 
-    String theLock = anId;
-    if(theLock == null) theLock = aHost + ":" + aPort;
+    String theLock = LOCK_PREFIX + anId;
+    if(anId == null) theLock = aHost + ":" + aPort;
 
     synchronized(theLock){
       if(anId == null || !myPool.contains( anId )){
