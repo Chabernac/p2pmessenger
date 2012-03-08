@@ -20,6 +20,7 @@ import chabernac.io.ClassPathResource;
 import chabernac.protocol.AbstractProtocolTest;
 import chabernac.protocol.ProtocolContainer;
 import chabernac.protocol.ProtocolServer;
+import chabernac.protocol.iP2PServer;
 import chabernac.protocol.packet.PacketTransferState.State;
 import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.RoutingTable;
@@ -29,11 +30,11 @@ public class PacketSenderReceiverTest extends AbstractProtocolTest {
   private static Logger LOGGER = Logger.getLogger(PacketSenderReceiverTest.class);
   
   private ProtocolContainer myProtocolContainer1;
-  private ProtocolServer myServer1;
+  private iP2PServer myServer1;
   private PacketProtocol myPacketProtocl1;
 
   private ProtocolContainer myProtocolContainer2;
-  private ProtocolServer myServer2;
+  private iP2PServer myServer2;
   private PacketProtocol myPacketProtocol2;
   private String myPeerId2;
   
@@ -46,13 +47,13 @@ public class PacketSenderReceiverTest extends AbstractProtocolTest {
     super.setUp();
     //p1 <--> p2 <--> p3 peer 1 cannot reach peer 3
     myProtocolContainer1 = getProtocolContainer( -1, false, "1");
-    myServer1 = new ProtocolServer(myProtocolContainer1, RoutingProtocol.START_PORT);
+    myServer1 = getP2PServer( myProtocolContainer1, RoutingProtocol.START_PORT);
     RoutingProtocol theRoutingProtocol1 = (RoutingProtocol)myProtocolContainer1.getProtocol( RoutingProtocol.ID );
     myPacketProtocl1 = ((PacketProtocol)myProtocolContainer1.getProtocol( PacketProtocol.ID ));
 
 
     myProtocolContainer2 = getProtocolContainer( -1, false, "2");
-    myServer2 = new ProtocolServer(myProtocolContainer2, RoutingProtocol.START_PORT + 1);
+    myServer2 = getP2PServer(myProtocolContainer2, RoutingProtocol.START_PORT + 1);
     RoutingProtocol theRoutingProtocol2 = (RoutingProtocol)myProtocolContainer2.getProtocol( RoutingProtocol.ID );
     myPacketProtocol2 = ((PacketProtocol)myProtocolContainer2.getProtocol( PacketProtocol.ID ));
 

@@ -16,6 +16,7 @@ import chabernac.protocol.AbstractProtocolTest;
 import chabernac.protocol.ProtocolContainer;
 import chabernac.protocol.ProtocolException;
 import chabernac.protocol.ProtocolServer;
+import chabernac.protocol.iP2PServer;
 import chabernac.protocol.encryption.EncryptionProtocol;
 import chabernac.protocol.message.DeliveryReport.Status;
 import chabernac.protocol.routing.RoutingProtocol;
@@ -30,13 +31,13 @@ public class MultiPeerMessageProtocolTest extends AbstractProtocolTest {
   
   public void testMultiPeerMessageProtocol() throws ProtocolException, InterruptedException, MessageException{
     ProtocolContainer theProtocol1 = getProtocolContainer( -1, false, "x" );
-    ProtocolServer theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT);
+    iP2PServer theServer1 = getP2PServer( theProtocol1, RoutingProtocol.START_PORT);
 
     ProtocolContainer theProtocol2 = getProtocolContainer( -1, false, "y" );
-    ProtocolServer theServer2 = new ProtocolServer(theProtocol2, RoutingProtocol.START_PORT + 1); 
+    iP2PServer theServer2 = getP2PServer( theProtocol2, RoutingProtocol.START_PORT + 1); 
     
     ProtocolContainer theProtocol3 = getProtocolContainer( -1, false, "z" );
-    ProtocolServer theServer3 = new ProtocolServer(theProtocol3, RoutingProtocol.START_PORT + 2);
+    iP2PServer theServer3 = getP2PServer( theProtocol3, RoutingProtocol.START_PORT + 2);
     
     RoutingProtocol theRoutingProtocol1 = (RoutingProtocol)theProtocol1.getProtocol( RoutingProtocol.ID );
     MultiPeerMessageProtocol theMessageProtocol1 = (MultiPeerMessageProtocol)theProtocol1.getProtocol( MultiPeerMessageProtocol.ID );

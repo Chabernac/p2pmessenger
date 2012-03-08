@@ -13,6 +13,7 @@ import org.apache.log4j.BasicConfigurator;
 import chabernac.protocol.AbstractProtocolTest;
 import chabernac.protocol.ProtocolContainer;
 import chabernac.protocol.ProtocolServer;
+import chabernac.protocol.iP2PServer;
 import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.RoutingTable;
 
@@ -36,10 +37,10 @@ public class CamProtocolTest extends AbstractProtocolTest {
 
   public void testCapture() throws Exception{
     ProtocolContainer theProtocol1 = getProtocolContainer( -1, false, "1" );
-    ProtocolServer theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT);
+    iP2PServer theServer1 = getP2PServer( theProtocol1, RoutingProtocol.START_PORT);
 
     ProtocolContainer theProtocol2 = getProtocolContainer( -1, false, "2" );
-    ProtocolServer theServer2 = new ProtocolServer(theProtocol2, RoutingProtocol.START_PORT + 1);
+    iP2PServer theServer2 = getP2PServer( theProtocol2, RoutingProtocol.START_PORT + 1);
 
     RoutingProtocol theRoutingProtocol1 = (RoutingProtocol)theProtocol1.getProtocol( RoutingProtocol.ID );
     RoutingTable theRoutingTable1 = theRoutingProtocol1.getRoutingTable();

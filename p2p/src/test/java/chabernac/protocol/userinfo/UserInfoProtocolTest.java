@@ -23,6 +23,7 @@ import chabernac.protocol.ProtocolContainer;
 import chabernac.protocol.ProtocolException;
 import chabernac.protocol.ProtocolServer;
 import chabernac.protocol.ProtocolWebServer;
+import chabernac.protocol.iP2PServer;
 import chabernac.protocol.routing.NoAvailableNetworkAdapterException;
 import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.RoutingTable;
@@ -40,10 +41,10 @@ public class UserInfoProtocolTest extends AbstractProtocolTest {
 
   public void testUserInfoProtocol() throws ProtocolException, UserInfoException, InterruptedException, SocketException, UnknownPeerException, NoAvailableNetworkAdapterException{
     ProtocolContainer theProtocol1 = getProtocolContainer( -1, false, "1" );
-    ProtocolServer theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT);
+    iP2PServer theServer1 = getP2PServer( theProtocol1, RoutingProtocol.START_PORT);
 
     ProtocolContainer theProtocol2 = getProtocolContainer( -1, false, "2" );
-    ProtocolServer theServer2 = new ProtocolServer(theProtocol2, RoutingProtocol.START_PORT + 1);
+    iP2PServer theServer2 = getP2PServer( theProtocol2, RoutingProtocol.START_PORT + 1);
 
     RoutingProtocol theRoutingProtocol1 = (RoutingProtocol)theProtocol1.getProtocol( RoutingProtocol.ID );
     RoutingTable theRoutingTable1 = theRoutingProtocol1.getRoutingTable();
@@ -134,10 +135,10 @@ public class UserInfoProtocolTest extends AbstractProtocolTest {
 
 
     ProtocolContainer theProtocol1 = getProtocolContainer( -1, true, "1" );
-    ProtocolServer theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT);
+    iP2PServer theServer1 = getP2PServer( theProtocol1, RoutingProtocol.START_PORT);
 
     ProtocolContainer theProtocol2 = getProtocolContainer( -1, true, "2" );
-    ProtocolServer theServer2 = new ProtocolServer(theProtocol2, RoutingProtocol.START_PORT + 1);
+    iP2PServer theServer2 = getP2PServer( theProtocol2, RoutingProtocol.START_PORT + 1);
 
     RoutingProtocol theRoutingProtocol1 = (RoutingProtocol)theProtocol1.getProtocol( RoutingProtocol.ID );
     RoutingTable theRoutingTable1 = theRoutingProtocol1.getRoutingTable();
@@ -174,10 +175,10 @@ public class UserInfoProtocolTest extends AbstractProtocolTest {
       assertTrue( theRoutingTable2File.exists() );
 
       theProtocol1 = getProtocolContainer( -1, true, "1" );
-      theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT);
+      theServer1 = getP2PServer( theProtocol1, RoutingProtocol.START_PORT);
 
       theProtocol2 = getProtocolContainer( -1, true, "2" );
-      theServer2 = new ProtocolServer(theProtocol2, RoutingProtocol.START_PORT + 1);
+      theServer2 = getP2PServer( theProtocol2, RoutingProtocol.START_PORT + 1);
 
       theRoutingProtocol1 = (RoutingProtocol)theProtocol1.getProtocol( RoutingProtocol.ID );
       theRoutingTable1 = theRoutingProtocol1.getRoutingTable();
@@ -210,10 +211,10 @@ public class UserInfoProtocolTest extends AbstractProtocolTest {
 
   public void testRemoveUserInfo() throws ProtocolException, UserInfoException, InterruptedException, SocketException, UnknownPeerException, NoAvailableNetworkAdapterException{
     ProtocolContainer theProtocol1 = getProtocolContainer( -1, false, "1" );
-    ProtocolServer theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT);
+    iP2PServer theServer1 = getP2PServer( theProtocol1, RoutingProtocol.START_PORT);
 
     ProtocolContainer theProtocol2 = getProtocolContainer( -1, false, "2" );
-    ProtocolServer theServer2 = new ProtocolServer(theProtocol2, RoutingProtocol.START_PORT + 1);
+    iP2PServer theServer2 = getP2PServer( theProtocol2, RoutingProtocol.START_PORT + 1);
 
     RoutingProtocol theRoutingProtocol1 = (RoutingProtocol)theProtocol1.getProtocol( RoutingProtocol.ID );
     RoutingTable theRoutingTable1 = theRoutingProtocol1.getRoutingTable();
@@ -285,19 +286,19 @@ public class UserInfoProtocolTest extends AbstractProtocolTest {
   }
 
   public void testUserInfoProtocolThroughWebPeer() throws Exception{
-    ProtocolServer theServer1 = null;
-    ProtocolServer theServer2 = null;
+    iP2PServer theServer1 = null;
+    iP2PServer theServer2 = null;
     Server theWebServer = null;
     try{
       ProtocolContainer theProtocol1 = getProtocolContainer( -1, false, "1" );
-      theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT);
+      theServer1 = getP2PServer( theProtocol1, RoutingProtocol.START_PORT);
       RoutingProtocol theRoutingProtocol1 = (RoutingProtocol)theProtocol1.getProtocol( RoutingProtocol.ID );
       UserInfoProtocol theUserInfoProtocol1 = (UserInfoProtocol)theProtocol1.getProtocol( UserInfoProtocol.ID );
       theRoutingProtocol1.getLocalUnreachablePeerIds().add("2");
       theProtocol1.getProtocol( WebPeerProtocol.ID );
 
       ProtocolContainer theProtocol2 = getProtocolContainer( -1, false, "2" );
-      theServer2 = new ProtocolServer(theProtocol2, RoutingProtocol.START_PORT + 1);
+      theServer2 = getP2PServer(theProtocol2, RoutingProtocol.START_PORT + 1);
       RoutingProtocol theRoutingProtocol2 = (RoutingProtocol)theProtocol2.getProtocol( RoutingProtocol.ID );
       UserInfoProtocol theUserInfoProtocol2 = (UserInfoProtocol)theProtocol2.getProtocol( UserInfoProtocol.ID );
       theRoutingProtocol2.getLocalUnreachablePeerIds().add("1");
@@ -372,10 +373,10 @@ public class UserInfoProtocolTest extends AbstractProtocolTest {
 
   public void testPeerGoesOffline() throws ProtocolException, InterruptedException{
     ProtocolContainer theProtocol1 = getProtocolContainer( -1, false, "1" );
-    ProtocolServer theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT);
+    iP2PServer theServer1 = getP2PServer( theProtocol1, RoutingProtocol.START_PORT);
 
     ProtocolContainer theProtocol2 = getProtocolContainer( -1, false, "2" );
-    ProtocolServer theServer2 = new ProtocolServer(theProtocol2, RoutingProtocol.START_PORT + 1);
+    iP2PServer theServer2 = getP2PServer( theProtocol2, RoutingProtocol.START_PORT + 1);
 
     RoutingProtocol theRoutingProtocol1 = (RoutingProtocol)theProtocol1.getProtocol( RoutingProtocol.ID );
     RoutingTable theRoutingTable1 = theRoutingProtocol1.getRoutingTable();
@@ -445,11 +446,11 @@ public class UserInfoProtocolTest extends AbstractProtocolTest {
 
   public void testChangeStatusRemotely() throws ProtocolException, UserInfoException, InterruptedException{
     ProtocolContainer theProtocol1 = getProtocolContainer( -1, false, "1" );
-    ProtocolServer theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT);
+    iP2PServer theServer1 = getP2PServer( theProtocol1, RoutingProtocol.START_PORT);
     RoutingProtocol theRoutingProtocol1 = (RoutingProtocol)theProtocol1.getProtocol( RoutingProtocol.ID );
 
     ProtocolContainer theProtocol2 = getProtocolContainer( -1, false, "2" );
-    ProtocolServer theServer2 = new ProtocolServer(theProtocol2, RoutingProtocol.START_PORT + 1);
+    iP2PServer theServer2 = getP2PServer( theProtocol2, RoutingProtocol.START_PORT + 1);
     RoutingProtocol theRoutingProtocol2 = (RoutingProtocol)theProtocol2.getProtocol( RoutingProtocol.ID );
 
     try{

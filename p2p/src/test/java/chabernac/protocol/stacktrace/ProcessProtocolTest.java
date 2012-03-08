@@ -9,7 +9,7 @@ import org.apache.log4j.BasicConfigurator;
 import chabernac.protocol.AbstractProtocolTest;
 import chabernac.protocol.ProtocolContainer;
 import chabernac.protocol.ProtocolException;
-import chabernac.protocol.ProtocolServer;
+import chabernac.protocol.iP2PServer;
 import chabernac.protocol.message.Message;
 import chabernac.protocol.message.MessageException;
 import chabernac.protocol.message.MessageProtocol;
@@ -26,7 +26,7 @@ public class ProcessProtocolTest extends AbstractProtocolTest  {
   public void testStackTraceProtocol() throws ProtocolException, UnknownPeerException, MessageException{
     ProtocolContainer theProtocolContainer = getProtocolContainer( -1, false, "1" );
     
-    ProtocolServer theServer = new ProtocolServer(theProtocolContainer, RoutingProtocol.START_PORT);
+    iP2PServer theServer = getP2PServer( theProtocolContainer, RoutingProtocol.START_PORT);
     
     RoutingProtocol theRoutingProtocol = (RoutingProtocol)theProtocolContainer.getProtocol( RoutingProtocol.ID );
     MessageProtocol theMessageProtocol = (MessageProtocol)theProtocolContainer.getProtocol( MessageProtocol.ID );
@@ -49,7 +49,7 @@ public class ProcessProtocolTest extends AbstractProtocolTest  {
   public void testProcess() throws ProtocolException, UnknownPeerException, MessageException{
     ProtocolContainer theProtocolContainer = getProtocolContainer( -1, false, "1" );
     
-    ProtocolServer theServer = new ProtocolServer(theProtocolContainer, RoutingProtocol.START_PORT);
+    iP2PServer theServer = getP2PServer( theProtocolContainer, RoutingProtocol.START_PORT);
     
     RoutingProtocol theRoutingProtocol = (RoutingProtocol)theProtocolContainer.getProtocol( RoutingProtocol.ID );
     MessageProtocol theMessageProtocol = (MessageProtocol)theProtocolContainer.getProtocol( MessageProtocol.ID );

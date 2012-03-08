@@ -20,7 +20,7 @@ import org.apache.log4j.Logger;
 import chabernac.protocol.AbstractProtocolTest;
 import chabernac.protocol.ProtocolContainer;
 import chabernac.protocol.ProtocolException;
-import chabernac.protocol.ProtocolServer;
+import chabernac.protocol.iP2PServer;
 import chabernac.protocol.asyncfiletransfer.AcceptFileResponse.Response;
 import chabernac.protocol.filetransfer.FileTransferException;
 import chabernac.protocol.routing.RoutingProtocol;
@@ -36,14 +36,14 @@ public class AsyncFileTransferProtocolTest extends AbstractProtocolTest {
   private static final int IGNORE_PACKET_RATIO_2 = 2;
   private static final int MAX_RETRIES = 50;
 
-  private ProtocolServer myServer1 = null;
+  private iP2PServer myServer1 = null;
   private ProtocolContainer myProtocolContainer1 = null;
   private AsyncFileTransferProtocol myAFP1 = null;
   
-  private ProtocolServer myServer2 = null;
+  private iP2PServer myServer2 = null;
   private ProtocolContainer myProtocolContainer2 = null;
   
-  private ProtocolServer myServer3 = null;
+  private iP2PServer myServer3 = null;
   private ProtocolContainer myProtocolContainer3 = null;
   private AsyncFileTransferProtocol myAFP3 = null;
 
@@ -72,7 +72,7 @@ public class AsyncFileTransferProtocolTest extends AbstractProtocolTest {
 
     //p1 <--> p2 <--> p3 peer 1 cannot reach peer 3
     myProtocolContainer1 = getProtocolContainer( -1, false, "1");
-    myServer1 = new ProtocolServer(myProtocolContainer1, RoutingProtocol.START_PORT);
+    myServer1 = getP2PServer( myProtocolContainer1, RoutingProtocol.START_PORT);
     RoutingProtocol theRoutingProtocol1 = (RoutingProtocol)myProtocolContainer1.getProtocol( RoutingProtocol.ID );
     myAFP1 = ((AsyncFileTransferProtocol)myProtocolContainer1.getProtocol( AsyncFileTransferProtocol.ID ));
     myAFP1.setPacketSize( 1 );
@@ -83,11 +83,11 @@ public class AsyncFileTransferProtocolTest extends AbstractProtocolTest {
 
 
     myProtocolContainer2 = getProtocolContainer( -1, false, "2");
-    myServer2 = new ProtocolServer(myProtocolContainer2, RoutingProtocol.START_PORT + 1);
+    myServer2 = getP2PServer(myProtocolContainer2, RoutingProtocol.START_PORT + 1);
     RoutingProtocol theRoutingProtocol2 = (RoutingProtocol)myProtocolContainer2.getProtocol( RoutingProtocol.ID );
 
     myProtocolContainer3 = getProtocolContainer( -1, false, "3");
-    myServer3 = new ProtocolServer(myProtocolContainer3, RoutingProtocol.START_PORT + 2);
+    myServer3 = getP2PServer(myProtocolContainer3, RoutingProtocol.START_PORT + 2);
     myAFP3 = ((AsyncFileTransferProtocol)myProtocolContainer3.getProtocol( AsyncFileTransferProtocol.ID ));
     myAFP3.setFileHandler( myFileHandler );
     myAFP3.setIsIgnorePacketRatio( IGNORE_PACKET_RATIO );
