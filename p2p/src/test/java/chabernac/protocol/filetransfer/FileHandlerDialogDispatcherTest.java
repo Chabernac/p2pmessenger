@@ -25,7 +25,7 @@ public class FileHandlerDialogDispatcherTest extends TestCase {
     P2PFacade theFacade1 = new P2PFacade()
     .setExchangeDelay( 300 )
     .setPersist( false )
-    .start( 5 );
+    .start();
 
     DeliveryReportCollector theDeliveryReportCollector = new DeliveryReportCollector();
     theFacade1.addDeliveryReportListener( theDeliveryReportCollector );
@@ -33,7 +33,7 @@ public class FileHandlerDialogDispatcherTest extends TestCase {
     P2PFacade theFacade2 = new P2PFacade()
     .setExchangeDelay( 300 )
     .setPersist( false )
-    .start( 5 );
+    .start();
 
     Thread.sleep( 2000 );
 

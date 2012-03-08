@@ -33,7 +33,6 @@ public class ProtocolServer implements Runnable, iP2PServer{
   public static final String REMOTE_IP = "Socket";
 
   private int myPort;
-  private int myNumberOfThreads;
   private IProtocol myProtocol = null;
   private boolean isStarted = false;
   private ServerSocket myServerSocket = null;
@@ -46,15 +45,14 @@ public class ProtocolServer implements Runnable, iP2PServer{
   private ExecutorService myClientHandlerService = null;
   private List< Socket > myRunningSockets = new ArrayList< Socket >();
 
-  public ProtocolServer(IProtocol aProtocol, int aPort, int aNumberOfThreads){
-    this(aProtocol, aPort, aNumberOfThreads, false);
+  public ProtocolServer(IProtocol aProtocol, int aPort){
+    this(aProtocol, aPort, false);
   }
 
-  public ProtocolServer(IProtocol aProtocol, int aPort, int aNumberOfThreads, boolean isFindUnusedPort){
+  public ProtocolServer(IProtocol aProtocol, int aPort, boolean isFindUnusedPort){
     this.isFindUnusedPort = isFindUnusedPort;
     myProtocol = aProtocol;
     myPort = aPort;
-    myNumberOfThreads = aNumberOfThreads;
   }
 
   public boolean start(){
@@ -153,32 +151,6 @@ public class ProtocolServer implements Runnable, iP2PServer{
         LOCK.notify();
       }
       mySimultanousThreads.decrementAndGet();
-    }
-  }
-
-  /**
-   * if no threads are available this method will kill the oldest socket
-   * so the new socket can be handled in the newly available thread
-   */
-  private void killOldestSocket(){
-    int theCounter = 15;
-    while(myRunningSockets.size() == myNumberOfThreads && theCounter-- > 0){
-      try {
-        Thread.sleep( 500 );
-      } catch ( InterruptedException e ) {
-      }
-    }
-    try{
-      if(myRunningSockets.size() == myNumberOfThreads){
-        //there are no free threads kill the oldest one
-        Socket theOldestSocket = myRunningSockets.get( 0 );
-        try{
-          theOldestSocket.close();
-        } finally {
-          myRunningSockets.remove( theOldestSocket );
-        }
-      }
-    }catch(Exception e){
     }
   }
 

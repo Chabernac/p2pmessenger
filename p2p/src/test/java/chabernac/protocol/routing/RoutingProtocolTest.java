@@ -43,7 +43,7 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
   public void testLocalPeer() throws InterruptedException, SocketException, NoAvailableNetworkAdapterException, ProtocolException, UnknownPeerException{
 
     ProtocolContainer theProtocol = getProtocolContainer( -1, true, "1" );
-    ProtocolServer theServer = new ProtocolServer(theProtocol, RoutingProtocol.START_PORT, 5);
+    ProtocolServer theServer = new ProtocolServer(theProtocol, RoutingProtocol.START_PORT);
     RoutingProtocol theRoutingProtocol1 = (RoutingProtocol)theProtocol.getProtocol( RoutingProtocol.ID );
 
     try{
@@ -86,11 +86,11 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
 
     //server 1
     ProtocolContainer theProtocol = getProtocolContainer( theExchangeDelayInSeconds, true, "1" );
-    ProtocolServer theServer = new ProtocolServer(theProtocol, RoutingProtocol.START_PORT, 5);
+    ProtocolServer theServer = new ProtocolServer(theProtocol, RoutingProtocol.START_PORT);
 
     //server 2
     ProtocolContainer theProtocol2 = getProtocolContainer( theExchangeDelayInSeconds, true, "2" );
-    ProtocolServer theServer2 = new ProtocolServer(theProtocol2, RoutingProtocol.START_PORT + 1, 5);
+    ProtocolServer theServer2 = new ProtocolServer(theProtocol2, RoutingProtocol.START_PORT + 1);
     
     RoutingProtocol theRoutingProtocol1 = (RoutingProtocol)theProtocol.getProtocol( RoutingProtocol.ID );
     RoutingTable theRoutingTable1 = theRoutingProtocol1.getRoutingTable();
@@ -148,16 +148,16 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
 //    Thread.sleep( 10000 );
 
     ProtocolContainer theProtocol1 = getProtocolContainer( -1, false, "1" );
-    ProtocolServer theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT, 10);
+    ProtocolServer theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT);
 
     ProtocolContainer theProtocol2 = getProtocolContainer( -1, false, "2" );
-    ProtocolServer theServer2 = new ProtocolServer(theProtocol2, RoutingProtocol.START_PORT + 1, 10);
+    ProtocolServer theServer2 = new ProtocolServer(theProtocol2, RoutingProtocol.START_PORT + 1);
 
     ProtocolContainer theProtocol3 = getProtocolContainer( -1, false, "3" );
-    ProtocolServer theServer3 = new ProtocolServer(theProtocol3, RoutingProtocol.START_PORT + 2, 10);
+    ProtocolServer theServer3 = new ProtocolServer(theProtocol3, RoutingProtocol.START_PORT + 2);
     
     ProtocolContainer theProtocol4 = getProtocolContainer( -1, false, "4" );
-    ProtocolServer theServer4 = new ProtocolServer(theProtocol4, RoutingProtocol.START_PORT + 3, 10);
+    ProtocolServer theServer4 = new ProtocolServer(theProtocol4, RoutingProtocol.START_PORT + 3);
 
     RoutingProtocol theRoutingProtocol1 = (RoutingProtocol)theProtocol1.getProtocol( RoutingProtocol.ID );
     RoutingTable theRoutingTable1 = theRoutingProtocol1.getRoutingTable();
@@ -462,10 +462,10 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
   public void testScanRemoteSystem() throws InterruptedException, ProtocolException, UnknownPeerException{
     
     ProtocolContainer theProtocol1 = getProtocolContainer( -1, false, "1" );
-    ProtocolServer theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT, 5);
+    ProtocolServer theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT);
 
     ProtocolContainer theProtocol2 = getProtocolContainer( -1, false, "2" );
-    ProtocolServer theServer2 = new ProtocolServer(theProtocol2, RoutingProtocol.START_PORT + 1, 5);
+    ProtocolServer theServer2 = new ProtocolServer(theProtocol2, RoutingProtocol.START_PORT + 1);
 
     RoutingProtocol theRoutingProtocol1 = (RoutingProtocol)theProtocol1.getProtocol( RoutingProtocol.ID );
     RoutingTable theRoutingTable1 = theRoutingProtocol1.getRoutingTable();
@@ -548,10 +548,10 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
    */
   public void testChangePropagation() throws ProtocolException, InterruptedException, UnknownPeerException{
     ProtocolContainer theProtocol1 = getProtocolContainer( -1, false, "1" );
-    ProtocolServer theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT, 5);
+    ProtocolServer theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT);
 
     ProtocolContainer theProtocol2 = getProtocolContainer( -1, false, "2" );
-    ProtocolServer theServer2 = new ProtocolServer(theProtocol2, RoutingProtocol.START_PORT + 1, 5);
+    ProtocolServer theServer2 = new ProtocolServer(theProtocol2, RoutingProtocol.START_PORT + 1);
 
     RoutingProtocol theRoutingProtocol1 = (RoutingProtocol)theProtocol1.getProtocol( RoutingProtocol.ID );
     RoutingTable theRoutingTable1 = theRoutingProtocol1.getRoutingTable();
@@ -595,10 +595,10 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
   @Ignore
   public void testUDPAnnouncement() throws InterruptedException, ProtocolException, UnknownPeerException{
     ProtocolContainer theProtocol1 = getProtocolContainer( -1, false, "1" );
-    ProtocolServer theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT, 5);
+    ProtocolServer theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT);
 
     ProtocolContainer theProtocol2 = getProtocolContainer( -1, false, "2" );
-    ProtocolServer theServer2 = new ProtocolServer(theProtocol2, RoutingProtocol.START_PORT + 1, 5);
+    ProtocolServer theServer2 = new ProtocolServer(theProtocol2, RoutingProtocol.START_PORT + 1);
     
     RoutingProtocol theRoutingProtocol1 = (RoutingProtocol)theProtocol1.getProtocol( RoutingProtocol.ID );
     RoutingTable theRoutingTable1 = theRoutingProtocol1.getRoutingTable();
@@ -648,7 +648,7 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
     if(theRoutingTableFile.exists()) theRoutingTableFile.delete();
     
     ProtocolContainer theProtocol1 = getProtocolContainer( -1, true, "1" );
-    ProtocolServer theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT, 5);
+    ProtocolServer theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT);
     
     RoutingProtocol theRoutingProtocol1 = (RoutingProtocol)theProtocol1.getProtocol( RoutingProtocol.ID );
     RoutingTable theRoutingTable1 = theRoutingProtocol1.getRoutingTable();
@@ -666,7 +666,7 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
       assertTrue( theRoutingTableFile.exists() );
       
       theProtocol1 = getProtocolContainer( -1, true, "1" );
-      theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT, 5);
+      theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT);
       
       theRoutingProtocol1 = (RoutingProtocol)theProtocol1.getProtocol( RoutingProtocol.ID );
       theRoutingTable1 = theRoutingProtocol1.getRoutingTable();
@@ -692,7 +692,7 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
     if(theRoutingTableFile.exists()) theRoutingTableFile.delete();
     
     ProtocolContainer theProtocol1 = getProtocolContainer( -1, true, null );
-    ProtocolServer theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT, 5);
+    ProtocolServer theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT);
     
     RoutingProtocol theRoutingProtocol1 = (RoutingProtocol)theProtocol1.getProtocol( RoutingProtocol.ID );
     RoutingTable theRoutingTable1 = theRoutingProtocol1.getRoutingTable();
@@ -711,7 +711,7 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
       assertTrue( theRoutingTableFile.exists() );
       
       theProtocol1 = getProtocolContainer( -1, true, null );
-      theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT, 5);
+      theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT);
       
       theRoutingProtocol1 = (RoutingProtocol)theProtocol1.getProtocol( RoutingProtocol.ID );
       theRoutingTable1 = theRoutingProtocol1.getRoutingTable();
@@ -735,10 +735,10 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
   
 //  public void testDetectRemoteSystem() throws InterruptedException, ProtocolException{
 //    ProtocolContainer theProtocol1 = getProtocolContainer( -1, false, "1" );
-//    ProtocolServer theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT, 5);
+//    ProtocolServer theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT);
 //
 //    ProtocolContainer theProtocol2 = getProtocolContainer( -1, false, "2" );
-//    ProtocolServer theServer2 = new ProtocolServer(theProtocol2, RoutingProtocol.START_PORT + 1, 5);
+//    ProtocolServer theServer2 = new ProtocolServer(theProtocol2, RoutingProtocol.START_PORT + 1);
 //    
 //    RoutingProtocol theRoutingProtocol1 = (RoutingProtocol)theProtocol1.getProtocol( RoutingProtocol.ID );
 //    RoutingTable theRoutingTable1 = theRoutingProtocol1.getRoutingTable();
@@ -761,7 +761,7 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
   
     public void testLocalPeerEntry() throws ProtocolException, UnknownPeerException, InterruptedException{
       ProtocolContainer theProtocol1 = getProtocolContainer( -1, true, "1");
-      ProtocolServer theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT, 5);
+      ProtocolServer theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT);
       
       RoutingProtocol theRoutingProtocol1 = (RoutingProtocol)theProtocol1.getProtocol( RoutingProtocol.ID );
       RoutingTable theRoutingTable1 = theRoutingProtocol1.getRoutingTable();
@@ -782,10 +782,10 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
     
 //    public void testRemoveEntry() throws ProtocolException, InterruptedException, UnknownPeerException{
 //      ProtocolContainer theProtocol1 = getProtocolContainer( -1, false, "1" );
-//      ProtocolServer theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT, 5);
+//      ProtocolServer theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT);
 //
 //      ProtocolContainer theProtocol2 = getProtocolContainer( -1, false, "2" );
-//      ProtocolServer theServer2 = new ProtocolServer(theProtocol2, RoutingProtocol.START_PORT + 1, 5);
+//      ProtocolServer theServer2 = new ProtocolServer(theProtocol2, RoutingProtocol.START_PORT + 1);
 //      
 //      RoutingProtocol theRoutingProtocol1 = (RoutingProtocol)theProtocol1.getProtocol( RoutingProtocol.ID );
 //      RoutingTable theRoutingTable1 = theRoutingProtocol1.getRoutingTable();
@@ -842,10 +842,10 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
     
     public void testDoNotExchangeRoutingTableEntriesWithMaxHopDistance() throws ProtocolException, NoAvailableNetworkAdapterException, InterruptedException{
       ProtocolContainer theProtocol1 = getProtocolContainer( 1, false, "1" );
-      ProtocolServer theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT, 5);
+      ProtocolServer theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT);
 
       ProtocolContainer theProtocol2 = getProtocolContainer( 1, false, "2" );
-      ProtocolServer theServer2 = new ProtocolServer(theProtocol2, RoutingProtocol.START_PORT + 1, 5);
+      ProtocolServer theServer2 = new ProtocolServer(theProtocol2, RoutingProtocol.START_PORT + 1);
       
       RoutingProtocol theRoutingProtocol1 = (RoutingProtocol)theProtocol1.getProtocol( RoutingProtocol.ID );
       RoutingTable theRoutingTable1 = theRoutingProtocol1.getRoutingTable();
@@ -878,10 +878,10 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
     
     public void testScanSuperNodes() throws Exception{
       ProtocolContainer theProtocol1 = getProtocolContainer( -1, false, "1", "localhost", "http://localhost:9090/") ;
-      ProtocolServer theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT, 5);
+      ProtocolServer theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT);
 
       ProtocolContainer theProtocol2 = getProtocolContainer( -1, false, "2", "localhost", "http://localhost:9090/") ;
-      ProtocolServer theServer2 = new ProtocolServer(theProtocol2, RoutingProtocol.START_PORT + 1, 5 );
+      ProtocolServer theServer2 = new ProtocolServer(theProtocol2, RoutingProtocol.START_PORT + 1);
       
       RoutingProtocol theRoutingProtocol1 = (RoutingProtocol)theProtocol1.getProtocol( RoutingProtocol.ID );
       RoutingTable theRoutingTable1 = theRoutingProtocol1.getRoutingTable();

@@ -66,7 +66,7 @@ public class P2PFacadeTest extends TestCase {
     .setPersist( false )
     .setPeerId("P2P1")
     .setServerMode( getSocketServerMode() )
-    .start( 20 );
+    .start();
 
     Thread.sleep(1000);
 
@@ -87,7 +87,7 @@ public class P2PFacadeTest extends TestCase {
     .setPersist( false )
     .setPeerId("P2P2")
     .setServerMode( getSocketServerMode() )
-    .start( 20 );
+    .start();
 
     System.out.println("testP2PSendMessage Peer id: " + theFacade1.getPeerId());
     System.out.println("testP2PSendMessage Peer id: " + theFacade2.getPeerId());
@@ -128,7 +128,7 @@ public class P2PFacadeTest extends TestCase {
     .setPersist( false )
     .setPeerId("P2P1")
     .setServerMode( ServerMode.SPLITTING_SOCKET )
-    .start( 20 );
+    .start();
 
     Thread.sleep(1000);
 
@@ -149,7 +149,7 @@ public class P2PFacadeTest extends TestCase {
     .setPersist( false )
     .setPeerId("P2P2")
     .setServerMode( ServerMode.SPLITTING_SOCKET )
-    .start( 20 );
+    .start();
 
     System.out.println("testP2PSendMessage Peer id: " + theFacade1.getPeerId());
     System.out.println("testP2PSendMessage Peer id: " + theFacade2.getPeerId());
@@ -190,7 +190,7 @@ public class P2PFacadeTest extends TestCase {
     .setPersist( false )
     .setPeerId("P2P1")
     .setServerMode( ServerMode.SOCKET)
-    .start( 20 );
+    .start();
 
     Thread.sleep(1000);
 
@@ -211,7 +211,7 @@ public class P2PFacadeTest extends TestCase {
     .setPersist( false )
     .setPeerId("P2P2")
     .setServerMode( ServerMode.SPLITTING_SOCKET )
-    .start( 20 );
+    .start();
 
     System.out.println("testP2PSendMessage Peer id: " + theFacade1.getPeerId());
     System.out.println("testP2PSendMessage Peer id: " + theFacade2.getPeerId());
@@ -254,7 +254,7 @@ public class P2PFacadeTest extends TestCase {
     .setPersist( false )
     .setPeerId("P2P1")
     .setServerMode( ServerMode.SPLITTING_SOCKET)
-    .start( 20 );
+    .start();
 
     Thread.sleep(1000);
 
@@ -275,7 +275,7 @@ public class P2PFacadeTest extends TestCase {
     .setPersist( false )
     .setPeerId("P2P2")
     .setServerMode( ServerMode.SOCKET )
-    .start( 20 );
+    .start();
 
     System.out.println("testP2PSendMessage Peer id: " + theFacade1.getPeerId());
     System.out.println("testP2PSendMessage Peer id: " + theFacade2.getPeerId());
@@ -343,7 +343,7 @@ public class P2PFacadeTest extends TestCase {
     .setExchangeDelay( 300 )
     .setPersist( false )
     .setServerMode( getSocketServerMode() )
-    .start( 20 );
+    .start();
 
     System.out.println("testFailMessage Peer id: " + theFacade1.getPeerId());
 
@@ -374,7 +374,7 @@ public class P2PFacadeTest extends TestCase {
     .setPersist( false )
     .setKeepRoutingTableHistory( true )
     .setServerMode( getSocketServerMode() )
-    .start( 20 );
+    .start();
 
     DeliveryReportCollector theDeliveryReportCollector = new DeliveryReportCollector();
     theFacade1.addDeliveryReportListener( theDeliveryReportCollector );
@@ -384,7 +384,7 @@ public class P2PFacadeTest extends TestCase {
     .setPersist( false )
     .setKeepRoutingTableHistory( true )
     .setServerMode( getSocketServerMode() )
-    .start( 20 );
+    .start();
 
     System.out.println("testSendFile Peer id: " + theFacade1.getPeerId());
     System.out.println("testSendFile Peer id: " + theFacade2.getPeerId());
@@ -432,14 +432,14 @@ public class P2PFacadeTest extends TestCase {
     .setPersist( false )
     .setKeepRoutingTableHistory( true )
     .setServerMode( getSocketServerMode() )
-    .start( 20 );
+    .start();
 
     P2PFacade theFacade2 = new P2PFacade()
     .setExchangeDelay( 300 )
     .setPersist( false )
     .setKeepRoutingTableHistory( true )
     .setServerMode( getSocketServerMode() )
-    .start( 20 );
+    .start();
 
     System.out.println("testPipe Peer id: " + theFacade1.getPeerId());
     System.out.println("testPipe Peer id: " + theFacade2.getPeerId());
@@ -484,14 +484,14 @@ public class P2PFacadeTest extends TestCase {
     .setPersist( false )
     .setUserInfoProvider( new UserInfoProvider("Guy", "guy.chauliac@gmail.com") )
     .setServerMode( getSocketServerMode() )
-    .start( 20 );
+    .start();
 
     P2PFacade theFacade2 = new P2PFacade()
     .setExchangeDelay( 300 )
     .setPersist( false )
     .setUserInfoProvider( new UserInfoProvider("Leslie", "leslie.torreele@gmail.com") )
     .setServerMode( getSocketServerMode() )
-    .start( 20 );
+    .start();
 
     LOGGER.debug("Peer 1 id: " + theFacade1.getPeerId());
     LOGGER.debug("Peer 2 id: " + theFacade2.getPeerId());
@@ -536,13 +536,13 @@ public class P2PFacadeTest extends TestCase {
     .setExchangeDelay( 300 )
     .setPersist( false )
     .setServerMode( getSocketServerMode() )
-    .start( 20 );
+    .start();
 
     P2PFacade theFacade2 = new P2PFacade()
     .setExchangeDelay( 300 )
     .setPersist( false )
     .setServerMode( getSocketServerMode() )
-    .start( 20 );
+    .start();
 
     System.out.println("testMessageArchive Peer id: " + theFacade1.getPeerId());
     System.out.println("testMessageArchive Peer id: " + theFacade2.getPeerId());
@@ -611,7 +611,7 @@ public class P2PFacadeTest extends TestCase {
       .setPersist( true )
       .setStopWhenAlreadyRunning(true)
       .setServerMode( getSocketServerMode() )
-      .start( 20 );
+      .start();
 
       Thread.sleep(5000);
 
@@ -620,7 +620,7 @@ public class P2PFacadeTest extends TestCase {
       .setPersist( true )
       .setStopWhenAlreadyRunning(true)
       .setServerMode( getSocketServerMode() )
-      .start( 20 );
+      .start();
 
       System.out.println("testStopWhenAlreadyRunning Peer id: " + theFacade1.getPeerId());
       System.out.println("testStopWhenAlreadyRunning Peer id: " + theFacade2.getPeerId());
@@ -647,7 +647,7 @@ public class P2PFacadeTest extends TestCase {
       .setStopWhenAlreadyRunning(true)
       .setPeerId( "1" )
       .setServerMode( getSocketServerMode() )
-      .start( 20 );
+      .start();
 
       theFacade2 = new P2PFacade()
       .setExchangeDelay( 300 )
@@ -655,7 +655,7 @@ public class P2PFacadeTest extends TestCase {
       .setStopWhenAlreadyRunning(true)
       .setPeerId( "2" )
       .setServerMode( getSocketServerMode() )
-      .start( 20 );
+      .start();
 
       theFacade1.stop();
       theFacade2.stop();
@@ -668,7 +668,7 @@ public class P2PFacadeTest extends TestCase {
       .setStopWhenAlreadyRunning(true)
       .setPeerId( "2" )
       .setServerMode( getSocketServerMode() )
-      .start( 20 );
+      .start();
 
       theFacade1 = new P2PFacade()
       .setExchangeDelay( 300 )
@@ -676,7 +676,7 @@ public class P2PFacadeTest extends TestCase {
       .setStopWhenAlreadyRunning(true)
       .setPeerId( "1" )
       .setServerMode( getSocketServerMode() )
-      .start( 20 );
+      .start();
     } finally {
       if(theFacade1 != null) theFacade1.stop();
       if(theFacade2 != null) theFacade2.stop();
@@ -697,7 +697,7 @@ public class P2PFacadeTest extends TestCase {
       .setKeepRoutingTableHistory( true )
       .setChannel("A")
       .setServerMode( getSocketServerMode() )
-      .start( 10 );
+      .start( );
 
       theFacade2 = new P2PFacade()
       .setExchangeDelay( 300 )
@@ -705,7 +705,7 @@ public class P2PFacadeTest extends TestCase {
       .setKeepRoutingTableHistory( true )
       .setChannel("A")
       .setServerMode( getSocketServerMode() )
-      .start( 10 );
+      .start( );
 
       theFacade3 = new P2PFacade()
       .setExchangeDelay( 300 )
@@ -713,7 +713,7 @@ public class P2PFacadeTest extends TestCase {
       .setKeepRoutingTableHistory( true )
       .setChannel("B")
       .setServerMode( getSocketServerMode() )
-      .start( 10 );
+      .start( );
 
       theFacade4 = new P2PFacade()
       .setExchangeDelay( 300 )
@@ -721,7 +721,7 @@ public class P2PFacadeTest extends TestCase {
       .setKeepRoutingTableHistory( true )
       .setChannel("B")
       .setServerMode( getSocketServerMode() )
-      .start( 10 );
+      .start( );
 
       Thread.sleep(4000);
 
@@ -759,14 +759,14 @@ public class P2PFacadeTest extends TestCase {
     .setPersist( false )
     .setInfoObject( "test", "test1" )
     .setServerMode( getSocketServerMode() )
-    .start( 20 );
+    .start();
 
     P2PFacade theFacade2 = new P2PFacade()
     .setExchangeDelay( 300 )
     .setInfoObject( "test", "test2" )
     .setPersist( false )
     .setServerMode( getSocketServerMode() )
-    .start( 20 );
+    .start();
 
     Thread.sleep( 2000 );
 
@@ -819,7 +819,7 @@ public class P2PFacadeTest extends TestCase {
     .setInfoObject( "test", "test1" )
     .setMessageResenderActivated( true )
     .setServerMode( getSocketServerMode() )
-    .start( 20 );
+    .start();
 
     P2PFacade theFacade2 = new P2PFacade()
     .setExchangeDelay( 300 )
@@ -827,7 +827,7 @@ public class P2PFacadeTest extends TestCase {
     .setPersist( false )
     .setMessageResenderActivated( true )
     .setServerMode( getSocketServerMode() )
-    .start( 20 );
+    .start();
 
     String thePeerId2 = theFacade2.getPeerId();
 
@@ -871,7 +871,7 @@ public class P2PFacadeTest extends TestCase {
       .setPeerId( thePeerId2 )
       .setMessageResenderActivated( true )
       .setServerMode( getSocketServerMode() )
-      .start( 20 );
+      .start();
       
       theFacade2.addMessageListener( theCollector );
 
@@ -900,14 +900,14 @@ public class P2PFacadeTest extends TestCase {
     .setPersist( false )
     .setInfoObject( "test", "test1" )
     .setServerMode( getSocketServerMode() )
-    .start( 20 );
+    .start();
 
     P2PFacade theFacade2 = new P2PFacade()
     .setExchangeDelay( 300 )
     .setInfoObject( "test", "test2" )
     .setPersist( false )
     .setServerMode( getSocketServerMode() )
-    .start( 20 );
+    .start();
 
     Thread.sleep( 2000 );
 
@@ -961,7 +961,7 @@ public class P2PFacadeTest extends TestCase {
     .setServerMode( ServerMode.WEB ) 
     .setWebPort( 8080 )
     .setWebURL( new URL("http://localhost:8080") )
-    .start(20);
+    .start();
 
 
     P2PFacade theSocketPeer = new P2PFacade()
@@ -969,7 +969,7 @@ public class P2PFacadeTest extends TestCase {
     .setPersist( false )
     .addSuperNode( "http://localhost:8080" )
     .setServerMode( getSocketServerMode() )
-    .start( 20 );
+    .start();
 
 
     theSocketPeer.scanSuperNodes();
@@ -1113,7 +1113,7 @@ public class P2PFacadeTest extends TestCase {
     .setPersist( false )
     .setInfoObject( "test", "test1" )
     .setServerMode( getSocketServerMode() )
-    .start( 20 );
+    .start();
 
     try{
       theFacade.setServerMode( ServerMode.WEB );

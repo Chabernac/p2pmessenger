@@ -19,7 +19,7 @@ public class ApplicationProtocolTest extends AbstractProtocolTest {
     P2PFacade theFacade1 = new P2PFacade()
     .setExchangeDelay( -1 )
     .setPersist( false )
-    .start( 5 );
+    .start();
 
     try{
       ApplicationProtocolDelegate theDelegate = new ApplicationProtocolDelegate();

@@ -209,7 +209,7 @@ public class RoutingFrame extends JFrame {
         ,"10.240.221.73"));
     ProtocolFactory theFactory = new ProtocolFactory(theProperties);
     ProtocolContainer theContainer = new ProtocolContainer(theFactory);
-    ProtocolServer theServer1 = new ProtocolServer(theContainer, RoutingProtocol.START_PORT, 20, true);
+    ProtocolServer theServer1 = new ProtocolServer(theContainer, RoutingProtocol.START_PORT, true);
 
     RoutingFrame theFrame = new RoutingFrame(theServer1, theContainer, true);
     theServer1.start();

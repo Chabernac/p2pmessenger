@@ -26,7 +26,7 @@ public class InfoExchangeProtocolTest extends TestCase {
     P2PFacade theFacade1 = new P2PFacade()
     .setExchangeDelay( 3 )
     .setPersist( false )
-    .start( 5 );
+    .start();
 
     InfoCollecter theInfoCollecter1 = new InfoCollecter();
     theFacade1.addInfoListener( theInfoCollecter1 );
@@ -36,7 +36,7 @@ public class InfoExchangeProtocolTest extends TestCase {
     P2PFacade theFacade2 = new P2PFacade()
     .setExchangeDelay( 3 )
     .setPersist( false )
-    .start( 5 );
+    .start();
 
     try{
       InfoCollecter theInfoCollecter2 = new InfoCollecter();
@@ -67,7 +67,7 @@ public class InfoExchangeProtocolTest extends TestCase {
     P2PFacade theFacade1 = new P2PFacade()
     .setExchangeDelay( 3 )
     .setPersist( false )
-    .start( 5 );
+    .start();
 
     InfoCollecter theInfoCollecter1 = new InfoCollecter();
     theFacade1.addInfoListener( theInfoCollecter1 );
@@ -77,7 +77,7 @@ public class InfoExchangeProtocolTest extends TestCase {
     P2PFacade theFacade2 = new P2PFacade()
     .setExchangeDelay( 3 )
     .setPersist( false )
-    .start( 5 );
+    .start();
 
     try{
       InfoCollecter theInfoCollecter2 = new InfoCollecter();
