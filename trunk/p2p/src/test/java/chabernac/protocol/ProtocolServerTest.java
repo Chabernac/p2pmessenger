@@ -28,12 +28,12 @@ public class ProtocolServerTest extends AbstractProtocolTest {
     BasicConfigurator.configure();
   }
 
-  public void testProtocolServer() throws UnknownHostException, IOException, ProtocolException{
+  public void testProtocolServer() throws UnknownHostException, IOException{
     ProtocolContainer theMasterProtocol = new ProtocolContainer(new ProtocolFactory(new PropertyMap()));
 
     int thePort = 12026;
 
-    iP2PServer theServer = getP2PServer( theMasterProtocol, thePort);
+    ProtocolServer theServer = new ProtocolServer(theMasterProtocol, thePort);
 
     try{
       assertTrue( theServer.start() );
@@ -53,12 +53,12 @@ public class ProtocolServerTest extends AbstractProtocolTest {
     }
   }
   
-  public void testProtocolServerStreamSplitterCompatibility() throws UnknownHostException, IOException, ProtocolException{
+  public void testProtocolServerStreamSplitterCompatibility() throws UnknownHostException, IOException{
     ProtocolContainer theMasterProtocol = new ProtocolContainer(new ProtocolFactory(new PropertyMap()));
 
     int thePort = 12026;
 
-    iP2PServer theServer = getP2PServer( theMasterProtocol, thePort);
+    ProtocolServer theServer = new ProtocolServer(theMasterProtocol, thePort);
 
     try{
       assertTrue( theServer.start() );
@@ -84,7 +84,7 @@ public class ProtocolServerTest extends AbstractProtocolTest {
 
     int thePort = 12027;
 
-    iP2PServer theServer = getP2PServer( theMasterProtocol, thePort);
+    ProtocolServer theServer = new ProtocolServer(theMasterProtocol, thePort);
     try{
       assertTrue( theServer.start() );
 
