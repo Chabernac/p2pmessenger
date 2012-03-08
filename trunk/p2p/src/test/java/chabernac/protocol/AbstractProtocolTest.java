@@ -8,11 +8,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import junit.framework.TestCase;
+import chabernac.io.StreamSplittingServer;
 import chabernac.p2p.settings.P2PSettings;
+import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.tools.PropertyMap;
 
 public abstract class AbstractProtocolTest extends TestCase {
   protected static final int SLEEP_AFTER_SCAN = 2000;
+  
+  private static enum ServerMode{SOCKET, STREAM_SPLITTING};
+  private ServerMode myServerMode = ServerMode.SOCKET;
   
   public void setUp() throws Exception{
     P2PSettings.getInstance().getSocketPool().cleanUp();
@@ -40,6 +45,17 @@ public abstract class AbstractProtocolTest extends TestCase {
     if(aPeerId != null) theProperties.setProperty("peerid", aPeerId);
     ProtocolFactory theFactory = new ProtocolFactory(theProperties);
     return new ProtocolContainer(theFactory);
+  }
+  
+  protected iP2PServer getP2PServer(ProtocolContainer aProtocolContainer, int aStartPort) throws ProtocolException{
+    if(myServerMode == ServerMode.SOCKET){
+      return new ProtocolServer(aProtocolContainer, aStartPort); 
+    } else if(myServerMode == ServerMode.STREAM_SPLITTING){
+      RoutingProtocol theRoutingProtocol = (RoutingProtocol)aProtocolContainer.getProtocol( RoutingProtocol.ID );
+      InputOutputProtocolAdapter theIOAdapter = new InputOutputProtocolAdapter(aProtocolContainer);
+      return new P2PServerSplittingServerAdapter( new StreamSplittingServer( theIOAdapter, aStartPort, true, theRoutingProtocol.getLocalPeerId() ) );
+    }
+    throw new ProtocolException("Could not create p2p server");
   }
 
 }

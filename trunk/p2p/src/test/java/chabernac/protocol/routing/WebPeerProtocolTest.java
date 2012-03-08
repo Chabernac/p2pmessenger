@@ -42,14 +42,14 @@ public class WebPeerProtocolTest extends AbstractProtocolTest {
   public void setUp() throws Exception{
     try{
       ProtocolContainer theProtocol1 = getProtocolContainer( -1, false, "1" );
-      theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT, 5);
+      theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT);
       myRoutingProtocol1 = (RoutingProtocol)theProtocol1.getProtocol( RoutingProtocol.ID );
       myMessageProtocol1 = (MessageProtocol)theProtocol1.getProtocol( MessageProtocol.ID );
       myRoutingProtocol1.getLocalUnreachablePeerIds().add("2");
       theProtocol1.getProtocol( WebPeerProtocol.ID );
 
       ProtocolContainer theProtocol2 = getProtocolContainer( -1, false, "2" );
-      theServer2 = new ProtocolServer(theProtocol2, RoutingProtocol.START_PORT + 1, 5);
+      theServer2 = new ProtocolServer(theProtocol2, RoutingProtocol.START_PORT + 1);
       RoutingProtocol theRoutingProtocol2 = (RoutingProtocol)theProtocol2.getProtocol( RoutingProtocol.ID );
       myMessageProtocol2 = (MessageProtocol)theProtocol2.getProtocol( MessageProtocol.ID );
       theRoutingProtocol2.getLocalUnreachablePeerIds().add("1");

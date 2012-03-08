@@ -44,13 +44,13 @@ public class FileTransferStateTest extends AbstractProtocolTest {
     super.setUp();
     //p1 <--> p2 <--> p3 peer 1 cannot reach peer 3
     myProtocolContainer1 = getProtocolContainer( -1, false, "1");
-    myServer1 = new ProtocolServer(myProtocolContainer1, RoutingProtocol.START_PORT, 5);
+    myServer1 = new ProtocolServer(myProtocolContainer1, RoutingProtocol.START_PORT);
     RoutingProtocol theRoutingProtocol1 = (RoutingProtocol)myProtocolContainer1.getProtocol( RoutingProtocol.ID );
     myPacketProtocl1 = ((PacketProtocol)myProtocolContainer1.getProtocol( PacketProtocol.ID ));
 
 
     myProtocolContainer2 = getProtocolContainer( -1, false, "2");
-    myServer2 = new ProtocolServer(myProtocolContainer2, RoutingProtocol.START_PORT + 1, 5);
+    myServer2 = new ProtocolServer(myProtocolContainer2, RoutingProtocol.START_PORT + 1);
     RoutingProtocol theRoutingProtocol2 = (RoutingProtocol)myProtocolContainer2.getProtocol( RoutingProtocol.ID );
     myPacketProtocol2 = ((PacketProtocol)myProtocolContainer2.getProtocol( PacketProtocol.ID ));
 

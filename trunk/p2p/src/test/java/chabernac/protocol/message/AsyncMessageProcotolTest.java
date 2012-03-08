@@ -13,7 +13,7 @@ import org.apache.log4j.Logger;
 import chabernac.protocol.AbstractProtocolTest;
 import chabernac.protocol.ProtocolContainer;
 import chabernac.protocol.ProtocolException;
-import chabernac.protocol.ProtocolServer;
+import chabernac.protocol.iP2PServer;
 import chabernac.protocol.routing.AbstractPeer;
 import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.RoutingTable;
@@ -34,10 +34,10 @@ public class AsyncMessageProcotolTest extends AbstractProtocolTest {
   public void testSendEndUserMessage() throws ProtocolException, InterruptedException, MessageException, UnknownPeerException{
     LOGGER.debug("Begin of testMessageProtocol");
     ProtocolContainer theProtocol1 = getProtocolContainer( -1, false, "1" );
-    ProtocolServer theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT, 5);
+    iP2PServer theServer1 = getP2PServer( theProtocol1, RoutingProtocol.START_PORT);
 
     ProtocolContainer theProtocol2 = getProtocolContainer( -1, false, "2" );
-    ProtocolServer theServer2 = new ProtocolServer(theProtocol2, RoutingProtocol.START_PORT + 1, 5);
+    iP2PServer theServer2 = getP2PServer(theProtocol2, RoutingProtocol.START_PORT + 1);
 
     RoutingProtocol theRoutingProtocol1 = (RoutingProtocol)theProtocol1.getProtocol( RoutingProtocol.ID );
     RoutingTable theRoutingTable1 = theRoutingProtocol1.getRoutingTable();
@@ -78,11 +78,11 @@ public class AsyncMessageProcotolTest extends AbstractProtocolTest {
   public void testCancelResponse() throws ProtocolException, InterruptedException, UnknownPeerException, MessageException{
     LOGGER.debug("Begin of testMessageProtocol");
     ProtocolContainer theProtocol1 = getProtocolContainer( -1, false, "1" );
-    ProtocolServer theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT, 5);
+    iP2PServer theServer1 = getP2PServer(theProtocol1, RoutingProtocol.START_PORT);
 
     ProtocolContainer theProtocol2 = getProtocolContainer( -1, false, "2" );
     theProtocol2.addProtocol( new BlockingProtocol( 5000 ) );
-    ProtocolServer theServer2 = new ProtocolServer(theProtocol2, RoutingProtocol.START_PORT + 1, 5);
+    iP2PServer theServer2 = getP2PServer(theProtocol2, RoutingProtocol.START_PORT + 1);
 
     RoutingProtocol theRoutingProtocol1 = (RoutingProtocol)theProtocol1.getProtocol( RoutingProtocol.ID );
     RoutingTable theRoutingTable1 = theRoutingProtocol1.getRoutingTable();
@@ -155,10 +155,10 @@ public class AsyncMessageProcotolTest extends AbstractProtocolTest {
   
   public void testMessageLoop() throws ProtocolException, InterruptedException, UnknownPeerException, MessageException{
     ProtocolContainer theProtocol1 = getProtocolContainer( -1, false, "1" );
-    ProtocolServer theServer1 = new ProtocolServer(theProtocol1, RoutingProtocol.START_PORT, 6);
+    iP2PServer theServer1 = getP2PServer(theProtocol1, RoutingProtocol.START_PORT);
 
     ProtocolContainer theProtocol2 = getProtocolContainer( -1, false, "2" );
-    ProtocolServer theServer2 = new ProtocolServer(theProtocol2, RoutingProtocol.START_PORT + 1, 6);
+    iP2PServer theServer2 = getP2PServer(theProtocol2, RoutingProtocol.START_PORT + 1);
 
     RoutingProtocol theRoutingProtocol1 = (RoutingProtocol)theProtocol1.getProtocol( RoutingProtocol.ID );
     RoutingTable theRoutingTable1 = theRoutingProtocol1.getRoutingTable();

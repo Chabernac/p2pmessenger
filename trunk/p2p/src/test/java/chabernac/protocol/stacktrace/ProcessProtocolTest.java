@@ -26,7 +26,7 @@ public class ProcessProtocolTest extends AbstractProtocolTest  {
   public void testStackTraceProtocol() throws ProtocolException, UnknownPeerException, MessageException{
     ProtocolContainer theProtocolContainer = getProtocolContainer( -1, false, "1" );
     
-    ProtocolServer theServer = new ProtocolServer(theProtocolContainer, RoutingProtocol.START_PORT, 5);
+    ProtocolServer theServer = new ProtocolServer(theProtocolContainer, RoutingProtocol.START_PORT);
     
     RoutingProtocol theRoutingProtocol = (RoutingProtocol)theProtocolContainer.getProtocol( RoutingProtocol.ID );
     MessageProtocol theMessageProtocol = (MessageProtocol)theProtocolContainer.getProtocol( MessageProtocol.ID );
@@ -49,7 +49,7 @@ public class ProcessProtocolTest extends AbstractProtocolTest  {
   public void testProcess() throws ProtocolException, UnknownPeerException, MessageException{
     ProtocolContainer theProtocolContainer = getProtocolContainer( -1, false, "1" );
     
-    ProtocolServer theServer = new ProtocolServer(theProtocolContainer, RoutingProtocol.START_PORT, 5);
+    ProtocolServer theServer = new ProtocolServer(theProtocolContainer, RoutingProtocol.START_PORT);
     
     RoutingProtocol theRoutingProtocol = (RoutingProtocol)theProtocolContainer.getProtocol( RoutingProtocol.ID );
     MessageProtocol theMessageProtocol = (MessageProtocol)theProtocolContainer.getProtocol( MessageProtocol.ID );

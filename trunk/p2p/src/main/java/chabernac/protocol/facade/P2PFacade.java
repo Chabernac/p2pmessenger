@@ -787,10 +787,6 @@ public class P2PFacade {
   }
 
   public P2PFacade start() throws P2PFacadeException{
-    return start(256);
-  }
-
-  public P2PFacade start(int aNumberOfThreads) throws P2PFacadeException{
     if(isStarted()) return this;
 
     try{
@@ -811,7 +807,7 @@ public class P2PFacade {
       }
 
       if(myServerMode == ServerMode.SOCKET) {
-        myProtocolServers.add(new ProtocolServer(myContainer, RoutingProtocol.START_PORT, aNumberOfThreads, true));
+        myProtocolServers.add(new ProtocolServer(myContainer, RoutingProtocol.START_PORT, true));
         theRoutingProtocol.setRoutingTableInspector( new SocketRoutingTableInspector(myContainer.getSessionData() ) );
       }
 

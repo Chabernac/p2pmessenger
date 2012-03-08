@@ -72,7 +72,7 @@ public class AsyncFileTransferProtocolTest extends AbstractProtocolTest {
 
     //p1 <--> p2 <--> p3 peer 1 cannot reach peer 3
     myProtocolContainer1 = getProtocolContainer( -1, false, "1");
-    myServer1 = new ProtocolServer(myProtocolContainer1, RoutingProtocol.START_PORT, 5);
+    myServer1 = new ProtocolServer(myProtocolContainer1, RoutingProtocol.START_PORT);
     RoutingProtocol theRoutingProtocol1 = (RoutingProtocol)myProtocolContainer1.getProtocol( RoutingProtocol.ID );
     myAFP1 = ((AsyncFileTransferProtocol)myProtocolContainer1.getProtocol( AsyncFileTransferProtocol.ID ));
     myAFP1.setPacketSize( 1 );
@@ -83,11 +83,11 @@ public class AsyncFileTransferProtocolTest extends AbstractProtocolTest {
 
 
     myProtocolContainer2 = getProtocolContainer( -1, false, "2");
-    myServer2 = new ProtocolServer(myProtocolContainer2, RoutingProtocol.START_PORT + 1, 5);
+    myServer2 = new ProtocolServer(myProtocolContainer2, RoutingProtocol.START_PORT + 1);
     RoutingProtocol theRoutingProtocol2 = (RoutingProtocol)myProtocolContainer2.getProtocol( RoutingProtocol.ID );
 
     myProtocolContainer3 = getProtocolContainer( -1, false, "3");
-    myServer3 = new ProtocolServer(myProtocolContainer3, RoutingProtocol.START_PORT + 2, 5);
+    myServer3 = new ProtocolServer(myProtocolContainer3, RoutingProtocol.START_PORT + 2);
     myAFP3 = ((AsyncFileTransferProtocol)myProtocolContainer3.getProtocol( AsyncFileTransferProtocol.ID ));
     myAFP3.setFileHandler( myFileHandler );
     myAFP3.setIsIgnorePacketRatio( IGNORE_PACKET_RATIO );
