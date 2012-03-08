@@ -65,7 +65,7 @@ public class P2PStatusConnector implements iEventListener, iUserInfoListener {
     .addSupportedProtocol( MessageProtocol.ID )
     .addSupportedProtocol( WebPeerProtocol.ID )
     .addSupportedProtocol( AsyncMessageProcotol.ID )
-    .start( 256 );
+    .start();
 
     myP2PFacade.forceProtocolStart( UserInfoProtocol.ID );
   }
