@@ -180,8 +180,6 @@ public class AsyncFileTransferProtocolTest extends AbstractProtocolTest {
     for(FileTransferHandler theHandler : theFileHandlers){
       theHandler.waitUntillDone();
     }
-    
-    Thread.sleep(20000);
   }
   
   private void compareFiles(){

@@ -9,8 +9,10 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.net.SocketException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CountDownLatch;
@@ -123,6 +125,15 @@ public class SocketPeer extends AbstractPeer implements Serializable {
   }
 
 
+  private Set<String> getIPs(){
+    Set<String> theIPList = new HashSet<String>();
+    for(SimpleNetworkInterface theInteface : myHost){
+      for(String theIP : theInteface.getIp()){
+        theIPList.add( theIP );
+      }
+    }
+    return theIPList;
+  }
 
   /**
    * this method creates a socket by using the socket pool
@@ -133,7 +144,7 @@ public class SocketPeer extends AbstractPeer implements Serializable {
   public SocketProxy createSocket(final int aPort){
     final iSocketPool theSocketPool = P2PSettings.getInstance().getSocketPool();
 
-    final CountDownLatch theCountDownLatch = new CountDownLatch(myHost.size());
+    final CountDownLatch theCountDownLatch = new CountDownLatch(getIPs().size());
     for(Iterator< SimpleNetworkInterface > i = new ArrayList<SimpleNetworkInterface>(myHost).iterator(); i.hasNext();){
       final SimpleNetworkInterface theHost = i.next();
       try{
