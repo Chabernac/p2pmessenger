@@ -193,7 +193,7 @@ public class ApplicationLauncher {
     .setSocketReuse( true )
     .setMessageResenderActivated( true )
     .setAutoUserStatusDetectionEnabled( true )
-    .start( 256 );
+    .start();
     
     if("true".equalsIgnoreCase( anInterPreter.getKeyValue( "routingtable" ) )) myFacade.showRoutingTable();
   }

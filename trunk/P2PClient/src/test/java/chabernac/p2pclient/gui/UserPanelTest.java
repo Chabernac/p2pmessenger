@@ -35,7 +35,7 @@ public class UserPanelTest extends TestCase {
     .setExchangeDelay( 300 )
     .setPersist( false )
     .setUserInfoProvider( theUserInfoProvider1 )
-    .start( 5 );
+    .start();
     
     
     DefaultUserInfoProvider theUserInfoProvider2 = new DefaultUserInfoProvider();
@@ -49,7 +49,7 @@ public class UserPanelTest extends TestCase {
     .setExchangeDelay( 300 )
     .setPersist( false )
     .setUserInfoProvider( theUserInfoProvider2 )
-    .start( 5 );
+    .start();
     
     
     DefaultUserInfoProvider theUserInfoProvider3 = new DefaultUserInfoProvider();
@@ -63,7 +63,7 @@ public class UserPanelTest extends TestCase {
     .setExchangeDelay( 300 )
     .setPersist( false )
     .setUserInfoProvider( theUserInfoProvider3 )
-    .start( 5 );
+    .start();
     
     Thread.sleep( 5000 );
     

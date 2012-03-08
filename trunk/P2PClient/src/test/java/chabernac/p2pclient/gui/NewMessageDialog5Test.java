@@ -17,7 +17,7 @@ public class NewMessageDialog5Test extends TestCase {
   public void testNewMessageDialog5() throws P2PFacadeException, InterruptedException, AWTException{
     MultiPeerMessage theMessage = MultiPeerMessage.createMessage( "test" );
     P2PFacade theFacade = new P2PFacade();
-    theFacade.start( 1 );
+    theFacade.start();
     ChatMediator theMediator = new ChatMediator( theFacade );
     NewMessageDialog5.getInstance( theMediator ).showMessage( theMessage );
 //    Thread.sleep(5000);

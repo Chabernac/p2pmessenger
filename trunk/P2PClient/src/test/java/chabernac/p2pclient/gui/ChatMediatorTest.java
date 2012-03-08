@@ -29,19 +29,19 @@ public class ChatMediatorTest extends TestCase {
     .setExchangeDelay( 300 )
     .setPersist( false )
     .setUserInfoProvider( new AXALDAPUserInfoProvider() )
-    .start( 5 );
+    .start();
     
     P2PFacade theFacade2 = new P2PFacade()
     .setExchangeDelay( 300 )
     .setPersist( false )
     .setUserInfoProvider( new AXALDAPUserInfoProvider() )
-    .start( 5 );
+    .start();
     
     P2PFacade theFacade3 = new P2PFacade()
     .setExchangeDelay( 300 )
     .setPersist( false )
     .setUserInfoProvider( new AXALDAPUserInfoProvider() )
-    .start( 5 );
+    .start();
     
     Thread.sleep( 2000 );
 
