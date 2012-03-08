@@ -21,7 +21,6 @@ import chabernac.p2p.web.ProtocolServlet;
 import chabernac.protocol.AbstractProtocolTest;
 import chabernac.protocol.ProtocolContainer;
 import chabernac.protocol.ProtocolException;
-import chabernac.protocol.ProtocolServer;
 import chabernac.protocol.ProtocolWebServer;
 import chabernac.protocol.iP2PServer;
 import chabernac.protocol.routing.NoAvailableNetworkAdapterException;
