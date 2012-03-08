@@ -78,14 +78,8 @@ public class StreamSplittingServer implements iSocketSender{
     }
     return isRunning;
   }
-
-  public synchronized void close(){
-    try{
-      myInputOutputHandler.close();
-    }catch(Exception e){
-      LOGGER.error( "Error occured while closing input output handler", e );
-    }
-
+  
+  public void kill() {
     if(myServerSocket != null){
       try{
         myServerSocket.close();
@@ -97,6 +91,16 @@ public class StreamSplittingServer implements iSocketSender{
     myExecutorService = null;
 
     myPool.closeAll();
+  }
+
+  public synchronized void close(){
+    try{
+      myInputOutputHandler.close();
+    }catch(Exception e){
+      LOGGER.error( "Error occured while closing input output handler", e );
+    }
+    
+    kill();
   }
 
   public boolean containsSocketForId(String anId){

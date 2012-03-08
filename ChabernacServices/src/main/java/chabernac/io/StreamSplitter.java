@@ -65,10 +65,10 @@ public class StreamSplitter {
   }
 
   public String send(String anInput) throws InterruptedException{
-    System.out.println(myId + ":SENDING INPUT: '" + anInput + "'");
+//    System.out.println(myId + ":SENDING INPUT: '" + anInput + "'");
     sendWithoutReply(IN + anInput);
     String theReply = myOutputQueue.take();
-    System.out.println(myId + ":RETURNING OUTPUT: '" + theReply + "'");
+//    System.out.println(myId + ":RETURNING OUTPUT: '" + theReply + "'");
     return theReply;
   }
 
@@ -102,20 +102,20 @@ public class StreamSplitter {
     public void doRun(){
       String theLine = null;
       try{
-        System.out.println("Inputhandler running for server with remote id '" + myId + "'");
+//        System.out.println("Inputhandler running for server with remote id '" + myId + "'");
         while((theLine = myInputStream.readLine()) != null){
           if(theLine.startsWith(IN)){
-            System.out.println(myId +  ":INPUT RECEIVED: '" + theLine + "'");
+//            System.out.println(myId +  ":INPUT RECEIVED: '" + theLine + "'");
             String theInput = theLine.substring(IN.length());
             handleInput(theInput);
           } else {
-            System.out.println(myId + ":OUTPUT RECEIVED: '" + theLine + "'");
+//            System.out.println(myId + ":OUTPUT RECEIVED: '" + theLine + "'");
             String theResponse = theLine;
             if(theResponse.startsWith(OUT)) theResponse = theResponse.substring(OUT.length());
             myOutputQueue.put(theResponse);
           }
         }
-        System.out.println("Line null");
+//        System.out.println("Line null");
       }catch(Exception e){
         LOGGER.error("Error occured while reading stream", e);
       } finally {
