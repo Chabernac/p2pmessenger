@@ -26,4 +26,9 @@ public class P2PServerSplittingServerAdapter implements iP2PServer {
     myServer.close();
   }
 
+  @Override
+  public void kill() {
+    myServer.kill();
+  }
+
 }

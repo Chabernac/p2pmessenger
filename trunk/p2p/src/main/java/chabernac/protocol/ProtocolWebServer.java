@@ -97,4 +97,9 @@ public class ProtocolWebServer implements iP2PServer {
     }
     myServer = null;
   }
+
+  @Override
+  public void kill() {
+    stop();
+  }
 }
