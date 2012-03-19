@@ -11,9 +11,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.log4j.Logger;
 
@@ -35,6 +37,8 @@ public class StreamSplittingServer implements iSocketSender{
   private Map<String, Socket> mySockets = new HashMap<String, Socket>();
   private final String myId;
   private final String LOCK_PREFIX = UUID.randomUUID().toString();
+  private AtomicInteger myOutgoingSocketCounter = new AtomicInteger(0);
+  private Random myRandom = new Random();
 
   public StreamSplittingServer ( iInputOutputHandler aInputOutputHandler, int aPort, boolean isFindUnusedPort, String anId ) {
     super();
@@ -78,7 +82,7 @@ public class StreamSplittingServer implements iSocketSender{
     }
     return isRunning;
   }
-  
+
   public void kill() {
     if(myServerSocket != null){
       try{
@@ -90,7 +94,7 @@ public class StreamSplittingServer implements iSocketSender{
     if(myExecutorService != null)  myExecutorService.shutdownNow();
     myExecutorService = null;
 
-    myPool.closeAll();
+    if(myPool != null) myPool.closeAll();
   }
 
   public synchronized void close(){
@@ -99,7 +103,7 @@ public class StreamSplittingServer implements iSocketSender{
     }catch(Exception e){
       LOGGER.error( "Error occured while closing input output handler", e );
     }
-    
+
     kill();
   }
 
@@ -112,10 +116,10 @@ public class StreamSplittingServer implements iSocketSender{
   }
 
   private String addSocket(final Socket aSocket) throws IOException{
-    System.out.println("adding socket in server with id '" + myId + "' trying to add stream splitter");
+    LOGGER.debug("adding socket in server with id '" + myId + "' trying to add stream splitter");
     final StreamSplitter theSplitter = new StreamSplitter( aSocket.getInputStream(), aSocket.getOutputStream(), myInputOutputHandler );
     Result theResult = myPool.add( theSplitter );
-    System.out.println("Stream splitter added in server with id '" + myId + "' for remote server with id '" + theSplitter.getId() + "' result: " + theResult);
+    LOGGER.debug("Stream splitter added in server with id '" + myId + "' for remote server with id '" + theSplitter.getId() + "' result: " + theResult);
 
     if(theResult == Result.ADDED){
       theSplitter.addStreamListener( new iStreamListener() {
@@ -135,15 +139,23 @@ public class StreamSplittingServer implements iSocketSender{
     return theSplitter.getId();
 
   }
-  
+
   public String getRemoteId(String aHost, int aPort) throws IOException{
     return addSocket( new Socket(aHost, aPort) );
   }
-  
 
-  public String send(String anId, String aHost, int aPort, String aMessage) throws IOException{
+
+  public SocketSenderReply send(String aHost, int aPort, String aMessage) throws IOException{
+    return send(null, aHost, aPort, aMessage);
+  }
+  
+  public String send(String anId, String aMessage) throws IOException{
+    return send(anId, null, -1, aMessage).getReply();
+  }
+  
+  private SocketSenderReply send(String anId, String aHost, int aPort, String aMessage) throws IOException{
     if(anId != null && anId.equals(myPool.getId())){
-      return myInputOutputHandler.handle(anId, aMessage);
+      return new SocketSenderReply( myInputOutputHandler.handle(anId, aMessage), anId);
     }
 
     String theLock = LOCK_PREFIX + anId;
@@ -151,12 +163,30 @@ public class StreamSplittingServer implements iSocketSender{
 
     synchronized(theLock){
       if(anId == null || !myPool.contains( anId )){
-        anId = addSocket( new Socket(aHost, aPort) );
+        try{
+          myOutgoingSocketCounter.incrementAndGet();
+          
+          int theRetries = 0;
+          Socket theSocket = null;
+          while(theSocket == null && theRetries++ < 3){
+            theSocket = new Socket(aHost, aPort);
+            Thread.sleep( 200 );
+            if(theSocket.isClosed()){
+              theSocket = null;
+            }
+            Thread.sleep(Math.abs(myRandom.nextLong() % 500));
+          }
+          anId = addSocket( theSocket );
+        } catch ( InterruptedException e ) {
+          LOGGER.error("sleeping interrupted", e);
+        }finally{
+          myOutgoingSocketCounter.decrementAndGet();
+        }
       }
       if(anId.equals( myPool.getId() )){
-        return myInputOutputHandler.handle(anId, aMessage);
+        return new SocketSenderReply(myInputOutputHandler.handle(anId, aMessage), anId);
       } else if(myPool.contains( anId )){
-        return myPool.send( anId, aMessage );
+        return new SocketSenderReply(myPool.send( anId, aMessage ), anId);
       }
       throw new IOException("No socket present for id '" + anId + "'");
     }
@@ -190,8 +220,12 @@ public class StreamSplittingServer implements iSocketSender{
           Socket theSocket = null;
           try{
             theSocket = myServerSocket.accept();
-            System.out.println("Socket accepted in server with id '" + myId + "'");
-            addSocket( theSocket );
+            if(myOutgoingSocketCounter.get() > 0){
+              theSocket.close();
+            } else {
+              LOGGER.debug("Socket accepted in server with id '" + myId + "'");
+              addSocket( theSocket );
+            }
           }catch(Exception e){
             LOGGER.error("Could not add server socket", e);
             if(theSocket != null){

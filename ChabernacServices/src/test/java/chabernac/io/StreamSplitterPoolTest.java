@@ -14,6 +14,8 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.BasicConfigurator;
 
+import chabernac.io.StreamSplitterPool.Result;
+
 import junit.framework.TestCase;
 
 public class StreamSplitterPoolTest extends TestCase {
@@ -56,7 +58,9 @@ public class StreamSplitterPoolTest extends TestCase {
         try{
           Socket theSocket = myServerSocket.accept();
           StreamSplitter theSplitter = new StreamSplitter(theSocket.getInputStream(), theSocket.getOutputStream(), new MultiplyHandler(theFactor1));
-          assertEquals("2", thePool1.add( theSplitter ));
+          Result theResult = thePool1.add( theSplitter );
+          assertEquals( Result.ADDED, theResult );
+          assertEquals("2", theSplitter.getId());
           testStreamSplitter(thePool1, "2", runs, theFactor2, theLatch1);
           theLatch1.await(5, TimeUnit.SECONDS);
           theLatch2.await(5, TimeUnit.SECONDS);
@@ -71,7 +75,9 @@ public class StreamSplitterPoolTest extends TestCase {
         try{
           Socket theSocket = new Socket("localhost", 21305);
           StreamSplitter theSplitter = new StreamSplitter(theSocket.getInputStream(), theSocket.getOutputStream(), new MultiplyHandler(theFactor2));
-          assertEquals("1",thePool2.add( theSplitter ));
+          Result theResult = thePool2.add( theSplitter );
+          assertEquals( Result.ADDED, theResult);
+          assertEquals("1", theSplitter.getId());;
           testStreamSplitter(thePool2, "1", runs, theFactor1, theLatch2);
           theLatch1.await(5, TimeUnit.SECONDS);
           theLatch2.await(5, TimeUnit.SECONDS);
@@ -109,8 +115,11 @@ public class StreamSplitterPoolTest extends TestCase {
         try{
           Socket theSocket = myServerSocket.accept();
           StreamSplitter theSplitter = new StreamSplitter(theSocket.getInputStream(), theSocket.getOutputStream(), new MultiplyHandler(1));
-          thePool1.add( theSplitter );
-          theLatch1.countDown();
+          Result theResult = thePool1.add( theSplitter );
+          
+          if(theResult == Result.IS_OWN_ID){
+            theLatch1.countDown();
+          }
         }catch(Exception e){
           e.printStackTrace();
         }
@@ -122,10 +131,13 @@ public class StreamSplitterPoolTest extends TestCase {
         try{
           Socket theSocket = new Socket("localhost", 21305);
           StreamSplitter theSplitter = new StreamSplitter(theSocket.getInputStream(), theSocket.getOutputStream(), new MultiplyHandler(1));
-          thePool2.add( theSplitter );
+          Result theResult = thePool2.add( theSplitter );
+          
+          if(theResult == Result.IS_OWN_ID){
+            theLatch2.countDown();
+          }
         }catch(Exception e){
           e.printStackTrace();
-          theLatch2.countDown();
         }
       }
     });
