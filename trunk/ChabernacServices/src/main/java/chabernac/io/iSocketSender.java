@@ -14,7 +14,10 @@ public interface iSocketSender {
    * 
    * anId: the id of the receiving host 
    */
-  public String send(String anId, String aHost, int aPort, String aMessage) throws IOException;
+  
+  public SocketSenderReply send(String aHost, int aPort, String amessage) throws IOException;
+  public String send(String anId, String aMessage) throws IOException;
   public String getRemoteId(String aHost, int aPort) throws IOException;
   public Socket getSocket(String anId);
+  public boolean containsSocketForId(String anId);
 }

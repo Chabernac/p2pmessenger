@@ -5,5 +5,18 @@
 package chabernac.io;
 
 public class SocketSenderReply {
-
-}
+  private final String myReply;
+  private final String myRemoteId;
+  
+  public SocketSenderReply( String aReply, String aRemoteId ) {
+    super();
+    myReply = aReply;
+    myRemoteId = aRemoteId;
+  }
+  public String getReply() {
+    return myReply;
+  }
+  public String getRemoteId() {
+    return myRemoteId;
+  }
+} 
