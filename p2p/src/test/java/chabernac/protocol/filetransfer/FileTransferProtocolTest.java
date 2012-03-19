@@ -16,6 +16,7 @@ import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 
 import chabernac.protocol.AbstractProtocolTest;
+import chabernac.protocol.P2PServerFactoryException;
 import chabernac.protocol.ProtocolContainer;
 import chabernac.protocol.ProtocolException;
 import chabernac.protocol.ProtocolServer;
@@ -33,7 +34,7 @@ public class FileTransferProtocolTest extends AbstractProtocolTest {
     BasicConfigurator.configure();;
   }
 
-  public void testFileTransfer() throws InterruptedException, UnknownHostException, IOException, FileTransferException, ProtocolException, UnknownPeerException{
+  public void testFileTransfer() throws InterruptedException, UnknownHostException, IOException, FileTransferException, ProtocolException, UnknownPeerException, P2PServerFactoryException{
 
     //p1 <--> p2 <--> p3 peer 1 cannot reach peer 3
     ProtocolContainer theProtocol1 = getProtocolContainer( -1, false, "1");

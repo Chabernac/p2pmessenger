@@ -19,6 +19,7 @@ import org.mortbay.jetty.servlet.ServletHolder;
 import chabernac.comet.CometServlet;
 import chabernac.p2p.web.ProtocolServlet;
 import chabernac.protocol.AbstractProtocolTest;
+import chabernac.protocol.P2PServerFactoryException;
 import chabernac.protocol.ProtocolContainer;
 import chabernac.protocol.ProtocolException;
 import chabernac.protocol.ProtocolWebServer;
@@ -38,7 +39,7 @@ public class UserInfoProtocolTest extends AbstractProtocolTest {
     BasicConfigurator.configure();
   }
 
-  public void testUserInfoProtocol() throws ProtocolException, UserInfoException, InterruptedException, SocketException, UnknownPeerException, NoAvailableNetworkAdapterException{
+  public void testUserInfoProtocol() throws ProtocolException, UserInfoException, InterruptedException, SocketException, UnknownPeerException, NoAvailableNetworkAdapterException, P2PServerFactoryException{
     ProtocolContainer theProtocol1 = getProtocolContainer( -1, false, "1" );
     iP2PServer theServer1 = getP2PServer( theProtocol1, RoutingProtocol.START_PORT);
 
@@ -126,7 +127,7 @@ public class UserInfoProtocolTest extends AbstractProtocolTest {
     }
   }
 
-  public void testUserInfoWithPersistingRoutingTable() throws InterruptedException, ProtocolException, UnknownPeerException, UserInfoException{
+  public void testUserInfoWithPersistingRoutingTable() throws InterruptedException, ProtocolException, UnknownPeerException, UserInfoException, P2PServerFactoryException{
     File theRoutingTable1File = new File("RoutingTable_1.bin");
     if(theRoutingTable1File.exists()) theRoutingTable1File.delete();
     File theRoutingTable2File = new File("RoutingTable_2.bin");
@@ -208,7 +209,7 @@ public class UserInfoProtocolTest extends AbstractProtocolTest {
     }
   }
 
-  public void testRemoveUserInfo() throws ProtocolException, UserInfoException, InterruptedException, SocketException, UnknownPeerException, NoAvailableNetworkAdapterException{
+  public void testRemoveUserInfo() throws ProtocolException, UserInfoException, InterruptedException, SocketException, UnknownPeerException, NoAvailableNetworkAdapterException, P2PServerFactoryException{
     ProtocolContainer theProtocol1 = getProtocolContainer( -1, false, "1" );
     iP2PServer theServer1 = getP2PServer( theProtocol1, RoutingProtocol.START_PORT);
 
@@ -370,7 +371,7 @@ public class UserInfoProtocolTest extends AbstractProtocolTest {
   }
 
 
-  public void testPeerGoesOffline() throws ProtocolException, InterruptedException{
+  public void testPeerGoesOffline() throws ProtocolException, InterruptedException, P2PServerFactoryException, UnknownPeerException{
     ProtocolContainer theProtocol1 = getProtocolContainer( -1, false, "1" );
     iP2PServer theServer1 = getP2PServer( theProtocol1, RoutingProtocol.START_PORT);
 
@@ -382,6 +383,7 @@ public class UserInfoProtocolTest extends AbstractProtocolTest {
     RoutingProtocol theRoutingProtocol2 = (RoutingProtocol)theProtocol2.getProtocol( RoutingProtocol.ID );
 
     UserInfoProtocol theUserInfoProtocol2 = (UserInfoProtocol)theProtocol2.getProtocol( UserInfoProtocol.ID );
+    RoutingTable theRoutingTable2 = theRoutingProtocol2.getRoutingTable();
     UserInfoListener theListener = new UserInfoListener();
     theUserInfoProtocol2.addUserInfoListener( theListener );
 
@@ -394,8 +396,12 @@ public class UserInfoProtocolTest extends AbstractProtocolTest {
       theRoutingProtocol1.scanLocalSystem();
       theRoutingProtocol2.scanLocalSystem();
 
-      Thread.sleep(SLEEP_AFTER_SCAN);
-
+      theRoutingTable1.getEntryForLocalPeer( 5 );
+      theRoutingTable2.getEntryForLocalPeer( 5 );
+      
+      theRoutingTable2.getEntryForPeer( theRoutingTable1.getLocalPeerId(), 5 );
+      theRoutingTable1.getEntryForPeer( theRoutingTable2.getLocalPeerId(), 5 );
+      
       UserInfo theUserInfo = theUserInfoProtocol2.getUserInfo().get( theRoutingTable1.getLocalPeerId() ); 
       assertNotNull( theUserInfo );
       assertEquals( Status.ONLINE, theUserInfo.getStatus() );
@@ -443,7 +449,7 @@ public class UserInfoProtocolTest extends AbstractProtocolTest {
     }
   }
 
-  public void testChangeStatusRemotely() throws ProtocolException, UserInfoException, InterruptedException{
+  public void testChangeStatusRemotely() throws ProtocolException, UserInfoException, InterruptedException, P2PServerFactoryException{
     ProtocolContainer theProtocol1 = getProtocolContainer( -1, false, "1" );
     iP2PServer theServer1 = getP2PServer( theProtocol1, RoutingProtocol.START_PORT);
     RoutingProtocol theRoutingProtocol1 = (RoutingProtocol)theProtocol1.getProtocol( RoutingProtocol.ID );

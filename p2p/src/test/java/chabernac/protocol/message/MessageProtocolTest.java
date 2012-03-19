@@ -17,12 +17,13 @@ import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 
 import chabernac.protocol.AbstractProtocolTest;
+import chabernac.protocol.P2PServerFactory.ServerMode;
+import chabernac.protocol.P2PServerFactoryException;
 import chabernac.protocol.ProtocolContainer;
 import chabernac.protocol.ProtocolException;
 import chabernac.protocol.iP2PServer;
 import chabernac.protocol.encryption.EncryptionException;
 import chabernac.protocol.encryption.EncryptionProtocol;
-import chabernac.protocol.facade.P2PFacade.ServerMode;
 import chabernac.protocol.routing.AbstractPeer;
 import chabernac.protocol.routing.NoAvailableNetworkAdapterException;
 import chabernac.protocol.routing.RoutingProtocol;
@@ -43,7 +44,7 @@ public class MessageProtocolTest extends AbstractProtocolTest {
     BasicConfigurator.configure();
   }
 
-  public void testMessageProtocol() throws ProtocolException, InterruptedException, SocketException, MessageException, UnknownPeerException, NoAvailableNetworkAdapterException{
+  public void testMessageProtocol() throws ProtocolException, InterruptedException, SocketException, MessageException, UnknownPeerException, NoAvailableNetworkAdapterException, P2PServerFactoryException{
     LOGGER.debug("Begin of testMessageProtocol");
     ProtocolContainer theProtocol1 = getProtocolContainer( -1, false, "1" );
     iP2PServer theServer1 = getP2PServer( theProtocol1, RoutingProtocol.START_PORT);
@@ -109,7 +110,7 @@ public class MessageProtocolTest extends AbstractProtocolTest {
     }
   }
 
-  public void testSendEndUserMessage() throws ProtocolException, InterruptedException, MessageException, UnknownPeerException{
+  public void testSendEndUserMessage() throws ProtocolException, InterruptedException, MessageException, UnknownPeerException, P2PServerFactoryException{
     LOGGER.debug("Begin of testMessageProtocol");
     ProtocolContainer theProtocol1 = getProtocolContainer( -1, false, "1" );
     iP2PServer theServer1 = getP2PServer( theProtocol1, RoutingProtocol.START_PORT);
@@ -154,7 +155,7 @@ public class MessageProtocolTest extends AbstractProtocolTest {
 
   }
   
-  public void testSendEncryptedMessageAndSenderHasBadPublicKey() throws InterruptedException, ProtocolException, UnknownPeerException, MessageException, EncryptionException{
+  public void testSendEncryptedMessageAndSenderHasBadPublicKey() throws InterruptedException, ProtocolException, UnknownPeerException, MessageException, EncryptionException, P2PServerFactoryException{
     ProtocolContainer theProtocol1 = getProtocolContainer( -1, false, "1" );
     iP2PServer theServer1 = getP2PServer( theProtocol1, RoutingProtocol.START_PORT);
 
@@ -207,7 +208,7 @@ public class MessageProtocolTest extends AbstractProtocolTest {
     }
   }
 
-  public void testSendEnctryptedMessage() throws ProtocolException, InterruptedException, MessageException, UnknownPeerException{
+  public void testSendEnctryptedMessage() throws ProtocolException, InterruptedException, MessageException, UnknownPeerException, P2PServerFactoryException{
     LOGGER.debug("Begin of testMessageProtocol");
     ProtocolContainer theProtocol1 = getProtocolContainer( -1, false, "1" );
     iP2PServer theServer1 = getP2PServer( theProtocol1, RoutingProtocol.START_PORT);
@@ -255,7 +256,7 @@ public class MessageProtocolTest extends AbstractProtocolTest {
     }
   }
 
-  public void testStressTest() throws ProtocolException, InterruptedException, MessageException, UnknownPeerException{
+  public void testStressTest() throws ProtocolException, InterruptedException, MessageException, UnknownPeerException, P2PServerFactoryException{
     LOGGER.debug("Begin of testMessageProtocol");
     ProtocolContainer theProtocol1 = getProtocolContainer( -1, false, "1" );
     iP2PServer theServer1 = getP2PServer( theProtocol1, RoutingProtocol.START_PORT);
@@ -326,11 +327,11 @@ public class MessageProtocolTest extends AbstractProtocolTest {
     }
   }
 
-  public void testMessageLoop() throws ProtocolException, InterruptedException, UnknownPeerException, MessageException{
+  public void testMessageLoop() throws ProtocolException, InterruptedException, UnknownPeerException, MessageException, P2PServerFactoryException{
     //skip this test in stream splitting mode
     //because of the design of the stream splitter this test will always fail
     //anyway MessageProtocol is a deprecated protocol ans should be replaced by AsyncMessageProtocol 
-    if(myServerMode == ServerMode.STREAM_SPLITTING) return;
+    if(myServerMode == ServerMode.SPLITTING_SOCKET) return;
     ProtocolContainer theProtocol1 = getProtocolContainer( -1, false, "1" );
     iP2PServer theServer1 = getP2PServer( theProtocol1, RoutingProtocol.START_PORT);
 
@@ -376,7 +377,7 @@ public class MessageProtocolTest extends AbstractProtocolTest {
     }
   }
 
-  public void testMessageFromUnknownPeer() throws ProtocolException, InterruptedException, UnknownPeerException, MessageException{
+  public void testMessageFromUnknownPeer() throws ProtocolException, InterruptedException, UnknownPeerException, MessageException, P2PServerFactoryException{
     LOGGER.debug("Begin of testMessageProtocol");
     ProtocolContainer theProtocol1 = getProtocolContainer( -1, false, "1" );
     iP2PServer theServer1 = getP2PServer( theProtocol1, RoutingProtocol.START_PORT);

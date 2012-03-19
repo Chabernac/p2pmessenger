@@ -35,6 +35,7 @@ public class PeerSender extends AbstractPeerSender{
         return myWebToPeerSender.sendMessageTo( (WebPeer)theFrom, theTo, aMessage.getMessage(), aTimeoutInSeconds ); 
       } else if(theTo instanceof SocketPeer){
         SocketPeer theSocketPeer = (SocketPeer)theTo;
+        checkPortRange( theSocketPeer );
         if(myPeerToPeerSplitSender == null) theSocketPeer.setStreamSplittingSupported( false );
         
         if(theSocketPeer.isStreamSplittingSupported() == StreamSplitterSupport.UNKNOWN){
@@ -54,9 +55,18 @@ public class PeerSender extends AbstractPeerSender{
         }
       }
     }catch(Exception e){
-      throw new IOException("Could not send message", e);
+      try {
+        throw new IOException("Could not send message '" + aMessage.getMessage() + "' from '" + myRoutingTable.getEntryForLocalPeer().getPeer() + "' to '" +  aMessage.getPeer() + "'", e);
+      } catch ( UnknownPeerException e1 ) {
+      }
     }
     throw new IOException("Unsuported peer combination");
+  }
+  
+  private void checkPortRange(SocketPeer aSocketPeer) throws IOException{
+    if(aSocketPeer.getPort() < RoutingProtocol.START_PORT || aSocketPeer.getPort() > RoutingProtocol.END_PORT){
+      throw new IOException("Port '" + aSocketPeer.getPort() + "' is not withing the current port range '" + RoutingProtocol.START_PORT + "' --> '" + RoutingProtocol.END_PORT + "'");
+    }
   }
 
   public WebToPeerSender getWebToPeerSender() {

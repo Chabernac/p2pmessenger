@@ -11,6 +11,7 @@ import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 
 import chabernac.protocol.AbstractProtocolTest;
+import chabernac.protocol.P2PServerFactoryException;
 import chabernac.protocol.ProtocolContainer;
 import chabernac.protocol.ProtocolException;
 import chabernac.protocol.iP2PServer;
@@ -31,7 +32,7 @@ public class AsyncMessageProcotolTest extends AbstractProtocolTest {
     BasicConfigurator.configure();
   }
   
-  public void testSendEndUserMessage() throws ProtocolException, InterruptedException, MessageException, UnknownPeerException{
+  public void testSendEndUserMessage() throws ProtocolException, InterruptedException, MessageException, UnknownPeerException, P2PServerFactoryException{
     LOGGER.debug("Begin of testMessageProtocol");
     ProtocolContainer theProtocol1 = getProtocolContainer( -1, false, "1" );
     iP2PServer theServer1 = getP2PServer( theProtocol1, RoutingProtocol.START_PORT);
@@ -53,14 +54,11 @@ public class AsyncMessageProcotolTest extends AbstractProtocolTest {
       theRoutingProtocol1.scanLocalSystem();
       theRoutingProtocol2.scanLocalSystem();
 
-      //scanning the local system might take a small time
-      Thread.sleep( SLEEP_AFTER_SCAN );
-
       MessageCounterListener theListener = new MessageCounterListener();
       theMessageProtocol2.addMessageListener( theListener );
 
       Message theMessage = new Message();
-      theMessage.setDestination( theRoutingTable1.getEntryForPeer( "2" ).getPeer() );
+      theMessage.setDestination( theRoutingTable1.getEntryForPeer( "2", 5 ).getPeer() );
       int times = 10;
       for(int i=0;i<times;i++){
         theMessage.setMessage( "test message " + i );
@@ -75,7 +73,7 @@ public class AsyncMessageProcotolTest extends AbstractProtocolTest {
     }
   }
   
-  public void testCancelResponse() throws ProtocolException, InterruptedException, UnknownPeerException, MessageException{
+  public void testCancelResponse() throws ProtocolException, InterruptedException, UnknownPeerException, MessageException, P2PServerFactoryException{
     LOGGER.debug("Begin of testMessageProtocol");
     ProtocolContainer theProtocol1 = getProtocolContainer( -1, false, "1" );
     iP2PServer theServer1 = getP2PServer(theProtocol1, RoutingProtocol.START_PORT);
@@ -153,7 +151,7 @@ public class AsyncMessageProcotolTest extends AbstractProtocolTest {
 
   }
   
-  public void testMessageLoop() throws ProtocolException, InterruptedException, UnknownPeerException, MessageException{
+  public void testMessageLoop() throws ProtocolException, InterruptedException, UnknownPeerException, MessageException, P2PServerFactoryException{
     ProtocolContainer theProtocol1 = getProtocolContainer( -1, false, "1" );
     iP2PServer theServer1 = getP2PServer(theProtocol1, RoutingProtocol.START_PORT);
 

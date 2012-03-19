@@ -27,7 +27,7 @@ import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 
 import chabernac.io.SocketProxy;
-import chabernac.protocol.facade.P2PFacade.ServerMode;
+import chabernac.protocol.P2PServerFactory.ServerMode;
 import chabernac.protocol.message.DeliveryReport;
 import chabernac.protocol.message.MessageArchive;
 import chabernac.protocol.message.MultiPeerMessage;
