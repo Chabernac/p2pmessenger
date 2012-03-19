@@ -13,6 +13,7 @@ import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 
 import chabernac.protocol.AbstractProtocolTest;
+import chabernac.protocol.P2PServerFactoryException;
 import chabernac.protocol.ProtocolContainer;
 import chabernac.protocol.ProtocolException;
 import chabernac.protocol.ProtocolServer;
@@ -29,7 +30,7 @@ public class MultiPeerMessageProtocolTest extends AbstractProtocolTest {
     BasicConfigurator.configure();
   }
   
-  public void testMultiPeerMessageProtocol() throws ProtocolException, InterruptedException, MessageException{
+  public void testMultiPeerMessageProtocol() throws ProtocolException, InterruptedException, MessageException, P2PServerFactoryException{
     ProtocolContainer theProtocol1 = getProtocolContainer( -1, false, "x" );
     iP2PServer theServer1 = getP2PServer( theProtocol1, RoutingProtocol.START_PORT);
 

@@ -7,6 +7,7 @@ package chabernac.protocol.stacktrace;
 import org.apache.log4j.BasicConfigurator;
 
 import chabernac.protocol.AbstractProtocolTest;
+import chabernac.protocol.P2PServerFactoryException;
 import chabernac.protocol.ProtocolContainer;
 import chabernac.protocol.ProtocolException;
 import chabernac.protocol.iP2PServer;
@@ -23,7 +24,7 @@ public class ProcessProtocolTest extends AbstractProtocolTest  {
     BasicConfigurator.configure();
   }
   
-  public void testStackTraceProtocol() throws ProtocolException, UnknownPeerException, MessageException{
+  public void testStackTraceProtocol() throws ProtocolException, UnknownPeerException, MessageException, P2PServerFactoryException{
     ProtocolContainer theProtocolContainer = getProtocolContainer( -1, false, "1" );
     
     iP2PServer theServer = getP2PServer( theProtocolContainer, RoutingProtocol.START_PORT);
@@ -46,7 +47,7 @@ public class ProcessProtocolTest extends AbstractProtocolTest  {
     }
   }
   
-  public void testProcess() throws ProtocolException, UnknownPeerException, MessageException{
+  public void testProcess() throws ProtocolException, UnknownPeerException, MessageException, P2PServerFactoryException{
     ProtocolContainer theProtocolContainer = getProtocolContainer( -1, false, "1" );
     
     iP2PServer theServer = getP2PServer( theProtocolContainer, RoutingProtocol.START_PORT);

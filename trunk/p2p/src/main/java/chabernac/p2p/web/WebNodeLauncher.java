@@ -10,8 +10,8 @@ import java.net.URL;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
+import chabernac.protocol.P2PServerFactory.ServerMode;
 import chabernac.protocol.facade.P2PFacade;
-import chabernac.protocol.facade.P2PFacade.ServerMode;
 import chabernac.protocol.message.AsyncMessageProcotol;
 import chabernac.protocol.message.MessageProtocol;
 import chabernac.protocol.packet.PacketProtocol;

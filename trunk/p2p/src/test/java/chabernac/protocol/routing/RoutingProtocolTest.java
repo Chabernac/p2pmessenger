@@ -20,6 +20,7 @@ import org.mortbay.jetty.servlet.ServletHolder;
 import chabernac.comet.CometServlet;
 import chabernac.p2p.web.ProtocolServlet;
 import chabernac.protocol.AbstractProtocolTest;
+import chabernac.protocol.P2PServerFactoryException;
 import chabernac.protocol.ProtocolContainer;
 import chabernac.protocol.ProtocolException;
 import chabernac.protocol.ProtocolServer;
@@ -41,7 +42,7 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
     assertEquals( "300", theProperties.getProperty( "routingprotocol.exchangedelay", "10" ));
   }
   
-  public void testLocalPeer() throws InterruptedException, SocketException, NoAvailableNetworkAdapterException, ProtocolException, UnknownPeerException{
+  public void testLocalPeer() throws InterruptedException, SocketException, NoAvailableNetworkAdapterException, ProtocolException, UnknownPeerException, P2PServerFactoryException{
 
     ProtocolContainer theProtocol = getProtocolContainer( -1, true, "1" );
     iP2PServer theServer = getP2PServer( theProtocol, RoutingProtocol.START_PORT);
@@ -73,7 +74,7 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
 
   }
 
-  public void testRoutingProtocol() throws InterruptedException, ProtocolException, UnknownPeerException{
+  public void testRoutingProtocol() throws InterruptedException, ProtocolException, UnknownPeerException, P2PServerFactoryException{
 
     //delete routing table files is they exist
     for(int i=1;i<10;i++){
@@ -144,7 +145,7 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
     }
   }
 
-  public void testReachableSituation1() throws InterruptedException, ProtocolException, UnknownPeerException{
+  public void testReachableSituation1() throws InterruptedException, ProtocolException, UnknownPeerException, P2PServerFactoryException{
     //p1 <--> p2 <--> p3 peer 1 cannot reach peer 3
 //    Thread.sleep( 10000 );
 
@@ -459,8 +460,9 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
    * @throws InterruptedException
    * @throws ProtocolException 
    * @throws UnknownPeerException 
+   * @throws P2PServerFactoryException 
    */
-  public void testScanRemoteSystem() throws InterruptedException, ProtocolException, UnknownPeerException{
+  public void testScanRemoteSystem() throws InterruptedException, ProtocolException, UnknownPeerException, P2PServerFactoryException{
     
     ProtocolContainer theProtocol1 = getProtocolContainer( -1, false, "1" );
     iP2PServer theServer1 = getP2PServer( theProtocol1, RoutingProtocol.START_PORT);
@@ -547,7 +549,7 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
   /*
    * in this test we test if a change to a routing table will travel trough the entire network
    */
-  public void testChangePropagation() throws ProtocolException, InterruptedException, UnknownPeerException{
+  public void testChangePropagation() throws ProtocolException, InterruptedException, UnknownPeerException, P2PServerFactoryException{
     ProtocolContainer theProtocol1 = getProtocolContainer( -1, false, "1" );
     iP2PServer theServer1 = getP2PServer( theProtocol1, RoutingProtocol.START_PORT);
 
@@ -594,7 +596,7 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
   }
   
   @Ignore
-  public void testUDPAnnouncement() throws InterruptedException, ProtocolException, UnknownPeerException{
+  public void testUDPAnnouncement() throws InterruptedException, ProtocolException, UnknownPeerException, P2PServerFactoryException{
     ProtocolContainer theProtocol1 = getProtocolContainer( -1, false, "1" );
     iP2PServer theServer1 = getP2PServer( theProtocol1, RoutingProtocol.START_PORT);
 
@@ -644,7 +646,7 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
     }
   }
   
-  public void testPersistRoutingTableWithFixedPeerId() throws ProtocolException, InterruptedException{
+  public void testPersistRoutingTableWithFixedPeerId() throws ProtocolException, InterruptedException, P2PServerFactoryException{
     File theRoutingTableFile = new File( "RoutingTable_1.bin" );
     if(theRoutingTableFile.exists()) theRoutingTableFile.delete();
     
@@ -688,7 +690,7 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
     }
   }
   
-  public void testPersistRoutingTableWithNewPeerId() throws ProtocolException, InterruptedException{
+  public void testPersistRoutingTableWithNewPeerId() throws ProtocolException, InterruptedException, P2PServerFactoryException{
     File theRoutingTableFile = new File( "RoutingTable.bin" );
     if(theRoutingTableFile.exists()) theRoutingTableFile.delete();
     
@@ -760,7 +762,7 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
 //    }
 //  }
   
-    public void testLocalPeerEntry() throws ProtocolException, UnknownPeerException, InterruptedException{
+    public void testLocalPeerEntry() throws ProtocolException, UnknownPeerException, InterruptedException, P2PServerFactoryException{
       ProtocolContainer theProtocol1 = getProtocolContainer( -1, true, "1");
       iP2PServer theServer1 = getP2PServer( theProtocol1, RoutingProtocol.START_PORT);
       
@@ -841,7 +843,7 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
 //      }
 //    }
     
-    public void testDoNotExchangeRoutingTableEntriesWithMaxHopDistance() throws ProtocolException, NoAvailableNetworkAdapterException, InterruptedException{
+    public void testDoNotExchangeRoutingTableEntriesWithMaxHopDistance() throws ProtocolException, NoAvailableNetworkAdapterException, InterruptedException, P2PServerFactoryException{
       ProtocolContainer theProtocol1 = getProtocolContainer( 1, false, "1" );
       iP2PServer theServer1 = getP2PServer( theProtocol1, RoutingProtocol.START_PORT);
 

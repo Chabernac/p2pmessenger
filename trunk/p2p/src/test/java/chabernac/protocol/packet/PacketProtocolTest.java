@@ -14,6 +14,7 @@ import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 
 import chabernac.protocol.AbstractProtocolTest;
+import chabernac.protocol.P2PServerFactoryException;
 import chabernac.protocol.ProtocolContainer;
 import chabernac.protocol.ProtocolException;
 import chabernac.protocol.ProtocolServer;
@@ -34,7 +35,7 @@ public class PacketProtocolTest extends AbstractProtocolTest {
   }
   
   
-  public void testSendPacket() throws ProtocolException, InterruptedException, MessageException, UnknownPeerException, PacketProtocolException{
+  public void testSendPacket() throws ProtocolException, InterruptedException, MessageException, UnknownPeerException, PacketProtocolException, P2PServerFactoryException{
     LOGGER.debug("Begin of testMessageProtocol");
     ProtocolContainer theProtocol1 = getProtocolContainer( -1, false, "1" );
     iP2PServer theServer1 = getP2PServer( theProtocol1, RoutingProtocol.START_PORT);
@@ -87,7 +88,7 @@ public class PacketProtocolTest extends AbstractProtocolTest {
     }
   }
   
-  public void testSendPacketNoReply() throws ProtocolException, InterruptedException, MessageException, UnknownPeerException, PacketProtocolException{
+  public void testSendPacketNoReply() throws ProtocolException, InterruptedException, MessageException, UnknownPeerException, PacketProtocolException, P2PServerFactoryException{
     LOGGER.debug("Begin of testMessageProtocol");
     ProtocolContainer theProtocol1 = getProtocolContainer( -1, false, "1" );
     iP2PServer theServer1 = getP2PServer( theProtocol1, RoutingProtocol.START_PORT);
@@ -133,7 +134,7 @@ public class PacketProtocolTest extends AbstractProtocolTest {
     }
   }
   
-  public void testSendPacketMultipeer() throws ProtocolException, InterruptedException, SocketException, MessageException, UnknownPeerException, NoAvailableNetworkAdapterException, PacketProtocolException{
+  public void testSendPacketMultipeer() throws ProtocolException, InterruptedException, SocketException, MessageException, UnknownPeerException, NoAvailableNetworkAdapterException, PacketProtocolException, P2PServerFactoryException{
     LOGGER.debug("Begin of testMessageProtocol");
     ProtocolContainer theProtocol1 = getProtocolContainer( -1, false, "1" );
     iP2PServer theServer1 = getP2PServer( theProtocol1, RoutingProtocol.START_PORT);

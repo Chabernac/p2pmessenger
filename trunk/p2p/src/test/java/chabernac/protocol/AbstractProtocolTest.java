@@ -8,17 +8,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import junit.framework.TestCase;
-import chabernac.io.StreamSplittingServer;
 import chabernac.p2p.settings.P2PSettings;
-import chabernac.protocol.routing.RoutingProtocol;
-import chabernac.protocol.routing.SocketRoutingTableInspector;
+import chabernac.protocol.P2PServerFactory.ServerMode;
 import chabernac.tools.PropertyMap;
 
 public abstract class AbstractProtocolTest extends TestCase {
   protected static final int SLEEP_AFTER_SCAN = 2000;
   
-  protected static enum ServerMode{SOCKET, STREAM_SPLITTING};
-  protected ServerMode myServerMode = ServerMode.STREAM_SPLITTING;
+  protected ServerMode myServerMode = ServerMode.SPLITTING_SOCKET;
   
   public void setUp() throws Exception{
     P2PSettings.getInstance().getSocketPool().cleanUp();
@@ -48,21 +45,7 @@ public abstract class AbstractProtocolTest extends TestCase {
     return new ProtocolContainer(theFactory);
   }
   
-  protected iP2PServer getP2PServer(ProtocolContainer aProtocolContainer, int aStartPort) throws ProtocolException{
-    if(myServerMode == ServerMode.SOCKET){
-      return new ProtocolServer(aProtocolContainer, aStartPort); 
-    } else if(myServerMode == ServerMode.STREAM_SPLITTING){
-      RoutingProtocol theRoutingProtocol = (RoutingProtocol)aProtocolContainer.getProtocol( RoutingProtocol.ID );
-      
-      InputOutputProtocolAdapter theAdaptor = new InputOutputProtocolAdapter( aProtocolContainer );
-      StreamSplittingServer theServer = new StreamSplittingServer( 
-          theAdaptor, aStartPort, true, theRoutingProtocol.getLocalPeerId() );
-      theAdaptor.setStreamSplittingServer( theServer );
-      theServer.addListener( new StreamSplittingServerListener( aProtocolContainer ) );
-      theRoutingProtocol.setRoutingTableInspector( new SocketRoutingTableInspector(aProtocolContainer.getSessionData() ) );
-      return new P2PServerSplittingServerAdapter( theServer );
-    }
-    throw new ProtocolException("Could not create p2p server");
+  protected iP2PServer getP2PServer(ProtocolContainer aProtocolContainer, int aStartPort) throws P2PServerFactoryException{
+    return P2PServerFactory.createSocketServer( aProtocolContainer, myServerMode );
   }
-
 }

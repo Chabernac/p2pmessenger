@@ -35,7 +35,7 @@ public class SocketPeer extends AbstractPeer implements Serializable {
   private List<SimpleNetworkInterface> myHost = null;
   private int myPort;
   public static enum StreamSplitterSupport { TRUE, FALSE, UNKNOWN };
-  private StreamSplitterSupport myStreamSplittingSupported = StreamSplitterSupport.UNKNOWN;
+  private StreamSplitterSupport myStreamSplittingSupported = StreamSplitterSupport.TRUE;
 
   public SocketPeer (){
     super(null);

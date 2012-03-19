@@ -19,20 +19,18 @@ import java.util.concurrent.Future;
 
 import javax.sound.sampled.AudioFormat;
 
+import org.apache.log4j.Logger;
+
 import chabernac.io.BasicSocketPool;
 import chabernac.io.CachingSocketPool;
-import chabernac.io.StreamSplittingServer;
 import chabernac.io.iSocketPool;
 import chabernac.p2p.debug.RoutingFrame;
 import chabernac.p2p.settings.P2PSettings;
-import chabernac.protocol.InputOutputProtocolAdapter;
-import chabernac.protocol.P2PServerSplittingServerAdapter;
+import chabernac.protocol.P2PServerFactory;
+import chabernac.protocol.P2PServerFactory.ServerMode;
 import chabernac.protocol.ProtocolContainer;
 import chabernac.protocol.ProtocolException;
 import chabernac.protocol.ProtocolFactory;
-import chabernac.protocol.ProtocolServer;
-import chabernac.protocol.ProtocolWebServer;
-import chabernac.protocol.StreamSplittingServerListener;
 import chabernac.protocol.iP2PServer;
 import chabernac.protocol.iProtocolDelegate;
 import chabernac.protocol.application.ApplicationProtocol;
@@ -67,7 +65,6 @@ import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.RoutingTable;
 import chabernac.protocol.routing.RoutingTableEntry;
 import chabernac.protocol.routing.SocketPeer;
-import chabernac.protocol.routing.SocketRoutingTableInspector;
 import chabernac.protocol.routing.WebPeerProtocol;
 import chabernac.protocol.userinfo.AutoUserInfoStatusDector;
 import chabernac.protocol.userinfo.UserInfo;
@@ -104,8 +101,7 @@ import chabernac.tools.PropertyMap;
  */
 
 public class P2PFacade {
-  public static enum ServerMode{SOCKET, WEB, SPLITTING_SOCKET, BOTH};
-
+  private static Logger LOGGER = Logger.getLogger(P2PFacade.class);
   private ServerMode myServerMode = ServerMode.SOCKET;
   private ProtocolContainer myContainer = null;
   private List<iP2PServer> myProtocolServers = new ArrayList< iP2PServer >();
@@ -800,27 +796,11 @@ public class P2PFacade {
 
 
       if(myServerMode == ServerMode.WEB || myServerMode == ServerMode.BOTH){
-        if(myWebURL == null) throw new P2PFacadeException( "Must set a web url before starting" );
-        ProtocolWebServer theProtocolWebServer = new ProtocolWebServer( myContainer, myWebPort, myWebURL );
-        theProtocolWebServer.setAJPPort( myAJPPort );
-        myProtocolServers.add(theProtocolWebServer);
+        myProtocolServers.add(P2PServerFactory.createWebServer( myContainer, myWebURL, myWebPort, myAJPPort));
       }
 
-      if(myServerMode == ServerMode.SOCKET) {
-        myProtocolServers.add(new ProtocolServer(myContainer, RoutingProtocol.START_PORT, true));
-        theRoutingProtocol.setRoutingTableInspector( new SocketRoutingTableInspector(myContainer.getSessionData() ) );
-      }
-
-      if(myServerMode == ServerMode.SPLITTING_SOCKET || myServerMode == ServerMode.BOTH){
-        
-        InputOutputProtocolAdapter theAdaptor = new InputOutputProtocolAdapter( myContainer );
-        StreamSplittingServer theServer = new StreamSplittingServer( 
-            theAdaptor, RoutingProtocol.START_PORT, true, theRoutingProtocol.getLocalPeerId() );
-        theAdaptor.setStreamSplittingServer( theServer );
-        
-        theServer.addListener( new StreamSplittingServerListener( myContainer ) );
-        myProtocolServers.add(new P2PServerSplittingServerAdapter(theServer));
-        theRoutingProtocol.setRoutingTableInspector( new SocketRoutingTableInspector(myContainer.getSessionData() ) );
+      if(myServerMode == ServerMode.SOCKET || myServerMode == ServerMode.BOTH || myServerMode == ServerMode.SPLITTING_SOCKET) {
+        myProtocolServers.add(P2PServerFactory.createSocketServer( myContainer, myServerMode ));
       }
 
       for(iP2PServer theServer : myProtocolServers){
@@ -855,7 +835,8 @@ public class P2PFacade {
       setAutoUserStatusDetectionEnabled(isAutoUserStatusEnabled);
 
       return this;
-    }catch(ProtocolException e){
+    }catch(Exception e){
+      LOGGER.error( "An error occured while starting facade", e );
       stop();
       throw new P2PFacadeException("Could not start P2P Facade", e);
     }

@@ -6,6 +6,7 @@ import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 
 import chabernac.protocol.AbstractProtocolTest;
+import chabernac.protocol.P2PServerFactoryException;
 import chabernac.protocol.ProtocolContainer;
 import chabernac.protocol.ProtocolException;
 import chabernac.protocol.ProtocolServer;
@@ -24,7 +25,7 @@ public class PipeProtocolTest extends AbstractProtocolTest {
     BasicConfigurator.configure();
   }
   
-  public void testPipeProtocol() throws InterruptedException, IOException, UnknownPeerException, ProtocolException, PipeException, NoAvailableNetworkAdapterException{
+  public void testPipeProtocol() throws InterruptedException, IOException, UnknownPeerException, ProtocolException, PipeException, NoAvailableNetworkAdapterException, P2PServerFactoryException{
     //p1 <--> p2 <--> p3 peer 1 cannot reach peer 3
 
     ProtocolContainer theProtocol1 = getProtocolContainer( 1, false, "1" );
