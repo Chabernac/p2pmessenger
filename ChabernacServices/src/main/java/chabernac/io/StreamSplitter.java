@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 
@@ -66,7 +67,8 @@ public class StreamSplitter {
   public String send(String anInput) throws InterruptedException{
 //    System.out.println(myId + ":SENDING INPUT: '" + anInput + "'");
     sendWithoutReply(IN + anInput);
-    String theReply = myOutputQueue.take();
+    String theReply = myOutputQueue.poll(5, TimeUnit.SECONDS);
+    if(theReply == null) throw new InterruptedException("No reply received within 5 seconds");
 //    System.out.println(myId + ":RETURNING OUTPUT: '" + theReply + "'");
     return theReply;
   }
