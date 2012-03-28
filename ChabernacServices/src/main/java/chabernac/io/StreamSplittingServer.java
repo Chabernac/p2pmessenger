@@ -135,6 +135,8 @@ public class StreamSplittingServer implements iSocketSender{
       });
 
       mySockets.put( theSplitter.getId(), aSocket );
+    } else {
+      aSocket.close();
     }
     return theSplitter.getId();
 
@@ -166,12 +168,14 @@ public class StreamSplittingServer implements iSocketSender{
         try{
           int theRetries = 0;
           Socket theSocket = null;
+          int theTotalSleep = 0;
           while(theSocket == null && theRetries++ < 10){
             myOutgoingSocketCounter.incrementAndGet();
             theSocket = new Socket(aHost, aPort);
             if(theSocket.getInputStream().read() == 0){
               int sleep = (int)Math.abs(myRandom.nextLong() % (theRetries * 100));
-              LOGGER.debug("Synchronous connection attempt detected in " + myId + " waiting for a random time to create a new connection retry nr: " + theRetries + " sleep " + sleep);
+              theTotalSleep += sleep;
+              LOGGER.debug("Synchronous connection attempt detected in " + myId + " when connecting to '" + theSocket.toString() + "' waiting for a random time to create a new connection retry nr: " + theRetries + " sleep " + sleep);
               theSocket.close();
               theSocket = null;
               myOutgoingSocketCounter.decrementAndGet();
@@ -179,6 +183,7 @@ public class StreamSplittingServer implements iSocketSender{
             }
           }
           if(theSocket == null) throw new IOException("Could not establish a connection");
+          LOGGER.debug("Connection made after '" + theRetries + "' attempts in " + myId + " to '" + theSocket.toString() + "' sleep " + theTotalSleep);
           anId = addSocket( theSocket );
         } catch ( InterruptedException e ) {
           LOGGER.error("sleeping interrupted", e);
