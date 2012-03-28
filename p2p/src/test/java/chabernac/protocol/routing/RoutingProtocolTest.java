@@ -23,7 +23,6 @@ import chabernac.protocol.AbstractProtocolTest;
 import chabernac.protocol.P2PServerFactoryException;
 import chabernac.protocol.ProtocolContainer;
 import chabernac.protocol.ProtocolException;
-import chabernac.protocol.ProtocolServer;
 import chabernac.protocol.ProtocolWebServer;
 import chabernac.protocol.iP2PServer;
 import chabernac.tools.SimpleNetworkInterface;
@@ -185,9 +184,11 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
       
       Thread.sleep( SLEEP_AFTER_SCAN );
       
-      theRoutingProtocol2.exchangeRoutingTable();
-      theRoutingProtocol1.exchangeRoutingTable();
-      theRoutingProtocol3.exchangeRoutingTable();
+      for(int i=0;i<2;i++){
+        theRoutingProtocol2.exchangeRoutingTable();
+        theRoutingProtocol1.exchangeRoutingTable();
+        theRoutingProtocol3.exchangeRoutingTable();
+      }
       
 //      theServer1.stop();
 //      theServer2.stop();
@@ -445,10 +446,12 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
       testEntry( theRoutingTable4.getEntryForPeer("3"), 6, "3", false, false);
       testEntry( theRoutingTable4.getEntryForPeer("4"), 0, "4", true, true);
     }finally{
+      LOGGER.debug( "Shutting down servers" );
       if(theServer1 != null) theServer1.stop();
       if(theServer2 != null) theServer2.stop();
       if(theServer3 != null) theServer3.stop();
       if(theServer4 != null) theServer4.stop();
+      LOGGER.debug( "Shutting down servers ended" );
     }
   }
   

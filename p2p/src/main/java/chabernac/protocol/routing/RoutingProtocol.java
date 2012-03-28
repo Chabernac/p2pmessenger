@@ -510,7 +510,7 @@ public class RoutingProtocol extends Protocol {
       if(anUnreachablePeers == null || !anUnreachablePeers.contains( theRemotePeer.getPeerId() )){
         RoutingTableEntry theEntry = new RoutingTableEntry(theRemotePeer, 1, theRemotePeer, System.currentTimeMillis());
 
-        LOGGER.debug("Detected system on '" + theRemotePeer.getEndPointRepresentation());
+        LOGGER.debug("Detected system on '" + theRemotePeer.getEndPointRepresentation() + " Local peer '" + myLocalPeerId + "' remote peer '" + theRemotePeer.getPeerId() + "'");
         //only if we have detected our self we set the hop distance to 0
         if(theRemotePeer.getPeerId().equals(myRoutingTable.getLocalPeerId())){
           theEntry = theEntry.derivedEntry( 0 );
@@ -541,7 +541,9 @@ public class RoutingProtocol extends Protocol {
     LOGGER.debug( "Scanning local system" );
     //      List<String> theLocalHosts = NetTools.getLocalExposedIpAddresses();
     for(int i=START_PORT;i<=END_PORT;i++){
-      getExecutorService().execute( new ScanSystem(this, i, myUnreachablePeers, "localhost"));
+      if(i != myServerInfo.getServerPort()){
+        getExecutorService().execute( new ScanSystem(this, i, myUnreachablePeers, "localhost"));
+      }
     }
     //    }catch(SocketException e){
     //      LOGGER.error( "Could not get local ip addressed", e );
@@ -691,7 +693,6 @@ public class RoutingProtocol extends Protocol {
   private void sendAnnouncementWithReply(RoutingTableEntry aRoutingTableEntry){
     AbstractPeer thePeer = aRoutingTableEntry.getPeer();
 
-    LOGGER.debug("Entering send announcement for peer '" + thePeer.getPeerId() + "' contactable: '" + thePeer.isContactable() + "'");
 
     if(thePeer.isContactable() && !thePeer.getPeerId().equals(myRoutingTable.getLocalPeerId())){
       try {
@@ -699,8 +700,8 @@ public class RoutingProtocol extends Protocol {
           //simulate that we cannot contact the peer
           throw new Exception("Simulate that we can not contact peer: " + thePeer.getPeerId());
         }
-
-        LOGGER.debug("Sending announcement to peer '" + thePeer.getPeerId() + "'");
+        
+        LOGGER.debug("Trying to exchange routing tables between " + myLocalPeerId + " and " + thePeer.getPeerId());
 
         String theCMD = createMessage( Command.ANNOUNCEMENT_WITH_REPLY.name() + " "  + myRoutingTableEntryConverter.toString( myRoutingTable.getEntryForLocalPeer() ));
         String theTable = getPeerSender().send(thePeer, theCMD);
@@ -725,9 +726,12 @@ public class RoutingProtocol extends Protocol {
 
           myRoutingTable.addRoutingTableEntry( theEntryOfRemotePeer.derivedEntry( 1 ) );
         }
+        LOGGER.debug("Exchange routing tables between " + myLocalPeerId + " and " + thePeer.getPeerId() + " completed");
       } catch ( Exception e ) {
-        //LOGGER.error( "Could not contact peer '" + thePeer.getPeerId() + "'", e );
-        LOGGER.error( "Could not contact peer '" + thePeer.getPeerId() + "'", e );
+        if(!e.getMessage().startsWith( "Simulate" )){
+          //LOGGER.error( "Could not contact peer '" + thePeer.getPeerId() + "'", e );
+          LOGGER.error( "Could exchange routing tables between '" + myLocalPeerId + "' and '" + thePeer.getPeerId() + "'", e );
+        }
         //set the peer entry itself to the max hop distance, only if the peer was previously direct reachable
         if(aRoutingTableEntry.getHopDistance() == 1) myRoutingTable.addRoutingTableEntry(aRoutingTableEntry.derivedEntry(RoutingTableEntry.MAX_HOP_DISTANCE));
 

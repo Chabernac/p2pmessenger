@@ -1,6 +1,9 @@
 package chabernac.protocol.routing;
 
 import java.io.IOException;
+import java.net.ConnectException;
+
+import org.apache.log4j.Logger;
 
 import chabernac.io.iSocketSender;
 import chabernac.p2p.io.PeerToPeerSender;
@@ -10,6 +13,8 @@ import chabernac.p2p.io.WebToPeerSender;
 import chabernac.protocol.routing.SocketPeer.StreamSplitterSupport;
 
 public class PeerSender extends AbstractPeerSender{
+  private static Logger LOGGER = Logger.getLogger(PeerSender.class);
+  
   private final RoutingTable myRoutingTable;
 
   private final WebToPeerSender myWebToPeerSender = new WebToPeerSender();
