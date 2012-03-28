@@ -5,6 +5,7 @@
 package chabernac.protocol.routing;
 
 import java.io.IOException;
+import java.net.ConnectException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -53,7 +54,12 @@ public abstract class AbstractPeerSender implements iPeerSender {
       if(theResponse != null) myBytesReceived += (theResponse.toCharArray().length * 2);
       return theResponse;
     }catch(IOException e){
-      LOGGER.error("Error occured while sending message", e);
+      if(e.getCause() != null && e.getCause() instanceof ConnectException){
+        //do not log the entire stacktrace when we can just not connect to this host.
+        LOGGER.debug("Can not connect to peer at '" + aTo.getEndPointRepresentation() + "'");
+      } else {
+        LOGGER.error("Error occured while sending message", e);
+      }
       theMessage.setState( State.NOK );
       throw e;
     }

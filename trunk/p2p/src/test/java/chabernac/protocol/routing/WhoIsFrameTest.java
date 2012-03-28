@@ -4,12 +4,11 @@
  */
 package chabernac.protocol.routing;
 
-import chabernac.p2p.debug.WhoIsFrame;
 import junit.framework.TestCase;
 
 public class WhoIsFrameTest extends TestCase {
   public void testWhoIsFrame(){
-    WhoIsFrame theFrame = new WhoIsFrame();
-    theFrame.setVisible( true );
+    //WhoIsFrame theFrame = new WhoIsFrame();
+    //theFrame.setVisible( true );
   }
 }
