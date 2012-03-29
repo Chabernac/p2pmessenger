@@ -730,7 +730,7 @@ public class RoutingProtocol extends Protocol {
       } catch ( Exception e ) {
         if(!e.getMessage().startsWith( "Simulate" )){
           //LOGGER.error( "Could not contact peer '" + thePeer.getPeerId() + "'", e );
-          LOGGER.error( "Could exchange routing tables between '" + myLocalPeerId + "' and '" + thePeer.getPeerId() + "'", e );
+          LOGGER.error( "Could not exchange routing tables between '" + myLocalPeerId + "' and '" + thePeer.getPeerId() + "'", e );
         }
         //set the peer entry itself to the max hop distance, only if the peer was previously direct reachable
         if(aRoutingTableEntry.getHopDistance() == 1) myRoutingTable.addRoutingTableEntry(aRoutingTableEntry.derivedEntry(RoutingTableEntry.MAX_HOP_DISTANCE));
