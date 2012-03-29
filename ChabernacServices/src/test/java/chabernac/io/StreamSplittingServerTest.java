@@ -23,6 +23,37 @@ public class StreamSplittingServerTest extends TestCase {
     BasicConfigurator.resetConfiguration();
     BasicConfigurator.configure();
   }
+  
+  public void testCloseStreamSplittingServerOnOneSide() throws IOException, InterruptedException{
+
+    StreamSplittingServer theServer1 = new StreamSplittingServer( new MultiplyHandler( 2 ), 13000, false, "1" );
+    StreamSplittingServer theServer2 = new StreamSplittingServer( new MultiplyHandler( 3 ), 13001, false, "2" );
+    theServer1.start();
+    theServer2.start();
+    assertTrue(theServer1.isStarted());
+    assertTrue(theServer2.isStarted());
+
+    try{
+      assertEquals( Integer.toString(5 * 3), theServer1.send( "localhost", 13001, Integer.toString(5) ).getReply());
+      assertEquals( Integer.toString(5 * 2), theServer2.send( "localhost", 13000, Integer.toString(5) ).getReply());
+      
+      assertTrue( theServer1.containsSocketForId( "2" ) );
+      assertTrue( theServer2.containsSocketForId( "1" ) );
+      
+      theServer1.close();
+      //the connection between peer 1 and 2 should be closed, both peers should have no connections left in the pool
+      
+      Thread.sleep( 3000 );
+      
+      assertFalse( theServer1.containsSocketForId( "2" ) );
+      assertFalse( theServer2.containsSocketForId( "1" ) );
+      
+    }finally{
+      theServer1.close();
+      theServer2.close();
+    }
+
+  }
 
   public void testStreamSplittingServer() throws IOException, InterruptedException{
 

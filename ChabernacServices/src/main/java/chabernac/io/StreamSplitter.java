@@ -51,7 +51,6 @@ public class StreamSplitter {
   }
 
   public void close(){
-    
     myOutputStream.close();
     try {
       myInputStream.close();

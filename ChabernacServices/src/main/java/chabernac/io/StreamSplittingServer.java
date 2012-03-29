@@ -126,6 +126,7 @@ public class StreamSplittingServer implements iSocketSender{
         @Override
         public void streamClosed() {
           try {
+            LOGGER.debug( "Closing socket for peer id '" + theSplitter.getId() + "' because the stream was closed" );
             aSocket.close();
             mySockets.remove(theSplitter.getId());
           } catch ( IOException e ) {
