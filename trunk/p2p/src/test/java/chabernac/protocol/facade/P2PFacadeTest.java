@@ -182,7 +182,7 @@ public class P2PFacadeTest extends TestCase {
       theFacade2.stop();
     }
   }
-  
+  /*
   public void testP2PSendMessageNonSplittingToSplitting() throws P2PFacadeException, InterruptedException, ExecutionException{
     LOGGER.debug("Executing test " + new Exception().getStackTrace()[0].getMethodName());
     P2PFacade theFacade1 = new P2PFacade()
@@ -310,6 +310,7 @@ public class P2PFacadeTest extends TestCase {
       theFacade2.stop();
     }
   }
+  */
 
 
   public void testSendMessageWhenServerNotStarted() throws P2PFacadeException{
