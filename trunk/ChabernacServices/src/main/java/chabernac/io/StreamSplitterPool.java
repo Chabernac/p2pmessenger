@@ -13,11 +13,10 @@ import java.util.concurrent.ExecutorService;
 import org.apache.log4j.Logger;
 
 public class StreamSplitterPool {
+  private static Logger LOGGER = Logger.getLogger(StreamSplitterPool.class);
   public final static String ID_PREFIX = "ID:";
-
   public static enum Result {ADDED, ID_ALREADY_EXISTS, IS_OWN_ID };
 
-  private static Logger LOGGER = Logger.getLogger(StreamSplitterPool.class);
 
   protected final Map< String, StreamSplitter > myStreamSplitters = new HashMap< String, StreamSplitter >();
   protected final String myId;
@@ -90,6 +89,7 @@ public class StreamSplitterPool {
   public void close(String aRemoteId){
     synchronized(aRemoteId){
       if(myStreamSplitters.containsKey( aRemoteId )){
+        LOGGER.debug("Closing stream splitter with id '" + aRemoteId + "'");
         myStreamSplitters.get(aRemoteId).close();
       }
     }
@@ -120,6 +120,7 @@ public class StreamSplitterPool {
     @Override
     public void streamClosed() {
       synchronized(StreamSplitterPool.this){
+        LOGGER.debug("Removing stream splitter for peer with id '" + myId + "'");
         myStreamSplitters.remove( myId );
       }
     }
