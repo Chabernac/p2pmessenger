@@ -391,14 +391,20 @@ public class UserInfoProtocolTest extends AbstractProtocolTest {
       assertTrue( theServer1.start() );
       assertTrue( theServer2.start() );
 
-      Thread.sleep( SLEEP_AFTER_SCAN );
+      Thread.sleep( 1000 );
 
       theRoutingProtocol1.scanLocalSystem();
       theRoutingProtocol2.scanLocalSystem();
 
-      theRoutingTable1.getEntryForLocalPeer( 5 );
-      theRoutingTable2.getEntryForLocalPeer( 5 );
-      
+      Thread.sleep(SLEEP_AFTER_SCAN);
+
+      //after a local system scan we must at least know our selfs
+      assertNotNull( theRoutingTable1.getEntryForLocalPeer(5) );
+      assertNotNull( theRoutingTable2.getEntryForLocalPeer(5) );
+
+      theRoutingProtocol1.exchangeRoutingTable();
+      theRoutingProtocol2.exchangeRoutingTable();
+
       theRoutingTable2.getEntryForPeer( theRoutingTable1.getLocalPeerId(), 5 );
       theRoutingTable1.getEntryForPeer( theRoutingTable2.getLocalPeerId(), 5 );
       
@@ -406,7 +412,7 @@ public class UserInfoProtocolTest extends AbstractProtocolTest {
       assertNotNull( theUserInfo );
       assertEquals( Status.ONLINE, theUserInfo.getStatus() );
 
-      theServer1.kill();
+      theServer1.stop();
 
       Thread.sleep( SLEEP_AFTER_SCAN );
 

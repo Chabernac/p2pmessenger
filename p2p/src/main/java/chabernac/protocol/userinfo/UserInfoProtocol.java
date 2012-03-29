@@ -366,6 +366,7 @@ public class UserInfoProtocol extends Protocol {
           //we have user information for this peer
           //if the entry is not reachable any more than set the status of the user to offline
           if(!anEntry.isReachable()){
+            LOGGER.debug("Peer is not reachable any more setting peer '" + anEntry.getPeer().getPeerId() + "'  to offline");
             UserInfo theUserInfo = myUserInfo.get(anEntry.getPeer().getPeerId());
             theUserInfo.setStatus( Status.OFFLINE );
             notifyUserInfoChanged(theUserInfo);
@@ -379,6 +380,7 @@ public class UserInfoProtocol extends Protocol {
     @Override
     public void routingTableEntryRemoved( RoutingTableEntry anEntry ) {
       if(myUserInfo.containsKey( anEntry.getPeer().getPeerId() )){
+        LOGGER.debug("Routing table entry was removed setting for peer '" + anEntry.getPeer().getPeerId() + "'  to offline");
         UserInfo theInfo = myUserInfo.get( anEntry.getPeer().getPeerId() );
         theInfo.setStatus( Status.OFFLINE );
         //        myUserInfo.remove( anEntry.getPeer().getPeerId() );
