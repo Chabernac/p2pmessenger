@@ -49,6 +49,7 @@ public class SocketPeer extends AbstractPeer implements Serializable {
     mySupportedProtocols.clear();
     mySupportedProtocols.addAll(aSocketPeer.getSupportedProtocols());
     myHost = aHosts;
+    myPort = aSocketPeer.getPort();
 
   }
   
