@@ -85,7 +85,7 @@ public abstract class AbstractMessageProtocol extends Protocol {
       AbstractPeer theGateway = getRoutingTable().getGatewayForPeer( aMessage.getDestination() );
       
       aMessage.setLastHop(getRoutingTable().getEntryForLocalPeer().getPeer());
-      LOGGER.debug("Forwarding message with id '" + aMessage.getMessageId().toString() + "' last hop='" + aMessage.getLastHop() + "' hops='" + aMessage.getHops() + "'");
+//      LOGGER.debug("Forwarding message with id '" + aMessage.getMessageId().toString() + "' last hop='" + aMessage.getLastHop() + "' hops='" + aMessage.getHops() + "'");
 
       AbstractPeer theLocalPeer = getRoutingTable().getEntryForLocalPeer().getPeer();
       if(!theGateway.isSameEndPointAs( theLocalPeer )){

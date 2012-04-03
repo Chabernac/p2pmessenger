@@ -25,6 +25,7 @@ import chabernac.protocol.IProtocol;
 import chabernac.protocol.Protocol;
 import chabernac.protocol.ProtocolContainer;
 import chabernac.protocol.ProtocolException;
+import chabernac.protocol.ServerInfo;
 import chabernac.protocol.message.AsyncMessageProcotol;
 import chabernac.protocol.message.Message;
 import chabernac.protocol.routing.AbstractPeer;
@@ -221,6 +222,15 @@ public class UserInfoProtocol extends Protocol {
       Thread.sleep(2000);
     } catch ( Exception e ) {
       LOGGER.error( "Error occured while stopping user info protocol", e );
+    }
+  }
+  
+  public void setServerInfo(ServerInfo aServerInfo) throws ProtocolException{
+    super.setServerInfo(aServerInfo);
+    try {
+      getPersonalInfo().setStatus(Status.ONLINE);
+    } catch (UserInfoException e) {
+      LOGGER.error( "Error occured while starting user info protocol", e );
     }
   }
 

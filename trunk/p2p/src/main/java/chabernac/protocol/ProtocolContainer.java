@@ -221,6 +221,9 @@ public class ProtocolContainer implements IProtocol {
   }
 
   public ExecutorService getExecutorService(){
+    if(myExecutor.isShutdown()){
+      myExecutor = new DynamicSizeExecutor(5, 256,0);
+    }
     return myExecutor;
   }
   
