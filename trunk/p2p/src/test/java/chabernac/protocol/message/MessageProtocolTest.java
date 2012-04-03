@@ -294,7 +294,7 @@ public class MessageProtocolTest extends AbstractProtocolTest {
         theservice.execute( new Runnable (){
           public void run(){
             try{
-              System.out.println("Sending message nr: " + theCurrMessage);
+//              System.out.println("Sending message nr: " + theCurrMessage);
               Message theMessage = new Message();
               theMessage.addMessageIndicator( MessageIndicator.TO_BE_ENCRYPTED );
               theMessage.setDestination( theRoutingTable1.getEntryForPeer( "2" ).getPeer() );
@@ -312,7 +312,7 @@ public class MessageProtocolTest extends AbstractProtocolTest {
 
       }
 
-      theLatch.await(20, TimeUnit.SECONDS);
+      theLatch.await(30, TimeUnit.SECONDS);
 
       assertEquals( 0, theLatch.getCount() );
 

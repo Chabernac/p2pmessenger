@@ -15,6 +15,7 @@ import java.net.UnknownHostException;
 import org.apache.log4j.BasicConfigurator;
 
 import chabernac.io.StreamSplitter;
+import chabernac.protocol.P2PServerFactory.ServerMode;
 import chabernac.protocol.ping.PingProtocol;
 import chabernac.protocol.routing.NoAvailableNetworkAdapterException;
 import chabernac.protocol.routing.RoutingProtocol;
@@ -82,7 +83,8 @@ public class ProtocolServerTest extends AbstractProtocolTest {
   public void testProtocolServerWithPeer() throws UnknownHostException, IOException, NoAvailableNetworkAdapterException, ProtocolException{
     ProtocolContainer theMasterProtocol = new ProtocolContainer(new ProtocolFactory(new PropertyMap()));
 
-    int thePort = 12027;
+    RoutingProtocol.determinePorts(ServerMode.SOCKET);
+    int thePort = 12750;
 
     ProtocolServer theServer = new ProtocolServer(theMasterProtocol, thePort);
     try{
