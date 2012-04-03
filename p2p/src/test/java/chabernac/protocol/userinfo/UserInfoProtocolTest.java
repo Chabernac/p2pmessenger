@@ -424,7 +424,7 @@ public class UserInfoProtocolTest extends AbstractProtocolTest {
       assertNotNull( theUserInfo );
       assertEquals( Status.OFFLINE, theUserInfo.getStatus() );
 
-      theServer1.start();
+      assertTrue( theServer1.start() );
 
       Thread.sleep( SLEEP_AFTER_SCAN );
 
