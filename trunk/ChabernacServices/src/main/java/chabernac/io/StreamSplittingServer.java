@@ -144,18 +144,46 @@ public class StreamSplittingServer implements iSocketSender{
   }
 
   public String getRemoteId(String aHost, int aPort) throws IOException{
-    return addSocket( new Socket(aHost, aPort) );
+    return addSocket( createSocket( aHost, aPort ));
   }
 
 
   public SocketSenderReply send(String aHost, int aPort, String aMessage) throws IOException{
     return send(null, aHost, aPort, aMessage);
   }
-  
+
   public String send(String anId, String aMessage) throws IOException{
     return send(anId, null, -1, aMessage).getReply();
   }
-  
+
+  private Socket createSocket(String aHost, int aPort) throws IOException {
+    int theRetries = 0;
+    Socket theSocket = null;
+    int theTotalSleep = 0;
+    try{
+      while(theSocket == null && theRetries++ < 10){
+        myOutgoingSocketCounter.incrementAndGet();
+        theSocket = new Socket(aHost, aPort);
+        if(theSocket.getInputStream().read() == 0){
+          int sleep = (int)Math.abs(myRandom.nextLong() % (theRetries * 100));
+          theTotalSleep += sleep;
+          LOGGER.debug("Synchronous connection attempt detected in " + myId + " when connecting to '" + theSocket.toString() + "' waiting for a random time to create a new connection retry nr: " + theRetries + " sleep " + sleep);
+          theSocket.close();
+          theSocket = null;
+          myOutgoingSocketCounter.decrementAndGet();
+          Thread.sleep(sleep);
+        }
+      }
+    }catch(Exception e){
+      throw new IOException( "could not create socket with host '" + aHost + ":" + aPort + "'" );
+    }finally{
+      myOutgoingSocketCounter.decrementAndGet();
+    }
+    if(theSocket == null) throw new IOException("Could not establish a connection");
+    LOGGER.debug("Connection made after '" + theRetries + "' attempts in " + myId + " to '" + theSocket.toString() + "' sleep " + theTotalSleep);
+    return theSocket;
+  }
+
   private SocketSenderReply send(String anId, String aHost, int aPort, String aMessage) throws IOException{
     if(anId != null && anId.equals(myPool.getId())){
       return new SocketSenderReply( myInputOutputHandler.handle(anId, aMessage), anId);
@@ -167,29 +195,9 @@ public class StreamSplittingServer implements iSocketSender{
     synchronized(theLock){
       if(anId == null || !myPool.contains( anId )){
         try{
-          int theRetries = 0;
-          Socket theSocket = null;
-          int theTotalSleep = 0;
-          while(theSocket == null && theRetries++ < 10){
-            myOutgoingSocketCounter.incrementAndGet();
-            theSocket = new Socket(aHost, aPort);
-            if(theSocket.getInputStream().read() == 0){
-              int sleep = (int)Math.abs(myRandom.nextLong() % (theRetries * 100));
-              theTotalSleep += sleep;
-              LOGGER.debug("Synchronous connection attempt detected in " + myId + " when connecting to '" + theSocket.toString() + "' waiting for a random time to create a new connection retry nr: " + theRetries + " sleep " + sleep);
-              theSocket.close();
-              theSocket = null;
-              myOutgoingSocketCounter.decrementAndGet();
-              Thread.sleep(sleep);
-            }
-          }
-          if(theSocket == null) throw new IOException("Could not establish a connection");
-          LOGGER.debug("Connection made after '" + theRetries + "' attempts in " + myId + " to '" + theSocket.toString() + "' sleep " + theTotalSleep);
-          anId = addSocket( theSocket );
-        } catch ( InterruptedException e ) {
-          LOGGER.error("sleeping interrupted", e);
-        }finally{
-          myOutgoingSocketCounter.decrementAndGet();
+          anId = addSocket( createSocket( aHost, aPort ) );
+        } catch ( IOException e ) {
+          LOGGER.error("Could not create socket", e);
         }
       }
       if(anId.equals( myPool.getId() )){

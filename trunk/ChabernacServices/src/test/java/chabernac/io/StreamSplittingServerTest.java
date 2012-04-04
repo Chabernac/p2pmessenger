@@ -133,4 +133,24 @@ public class StreamSplittingServerTest extends TestCase {
     assertEquals( 0, theLatch1.getCount() );
     assertEquals( 0, theLatch2.getCount() );
   }
+  
+  public void testGetRemoteId() throws IOException{
+    StreamSplittingServer theServer1 = new StreamSplittingServer( new MultiplyHandler( 2 ), 13000, false, "1" );
+    StreamSplittingServer theServer2 = new StreamSplittingServer( new MultiplyHandler( 3 ), 13001, false, "2" );
+    theServer1.start();
+    theServer2.start();
+    assertTrue(theServer1.isStarted());
+    assertTrue(theServer2.isStarted());
+
+    try{
+      assertEquals( "2",theServer1.getRemoteId( "localhost", 13001 ));
+//      assertEquals( "1",theServer1.getRemoteId( "localhost", 13000 ));
+//      assertEquals( "2",theServer2.getRemoteId( "localhost", 13001 ));
+      assertEquals( "1",theServer2.getRemoteId( "localhost", 13000 ));
+      
+    }finally{
+      theServer1.close();
+      theServer2.close();
+    }    
+  }
 }
