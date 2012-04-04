@@ -28,17 +28,19 @@ public class PipeProtocolTest extends AbstractProtocolTest {
   public void testPipeProtocol() throws InterruptedException, IOException, UnknownPeerException, ProtocolException, PipeException, NoAvailableNetworkAdapterException, P2PServerFactoryException{
     //p1 <--> p2 <--> p3 peer 1 cannot reach peer 3
 
-    ProtocolContainer theProtocol1 = getProtocolContainer( 1, false, "1" );
+    ProtocolContainer theProtocol1 = getProtocolContainer( -1, false, "1" );
     iP2PServer theServer1 = getP2PServer( theProtocol1, RoutingProtocol.START_PORT);
 
-    ProtocolContainer theProtocol2 = getProtocolContainer( 1, false, "2" );
+    ProtocolContainer theProtocol2 = getProtocolContainer( -1, false, "2" );
     iP2PServer theServer2 = getP2PServer( theProtocol2, RoutingProtocol.START_PORT + 1);
 
-    ProtocolContainer theProtocol3 = getProtocolContainer( 1, false, "3" );
+    ProtocolContainer theProtocol3 = getProtocolContainer( -1, false, "3" );
     iP2PServer theServer3 = getP2PServer( theProtocol3, RoutingProtocol.START_PORT + 2);
 
     RoutingProtocol theRoutingProtocol1 = (RoutingProtocol)theProtocol1.getProtocol( RoutingProtocol.ID );
     PipeProtocol thePipeProtocol1 = (PipeProtocol)theProtocol1.getProtocol( PipeProtocol.ID );
+    
+    RoutingProtocol theRoutingProtocol2 = (RoutingProtocol)theProtocol2.getProtocol( RoutingProtocol.ID );
     
     RoutingProtocol theRoutingProtocol3 = (RoutingProtocol)theProtocol3.getProtocol( RoutingProtocol.ID );
     PipeProtocol thePipeProtocol3 = (PipeProtocol)theProtocol3.getProtocol( PipeProtocol.ID );
@@ -54,7 +56,16 @@ public class PipeProtocolTest extends AbstractProtocolTest {
       assertTrue( theServer2.start() );
       assertTrue( theServer3.start() );
 
+      theRoutingProtocol1.scanLocalSystem();
+      theRoutingProtocol2.scanLocalSystem();
+      theRoutingProtocol3.scanLocalSystem();
       
+      for(int i=0;i<5;i++){
+        theRoutingProtocol1.exchangeRoutingTable();
+        theRoutingProtocol2.exchangeRoutingTable();
+        theRoutingProtocol3.exchangeRoutingTable();
+      }
+
       //after a local system scan we must at least know our selfs
       assertNotNull( theRoutingProtocol1.getRoutingTable().getEntryForLocalPeer(5) );
       assertNotNull( theRoutingProtocol3.getRoutingTable().getEntryForLocalPeer(5) );
