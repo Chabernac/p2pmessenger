@@ -30,7 +30,7 @@ public class ProtocolContainer implements IProtocol {
   private Map<String, IProtocol> myProtocolMap = null;
   private List< ProtocolMessageEntry > myMessageHistory = Collections.synchronizedList( new LimitedListDecorator<ProtocolMessageEntry>(100, new ArrayList< ProtocolMessageEntry >() ));
   private List<iProtocolMessageListener> myListeners = new ArrayList< iProtocolMessageListener >();
-  private ExecutorService myExecutor = new DynamicSizeExecutor(5, 256,0);
+  private ExecutorService myExecutor = null;
 
   private iProtocolFactory myProtocolFactory = null;
   private ServerInfo myServerInfo = null;
@@ -187,6 +187,9 @@ public class ProtocolContainer implements IProtocol {
 
   @Override
   public void setServerInfo( ServerInfo aServerInfo ) throws ProtocolException {
+    if(myExecutor == null || myExecutor.isShutdown()){
+      myExecutor = new DynamicSizeExecutor(5, 256,0);
+    }
     myServerInfo = aServerInfo;
     for(Iterator< IProtocol > i = new ArrayList<IProtocol>(myProtocolMap.values()).iterator();i.hasNext();){
       IProtocol theProtocol = i.next();
@@ -221,9 +224,6 @@ public class ProtocolContainer implements IProtocol {
   }
 
   public ExecutorService getExecutorService(){
-    if(myExecutor.isShutdown()){
-      myExecutor = new DynamicSizeExecutor(5, 256,0);
-    }
     return myExecutor;
   }
   
