@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit;
 
 public abstract class AbstractTransferState {
   public static enum State{PENDING, RUNNING, STOPPED, CANCELLED, DONE, FAILED};
-  public static enum Direction{SEND, RECEIVE};
+  public static enum Direction{SEND, RECEIVE, BOTH};
   
   protected final String myTransferId;
   private State myState = State.PENDING;
