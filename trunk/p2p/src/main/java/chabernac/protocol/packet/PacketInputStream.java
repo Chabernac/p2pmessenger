@@ -20,7 +20,6 @@ public class PacketInputStream extends InputStream implements iPacketTransfer {
   public PacketInputStream(PacketProtocol aPacketProtocol, String aTransferId){
     myPacketProtocol = aPacketProtocol;
     myTransferId = aTransferId;
-    myPacketProtocol.addPacketListenr( myTransferId,  new PacketListener() );
   }
 
   @Override
@@ -38,13 +37,13 @@ public class PacketInputStream extends InputStream implements iPacketTransfer {
   @Override
   public void start() {
     isStreamOpen = true;
-
+    myPacketProtocol.addPacketListenr( myTransferId,  new PacketListener() );
   }
 
   @Override
   public void stop() {
     isStreamOpen = false;
-
+    myPacketProtocol.removePacketListener(myTransferId);
   }
 
   @Override
