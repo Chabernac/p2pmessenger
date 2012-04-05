@@ -35,6 +35,7 @@ import chabernac.p2pclient.settings.Settings.SendEnveloppe;
 import chabernac.plugin.PluginActivator;
 import chabernac.plugin.PluginRegistry;
 import chabernac.preference.ApplicationPreferences;
+import chabernac.protocol.P2PServerFactory.ServerMode;
 import chabernac.protocol.iProtocolDelegate;
 import chabernac.protocol.facade.P2PFacade;
 import chabernac.protocol.facade.P2PFacadeException;
@@ -193,6 +194,7 @@ public class ApplicationLauncher {
     .setSocketReuse( true )
     .setMessageResenderActivated( true )
     .setAutoUserStatusDetectionEnabled( true )
+    .setServerMode( ServerMode.SPLITTING_SOCKET )
     .start();
     
     if("true".equalsIgnoreCase( anInterPreter.getKeyValue( "routingtable" ) )) myFacade.showRoutingTable();
