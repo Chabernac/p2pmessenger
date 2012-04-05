@@ -64,14 +64,17 @@ public class NewUserTrayIconDisplayer extends TrayIconAnimator{
       LOGGER.error("Could not get local user info", e);
     }
     
+    if(theLocalUser == null) return false;
+    
     for(String theUserId : aFullUserInfoList.keySet()){
-      if(theLocalUser == null || !theLocalUser.getId().equals( theUserId )){
+      if(!theLocalUser.getId().equals( theUserId )){
         UserInfo theNewUserInfo = aFullUserInfoList.get(theUserId);
         //only if the new user info changed to an online status
         if(theNewUserInfo.getStatus() != UserInfo.Status.OFFLINE) {
           //only if the user was not known yet or the status was previously offline
           if(!myLatestUserInfo.containsKey( theUserId ) || myLatestUserInfo.get( theUserId ) == UserInfo.Status.OFFLINE){
             //if we have detected one user change stop further processing
+            LOGGER.debug("new user detected: '" + theUserId + "'");
             return true;
           }
         }
