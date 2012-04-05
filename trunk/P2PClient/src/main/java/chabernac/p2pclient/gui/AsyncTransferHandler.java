@@ -8,6 +8,7 @@ import org.apache.log4j.Logger;
 
 import chabernac.protocol.facade.P2PFacadeException;
 import chabernac.protocol.packet.AbstractTransferState;
+import chabernac.protocol.packet.AbstractTransferState.Direction;
 import chabernac.protocol.packet.AudioTransferState;
 import chabernac.protocol.packet.FileTransferState;
 import chabernac.protocol.packet.iTransferListener;
@@ -22,9 +23,9 @@ public class AsyncTransferHandler implements iTransferListener {
   }
 
   @Override
-  public void newTransfer( AbstractTransferState aTransfer, boolean isIncoming ) {
+  public void newTransfer( AbstractTransferState aTransfer, Direction aDirection ) {
     // TODO Auto-generated method stub
-    if(aTransfer instanceof FileTransferState && isIncoming){
+    if(aTransfer instanceof FileTransferState && aDirection == Direction.RECEIVE){
       FileTransferState theFileTransfer = ((FileTransferState)aTransfer);
     
     try{
@@ -38,7 +39,7 @@ public class AsyncTransferHandler implements iTransferListener {
     }catch(P2PFacadeException e){
       LOGGER.error( "An error occured while sending system message", e );
     }
-    } else if(aTransfer instanceof AudioTransferState && isIncoming){
+    } else if(aTransfer instanceof AudioTransferState){
       AudioTransferState theAudioTransfer = ((AudioTransferState)aTransfer);
       try{
         UserInfo theUserInfo = myMediator.getP2PFacade().getUserInfo().get(aTransfer.getRemotePeer());
