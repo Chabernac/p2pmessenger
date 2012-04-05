@@ -20,6 +20,7 @@ import chabernac.protocol.AbstractProtocolTest;
 import chabernac.protocol.ProtocolContainer;
 import chabernac.protocol.ProtocolServer;
 import chabernac.protocol.iP2PServer;
+import chabernac.protocol.packet.AbstractTransferState.Direction;
 import chabernac.protocol.packet.AbstractTransferState.State;
 import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.RoutingTable;
@@ -137,7 +138,7 @@ public class TestAsyncTransferProtocolTest extends AbstractProtocolTest {
     }
 
     @Override
-    public void newTransfer( AbstractTransferState aTransfer, boolean isIncoming ) {
+    public void newTransfer( AbstractTransferState aTransfer, Direction aDirection) {
       try {
         myTransferState = aTransfer;
         myLatch.countDown();
@@ -163,7 +164,7 @@ public class TestAsyncTransferProtocolTest extends AbstractProtocolTest {
     private AbstractTransferState myTransferState;
 
     @Override
-    public void newTransfer( AbstractTransferState aTransfer, boolean isIncoming  ) {
+    public void newTransfer( AbstractTransferState aTransfer, Direction aDirection  ) {
       try {
         myTransferState = aTransfer;
         myLatch.countDown();

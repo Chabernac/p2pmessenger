@@ -15,6 +15,7 @@ public class PacketInputStream extends InputStream implements iPacketTransfer {
   private BlockingQueue<byte[]> myBufferedPackets = new LinkedBlockingQueue<byte[]>();
   private byte[] myCurrentPacket = null;
   private int myCurrentIndex;
+  private boolean isStreamOpen = true;
   
   public PacketInputStream(PacketProtocol aPacketProtocol, String aTransferId){
     myPacketProtocol = aPacketProtocol;
@@ -36,19 +37,18 @@ public class PacketInputStream extends InputStream implements iPacketTransfer {
 
   @Override
   public void start() {
-    // TODO Auto-generated method stub
+    isStreamOpen = true;
 
   }
 
   @Override
   public void stop() {
-    // TODO Auto-generated method stub
+    isStreamOpen = false;
 
   }
 
   @Override
   public void done() {
-    // TODO Auto-generated method stub
 
   }
 
@@ -66,6 +66,7 @@ public class PacketInputStream extends InputStream implements iPacketTransfer {
 
   @Override
   public int read() throws IOException {
+    if(!isStreamOpen) throw new IOException("The stream has been closed");
     if(myCurrentPacket == null || myCurrentIndex >= myCurrentPacket.length){
       try {
         myCurrentPacket = myBufferedPackets.take();

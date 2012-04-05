@@ -91,7 +91,7 @@ public class TransferOverviewPanel extends JPanel implements iTransferListener {
   }
 
   @Override
-  public void newTransfer( AbstractTransferState aTransfer, boolean isIncoming  ) {
+  public void newTransfer( AbstractTransferState aTransfer, Direction aDirection  ) {
     SwingUtilities.invokeLater(new Runnable(){
       public void run(){
         populate(myTransferController.getTransferStates());
