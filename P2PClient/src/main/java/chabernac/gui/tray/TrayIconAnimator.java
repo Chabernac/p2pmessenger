@@ -11,7 +11,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.IOException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -24,7 +23,6 @@ import chabernac.gui.event.FocusGainedEvent;
 import chabernac.io.ClassPathResource;
 import chabernac.p2pclient.gui.ChatMediator;
 import chabernac.preference.ApplicationPreferences;
-import chabernac.protocol.facade.P2PFacadeException;
 
 public abstract class TrayIconAnimator {
   protected final ChatMediator myMediator;
