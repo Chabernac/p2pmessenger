@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import chabernac.task.Task;
 import chabernac.task.TaskTools;
 
-public class AddToToDoCommand extends ActivityCommand {
+public class AddRemoveToDoCommand extends ActivityCommand {
 
 	protected void executeCommand() {
 		ArrayList theToDoList = TaskTools.getToDoList();
