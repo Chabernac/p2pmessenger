@@ -1,6 +1,7 @@
 package chabernac.task.command;
 
 import chabernac.task.Task;
+import chabernac.task.TaskTools;
 
 public class CompletedActivityCommand extends ActivityCommand {
   
@@ -12,6 +13,9 @@ public class CompletedActivityCommand extends ActivityCommand {
     Task theSelectedTask = getSelectedTask();
     if(theSelectedTask != null){
       theSelectedTask.setCompleted(!theSelectedTask.isCompleted());
+      if(theSelectedTask.isCompleted()){
+        TaskTools.getToDoList().remove( theSelectedTask );
+      }
     }
     update();
     goToTask(theSelectedTask);
