@@ -112,9 +112,10 @@ public class AsyncTransferProtocol extends Protocol implements iTransferContaine
           int thePacketsPerSecond = Integer.parseInt(theParams[6]);
           String theTransferId = theParams[7];
           String theRemotePeer = theParams[8];
-          theReceiveTransferState = new AudioTransferState( getPacketProtocol(), theTransferId, theRemotePeer, theEncoding, theSamplesPerSeconds, theBits, theSpeexQuality, thePacketsPerSecond);
+          Direction theDirection = Direction.valueOf( theParams[9] );
+          theReceiveTransferState = new AudioTransferState( getPacketProtocol(), theTransferId, theRemotePeer, theEncoding, theSamplesPerSeconds, theBits, theSpeexQuality, thePacketsPerSecond, theDirection);
           theReceiveTransferState.addStateChangeListener( myStateChangeListener );
-          addTransfer( theReceiveTransferState, Direction.BOTH);
+          addTransfer( theReceiveTransferState, theDirection);
         } else if(theTransferType == TransferType.STREAM){
           String theTransferId = theParams[0];
           String theRemotePeerId = theParams[1];
@@ -173,15 +174,21 @@ public class AsyncTransferProtocol extends Protocol implements iTransferContaine
       throw new AsyncTransferException("Could not start transfer", e);
     }
   }
+  
+  private Direction invertDirection(Direction aDirection){
+    if(aDirection == Direction.RECEIVE) return Direction.SEND;
+    if(aDirection == Direction.SEND) return Direction.RECEIVE;
+    return Direction.BOTH;
+  }
 
-  public AbstractTransferState startAudioTransfer(String aPeer, AudioFormat.Encoding anEncoding, int aSamplesPerSecond, int aBits, int aSpeexQuality, int aPacketsPerSecond) throws AsyncTransferException{
+  public AbstractTransferState startAudioTransfer(String aPeer, AudioFormat.Encoding anEncoding, int aSamplesPerSecond, int aBits, int aSpeexQuality, int aPacketsPerSecond, Direction aDirection) throws AsyncTransferException{
     try{
       String theTransferId = UUID.randomUUID().toString();
-      AudioTransferState theFileTransfeState = new AudioTransferState( getPacketProtocol(), theTransferId, aPeer, anEncoding, aSamplesPerSecond, aBits, aSpeexQuality, aPacketsPerSecond);
+      AudioTransferState theFileTransfeState = new AudioTransferState( getPacketProtocol(), theTransferId, aPeer, anEncoding, aSamplesPerSecond, aBits, aSpeexQuality, aPacketsPerSecond, aDirection);
       theFileTransfeState.addStateChangeListener( myStateChangeListener );
 
       addTransfer( theFileTransfeState, Direction.BOTH );
-      String theResponse = sendMessage( Command.SETUP_TRANSFER + ";" + TransferType.AUDIO  + ";" + anEncoding.toString() + ";" + aSamplesPerSecond + ";" + aBits + ";" + aSpeexQuality + ";" + aPacketsPerSecond + ";" + theTransferId + ";" +  getRoutingTable().getLocalPeerId(), aPeer); 
+      String theResponse = sendMessage( Command.SETUP_TRANSFER + ";" + TransferType.AUDIO  + ";" + anEncoding.toString() + ";" + aSamplesPerSecond + ";" + aBits + ";" + aSpeexQuality + ";" + aPacketsPerSecond + ";" + theTransferId + ";" +  getRoutingTable().getLocalPeerId() + ";" + invertDirection( aDirection ).name(), aPeer); 
       if(!Response.OK.name().equalsIgnoreCase( theResponse )) throw new AsyncTransferException("an error occured while setting up transfer with id '" + theTransferId + "'");
 
       return theFileTransfeState;
