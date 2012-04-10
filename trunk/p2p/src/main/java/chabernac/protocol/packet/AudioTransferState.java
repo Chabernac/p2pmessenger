@@ -13,8 +13,8 @@ public class AudioTransferState extends AbstractTransferState {
   private final int mySpeexQuality;
   private final int myPacketsPerSecond;
 
-  public AudioTransferState(PacketProtocol aPacketProtocol, String aTransferId, String aRemotePeer, Encoding anEncoding, int aSamplesPerSecond, int aBits, int aSpeexQuality, int aPacketsPerSecond) {
-    super(aTransferId, aRemotePeer, Direction.BOTH);
+  public AudioTransferState(PacketProtocol aPacketProtocol, String aTransferId, String aRemotePeer, Encoding anEncoding, int aSamplesPerSecond, int aBits, int aSpeexQuality, int aPacketsPerSecond, Direction aDirection) {
+    super(aTransferId, aRemotePeer, aDirection);
     myEncoding = anEncoding;
     myPacketProtocol = aPacketProtocol;
     mySamplesPerSecond = aSamplesPerSecond;
@@ -27,8 +27,14 @@ public class AudioTransferState extends AbstractTransferState {
   protected iPacketTransfer createPacketTransfer() throws IOException {
     try{
       PacketTransferComposite theAudioComposite = new PacketTransferComposite();
-      theAudioComposite.addPacketTransfer( new PacketReceiver(myPacketProtocol, myTransferId, new MicrophonePacketPersister(myEncoding, mySamplesPerSecond, myBits, myPacketsPerSecond)) );
-      theAudioComposite.addPacketTransfer( new AsyncPacketSender(myPacketProtocol, myTransferId, myRemotePeer, new MicrophonePacketProvider(myEncoding, mySamplesPerSecond, myBits, mySpeexQuality, myPacketsPerSecond)) );
+      if(myDirection == Direction.BOTH || myDirection == Direction.RECEIVE){
+        theAudioComposite.addPacketTransfer( new PacketReceiver(myPacketProtocol, myTransferId, new MicrophonePacketPersister(myEncoding, mySamplesPerSecond, myBits, myPacketsPerSecond)) );
+      }
+      
+      if(myDirection == Direction.BOTH || myDirection == Direction.SEND){
+        theAudioComposite.addPacketTransfer( new AsyncPacketSender(myPacketProtocol, myTransferId, myRemotePeer, new MicrophonePacketProvider(myEncoding, mySamplesPerSecond, myBits, mySpeexQuality, myPacketsPerSecond)) );
+      }
+      
       return theAudioComposite;
     }catch(LineUnavailableException e){
       throw new IOException("Line not available", e);
