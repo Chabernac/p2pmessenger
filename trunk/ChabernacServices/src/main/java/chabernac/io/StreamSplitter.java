@@ -45,7 +45,7 @@ public class StreamSplitter {
   }
 
   private void notifyListeners(){
-    for(iStreamListener theListener : myStreamListeners){
+    for(iStreamListener theListener : new ArrayList<iStreamListener>(myStreamListeners)){
       theListener.streamClosed();
     }
   }

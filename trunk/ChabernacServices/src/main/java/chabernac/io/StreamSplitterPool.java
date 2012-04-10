@@ -7,20 +7,23 @@ package chabernac.io;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.log4j.Logger;
 
 public class StreamSplitterPool {
   private static Logger LOGGER = Logger.getLogger(StreamSplitterPool.class);
   public final static String ID_PREFIX = "ID:";
-  public static enum Result {ADDED, ID_ALREADY_EXISTS, IS_OWN_ID };
+  public static enum Result {ADDED, CLOSED, IS_OWN_ID, CONCURRENT_CONNECTION_ATTEMPT };
 
 
   protected final Map< String, StreamSplitter > myStreamSplitters = new HashMap< String, StreamSplitter >();
   protected final String myId;
   private final ExecutorService myExecutorService;
+  private final Map<String, AtomicInteger> mySimultanousConnectionAttempts = new HashMap<String, AtomicInteger>();
 
   public StreamSplitterPool ( String aId, ExecutorService anExecutorService ) {
     super();
@@ -32,7 +35,28 @@ public class StreamSplitterPool {
     return myId;
   }
 
+  private int incrementConnectionAttempts(String anId){
+    synchronized(anId.intern()){
+      if(!mySimultanousConnectionAttempts.containsKey( anId )){
+        mySimultanousConnectionAttempts.put( anId, new AtomicInteger(0) ); 
+      }
+      return mySimultanousConnectionAttempts.get(anId).incrementAndGet();
+    }
+  }
+
+  private void decrementConnectionAttempts(String anId){
+    synchronized ( anId.intern() ) {
+      if(mySimultanousConnectionAttempts.containsKey( anId )){
+        int theCount = mySimultanousConnectionAttempts.get( anId ).decrementAndGet();
+        if(theCount <= 0){
+          mySimultanousConnectionAttempts.remove( anId );
+        }
+      }
+    }
+  }
+
   public Result add(StreamSplitter aSplitter) throws IOException{
+//    LOGGER.debug( "ID exchange started local peer id " + myId );
     if(myStreamSplitters.values().contains( aSplitter )) throw new IOException("The pool alredy contains this streamsplitter");
     //write our own id
     aSplitter.sendWithoutReply( ID_PREFIX + myId );
@@ -41,43 +65,72 @@ public class StreamSplitterPool {
     if(!theRemoteId.startsWith( ID_PREFIX )) throw new IOException("Expected id prefix but got '" + theRemoteId + "'");
     theRemoteId = theRemoteId.substring( ID_PREFIX.length() );
     aSplitter.setId( theRemoteId );
+//    LOGGER.debug( "Stream splitter ID exchange ended, local peer id " + myId  + " remote peer id " + theRemoteId);
 
-    synchronized(theRemoteId){
+    try{
+      if(incrementConnectionAttempts( theRemoteId ) > 1){
+        aSplitter.sendWithoutReply( Result.CONCURRENT_CONNECTION_ATTEMPT.name() );
+        aSplitter.close();
+//        LOGGER.debug("Detected local concurrent connection attempt");
+        return Result.CONCURRENT_CONNECTION_ATTEMPT;
+      }
+      aSplitter.sendWithoutReply( "OK" );
+
+      try{
+        if(aSplitter.readLine().equals( Result.CONCURRENT_CONNECTION_ATTEMPT.name() )){
+//          LOGGER.debug("Detected remote concurrent connection attempt");
+          aSplitter.close();
+          return Result.CONCURRENT_CONNECTION_ATTEMPT;
+        }
+      }catch(Exception e){
+        return Result.CONCURRENT_CONNECTION_ATTEMPT;
+      }
+
+//      LOGGER.debug( "Add stream splitter started, local peer id '"  +  myId + "' remote peer id '" + theRemoteId + "'");
       Result theResult = addStreamSplitter( theRemoteId, aSplitter );
       if(theResult != Result.ADDED){
-        LOGGER.debug("Stream splitter for remote id '" + theRemoteId + "' not added in server with id '" + myId + "'");
-        aSplitter.close();
+//        LOGGER.debug("Stream splitter for remote id '" + theRemoteId + "' not added in server with id '" + myId + "'");
         return theResult;
       } 
-      
+
       aSplitter.sendWithoutReply( "dummy" );
       aSplitter.readLine();
 
       aSplitter.startSplitting(myExecutorService);
+//      LOGGER.debug( "Add stream splitter ended , local peer id '"  +  myId + "' remote peer id '" + theRemoteId + "' " + theResult);
       return theResult;
+    }catch(IOException e){
+      LOGGER.error("An error occured while setting up stream splitter for remote id '" + theRemoteId + "' closing it ", e);
+      aSplitter.close();
+      return Result.CLOSED;
+    } finally {
+      decrementConnectionAttempts( theRemoteId );
     }
   }
 
-  private Result addStreamSplitter(String anId, StreamSplitter aStreamSplitter){
-    if(myId.equals( anId )) {
-      LOGGER.error( "The given stream splitter has the same id '" + anId + "' as the local id '" + myId + "'" );
+  private Result addStreamSplitter(String aRemoteId, StreamSplitter aStreamSplitter){
+    if(myId.equals( aRemoteId )) {
+      LOGGER.error( "The given stream splitter has the same id '" + aRemoteId + "' as the local id '" + myId + "'" );
+      aStreamSplitter.close();
       return Result.IS_OWN_ID;
     }
 
-    if(myStreamSplitters.containsKey( anId )) {
-      LOGGER.error( "The given stream splitter already exists '" + anId + "'" );
-      return Result.ID_ALREADY_EXISTS;
+    if(myStreamSplitters.containsKey( aRemoteId )) {
+      aStreamSplitter.close();
+      LOGGER.error( "We have detected a stream splitter with the remote id'" + aRemoteId + "' already exists, closing the new stream splitter" );
+      return Result.CLOSED;
     }
-    myStreamSplitters.put(anId, aStreamSplitter);
-    aStreamSplitter.addStreamListener( new StreamClosedListener( anId ) );
+
+    myStreamSplitters.put(aRemoteId, aStreamSplitter);
+    aStreamSplitter.addStreamListener( new StreamClosedListener( aRemoteId, aStreamSplitter ) );
     return Result.ADDED;
   }
 
   public String send(String aRemoteId, String aMessage) throws IOException{
     if(!myStreamSplitters.containsKey( aRemoteId )) throw new IOException("No stream splitter found for id '" + aRemoteId + "'");
 
-    synchronized(aRemoteId){
-//      LOGGER.debug("Trying to send message from '" + myId + "' to '" + aRemoteId + "': " + aMessage);
+    synchronized(aRemoteId.intern()){
+      //      LOGGER.debug("Trying to send message from '" + myId + "' to '" + aRemoteId + "': " + aMessage);
       try {
         return myStreamSplitters.get(aRemoteId).send( aMessage );
       } catch ( InterruptedException e ) {
@@ -87,7 +140,7 @@ public class StreamSplitterPool {
   }
 
   public void close(String aRemoteId){
-    synchronized(aRemoteId){
+    synchronized(aRemoteId.intern()){
       if(myStreamSplitters.containsKey( aRemoteId )){
         LOGGER.debug("Closing stream splitter with id '" + aRemoteId + "'");
         myStreamSplitters.get(aRemoteId).close();
@@ -100,7 +153,7 @@ public class StreamSplitterPool {
   }
 
   public synchronized void closeAll(){
-    for(String theKey : myStreamSplitters.keySet()){
+    for(String theKey : new HashSet<String>(myStreamSplitters.keySet())){
       close(theKey);
     }
   }
@@ -111,17 +164,21 @@ public class StreamSplitterPool {
 
   private class StreamClosedListener implements iStreamListener{
     private final String myId;
+    private final StreamSplitter myStreamSplitter;
 
-    public StreamClosedListener ( String aId ) {
+    public StreamClosedListener ( String aId, StreamSplitter aStreamSplitter ) {
       super();
       myId = aId;
+      myStreamSplitter = aStreamSplitter;
     }
 
     @Override
     public void streamClosed() {
-      synchronized(StreamSplitterPool.this){
-        LOGGER.debug("Removing stream splitter for peer with id '" + myId + "'");
-        myStreamSplitters.remove( myId );
+      synchronized(myId.intern()){
+//        LOGGER.debug("Removing stream splitter for peer with id '" + myId + "'");
+        if(myStreamSplitters.containsKey( myId ) && myStreamSplitters.get( myId ) == myStreamSplitter){
+          myStreamSplitters.remove( myId );
+        }
       }
     }
   }
