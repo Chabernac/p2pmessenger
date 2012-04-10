@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -36,8 +35,6 @@ public class StreamSplittingServer implements iSocketSender{
   private Map<String, Socket> mySockets = new HashMap<String, Socket>();
   private final String myId;
   private final String LOCK_PREFIX = UUID.randomUUID().toString();
-  //  private AtomicInteger myOutgoingSocketCounter = new AtomicInteger(0);
-  private Random myRandom = new Random();
 
   public StreamSplittingServer ( iInputOutputHandler aInputOutputHandler, int aPort, boolean isFindUnusedPort, String anId ) {
     super();
@@ -163,18 +160,6 @@ public class StreamSplittingServer implements iSocketSender{
     int theCount = 0;
 
     while(theResult == Result.CONCURRENT_CONNECTION_ATTEMPT){
-      /*
-      try {
-        if(theCount++ > 0){
-          long theSleepTime =  Math.abs(myRandom.nextLong()) %  (theCount * 2);
-          LOGGER.debug("Connection attempt '" + theCount + "' Sleeping '" + theSleepTime  + "' ms"); 
-          Thread.sleep(  theSleepTime );
-        }
-      } catch ( InterruptedException e ) {
-        LOGGER.error("could not sleep", e);
-      }
-      */
-      LOGGER.debug( "Connection attempt '" + ++theCount  + "'");
       if(theSocket != null)  theSocket.close();
       theSocket = new Socket(aHost, aPort);
       theSocket.setReuseAddress( true );
@@ -267,17 +252,6 @@ public class StreamSplittingServer implements iSocketSender{
           Socket theSocket = null;
           try{
             theSocket = myServerSocket.accept();
-            /*
-            if(myOutgoingSocketCounter.get() > 0){
-              theSocket.getOutputStream().write(0);
-              theSocket.getOutputStream().flush();
-              theSocket.close();
-            } else {
-              theSocket.getOutputStream().write(1);
-              theSocket.getOutputStream().flush();
-              LOGGER.debug("Socket accepted in server with id '" + myId + "'");
-            }
-             */
             addSocket( theSocket );
           }catch(Exception e){
             LOGGER.error("Could not add server socket", e);
