@@ -19,7 +19,6 @@ public class StreamSplitterPool {
   public final static String ID_PREFIX = "ID:";
   public static enum Result {ADDED, CLOSED, IS_OWN_ID, CONCURRENT_CONNECTION_ATTEMPT };
 
-
   protected final Map< String, StreamSplitter > myStreamSplitters = new HashMap< String, StreamSplitter >();
   protected final String myId;
   private final ExecutorService myExecutorService;
@@ -56,7 +55,6 @@ public class StreamSplitterPool {
   }
 
   public Result add(StreamSplitter aSplitter) throws IOException{
-//    LOGGER.debug( "ID exchange started local peer id " + myId );
     if(myStreamSplitters.values().contains( aSplitter )) throw new IOException("The pool alredy contains this streamsplitter");
     //write our own id
     aSplitter.sendWithoutReply( ID_PREFIX + myId );
@@ -65,20 +63,17 @@ public class StreamSplitterPool {
     if(!theRemoteId.startsWith( ID_PREFIX )) throw new IOException("Expected id prefix but got '" + theRemoteId + "'");
     theRemoteId = theRemoteId.substring( ID_PREFIX.length() );
     aSplitter.setId( theRemoteId );
-//    LOGGER.debug( "Stream splitter ID exchange ended, local peer id " + myId  + " remote peer id " + theRemoteId);
 
     try{
       if(incrementConnectionAttempts( theRemoteId ) > 1){
         aSplitter.sendWithoutReply( Result.CONCURRENT_CONNECTION_ATTEMPT.name() );
         aSplitter.close();
-//        LOGGER.debug("Detected local concurrent connection attempt");
         return Result.CONCURRENT_CONNECTION_ATTEMPT;
       }
       aSplitter.sendWithoutReply( "OK" );
 
       try{
         if(aSplitter.readLine().equals( Result.CONCURRENT_CONNECTION_ATTEMPT.name() )){
-//          LOGGER.debug("Detected remote concurrent connection attempt");
           aSplitter.close();
           return Result.CONCURRENT_CONNECTION_ATTEMPT;
         }
@@ -86,10 +81,8 @@ public class StreamSplitterPool {
         return Result.CONCURRENT_CONNECTION_ATTEMPT;
       }
 
-//      LOGGER.debug( "Add stream splitter started, local peer id '"  +  myId + "' remote peer id '" + theRemoteId + "'");
       Result theResult = addStreamSplitter( theRemoteId, aSplitter );
       if(theResult != Result.ADDED){
-//        LOGGER.debug("Stream splitter for remote id '" + theRemoteId + "' not added in server with id '" + myId + "'");
         return theResult;
       } 
 
@@ -97,7 +90,6 @@ public class StreamSplitterPool {
       aSplitter.readLine();
 
       aSplitter.startSplitting(myExecutorService);
-//      LOGGER.debug( "Add stream splitter ended , local peer id '"  +  myId + "' remote peer id '" + theRemoteId + "' " + theResult);
       return theResult;
     }catch(IOException e){
       LOGGER.error("An error occured while setting up stream splitter for remote id '" + theRemoteId + "' closing it ", e);
