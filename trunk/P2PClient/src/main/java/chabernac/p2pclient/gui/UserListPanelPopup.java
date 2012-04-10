@@ -23,6 +23,7 @@ import chabernac.gui.GPanelPopupMenu;
 import chabernac.preference.ApplicationPreferences;
 import chabernac.protocol.cam.CamFrame;
 import chabernac.protocol.facade.P2PFacadeException;
+import chabernac.protocol.packet.AbstractTransferState.Direction;
 import chabernac.protocol.userinfo.UserInfo.Status;
 
 public class UserListPanelPopup extends GPanelPopupMenu {
@@ -285,7 +286,7 @@ public class UserListPanelPopup extends GPanelPopupMenu {
       StatusCheckBox theStatusCheckBox = (StatusCheckBox)getSelectedComponent();
       String theUser = myPanel.getUserForCheckBox( theStatusCheckBox );
       try {
-        myMediator.getP2PFacade().startAudioTransfer(theUser, AudioFormat.Encoding.PCM_SIGNED, 16000, 16, 8, 5);
+        myMediator.getP2PFacade().startAudioTransfer(theUser, AudioFormat.Encoding.PCM_SIGNED, 16000, 16, 8, 5, Direction.BOTH);
       } catch (P2PFacadeException e) {
         logger.error("Could not start audio transfer", e);
       }
