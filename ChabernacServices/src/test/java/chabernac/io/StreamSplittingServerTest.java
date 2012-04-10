@@ -84,7 +84,7 @@ public class StreamSplittingServerTest extends TestCase {
   public void testSimultanousConnectionAttempt() throws InterruptedException{
     final CyclicBarrier theBarrier = new CyclicBarrier( 2 );
 
-    final int times = 20;
+    final int times = 200;
 
     ExecutorService theExecutorService= Executors.newFixedThreadPool( 2 );
     
@@ -100,9 +100,15 @@ public class StreamSplittingServerTest extends TestCase {
             theBarrier.await();
             assertEquals( Integer.toString(5 * 3), theServer.send( "localhost", 13001, Integer.toString(5) ).getReply());
             theLatch1.countDown();
-            theBarrier.await();
           } catch ( Exception e ) {
             LOGGER.error("Error occured while sending", e);
+          } finally {
+            try{
+              theBarrier.await();
+            }catch(Exception e){
+              LOGGER.error("Broken barrier", e);
+            }
+            LOGGER.debug( "Countdown 1: " + theLatch1.getCount() );
           }
           theServer.close();
         }
@@ -118,17 +124,23 @@ public class StreamSplittingServerTest extends TestCase {
             theBarrier.await();
             assertEquals( Integer.toString(5 * 2), theServer.send( "localhost", 13000, Integer.toString(5) ).getReply());
             theLatch2.countDown();
-            theBarrier.await();
           } catch ( Exception e ) {
-            LOGGER.error("Error occured while sending");
+            LOGGER.error("Error occured while sending", e);
+          } finally {
+            try{
+              theBarrier.await();
+            }catch(Exception e){
+              LOGGER.error("Borken barrier", e);
+            }
+            LOGGER.debug( "Countdown 2: " + theLatch2.getCount() );
           }
           theServer.close();
         }
       }
     });
     
-    theLatch1.await( 5, TimeUnit.SECONDS );
-    theLatch2.await( 5, TimeUnit.SECONDS );
+    theLatch1.await( 10, TimeUnit.SECONDS );
+    theLatch2.await( 10, TimeUnit.SECONDS );
     
     assertEquals( 0, theLatch1.getCount() );
     assertEquals( 0, theLatch2.getCount() );
