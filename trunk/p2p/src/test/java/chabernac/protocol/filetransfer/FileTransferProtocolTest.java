@@ -19,7 +19,6 @@ import chabernac.protocol.AbstractProtocolTest;
 import chabernac.protocol.P2PServerFactoryException;
 import chabernac.protocol.ProtocolContainer;
 import chabernac.protocol.ProtocolException;
-import chabernac.protocol.ProtocolServer;
 import chabernac.protocol.iP2PServer;
 import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.RoutingTable;
