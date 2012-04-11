@@ -46,6 +46,35 @@ public class MicrophonePacketProvider implements iDataPacketProvider{
   public int getNrOfSpeechPackets(){
 	  return myNrOfSpeechPackets;
   }
+  
+  protected int calculateRMSLevel(byte[] audioData)
+  { // audioData might be buffered data read from a data line
+    
+      double dAvg = calculateSoundLevel(audioData, 2);
+
+      double sumMeanSquare = 0d;
+      for(int j=0; j<audioData.length; j++)
+          sumMeanSquare = sumMeanSquare + Math.pow(audioData[j] - dAvg, 2d);
+
+      double averageMeanSquare = sumMeanSquare / audioData.length;
+      return (int)(Math.pow(averageMeanSquare,0.5d) + 0.5);
+  }
+  
+  private float calculateSoundLevel(byte[] aBytes, int aBytesPerFrame){
+    float theSoundLevel = 0;
+    int theFrames = aBytes.length / aBytesPerFrame; 
+    for(int i=0;i<theFrames;i++){
+      int theLevel = 0;
+      for(int j=0;j<aBytesPerFrame;j++){
+        System.out.println("Adding byte " + Byte.(aBytes[i*aBytesPerFrame+j]));
+        theLevel |= (aBytes[i*aBytesPerFrame+j] & 0xFF) << 8 * j;
+      }
+      System.out.println("Level: '" + theLevel);
+      theSoundLevel += theLevel;
+    }
+    theSoundLevel /= (float)theFrames;
+    return theSoundLevel;
+  }
 
   @Override
   public DataPacket getNextPacket() throws IOException {
@@ -53,6 +82,7 @@ public class MicrophonePacketProvider implements iDataPacketProvider{
 //    System.out.println("packet size " + theByte.length + " " + mySpeexEncoder.getEncoder().getFrameSize());
 //    System.out.println("packet size " + theByte.length);
     myDataLine.read(theByte, 0, theByte.length);
+    System.out.println("Sound level: '" + calculateSoundLevel(theByte, 2) + "'");
 
     byte[] theProcessedBytes = new byte[myMaxBytes];
     
