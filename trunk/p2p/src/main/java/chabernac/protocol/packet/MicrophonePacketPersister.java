@@ -117,7 +117,7 @@ public class MicrophonePacketPersister implements iDataPacketPersister {
       while(!stop){
         myPacketCounter++;
         DataPacket thePacket = mySortedPackets.get();
-        System.out.println("Playing packet " + thePacket.getId()  + " buffer size: " + mySortedPackets.size() +  (float)(1000 * myPacketCounter) / (float)(System.currentTimeMillis() - myStartTime) + " packets/second");
+        System.out.println("Playing packet " + thePacket.getId()  + " buffer size: " + mySortedPackets.size() +  " " + (float)(1000 * myPacketCounter) / (float)(System.currentTimeMillis() - myStartTime) + " packets/second");
         playPacket(thePacket);
       }
     }
