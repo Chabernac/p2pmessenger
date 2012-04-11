@@ -9,6 +9,7 @@ import org.apache.log4j.Logger;
 import chabernac.protocol.facade.P2PFacadeException;
 import chabernac.protocol.packet.AbstractTransferState;
 import chabernac.protocol.packet.AbstractTransferState.Direction;
+import chabernac.protocol.packet.AbstractTransferState.Side;
 import chabernac.protocol.packet.AudioTransferState;
 import chabernac.protocol.packet.FileTransferState;
 import chabernac.protocol.packet.iTransferListener;
@@ -23,9 +24,11 @@ public class AsyncTransferHandler implements iTransferListener {
   }
 
   @Override
-  public void newTransfer( AbstractTransferState aTransfer, Direction aDirection ) {
-    // TODO Auto-generated method stub
-    if(aTransfer instanceof FileTransferState && aDirection == Direction.RECEIVE){
+  public void newTransfer( AbstractTransferState aTransfer) {
+    //only show information when we are the receiving side
+    if(aTransfer.getSide() != Side.RECEIVER) return;
+    
+    if(aTransfer instanceof FileTransferState && aTransfer.getDirection() == Direction.RECEIVE){
       FileTransferState theFileTransfer = ((FileTransferState)aTransfer);
     
     try{
