@@ -1,8 +1,6 @@
 package chabernac.protocol.routing;
 
 import java.io.IOException;
-import java.net.ConnectException;
-
 import org.apache.log4j.Logger;
 
 import chabernac.io.iSocketSender;

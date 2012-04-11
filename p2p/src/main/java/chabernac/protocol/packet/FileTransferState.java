@@ -17,8 +17,8 @@ public class FileTransferState extends AbstractTransferState{
   
   private FileDataPacketProvider myFileDataPacketProvider = null;
 
-  private FileTransferState ( PacketProtocol aPacketProtocol, String aTransferId, File aFile, Direction aDirection, String aRemotePeer, int aNrOfPackets, int aPacketSize, int anOutstandingPacktes ) throws IOException {
-    super( aTransferId, aRemotePeer, aDirection );
+  private FileTransferState ( PacketProtocol aPacketProtocol, String aTransferId, File aFile, Side aSide, Direction aDirection, String aRemotePeer, int aNrOfPackets, int aPacketSize, int anOutstandingPacktes ) throws IOException {
+    super( aTransferId, aRemotePeer, aSide, aDirection );
     myDirection = aDirection;
     myFile = aFile;
     myPacketProtocl = aPacketProtocol;
@@ -34,12 +34,12 @@ public class FileTransferState extends AbstractTransferState{
     }
   }
 
-  public static FileTransferState createForSend(PacketProtocol aPacketProtocol, String aTranferId, File aFile, String aRemotePeer, int aPacketSize, int anOutstandingPacktes) throws IOException{
-    return new FileTransferState(aPacketProtocol, aTranferId, aFile, Direction.SEND, aRemotePeer, -1, aPacketSize, anOutstandingPacktes);
+  public static FileTransferState createForSend(PacketProtocol aPacketProtocol, String aTranferId, File aFile, String aRemotePeer, int aPacketSize, int anOutstandingPacktes, Side aSide) throws IOException{
+    return new FileTransferState(aPacketProtocol, aTranferId, aFile, aSide, Direction.SEND, aRemotePeer, -1, aPacketSize, anOutstandingPacktes);
   }
   
-  public static FileTransferState createForReceive(PacketProtocol aPacketProtocol, String aTranferId, File aFile, String aRemotePeer, int aNrOfPackets, int aPacketSize) throws IOException{
-    return new FileTransferState(aPacketProtocol, aTranferId, aFile, Direction.RECEIVE, aRemotePeer, aNrOfPackets, aPacketSize, -1);
+  public static FileTransferState createForReceive(PacketProtocol aPacketProtocol, String aTranferId, File aFile, String aRemotePeer, int aNrOfPackets, int aPacketSize, Side aSide) throws IOException{
+    return new FileTransferState(aPacketProtocol, aTranferId, aFile, aSide, Direction.RECEIVE, aRemotePeer, aNrOfPackets, aPacketSize, -1);
   }
   
   public void start(File aFile) throws StateChangeException{

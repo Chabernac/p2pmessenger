@@ -4,9 +4,8 @@
  */
 package chabernac.protocol.packet;
 
-import chabernac.protocol.packet.AbstractTransferState.Direction;
 
 public interface iTransferListener {
-  public void newTransfer(AbstractTransferState aTransfer, Direction aDirection);
+  public void newTransfer(AbstractTransferState aTransfer);
   public void transferRemoved(AbstractTransferState aTransfer);
 }

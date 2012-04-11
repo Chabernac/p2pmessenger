@@ -13,8 +13,8 @@ public class AudioTransferState extends AbstractTransferState {
   private final int mySpeexQuality;
   private final int myPacketsPerSecond;
 
-  public AudioTransferState(PacketProtocol aPacketProtocol, String aTransferId, String aRemotePeer, Encoding anEncoding, int aSamplesPerSecond, int aBits, int aSpeexQuality, int aPacketsPerSecond, Direction aDirection) {
-    super(aTransferId, aRemotePeer, aDirection);
+  public AudioTransferState(PacketProtocol aPacketProtocol, String aTransferId, String aRemotePeer, Encoding anEncoding, int aSamplesPerSecond, int aBits, int aSpeexQuality, int aPacketsPerSecond, Side aSide, Direction aDirection) {
+    super(aTransferId, aRemotePeer, aSide, aDirection);
     myEncoding = anEncoding;
     myPacketProtocol = aPacketProtocol;
     mySamplesPerSecond = aSamplesPerSecond;
@@ -45,6 +45,7 @@ public class AudioTransferState extends AbstractTransferState {
   public String getTransferDescription() {
     if(myDirection == Direction.RECEIVE) return "Receiving audio";
     else if(myDirection == Direction.SEND) return "Sending audio";
+    else if(myDirection == Direction.BOTH) return "Send/Receive audio";
     return null;
   }
 

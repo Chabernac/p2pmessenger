@@ -13,8 +13,10 @@ import java.util.concurrent.TimeUnit;
 public abstract class AbstractTransferState {
   public static enum State{PENDING, RUNNING, STOPPED, CANCELLED, DONE, FAILED};
   public static enum Direction{SEND, RECEIVE, BOTH};
+  public static enum Side{INITIATOR, RECEIVER};
   
   protected final String myTransferId;
+  protected final Side mySide;
   private State myState = State.PENDING;
   private iPacketTransfer myTransfer;
   protected final String myRemotePeer;
@@ -26,11 +28,12 @@ public abstract class AbstractTransferState {
   private PacketTransferStateAdapterListener myAdapterListener = null;
   protected final Direction myDirection;
   
-  public AbstractTransferState ( String aTransferId, String aRemotePeer, Direction aDirection ) {
+  public AbstractTransferState ( String aTransferId, String aRemotePeer, Side aSide, Direction aDirection ) {
     super();
     myTransferId = aTransferId;
     myRemotePeer = aRemotePeer;
     myDirection = aDirection;
+    mySide = aSide;
   }
   
   public void start() throws StateChangeException{
@@ -112,6 +115,10 @@ public abstract class AbstractTransferState {
     return myState;
   }
   
+  public Side getSide() {
+    return mySide;
+  }
+
   public PacketTransferState getPacketTransferState() throws TransferStateException{
     if(myTransfer == null) throw new TransferStateException("Transfer has not yet been started");
     return myTransfer.getTransferState();
@@ -169,6 +176,10 @@ public abstract class AbstractTransferState {
     return myTransferId;
   }
   
+  public Direction getDirection() {
+    return myDirection;
+  }
+
   private class PacketTransferListener implements iPacketTransferListener {
     @Override
     public void transferUpdated( PacketTransferState aPacketTransferState ) {

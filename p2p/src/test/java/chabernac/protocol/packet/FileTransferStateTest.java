@@ -20,6 +20,7 @@ import chabernac.io.ClassPathResource;
 import chabernac.protocol.AbstractProtocolTest;
 import chabernac.protocol.ProtocolContainer;
 import chabernac.protocol.iP2PServer;
+import chabernac.protocol.packet.AbstractTransferState.Side;
 import chabernac.protocol.packet.AbstractTransferState.State;
 import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.RoutingTable;
@@ -92,11 +93,11 @@ public class FileTransferStateTest extends AbstractProtocolTest {
     if(theReceivingFile.exists()) theReceivingFile.delete();
 
     try{
-      FileTransferState theSendState = FileTransferState.createForSend( myPacketProtocl1, "transfer-1", theFile.getFile(), "2", 1024, 5);
+      FileTransferState theSendState = FileTransferState.createForSend( myPacketProtocl1, "transfer-1", theFile.getFile(), "2", 1024, 5, Side.INITIATOR);
       StateChangeListener theSendStateListener = new StateChangeListener();
       theSendState.addStateChangeListener( theSendStateListener );
 
-      FileTransferState theReceiveState = FileTransferState.createForReceive( myPacketProtocol2, theSendState.getTransferId(), theReceivingFile, "1", theSendState.getNrOfPackets(), theSendState.getPacketSize() );
+      FileTransferState theReceiveState = FileTransferState.createForReceive( myPacketProtocol2, theSendState.getTransferId(), theReceivingFile, "1", theSendState.getNrOfPackets(), theSendState.getPacketSize(), Side.RECEIVER );
       StateChangeListener theReceiveStateListener = new StateChangeListener();
       theReceiveState.addStateChangeListener( theReceiveStateListener );
 

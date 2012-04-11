@@ -13,8 +13,8 @@ public class StreamTransferState extends AbstractTransferState {
   private PacketOutputStream myOutputStream;
   private PacketInputStream myInputStream;
 
-  public StreamTransferState( PacketProtocol aPacketProtocol, String aTransferId, String aRemotePeer ) {
-    super( aTransferId, aRemotePeer, Direction.BOTH );
+  public StreamTransferState( PacketProtocol aPacketProtocol, String aTransferId, String aRemotePeer, Side aSide ) {
+    super( aTransferId, aRemotePeer, aSide, Direction.BOTH );
     myPacketProtocol = aPacketProtocol;
   }
 

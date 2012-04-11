@@ -12,7 +12,6 @@ import org.apache.log4j.BasicConfigurator;
 
 import chabernac.protocol.AbstractProtocolTest;
 import chabernac.protocol.ProtocolContainer;
-import chabernac.protocol.ProtocolServer;
 import chabernac.protocol.iP2PServer;
 import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.RoutingTable;

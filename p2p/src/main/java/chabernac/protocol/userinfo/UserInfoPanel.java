@@ -51,7 +51,7 @@ public class UserInfoPanel extends JPanel {
     theSouthPanel.add(new JButton(new RefreshUserInfo()));
     theSouthPanel.add(new JButton(new AnnounceMe()));
     
-    JComboBox theList = new JComboBox(Status.values());
+    JComboBox<Status> theList = new JComboBox<Status>(Status.values());
     theList.addItemListener(new MyComboBoxListener());
     theSouthPanel.add(theList);
     
