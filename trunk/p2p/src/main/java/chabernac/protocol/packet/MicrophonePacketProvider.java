@@ -24,6 +24,7 @@ public class MicrophonePacketProvider implements iDataPacketProvider{
   
   public MicrophonePacketProvider(Encoding anEncoding, int aSamplesPerSecond, int aBitSize, int aSpeexQuality, int aPacketsPerSecond) throws LineUnavailableException{
     myAudioFormat = new AudioFormat(anEncoding, aSamplesPerSecond, aBitSize, 1, (aBitSize + 7) / 8, aSamplesPerSecond, false);
+    System.out.println("Big endian: " + myAudioFormat.isBigEndian());
     mySpeexEncoder = new SpeexEncoder();
     mySpeexEncoder.init(SPEEX_MODE_WIDEBAND, aSpeexQuality, aSamplesPerSecond, 1);
     myDataLine = AudioSystem.getTargetDataLine(myAudioFormat);
@@ -66,10 +67,10 @@ public class MicrophonePacketProvider implements iDataPacketProvider{
     for(int i=0;i<theFrames;i++){
       int theLevel = 0;
       for(int j=0;j<aBytesPerFrame;j++){
-        System.out.println("Adding byte " + Byte.(aBytes[i*aBytesPerFrame+j]));
+//        System.out.println("Adding byte " + Byte.(aBytes[i*aBytesPerFrame+j]));
         theLevel |= (aBytes[i*aBytesPerFrame+j] & 0xFF) << 8 * j;
       }
-      System.out.println("Level: '" + theLevel);
+//      System.out.println("Level: '" + theLevel);
       theSoundLevel += theLevel;
     }
     theSoundLevel /= (float)theFrames;
