@@ -12,7 +12,7 @@ import org.xiph.speex.SpeexEncoder;
 
 public class MicrophonePacketProvider implements iDataPacketProvider{
   private final int SPEEX_MODE_WIDEBAND = 1;
-  
+
   private final AudioFormat myAudioFormat;
   private TargetDataLine myDataLine;
   private int myCurrentPacket = 0;
@@ -21,10 +21,12 @@ public class MicrophonePacketProvider implements iDataPacketProvider{
   private final int myMaxSpeexBytes;
   private final int myPacketsPerSecond;
   private int myNrOfSpeechPackets;
-  
-  public MicrophonePacketProvider(Encoding anEncoding, int aSamplesPerSecond, int aBitSize, int aSpeexQuality, int aPacketsPerSecond) throws LineUnavailableException{
+  private final SoundLevelCalculator mySoundLevelCalculator;
+  private final iSoundLevelTreshHoldProvider myThreshHoldProvider;
+
+  public MicrophonePacketProvider(Encoding anEncoding, int aSamplesPerSecond, int aBitSize, int aSpeexQuality, int aPacketsPerSecond, iSoundLevelTreshHoldProvider aSoundLevelThreshHoldProvider) throws LineUnavailableException{
     myAudioFormat = new AudioFormat(anEncoding, aSamplesPerSecond, aBitSize, 1, (aBitSize + 7) / 8, aSamplesPerSecond, false);
-    System.out.println("Big endian: " + myAudioFormat.isBigEndian());
+    myThreshHoldProvider = aSoundLevelThreshHoldProvider == null ? new BasicSoundLevelThreshHoldProvider() : aSoundLevelThreshHoldProvider;
     mySpeexEncoder = new SpeexEncoder();
     mySpeexEncoder.init(SPEEX_MODE_WIDEBAND, aSpeexQuality, aSamplesPerSecond, 1);
     myDataLine = AudioSystem.getTargetDataLine(myAudioFormat);
@@ -36,83 +38,63 @@ public class MicrophonePacketProvider implements iDataPacketProvider{
     myNrOfSpeechPackets = (int)Math.floor((float)theMaxBytes / (float)myMaxSpeexBytes);
     if(myNrOfSpeechPackets <= 0) myNrOfSpeechPackets = 1;
     myMaxBytes = myNrOfSpeechPackets * myMaxSpeexBytes;
-    
+
     myPacketsPerSecond =  aSamplesPerSecond * (aBitSize / 8) / myMaxBytes;
+    mySoundLevelCalculator  = new SoundLevelCalculator( myAudioFormat );
   }
-  
+
   public int getPacketsPerSecond(){
     return myPacketsPerSecond;
   }
-  
+
   public int getNrOfSpeechPackets(){
-	  return myNrOfSpeechPackets;
+    return myNrOfSpeechPackets;
   }
-  
-  protected int calculateRMSLevel(byte[] audioData)
-  { // audioData might be buffered data read from a data line
-    
-      double dAvg = calculateSoundLevel(audioData, 2);
 
-      double sumMeanSquare = 0d;
-      for(int j=0; j<audioData.length; j++)
-          sumMeanSquare = sumMeanSquare + Math.pow(audioData[j] - dAvg, 2d);
-
-      double averageMeanSquare = sumMeanSquare / audioData.length;
-      return (int)(Math.pow(averageMeanSquare,0.5d) + 0.5);
-  }
-  
-  private float calculateSoundLevel(byte[] aBytes, int aBytesPerFrame){
-    float theSoundLevel = 0;
-    int theFrames = aBytes.length / aBytesPerFrame; 
-    for(int i=0;i<theFrames;i++){
-      int theLevel = 0;
-      for(int j=0;j<aBytesPerFrame;j++){
-//        System.out.println("Adding byte " + Byte.(aBytes[i*aBytesPerFrame+j]));
-        theLevel |= (aBytes[i*aBytesPerFrame+j] & 0xFF) << 8 * j;
-      }
-//      System.out.println("Level: '" + theLevel);
-      theSoundLevel += theLevel;
-    }
-    theSoundLevel /= (float)theFrames;
-    return theSoundLevel;
-  }
 
   @Override
   public DataPacket getNextPacket() throws IOException {
     byte[] theByte = new byte[myMaxBytes];
-//    System.out.println("packet size " + theByte.length + " " + mySpeexEncoder.getEncoder().getFrameSize());
-//    System.out.println("packet size " + theByte.length);
-    myDataLine.read(theByte, 0, theByte.length);
-    System.out.println("Sound level: '" + calculateSoundLevel(theByte, 2) + "'");
+    //    System.out.println("packet size " + theByte.length + " " + mySpeexEncoder.getEncoder().getFrameSize());
+    //    System.out.println("packet size " + theByte.length);
 
-    byte[] theProcessedBytes = new byte[myMaxBytes];
-    
-    int theCurrentByte = 0;
-    int theCurrentSpeexByte = 0;
-    int theNrOfBytesToRead = theByte.length < myMaxSpeexBytes ? theByte.length : myMaxSpeexBytes; 
-    while(theCurrentByte < myMaxBytes){
-      int theRemainingBytes = theByte.length - theCurrentByte;
-      int theBytesToRead = theRemainingBytes < theNrOfBytesToRead ? theRemainingBytes : theNrOfBytesToRead;
-      mySpeexEncoder.processData(theByte, theCurrentByte, theBytesToRead);
-      int theProcessedDataByteSize = mySpeexEncoder.getProcessedDataByteSize();
-      mySpeexEncoder.getProcessedData(theProcessedBytes, theCurrentSpeexByte);
-      theCurrentSpeexByte += theProcessedDataByteSize;
-      theCurrentByte += theBytesToRead;
+    while(myDataLine.isOpen()){
+      myDataLine.read(theByte, 0, theByte.length);
+      double theCurrentSoundLevel = mySoundLevelCalculator.calculateLevel( theByte );
+      myThreshHoldProvider.currentRecordingSoundLevel( theCurrentSoundLevel );
+      if(theCurrentSoundLevel > myThreshHoldProvider.getThreshHold()){
+
+        byte[] theProcessedBytes = new byte[myMaxBytes];
+
+        int theCurrentByte = 0;
+        int theCurrentSpeexByte = 0;
+        int theNrOfBytesToRead = theByte.length < myMaxSpeexBytes ? theByte.length : myMaxSpeexBytes; 
+        while(theCurrentByte < myMaxBytes){
+          int theRemainingBytes = theByte.length - theCurrentByte;
+          int theBytesToRead = theRemainingBytes < theNrOfBytesToRead ? theRemainingBytes : theNrOfBytesToRead;
+          mySpeexEncoder.processData(theByte, theCurrentByte, theBytesToRead);
+          int theProcessedDataByteSize = mySpeexEncoder.getProcessedDataByteSize();
+          mySpeexEncoder.getProcessedData(theProcessedBytes, theCurrentSpeexByte);
+          theCurrentSpeexByte += theProcessedDataByteSize;
+          theCurrentByte += theBytesToRead;
+        }
+
+        //now trim the byte array
+        byte[] theEncodedBytes = new byte[theCurrentSpeexByte + 1];
+
+        //store the number of speech packets in the first byte
+        theEncodedBytes[0] = (byte)myNrOfSpeechPackets;
+        System.arraycopy( theProcessedBytes, 0, theEncodedBytes, 1, theEncodedBytes.length - 1 );
+
+        //    System.out.println("Speex reduced packet size from '" + theByte.length + "' to " + theEncodedBytes.length  + "' " + (100 * (float)theEncodedBytes.length / (float)theByte.length) + " % compression");
+        //    System.out.println("returning packet " + myCurrentPacket + " " + theEncodedBytes.length);
+        DataPacket thePacket = new DataPacket(Integer.toString(myCurrentPacket), theEncodedBytes);
+
+        myCurrentPacket++;
+        return thePacket;
+      }
     }
-    
-    //now trim the byte array
-    byte[] theEncodedBytes = new byte[theCurrentSpeexByte + 1];
-    
-    //store the number of speech packets in the first byte
-    theEncodedBytes[0] = (byte)myNrOfSpeechPackets;
-    System.arraycopy( theProcessedBytes, 0, theEncodedBytes, 1, theEncodedBytes.length - 1 );
-    
-//    System.out.println("Speex reduced packet size from '" + theByte.length + "' to " + theEncodedBytes.length  + "' " + (100 * (float)theEncodedBytes.length / (float)theByte.length) + " % compression");
-//    System.out.println("returning packet " + myCurrentPacket + " " + theEncodedBytes.length);
-    DataPacket thePacket = new DataPacket(Integer.toString(myCurrentPacket), theEncodedBytes);
-    
-    myCurrentPacket++;
-    return thePacket;
+    throw new IOException("The line was closed");
   }
 
   @Override

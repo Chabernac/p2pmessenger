@@ -30,11 +30,16 @@ public class MicrophonePacketPersister implements iDataPacketPersister {
   private ExecutorService myPlayerThread = null;
   private boolean stop = false;
   private final SpeexDecoder mySpeexDecoder;
+  private final iSoundLevelTreshHoldProvider mySoundLevelVisualizer;
+  private final SoundLevelCalculator mySoundLevelCalculator;
+  
 
 
-  public MicrophonePacketPersister(Encoding anEncoding, int aSamplesPerSecond, int aBitSize, int aPacketsPerSecond) throws LineUnavailableException{
+  public MicrophonePacketPersister(Encoding anEncoding, int aSamplesPerSecond, int aBitSize, int aPacketsPerSecond, iSoundLevelTreshHoldProvider aSoundLevelVisualizer) throws LineUnavailableException{
     myAudioFormat = new AudioFormat(anEncoding, aSamplesPerSecond, aBitSize, 1, (aBitSize + 7) / 8, aSamplesPerSecond, false);
-
+    mySoundLevelVisualizer = aSoundLevelVisualizer;
+    mySoundLevelCalculator = new SoundLevelCalculator( myAudioFormat );
+    
     float theMSPerPacket = 1000 / (float)aPacketsPerSecond;
     int theLowerLimit = (int)Math.ceil(LOWER_LIMIT_BUFFER_TIME / theMSPerPacket);
     int theUpperLimit = (int)Math.ceil(UPPER_BUFFER_TIME / theMSPerPacket);
@@ -100,6 +105,8 @@ public class MicrophonePacketPersister implements iDataPacketPersister {
         int theProcessedBytes = mySpeexDecoder.getProcessedDataByteSize();
         byte[] theDecodedBytes = new byte[theProcessedBytes];
         mySpeexDecoder.getProcessedData(theDecodedBytes, 0);
+        
+        mySoundLevelVisualizer.currentPlayingSoundLevel( mySoundLevelCalculator.calculateLevel( theDecodedBytes ) );
         myDataLine.write(theDecodedBytes, 0, theDecodedBytes.length);
         theCurrentSpeexByte += theSpeechPacketLength;
       }
