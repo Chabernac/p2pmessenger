@@ -17,8 +17,8 @@ public class MicroPhonePacketPersisterProviderTest {
    * @throws LineUnavailableException 
    */
   public static void main(String[] args) throws LineUnavailableException{
-    final MicrophonePacketProvider theProvider = new MicrophonePacketProvider(Encoding.PCM_SIGNED, 16000, 16, 8, 5);
-    final MicrophonePacketPersister thePersister = new MicrophonePacketPersister(Encoding.PCM_SIGNED, 16000, 16, theProvider.getPacketsPerSecond());
+    final MicrophonePacketProvider theProvider = new MicrophonePacketProvider(Encoding.PCM_SIGNED, 16000, 16, 8, 5, null);
+    final MicrophonePacketPersister thePersister = new MicrophonePacketPersister(Encoding.PCM_SIGNED, 16000, 16, theProvider.getPacketsPerSecond(), null);
 
     System.out.println("Updated packets per second " + theProvider.getPacketsPerSecond() + " nr of speech packets " + theProvider.getNrOfSpeechPackets());
     

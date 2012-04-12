@@ -12,6 +12,7 @@ public class AudioTransferState extends AbstractTransferState {
   private final Encoding myEncoding;
   private final int mySpeexQuality;
   private final int myPacketsPerSecond;
+  private iSoundLevelTreshHoldProvider mySoundLevelTreshHoldProvider = null;
 
   public AudioTransferState(PacketProtocol aPacketProtocol, String aTransferId, String aRemotePeer, Encoding anEncoding, int aSamplesPerSecond, int aBits, int aSpeexQuality, int aPacketsPerSecond, Side aSide, Direction aDirection) {
     super(aTransferId, aRemotePeer, aSide, aDirection);
@@ -21,6 +22,15 @@ public class AudioTransferState extends AbstractTransferState {
     myBits = aBits;
     mySpeexQuality = aSpeexQuality;
     myPacketsPerSecond = aPacketsPerSecond;
+    
+    //remove
+    SoundLevelFrame theFrame = new SoundLevelFrame();
+    theFrame.setVisible( true );
+    mySoundLevelTreshHoldProvider = theFrame.getSoundLevelThreshHoldProvider(); 
+  }
+  
+  public void setSoundLevelThreshHoldProvider(iSoundLevelTreshHoldProvider aSoundLevelThreshHoldProvider){
+    mySoundLevelTreshHoldProvider = aSoundLevelThreshHoldProvider;
   }
 
   @Override
@@ -28,11 +38,11 @@ public class AudioTransferState extends AbstractTransferState {
     try{
       PacketTransferComposite theAudioComposite = new PacketTransferComposite();
       if(myDirection == Direction.BOTH || myDirection == Direction.RECEIVE){
-        theAudioComposite.addPacketTransfer( new PacketReceiver(myPacketProtocol, myTransferId, new MicrophonePacketPersister(myEncoding, mySamplesPerSecond, myBits, myPacketsPerSecond)) );
+        theAudioComposite.addPacketTransfer( new PacketReceiver(myPacketProtocol, myTransferId, new MicrophonePacketPersister(myEncoding, mySamplesPerSecond, myBits, myPacketsPerSecond, mySoundLevelTreshHoldProvider)) );
       }
       
       if(myDirection == Direction.BOTH || myDirection == Direction.SEND){
-        theAudioComposite.addPacketTransfer( new AsyncPacketSender(myPacketProtocol, myTransferId, myRemotePeer, new MicrophonePacketProvider(myEncoding, mySamplesPerSecond, myBits, mySpeexQuality, myPacketsPerSecond)) );
+        theAudioComposite.addPacketTransfer( new AsyncPacketSender(myPacketProtocol, myTransferId, myRemotePeer, new MicrophonePacketProvider(myEncoding, mySamplesPerSecond, myBits, mySpeexQuality, myPacketsPerSecond, mySoundLevelTreshHoldProvider)) );
       }
       
       return theAudioComposite;
@@ -48,5 +58,4 @@ public class AudioTransferState extends AbstractTransferState {
     else if(myDirection == Direction.BOTH) return "Send/Receive audio";
     return null;
   }
-
 }
