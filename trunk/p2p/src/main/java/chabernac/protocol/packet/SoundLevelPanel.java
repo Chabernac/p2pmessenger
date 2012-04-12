@@ -18,6 +18,7 @@ public class SoundLevelPanel extends JPanel implements iSoundLevelTreshHoldProvi
   private static final long serialVersionUID = -1956465114269743781L;
   private final Color DARK_GREEN = new Color(0,150,0);
   private final Color DARK_BLUE = new Color(0,0,150);
+  private final int SMOOTHING = 8;
   private double myMaxLevel = 15;
   
   private double myCurrentSoundLevel = 0;
@@ -44,7 +45,7 @@ public class SoundLevelPanel extends JPanel implements iSoundLevelTreshHoldProvi
 
   @Override
   public void currentRecordingSoundLevel( double aSoundLevel ) {
-    myCurrentSoundLevel = aSoundLevel;
+    myCurrentSoundLevel = (SMOOTHING * myCurrentSoundLevel + aSoundLevel) / (SMOOTHING +  1);
     if(myCurrentSoundLevel > myMaxSoundLevel){
       myMaxSoundLevel = myCurrentSoundLevel;
       myMaxLevel = myMaxSoundLevel * 1.2;
@@ -54,7 +55,7 @@ public class SoundLevelPanel extends JPanel implements iSoundLevelTreshHoldProvi
   
   @Override
   public void currentPlayingSoundLevel( double aSoundLevel ) {
-    myCurrentPlayingLevel = aSoundLevel;
+    myCurrentPlayingLevel = (SMOOTHING * myCurrentPlayingLevel + aSoundLevel) / (SMOOTHING + 1);
     if(myCurrentPlayingLevel > myMaxSoundLevel){
       myMaxSoundLevel = myCurrentPlayingLevel;
       myMaxLevel = myMaxSoundLevel * 1.2;

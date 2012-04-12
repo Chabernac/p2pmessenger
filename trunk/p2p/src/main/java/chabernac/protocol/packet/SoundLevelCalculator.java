@@ -46,7 +46,7 @@ public class SoundLevelCalculator {
       short[] theAudioShorts = new short[theBuffer.capacity()];
       theBuffer.get(theAudioShorts);
       
-      int theLength = theAudioShorts.length / 10;
+      int theLength = theAudioShorts.length / 4;
       double theAverageLevel = 0;
       for(int i=0;i<theLength;i++){
         theAverageLevel += Math.pow( theAudioShorts[i], 2);
