@@ -18,8 +18,8 @@ public class SoundLevelPanel extends JPanel implements iSoundLevelTreshHoldProvi
   private static final long serialVersionUID = -1956465114269743781L;
   private final Color DARK_GREEN = new Color(0,150,0);
   private final Color DARK_BLUE = new Color(0,0,150);
-  private final int SMOOTHING = 8;
-  private double myMaxLevel = 15;
+  private final int SMOOTHING = 0;
+  private double myMaxLevel = 8;
   
   private double myCurrentSoundLevel = 0;
   private double myMaxSoundLevel = 0;

@@ -6,6 +6,9 @@ import java.util.concurrent.ArrayBlockingQueue;
 import javax.sound.sampled.AudioFormat.Encoding;
 import javax.sound.sampled.LineUnavailableException;
 
+import org.apache.log4j.BasicConfigurator;
+
+import chabernac.protocol.packet.BasicSoundLevelThreshHoldProvider;
 import chabernac.protocol.packet.DataPacket;
 import chabernac.protocol.packet.MicrophonePacketPersister;
 import chabernac.protocol.packet.MicrophonePacketProvider;
@@ -17,8 +20,10 @@ public class MicroPhonePacketPersisterProviderTest {
    * @throws LineUnavailableException 
    */
   public static void main(String[] args) throws LineUnavailableException{
-    final MicrophonePacketProvider theProvider = new MicrophonePacketProvider(Encoding.PCM_SIGNED, 16000, 16, 8, 5, null);
-    final MicrophonePacketPersister thePersister = new MicrophonePacketPersister(Encoding.PCM_SIGNED, 16000, 16, theProvider.getPacketsPerSecond(), null);
+    BasicConfigurator.configure();
+    
+    final MicrophonePacketProvider theProvider = new MicrophonePacketProvider(Encoding.PCM_SIGNED, 16000, 16, 8, 5, new BasicSoundLevelThreshHoldProvider());
+    final MicrophonePacketPersister thePersister = new MicrophonePacketPersister(Encoding.PCM_SIGNED, 16000, 16, theProvider.getPacketsPerSecond(), new BasicSoundLevelThreshHoldProvider());
 
     System.out.println("Updated packets per second " + theProvider.getPacketsPerSecond() + " nr of speech packets " + theProvider.getNrOfSpeechPackets());
     
