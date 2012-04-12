@@ -1,26 +1,26 @@
 package chabernac.utils;
 
+import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.TreeSet;
+import java.util.List;
 
-public class Buffer<T> {
+public class SimpleBuffer<T> {
   private int myLowerLimit;
   private int myUpperLimit;
-  private TreeSet<T> mySortedItems = null;
+  private List<T> myItems = null;
   private final Object LOCK = new Object();
   private boolean isWaitUntillFull = true;
 
-  public Buffer(int aLowerLimit, int aUpperLimit){
+  public SimpleBuffer(int aLowerLimit, int aUpperLimit){
     this(aLowerLimit, aUpperLimit, null);
   }
 
-  public Buffer(int aLowerLimit, int aUpperLimit, Comparator<T> aComparator) {
+  public SimpleBuffer(int aLowerLimit, int aUpperLimit, Comparator<T> aComparator) {
     super();
     myLowerLimit = aLowerLimit;
     myUpperLimit = aUpperLimit;
     
-    if(aComparator != null) mySortedItems = new TreeSet<T>(aComparator);
-    else mySortedItems = new TreeSet<T>();
+    myItems = new ArrayList<T>();
   }
 
   public int getLowerLimit() {
@@ -40,15 +40,19 @@ public class Buffer<T> {
   }
 
   public void put(T aPacket){
-    mySortedItems.add(aPacket);
+    myItems.add(aPacket);
     synchronized(LOCK)
     { 
       LOCK.notifyAll();
     }
   }
+  
+  public boolean isBufferUnderrun(){
+    return isWaitUntillFull && myItems.size() < myUpperLimit || myItems.size() <= myLowerLimit;
+  }
 
   public T get(){
-    while(isWaitUntillFull && mySortedItems.size() < myUpperLimit || mySortedItems.size() <= myLowerLimit){
+    while(isBufferUnderrun()){
       try {
         synchronized (LOCK) {
           LOCK.wait();
@@ -57,14 +61,14 @@ public class Buffer<T> {
       }
     }
     isWaitUntillFull = false;
-    T thePacket  = mySortedItems.pollFirst();
-    if(mySortedItems.size() <= myLowerLimit){
+    T thePacket  = myItems.remove(0);
+    if(myItems.size() <= myLowerLimit){
       isWaitUntillFull = true;
     }
     return thePacket;
   }
 
   public int size(){
-    return mySortedItems.size();
+    return myItems.size();
   }
 }
