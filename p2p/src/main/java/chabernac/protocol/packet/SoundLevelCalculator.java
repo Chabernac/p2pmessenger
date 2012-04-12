@@ -9,17 +9,13 @@ import javax.sound.sampled.AudioFormat.Encoding;
 
 public class SoundLevelCalculator {
   private final AudioFormat myAudioFormat;
-  private final int myBytesPerFrame;
   private final boolean isBigEndian;
   private iLevelCalculator myLevelCalculator;
-  private final ByteBuffer myByteBuffer;
 
   public SoundLevelCalculator(AudioFormat aAudioFormat) {
     super();
     myAudioFormat = aAudioFormat;
-    myBytesPerFrame = myAudioFormat.getSampleSizeInBits() / 8;
     isBigEndian = myAudioFormat.isBigEndian();
-    myByteBuffer = ByteBuffer.allocate( myBytesPerFrame );
     initLevelCalculator();
   }
   
