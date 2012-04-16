@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import junit.framework.Assert;
+
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 import org.junit.Ignore;
@@ -932,6 +934,60 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
         theServer1.stop();
         theServer2.stop();
         theWebServer.stop();
+      }
+    }
+    
+    public void testLoadRoutingTable() throws P2PServerFactoryException, ProtocolException, InterruptedException, UnknownPeerException{
+      ProtocolContainer theProtocol1 = getProtocolContainer( 1, true, "1" );
+      iP2PServer theServer1 = getP2PServer( theProtocol1, RoutingProtocol.START_PORT);
+
+      ProtocolContainer theProtocol2 = getProtocolContainer( 1, false, "2" );
+      iP2PServer theServer2 = getP2PServer( theProtocol2, RoutingProtocol.START_PORT + 1);
+      
+      RoutingProtocol theRoutingProtocol1 = (RoutingProtocol)theProtocol1.getProtocol( RoutingProtocol.ID );
+      RoutingTable theRoutingTable1 = theRoutingProtocol1.getRoutingTable();
+      RoutingProtocol theRoutingProtocol2 = (RoutingProtocol)theProtocol2.getProtocol( RoutingProtocol.ID );
+      RoutingTable theRoutingTable2 = theRoutingProtocol2.getRoutingTable();
+      
+      
+      try{
+        assertTrue( theServer1.start() );
+        assertTrue( theServer2.start() );
+        
+        Thread.sleep( 5000 );
+        
+        assertTrue( theRoutingTable1.containsEntryForPeer( "1" ) );
+        assertTrue( theRoutingTable1.containsEntryForPeer( "2" ) );
+        
+        assertTrue( theRoutingTable2.containsEntryForPeer( "1" ) );
+        assertTrue( theRoutingTable2.containsEntryForPeer( "2" ) );
+        
+        //change temporary peers to non temporary peer to force saving all entries
+        
+        theServer2.stop();
+        
+        theRoutingTable1.getEntryForPeer("1").getPeer().setTemporaryPeer(false);
+        theRoutingTable1.getEntryForPeer("2").getPeer().setTemporaryPeer(false);
+        
+        theRoutingProtocol1.exchangeRoutingTable();
+        
+        theServer1.stop();
+        
+        //the routing table should be saved at this moment
+        
+        //restart new instance of server 1 the routing table will be reloaded
+        
+        theProtocol1 = getProtocolContainer( 1, true, "1" );
+        theRoutingProtocol1 = (RoutingProtocol)theProtocol1.getProtocol( RoutingProtocol.ID );
+        theRoutingTable1 = theRoutingProtocol1.getRoutingTable();
+        
+        assertEquals(2, theRoutingTable1.getEntries().size());
+        assertTrue(theRoutingTable1.containsEntryForPeer("2"));
+        assertEquals(6, theRoutingTable1.getEntryForPeer("2").getHopDistance());
+
+      }finally {
+        theServer1.stop();
+        theServer2.stop();
       }
     }
 }

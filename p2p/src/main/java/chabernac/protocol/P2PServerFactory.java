@@ -7,16 +7,29 @@ package chabernac.protocol;
 import java.net.URL;
 
 import chabernac.io.StreamSplittingServer;
+import chabernac.protocol.routing.JVMPeerSender;
 import chabernac.protocol.routing.RoutingProtocol;
+import chabernac.protocol.routing.RoutingTable;
 import chabernac.protocol.routing.SocketRoutingTableInspector;
 
 public class P2PServerFactory {
   public static enum ServerMode{SOCKET, WEB, SPLITTING_SOCKET, BOTH};
 
+  private static void addJVMPeerSender(ProtocolContainer aProtocolContainer) throws P2PServerFactoryException{
+    try{
+      RoutingProtocol theRoutingProtocol = (RoutingProtocol)aProtocolContainer.getProtocol( RoutingProtocol.ID );
+      RoutingTable theRoutingTable = theRoutingProtocol.getRoutingTable(); 
+      JVMPeerSender.getInstance().addPeerProtocol(theRoutingTable.getLocalPeerId(), aProtocolContainer);
+    }catch(ProtocolException e){
+      throw new P2PServerFactoryException("Could not add jvm peer sender", e);
+    }
+  }
+
   public static iP2PServer createWebServer(ProtocolContainer aProtocolContainer, URL aWebURL, int aWebPort, Integer anAJPPort) throws P2PServerFactoryException{
     if(aWebURL == null) throw new P2PServerFactoryException( "Must set a web url before starting" );
     ProtocolWebServer theProtocolWebServer = new ProtocolWebServer( aProtocolContainer, aWebPort, aWebURL );
     if(anAJPPort != null) theProtocolWebServer.setAJPPort( anAJPPort );
+    addJVMPeerSender(aProtocolContainer);
     return theProtocolWebServer;
   }
 
@@ -27,6 +40,8 @@ public class P2PServerFactory {
       RoutingProtocol theRoutingProtocol = (RoutingProtocol)aProtocolContainer.getProtocol( RoutingProtocol.ID );
       theRoutingProtocol.setRoutingTableInspector( new SocketRoutingTableInspector(aProtocolContainer.getSessionData() ) );
       
+      addJVMPeerSender(aProtocolContainer);
+
       if(aServerMode == ServerMode.SOCKET){
         return new ProtocolServer(aProtocolContainer, RoutingProtocol.START_PORT, true); 
       } else if(aServerMode == ServerMode.SPLITTING_SOCKET || aServerMode == ServerMode.BOTH){
