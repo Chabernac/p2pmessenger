@@ -822,8 +822,8 @@ public class RoutingProtocol extends Protocol {
       }catch(Exception e){
         LOGGER.error( "Could not load routing table", e );
       }
-    } 
-
+    }  
+    
     myRoutingTable = new RoutingTable(getLocalPeerId());
   }
 

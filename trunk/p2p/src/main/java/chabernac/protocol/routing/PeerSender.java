@@ -27,6 +27,10 @@ public class PeerSender extends AbstractPeerSender{
   
   protected String doSend(PeerMessage aMessage, int aTimeoutInSeconds) throws IOException{
     try{
+      if(JVMPeerSender.getInstance().containsPeerProtocol(aMessage.getPeer().getPeerId())){
+        return JVMPeerSender.getInstance().send(aMessage.getPeer().getPeerId(), aMessage.getMessage());
+      }
+      
       AbstractPeer theFrom = myRoutingTable.getEntryForLocalPeer().getPeer();
       AbstractPeer theTo = aMessage.getPeer();
       
