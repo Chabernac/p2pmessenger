@@ -28,7 +28,7 @@ public class InputOutputProtocolAdapter implements iInputOutputHandler{
     if(anId != null){
       Socket theSocket = myStreamSplittingServer.getSocket( anId );
       if(theSocket != null){
-        mySessionData.putProperty( theSessionId, ProtocolServer.REMOTE_IP, myStreamSplittingServer.getSocket( anId ).getInetAddress().getHostAddress() );
+        mySessionData.putProperty( theSessionId, ProtocolServer.REMOTE_IP, theSocket.getInetAddress().getHostAddress() );
       }
     }
     return myProtocol.handleCommand(theSessionId, anInput);
