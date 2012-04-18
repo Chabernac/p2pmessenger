@@ -298,7 +298,7 @@ public class RoutingProtocol extends Protocol {
       //by doing this we will avoid all peers to keep track of peer id's which will never occure again
       theLocalPeer.setTemporaryPeer( !isPersistRoutingTable );
 
-      RoutingTableEntry theLocalRoutingTableEntry = new RoutingTableEntry(theLocalPeer, 0, theLocalPeer, System.currentTimeMillis());
+      RoutingTableEntry theLocalRoutingTableEntry = new RoutingTableEntry(theLocalPeer, 0, theLocalPeer, System.currentTimeMillis(), 0);
       myRoutingTable.addRoutingTableEntry( theLocalRoutingTableEntry );
     }
 
@@ -504,11 +504,16 @@ public class RoutingProtocol extends Protocol {
   boolean contactPeer(AbstractPeer aPeer, List<String> anUnreachablePeers, boolean isRequestTableWhenPeerFound){
     try{
       LOGGER.debug("Sending message to '" + aPeer.getEndPointRepresentation() );
+      
+      
+      long t1 = System.currentTimeMillis();
       String theResponse = getPeerSender().send( aPeer, createMessage( Command.WHO_ARE_YOU.name() ));
+      long theTimeDistance = System.currentTimeMillis() - t1;
+      
       AbstractPeer theRemotePeer = myPeerConverter.getObject( theResponse );
 
       if(anUnreachablePeers == null || !anUnreachablePeers.contains( theRemotePeer.getPeerId() )){
-        RoutingTableEntry theEntry = new RoutingTableEntry(theRemotePeer, 1, theRemotePeer, System.currentTimeMillis());
+        RoutingTableEntry theEntry = new RoutingTableEntry(theRemotePeer, 1, theRemotePeer, System.currentTimeMillis(), theTimeDistance);
 
         LOGGER.debug("Detected system on '" + theRemotePeer.getEndPointRepresentation() + " Local peer '" + myLocalPeerId + "' remote peer '" + theRemotePeer.getPeerId() + "'");
         //only if we have detected our self we set the hop distance to 0

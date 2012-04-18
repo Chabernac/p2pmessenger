@@ -64,14 +64,14 @@ public class WebRoutingTableInspecter implements iRoutingTableInspector {
         } else {
           LOGGER.debug("The ip of the requesting peer '" + theIPRequestor + "' does not match the ip of the inspected routing table entry '" + theExposedIp + "' adding indirect reachable peer");
           IndirectReachablePeer theNewPeer = new IndirectReachablePeer(thePeer);
-          RoutingTableEntry theNewEntry = new RoutingTableEntry( theNewPeer, theEntry.getHopDistance(), theEntry.getGateway(), theEntry.getLastOnlineTime());
+          RoutingTableEntry theNewEntry = new RoutingTableEntry( theNewPeer, theEntry.getHopDistance(), theEntry.getGateway(), theEntry.getLastOnlineTime(), theEntry.getTimeDistance());
           theTable.addRoutingTableEntry(theNewEntry);
         }
       } else if(hasURLRequestor && theEntry.getHopDistance() == 0 && theEntry.getPeer() instanceof WebPeer){
         try{
           WebPeer theLocalWebPeer = (WebPeer)theEntry.getPeer();
           WebPeer theWebPeer = new WebPeer( new URL(theURLRequestor), theLocalWebPeer);
-          RoutingTableEntry theNewEntry = new RoutingTableEntry( theWebPeer, theEntry.getHopDistance(), theWebPeer, theEntry.getLastOnlineTime());
+          RoutingTableEntry theNewEntry = new RoutingTableEntry( theWebPeer, theEntry.getHopDistance(), theWebPeer, theEntry.getLastOnlineTime(), theEntry.getTimeDistance());
           theTable.addRoutingTableEntry( theNewEntry );
         }catch(Exception e){
           LOGGER.error("Could not create copy of local web peer, e");

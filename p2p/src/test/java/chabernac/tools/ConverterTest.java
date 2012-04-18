@@ -31,19 +31,19 @@ public class ConverterTest extends TestCase {
     RoutingTable theTable = new RoutingTable("1");
 
     SocketPeer thePeer = new SocketPeer("2", 1002, "x20d1148");
-    RoutingTableEntry theEntry = new RoutingTableEntry(thePeer, 1, thePeer, 123456);
+    RoutingTableEntry theEntry = new RoutingTableEntry(thePeer, 1, thePeer, 123456, 0);
     long theLastOnlineTime2 = theEntry.getLastOnlineTime();
 
     SocketPeer thePeer2 = new SocketPeer("3", 1003, "x01p0880");
-    RoutingTableEntry theEntry2 = new RoutingTableEntry(thePeer2, 2, thePeer, 654321);
+    RoutingTableEntry theEntry2 = new RoutingTableEntry(thePeer2, 2, thePeer, 654321, 0);
     long theLastOnlineTime3 = theEntry2.getLastOnlineTime();
 
     SocketPeer thePeer3 = new SocketPeer("4", 1003, "x01p0880");
-    RoutingTableEntry theEntry3 = new RoutingTableEntry(thePeer3, 1, thePeer3, 654321);
+    RoutingTableEntry theEntry3 = new RoutingTableEntry(thePeer3, 1, thePeer3, 654321, 0);
     
     WebPeer thePeer4 = new WebPeer("5", new URL("http://localhost:8080"));
     thePeer4.setChannel( "peer4" );
-    RoutingTableEntry theEntry4 = new RoutingTableEntry(thePeer4, 1, thePeer4, 654321);
+    RoutingTableEntry theEntry4 = new RoutingTableEntry(thePeer4, 1, thePeer4, 654321, 0);
     long theLastOnlineTime5 = theEntry4.getLastOnlineTime();
 
     theTable.addRoutingTableEntry( theEntry );
@@ -91,7 +91,7 @@ public class ConverterTest extends TestCase {
 
 
     SocketPeer thePeer = new SocketPeer("2", 1002, "x20d1148");
-    RoutingTableEntry theEntry = new RoutingTableEntry(thePeer, 1, thePeer,123456);
+    RoutingTableEntry theEntry = new RoutingTableEntry(thePeer, 1, thePeer,123456, 0);
     RoutingTableEntry theEntry2 = myRoutingTableEntryConverter.getObject( myRoutingTableEntryConverter.toString( theEntry ));
     assertEquals( theEntry.getPeer().getPeerId(), theEntry2.getPeer().getPeerId()); 
   }
