@@ -6,9 +6,9 @@
   <element>
     <type>com.umlet.element.Class</type>
     <coordinates>
-      <x>936</x>
+      <x>912</x>
       <y>432</y>
-      <w>96</w>
+      <w>120</w>
       <h>24</h>
     </coordinates>
     <panel_attributes>ProtocolContainer
@@ -595,5 +595,18 @@ fg=blue</panel_attributes>
     <panel_attributes>lt=&lt;-
 fg=#00AA00</panel_attributes>
     <additional_attributes>24;24;24;64</additional_attributes>
+  </element>
+  <element>
+    <type>com.umlet.element.Relation</type>
+    <coordinates>
+      <x>888</x>
+      <y>360</y>
+      <w>84</w>
+      <h>88</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+children
+fg=#00AA00</panel_attributes>
+    <additional_attributes>48;24;48;72</additional_attributes>
   </element>
 </diagram>
