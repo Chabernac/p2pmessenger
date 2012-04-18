@@ -22,12 +22,12 @@ public class WebRoutingTableInspecterTest extends TestCase {
 
     RoutingTable theRoutingTable = new RoutingTable( "1" );
 
-    theRoutingTable.addRoutingTableEntry( new RoutingTableEntry( new WebPeer( "1", new URL("http://localhost:80/p2p") ), 0, new WebPeer( "1", new URL("http://localhost:80/p2p") ), System.currentTimeMillis() ) );
-    theRoutingTable.addRoutingTableEntry( new RoutingTableEntry( new SocketPeer( "2" ).setChannel("CHANNEL_ZERO").addSupportedProtocol(RoutingProtocol.ID), 1, new SocketPeer( "2" ), System.currentTimeMillis() ) );
-    theRoutingTable.addRoutingTableEntry( new RoutingTableEntry( new SocketPeer( "3" ), 1, new SocketPeer( "3" ), System.currentTimeMillis() ) );
-    theRoutingTable.addRoutingTableEntry( new RoutingTableEntry( new SocketPeer( "4" ), 1, new SocketPeer( "4" ), System.currentTimeMillis() ) );
-    theRoutingTable.addRoutingTableEntry( new RoutingTableEntry( new SocketPeer( "5" ), 2, new SocketPeer( "5" ), System.currentTimeMillis() ) );
-    theRoutingTable.addRoutingTableEntry( new RoutingTableEntry( new SocketPeer( "6" ), 2, new SocketPeer( "4" ), System.currentTimeMillis() ) );
+    theRoutingTable.addRoutingTableEntry( new RoutingTableEntry( new WebPeer( "1", new URL("http://localhost:80/p2p") ), 0, new WebPeer( "1", new URL("http://localhost:80/p2p") ), System.currentTimeMillis(), 0 ) );
+    theRoutingTable.addRoutingTableEntry( new RoutingTableEntry( new SocketPeer( "2" ).setChannel("CHANNEL_ZERO").addSupportedProtocol(RoutingProtocol.ID), 1, new SocketPeer( "2" ), System.currentTimeMillis(), 0 ) );
+    theRoutingTable.addRoutingTableEntry( new RoutingTableEntry( new SocketPeer( "3" ), 1, new SocketPeer( "3" ), System.currentTimeMillis(), 0 ) );
+    theRoutingTable.addRoutingTableEntry( new RoutingTableEntry( new SocketPeer( "4" ), 1, new SocketPeer( "4" ), System.currentTimeMillis(), 0 ) );
+    theRoutingTable.addRoutingTableEntry( new RoutingTableEntry( new SocketPeer( "5" ), 2, new SocketPeer( "5" ), System.currentTimeMillis(), 0 ) );
+    theRoutingTable.addRoutingTableEntry( new RoutingTableEntry( new SocketPeer( "6" ), 2, new SocketPeer( "4" ), System.currentTimeMillis(), 0 ) );
 
     thePeerExternalIpLink.put( "1", "192.168.0.1" );
     thePeerExternalIpLink.put( "2", "192.168.0.2" );
@@ -102,7 +102,7 @@ public class WebRoutingTableInspecterTest extends TestCase {
     RoutingTable theRoutingTable = new RoutingTable( "1" );
     
     WebPeer theLocalWebPeer =  new WebPeer( "1", new URL("http://localhost:80/") );
-    RoutingTableEntry theEntry = new RoutingTableEntry(theLocalWebPeer, 0, theLocalWebPeer, System.currentTimeMillis() );
+    RoutingTableEntry theEntry = new RoutingTableEntry(theLocalWebPeer, 0, theLocalWebPeer, System.currentTimeMillis(), 0 );
     theRoutingTable.addRoutingTableEntry( theEntry );
     
     RoutingTable theNewRoutingTable = theInspector.inspectRoutingTable( "session-1", theRoutingTable );

@@ -70,7 +70,7 @@ public class RoutingFrame extends JFrame {
   private void addWebPeer(){
     try{
       WebPeer theWebPeer = new WebPeer("", new URL("http://x22p0212:8080/p2pwebnode"));
-      RoutingTableEntry theEntry = new RoutingTableEntry(theWebPeer, 1, theWebPeer, System.currentTimeMillis());
+      RoutingTableEntry theEntry = new RoutingTableEntry(theWebPeer, 1, theWebPeer, System.currentTimeMillis(), 0);
       getRoutingTable().addEntry( theEntry );
     }catch(Exception e){
       LOGGER.error("Unable to add web peer", e);

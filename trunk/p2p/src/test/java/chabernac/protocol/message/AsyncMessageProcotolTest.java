@@ -178,8 +178,8 @@ public class AsyncMessageProcotolTest extends AbstractProtocolTest {
       SocketPeer thePeer3 = new SocketPeer("3", 124, "brol");
       thePeer3.setChannel(thePeer1.getChannel());
 
-      theRoutingTable1.addRoutingTableEntry(new RoutingTableEntry(thePeer3, 2, thePeer2, System.currentTimeMillis()));
-      theRoutingTable2.addRoutingTableEntry(new RoutingTableEntry(thePeer3, 2, thePeer1, System.currentTimeMillis()));
+      theRoutingTable1.addRoutingTableEntry(new RoutingTableEntry(thePeer3, 2, thePeer2, System.currentTimeMillis(), 0));
+      theRoutingTable2.addRoutingTableEntry(new RoutingTableEntry(thePeer3, 2, thePeer1, System.currentTimeMillis(), 0));
 
       Message theMessage = new Message();
       theMessage.setDestination(thePeer3);

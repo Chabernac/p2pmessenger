@@ -57,10 +57,10 @@ public class RoutingTablePersisterTest extends TestCase {
     WebPeer thePeer4 = new WebPeer("4", new URL("http://localhost:8080/"));
     thePeer4.setTemporaryPeer( false );
     
-    theTable.addRoutingTableEntry( new RoutingTableEntry(thePeer1, 0, thePeer1, System.currentTimeMillis()) );
-    theTable.addEntry( new RoutingTableEntry(thePeer2, 6, thePeer1, System.currentTimeMillis()) );
-    theTable.addRoutingTableEntry( new RoutingTableEntry(thePeer3, 2, thePeer2, System.currentTimeMillis()) );
-    theTable.addRoutingTableEntry( new RoutingTableEntry(thePeer4, 1, thePeer4, System.currentTimeMillis()) );
+    theTable.addRoutingTableEntry( new RoutingTableEntry(thePeer1, 0, thePeer1, System.currentTimeMillis(), 0) );
+    theTable.addEntry( new RoutingTableEntry(thePeer2, 6, thePeer1, System.currentTimeMillis(), 0) );
+    theTable.addRoutingTableEntry( new RoutingTableEntry(thePeer3, 2, thePeer2, System.currentTimeMillis(), 0) );
+    theTable.addRoutingTableEntry( new RoutingTableEntry(thePeer4, 1, thePeer4, System.currentTimeMillis(), 0) );
     
     File theFile = new File("routingtable.bin");
     

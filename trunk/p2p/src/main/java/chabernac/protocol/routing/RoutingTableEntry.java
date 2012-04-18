@@ -18,6 +18,9 @@ public class RoutingTableEntry implements Serializable{
 	//the hop distance of the peer.  this indicates how many peers must 
 	//be travelled to reach the destination peer
 	private final int myHopDistance;
+	
+	//the time distance of the peer
+	private final long myTimeDistance;
   
 	//the gateway for accessing this peer.  this is the same as the target peer
 	//if the target peer can be reached directly
@@ -29,10 +32,10 @@ public class RoutingTableEntry implements Serializable{
 	
 	//create a routing table entry for this peer which is directly reachable
 	public RoutingTableEntry ( AbstractPeer anHost ){
-	  this(anHost, 1, anHost, System.currentTimeMillis());
+	  this(anHost, 1, anHost, System.currentTimeMillis(), 0);
 	}
 	
-	public RoutingTableEntry ( AbstractPeer anHost , int anHopDistance , AbstractPeer anGateway, long aLastOnlineTime ) {
+	public RoutingTableEntry ( AbstractPeer anHost , int anHopDistance , AbstractPeer anGateway, long aLastOnlineTime, long aTimeDistance ) {
 		super();
 		myPeer = anHost;
 		if(anHopDistance >= MAX_HOP_DISTANCE){
@@ -46,6 +49,7 @@ public class RoutingTableEntry implements Serializable{
 		  myHopDistance = anHopDistance;
 		  myLastOnlineTime = System.currentTimeMillis();
 		}
+		myTimeDistance = aTimeDistance;
 		myGateway = anGateway;
 		checkValidity();
 	}
@@ -69,7 +73,11 @@ public class RoutingTableEntry implements Serializable{
 		return myHopDistance;
 	}
 
-	public AbstractPeer getGateway() {
+	public long getTimeDistance() {
+    return myTimeDistance;
+  }
+
+  public AbstractPeer getGateway() {
 		return myGateway;
 	}
 
@@ -111,15 +119,15 @@ public class RoutingTableEntry implements Serializable{
   }
   
   public RoutingTableEntry entryForNextPeer(AbstractPeer aReceivedPeer){
-    return new RoutingTableEntry(getPeer(), getHopDistance() + 1, aReceivedPeer, System.currentTimeMillis());
+    return new RoutingTableEntry(getPeer(), getHopDistance() + 1, aReceivedPeer, System.currentTimeMillis(), getTimeDistance());
   }
   
   public RoutingTableEntry derivedEntry(int aHopDistance){
-    return new RoutingTableEntry(getPeer(), aHopDistance, getGateway(), myLastOnlineTime);
+    return new RoutingTableEntry(getPeer(), aHopDistance, getGateway(), myLastOnlineTime, getTimeDistance());
   }
   
   public RoutingTableEntry incHopDistance(){
-    return new RoutingTableEntry(getPeer(), getHopDistance() + 1, getGateway(), myLastOnlineTime);
+    return new RoutingTableEntry(getPeer(), getHopDistance() + 1, getGateway(), myLastOnlineTime, getTimeDistance());
   }
 
 }
