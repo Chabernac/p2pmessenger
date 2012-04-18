@@ -50,6 +50,7 @@ public class TaskTreePanel extends JPanel implements iEventListener{
   private void buildGUI(){
     setLayout(new BorderLayout());
     myTree = new JTree(myModel); 
+    myTree.setCellRenderer( new TaskTreeRenderer());
     myTree.setEditable(false);
     myTree.setDragEnabled(false);
     myTree.setShowsRootHandles(true);
