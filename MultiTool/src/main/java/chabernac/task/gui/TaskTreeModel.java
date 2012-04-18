@@ -1,6 +1,7 @@
 package chabernac.task.gui;
 
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeNode;
 
 import chabernac.application.ApplicationRefBase;
 import chabernac.task.Task;
@@ -20,8 +21,13 @@ public class TaskTreeModel extends DefaultTreeModel {
   
   public Object getChild(Object aParent, int index){
     Task theTask = (Task)aParent;
-    if(showFinishedTasks) return theTask.getChildAt(index);
-    return getUnfinishedChildAt((Task)aParent, index);
+    TreeNode theChild = null;
+    if(showFinishedTasks) {
+       theChild = theTask.getChildAt(index);
+    } else {
+      theChild = getUnfinishedChildAt((Task)aParent, index); 
+    }
+    return theChild; 
   }
   
   public void setShowFinished(boolean showFinished){
