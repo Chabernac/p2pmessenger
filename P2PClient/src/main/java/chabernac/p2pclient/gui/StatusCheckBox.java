@@ -15,6 +15,8 @@ import java.awt.RenderingHints;
 import java.awt.event.MouseEvent;
 
 import javax.swing.JCheckBox;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import chabernac.image.ImageFactory;
 import chabernac.paint.Selector;
@@ -44,6 +46,7 @@ public class StatusCheckBox extends JCheckBox {
     //myMargin = getMargin();
     setMargin(DEFAULT_MARGIN);
     setFont();
+    addChangeListener( new ColorChangeListener() );
   }
   
   private void setFont(){
@@ -141,12 +144,20 @@ public class StatusCheckBox extends JCheckBox {
   public void setEditable( boolean aEditable ) {
     isEditable = aEditable;
   }
-  
-  public void setSelected(boolean isSelected){
-    if(isEditable){
-      super.setSelected( isSelected );
+    
+  private void changeBackGroundColor(){
+    if(isSelected()){
+      setBackground( Color.yellow );
+    } else {
+      setBackground( null );
     }
   }
   
-  
+  public class ColorChangeListener implements ChangeListener {
+    @Override
+    public void stateChanged( ChangeEvent aE ) {
+      changeBackGroundColor();
+    }
+  }
+
 }
