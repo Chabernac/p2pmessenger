@@ -453,7 +453,7 @@ public class RoutingProtocol extends Protocol {
         //the sending peer has send the entry so we set it as gateway and increment the hop distance
         //if the gateway of the entry was our peer id  than we ignore the entry, otherwise loops might be created in the routing table hierarchy
         if(!thePeer.getGateway().getPeerId().equals( myLocalPeerId )){
-          thePeer = thePeer.entryForNextPeer( theSendingPeer.getPeer() );
+          thePeer = thePeer.entryForNextPeer( theSendingPeer.getPeer(), myRoutingTable.getEntryForPeer( theSendingPeer.getPeer().getPeerId()).getHopDistance() );
           myRoutingTable.addRoutingTableEntry( thePeer );
         }
         return Response.OK.name();
