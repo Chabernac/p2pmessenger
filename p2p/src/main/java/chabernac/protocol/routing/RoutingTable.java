@@ -22,6 +22,7 @@ import java.util.concurrent.TimeUnit;
 import javax.jdo.annotations.PersistenceCapable;
 
 import org.apache.log4j.Logger;
+import org.apache.log4j.jmx.Agent;
 import org.doomdark.uuid.UUID;
 
 import chabernac.utils.LimitedListDecorator;
@@ -79,6 +80,12 @@ public class RoutingTable implements Iterable< RoutingTableEntry >, Serializable
    */
   public synchronized void addEntry(RoutingTableEntry anEntry){
     myRoutingTable.put(anEntry.getPeer().getPeerId(), anEntry);
+  }
+  
+  public void addRoutingTableEntry(RoutingTableEntry anEntry, String aGateway) throws UnknownPeerException{
+    RoutingTableEntry theGateWay = getEntryForPeer( aGateway );
+    RoutingTableEntry theEntry = anEntry.entryForNextPeer( theGateWay.getPeer(), theGateWay.getTimeDistance() );
+    addRoutingTableEntry( theEntry );
   }
 
   public synchronized void addRoutingTableEntry(RoutingTableEntry anEntry){
@@ -274,13 +281,14 @@ public class RoutingTable implements Iterable< RoutingTableEntry >, Serializable
     return Collections.unmodifiableCollection(  copyOfRoutingTable().values() ).iterator();
   }
 
-  public synchronized void merge(RoutingTable anotherRoutingTable) throws SocketException, NoAvailableNetworkAdapterException, UnknownPeerException{
+  public synchronized void merge(RoutingTable anotherRoutingTable, long aTimeDistance) throws SocketException, NoAvailableNetworkAdapterException, UnknownPeerException{
+    
     for(Iterator< RoutingTableEntry > i = anotherRoutingTable.iterator(); i.hasNext();){
       RoutingTableEntry theEntry = i.next();
       //add all entries except the entry for ourselfs
       //and except the entries which have our peer id as gateway, otherwise loops may be created in the routing table hierarchy
       if(!theEntry.getPeer().getPeerId().equals( myLocalPeerId )){
-        addRoutingTableEntry(theEntry.entryForNextPeer( anotherRoutingTable.getEntryForLocalPeer().getPeer() ) );
+        addRoutingTableEntry(theEntry.entryForNextPeer( anotherRoutingTable.getEntryForLocalPeer().getPeer(), aTimeDistance ) );
       }
     }
 

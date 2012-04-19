@@ -118,8 +118,8 @@ public class RoutingTableEntry implements Serializable{
     return true;
   }
   
-  public RoutingTableEntry entryForNextPeer(AbstractPeer aReceivedPeer){
-    return new RoutingTableEntry(getPeer(), getHopDistance() + 1, aReceivedPeer, System.currentTimeMillis(), getTimeDistance());
+  public RoutingTableEntry entryForNextPeer(AbstractPeer aReceivedPeer, long aTimeDistance){
+    return new RoutingTableEntry(getPeer(), getHopDistance() + 1, aReceivedPeer, System.currentTimeMillis(), getTimeDistance() + aTimeDistance);
   }
   
   public RoutingTableEntry derivedEntry(int aHopDistance){
