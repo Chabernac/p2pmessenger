@@ -453,7 +453,7 @@ public class RoutingProtocol extends Protocol {
         //the sending peer has send the entry so we set it as gateway and increment the hop distance
         //if the gateway of the entry was our peer id  than we ignore the entry, otherwise loops might be created in the routing table hierarchy
         if(!thePeer.getGateway().getPeerId().equals( myLocalPeerId )){
-          thePeer = thePeer.entryForNextPeer( theSendingPeer.getPeer(), myRoutingTable.getEntryForPeer( theSendingPeer.getPeer().getPeerId()).getHopDistance() );
+          thePeer = thePeer.entryForNextPeer( theSendingPeer.getPeer(), 0 );
           myRoutingTable.addRoutingTableEntry( thePeer );
         }
         return Response.OK.name();
@@ -504,16 +504,11 @@ public class RoutingProtocol extends Protocol {
   boolean contactPeer(AbstractPeer aPeer, List<String> anUnreachablePeers, boolean isRequestTableWhenPeerFound){
     try{
       LOGGER.debug("Sending message to '" + aPeer.getEndPointRepresentation() );
-      
-      
-      long t1 = System.currentTimeMillis();
       String theResponse = getPeerSender().send( aPeer, createMessage( Command.WHO_ARE_YOU.name() ));
-      long theTimeDistance = System.currentTimeMillis() - t1;
-      
       AbstractPeer theRemotePeer = myPeerConverter.getObject( theResponse );
 
       if(anUnreachablePeers == null || !anUnreachablePeers.contains( theRemotePeer.getPeerId() )){
-        RoutingTableEntry theEntry = new RoutingTableEntry(theRemotePeer, 1, theRemotePeer, System.currentTimeMillis(), theTimeDistance);
+        RoutingTableEntry theEntry = new RoutingTableEntry(theRemotePeer, 1, theRemotePeer, System.currentTimeMillis(), 0);
 
         LOGGER.debug("Detected system on '" + theRemotePeer.getEndPointRepresentation() + " Local peer '" + myLocalPeerId + "' remote peer '" + theRemotePeer.getPeerId() + "'");
         //only if we have detected our self we set the hop distance to 0
@@ -724,7 +719,7 @@ public class RoutingProtocol extends Protocol {
         //test that we did not take the place of another peer on the same host and port
         if(!myLocalPeerId.equals( theRemoteTable.getLocalPeerId() )){
 
-          myRoutingTable.merge( theRemoteTable );
+          myRoutingTable.merge( theRemoteTable, 0 );
           //we can connect directly to this peer, so the hop distance is 1
           //theEntry.setHopDistance( 1 );
           RoutingTableEntry theEntryOfRemotePeer = myRoutingTable.getEntryForPeer( theRemoteTable.getLocalPeerId() );
