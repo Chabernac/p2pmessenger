@@ -1,0 +1,150 @@
+package chabernac.protocol.asyncfiletransfer;
+
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.Point;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.SwingUtilities;
+
+import org.apache.log4j.Logger;
+
+import chabernac.command.AbstractCommand;
+import chabernac.tools.SystemTools;
+
+public class FileTransferPanel extends JPanel implements iFileTransferListener{
+  private static final long serialVersionUID = 1937364427569729273L;
+  private static Logger LOGGER = Logger.getLogger(FileTransferPanel.class);
+  private final FileTransferHandler myHandler;
+  private JPopupMenu myPopupMenu = null;
+
+  public FileTransferPanel(FileTransferHandler aHandler){
+    myHandler = aHandler;
+    buildGUI();
+  }
+
+  private void buildGUI(){
+    setLayout(new BorderLayout());
+    add(new FileTransferProgressPanel(myHandler), BorderLayout.CENTER);
+
+    addListeners();
+  }
+
+  private void addListeners(){
+    try {
+      myHandler.addFileTransferListener(this);
+    } catch (AsyncFileTransferException e) {
+    }
+
+    addMouseListener(new ShowPopupMenuListener());
+  }
+
+  public Dimension getPreferredSize(){
+    return new Dimension(super.getPreferredSize().width, FileTransferProgressPanel.HEIGHT);
+  }
+
+  public class StartStopAction extends AbstractCommand{
+    @Override
+    public String getName() {
+      switch(myHandler.getState().getState()){
+      case RUNNING : return "Stop";
+      case PAUSED  : return "Start";
+      case FAILED  : return "Retry";
+      default : return "Stop";
+
+      }
+    }
+
+    @Override
+    public boolean isEnabled() {
+      switch(myHandler.getState().getState()){
+      case RUNNING : 
+      case PAUSED  :
+      case FAILED  : return true;
+      }
+      return false;
+    }
+
+    @Override
+    public void execute() {
+      try{
+        switch(myHandler.getState().getState()){
+        case RUNNING : myHandler.pause(); break;
+        case PAUSED  : myHandler.resume(); break;
+        case FAILED  : myHandler.resume(); break;
+        }
+      }catch(Exception e){
+        LOGGER.error("Could not invoke command", e);
+      } 
+
+      notifyObs();
+    }
+  }
+
+  public class CancelCommand extends AbstractCommand{
+    @Override
+    public String getName() {
+      switch(myHandler.getState().getState()){
+      case RUNNING: return "Cancel";
+
+      }
+      return "Remove";
+    }
+
+    @Override
+    public boolean isEnabled() {
+      return true;
+    }
+
+    @Override
+    public void execute() {
+
+      try{
+        myHandler.cancel();
+      }catch(Exception e){
+        LOGGER.error("Could not invoke command", e);
+      } 
+
+      notifyObs();
+    }
+  }
+
+  @Override
+  public void transferStateChanged() {
+    //    myStartStopCommand.notifyObs();
+    //    myCancelCommand.notifyObs();
+  }
+
+  private void buildPopupMenu(MouseEvent evt) throws AsyncFileTransferException{
+    if(myPopupMenu ==  null) {
+      myPopupMenu = new FileTransferPopup(myHandler);
+    }
+    Point theRelativePoint = SwingUtilities.convertPoint(evt.getComponent(), evt.getX(), evt.getY(), this);
+    myPopupMenu.show(this, theRelativePoint.x, theRelativePoint.y);
+  }
+
+  public class ShowPopupMenuListener extends MouseAdapter {
+    public void mouseReleased(MouseEvent evt){
+      if(evt.getButton() == MouseEvent.BUTTON3){
+      try {
+        buildPopupMenu(evt);
+      } catch (AsyncFileTransferException e) {
+        LOGGER.error("Could not show popup menu", e);
+      }
+      }
+    }
+    public void mousePressed(MouseEvent evt){
+      if(evt.getButton() == MouseEvent.BUTTON1 && evt.getClickCount() >= 2){
+        try {
+          SystemTools.openFile(myHandler.getFile());
+        } catch (Exception e) {
+          LOGGER.error("An error occured while opening file", e);
+        }
+      }
+    }
+  }
+
+}
