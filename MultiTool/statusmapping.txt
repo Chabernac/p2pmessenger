@@ -1,4 +1,0 @@
-Eten=AWAY
-Pauze=AWAY
-WC=AWAY
-meeting=BUSY
