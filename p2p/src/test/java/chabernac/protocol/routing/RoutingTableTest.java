@@ -44,7 +44,7 @@ public class RoutingTableTest extends TestCase {
     RoutingTableEntry theEntry3 = new RoutingTableEntry(thePeer3, 0, thePeer3, System.currentTimeMillis(), 0);
     theTable2.addRoutingTableEntry( theEntry3 );
 
-    theTable.merge( theTable2 );
+    theTable.merge( theTable2, 0 );
 
 
     assertEquals( 3,  theTable.getEntries().size());
