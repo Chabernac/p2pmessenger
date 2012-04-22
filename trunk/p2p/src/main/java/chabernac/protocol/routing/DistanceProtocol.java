@@ -1,5 +1,9 @@
 package chabernac.protocol.routing;
 
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
 import chabernac.protocol.Protocol;
 import chabernac.protocol.ProtocolException;
 import chabernac.protocol.ServerInfo;
@@ -11,6 +15,8 @@ import chabernac.protocol.ServerInfo;
  *  This information can then be used to calculate a fastest path to another peer instead of a path with the least hops.
  */
 public class DistanceProtocol extends Protocol {
+  private Map<String, Long> myDistanceMap = new HashMap<String, Long>();
+  
   public DistanceProtocol() {
     super("DTP");
   }
@@ -22,6 +28,24 @@ public class DistanceProtocol extends Protocol {
 
   public RoutingTable getRoutingTable() throws ProtocolException{
     return ((RoutingProtocol)findProtocolContainer().getProtocol( RoutingProtocol.ID )).getRoutingTable();
+  }
+  
+  public iPeerSender getPeerSender() throws ProtocolException{
+    return ((RoutingProtocol)findProtocolContainer().getProtocol( RoutingProtocol.ID )).getPeerSender();
+  }
+
+  public long getTimeDistance(AbstractPeer aPeer) throws ProtocolException{
+    if(myDistanceMap.containsKey(aPeer)){
+      long t1 = System.currentTimeMillis();
+      try{
+      getPeerSender().send(aPeer, createMessage("IN"));
+      }catch(IOException e){
+        throw new ProtocolException("Could not send message to peer '"  + aPeer.getPeerId()  + " for obtaining time distance", e);
+      }
+      long t2 = System.currentTimeMillis();
+      myDistanceMap.put(aPeer.getPeerId(), t2 - t1);
+    }
+    return myDistanceMap.get(aPeer.getPeerId());
   }
   
   @Override
