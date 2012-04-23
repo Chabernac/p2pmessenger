@@ -5,9 +5,11 @@
 package chabernac.io;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -23,6 +25,8 @@ public class StreamSplitterPool {
   protected final String myId;
   private final ExecutorService myExecutorService;
   private final Map<String, AtomicInteger> mySimultanousConnectionAttempts = new HashMap<String, AtomicInteger>();
+  
+  private final List<iStreamSplitterPoolListener> myStreamSplitterPoolListeners = new ArrayList<iStreamSplitterPoolListener>();
 
   public StreamSplitterPool ( String aId, ExecutorService anExecutorService ) {
     super();
@@ -33,6 +37,15 @@ public class StreamSplitterPool {
   public String getId(){
     return myId;
   }
+  
+  public void addStreamSplitterPoolListener(iStreamSplitterPoolListener aListener){
+    myStreamSplitterPoolListeners.add(aListener);
+  }
+  
+  public void removeStreamSplitterPoolListener(iStreamSplitterPoolListener aListener){
+    myStreamSplitterPoolListeners.remove(aListener);
+  }
+  
 
   private int incrementConnectionAttempts(String anId){
     synchronized(anId.intern()){
