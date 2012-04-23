@@ -152,7 +152,9 @@ public class ProtocolContainer implements IProtocol {
     } catch ( InterruptedException e ) {
     }
 
-    myExecutor.shutdownNow();
+    if(myExecutor != null){
+      myExecutor.shutdownNow();
+    }
   }
 
   public IProtocol getProtocol(String anId) throws ProtocolException{
