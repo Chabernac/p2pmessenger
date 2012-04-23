@@ -15,10 +15,11 @@ import chabernac.protocol.ServerInfo;
  *  This information can then be used to calculate a fastest path to another peer instead of a path with the least hops.
  */
 public class DistanceProtocol extends Protocol {
+  public static final String ID = "DTP";
   private Map<String, Long> myDistanceMap = new HashMap<String, Long>();
   
   public DistanceProtocol() {
-    super("DTP");
+    super(ID);
   }
 
   @Override
@@ -35,17 +36,21 @@ public class DistanceProtocol extends Protocol {
   }
 
   public long getTimeDistance(AbstractPeer aPeer) throws ProtocolException{
-    if(myDistanceMap.containsKey(aPeer)){
-      long t1 = System.currentTimeMillis();
+    if(!myDistanceMap.containsKey(aPeer)){
+      long t1 = System.nanoTime();
       try{
       getPeerSender().send(aPeer, createMessage("IN"));
       }catch(IOException e){
         throw new ProtocolException("Could not send message to peer '"  + aPeer.getPeerId()  + " for obtaining time distance", e);
       }
-      long t2 = System.currentTimeMillis();
-      myDistanceMap.put(aPeer.getPeerId(), t2 - t1);
+      long t2 = System.nanoTime();
+      myDistanceMap.put(aPeer.getPeerId(), (t2 - t1));
     }
     return myDistanceMap.get(aPeer.getPeerId());
+  }
+  
+  public void clear(){
+    myDistanceMap.clear();
   }
   
   @Override

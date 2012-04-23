@@ -47,4 +47,8 @@ public class JVMPeerSender {
     
     return theProtocol.handleCommand(UUID.randomUUID().toString(), aMessage);
   }
+  
+  public void clear(){
+    myLocalJVMProtocols.clear();
+  }
 }
