@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
@@ -33,6 +34,8 @@ public class StreamSplitter {
   private String myId;
   private boolean isClosed = false;
 
+  private ExecutorService myListenerService = Executors.newSingleThreadExecutor();
+
   public StreamSplitter(InputStream aInputStream, OutputStream aOutputStream, iInputOutputHandler aInputOutputHandler) {
     super();
     myInputOutputHandler = aInputOutputHandler;
@@ -44,10 +47,30 @@ public class StreamSplitter {
     myStreamListeners.add(aListener);
   }
 
-  private void notifyListeners(){
+  private void notifyListenersClosed(){
     for(iStreamListener theListener : new ArrayList<iStreamListener>(myStreamListeners)){
       theListener.streamClosed();
     }
+  }
+
+  private void notifyListenersOutgoingMessage(final String aMessage){
+    myListenerService.execute(new Runnable(){
+      public void run(){
+        for(iStreamListener theListener : new ArrayList<iStreamListener>(myStreamListeners)){
+          theListener.outgoingMessage(aMessage);
+        }
+      }
+    });
+  }
+
+  private void notifyListenersIncoming(final String aMessage){
+    myListenerService.execute(new Runnable(){
+      public void run(){
+        for(iStreamListener theListener : new ArrayList<iStreamListener>(myStreamListeners)){
+          theListener.incomingMessage(aMessage);
+        }
+      }
+    });
   }
 
   public void close(){
@@ -58,17 +81,17 @@ public class StreamSplitter {
     }
     isClosed = true;
   }
-  
+
   public boolean isClosed(){
     return isClosed;
   }
 
   public String send(String anInput) throws InterruptedException{
-//    LOGGER.debug(myId + ":SENDING INPUT: '" + anInput + "'");
+    //    LOGGER.debug(myId + ":SENDING INPUT: '" + anInput + "'");
     sendWithoutReply(IN + anInput);
     String theReply = myOutputQueue.poll(5, TimeUnit.SECONDS);
     if(theReply == null) throw new InterruptedException("No reply received within 5 seconds");
-//    LOGGER.debug(myId + ":RETURNING OUTPUT: '" + theReply + "'");
+    //    LOGGER.debug(myId + ":RETURNING OUTPUT: '" + theReply + "'");
     return theReply;
   }
 
@@ -80,8 +103,9 @@ public class StreamSplitter {
     anExecutorService.execute(new InputHandler());
   }
 
-  public void sendWithoutReply(String anInput){
-    myOutputStream.println(anInput);
+  public void sendWithoutReply(String aMessage){
+    notifyListenersOutgoingMessage(aMessage);
+    myOutputStream.println(aMessage);
     myOutputStream.flush();
   }
 
@@ -93,6 +117,8 @@ public class StreamSplitter {
     myId = aId;
   }
 
+
+
   public void handleInput(String anInput){
     String theOutput = myInputOutputHandler.handle(myId, anInput);
     sendWithoutReply(OUT + theOutput);
@@ -102,24 +128,25 @@ public class StreamSplitter {
     public void doRun(){
       String theLine = null;
       try{
-//        System.out.println("Inputhandler running for server with remote id '" + myId + "'");
+        //        System.out.println("Inputhandler running for server with remote id '" + myId + "'");
         while((theLine = myInputStream.readLine()) != null){
+          notifyListenersIncoming(theLine);
           if(theLine.startsWith(IN)){
-//            LOGGER.debug(myId +  ":INPUT RECEIVED: '" + theLine + "'");
+            //            LOGGER.debug(myId +  ":INPUT RECEIVED: '" + theLine + "'");
             String theInput = theLine.substring(IN.length());
             handleInput(theInput);
           } else {
-//            LOGGER.debug(myId + ":OUTPUT RECEIVED: '" + theLine + "'");
+            //            LOGGER.debug(myId + ":OUTPUT RECEIVED: '" + theLine + "'");
             String theResponse = theLine;
             if(theResponse.startsWith(OUT)) theResponse = theResponse.substring(OUT.length());
             myOutputQueue.put(theResponse);
           }
         }
-//        System.out.println("Line null");
+        //        System.out.println("Line null");
       }catch(Exception e){
         LOGGER.error("Error occured while reading stream", e);
       } finally {
-        notifyListeners();
+        notifyListenersClosed();
       }
     }
   }

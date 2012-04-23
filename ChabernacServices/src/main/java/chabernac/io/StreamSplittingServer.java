@@ -118,7 +118,7 @@ public class StreamSplittingServer implements iSocketSender{
     //    LOGGER.debug("Stream splitter added in server with id '" + myId + "' for remote server with id '" + theSplitter.getId() + "' result: " + theResult);
 
     if(theResult == Result.ADDED){
-      theSplitter.addStreamListener( new iStreamListener() {
+      theSplitter.addStreamListener( new StreamSplitterListenerAdapter() {
         @Override
         public void streamClosed() {
           try {
@@ -173,7 +173,7 @@ public class StreamSplittingServer implements iSocketSender{
     final Socket theSock = theSocket;
 
     if(theResult == Result.ADDED){
-      theSplitter.addStreamListener( new iStreamListener() {
+      theSplitter.addStreamListener( new StreamSplitterListenerAdapter() {
         @Override
         public void streamClosed() {
           try {
