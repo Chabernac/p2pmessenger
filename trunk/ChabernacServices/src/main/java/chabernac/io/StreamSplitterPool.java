@@ -154,7 +154,7 @@ public class StreamSplitterPool {
     return Collections.unmodifiableMap( myStreamSplitters );
   }
 
-  private class StreamClosedListener implements iStreamListener{
+  private class StreamClosedListener extends StreamSplitterListenerAdapter{
     private final String myId;
     private final StreamSplitter myStreamSplitter;
 

@@ -108,7 +108,7 @@ public class StreamSplitterTest extends TestCase {
     }
   }
   
-  private class StreamListener implements iStreamListener{
+  private class StreamListener extends StreamSplitterListenerAdapter{
     private final CountDownLatch myLatch;
     
     public StreamListener(CountDownLatch myLatch) {
