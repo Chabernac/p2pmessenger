@@ -27,6 +27,7 @@ import chabernac.protocol.packet.AsyncTransferProtocol;
 import chabernac.protocol.packet.PacketProtocol;
 import chabernac.protocol.ping.PingProtocol;
 import chabernac.protocol.pipe.PipeProtocol;
+import chabernac.protocol.routing.DistanceProtocol;
 import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.WebPeerProtocol;
 import chabernac.protocol.stacktrace.ProcessProtocol;
@@ -162,6 +163,10 @@ public class ProtocolFactory implements iProtocolFactory{
     
     if(AsyncTransferProtocol.ID.equalsIgnoreCase( aProtocolId )) {
       return new AsyncTransferProtocol( );
+    }
+    
+    if(DistanceProtocol.ID.equalsIgnoreCase( aProtocolId )) {
+      return new DistanceProtocol( );
     }
 
 
