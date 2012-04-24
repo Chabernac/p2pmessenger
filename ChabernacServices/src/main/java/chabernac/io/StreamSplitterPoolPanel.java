@@ -40,6 +40,7 @@ public class StreamSplitterPoolPanel extends JPanel {
     
     @Override
     public void streamSplitterAdded(StreamSplitter aStreamSplitter) {
+      System.out.println("Stream splitter added " + aStreamSplitter.getId());
       myModel.fireTableModelChanged();
       aStreamSplitter.addStreamListener(myStreamListener);
     }
