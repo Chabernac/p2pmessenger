@@ -58,10 +58,10 @@ public class MicrophonePacketPersister implements iDataPacketPersister {
     mySortedPackets = new SimpleBuffer<byte[]>(0, 5);
 //    mySortedPackets = new ArrayBlockingQueue<byte[]>(theUpperLimit);
 
-    System.out.println("Buffer: " +  mySortedPackets.getLowerLimit() + " " + mySortedPackets.getUpperLimit());
+//    System.out.println("Buffer: " +  mySortedPackets.getLowerLimit() + " " + mySortedPackets.getUpperLimit());
 
     int theDataLineBufferSize =  DATA_LINE_BUFFER * aSamplesPerSecond  * (aBitSize / 2) / 1000;
-    System.out.println("Data line buffer " + theDataLineBufferSize);
+//    System.out.println("Data line buffer " + theDataLineBufferSize);
     //    int theDataLineBufferSize = 4000;
 
     mySpeexDecoder = new SpeexDecoder();
@@ -134,7 +134,7 @@ public class MicrophonePacketPersister implements iDataPacketPersister {
   }
 
   private void playPacket(byte[] aBytes){
-    System.out.println("Playing packet");
+//    System.out.println("Playing packet");
     mySoundLevelVisualizer.currentPlayingSoundLevel( mySoundLevelCalculator.calculateLevel( aBytes ) );
     myDataLine.write(aBytes, 0, aBytes.length);
   }
@@ -147,17 +147,17 @@ public class MicrophonePacketPersister implements iDataPacketPersister {
       myStartTime = System.currentTimeMillis();
       while(!stop){
         myPacketCounter++;
-        System.out.println("playing packet in audio player");
+//        System.out.println("playing packet in audio player");
 //        System.out.println("Playing packet " + thePacket.getId()  + " buffer size: " + mySortedPackets.size() +  " " + (float)(1000 * myPacketCounter) / (float)(System.currentTimeMillis() - myStartTime) + " packets/second");
         
         if(mySortedPackets.isBufferUnderrun()){
-          System.out.println("Playing empty buffer");
+//          System.out.println("Playing empty buffer");
           playPacket(EMPTY_BUFFER);
         } else {
           playPacket(mySortedPackets.get());
         }
         
-        System.out.println("packet played in audio player");
+//        System.out.println("packet played in audio player");
       }
     }
   }

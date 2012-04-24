@@ -11,7 +11,7 @@ public class BasicSoundLevelThreshHoldProvider implements iSoundLevelTreshHoldPr
 
   @Override
   public double getThreshHold() {
-    return 1.5;
+    return 0;
   }
 
   @Override
