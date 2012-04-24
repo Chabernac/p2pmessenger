@@ -15,6 +15,8 @@ import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 
+import javax.swing.JPanel;
+
 import org.apache.log4j.Logger;
 
 import chabernac.io.StreamSplitterPool.Result;
@@ -35,7 +37,7 @@ public class StreamSplittingServer implements iSocketSender{
   private Map<String, Socket> mySockets = new HashMap<String, Socket>();
   private final String myId;
   private final String LOCK_PREFIX = UUID.randomUUID().toString();
-  private StreamSplitterServerDebugInfoFrame myDebugInfo = null;
+  private StreamSplitterPoolPanel myDebugPanel = null;
 
   public StreamSplittingServer ( iInputOutputHandler aInputOutputHandler, int aPort, boolean isFindUnusedPort, String anId ) {
     super();
@@ -277,11 +279,11 @@ public class StreamSplittingServer implements iSocketSender{
   }
 
   @Override
-  public void showDebuggingInfo() {
-    if(myDebugInfo == null){
-      myDebugInfo = new StreamSplitterServerDebugInfoFrame(this);
+  public JPanel getDebuggingPanel(){
+    if(myDebugPanel == null){
+      myDebugPanel = new StreamSplitterPoolPanel( myPool );
     }
-    myDebugInfo.setVisible(true);
+    return myDebugPanel;
     
   }
 
