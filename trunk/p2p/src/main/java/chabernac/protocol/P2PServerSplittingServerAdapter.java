@@ -1,5 +1,7 @@
 package chabernac.protocol;
 
+import javax.swing.JPanel;
+
 import chabernac.io.StreamSplittingServer;
 
 public class P2PServerSplittingServerAdapter implements iP2PServer {
@@ -32,7 +34,7 @@ public class P2PServerSplittingServerAdapter implements iP2PServer {
   }
 
   @Override
-  public void showDebugInfo() {
-    myServer.showDebuggingInfo();
+  public JPanel getDebuggingPanel() {
+    return myServer.getDebuggingPanel();
   }
 }

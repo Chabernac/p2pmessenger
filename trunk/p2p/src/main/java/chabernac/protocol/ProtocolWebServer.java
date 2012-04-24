@@ -2,6 +2,8 @@ package chabernac.protocol;
 
 import java.net.URL;
 
+import javax.swing.JPanel;
+
 import org.apache.log4j.Logger;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.ajp.Ajp13SocketConnector;
@@ -104,6 +106,7 @@ public class ProtocolWebServer implements iP2PServer {
   }
 
   @Override
-  public void showDebugInfo() {
+  public JPanel getDebuggingPanel() {
+    return null;
   }
 }

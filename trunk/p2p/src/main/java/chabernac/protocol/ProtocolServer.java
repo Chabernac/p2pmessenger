@@ -18,6 +18,8 @@ import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicLong;
 
+import javax.swing.JPanel;
+
 import org.apache.log4j.Logger;
 
 import chabernac.io.StreamSplitter;
@@ -233,8 +235,8 @@ public class ProtocolServer implements Runnable, iP2PServer{
     }
   }
 
-
   @Override
-  public void showDebugInfo() {
+  public JPanel getDebuggingPanel() {
+    return null;
   }
 }
