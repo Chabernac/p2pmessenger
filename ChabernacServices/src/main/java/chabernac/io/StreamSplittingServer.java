@@ -281,7 +281,7 @@ public class StreamSplittingServer implements iSocketSender{
   @Override
   public JPanel getDebuggingPanel(){
     if(myDebugPanel == null){
-      myDebugPanel = new StreamSplitterPoolPanel( myPool );
+      myDebugPanel = new StreamSplitterPoolPanel( this, myPool );
     }
     return myDebugPanel;
     

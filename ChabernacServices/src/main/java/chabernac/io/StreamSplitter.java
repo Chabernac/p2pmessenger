@@ -49,6 +49,10 @@ public class StreamSplitter {
   public void addStreamListener(iStreamListener aListener){
     myStreamListeners.add(aListener);
   }
+  
+  public void removeStreamListener(iStreamListener aListener){
+    myStreamListeners.remove(aListener);
+  }
 
   private void notifyListenersClosed(){
     for(iStreamListener theListener : new ArrayList<iStreamListener>(myStreamListeners)){
