@@ -7,6 +7,8 @@ package chabernac.io;
 import java.io.IOException;
 import java.net.Socket;
 
+import javax.swing.JPanel;
+
 public interface iSocketSender {
   
   /**
@@ -21,5 +23,5 @@ public interface iSocketSender {
   public Socket getSocket(String anId);
   public boolean containsSocketForId(String anId);
   
-  public void showDebuggingInfo();
+  public JPanel getDebuggingPanel();
 }
