@@ -12,6 +12,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.log4j.Logger;
@@ -27,6 +28,8 @@ public class StreamSplitterPool {
   private final Map<String, AtomicInteger> mySimultanousConnectionAttempts = new HashMap<String, AtomicInteger>();
   
   private final List<iStreamSplitterPoolListener> myStreamSplitterPoolListeners = new ArrayList<iStreamSplitterPoolListener>();
+  
+  private ExecutorService myListenerService = Executors.newSingleThreadExecutor();
 
   public StreamSplitterPool ( String aId, ExecutorService anExecutorService ) {
     super();
@@ -44,6 +47,20 @@ public class StreamSplitterPool {
   
   public void removeStreamSplitterPoolListener(iStreamSplitterPoolListener aListener){
     myStreamSplitterPoolListeners.remove(aListener);
+  }
+  
+  private void notifyStreamSplitterAddedRemoved(final StreamSplitter aStreamSplitter, final boolean isAdded){
+    myExecutorService.execute(new Runnable(){
+      public void run(){
+        for(iStreamSplitterPoolListener theListener : myStreamSplitterPoolListeners){
+          if(isAdded){
+            theListener.streamSplitterAdded(aStreamSplitter);
+          } else {
+            theListener.streamSplitterRemoved(aStreamSplitter);
+          }
+        }
+      }
+    });
   }
   
 
@@ -127,6 +144,7 @@ public class StreamSplitterPool {
     }
 
     myStreamSplitters.put(aRemoteId, aStreamSplitter);
+    notifyStreamSplitterAddedRemoved(aStreamSplitter, true);
     aStreamSplitter.addStreamListener( new StreamClosedListener( aRemoteId, aStreamSplitter ) );
     return Result.ADDED;
   }
@@ -182,7 +200,8 @@ public class StreamSplitterPool {
       synchronized(myId.intern()){
 //        LOGGER.debug("Removing stream splitter for peer with id '" + myId + "'");
         if(myStreamSplitters.containsKey( myId ) && myStreamSplitters.get( myId ) == myStreamSplitter){
-          myStreamSplitters.remove( myId );
+          StreamSplitter theRemovedSplitter = myStreamSplitters.remove( myId );
+          notifyStreamSplitterAddedRemoved(theRemovedSplitter, false);
         }
       }
     }

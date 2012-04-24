@@ -20,4 +20,6 @@ public interface iSocketSender {
   public String getRemoteId(String aHost, int aPort) throws IOException;
   public Socket getSocket(String anId);
   public boolean containsSocketForId(String anId);
+  
+  public void showDebuggingInfo();
 }
