@@ -12,6 +12,7 @@ import java.net.URL;
 import java.util.UUID;
 
 import javax.swing.JFrame;
+import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
 import org.apache.log4j.BasicConfigurator;
@@ -64,7 +65,6 @@ public class RoutingFrame extends JFrame {
     addListeners();
     buildGUI();
     init();
-    aServer.showDebugInfo();
     //    addWebPeer();
   }
 
@@ -136,7 +136,11 @@ public class RoutingFrame extends JFrame {
     thePane.add("PeerMessages", new PeerMessagePanel(theRoutingProtocl.getPeerSender()));
 
     thePane.add("Message Archive", new MessageArchivePanel((MultiPeerMessageProtocol)myProtocolContainer.getProtocol( MultiPeerMessageProtocol.ID )));
-
+    
+    JPanel theDebuggingPanel = myProtocolServer.getDebuggingPanel();
+    if(theDebuggingPanel != null){
+      thePane.add("Server debug info", theDebuggingPanel);
+    }
 
     getContentPane().setLayout( new BorderLayout() );
     getContentPane().add( thePane, BorderLayout.CENTER );
