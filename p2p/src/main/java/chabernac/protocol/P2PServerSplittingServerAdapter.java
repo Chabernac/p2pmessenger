@@ -31,4 +31,8 @@ public class P2PServerSplittingServerAdapter implements iP2PServer {
     myServer.kill();
   }
 
+  @Override
+  public void showDebugInfo() {
+    myServer.showDebuggingInfo();
+  }
 }

@@ -64,6 +64,7 @@ public class RoutingFrame extends JFrame {
     addListeners();
     buildGUI();
     init();
+    aServer.showDebugInfo();
     //    addWebPeer();
   }
 

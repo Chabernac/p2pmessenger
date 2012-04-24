@@ -232,4 +232,9 @@ public class ProtocolServer implements Runnable, iP2PServer{
       return myServerInfo;
     }
   }
+
+
+  @Override
+  public void showDebugInfo() {
+  }
 }

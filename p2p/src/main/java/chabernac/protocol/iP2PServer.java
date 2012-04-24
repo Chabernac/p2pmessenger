@@ -14,4 +14,6 @@ public interface iP2PServer {
    */
   public void kill();
   
+  public void showDebugInfo();
+  
 }

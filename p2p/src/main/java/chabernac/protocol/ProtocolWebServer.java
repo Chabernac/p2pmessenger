@@ -102,4 +102,8 @@ public class ProtocolWebServer implements iP2PServer {
   public void kill() {
     stop();
   }
+
+  @Override
+  public void showDebugInfo() {
+  }
 }
