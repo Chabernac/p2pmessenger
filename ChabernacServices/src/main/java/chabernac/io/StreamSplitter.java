@@ -35,6 +35,9 @@ public class StreamSplitter {
   private boolean isClosed = false;
 
   private ExecutorService myListenerService = Executors.newSingleThreadExecutor();
+  
+  private long myBytesSend = 0;
+  private long myBytesReceived = 0;
 
   public StreamSplitter(InputStream aInputStream, OutputStream aOutputStream, iInputOutputHandler aInputOutputHandler) {
     super();
@@ -54,6 +57,7 @@ public class StreamSplitter {
   }
 
   private void notifyListenersOutgoingMessage(final String aMessage){
+    myBytesSend += aMessage.length();
     myListenerService.execute(new Runnable(){
       public void run(){
         for(iStreamListener theListener : new ArrayList<iStreamListener>(myStreamListeners)){
@@ -64,6 +68,7 @@ public class StreamSplitter {
   }
 
   private void notifyListenersIncoming(final String aMessage){
+    myBytesReceived += aMessage.length();
     myListenerService.execute(new Runnable(){
       public void run(){
         for(iStreamListener theListener : new ArrayList<iStreamListener>(myStreamListeners)){
@@ -116,8 +121,14 @@ public class StreamSplitter {
   public void setId( String aId ) {
     myId = aId;
   }
+  
+  public long getBytesSend() {
+    return myBytesSend;
+  }
 
-
+  public long getBytesReceived() {
+    return myBytesReceived;
+  }
 
   public void handleInput(String anInput){
     String theOutput = myInputOutputHandler.handle(myId, anInput);

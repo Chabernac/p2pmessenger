@@ -35,6 +35,7 @@ public class StreamSplittingServer implements iSocketSender{
   private Map<String, Socket> mySockets = new HashMap<String, Socket>();
   private final String myId;
   private final String LOCK_PREFIX = UUID.randomUUID().toString();
+  private StreamSplitterServerDebugInfoFrame myDebugInfo = null;
 
   public StreamSplittingServer ( iInputOutputHandler aInputOutputHandler, int aPort, boolean isFindUnusedPort, String anId ) {
     super();
@@ -273,5 +274,18 @@ public class StreamSplittingServer implements iSocketSender{
   @Override
   public Socket getSocket( String anId ) {
     return mySockets.get(anId);
+  }
+
+  @Override
+  public void showDebuggingInfo() {
+    if(myDebugInfo == null){
+      myDebugInfo = new StreamSplitterServerDebugInfoFrame(this);
+    }
+    myDebugInfo.setVisible(true);
+    
+  }
+
+  public StreamSplitterPool getStreamSplitterPool() {
+    return myPool;
   }
 }
