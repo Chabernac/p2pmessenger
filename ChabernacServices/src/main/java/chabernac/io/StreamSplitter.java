@@ -8,7 +8,8 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -29,7 +30,7 @@ public class StreamSplitter {
 
   private final ArrayBlockingQueue<String> myOutputQueue = new ArrayBlockingQueue<String>(128);
 
-  private List<iStreamListener> myStreamListeners = new ArrayList<iStreamListener>();
+  private Set<iStreamListener> myStreamListeners = new HashSet<iStreamListener>();
 
   private String myId;
   private boolean isClosed = false;

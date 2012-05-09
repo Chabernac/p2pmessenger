@@ -51,7 +51,7 @@ public class StreamSplitterPool {
   
   private void notifyStreamSplitterAddedRemoved(final StreamSplitter aStreamSplitter, final boolean isAdded){
     System.out.println("Stream splitter added/removed " + isAdded + " " + aStreamSplitter.getId());
-    myExecutorService.execute(new Runnable(){
+    myListenerService.execute(new Runnable(){
       public void run(){
         for(iStreamSplitterPoolListener theListener : myStreamSplitterPoolListeners){
           if(isAdded){
