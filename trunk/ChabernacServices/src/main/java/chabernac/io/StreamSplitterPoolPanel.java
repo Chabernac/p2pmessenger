@@ -2,7 +2,10 @@ package chabernac.io;
 
 import java.awt.BorderLayout;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -16,17 +19,39 @@ public class StreamSplitterPoolPanel extends JPanel {
   private final StreamSplitterPool myStreamSplitterPool;
   private StreamSplitterPoolTableModel myModel;
   private final iSocketSender mySocketSender;
+  private final StreamListener myStreamListener = new StreamListener();
+  
+  private final Map<StreamSplitter, StreamSplitterMonitor> myStreamSplitterMonitors = new HashMap<StreamSplitter, StreamSplitterMonitor>();
 
   public StreamSplitterPoolPanel(iSocketSender aSocketSender, StreamSplitterPool aStreamSplitterPool) {
     super();
     myStreamSplitterPool = aStreamSplitterPool;
     mySocketSender = aSocketSender;
-    addListener();
     buildGUI();
+    addListener();
+    addStreamSplitterListeners();
   }
 
   private void addListener(){
     myStreamSplitterPool.addStreamSplitterPoolListener(new StreamSplitterPoolListener());
+  }
+  
+  private void addStreamSplitterListeners(){
+    for(StreamSplitter theSplitter : myStreamSplitterPool.getStreamSplitters().values()){
+      addStreamListenerAndMonitor(theSplitter);
+    }
+  }
+  
+  private void addStreamListenerAndMonitor(StreamSplitter aStreamSplitter){
+    aStreamSplitter.addStreamListener(myStreamListener);
+    StreamSplitterMonitor theStreamSplitterMonitor = new StreamSplitterMonitor(aStreamSplitter);
+    theStreamSplitterMonitor.addStreamSplitterMonitorListener(new iStreamSplitterMonitorListener() {
+      @Override
+      public void streamActive(boolean isActive) {
+        myModel.fireTableModelChanged();
+      }
+    });
+    myStreamSplitterMonitors.put(aStreamSplitter, new StreamSplitterMonitor(aStreamSplitter));
   }
   
   private void buildGUI(){
@@ -36,19 +61,20 @@ public class StreamSplitterPoolPanel extends JPanel {
   }
 
   public class StreamSplitterPoolListener implements  iStreamSplitterPoolListener {
-    private StreamListener myStreamListener = new StreamListener();
+    
     
     @Override
     public void streamSplitterAdded(StreamSplitter aStreamSplitter) {
       System.out.println("Stream splitter added " + aStreamSplitter.getId());
       myModel.fireTableModelChanged();
-      aStreamSplitter.addStreamListener(myStreamListener);
+      addStreamListenerAndMonitor(aStreamSplitter);
     }
 
     @Override
     public void streamSplitterRemoved(StreamSplitter aStreamSplitter) {
       myModel.fireTableModelChanged();
       aStreamSplitter.removeStreamListener(myStreamListener);
+      myStreamSplitterMonitors.remove(aStreamSplitter);
     }
   }
   
@@ -70,28 +96,29 @@ public class StreamSplitterPoolPanel extends JPanel {
   }
   
   private class StreamSplitterPoolTableModel implements TableModel{
-    private List<StreamSplitter> mySplitters = null;
+    private List<StreamSplitterMonitor> mySplitters = null;
     private final List< TableModelListener > myListeners = new ArrayList< TableModelListener >();
 
     @Override
     public int getColumnCount() {
-      return 5;
+      return 6;
     }
 
     @Override
     public int getRowCount() {
-      mySplitters = new ArrayList<StreamSplitter>(myStreamSplitterPool.getStreamSplitters().values());
+      mySplitters = new ArrayList<StreamSplitterMonitor>(myStreamSplitterMonitors.values());
       return mySplitters.size();
     }
 
     @Override
     public Object getValueAt(int aRow, int aColumn) {
-      StreamSplitter theSplitter = mySplitters.get(aRow);
+      StreamSplitter theSplitter = mySplitters.get(aRow).getStreamSplitter();
       if(aColumn == 0)  return theSplitter.getId(); 
       if(aColumn == 1)  return theSplitter.getBytesReceived();
       if(aColumn == 2)  return theSplitter.getBytesSend();
       if(aColumn == 3)  return !theSplitter.isClosed();
       if(aColumn == 4)  return mySocketSender.getSocket(theSplitter.getId()).getRemoteSocketAddress().toString();
+      if(aColumn == 5)  return mySplitters.get(aRow).isActive() + "[" + new Date(mySplitters.get(aRow).getLastActiveTime()) + "]";
       return "";
     }
 
