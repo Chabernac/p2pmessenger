@@ -55,10 +55,10 @@ public class AsyncFileTransferProtocolTest extends AbstractProtocolTest {
   private String thePeerId1 = null;
   private String thePeerId3 = null;
   
-  static{
-    BasicConfigurator.resetConfiguration();
-    BasicConfigurator.configure();
-  }
+//  static{
+//    BasicConfigurator.resetConfiguration();
+//    BasicConfigurator.configure();
+//  }
 
   public void setUp() throws Exception{
     super.setUp();

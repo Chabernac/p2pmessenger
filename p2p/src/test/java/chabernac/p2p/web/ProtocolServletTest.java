@@ -8,10 +8,10 @@ import org.mortbay.jetty.testing.HttpTester;
 import org.mortbay.jetty.testing.ServletTester;
 
 public class ProtocolServletTest extends TestCase {
-  static{
-    BasicConfigurator.resetConfiguration();
-    BasicConfigurator.configure();
-  }
+//  static{
+//    BasicConfigurator.resetConfiguration();
+//    BasicConfigurator.configure();
+//  }
   
   public void testP2PServlet() throws Exception{
     final ServletTester theServletTester = new ServletTester();

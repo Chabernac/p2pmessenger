@@ -34,10 +34,10 @@ import chabernac.protocol.routing.WebPeerProtocol;
 import chabernac.protocol.userinfo.UserInfo.Status;
 
 public class UserInfoProtocolTest extends AbstractProtocolTest {
-  static{
-    BasicConfigurator.resetConfiguration();
-    BasicConfigurator.configure();
-  }
+//  static{
+//    BasicConfigurator.resetConfiguration();
+//    BasicConfigurator.configure();
+//  }
 
   public void testUserInfoProtocol() throws ProtocolException, UserInfoException, InterruptedException, SocketException, UnknownPeerException, NoAvailableNetworkAdapterException, P2PServerFactoryException{
     ProtocolContainer theProtocol1 = getProtocolContainer( -1, false, "1" );

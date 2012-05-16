@@ -24,10 +24,10 @@ import chabernac.utils.NetTools;
 
 public class SocketPoolTest extends TestCase {
   
-  static{
-    BasicConfigurator.resetConfiguration();
-    BasicConfigurator.configure();
-  }
+//  static{
+//    BasicConfigurator.resetConfiguration();
+//    BasicConfigurator.configure();
+//  }
   
   public void testSocketPool() throws IOException{
     ServerSocket theServerSocket = NetTools.openServerSocket( 1500 );

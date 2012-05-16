@@ -29,10 +29,10 @@ import chabernac.protocol.routing.RoutingTable;
  * @author <a href="mailto:guy.chauliac@axa.be"> Guy Chauliac </a>
  */
 public class CamProtocolTest extends AbstractProtocolTest {
-  static{
-    BasicConfigurator.resetConfiguration();
-    BasicConfigurator.configure();
-  }
+//  static{
+//    BasicConfigurator.resetConfiguration();
+//    BasicConfigurator.configure();
+//  }
 
   public void testCapture() throws Exception{
     ProtocolContainer theProtocol1 = getProtocolContainer( -1, false, "1" );

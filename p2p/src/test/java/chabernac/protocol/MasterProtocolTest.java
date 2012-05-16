@@ -13,10 +13,10 @@ import chabernac.protocol.ping.PingProtocol;
 import chabernac.tools.PropertyMap;
 
 public class MasterProtocolTest extends TestCase {
-  static{
-    BasicConfigurator.resetConfiguration();
-    BasicConfigurator.configure();
-  }
+//  static{
+//    BasicConfigurator.resetConfiguration();
+//    BasicConfigurator.configure();
+//  }
   
   
   public void testMasterProtocol() throws ProtocolException{

@@ -28,9 +28,9 @@ import chabernac.protocol.echo.EchoProtocol;
 import chabernac.protocol.userinfo.UserInfoProtocol;
 
 public class WebPeerTest extends TestCase {
-  static{
-    BasicConfigurator.configure();
-  }
+//  static{
+//    BasicConfigurator.configure();
+//  }
   
   public void testWebPeer() throws Exception{
     Server theServer = new Server(9090);

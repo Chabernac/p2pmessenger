@@ -24,10 +24,10 @@ import chabernac.protocol.routing.RoutingProtocol;
 public class MultiPeerMessageProtocolTest extends AbstractProtocolTest {
   private static Logger LOGGER = Logger.getLogger(MultiPeerMessageProtocolTest.class);
   
-  static{
-    BasicConfigurator.resetConfiguration();
-    BasicConfigurator.configure();
-  }
+//  static{
+//    BasicConfigurator.resetConfiguration();
+//    BasicConfigurator.configure();
+//  }
   
   public void testMultiPeerMessageProtocol() throws ProtocolException, InterruptedException, MessageException, P2PServerFactoryException{
     ProtocolContainer theProtocol1 = getProtocolContainer( -1, false, "x" );

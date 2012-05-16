@@ -8,10 +8,10 @@ import junit.framework.TestCase;
 
 public class EncryptionProtocolTest extends TestCase {
 
-  static{
-    BasicConfigurator.resetConfiguration();
-    BasicConfigurator.configure();
-  }
+//  static{
+//    BasicConfigurator.resetConfiguration();
+//    BasicConfigurator.configure();
+//  }
 
   public void testEncryptionProtocol() throws EncryptionException{
     EncryptionProtocol theSendingProtocol = new EncryptionProtocol();

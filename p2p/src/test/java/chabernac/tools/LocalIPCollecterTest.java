@@ -9,10 +9,10 @@ import junit.framework.TestCase;
 import org.apache.log4j.BasicConfigurator;
 
 public class LocalIPCollecterTest extends TestCase {
-  static{
-    BasicConfigurator.resetConfiguration();
-    BasicConfigurator.configure();
-  }
+//  static{
+//    BasicConfigurator.resetConfiguration();
+//    BasicConfigurator.configure();
+//  }
   
   public void testLocalIPCollecter() throws InterruptedException{
     LocalIPCollecter theCollector = new LocalIPCollecter(null, 1);

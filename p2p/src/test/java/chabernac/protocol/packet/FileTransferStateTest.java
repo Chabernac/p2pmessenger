@@ -36,10 +36,10 @@ public class FileTransferStateTest extends AbstractProtocolTest {
   private iP2PServer myServer2;
   private PacketProtocol myPacketProtocol2;
   
-  static{
-    BasicConfigurator.resetConfiguration();
-    BasicConfigurator.configure();
-  }
+//  static{
+//    BasicConfigurator.resetConfiguration();
+//    BasicConfigurator.configure();
+//  }
 
   public void setUp() throws Exception{
     super.setUp();

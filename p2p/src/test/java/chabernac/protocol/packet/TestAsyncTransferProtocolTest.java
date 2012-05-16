@@ -34,10 +34,10 @@ public class TestAsyncTransferProtocolTest extends AbstractProtocolTest {
   private iP2PServer myServer2;
   private AsyncTransferProtocol myTransferProtocol2;
 
-  static{
-    BasicConfigurator.resetConfiguration();
-    BasicConfigurator.configure();
-  }
+//  static{
+//    BasicConfigurator.resetConfiguration();
+//    BasicConfigurator.configure();
+//  }
 
   public void setUp() throws Exception{
     super.setUp();

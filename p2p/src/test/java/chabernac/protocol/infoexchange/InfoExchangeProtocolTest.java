@@ -17,10 +17,10 @@ import chabernac.protocol.pominfoexchange.POMInfo;
 import chabernac.protocol.version.Version;
 
 public class InfoExchangeProtocolTest extends TestCase {
-  static{
-    BasicConfigurator.resetConfiguration();
-    BasicConfigurator.configure();
-  }
+//  static{
+//    BasicConfigurator.resetConfiguration();
+//    BasicConfigurator.configure();
+//  }
 
   public void testInfoProtocol() throws P2PFacadeException, InterruptedException{
     P2PFacade theFacade1 = new P2PFacade()
