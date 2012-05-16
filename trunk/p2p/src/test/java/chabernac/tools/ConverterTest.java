@@ -23,9 +23,9 @@ public class ConverterTest extends TestCase {
   private iObjectStringConverter<RoutingTable> myRoutingTableConverter = new Base64ObjectStringConverter<RoutingTable>();
   private iObjectStringConverter<RoutingTableEntry> myRoutingTableEntryConverter = new Base64ObjectStringConverter<RoutingTableEntry>();
   
-  static{
-    BasicConfigurator.configure();
-  }
+//  static{
+//    BasicConfigurator.configure();
+//  }
 
   public void testToXML() throws UnknownPeerException, IOException{
     RoutingTable theTable = new RoutingTable("1");

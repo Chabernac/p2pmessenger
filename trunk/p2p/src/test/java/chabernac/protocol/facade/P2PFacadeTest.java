@@ -49,16 +49,10 @@ import chabernac.testingutils.UserInfoProvider;
 public class P2PFacadeTest extends TestCase {
   private static Logger LOGGER = Logger.getLogger(P2PFacadeTest.class);
 
-  static{
-    BasicConfigurator.resetConfiguration();
-    BasicConfigurator.configure();
-  }
-  
   private ServerMode getSocketServerMode(){
     return ServerMode.SPLITTING_SOCKET;
   }
   
-
   public void testP2PSendMessage() throws P2PFacadeException, InterruptedException, ExecutionException{
     LOGGER.debug("Executing test " + new Exception().getStackTrace()[0].getMethodName());
     P2PFacade theFacade1 = new P2PFacade()
@@ -1146,7 +1140,7 @@ public class P2PFacadeTest extends TestCase {
   }
 
   public void testManyPeers() throws P2PFacadeException, UnknownPeerException, InterruptedException{
-    BasicConfigurator.resetConfiguration();
+//    BasicConfigurator.resetConfiguration();
     
     List<P2PFacade> theFacades = new ArrayList<P2PFacade>();
     try{

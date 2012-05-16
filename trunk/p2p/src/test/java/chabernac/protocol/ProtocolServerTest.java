@@ -24,10 +24,10 @@ import chabernac.protocol.routing.iPeerSender;
 import chabernac.tools.PropertyMap;
 
 public class ProtocolServerTest extends AbstractProtocolTest {
-  static{
-    BasicConfigurator.resetConfiguration();
-    BasicConfigurator.configure();
-  }
+//  static{
+//    BasicConfigurator.resetConfiguration();
+//    BasicConfigurator.configure();
+//  }
 
   public void testProtocolServer() throws UnknownHostException, IOException{
     ProtocolContainer theMasterProtocol = new ProtocolContainer(new ProtocolFactory(new PropertyMap()));

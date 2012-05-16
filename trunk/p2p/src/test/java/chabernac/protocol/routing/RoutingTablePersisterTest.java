@@ -21,10 +21,10 @@ import chabernac.tools.SimpleNetworkInterface;
 
 public class RoutingTablePersisterTest extends TestCase {
   
-  static{
-    BasicConfigurator.resetConfiguration();
-    BasicConfigurator.configure();
-  }
+//  static{
+//    BasicConfigurator.resetConfiguration();
+//    BasicConfigurator.configure();
+//  }
   
   
   public void testPersistRoutingTable() throws IOException, UnknownPeerException{

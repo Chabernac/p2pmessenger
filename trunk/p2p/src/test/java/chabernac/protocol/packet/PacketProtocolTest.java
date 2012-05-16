@@ -28,10 +28,10 @@ import chabernac.protocol.routing.UnknownPeerException;
 public class PacketProtocolTest extends AbstractProtocolTest {
   private static Logger LOGGER = Logger.getLogger(PacketProtocolTest.class);
   
-  static{
-    BasicConfigurator.resetConfiguration();
-    BasicConfigurator.configure();
-  }
+//  static{
+//    BasicConfigurator.resetConfiguration();
+//    BasicConfigurator.configure();
+//  }
   
   
   public void testSendPacket() throws ProtocolException, InterruptedException, MessageException, UnknownPeerException, PacketProtocolException, P2PServerFactoryException{

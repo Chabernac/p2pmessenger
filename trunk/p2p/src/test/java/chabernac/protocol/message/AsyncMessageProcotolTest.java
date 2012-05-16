@@ -27,10 +27,10 @@ import chabernac.tools.BlockingProtocol;
 public class AsyncMessageProcotolTest extends AbstractProtocolTest {
   private static Logger LOGGER = Logger.getLogger(AsyncMessageProcotolTest.class);
   
-  static{
-    BasicConfigurator.resetConfiguration();
-    BasicConfigurator.configure();
-  }
+//  static{
+//    BasicConfigurator.resetConfiguration();
+//    BasicConfigurator.configure();
+//  }
   
   public void testSendEndUserMessage() throws ProtocolException, InterruptedException, MessageException, UnknownPeerException, P2PServerFactoryException{
     LOGGER.debug("Begin of testMessageProtocol");

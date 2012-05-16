@@ -37,10 +37,10 @@ public class PacketSenderReceiverTest extends AbstractProtocolTest {
   private PacketProtocol myPacketProtocol2;
   private String myPeerId2;
   
-  static{
-    BasicConfigurator.resetConfiguration();
-    BasicConfigurator.configure();
-  }
+//  static{
+//    BasicConfigurator.resetConfiguration();
+//    BasicConfigurator.configure();
+//  }
 
   public void setUp() throws Exception{
     super.setUp();

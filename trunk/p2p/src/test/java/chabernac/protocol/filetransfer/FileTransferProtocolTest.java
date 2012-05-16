@@ -28,10 +28,10 @@ import chabernac.protocol.routing.UnknownPeerException;
 public class FileTransferProtocolTest extends AbstractProtocolTest {
   private static Logger LOGGER = Logger.getLogger(FileTransferProtocolTest.class);
   
-  static{
-    BasicConfigurator.resetConfiguration();
-    BasicConfigurator.configure();;
-  }
+//  static{
+//    BasicConfigurator.resetConfiguration();
+//    BasicConfigurator.configure();;
+//  }
 
   public void testFileTransfer() throws InterruptedException, UnknownHostException, IOException, FileTransferException, ProtocolException, UnknownPeerException, P2PServerFactoryException{
 

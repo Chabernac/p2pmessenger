@@ -17,10 +17,10 @@ import junit.framework.TestCase;
 
 public class RoutingTableTest extends TestCase {
   
-  static{
-    BasicConfigurator.resetConfiguration();
-    BasicConfigurator.configure();
-  }
+//  static{
+//    BasicConfigurator.resetConfiguration();
+//    BasicConfigurator.configure();
+//  }
 
   public void testRoutingTable() throws SocketException, NoAvailableNetworkAdapterException, UnknownPeerException{
     RoutingTable theTable = new RoutingTable("1");

@@ -19,10 +19,10 @@ import chabernac.protocol.routing.UnknownPeerException;
 
 public class ProcessProtocolTest extends AbstractProtocolTest  {
   
-  static{
-    BasicConfigurator.resetConfiguration();
-    BasicConfigurator.configure();
-  }
+//  static{
+//    BasicConfigurator.resetConfiguration();
+//    BasicConfigurator.configure();
+//  }
   
   public void testStackTraceProtocol() throws ProtocolException, UnknownPeerException, MessageException, P2PServerFactoryException{
     ProtocolContainer theProtocolContainer = getProtocolContainer( -1, false, "1" );

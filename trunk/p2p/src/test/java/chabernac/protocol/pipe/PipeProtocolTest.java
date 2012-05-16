@@ -19,10 +19,10 @@ import chabernac.tools.IOTools;
 public class PipeProtocolTest extends AbstractProtocolTest {
   private static Logger LOGGER = Logger.getLogger(PipeProtocolTest.class);
   
-  static{
-    BasicConfigurator.resetConfiguration();
-    BasicConfigurator.configure();
-  }
+//  static{
+//    BasicConfigurator.resetConfiguration();
+//    BasicConfigurator.configure();
+//  }
   
   public void testPipeProtocol() throws InterruptedException, IOException, UnknownPeerException, ProtocolException, PipeException, NoAvailableNetworkAdapterException, P2PServerFactoryException{
     //p1 <--> p2 <--> p3 peer 1 cannot reach peer 3

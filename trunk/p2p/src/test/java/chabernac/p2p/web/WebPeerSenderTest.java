@@ -22,9 +22,9 @@ import chabernac.protocol.routing.WebPeer;
 
 public class WebPeerSenderTest extends TestCase {
   
-  static{
-    BasicConfigurator.configure();
-  }
+//  static{
+//    BasicConfigurator.configure();
+//  }
   
   public void testWebPeerSender() throws Exception{
     Server theServer = new Server(9090);

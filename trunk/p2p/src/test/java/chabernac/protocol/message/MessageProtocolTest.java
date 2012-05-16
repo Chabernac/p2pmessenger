@@ -39,10 +39,10 @@ import chabernac.testingutils.MessageCounterListener;
 public class MessageProtocolTest extends AbstractProtocolTest {
   private static Logger LOGGER = Logger.getLogger(MessageProtocolTest.class);
 
-  static{
-    BasicConfigurator.resetConfiguration();
-    BasicConfigurator.configure();
-  }
+//  static{
+//    BasicConfigurator.resetConfiguration();
+//    BasicConfigurator.configure();
+//  }
 
   public void testMessageProtocol() throws ProtocolException, InterruptedException, SocketException, MessageException, UnknownPeerException, NoAvailableNetworkAdapterException, P2PServerFactoryException{
     LOGGER.debug("Begin of testMessageProtocol");

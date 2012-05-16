@@ -34,10 +34,10 @@ public class WebPeerProtocolTest extends AbstractProtocolTest {
 
   private Server theWebServer;
 
-  static{
-    BasicConfigurator.resetConfiguration();
-    BasicConfigurator.configure();
-  }
+//  static{
+//    BasicConfigurator.resetConfiguration();
+//    BasicConfigurator.configure();
+//  }
 
   public void setUp() throws Exception{
     try{
