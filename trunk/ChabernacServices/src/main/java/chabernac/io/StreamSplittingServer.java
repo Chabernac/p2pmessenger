@@ -165,7 +165,7 @@ public class StreamSplittingServer implements iSocketSender{
     while(theResult == Result.CONCURRENT_CONNECTION_ATTEMPT){
       if(theSocket != null)  theSocket.close();
       theSocket = new Socket(aHost, aPort);
-      theSocket.setReuseAddress( true );
+      theSocket.setReuseAddress( false );
       theSplitter = new StreamSplitter( theSocket.getInputStream(), theSocket.getOutputStream(), myInputOutputHandler );
       theResult = myPool.add( theSplitter );
     }
