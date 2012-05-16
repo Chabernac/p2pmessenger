@@ -138,9 +138,12 @@ public class URLConnectionHelper extends AbstractURLConnectionHelper{
       try{
         theErrorReader = new BufferedReader( new InputStreamReader( ((HttpURLConnection)myConnection).getErrorStream()));
         String theLine = null;
+        String theHTMLResponse = "";
         while( (theLine = theErrorReader.readLine()) != null){
-          LOGGER.error(theLine);
+          theHTMLResponse += theLine;
+          theHTMLResponse += "\r\n";
         }
+        LOGGER.error(theHTMLResponse);
       } finally {
         if(theErrorReader != null){
           theErrorReader.close();
