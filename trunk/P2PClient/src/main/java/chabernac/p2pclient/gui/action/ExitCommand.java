@@ -38,15 +38,12 @@ public class ExitCommand implements Command {
     
     if(isCloseDirectly || JOptionPane.OK_OPTION == JOptionPane.showConfirmDialog( myFrame, "Ben je zeker dat je wilt afsluiten? Als je afsluit kan je geen berichten meer ontvangen.", "Afsluiten", JOptionPane.OK_CANCEL_OPTION)){
       try{
-        LOGGER.error( "Changing tray icon text" );
         SystemTray.getSystemTray().getTrayIcons()[0].setToolTip( "P2PClient: Bezig met afsluiten" );
         
         myFrame.setVisible( false );
         
         EventDispatcher.getInstance( SavePreferencesEvent.class ).fireEvent( new SavePreferencesEvent() );
-        LOGGER.error( "Saving" );
         ApplicationPreferences.getInstance().save();
-        LOGGER.error( "Stopping facade" );
         myMediator.getP2PFacade().stop();
         
         //give some time to end sockets
