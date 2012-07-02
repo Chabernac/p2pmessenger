@@ -35,6 +35,9 @@ public class MessageArchive implements iDeliverReportListener, iMultiPeerMessage
   //the key of the map are peer id's the values are the delivery reports
   private Map< MultiPeerMessage, Map<String, DeliveryReport> > myDeliveryReports = Collections.synchronizedMap( new LinkedHashMap< MultiPeerMessage, Map<String, DeliveryReport> >() ); 
   
+  protected MessageArchive(){
+  }
+  
   public MessageArchive(MultiPeerMessageProtocol aMultiPeerMessageProtocol){
     aMultiPeerMessageProtocol.addDeliveryReportListener( this );
     aMultiPeerMessageProtocol.addMultiPeerMessageListener( this );
@@ -43,7 +46,7 @@ public class MessageArchive implements iDeliverReportListener, iMultiPeerMessage
   private Set< MultiPeerMessage > myAllMessages = Collections.synchronizedSet(new LinkedHashSet< MultiPeerMessage >() );
 
   @Override
-  public void acceptDeliveryReport( DeliveryReport aDeliverReport ) {
+  public synchronized void acceptDeliveryReport( DeliveryReport aDeliverReport ) {
     if(!myDeliveryReports.containsKey( aDeliverReport.getMultiPeerMessage() )){
       Map<String, DeliveryReport> theDeliveryreportsForMultiPeerMessage = new HashMap< String, DeliveryReport >();
       myDeliveryReports.put( aDeliverReport.getMultiPeerMessage(), theDeliveryreportsForMultiPeerMessage );
@@ -54,27 +57,27 @@ public class MessageArchive implements iDeliverReportListener, iMultiPeerMessage
   }
 
   @Override
-  public void messageReceived( MultiPeerMessage aMessage ) {
+  public synchronized void messageReceived( MultiPeerMessage aMessage ) {
     myReceivedMessages.add(aMessage);
     myAllMessages.add( aMessage );
   }
 
-  public List< MultiPeerMessage > getReceivedMessages() {
-    return Collections.unmodifiableList( myReceivedMessages );
+  public synchronized List< MultiPeerMessage > getReceivedMessages() {
+    return Collections.unmodifiableList( new ArrayList<MultiPeerMessage>( myReceivedMessages ));
   }
 
-  public Map< MultiPeerMessage, Map< String, DeliveryReport >> getDeliveryReports() {
+  public synchronized Map< MultiPeerMessage, Map< String, DeliveryReport >> getDeliveryReports() {
     //TODO the internal map with delivery reports is not unmodifiable, make a change so that it is.
-    return Collections.unmodifiableMap( myDeliveryReports );
+    return Collections.unmodifiableMap( new HashMap<MultiPeerMessage, Map< String, DeliveryReport >>( myDeliveryReports ));
   }
   
-  public Map<String, DeliveryReport> getDeliveryReportsForMultiPeerMessage(MultiPeerMessage aMessage){
+  public synchronized Map<String, DeliveryReport> getDeliveryReportsForMultiPeerMessage(MultiPeerMessage aMessage){
     Map<String, DeliveryReport> theDeliveryReports = myDeliveryReports.get(aMessage);
     if(theDeliveryReports == null) return new HashMap< String, DeliveryReport >();
     return Collections.unmodifiableMap( theDeliveryReports );
   }
 
-  public Set< MultiPeerMessage > getAllMessages() {
+  public synchronized Set< MultiPeerMessage > getAllMessages() {
     return Collections.unmodifiableSet( new LinkedHashSet< MultiPeerMessage >(myAllMessages) );
   }
 
