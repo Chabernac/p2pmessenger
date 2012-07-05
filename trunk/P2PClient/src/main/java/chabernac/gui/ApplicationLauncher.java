@@ -194,7 +194,7 @@ public class ApplicationLauncher {
     .setSocketReuse( true )
     .setMessageResenderActivated( true )
     .setAutoUserStatusDetectionEnabled( true )
-    .setServerMode( ServerMode.SPLITTING_SOCKET )
+    .setServerMode( ServerMode.SOCKET)
     .start();
     
     if("true".equalsIgnoreCase( anInterPreter.getKeyValue( "routingtable" ) )) myFacade.showRoutingTable();
