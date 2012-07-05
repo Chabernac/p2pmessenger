@@ -190,11 +190,11 @@ public class ApplicationLauncher {
     .setChannel(anInterPreter.getKeyValue("channel", "default"))
     .setFileHandler( new FileHandlerDialogDispatcher() )
     .setInfoObject( "pom.info", new POMInfo() )
-    .setInfoObject( "version", "v2012.04.23" )
+    .setInfoObject( "version", "v2012.07.05" )
     .setSocketReuse( true )
     .setMessageResenderActivated( true )
     .setAutoUserStatusDetectionEnabled( true )
-    .setServerMode( ServerMode.SOCKET)
+    .setServerMode( ServerMode.SOCKET )
     .start();
     
     if("true".equalsIgnoreCase( anInterPreter.getKeyValue( "routingtable" ) )) myFacade.showRoutingTable();
