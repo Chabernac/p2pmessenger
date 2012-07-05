@@ -15,7 +15,7 @@ import chabernac.tools.PropertyMap;
 public abstract class AbstractProtocolTest extends TestCase {
   protected static final int SLEEP_AFTER_SCAN = 2000;
   
-  protected ServerMode myServerMode = ServerMode.SPLITTING_SOCKET;
+  protected ServerMode myServerMode = ServerMode.SOCKET;
   
   public void setUp() throws Exception{
     P2PSettings.getInstance().getSocketPool().cleanUp();

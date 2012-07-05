@@ -103,7 +103,7 @@ import chabernac.tools.PropertyMap;
 
 public class P2PFacade {
   private static Logger LOGGER = Logger.getLogger(P2PFacade.class);
-  private ServerMode myServerMode = ServerMode.SPLITTING_SOCKET;
+  private ServerMode myServerMode = ServerMode.SOCKET;
   private ProtocolContainer myContainer = null;
   private List<iP2PServer> myProtocolServers = new ArrayList< iP2PServer >();
   private PropertyMap myProperties = new PropertyMap();
