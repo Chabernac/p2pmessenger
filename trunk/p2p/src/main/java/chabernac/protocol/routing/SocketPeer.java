@@ -165,7 +165,7 @@ public class SocketPeer extends AbstractPeer implements Serializable {
                   myHost.add( 0, theHost);
                 }
               }catch(Exception e){
-                LOGGER.error( "Error while checking out socket for ip '" + theIp + "'", e );
+                LOGGER.error( "Error while checking out socket for ip '" + theIp + ":" + aPort + "'", e );
               }
               theCountDownLatch.countDown();
               if(theCountDownLatch.getCount() == 0){
