@@ -1,6 +1,7 @@
 package chabernac.tools;
 
 import java.net.InetAddress;
+import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.ArrayList;
@@ -32,11 +33,11 @@ public class NetTools {
       NetworkInterface theInterface = theInterfaces.nextElement();
       if(isCandidate( theInterface )){
         List<String> theIpAddresses = new ArrayList< String >();
-        Enumeration<InetAddress> theAddresses = theInterface.getInetAddresses();
-        while(theAddresses.hasMoreElements()){
-          InetAddress theAddress = theAddresses.nextElement();
-          theIpAddresses.add(theAddress.getHostAddress());
+        
+        for(InterfaceAddress theAddress : theInterface.getInterfaceAddresses()){
+          theIpAddresses.add(theAddress.getAddress().getHostAddress() + "/" + theAddress.getNetworkPrefixLength());
         }
+        
         if(theIpAddresses.size() > 0){
           theIpList.add( new SimpleNetworkInterface(theInterface.getHardwareAddress(), theIpAddresses.toArray(new String[]{})) );
         }
@@ -51,11 +52,11 @@ public class NetTools {
       NetworkInterface theInterface = theInterfaces.nextElement();
       if(theInterface.isLoopback()) {
         List<String> theIpAddresses = new ArrayList< String >();
-        Enumeration<InetAddress> theAddresses = theInterface.getInetAddresses();
-        while(theAddresses.hasMoreElements()){
-          InetAddress theAddress = theAddresses.nextElement();
-          theIpAddresses.add(theAddress.getHostAddress());
+        
+        for(InterfaceAddress theAddress : theInterface.getInterfaceAddresses()){
+          theIpAddresses.add(theAddress.getAddress().getHostAddress() + "/" + theAddress.getNetworkPrefixLength());
         }
+        
         return  new SimpleNetworkInterface(theInterface.getHardwareAddress(), theIpAddresses.toArray(new String[]{}));
       }
     }
