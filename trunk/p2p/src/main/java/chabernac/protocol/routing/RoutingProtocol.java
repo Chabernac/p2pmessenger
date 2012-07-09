@@ -140,7 +140,7 @@ public class RoutingProtocol extends Protocol {
     if(TestTools.isInUnitTest()){
       MULTICAST_PORT = 14879;
       MULTICAST_ADDRESS = "234.5.55.9";
-      START_PORT +=50;
+      START_PORT += 50;
       END_PORT += 50;
     }
   }
