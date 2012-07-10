@@ -23,7 +23,6 @@ import java.util.concurrent.TimeUnit;
 
 import junit.framework.TestCase;
 
-import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 
 import chabernac.io.SocketProxy;
@@ -50,7 +49,7 @@ public class P2PFacadeTest extends TestCase {
   private static Logger LOGGER = Logger.getLogger(P2PFacadeTest.class);
 
   private ServerMode getSocketServerMode(){
-    return ServerMode.SPLITTING_SOCKET;
+    return ServerMode.SOCKET;
   }
   
   public void testP2PSendMessage() throws P2PFacadeException, InterruptedException, ExecutionException{

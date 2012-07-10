@@ -252,7 +252,7 @@ public class RoutingProtocol extends Protocol {
         if(theLocalPeer instanceof SocketPeer && 
             myServerInfo != null && 
             myServerInfo.getServerPort() != ((SocketPeer)theLocalPeer).getPort() && 
-            isAlreadyRunning(theLocalPeer)){
+            isAlreadyRunning((SocketPeer)theLocalPeer)){
           throw new AlreadyRunningException(theLocalPeer);
         }
 
@@ -321,13 +321,15 @@ public class RoutingProtocol extends Protocol {
    * This method will try to contact a routing protocol that might be running at the port indicated in the routing table file
    * if there is a routing protocol already running at this port then return true
    */
-  private boolean isAlreadyRunning(AbstractPeer aPeer) {
+  private boolean isAlreadyRunning(SocketPeer aPeer) {
     LOGGER.debug("Checking if we're already running");
     try{
       if(getPeerSender().isRemoteIdRetrievalAvailable( aPeer )){
         return getPeerSender().getRemoteId( aPeer ).equals( aPeer.getPeerId() );
       } else {
-        String theResponse = getPeerSender().send( aPeer, createMessage( Command.WHO_ARE_YOU.name() ));
+        SocketPeer theSocketPeer = new SocketPeer(aPeer, aPeer.getHosts());
+        theSocketPeer.setPeerId(null);
+        String theResponse = getPeerSender().send( theSocketPeer, createMessage( Command.WHO_ARE_YOU.name() ));
         AbstractPeer theRemotePeer = myPeerConverter.getObject( theResponse );
         return theRemotePeer.getPeerId().equals( aPeer.getPeerId() );
       }
