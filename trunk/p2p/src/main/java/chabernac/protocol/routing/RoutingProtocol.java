@@ -675,13 +675,13 @@ public class RoutingProtocol extends Protocol {
       //by doing this we will hopefully avoid too much sockets to be created to peers which are not available
       //a new peer will still integrate in the network because of the condition theNumberOfNeighbours == 0
       //if(theEntry.getHopDistance() < RoutingTableEntry.MAX_HOP_DISTANCE || theNumberOfNeighbours < MIN_PEERS_REQUIRED_FOR_SKIP ){
-      if(theEntry.getHopDistance() < RoutingTableEntry.MAX_HOP_DISTANCE ){
+//      if(theEntry.getHopDistance() < RoutingTableEntry.MAX_HOP_DISTANCE ){
         getExecutorService().execute(new NamedRunnable("Announcement with reply"){
           public void doRun(){
             sendAnnouncementWithReply(theEntry);
           }
         });
-      }
+//      }
     }
 
     myExchangeCounter.incrementAndGet();
