@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Logger;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.ServletHolder;
@@ -34,10 +35,12 @@ import chabernac.protocol.routing.WebPeerProtocol;
 import chabernac.protocol.userinfo.UserInfo.Status;
 
 public class UserInfoProtocolTest extends AbstractProtocolTest {
-//  static{
-//    BasicConfigurator.resetConfiguration();
-//    BasicConfigurator.configure();
-//  }
+  private static Logger LOGGER = Logger.getLogger(UserInfoProtocolTest.class);
+  
+  static{
+    BasicConfigurator.resetConfiguration();
+    BasicConfigurator.configure();
+  }
 
   public void testUserInfoProtocol() throws ProtocolException, UserInfoException, InterruptedException, SocketException, UnknownPeerException, NoAvailableNetworkAdapterException, P2PServerFactoryException{
     ProtocolContainer theProtocol1 = getProtocolContainer( -1, false, "1" );
@@ -428,6 +431,8 @@ public class UserInfoProtocolTest extends AbstractProtocolTest {
 
       Thread.sleep( SLEEP_AFTER_SCAN );
 
+      LOGGER.debug("--Exchanging routing table--");
+      
       theRoutingProtocol2.exchangeRoutingTable();
 
       Thread.sleep(SLEEP_AFTER_SCAN);
