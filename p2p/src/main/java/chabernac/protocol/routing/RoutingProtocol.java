@@ -327,6 +327,9 @@ public class RoutingProtocol extends Protocol {
       if(getPeerSender().isRemoteIdRetrievalAvailable( aPeer )){
         return getPeerSender().getRemoteId( aPeer ).equals( aPeer.getPeerId() );
       } else {
+        //copy the socket peer and reset the peer id
+        //otherwise communication might happen trought the jvm sender and the message will
+        //be send to ourselfs instead of trying to detect if a peer is online at the given host and port of the peer
         SocketPeer theSocketPeer = new SocketPeer(aPeer, aPeer.getHosts());
         theSocketPeer.setPeerId(null);
         String theResponse = getPeerSender().send( theSocketPeer, createMessage( Command.WHO_ARE_YOU.name() ));
