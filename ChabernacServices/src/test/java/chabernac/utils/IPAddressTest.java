@@ -90,4 +90,9 @@ public class IPAddressTest extends TestCase {
       }
     }
   }
+  
+  public void testGetNetworkPrefixLengthForLocalIp() throws IOException{
+    assertEquals("127.0.0.1/8", IPAddress.getIPAddressForLocalIP("127.0.0.1").getIpAddressWithNetworkPrefixLength());
+//    assertEquals("192.168.1.3/24", IPAddress.getNetworkPrefixLengthForLocalIp("192.168.1.3").getIpAddressWithNetworkPrefixLength());
+  }
 }
