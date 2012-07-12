@@ -41,7 +41,10 @@ public class SocketRoutingTableInspector implements iRoutingTableInspector {
     RoutingTable theNewRoutingTable = new RoutingTable( aRoutingTable.getLocalPeerId() );
     
     for(RoutingTableEntry theEntry : aRoutingTable.getEntries()){
-      if(theEntry.getPeer() instanceof SocketPeer){
+      //do not inspect the local routing table entry
+      //if someone is able to contact us for retrieval of the routing table it already means that we are on the same network
+      //and it is not necessary to replace the local entry for a indirect reachable peer entry 
+      if(theEntry.getPeer() instanceof SocketPeer && theEntry.getHopDistance() > 0){
         SocketPeer thePeer = (SocketPeer)theEntry.getPeer();
         
         List<SimpleNetworkInterface> theHosts = thePeer.getHosts();
