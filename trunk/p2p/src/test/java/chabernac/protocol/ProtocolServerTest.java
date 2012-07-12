@@ -12,8 +12,6 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-import org.apache.log4j.BasicConfigurator;
-
 import chabernac.io.StreamSplitter;
 import chabernac.protocol.P2PServerFactory.ServerMode;
 import chabernac.protocol.ping.PingProtocol;

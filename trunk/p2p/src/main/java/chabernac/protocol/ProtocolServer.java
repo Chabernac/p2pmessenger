@@ -27,6 +27,7 @@ import chabernac.protocol.ServerInfo.Type;
 import chabernac.thread.DynamicSizeExecutor;
 import chabernac.util.concurrent.MonitorrableRunnable;
 import chabernac.util.concurrent.iRunnableListener;
+import chabernac.utils.IPAddress;
 import chabernac.utils.NetTools;
 
 public class ProtocolServer implements Runnable, iP2PServer{
@@ -190,7 +191,11 @@ public class ProtocolServer implements Runnable, iP2PServer{
           //the following line is just to ease the transition to using the stream splitter
           if(theLine.startsWith( StreamSplitter.IN )) theLine = theLine.substring( StreamSplitter.IN.length() );
           String theSession = UUID.randomUUID().toString();
-          myProtocol.getSessionData().putProperty( theSession, REMOTE_IP, mySocket.getInetAddress().getHostAddress() );
+          
+          //untill we have found a better way to detect the netmask of the remote ip we will assume both hosts are on the same network
+          //and thus have the same netmask.  so we use the local netmask and apply it to the remote ip
+          int theNetworkPrefixLength = IPAddress.getIPAddressForLocalIP(mySocket.getLocalAddress().getLocalHost().getHostAddress()).getNetworkPrefixLength();
+          myProtocol.getSessionData().putProperty( theSession, REMOTE_IP, mySocket.getInetAddress().getHostAddress()  + "/" + theNetworkPrefixLength);
           String  theResult = myProtocol.handleCommand(theSession, theLine );
           //          LOGGER.debug("Sending result: '" + theResult + "'");
           myProtocol.getSessionData().clearSessionData( theSession );
