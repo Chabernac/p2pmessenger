@@ -10,9 +10,9 @@ import java.net.URL;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
 import junit.framework.TestCase;
 
-import org.apache.log4j.BasicConfigurator;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.ServletHolder;
@@ -147,7 +147,7 @@ public class WebPeerTest extends TestCase {
   private class MyPeerSender extends AbstractPeerSender{
 
     @Override
-    protected String doSend( PeerMessage aMessage, int aTimeout ) throws IOException {
+    protected PeerSenderReply doSend( PeerMessage aMessage, int aTimeout ) throws IOException {
       return null;
     }
 
