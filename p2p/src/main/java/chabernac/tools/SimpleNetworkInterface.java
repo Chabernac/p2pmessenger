@@ -10,7 +10,7 @@ import java.util.Formatter;
 import java.util.List;
 import java.util.Locale;
 
-public class SimpleNetworkInterface implements Serializable{
+public class SimpleNetworkInterface implements Serializable, iNetworkInterface{
   private static final long serialVersionUID = -2887291844821748090L;
   
   private final List<String> myIp;
@@ -82,6 +82,11 @@ public class SimpleNetworkInterface implements Serializable{
       return myMACAddress.hashCode();
     }
     return super.hashCode();
+  }
+
+  @Override
+  public String getId() {
+    return myMACAddress;
   }
   
 }

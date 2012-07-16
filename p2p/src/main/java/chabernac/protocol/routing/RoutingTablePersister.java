@@ -67,7 +67,7 @@ public class RoutingTablePersister implements iObjectPersister<RoutingTable> {
         if(theRoutingTableEntryVars.length >= 4){
           theLastOnlineTime = Long.parseLong( theRoutingTableEntryVars[3] );
         }
-        RoutingTableEntry theEntry = new RoutingTableEntry(thePeers.get(  theRoutingTableEntryVars[0] ), Integer.parseInt(theRoutingTableEntryVars[1]), thePeers.get(theRoutingTableEntryVars[2]), theLastOnlineTime, 0);
+        RoutingTableEntry theEntry = new RoutingTableEntry(thePeers.get(  theRoutingTableEntryVars[0] ), Integer.parseInt(theRoutingTableEntryVars[1]), thePeers.get(theRoutingTableEntryVars[2]), theLastOnlineTime, 0, null);
         //      theEntry.setPeer( thePeers.get(  theRoutingTableEntryVars[0] ) ) ;
         //      theEntry.setHopDistance( Integer.parseInt(theRoutingTableEntryVars[1] ));
         //      theEntry.setGateway( thePeers.get(theRoutingTableEntryVars[2] )) ;

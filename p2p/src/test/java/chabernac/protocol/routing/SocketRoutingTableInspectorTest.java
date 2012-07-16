@@ -6,6 +6,7 @@ package chabernac.protocol.routing;
 
 import junit.framework.TestCase;
 import chabernac.protocol.ProtocolServer;
+import chabernac.tools.DummyNetworkInterface;
 import chabernac.tools.SimpleNetworkInterface;
 
 public class SocketRoutingTableInspectorTest extends TestCase {
@@ -13,12 +14,12 @@ public class SocketRoutingTableInspectorTest extends TestCase {
     SessionData theSessionData = new SessionData();
     
     RoutingTable theRoutingTable = new RoutingTable( "0" );
-    RoutingTableEntry theLocalEntry = new RoutingTableEntry( new SocketPeer( "4", SimpleNetworkInterface.createFromIpList( "192.168.1.4" ), 8000) );
-    theLocalEntry = theLocalEntry.derivedEntry( 0 );
+    RoutingTableEntry theLocalEntry = new RoutingTableEntry( new SocketPeer( "4", SimpleNetworkInterface.createFromIpList( "192.168.1.4" ), 8000), new DummyNetworkInterface() );
+    theLocalEntry = theLocalEntry.setHopDistance( 0 );
     theRoutingTable.addEntry( theLocalEntry );
-    theRoutingTable.addEntry( new RoutingTableEntry( new SocketPeer( "1", SimpleNetworkInterface.createFromIpList( "192.168.1.1" ), 8000) ) );
-    theRoutingTable.addEntry( new RoutingTableEntry( new SocketPeer( "2", SimpleNetworkInterface.createFromIpList( "192.168.1.2", "10.0.0.1/23" ), 8000) ) );
-    theRoutingTable.addEntry( new RoutingTableEntry( new SocketPeer( "3", SimpleNetworkInterface.createFromIpList( "192.168.1.3" ), 8000) ) );
+    theRoutingTable.addEntry( new RoutingTableEntry( new SocketPeer( "1", SimpleNetworkInterface.createFromIpList( "192.168.1.1" ), 8000), new DummyNetworkInterface() ) );
+    theRoutingTable.addEntry( new RoutingTableEntry( new SocketPeer( "2", SimpleNetworkInterface.createFromIpList( "192.168.1.2", "10.0.0.1/23" ), 8000) , new DummyNetworkInterface() ));
+    theRoutingTable.addEntry( new RoutingTableEntry( new SocketPeer( "3", SimpleNetworkInterface.createFromIpList( "192.168.1.3" ), 8000), new DummyNetworkInterface() ));
     
     SocketRoutingTableInspector theSocketRoutingTableInspector = new SocketRoutingTableInspector( theSessionData );
     

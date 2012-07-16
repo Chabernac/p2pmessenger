@@ -6,6 +6,8 @@ package chabernac.protocol.routing;
 
 import java.io.Serializable;
 
+import chabernac.tools.iNetworkInterface;
+
 
 public class RoutingTableEntry implements Serializable{
   private static final long serialVersionUID = -1285319346105443401L;
@@ -30,12 +32,15 @@ public class RoutingTableEntry implements Serializable{
 	
 	private final long myLastOnlineTime;
 	
+	//the local network interface trough which this peer is reachable 
+	private final transient iNetworkInterface myLocalNetworkInterface;
+	
 	//create a routing table entry for this peer which is directly reachable
-	public RoutingTableEntry ( AbstractPeer anHost ){
-	  this(anHost, 1, anHost, System.currentTimeMillis(), 0);
+	public RoutingTableEntry ( AbstractPeer anHost, iNetworkInterface aLocalNetworkInterface ){
+	  this(anHost, 1, anHost, System.currentTimeMillis(), 0, aLocalNetworkInterface);
 	}
 	
-	public RoutingTableEntry ( AbstractPeer anHost , int anHopDistance , AbstractPeer anGateway, long aLastOnlineTime, long aTimeDistance ) {
+	public RoutingTableEntry ( AbstractPeer anHost , int anHopDistance , AbstractPeer anGateway, long aLastOnlineTime, long aTimeDistance, iNetworkInterface aNetworkInterface ) {
 		super();
 		myPeer = anHost;
 		if(anHopDistance >= MAX_HOP_DISTANCE){
@@ -51,6 +56,7 @@ public class RoutingTableEntry implements Serializable{
 		}
 		myTimeDistance = aTimeDistance;
 		myGateway = anGateway;
+		myLocalNetworkInterface = aNetworkInterface;
 		checkValidity();
 	}
 	
@@ -62,6 +68,10 @@ public class RoutingTableEntry implements Serializable{
 	  if(!myPeer.getPeerId().equals( myGateway.getPeerId() ) && myHopDistance == 1){
 	    //this is not possible in this case hop distance must be > 1
 	    throw new RuntimeException("Hop distance can not be 1 when a gateway different from the peer is present");
+	  }
+	  
+	  if(myHopDistance == 1 && myLocalNetworkInterface == null){
+	    throw new RuntimeException("When hop distance is 1 we must have a local network interface");
 	  }
 	}
 
@@ -101,6 +111,10 @@ public class RoutingTableEntry implements Serializable{
     return myLastOnlineTime;
   }
 
+  public iNetworkInterface getLocalNetworkInterface() {
+    return myLocalNetworkInterface;
+  }
+
   public String toString(){
     return "<PeerEntry peerid='" + myPeer.getPeerId() + "' endpoint='" + myPeer.getEndPointRepresentation() + "' hopDistance='" + myHopDistance + "' gateway='" + myGateway.getPeerId() + "' creationTime='" + myCreationTime + "'/>";
   }
@@ -119,15 +133,23 @@ public class RoutingTableEntry implements Serializable{
   }
   
   public RoutingTableEntry entryForNextPeer(AbstractPeer aReceivedPeer, long aTimeDistance){
-    return new RoutingTableEntry(getPeer(), getHopDistance() + 1, aReceivedPeer, System.currentTimeMillis(), getTimeDistance() + aTimeDistance);
+    return new RoutingTableEntry(getPeer(), getHopDistance() + 1, aReceivedPeer, System.currentTimeMillis(), getTimeDistance() + aTimeDistance, null);
   }
   
-  public RoutingTableEntry derivedEntry(int aHopDistance){
-    return new RoutingTableEntry(getPeer(), aHopDistance, getGateway(), myLastOnlineTime, getTimeDistance());
+  public RoutingTableEntry setHopDistance(int aHopDistance){
+    return new RoutingTableEntry(getPeer(), aHopDistance, getGateway(), myLastOnlineTime, getTimeDistance(), null);
   }
   
   public RoutingTableEntry incHopDistance(){
-    return new RoutingTableEntry(getPeer(), getHopDistance() + 1, getGateway(), myLastOnlineTime, getTimeDistance());
+    return new RoutingTableEntry(getPeer(), getHopDistance() + 1, getGateway(), myLastOnlineTime, getTimeDistance(), null);
+  }
+  
+  public RoutingTableEntry setNetworkInterface(iNetworkInterface aNetworkInterface){
+    return new RoutingTableEntry(getPeer(), myHopDistance, myPeer, myLastOnlineTime, myTimeDistance, aNetworkInterface);
+  }
+  
+  public RoutingTableEntry setPeer(AbstractPeer aPeer){
+    return new RoutingTableEntry(getPeer(), myHopDistance, aPeer, myLastOnlineTime, myTimeDistance, myLocalNetworkInterface);
   }
 
 }

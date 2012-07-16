@@ -298,7 +298,7 @@ public class RoutingProtocol extends Protocol {
       //by doing this we will avoid all peers to keep track of peer id's which will never occure again
       theLocalPeer.setTemporaryPeer( !isPersistRoutingTable );
 
-      RoutingTableEntry theLocalRoutingTableEntry = new RoutingTableEntry(theLocalPeer, 0, theLocalPeer, System.currentTimeMillis(), 0);
+      RoutingTableEntry theLocalRoutingTableEntry = new RoutingTableEntry(theLocalPeer, 0, theLocalPeer, System.currentTimeMillis(), 0, null);
       myRoutingTable.addRoutingTableEntry( theLocalRoutingTableEntry );
     }
 
@@ -332,7 +332,7 @@ public class RoutingProtocol extends Protocol {
         //be send to ourselfs instead of trying to detect if a peer is online at the given host and port of the peer
         SocketPeer theSocketPeer = new SocketPeer(aPeer, aPeer.getHosts());
         theSocketPeer.setPeerId(null);
-        String theResponse = getPeerSender().send( theSocketPeer, createMessage( Command.WHO_ARE_YOU.name() ));
+        String theResponse = getPeerSender().send( theSocketPeer, createMessage( Command.WHO_ARE_YOU.name() )).getReply();
         AbstractPeer theRemotePeer = myPeerConverter.getObject( theResponse );
         return theRemotePeer.getPeerId().equals( aPeer.getPeerId() );
       }
@@ -509,16 +509,16 @@ public class RoutingProtocol extends Protocol {
   boolean contactPeer(AbstractPeer aPeer, List<String> anUnreachablePeers, boolean isRequestTableWhenPeerFound){
     try{
       LOGGER.debug("Sending message to '" + aPeer.getEndPointRepresentation() );
-      String theResponse = getPeerSender().send( aPeer, createMessage( Command.WHO_ARE_YOU.name() ));
-      AbstractPeer theRemotePeer = myPeerConverter.getObject( theResponse );
+      PeerSenderReply theResponse = getPeerSender().send( aPeer, createMessage( Command.WHO_ARE_YOU.name() ));
+      AbstractPeer theRemotePeer = myPeerConverter.getObject( theResponse.getReply() );
 
       if(anUnreachablePeers == null || !anUnreachablePeers.contains( theRemotePeer.getPeerId() )){
-        RoutingTableEntry theEntry = new RoutingTableEntry(theRemotePeer, 1, theRemotePeer, System.currentTimeMillis(), 0);
+        RoutingTableEntry theEntry = new RoutingTableEntry(theRemotePeer, 1, theRemotePeer, System.currentTimeMillis(), 0, theResponse.getNetworkInterface());
 
         LOGGER.debug("Detected system on '" + theRemotePeer.getEndPointRepresentation() + " Local peer '" + myLocalPeerId + "' remote peer '" + theRemotePeer.getPeerId() + "'");
         //only if we have detected our self we set the hop distance to 0
         if(theRemotePeer.getPeerId().equals(myRoutingTable.getLocalPeerId())){
-          theEntry = theEntry.derivedEntry( 0 );
+          theEntry = theEntry.setHopDistance( 0 );
         }
         myRoutingTable.addRoutingTableEntry( theEntry );
         if(isRequestTableWhenPeerFound){
@@ -710,15 +710,15 @@ public class RoutingProtocol extends Protocol {
         LOGGER.debug("Trying to exchange routing tables between " + myLocalPeerId + " and " + thePeer.getPeerId());
 
         String theCMD = createMessage( Command.ANNOUNCEMENT_WITH_REPLY.name() + " "  + myRoutingTableEntryConverter.toString( myRoutingTable.getEntryForLocalPeer() ));
-        String theTable = getPeerSender().send(thePeer, theCMD);
+        PeerSenderReply theTable = getPeerSender().send(thePeer, theCMD);
         //          String theTable = thePeer.send( createMessage( Command.REQUEST_TABLE.name() ));
-        RoutingTable theRemoteTable = myRoutingTableConverter.getObject( theTable );
+        RoutingTable theRemoteTable = myRoutingTableConverter.getObject( theTable.getReply() );
 
         if(!theRemoteTable.getLocalPeerId().equals( thePeer.getPeerId() )){
           //if we get here it means that another peer has taken the place of the previous peer,
           //i.e. it is running on the same host and port
           //this means that the peer is not reachable any more
-          RoutingTableEntry theOldEntry = aRoutingTableEntry.derivedEntry( RoutingTableEntry.MAX_HOP_DISTANCE );
+          RoutingTableEntry theOldEntry = aRoutingTableEntry.setHopDistance( RoutingTableEntry.MAX_HOP_DISTANCE );
           myRoutingTable.removeRoutingTableEntry( theOldEntry );
         }
 
@@ -730,7 +730,7 @@ public class RoutingProtocol extends Protocol {
           //theEntry.setHopDistance( 1 );
           RoutingTableEntry theEntryOfRemotePeer = myRoutingTable.getEntryForPeer( theRemoteTable.getLocalPeerId() );
 
-          myRoutingTable.addRoutingTableEntry( theEntryOfRemotePeer.derivedEntry( 1 ) );
+          myRoutingTable.addRoutingTableEntry( theEntryOfRemotePeer.setHopDistance( 1 ).setNetworkInterface(theTable.getNetworkInterface()) );
         }
         LOGGER.debug("Exchange routing tables between " + myLocalPeerId + " and " + thePeer.getPeerId() + " completed");
       } catch ( Exception e ) {
@@ -739,13 +739,13 @@ public class RoutingProtocol extends Protocol {
           LOGGER.error( "Could not exchange routing tables between '" + myLocalPeerId + "' and '" + thePeer.getPeerId() + "'", e );
         }
         //set the peer entry itself to the max hop distance, only if the peer was previously direct reachable
-        if(aRoutingTableEntry.getHopDistance() == 1) myRoutingTable.addRoutingTableEntry(aRoutingTableEntry.derivedEntry(RoutingTableEntry.MAX_HOP_DISTANCE));
+        if(aRoutingTableEntry.getHopDistance() == 1) myRoutingTable.addRoutingTableEntry(aRoutingTableEntry.setHopDistance(RoutingTableEntry.MAX_HOP_DISTANCE));
 
         //update all peers which have this peer as gateway to the max hop distance
         for(RoutingTableEntry theEntry2 : myRoutingTable.getEntries()){
           if(theEntry2.getGateway().getPeerId().equals( aRoutingTableEntry.getPeer().getPeerId())){
             //              theEntry2.setHopDistance( RoutingTableEntry.MAX_HOP_DISTANCE );
-            myRoutingTable.addRoutingTableEntry( theEntry2.derivedEntry( RoutingTableEntry.MAX_HOP_DISTANCE ) );
+            myRoutingTable.addRoutingTableEntry( theEntry2.setHopDistance( RoutingTableEntry.MAX_HOP_DISTANCE ) );
           }
         }
       }
@@ -777,7 +777,7 @@ public class RoutingProtocol extends Protocol {
           !myUnreachablePeers.contains(thePeer.getPeerId())){
         try {
           LOGGER.debug("Sending announcement of peer '" + anEntry.getPeer().getPeerId() +  "' from peer '" + myLocalPeerId +  "' to peer '" + thePeer.getPeerId() + "' on '" + thePeer.getEndPointRepresentation() + "'");
-          String theResult = getPeerSender().send( thePeer, createMessage( Command.ANNOUNCEMENT.name() + " "  + myRoutingTableEntryConverter.toString( myRoutingTable.getEntryForLocalPeer()) + ";" + myRoutingTableEntryConverter.toString( anEntry ))) ;
+          String theResult = getPeerSender().send( thePeer, createMessage( Command.ANNOUNCEMENT.name() + " "  + myRoutingTableEntryConverter.toString( myRoutingTable.getEntryForLocalPeer()) + ";" + myRoutingTableEntryConverter.toString( anEntry ))).getReply() ;
           if(!Response.OK.name().equals( theResult )){
             throw new Exception("Unexpected result code '" + theResult + "'");
           }
@@ -787,7 +787,7 @@ public class RoutingProtocol extends Protocol {
           for(RoutingTableEntry theEntry2 : myRoutingTable.getEntries()){
             if(theEntry2.getGateway().getPeerId().equals( theEntry.getPeer().getPeerId())){
               //              theEntry2.setHopDistance( RoutingTableEntry.MAX_HOP_DISTANCE );
-              myRoutingTable.addRoutingTableEntry( theEntry2.derivedEntry( RoutingTableEntry.MAX_HOP_DISTANCE ) );
+              myRoutingTable.addRoutingTableEntry( theEntry2.setHopDistance( RoutingTableEntry.MAX_HOP_DISTANCE ) );
             }
           }
         }
@@ -835,7 +835,7 @@ public class RoutingProtocol extends Protocol {
 
   public void resetRoutingTable(){
     for(RoutingTableEntry theEntry : myRoutingTable.getEntries()){
-      myRoutingTable.addRoutingTableEntry( theEntry.derivedEntry( RoutingTableEntry.MAX_HOP_DISTANCE ) );
+      myRoutingTable.addRoutingTableEntry( theEntry.setHopDistance( RoutingTableEntry.MAX_HOP_DISTANCE ) );
     }
   }
 
@@ -885,7 +885,7 @@ public class RoutingProtocol extends Protocol {
     try{
       RoutingTableEntry theSelfRoutingTableEntry = getRoutingTable().getEntryForLocalPeer();
       if(theSelfRoutingTableEntry != null){
-        theSelfRoutingTableEntry = theSelfRoutingTableEntry.derivedEntry( RoutingTableEntry.MAX_HOP_DISTANCE );
+        theSelfRoutingTableEntry = theSelfRoutingTableEntry.setHopDistance( RoutingTableEntry.MAX_HOP_DISTANCE );
         sendAnnoucement( theSelfRoutingTableEntry );
       }
     } catch ( UnknownPeerException e ) {

@@ -25,7 +25,7 @@ public class PeerSender extends AbstractPeerSender{
     myPeerToPeerSplitSender = aSocketSender == null ? null :  new PeerToPeerSplitSender(aSocketSender);
   }
   
-  protected String doSend(PeerMessage aMessage, int aTimeoutInSeconds) throws IOException{
+  protected PeerSenderReply doSend(PeerMessage aMessage, int aTimeoutInSeconds) throws IOException{
     try{
       if(JVMPeerSender.getInstance().containsPeerProtocol(aMessage.getPeer().getPeerId())){
         return JVMPeerSender.getInstance().send(aMessage.getPeer().getPeerId(), aMessage.getMessage());

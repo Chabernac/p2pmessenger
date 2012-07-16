@@ -64,14 +64,16 @@ public class WebRoutingTableInspecter implements iRoutingTableInspector {
         } else {
           LOGGER.debug("The ip of the requesting peer '" + theIPRequestor + "' does not match the ip of the inspected routing table entry '" + theExposedIp + "' adding indirect reachable peer");
           IndirectReachablePeer theNewPeer = new IndirectReachablePeer(thePeer);
-          RoutingTableEntry theNewEntry = new RoutingTableEntry( theNewPeer, theEntry.getHopDistance(), theEntry.getGateway(), theEntry.getLastOnlineTime(), theEntry.getTimeDistance());
-          theTable.addRoutingTableEntry(theNewEntry);
+          theTable.addRoutingTableEntry(theEntry.setPeer(theNewPeer));
         }
       } else if(hasURLRequestor && theEntry.getHopDistance() == 0 && theEntry.getPeer() instanceof WebPeer){
         try{
+          //replace the url in the webpeer with the url trough which the request was made
+          //we do this because sometimes a url is blocked  by a firewall but the the ip is not
+          //so possibly the call was made not through the url but by the ip address
           WebPeer theLocalWebPeer = (WebPeer)theEntry.getPeer();
           WebPeer theWebPeer = new WebPeer( new URL(theURLRequestor), theLocalWebPeer);
-          RoutingTableEntry theNewEntry = new RoutingTableEntry( theWebPeer, theEntry.getHopDistance(), theWebPeer, theEntry.getLastOnlineTime(), theEntry.getTimeDistance());
+          RoutingTableEntry theNewEntry = new RoutingTableEntry( theWebPeer, theEntry.getHopDistance(), theWebPeer, theEntry.getLastOnlineTime(), theEntry.getTimeDistance(), theEntry.getLocalNetworkInterface());
           theTable.addRoutingTableEntry( theNewEntry );
         }catch(Exception e){
           LOGGER.error("Could not create copy of local web peer, e");

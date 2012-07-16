@@ -10,12 +10,13 @@ import java.net.SocketException;
 import junit.framework.TestCase;
 import chabernac.protocol.routing.SocketPeer;
 import chabernac.protocol.routing.RoutingTableEntry;
+import chabernac.tools.DummyNetworkInterface;
 
 public class RoutingTableEntryTest extends TestCase {
   public void testRoutingTableEntry() throws FileNotFoundException, SocketException, NoAvailableNetworkAdapterException{
     SocketPeer thePeer = new SocketPeer("1", 1000);
-    RoutingTableEntry theEntry = new RoutingTableEntry(thePeer, 1, thePeer, System.currentTimeMillis(), 0);
-    RoutingTableEntry theEntry2 = new RoutingTableEntry(thePeer, 2, thePeer, System.currentTimeMillis(), 0);
+    RoutingTableEntry theEntry = new RoutingTableEntry(thePeer, 1, thePeer, System.currentTimeMillis(), 0, new DummyNetworkInterface());
+    RoutingTableEntry theEntry2 = new RoutingTableEntry(thePeer, 2, thePeer, System.currentTimeMillis(), 0, new DummyNetworkInterface());
     
     assertTrue( theEntry.closerThen( theEntry2 ) );
   }

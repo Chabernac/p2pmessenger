@@ -13,10 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import junit.framework.TestCase;
-
-import org.apache.log4j.BasicConfigurator;
-
 import chabernac.io.iObjectPersister;
+import chabernac.tools.DummyNetworkInterface;
 import chabernac.tools.SimpleNetworkInterface;
 
 public class RoutingTablePersisterTest extends TestCase {
@@ -57,10 +55,10 @@ public class RoutingTablePersisterTest extends TestCase {
     WebPeer thePeer4 = new WebPeer("4", new URL("http://localhost:8080/"));
     thePeer4.setTemporaryPeer( false );
     
-    theTable.addRoutingTableEntry( new RoutingTableEntry(thePeer1, 0, thePeer1, System.currentTimeMillis(), 0) );
-    theTable.addEntry( new RoutingTableEntry(thePeer2, 6, thePeer1, System.currentTimeMillis(), 0) );
-    theTable.addRoutingTableEntry( new RoutingTableEntry(thePeer3, 2, thePeer2, System.currentTimeMillis(), 0) );
-    theTable.addRoutingTableEntry( new RoutingTableEntry(thePeer4, 1, thePeer4, System.currentTimeMillis(), 0) );
+    theTable.addRoutingTableEntry( new RoutingTableEntry(thePeer1, 0, thePeer1, System.currentTimeMillis(), 0, new DummyNetworkInterface() ) );
+    theTable.addEntry( new RoutingTableEntry(thePeer2, 6, thePeer1, System.currentTimeMillis(), 0, new DummyNetworkInterface()) );
+    theTable.addRoutingTableEntry( new RoutingTableEntry(thePeer3, 2, thePeer2, System.currentTimeMillis(), 0, new DummyNetworkInterface()) );
+    theTable.addRoutingTableEntry( new RoutingTableEntry(thePeer4, 1, thePeer4, System.currentTimeMillis(), 0, new DummyNetworkInterface()) );
     
     File theFile = new File("routingtable.bin");
     
