@@ -13,7 +13,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 
 import chabernac.protocol.AbstractProtocolTest;
@@ -32,6 +31,7 @@ import chabernac.protocol.routing.RoutingTableEntry;
 import chabernac.protocol.routing.SocketPeer;
 import chabernac.protocol.routing.UnknownPeerException;
 import chabernac.testingutils.MessageCounterListener;
+import chabernac.tools.DummyNetworkInterface;
 
 /**
  * @deprecated
@@ -358,8 +358,8 @@ public class MessageProtocolTest extends AbstractProtocolTest {
       SocketPeer thePeer3 = new SocketPeer("3", 124, "brol");
       thePeer3.setChannel(thePeer1.getChannel());
 
-      theRoutingTable1.addRoutingTableEntry(new RoutingTableEntry(thePeer3, 2, thePeer2, System.currentTimeMillis(), 0));
-      theRoutingTable2.addRoutingTableEntry(new RoutingTableEntry(thePeer3, 2, thePeer1, System.currentTimeMillis(), 0));
+      theRoutingTable1.addRoutingTableEntry(new RoutingTableEntry(thePeer3, 2, thePeer2, System.currentTimeMillis(), 0, new DummyNetworkInterface()));
+      theRoutingTable2.addRoutingTableEntry(new RoutingTableEntry(thePeer3, 2, thePeer1, System.currentTimeMillis(), 0, new DummyNetworkInterface()));
 
       Message theMessage = new Message();
       theMessage.setDestination(thePeer3);

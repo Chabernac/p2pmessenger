@@ -13,6 +13,8 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.BasicConfigurator;
 
+import chabernac.tools.DummyNetworkInterface;
+
 import junit.framework.TestCase;
 
 public class RoutingTableTest extends TestCase {
@@ -26,8 +28,8 @@ public class RoutingTableTest extends TestCase {
     RoutingTable theTable = new RoutingTable("1");
 
     SocketPeer thePeer = new SocketPeer("2", 12800, "localhost");
-    RoutingTableEntry theEntry = new RoutingTableEntry(thePeer, 1, thePeer, System.currentTimeMillis(), 0);
-    RoutingTableEntry theEntry2 = new RoutingTableEntry(thePeer, 2, thePeer, System.currentTimeMillis(), 0);
+    RoutingTableEntry theEntry = new RoutingTableEntry(thePeer, 1, thePeer, System.currentTimeMillis(), 0, new DummyNetworkInterface());
+    RoutingTableEntry theEntry2 = new RoutingTableEntry(thePeer, 2, thePeer, System.currentTimeMillis(), 0, new DummyNetworkInterface());
 
     theTable.addRoutingTableEntry( theEntry2 );
     theTable.addRoutingTableEntry( theEntry );
@@ -38,10 +40,10 @@ public class RoutingTableTest extends TestCase {
 
     RoutingTable theTable2 = new RoutingTable("3");
     SocketPeer thePeer4 = new SocketPeer("4", 12801, "x20d1148");
-    RoutingTableEntry theEntry4 = new RoutingTableEntry(thePeer4, 1, thePeer4, System.currentTimeMillis(), 0);
+    RoutingTableEntry theEntry4 = new RoutingTableEntry(thePeer4, 1, thePeer4, System.currentTimeMillis(), 0, new DummyNetworkInterface());
     theTable2.addRoutingTableEntry( theEntry4 );
     SocketPeer thePeer3 = new SocketPeer("3", 12802, "x20d1148");
-    RoutingTableEntry theEntry3 = new RoutingTableEntry(thePeer3, 0, thePeer3, System.currentTimeMillis(), 0);
+    RoutingTableEntry theEntry3 = new RoutingTableEntry(thePeer3, 0, thePeer3, System.currentTimeMillis(), 0, new DummyNetworkInterface());
     theTable2.addRoutingTableEntry( theEntry3 );
 
     theTable.merge( theTable2, 0 );
@@ -59,9 +61,9 @@ public class RoutingTableTest extends TestCase {
     RoutingTable theTable = new RoutingTable("1");
 
     SocketPeer thePeer = new SocketPeer("2", 12800, "localhost");
-    RoutingTableEntry theEntry = new RoutingTableEntry(thePeer, 1, thePeer, System.currentTimeMillis(), 0);
+    RoutingTableEntry theEntry = new RoutingTableEntry(thePeer, 1, thePeer, System.currentTimeMillis(), 0, new DummyNetworkInterface());
 
-    RoutingTableEntry theEntry2 = new RoutingTableEntry(thePeer, RoutingTableEntry.MAX_HOP_DISTANCE, thePeer, System.currentTimeMillis(), 0);
+    RoutingTableEntry theEntry2 = new RoutingTableEntry(thePeer, RoutingTableEntry.MAX_HOP_DISTANCE, thePeer, System.currentTimeMillis(), 0, new DummyNetworkInterface());
 
     assertFalse( theEntry2.isResponding() );
 
@@ -77,7 +79,7 @@ public class RoutingTableTest extends TestCase {
 
     SocketPeer thePeer3 = new SocketPeer("3", 12801, "localhost");
 
-    RoutingTableEntry theEntry3 = new RoutingTableEntry(thePeer, 3, thePeer3, System.currentTimeMillis(), 0);
+    RoutingTableEntry theEntry3 = new RoutingTableEntry(thePeer, 3, thePeer3, System.currentTimeMillis(), 0, new DummyNetworkInterface());
 
     theTable.addRoutingTableEntry(theEntry3);
 
@@ -89,10 +91,10 @@ public class RoutingTableTest extends TestCase {
     RoutingTable theTable = new RoutingTable("1");
 
     SocketPeer thePeer = new SocketPeer("2", 12801);
-    RoutingTableEntry theEntry = new RoutingTableEntry(thePeer, RoutingTableEntry.MAX_HOP_DISTANCE, thePeer, System.currentTimeMillis(), 0);
+    RoutingTableEntry theEntry = new RoutingTableEntry(thePeer, RoutingTableEntry.MAX_HOP_DISTANCE, thePeer, System.currentTimeMillis(), 0, new DummyNetworkInterface());
 
     SocketPeer thePeer2 = new SocketPeer("2", 12802);
-    RoutingTableEntry theEntry2 = new RoutingTableEntry(thePeer2, 2, thePeer, System.currentTimeMillis(), 0);
+    RoutingTableEntry theEntry2 = new RoutingTableEntry(thePeer2, 2, thePeer, System.currentTimeMillis(), 0, new DummyNetworkInterface());
 
     theTable.addRoutingTableEntry(theEntry);
     theTable.addRoutingTableEntry(theEntry2);
@@ -105,16 +107,16 @@ public class RoutingTableTest extends TestCase {
 
   public void testCopyWithoutUnreachablePeers() throws NoAvailableNetworkAdapterException{
     RoutingTable theRoutingTable = new RoutingTable("1");
-    theRoutingTable.addEntry( new RoutingTableEntry(new SocketPeer("1",12800), 0, new SocketPeer("1",12800), System.currentTimeMillis(),0 ));
-    theRoutingTable.addEntry( new RoutingTableEntry(new SocketPeer("2",12801), 1, new SocketPeer("2",12801), System.currentTimeMillis(),0 ));
-    theRoutingTable.addEntry( new RoutingTableEntry(new SocketPeer("3",12802), 2, new SocketPeer("3",12802), System.currentTimeMillis(),0 ));
-    theRoutingTable.addEntry( new RoutingTableEntry(new SocketPeer("4",12803), 3, new SocketPeer("4",12803), System.currentTimeMillis(),0 ));
-    theRoutingTable.addEntry( new RoutingTableEntry(new SocketPeer("5",12804), 4, new SocketPeer("5",12804), System.currentTimeMillis(),0 ));
-    theRoutingTable.addEntry( new RoutingTableEntry(new SocketPeer("6",12805), 5, new SocketPeer("6",12805), System.currentTimeMillis(),0 ));
-    theRoutingTable.addEntry( new RoutingTableEntry(new SocketPeer("7",12806), 6, new SocketPeer("7",12806), System.currentTimeMillis(),0 ));
-    theRoutingTable.addEntry( new RoutingTableEntry(new SocketPeer("8",12807), 7, new SocketPeer("8",12807), System.currentTimeMillis(),0 ));
-    theRoutingTable.addEntry( new RoutingTableEntry(new SocketPeer("9",12808), 8, new SocketPeer("9",12808), System.currentTimeMillis(),0 ));
-    theRoutingTable.addEntry( new RoutingTableEntry(new SocketPeer("10",12809), 9, new SocketPeer("10",12809), System.currentTimeMillis(),0 ));
+    theRoutingTable.addEntry( new RoutingTableEntry(new SocketPeer("1",12800), 0, new SocketPeer("1",12800), System.currentTimeMillis(),0, new DummyNetworkInterface() ));
+    theRoutingTable.addEntry( new RoutingTableEntry(new SocketPeer("2",12801), 1, new SocketPeer("2",12801), System.currentTimeMillis(),0, new DummyNetworkInterface() ));
+    theRoutingTable.addEntry( new RoutingTableEntry(new SocketPeer("3",12802), 2, new SocketPeer("3",12802), System.currentTimeMillis(),0, new DummyNetworkInterface() ));
+    theRoutingTable.addEntry( new RoutingTableEntry(new SocketPeer("4",12803), 3, new SocketPeer("4",12803), System.currentTimeMillis(),0, new DummyNetworkInterface() ));
+    theRoutingTable.addEntry( new RoutingTableEntry(new SocketPeer("5",12804), 4, new SocketPeer("5",12804), System.currentTimeMillis(),0, new DummyNetworkInterface() ));
+    theRoutingTable.addEntry( new RoutingTableEntry(new SocketPeer("6",12805), 5, new SocketPeer("6",12805), System.currentTimeMillis(),0, new DummyNetworkInterface() ));
+    theRoutingTable.addEntry( new RoutingTableEntry(new SocketPeer("7",12806), 6, new SocketPeer("7",12806), System.currentTimeMillis(),0, new DummyNetworkInterface() ));
+    theRoutingTable.addEntry( new RoutingTableEntry(new SocketPeer("8",12807), 7, new SocketPeer("8",12807), System.currentTimeMillis(),0, new DummyNetworkInterface() ));
+    theRoutingTable.addEntry( new RoutingTableEntry(new SocketPeer("9",12808), 8, new SocketPeer("9",12808), System.currentTimeMillis(),0, new DummyNetworkInterface() ));
+    theRoutingTable.addEntry( new RoutingTableEntry(new SocketPeer("10",12809), 9, new SocketPeer("10",12809), System.currentTimeMillis(),0, new DummyNetworkInterface() ));
     assertEquals( 10, theRoutingTable.getEntries().size());
     RoutingTable theCopyWithoutUnreachablePeers = theRoutingTable.copyWithoutUnreachablePeers(); 
     assertEquals( 6, theCopyWithoutUnreachablePeers.getEntries().size());
@@ -129,15 +131,15 @@ public class RoutingTableTest extends TestCase {
 
   public void testGatewayNotReachable() throws NoAvailableNetworkAdapterException, UnknownPeerException{
     RoutingTable theRoutingTable = new RoutingTable("1");
-    theRoutingTable.addRoutingTableEntry( new RoutingTableEntry(new SocketPeer("1",12800), 0, new SocketPeer("1",12800), System.currentTimeMillis(),0 ));
-    theRoutingTable.addRoutingTableEntry( new RoutingTableEntry(new SocketPeer("2",12801), 2, new SocketPeer("3",12801), System.currentTimeMillis(),0 ));
-    theRoutingTable.addRoutingTableEntry( new RoutingTableEntry(new SocketPeer("3",12802), 1, new SocketPeer("3",12802), System.currentTimeMillis(),0 ));
+    theRoutingTable.addRoutingTableEntry( new RoutingTableEntry(new SocketPeer("1",12800), 0, new SocketPeer("1",12800), System.currentTimeMillis(),0, new DummyNetworkInterface() ));
+    theRoutingTable.addRoutingTableEntry( new RoutingTableEntry(new SocketPeer("2",12801), 2, new SocketPeer("3",12801), System.currentTimeMillis(),0, new DummyNetworkInterface() ));
+    theRoutingTable.addRoutingTableEntry( new RoutingTableEntry(new SocketPeer("3",12802), 1, new SocketPeer("3",12802), System.currentTimeMillis(),0, new DummyNetworkInterface() ));
 
     assertTrue( theRoutingTable.getEntryForPeer( "1" ).isReachable() );
     assertTrue( theRoutingTable.getEntryForPeer( "2" ).isReachable() );
     assertTrue( theRoutingTable.getEntryForPeer( "3" ).isReachable() );
 
-    theRoutingTable.addRoutingTableEntry( new RoutingTableEntry(new SocketPeer("3",12802), RoutingTableEntry.MAX_HOP_DISTANCE, new SocketPeer("3",12802), System.currentTimeMillis(),0 ));
+    theRoutingTable.addRoutingTableEntry( new RoutingTableEntry(new SocketPeer("3",12802), RoutingTableEntry.MAX_HOP_DISTANCE, new SocketPeer("3",12802), System.currentTimeMillis(),0, new DummyNetworkInterface() ));
 
     assertTrue( theRoutingTable.getEntryForPeer( "1" ).isReachable() );
     //entry 2 must not be available because entry 3 is the gateway for entry 2 and entry 3 is not reachable
@@ -155,7 +157,7 @@ public class RoutingTableTest extends TestCase {
       System.out.println("Date: " + theFormat.format( theCalendar.getTime() ));
       
 
-      theRoutingTable.addEntry(  new RoutingTableEntry(new SocketPeer(Integer.toString( i ),12800 + i), RoutingTableEntry.MAX_HOP_DISTANCE, new SocketPeer(Integer.toString(i),12800 + i), theCalendar.getTimeInMillis(), 0 ));
+      theRoutingTable.addEntry(  new RoutingTableEntry(new SocketPeer(Integer.toString( i ),12800 + i), RoutingTableEntry.MAX_HOP_DISTANCE, new SocketPeer(Integer.toString(i),12800 + i), theCalendar.getTimeInMillis(), 0, new DummyNetworkInterface() ));
     }
     
     //the are 5 items in the routingtable
@@ -191,13 +193,13 @@ public class RoutingTableTest extends TestCase {
     DummyPeer thePeer4 = new DummyPeer( "4" );
     
     //the local peer
-    theRoutingTable.addRoutingTableEntry( new RoutingTableEntry( thePeer1, 0, thePeer1, System.currentTimeMillis(),0 ));
+    theRoutingTable.addRoutingTableEntry( new RoutingTableEntry( thePeer1, 0, thePeer1, System.currentTimeMillis(),0, new DummyNetworkInterface() ));
     //peer 2 is directly reachable
-    theRoutingTable.addRoutingTableEntry( new RoutingTableEntry( thePeer2, 1, thePeer2, System.currentTimeMillis(),0 ));
+    theRoutingTable.addRoutingTableEntry( new RoutingTableEntry( thePeer2, 1, thePeer2, System.currentTimeMillis(),0, new DummyNetworkInterface() ));
     //peer 3 is reachable trough peer 2
-    theRoutingTable.addRoutingTableEntry( new RoutingTableEntry( thePeer3, 2, thePeer2, System.currentTimeMillis(),0 ));
+    theRoutingTable.addRoutingTableEntry( new RoutingTableEntry( thePeer3, 2, thePeer2, System.currentTimeMillis(),0, new DummyNetworkInterface() ));
     //peer 4 is reachable trough peer 3
-    theRoutingTable.addRoutingTableEntry( new RoutingTableEntry( thePeer4, 3, thePeer3, System.currentTimeMillis(),0 ));
+    theRoutingTable.addRoutingTableEntry( new RoutingTableEntry( thePeer4, 3, thePeer3, System.currentTimeMillis(),0, new DummyNetworkInterface() ));
     
     //now if we remove peer 2 then peer 3 is not reachable any more, this should be represented in the routingtable
     theRoutingTable.removeRoutingTableEntry( theRoutingTable.getEntryForPeer( "2" ) );
@@ -218,10 +220,10 @@ public class RoutingTableTest extends TestCase {
     DummyPeer thePeer3 = new DummyPeer( "3" );
     DummyPeer thePeer4 = new DummyPeer( "invalid4" );
     
-    theRoutingTable.addEntry( new RoutingTableEntry( thePeer1, 0, thePeer1, System.currentTimeMillis(),0 ));
-    theRoutingTable.addEntry( new RoutingTableEntry( thePeer2, 0, thePeer2, System.currentTimeMillis(),0 ));
-    theRoutingTable.addEntry( new RoutingTableEntry( thePeer3, 0, thePeer3, System.currentTimeMillis(),0 ));
-    theRoutingTable.addEntry( new RoutingTableEntry( thePeer4, 0, thePeer4, System.currentTimeMillis(),0 ));
+    theRoutingTable.addEntry( new RoutingTableEntry( thePeer1, 0, thePeer1, System.currentTimeMillis(),0, new DummyNetworkInterface() ));
+    theRoutingTable.addEntry( new RoutingTableEntry( thePeer2, 0, thePeer2, System.currentTimeMillis(),0, new DummyNetworkInterface() ));
+    theRoutingTable.addEntry( new RoutingTableEntry( thePeer3, 0, thePeer3, System.currentTimeMillis(),0, new DummyNetworkInterface() ));
+    theRoutingTable.addEntry( new RoutingTableEntry( thePeer4, 0, thePeer4, System.currentTimeMillis(),0, new DummyNetworkInterface() ));
 
     assertEquals( 4, theRoutingTable.getEntries().size() );
     
@@ -243,7 +245,7 @@ public class RoutingTableTest extends TestCase {
         try {
           Thread.sleep(2000);
           //add the entry for the local peer after 2 seconds
-          theRoutingTable.addRoutingTableEntry(new RoutingTableEntry(new DummyPeer("1"), 0, new DummyPeer("1"), System.currentTimeMillis(), 0));
+          theRoutingTable.addRoutingTableEntry(new RoutingTableEntry(new DummyPeer("1"), 0, new DummyPeer("1"), System.currentTimeMillis(), 0, new DummyNetworkInterface()));
         } catch (InterruptedException e) {
         }
       }
@@ -283,7 +285,7 @@ public class RoutingTableTest extends TestCase {
         final CountDownLatch theLatch = new CountDownLatch(1);
         Executors.newSingleThreadExecutor().execute(new Runnable(){
           public void run(){
-            theRoutingTable.addRoutingTableEntry(new RoutingTableEntry(new DummyPeer("2"), 1, new DummyPeer("2"), System.currentTimeMillis(), 0));
+            theRoutingTable.addRoutingTableEntry(new RoutingTableEntry(new DummyPeer("2"), 1, new DummyPeer("2"), System.currentTimeMillis(), 0, new DummyNetworkInterface()));
             theLatch.countDown();
           }
         });
@@ -297,7 +299,7 @@ public class RoutingTableTest extends TestCase {
     final CountDownLatch theLatch = new CountDownLatch(1);
     Executors.newSingleThreadExecutor().execute(new Runnable(){
       public void run(){
-       theRoutingTable.addRoutingTableEntry(new RoutingTableEntry(new DummyPeer("1"), 1, new DummyPeer("1"), System.currentTimeMillis(), 0));
+       theRoutingTable.addRoutingTableEntry(new RoutingTableEntry(new DummyPeer("1"), 1, new DummyPeer("1"), System.currentTimeMillis(), 0, new DummyNetworkInterface()));
        theLatch.countDown();
       }
     });
@@ -309,11 +311,11 @@ public class RoutingTableTest extends TestCase {
   
   public void testNrOfDirectRemoteNeighbours(){
     RoutingTable theTable = new RoutingTable("1");
-    theTable.addEntry(new RoutingTableEntry(new SocketPeer("2", 12800, "localhost")));
-    theTable.addEntry(new RoutingTableEntry(new SocketPeer("3", 12801, "127.0.0.1")));
-    theTable.addEntry(new RoutingTableEntry(new SocketPeer("4", 12801, "10.1.1.1"), 2, new SocketPeer("4", 12801, "127.0.0.1"), System.currentTimeMillis(), 0));
-    theTable.addEntry(new RoutingTableEntry(new SocketPeer("5", 12801, "10.1.1.2"), 2, new SocketPeer("5", 12802, "127.0.0.1"), System.currentTimeMillis(), 0));
-    theTable.addEntry(new RoutingTableEntry(new SocketPeer("6", 12801, "10.1.1.3"), 1, new SocketPeer("6", 12801, "10.1.1.3"), System.currentTimeMillis(), 0));
+    theTable.addEntry(new RoutingTableEntry(new SocketPeer("2", 12800, "localhost"), new DummyNetworkInterface()));
+    theTable.addEntry(new RoutingTableEntry(new SocketPeer("3", 12801, "127.0.0.1"), new DummyNetworkInterface()));
+    theTable.addEntry(new RoutingTableEntry(new SocketPeer("4", 12801, "10.1.1.1"), 2, new SocketPeer("4", 12801, "127.0.0.1"), System.currentTimeMillis(), 0, new DummyNetworkInterface()));
+    theTable.addEntry(new RoutingTableEntry(new SocketPeer("5", 12801, "10.1.1.2"), 2, new SocketPeer("5", 12802, "127.0.0.1"), System.currentTimeMillis(), 0, new DummyNetworkInterface()));
+    theTable.addEntry(new RoutingTableEntry(new SocketPeer("6", 12801, "10.1.1.3"), 1, new SocketPeer("6", 12801, "10.1.1.3"), System.currentTimeMillis(), 0, new DummyNetworkInterface()));
     
     assertEquals(1, theTable.getNrOfDirectRemoteNeighbours());
     

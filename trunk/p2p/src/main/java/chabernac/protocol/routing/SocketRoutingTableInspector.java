@@ -72,8 +72,7 @@ public class SocketRoutingTableInspector implements iRoutingTableInspector {
         } else {
           theNewPeer = new IndirectReachablePeer( thePeer );
         }
-        RoutingTableEntry theNewEntry = new RoutingTableEntry( theNewPeer, theEntry.getHopDistance(), theEntry.getGateway(), theEntry.getLastOnlineTime(), theEntry.getTimeDistance());
-        theNewRoutingTable.addRoutingTableEntry(theNewEntry);
+        theNewRoutingTable.addRoutingTableEntry(theEntry.setPeer(theNewPeer));
       } else {
         theNewRoutingTable.addRoutingTableEntry( theEntry );
       }

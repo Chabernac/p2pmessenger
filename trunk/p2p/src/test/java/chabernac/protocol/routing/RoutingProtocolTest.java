@@ -24,6 +24,7 @@ import chabernac.protocol.ProtocolContainer;
 import chabernac.protocol.ProtocolException;
 import chabernac.protocol.ProtocolWebServer;
 import chabernac.protocol.iP2PServer;
+import chabernac.tools.DummyNetworkInterface;
 import chabernac.tools.SimpleNetworkInterface;
 
 public class RoutingProtocolTest extends AbstractProtocolTest {
@@ -581,7 +582,7 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
       theDummyPeer.setHosts( theHosts );
       theDummyPeer.setPort( 12808 );
       
-      RoutingTableEntry theDummyEntry = new RoutingTableEntry(theDummyPeer, 1, theDummyPeer, System.currentTimeMillis(), 0);
+      RoutingTableEntry theDummyEntry = new RoutingTableEntry(theDummyPeer, 1, theDummyPeer, System.currentTimeMillis(), 0, new DummyNetworkInterface());
       
       theRoutingTable1.addRoutingTableEntry( theDummyEntry );
       
@@ -858,7 +859,7 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
       RoutingTable theRoutingTable2 = theRoutingProtocol2.getRoutingTable();
       
       SocketPeer thePeer3 = new SocketPeer("3", RoutingProtocol.START_PORT + 2);
-      theRoutingTable1.addEntry( new RoutingTableEntry(thePeer3, RoutingTableEntry.MAX_HOP_DISTANCE,  thePeer3, System.currentTimeMillis(), 0));
+      theRoutingTable1.addEntry( new RoutingTableEntry(thePeer3, RoutingTableEntry.MAX_HOP_DISTANCE,  thePeer3, System.currentTimeMillis(), 0, new DummyNetworkInterface()));
       
       try{
         assertTrue( theServer1.start() );

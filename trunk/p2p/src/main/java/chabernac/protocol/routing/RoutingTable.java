@@ -66,7 +66,7 @@ public class RoutingTable implements Iterable< RoutingTableEntry >, Serializable
 
     myRoutingTable.remove(anEntry.getPeer().getPeerId());
 
-    checkIntegrityForEntry( anEntry.derivedEntry( RoutingTableEntry.MAX_HOP_DISTANCE ) );
+    checkIntegrityForEntry( anEntry.setHopDistance( RoutingTableEntry.MAX_HOP_DISTANCE ) );
 
     notifyListenersOfRoutingTableEntryRemoval( anEntry );
   }
@@ -206,7 +206,7 @@ public class RoutingTable implements Iterable< RoutingTableEntry >, Serializable
       for(RoutingTableEntry theEntry : getReachableEntriesEntries()){
         if(theEntry.getGateway().getPeerId().equals( anEntry.getPeer().getPeerId() )){
           //this entry will not be reachable  because the gateway is not reachable
-          RoutingTableEntry theNewEntry = theEntry.derivedEntry( RoutingTableEntry.MAX_HOP_DISTANCE );
+          RoutingTableEntry theNewEntry = theEntry.setHopDistance( RoutingTableEntry.MAX_HOP_DISTANCE );
           addRoutingTableEntry( theNewEntry );
         }
       }
