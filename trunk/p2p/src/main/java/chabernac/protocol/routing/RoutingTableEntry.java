@@ -6,7 +6,7 @@ package chabernac.protocol.routing;
 
 import java.io.Serializable;
 
-import chabernac.tools.iNetworkInterface;
+import chabernac.tools.iCommunicationInterface;
 
 
 public class RoutingTableEntry implements Serializable{
@@ -33,14 +33,14 @@ public class RoutingTableEntry implements Serializable{
 	private final long myLastOnlineTime;
 	
 	//the local network interface trough which this peer is reachable 
-	private final transient iNetworkInterface myLocalNetworkInterface;
+	private final transient iCommunicationInterface myLocalNetworkInterface;
 	
 	//create a routing table entry for this peer which is directly reachable
-	public RoutingTableEntry ( AbstractPeer anHost, iNetworkInterface aLocalNetworkInterface ){
+	public RoutingTableEntry ( AbstractPeer anHost, iCommunicationInterface aLocalNetworkInterface ){
 	  this(anHost, 1, anHost, System.currentTimeMillis(), 0, aLocalNetworkInterface);
 	}
 	
-	public RoutingTableEntry ( AbstractPeer anHost , int anHopDistance , AbstractPeer anGateway, long aLastOnlineTime, long aTimeDistance, iNetworkInterface aNetworkInterface ) {
+	public RoutingTableEntry ( AbstractPeer anHost , int anHopDistance , AbstractPeer anGateway, long aLastOnlineTime, long aTimeDistance, iCommunicationInterface aNetworkInterface ) {
 		super();
 		myPeer = anHost;
 		if(anHopDistance >= MAX_HOP_DISTANCE){
@@ -111,7 +111,7 @@ public class RoutingTableEntry implements Serializable{
     return myLastOnlineTime;
   }
 
-  public iNetworkInterface getLocalNetworkInterface() {
+  public iCommunicationInterface getLocalNetworkInterface() {
     return myLocalNetworkInterface;
   }
 
@@ -144,7 +144,7 @@ public class RoutingTableEntry implements Serializable{
     return new RoutingTableEntry(getPeer(), getHopDistance() + 1, getGateway(), myLastOnlineTime, getTimeDistance(), null);
   }
   
-  public RoutingTableEntry setNetworkInterface(iNetworkInterface aNetworkInterface){
+  public RoutingTableEntry setNetworkInterface(iCommunicationInterface aNetworkInterface){
     return new RoutingTableEntry(getPeer(), myHopDistance, myPeer, myLastOnlineTime, myTimeDistance, aNetworkInterface);
   }
   

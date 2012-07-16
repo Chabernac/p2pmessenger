@@ -1,5 +1,5 @@
 package chabernac.tools;
 
-public interface iNetworkInterface {
+public interface iCommunicationInterface {
   public String getId();
 }
