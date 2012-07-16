@@ -2,7 +2,7 @@ package chabernac.tools;
 
 import java.util.UUID;
 
-public class DummyNetworkInterface implements iCommunicationInterface {
+public class InMemoryCommunicationInterface implements iCommunicationInterface {
   private final String myId = UUID.randomUUID().toString();
   
   @Override
