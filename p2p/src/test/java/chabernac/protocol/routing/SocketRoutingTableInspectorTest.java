@@ -5,9 +5,9 @@
 package chabernac.protocol.routing;
 
 import junit.framework.TestCase;
+import chabernac.io.SimpleNetworkInterface;
 import chabernac.protocol.ProtocolServer;
 import chabernac.tools.DummyNetworkInterface;
-import chabernac.tools.SimpleNetworkInterface;
 
 public class SocketRoutingTableInspectorTest extends TestCase {
   public void testSocketRoutingTableInspector() throws UnknownPeerException{

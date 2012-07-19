@@ -17,6 +17,7 @@ import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.ServletHolder;
 
 import chabernac.comet.CometServlet;
+import chabernac.io.SimpleNetworkInterface;
 import chabernac.p2p.web.ProtocolServlet;
 import chabernac.protocol.AbstractProtocolTest;
 import chabernac.protocol.P2PServerFactoryException;
@@ -25,7 +26,6 @@ import chabernac.protocol.ProtocolException;
 import chabernac.protocol.ProtocolWebServer;
 import chabernac.protocol.iP2PServer;
 import chabernac.tools.DummyNetworkInterface;
-import chabernac.tools.SimpleNetworkInterface;
 
 public class RoutingProtocolTest extends AbstractProtocolTest {
   private static Logger LOGGER = Logger.getLogger(RoutingProtocolTest.class);
