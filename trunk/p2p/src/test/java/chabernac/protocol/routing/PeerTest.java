@@ -8,7 +8,7 @@ import java.net.SocketException;
 import java.util.List;
 
 import junit.framework.TestCase;
-import chabernac.tools.SimpleNetworkInterface;
+import chabernac.io.SimpleNetworkInterface;
 
 public class PeerTest extends TestCase {
   public void testDetectLocalHost() throws SocketException, NoAvailableNetworkAdapterException{
@@ -35,9 +35,9 @@ public class PeerTest extends TestCase {
   }
   
   public void testSameHostWithMAC(){
-    SocketPeer thePeer1 = new SocketPeer("1", new SimpleNetworkInterface(new byte[]{0,1,2,3}, "192.168.1.2", "192.168.1.3"), 500);
-    SocketPeer thePeer2 = new SocketPeer("2", new SimpleNetworkInterface(new byte[]{0,1,2,3}, "192.168.1.4", "192.168.1.5" ), 500);
-    SocketPeer thePeer3 = new SocketPeer("3", new SimpleNetworkInterface(new byte[]{4,1,2,3}, "192.168.1.2"), 500);
+    SocketPeer thePeer1 = new SocketPeer("1", new SimpleNetworkInterface("interface", new byte[]{0,1,2,3}, "192.168.1.2", "192.168.1.3"), 500);
+    SocketPeer thePeer2 = new SocketPeer("2", new SimpleNetworkInterface("interface", new byte[]{0,1,2,3}, "192.168.1.4", "192.168.1.5" ), 500);
+    SocketPeer thePeer3 = new SocketPeer("3", new SimpleNetworkInterface("interface", new byte[]{4,1,2,3}, "192.168.1.2"), 500);
     
     assertFalse( thePeer1.isSameEndPointAs( thePeer3 ) );
     assertFalse( thePeer2.isSameEndPointAs( thePeer3 ) );

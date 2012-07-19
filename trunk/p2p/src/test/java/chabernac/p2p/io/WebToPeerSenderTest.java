@@ -41,7 +41,7 @@ public class WebToPeerSenderTest extends TestCase {
     });
 
     WebToPeerSender theSender = new WebToPeerSender();
-    String theReply = theSender.sendMessageTo( theSendingPeer, theReceivingPeer, "input", 5 );
+    String theReply = theSender.sendMessageTo( theSendingPeer, theReceivingPeer, "input", 5 ).getReply();
     assertEquals( "reply", theReply );
   }
   
