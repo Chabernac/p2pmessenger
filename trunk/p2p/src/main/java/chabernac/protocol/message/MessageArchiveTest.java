@@ -7,6 +7,7 @@ package chabernac.protocol.message;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
@@ -17,21 +18,25 @@ import chabernac.protocol.message.DeliveryReport.Status;
 import chabernac.protocol.routing.DummyPeer;
 
 public class MessageArchiveTest extends TestCase {
+  private Random myRandom = new Random();
+      
+  private MultiPeerMessage myMultiMessage = MultiPeerMessage.createMessage( "test" )
+      .addDestination( "1" );
+  
+  private int myTimes = 1000;
+  
   public void testSimultanousDeliveryReportsRetrieval() throws InterruptedException{
     final MessageArchive theMessageArchive = new MessageArchive( );
 
     //one thread that spawns delivery reports
-    final int theTimes = 10000;
-    final CountDownLatch theSpawningLatch = new CountDownLatch( theTimes );
+    final CountDownLatch theSpawningLatch = new CountDownLatch( myTimes );
 
     final List<Exception> theExceptions = new ArrayList<Exception>();
     
-    final DeliveryReport theDeliveryReport = createDeliveryReport();
-
     Executors.newSingleThreadExecutor().execute( new Runnable(){
       public void run(){
-        for(int i=0;i<theTimes;i++){
-          theMessageArchive.acceptDeliveryReport( theDeliveryReport );
+        for(int i=0;i<myTimes;i++){
+          theMessageArchive.acceptDeliveryReport( createDeliveryReport() );
           theSpawningLatch.countDown();
         }
       }
@@ -47,9 +52,9 @@ public class MessageArchiveTest extends TestCase {
               System.out.println(theReport);
             }
             
-            Map<String, DeliveryReport>  theDeliveryReports =  theMessageArchive.getDeliveryReportsForMultiPeerMessage(theDeliveryReport.getMultiPeerMessage());
-            for(DeliveryReport theReport : theDeliveryReports.values()){
-              System.out.println(theReport);
+            Map<String, DeliveryReport>  theDeliveryReports =  theMessageArchive.getDeliveryReportsForMultiPeerMessage(myMultiMessage);
+            for(String thePeerId : theDeliveryReports.keySet()){
+              System.out.println(thePeerId + ":" + theDeliveryReports.get( thePeerId ).toString());
             }
           }catch(Exception e){
             e.printStackTrace();
@@ -60,17 +65,17 @@ public class MessageArchiveTest extends TestCase {
     });
     
     theSpawningLatch.await( 5, TimeUnit.SECONDS );
+    assertEquals( 0, theSpawningLatch.getCount() );
     assertEquals( 0, theExceptions.size());
   }
 
   private DeliveryReport createDeliveryReport(){
-    MultiPeerMessage theMultiMessage = MultiPeerMessage.createMessage( "test" )
-        .addDestination( "1" );
+   
 
     Message theMessage =  new Message();
-    theMessage.setDestination( new DummyPeer( "1" ) );
+    theMessage.setDestination( new DummyPeer( Integer.toString( Math.abs(myRandom.nextInt() % 100) ) ));
 
-    DeliveryReport theReport = new DeliveryReport(theMultiMessage, Status.DELIVERED, theMessage);
+    DeliveryReport theReport = new DeliveryReport(myMultiMessage, Status.DELIVERED, theMessage);
     return theReport;
   }
   
@@ -78,8 +83,7 @@ public class MessageArchiveTest extends TestCase {
     final MessageArchive theMessageArchive = new MessageArchive( );
 
     //one thread that spawns delivery reports
-    final int theTimes = 10000;
-    final CountDownLatch theSpawningLatch = new CountDownLatch( theTimes );
+    final CountDownLatch theSpawningLatch = new CountDownLatch( myTimes );
 
     final List<Exception> theExceptions = new ArrayList<Exception>();
     
@@ -89,7 +93,7 @@ public class MessageArchiveTest extends TestCase {
 
     Executors.newSingleThreadExecutor().execute( new Runnable(){
       public void run(){
-        for(int i=0;i<theTimes;i++){
+        for(int i=0;i<myTimes;i++){
           theMessageArchive.messageReceived( theMultiMessage );
           theSpawningLatch.countDown();
         }
@@ -119,6 +123,7 @@ public class MessageArchiveTest extends TestCase {
     });
     
     theSpawningLatch.await( 5, TimeUnit.SECONDS );
+    assertEquals( 0, theSpawningLatch.getCount() );
     assertEquals( 0, theExceptions.size());
   }
   

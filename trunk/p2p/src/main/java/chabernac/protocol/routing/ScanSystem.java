@@ -8,7 +8,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import chabernac.tools.SimpleNetworkInterface;
+import chabernac.io.SimpleNetworkInterface;
 import chabernac.utils.NamedRunnable;
 
 public class ScanSystem extends NamedRunnable{
@@ -38,7 +38,7 @@ public class ScanSystem extends NamedRunnable{
   public void doRun() {
     if(myCondition == null || myCondition.isConditionFullFilled()){
       LOGGER.debug( "Scanning system '" + myHosts + "': '" + myPort + "'" );
-      SocketPeer thePeer = new SocketPeer(null, SimpleNetworkInterface.createFromIpList( myHosts), myPort);
+      SocketPeer thePeer = new SocketPeer(null, SimpleNetworkInterface.createFromIpList(null, myHosts), myPort);
       if(myRoutingProtocol.getRoutingProtocolMonitor() != null) myRoutingProtocol.getRoutingProtocolMonitor().scanStarted( thePeer );
       boolean result = myRoutingProtocol.contactPeer( thePeer, myUnreachablePeers, true );
       if(result && myRoutingProtocol.getRoutingProtocolMonitor() != null) myRoutingProtocol.getRoutingProtocolMonitor().peerFoundWithScan( thePeer );

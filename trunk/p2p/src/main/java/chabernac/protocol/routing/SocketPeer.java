@@ -22,12 +22,12 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 
+import chabernac.io.SimpleNetworkInterface;
 import chabernac.io.SocketProxy;
 import chabernac.io.iSocketPool;
 import chabernac.p2p.settings.P2PSettings;
-import chabernac.tools.NetTools;
-import chabernac.tools.SimpleNetworkInterface;
 import chabernac.utils.IPAddress;
+import chabernac.utils.NetTools;
 
 public class SocketPeer extends AbstractPeer implements Serializable {
   private static Logger LOGGER = Logger.getLogger(SocketPeer.class);
@@ -79,7 +79,7 @@ public class SocketPeer extends AbstractPeer implements Serializable {
   }
 
   public SocketPeer ( String aPeerId , int aPort, String... aHosts ) {
-    this(aPeerId, SimpleNetworkInterface.createFromIpList( aHosts ), aPort);
+    this(aPeerId, SimpleNetworkInterface.createFromIpList(null, aHosts ), aPort);
   }
 
   public synchronized void detectLocalInterfaces() throws NoAvailableNetworkAdapterException{

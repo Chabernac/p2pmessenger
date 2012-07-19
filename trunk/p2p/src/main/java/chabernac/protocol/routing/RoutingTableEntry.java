@@ -6,7 +6,7 @@ package chabernac.protocol.routing;
 
 import java.io.Serializable;
 
-import chabernac.tools.iCommunicationInterface;
+import chabernac.io.iCommunicationInterface;
 
 
 public class RoutingTableEntry implements Serializable{

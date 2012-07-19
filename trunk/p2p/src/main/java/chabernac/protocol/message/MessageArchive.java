@@ -68,20 +68,24 @@ public class MessageArchive implements iDeliverReportListener, iMultiPeerMessage
 
   public synchronized Map< MultiPeerMessage, Map< String, DeliveryReport >> getDeliveryReports() {
     //TODO the internal map with delivery reports is not unmodifiable, make a change so that it is.
-    return Collections.unmodifiableMap( new HashMap<MultiPeerMessage, Map< String, DeliveryReport >>( myDeliveryReports ));
+    Map< MultiPeerMessage, Map< String, DeliveryReport >> theInmutableMap = new HashMap<MultiPeerMessage, Map<String,DeliveryReport>>();
+    for(MultiPeerMessage theMessage : myDeliveryReports.keySet()){
+      theInmutableMap.put( theMessage,  Collections.unmodifiableMap(new HashMap<String, DeliveryReport>(myDeliveryReports.get( theMessage )) ));
+    }
+    return Collections.unmodifiableMap( theInmutableMap );
   }
   
   public synchronized Map<String, DeliveryReport> getDeliveryReportsForMultiPeerMessage(MultiPeerMessage aMessage){
     Map<String, DeliveryReport> theDeliveryReports = myDeliveryReports.get(aMessage);
     if(theDeliveryReports == null) return new HashMap< String, DeliveryReport >();
-    return Collections.unmodifiableMap( theDeliveryReports );
+    return Collections.unmodifiableMap( new HashMap<String, DeliveryReport>( theDeliveryReports ));
   }
 
   public synchronized Set< MultiPeerMessage > getAllMessages() {
     return Collections.unmodifiableSet( new LinkedHashSet< MultiPeerMessage >(myAllMessages) );
   }
 
-  public void clear(){
+  public synchronized void clear(){
     myDeliveryReports.clear();
     myAllMessages.clear();
   }

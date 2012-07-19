@@ -20,8 +20,8 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
+import chabernac.io.SimpleNetworkInterface;
 import chabernac.io.iObjectPersister;
-import chabernac.tools.SimpleNetworkInterface;
 
 public class RoutingTablePersister implements iObjectPersister<RoutingTable> {
   private static Logger LOGGER = Logger.getLogger( RoutingTablePersister.class );
@@ -49,7 +49,7 @@ public class RoutingTablePersister implements iObjectPersister<RoutingTable> {
         theSocketPeer.setPort( Integer.parseInt( thePeerVars[1] ) );
         List<SimpleNetworkInterface> theHosts = new ArrayList< SimpleNetworkInterface >();
         for(int i=2;i<thePeerVars.length;i++){
-          theHosts.add(new SimpleNetworkInterface(thePeerVars[i]));
+          theHosts.add(new SimpleNetworkInterface(null, thePeerVars[i]));
         }
         theSocketPeer.setHosts( theHosts );
       }

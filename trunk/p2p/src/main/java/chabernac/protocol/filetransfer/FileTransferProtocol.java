@@ -163,7 +163,7 @@ public class FileTransferProtocol extends Protocol {
         IOTools.copyStream( theInputStream, thePipe.getSocket().getOutputStream());
         thePipeProtocol.closePipe( thePipe );
 
-        theResponse = getPeerSender().send( thePeer, createMessage( Command.WAIT_FOR_FILE.name() + " " + theFileId + " " + aFile.length()));
+        theResponse = getPeerSender().send( thePeer, createMessage( Command.WAIT_FOR_FILE.name() + " " + theFileId + " " + aFile.length())).getReply();
 
         if(theResponse.equalsIgnoreCase( Response.BAD_FILE_SIZE.name() )){
           throw new FileTransferException("Received file had bad file size");
