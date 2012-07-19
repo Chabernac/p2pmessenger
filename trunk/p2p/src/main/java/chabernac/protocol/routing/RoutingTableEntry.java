@@ -116,7 +116,7 @@ public class RoutingTableEntry implements Serializable{
   }
 
   public String toString(){
-    return "<PeerEntry peerid='" + myPeer.getPeerId() + "' endpoint='" + myPeer.getEndPointRepresentation() + "' hopDistance='" + myHopDistance + "' gateway='" + myGateway.getPeerId() + "' creationTime='" + myCreationTime + "'/>";
+    return "<PeerEntry peerid='" + myPeer.getPeerId() + "' endpoint='" + myPeer.getEndPointRepresentation() + "' hopDistance='" + myHopDistance + "' gateway='" + myGateway.getPeerId() + "' creationTime='" + myCreationTime + "' interface='" + (myLocalNetworkInterface == null ? "" : myLocalNetworkInterface.getName()) +  "'/>";
   }
   
   public int hashCode(){
@@ -132,24 +132,24 @@ public class RoutingTableEntry implements Serializable{
     return true;
   }
   
-  public RoutingTableEntry entryForNextPeer(AbstractPeer aReceivedPeer, long aTimeDistance){
-    return new RoutingTableEntry(getPeer(), getHopDistance() + 1, aReceivedPeer, System.currentTimeMillis(), getTimeDistance() + aTimeDistance, null);
+  public RoutingTableEntry entryForNextPeer(AbstractPeer aReceivedPeer, long aTimeDistance, iCommunicationInterface aCommunicationInterface){
+    return new RoutingTableEntry(getPeer(), getHopDistance() + 1, aReceivedPeer, System.currentTimeMillis(), getTimeDistance() + aTimeDistance, aCommunicationInterface);
   }
   
   public RoutingTableEntry setHopDistance(int aHopDistance){
-    return new RoutingTableEntry(getPeer(), aHopDistance, getGateway(), myLastOnlineTime, getTimeDistance(), null);
+    return new RoutingTableEntry(getPeer(), aHopDistance, getGateway(), myLastOnlineTime, getTimeDistance(), myLocalNetworkInterface);
   }
   
   public RoutingTableEntry incHopDistance(){
-    return new RoutingTableEntry(getPeer(), getHopDistance() + 1, getGateway(), myLastOnlineTime, getTimeDistance(), null);
+    return new RoutingTableEntry(getPeer(), getHopDistance() + 1, getGateway(), myLastOnlineTime, getTimeDistance(), myLocalNetworkInterface);
   }
   
   public RoutingTableEntry setNetworkInterface(iCommunicationInterface aNetworkInterface){
-    return new RoutingTableEntry(getPeer(), myHopDistance, myPeer, myLastOnlineTime, myTimeDistance, aNetworkInterface);
+    return new RoutingTableEntry(getPeer(), myHopDistance, getGateway(), myLastOnlineTime, myTimeDistance, aNetworkInterface);
   }
   
   public RoutingTableEntry setPeer(AbstractPeer aPeer){
-    return new RoutingTableEntry(getPeer(), myHopDistance, aPeer, myLastOnlineTime, myTimeDistance, myLocalNetworkInterface);
+    return new RoutingTableEntry(aPeer, myHopDistance, getGateway(), myLastOnlineTime, myTimeDistance, myLocalNetworkInterface);
   }
 
 }

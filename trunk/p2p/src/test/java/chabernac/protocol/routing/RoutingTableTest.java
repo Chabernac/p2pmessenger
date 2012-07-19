@@ -11,11 +11,8 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.log4j.BasicConfigurator;
-
-import chabernac.tools.DummyNetworkInterface;
-
 import junit.framework.TestCase;
+import chabernac.tools.DummyNetworkInterface;
 
 public class RoutingTableTest extends TestCase {
   
@@ -46,7 +43,7 @@ public class RoutingTableTest extends TestCase {
     RoutingTableEntry theEntry3 = new RoutingTableEntry(thePeer3, 0, thePeer3, System.currentTimeMillis(), 0, new DummyNetworkInterface());
     theTable2.addRoutingTableEntry( theEntry3 );
 
-    theTable.merge( theTable2, 0 );
+    theTable.merge( theTable2, 0, new DummyNetworkInterface() );
 
 
     assertEquals( 3,  theTable.getEntries().size());
