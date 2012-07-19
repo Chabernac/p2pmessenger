@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.net.InetSocketAddress;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -17,14 +18,16 @@ import chabernac.io.StreamSplitterPool;
 import chabernac.p2p.settings.P2PSettings;
 import chabernac.protocol.routing.PeerMessage;
 import chabernac.protocol.routing.PeerMessage.State;
+import chabernac.protocol.routing.PeerSenderReply;
 import chabernac.protocol.routing.SocketPeer;
 import chabernac.protocol.routing.SocketPeer.StreamSplitterSupport;
 import chabernac.utils.NamedRunnable;
+import chabernac.utils.NetTools;
 
 public class PeerToPeerSender {
   private static final Logger LOGGER = Logger.getLogger(PeerToPeerSender.class);
 
-  public String sendMessageTo(PeerMessage aPeerMessage, SocketPeer aPeer, String aMessage, int aTimeoutInSeconds) throws IOException {
+  public PeerSenderReply sendMessageTo(PeerMessage aPeerMessage, SocketPeer aPeer, String aMessage, int aTimeoutInSeconds) throws IOException {
     if(aPeer.isStreamSplittingSupported() == StreamSplitterSupport.TRUE){
       //just to be compatible with the stream splitters
       aMessage = StreamSplitter.IN + aMessage;
@@ -85,7 +88,7 @@ public class PeerToPeerSender {
           theReturnMessage = theReturnMessage.substring( StreamSplitter.OUT.length() );
         }
 
-        return theReturnMessage;
+        return new PeerSenderReply( theReturnMessage, NetTools.getNetworkInterfaceForLocalIP( ((InetSocketAddress)theSocket.getLocalSocketAddress()).getHostName() ));
       }catch(IOException e){
         //for some reason the socket was corrupt just close the socket and retry untill retry counter is zero
         P2PSettings.getInstance().getSocketPool().close( theSocket );

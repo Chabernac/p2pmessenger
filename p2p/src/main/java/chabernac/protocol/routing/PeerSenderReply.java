@@ -1,6 +1,6 @@
 package chabernac.protocol.routing;
 
-import chabernac.tools.iCommunicationInterface;
+import chabernac.io.iCommunicationInterface;
 
 public class PeerSenderReply{
   //the reply from the remote peer

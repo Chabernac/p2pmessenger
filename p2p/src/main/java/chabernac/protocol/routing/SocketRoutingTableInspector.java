@@ -9,8 +9,8 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import chabernac.io.SimpleNetworkInterface;
 import chabernac.protocol.ProtocolServer;
-import chabernac.tools.SimpleNetworkInterface;
 import chabernac.utils.IPAddress;
 import chabernac.utils.InvalidIpAddressException;
 
@@ -63,7 +63,7 @@ public class SocketRoutingTableInspector implements iRoutingTableInspector {
             }
           }
           if(theNewIps.size() > 0){
-            theNewHosts.add( new SimpleNetworkInterface( theHost.getMACAddress(), theNewIps.toArray(new String[]{}) ));
+            theNewHosts.add( new SimpleNetworkInterface( theHost.getName(), theHost.getMACAddress(), theNewIps.toArray(new String[]{}) ));
           }
         }
         AbstractPeer theNewPeer;

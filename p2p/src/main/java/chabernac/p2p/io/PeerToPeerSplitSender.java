@@ -6,11 +6,12 @@ package chabernac.p2p.io;
 
 import java.io.IOException;
 
+import chabernac.io.SimpleNetworkInterface;
 import chabernac.io.SocketSenderReply;
 import chabernac.io.iSocketSender;
 import chabernac.protocol.routing.PeerMessage;
+import chabernac.protocol.routing.PeerSenderReply;
 import chabernac.protocol.routing.SocketPeer;
-import chabernac.tools.SimpleNetworkInterface;
 
 public class PeerToPeerSplitSender {
   private final iSocketSender mySocketSender;
@@ -20,15 +21,16 @@ public class PeerToPeerSplitSender {
     mySocketSender = aSocketSender;
   }
 
-  public String sendMessageTo(PeerMessage aPeerMessage, SocketPeer aPeer, String aMessage, int aTimeoutInSeconds) throws IOException {
+  public PeerSenderReply sendMessageTo(PeerMessage aPeerMessage, SocketPeer aPeer, String aMessage, int aTimeoutInSeconds) throws IOException {
     if(aPeer.getPeerId() != null && mySocketSender.containsSocketForId( aPeer.getPeerId() )){
-      return mySocketSender.send( aPeer.getPeerId(), aMessage );
+       SocketSenderReply theReply =  mySocketSender.send( aPeer.getPeerId(), aMessage );
+       return new PeerSenderReply( theReply.getReply(), theReply.getCommunicationInterface() );
     } else {
       for(SimpleNetworkInterface theHost : aPeer.getHosts()){
         for(String theIp : theHost.getIp()){
           SocketSenderReply theReply = mySocketSender.send(theIp, aPeer.getPort(), aMessage);
           aPeer.setPeerId( theReply.getRemoteId() );
-          return theReply.getReply();
+          return new PeerSenderReply( theReply.getReply(), theReply.getCommunicationInterface());
         }
       }
       throw new IOException("Could not send message to '" + aPeer.getPeerId() + "'");

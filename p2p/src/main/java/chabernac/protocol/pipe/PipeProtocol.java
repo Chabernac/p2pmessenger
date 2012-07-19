@@ -175,7 +175,7 @@ public class PipeProtocol extends Protocol {
 
   private SocketProxy openSocketToPeer(SocketPeer aFromPeer, SocketPeer aToPeer, String aPipeDescription) throws IOException, UnknownPeerException, ProtocolException{
     AbstractPeer theGateway = getRoutingTable().getGatewayForPeer(aToPeer);
-    String theResult = getPeerSender().send(theGateway, createMessage( Command.OPEN_SOCKET + ";" + aFromPeer.getPeerId()  + ";" + aToPeer.getPeerId() + ";" +  aPipeDescription) );
+    String theResult = getPeerSender().send(theGateway, createMessage( Command.OPEN_SOCKET + ";" + aFromPeer.getPeerId()  + ";" + aToPeer.getPeerId() + ";" +  aPipeDescription) ).getReply();
 
     if(!theResult.startsWith( Result.SOCKET_OPENED.name() )){
       LOGGER.error("Peer: " + getRoutingTable().getLocalPeerId() + " Socket with peer '" + aToPeer.getPeerId() +  "' could not be openend: " + theResult);
