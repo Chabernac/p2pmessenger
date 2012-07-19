@@ -8,15 +8,24 @@ public class SocketSenderReply {
   private final String myReply;
   private final String myRemoteId;
   
-  public SocketSenderReply( String aReply, String aRemoteId ) {
+  //the local interface through which the message was send
+  private final iCommunicationInterface myCommunicationInterface;
+  
+  public SocketSenderReply( String aReply, String aRemoteId, iCommunicationInterface aCommunicationInterface ) {
     super();
     myReply = aReply;
     myRemoteId = aRemoteId;
+    myCommunicationInterface = aCommunicationInterface;
   }
   public String getReply() {
     return myReply;
   }
+  
   public String getRemoteId() {
     return myRemoteId;
+  }
+  
+  public iCommunicationInterface getCommunicationInterface() {
+    return myCommunicationInterface;
   }
 } 

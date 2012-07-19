@@ -38,6 +38,8 @@ public class StreamSplittingServer implements iSocketSender{
   private final String myId;
   private final String LOCK_PREFIX = UUID.randomUUID().toString();
   private StreamSplitterPoolPanel myDebugPanel = null;
+  
+  private final InMemoryCommunicationInterface myJVMCommunicationInterface = new InMemoryCommunicationInterface();
 
   public StreamSplittingServer ( iInputOutputHandler aInputOutputHandler, int aPort, boolean isFindUnusedPort, String anId ) {
     super();
@@ -151,8 +153,8 @@ public class StreamSplittingServer implements iSocketSender{
     return send(null, aHost, aPort, aMessage);
   }
 
-  public String send(String anId, String aMessage) throws IOException{
-    return send(anId, null, -1, aMessage).getReply();
+  public SocketSenderReply send(String anId, String aMessage) throws IOException{
+    return send(anId, null, -1, aMessage);
   }
 
   private String createSocket(String aHost, int aPort) throws IOException {
@@ -199,7 +201,7 @@ public class StreamSplittingServer implements iSocketSender{
 
   private SocketSenderReply send(String anId, String aHost, int aPort, String aMessage) throws IOException{
     if(anId != null && anId.equals(myPool.getId())){
-      return new SocketSenderReply( myInputOutputHandler.handle(anId, aMessage), anId);
+      return new SocketSenderReply( myInputOutputHandler.handle(anId, aMessage), anId, myJVMCommunicationInterface);
     }
 
     String theLock = LOCK_PREFIX + anId;
@@ -219,9 +221,9 @@ public class StreamSplittingServer implements iSocketSender{
       }
       
       if(anId.equals( myPool.getId() )){
-        return new SocketSenderReply(myInputOutputHandler.handle(anId, aMessage), anId);
+        return new SocketSenderReply(myInputOutputHandler.handle(anId, aMessage), anId, myJVMCommunicationInterface );
       } else if(myPool.contains( anId )){
-        return new SocketSenderReply(myPool.send( anId, aMessage ), anId);
+        return new SocketSenderReply(myPool.send( anId, aMessage ), anId, NetTools.getNetworkInterfaceForLocalIP( mySockets.get( anId ).getLocalAddress().getHostAddress() ));
       }
       throw new IOException("No socket present for id '" + anId + "'");
     }
