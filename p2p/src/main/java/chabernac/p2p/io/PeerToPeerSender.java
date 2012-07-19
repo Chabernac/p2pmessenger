@@ -12,6 +12,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 
+import chabernac.io.SimpleNetworkInterface;
 import chabernac.io.SocketProxy;
 import chabernac.io.StreamSplitter;
 import chabernac.io.StreamSplitterPool;
@@ -88,7 +89,8 @@ public class PeerToPeerSender {
           theReturnMessage = theReturnMessage.substring( StreamSplitter.OUT.length() );
         }
 
-        return new PeerSenderReply( theReturnMessage, NetTools.getNetworkInterfaceForLocalIP( ((InetSocketAddress)theSocket.getLocalSocketAddress()).getHostName() ));
+        SimpleNetworkInterface theNetworkInterface = NetTools.getNetworkInterfaceForLocalIP( ((InetSocketAddress)theSocket.getLocalSocketAddress()).getAddress().getHostAddress() );
+        return new PeerSenderReply( theReturnMessage, theNetworkInterface);
       }catch(IOException e){
         //for some reason the socket was corrupt just close the socket and retry untill retry counter is zero
         P2PSettings.getInstance().getSocketPool().close( theSocket );

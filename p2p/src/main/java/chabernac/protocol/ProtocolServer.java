@@ -33,7 +33,11 @@ import chabernac.utils.NetTools;
 public class ProtocolServer implements Runnable, iP2PServer{
   private static Logger LOGGER = Logger.getLogger(ProtocolServer.class);
   public static final String SESSION = "Session";
+  
+  //TODO define these properties somewhere else as they are being used in several contexts
+  //including contexts not related to protocol server
   public static final String REMOTE_IP = "Socket";
+  public static final String NETWORK_INTERFACE = "NetworkInterface";
 
   private int myPort;
   private IProtocol myProtocol = null;
@@ -196,6 +200,7 @@ public class ProtocolServer implements Runnable, iP2PServer{
           //and thus have the same netmask.  so we use the local netmask and apply it to the remote ip
           int theNetworkPrefixLength = IPAddress.getIPAddressForLocalIP(mySocket.getLocalAddress().getLocalHost().getHostAddress()).getNetworkPrefixLength();
           myProtocol.getSessionData().putProperty( theSession, REMOTE_IP, mySocket.getInetAddress().getHostAddress()  + "/" + theNetworkPrefixLength);
+          myProtocol.getSessionData().putProperty( theSession, NETWORK_INTERFACE, NetTools.getNetworkInterfaceForLocalIP( mySocket.getLocalAddress().getHostAddress() ));
           String  theResult = myProtocol.handleCommand(theSession, theLine );
           //          LOGGER.debug("Sending result: '" + theResult + "'");
           myProtocol.getSessionData().clearSessionData( theSession );

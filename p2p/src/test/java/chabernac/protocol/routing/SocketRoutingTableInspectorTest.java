@@ -4,22 +4,29 @@
  */
 package chabernac.protocol.routing;
 
+import org.apache.log4j.BasicConfigurator;
+
 import junit.framework.TestCase;
 import chabernac.io.SimpleNetworkInterface;
 import chabernac.protocol.ProtocolServer;
 import chabernac.tools.DummyNetworkInterface;
 
 public class SocketRoutingTableInspectorTest extends TestCase {
+  static{
+    BasicConfigurator.resetConfiguration();
+    BasicConfigurator.configure();
+  }
+  
   public void testSocketRoutingTableInspector() throws UnknownPeerException{
     SessionData theSessionData = new SessionData();
     
     RoutingTable theRoutingTable = new RoutingTable( "0" );
-    RoutingTableEntry theLocalEntry = new RoutingTableEntry( new SocketPeer( "4", SimpleNetworkInterface.createFromIpList( "192.168.1.4" ), 8000), new DummyNetworkInterface() );
+    RoutingTableEntry theLocalEntry = new RoutingTableEntry( new SocketPeer( "4", SimpleNetworkInterface.createFromIpList("interface", "192.168.1.4" ), 8000), new DummyNetworkInterface() );
     theLocalEntry = theLocalEntry.setHopDistance( 0 );
     theRoutingTable.addEntry( theLocalEntry );
-    theRoutingTable.addEntry( new RoutingTableEntry( new SocketPeer( "1", SimpleNetworkInterface.createFromIpList( "192.168.1.1" ), 8000), new DummyNetworkInterface() ) );
-    theRoutingTable.addEntry( new RoutingTableEntry( new SocketPeer( "2", SimpleNetworkInterface.createFromIpList( "192.168.1.2", "10.0.0.1/23" ), 8000) , new DummyNetworkInterface() ));
-    theRoutingTable.addEntry( new RoutingTableEntry( new SocketPeer( "3", SimpleNetworkInterface.createFromIpList( "192.168.1.3" ), 8000), new DummyNetworkInterface() ));
+    theRoutingTable.addEntry( new RoutingTableEntry( new SocketPeer( "1", SimpleNetworkInterface.createFromIpList( "interface", "192.168.1.1" ), 8000), new DummyNetworkInterface() ) );
+    theRoutingTable.addEntry( new RoutingTableEntry( new SocketPeer( "2", SimpleNetworkInterface.createFromIpList( "interface", "192.168.1.2", "10.0.0.1/23" ), 8000) , new DummyNetworkInterface() ));
+    theRoutingTable.addEntry( new RoutingTableEntry( new SocketPeer( "3", SimpleNetworkInterface.createFromIpList( "interface", "192.168.1.3" ), 8000), new DummyNetworkInterface() ));
     
     SocketRoutingTableInspector theSocketRoutingTableInspector = new SocketRoutingTableInspector( theSessionData );
     

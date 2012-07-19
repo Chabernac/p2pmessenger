@@ -7,6 +7,7 @@ import java.util.UUID;
 
 import chabernac.io.InMemoryCommunicationInterface;
 import chabernac.protocol.IProtocol;
+import chabernac.protocol.ProtocolServer;
 
 public class JVMPeerSender {
   private static final class INSTANCE_HOLDER{
@@ -47,7 +48,10 @@ public class JVMPeerSender {
     }
     if(theProtocol == null) throw new IOException("No protocol for peer '" + aPeer + "'");
     
-    String theReply = theProtocol.handleCommand(UUID.randomUUID().toString(), aMessage);
+    String theSession = UUID.randomUUID().toString();
+    theProtocol.getSessionData().putProperty( theSession, ProtocolServer.NETWORK_INTERFACE, myCommunicationInterface);
+    
+    String theReply = theProtocol.handleCommand(theSession, aMessage);
     return new PeerSenderReply( theReply, myCommunicationInterface );
   }
   

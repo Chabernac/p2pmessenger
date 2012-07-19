@@ -35,7 +35,9 @@ import org.doomdark.uuid.UUIDGenerator;
 import chabernac.io.Base64ObjectStringConverter;
 import chabernac.io.ClassPathResource;
 import chabernac.io.FileResource;
+import chabernac.io.InMemoryCommunicationInterface;
 import chabernac.io.SimpleNetworkInterface;
+import chabernac.io.iCommunicationInterface;
 import chabernac.io.iObjectPersister;
 import chabernac.io.iObjectStringConverter;
 import chabernac.io.iSocketSender;
@@ -43,6 +45,7 @@ import chabernac.protocol.AlreadyRunningException;
 import chabernac.protocol.P2PServerFactory.ServerMode;
 import chabernac.protocol.Protocol;
 import chabernac.protocol.ProtocolException;
+import chabernac.protocol.ProtocolServer;
 import chabernac.protocol.ServerInfo;
 import chabernac.protocol.ServerInfo.Type;
 import chabernac.tools.IOTools;
@@ -298,7 +301,7 @@ public class RoutingProtocol extends Protocol {
       //by doing this we will avoid all peers to keep track of peer id's which will never occure again
       theLocalPeer.setTemporaryPeer( !isPersistRoutingTable );
 
-      RoutingTableEntry theLocalRoutingTableEntry = new RoutingTableEntry(theLocalPeer, 0, theLocalPeer, System.currentTimeMillis(), 0, null);
+      RoutingTableEntry theLocalRoutingTableEntry = new RoutingTableEntry(theLocalPeer, 0, theLocalPeer, System.currentTimeMillis(), 0, new InMemoryCommunicationInterface());
       myRoutingTable.addRoutingTableEntry( theLocalRoutingTableEntry );
     }
 
@@ -414,6 +417,8 @@ public class RoutingProtocol extends Protocol {
 
     refreshLocalEntry();
 
+    iCommunicationInterface theNetworkInterface = (iCommunicationInterface)getSessionData().getProperty( aSessionId, ProtocolServer.NETWORK_INTERFACE );
+    
     int theFirstIndexOfSpace = anInput.indexOf( " " );
     if(theFirstIndexOfSpace == -1) theFirstIndexOfSpace = anInput.length();
     String theCommandString = anInput.substring( 0,  theFirstIndexOfSpace);
@@ -437,7 +442,8 @@ public class RoutingProtocol extends Protocol {
         //the announcement is of the peer which is sending the annoucement
         //so the peer id inside the routingtable entry is also the containing peer
         String thePeerEntry = anInput.substring( theFirstIndexOfSpace + 1 );
-        RoutingTableEntry theEntry = myRoutingTableEntryConverter.getObject( thePeerEntry ).incHopDistance();
+        
+        RoutingTableEntry theEntry = myRoutingTableEntryConverter.getObject( thePeerEntry ).setNetworkInterface( theNetworkInterface  ).incHopDistance();
         myRoutingTable.addRoutingTableEntry( theEntry);
 
         //before sending our routing table, let's verify if we can still reach our neighbours
@@ -458,7 +464,7 @@ public class RoutingProtocol extends Protocol {
         //the sending peer has send the entry so we set it as gateway and increment the hop distance
         //if the gateway of the entry was our peer id  than we ignore the entry, otherwise loops might be created in the routing table hierarchy
         if(!thePeer.getGateway().getPeerId().equals( myLocalPeerId )){
-          thePeer = thePeer.entryForNextPeer( theSendingPeer.getPeer(), 0 );
+          thePeer = thePeer.entryForNextPeer( theSendingPeer.getPeer(), 0, theNetworkInterface );
           myRoutingTable.addRoutingTableEntry( thePeer );
         }
         return Response.OK.name();
@@ -530,7 +536,7 @@ public class RoutingProtocol extends Protocol {
       //TODO remove extensive logging
       //      try {
       //        if(aPeer.getPort() == RoutingProtocol.START_PORT && aPeer.getHosts().get( 0 ).equalsIgnoreCase( InetAddress.getLocalHost().getHostAddress() )){
-      //      LOGGER.error( "Error occured while contacting peer '" + aPeer.getPeerId() + "' " + aPeer.getHosts() + ": " + aPeer.getPort() );
+            LOGGER.error( "Error occured while contacting peer '" + aPeer.getPeerId() + "'");
       //        }
       //      } catch ( UnknownHostException e1 ) {
       //        e1.printStackTrace();
@@ -725,7 +731,7 @@ public class RoutingProtocol extends Protocol {
         //test that we did not take the place of another peer on the same host and port
         if(!myLocalPeerId.equals( theRemoteTable.getLocalPeerId() )){
 
-          myRoutingTable.merge( theRemoteTable, 0 );
+          myRoutingTable.merge( theRemoteTable, 0, theTable.getNetworkInterface() );
           //we can connect directly to this peer, so the hop distance is 1
           //theEntry.setHopDistance( 1 );
           RoutingTableEntry theEntryOfRemotePeer = myRoutingTable.getEntryForPeer( theRemoteTable.getLocalPeerId() );

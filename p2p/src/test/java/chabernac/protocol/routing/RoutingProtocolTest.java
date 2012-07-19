@@ -578,7 +578,7 @@ public class RoutingProtocolTest extends AbstractProtocolTest {
       
       SocketPeer theDummyPeer = new SocketPeer("dummy");
       List<SimpleNetworkInterface> theHosts = new ArrayList< SimpleNetworkInterface >();
-      theHosts.add( SimpleNetworkInterface.createFromIpList( "10.240.111.22") );
+      theHosts.add( SimpleNetworkInterface.createFromIpList( null, "10.240.111.22") );
       theDummyPeer.setHosts( theHosts );
       theDummyPeer.setPort( 12808 );
       
