@@ -22,9 +22,10 @@ import chabernac.protocol.routing.WebPeer;
 
 public class WebPeerSenderTest extends TestCase {
   
-//  static{
-//    BasicConfigurator.configure();
-//  }
+  static{
+    BasicConfigurator.resetConfiguration();
+    BasicConfigurator.configure();
+  }
   
   public void testWebPeerSender() throws Exception{
     Server theServer = new Server(9090);
@@ -41,6 +42,7 @@ public class WebPeerSenderTest extends TestCase {
             while(true){
               List<CometEvent> theEvents = theWebPeer.waitForEvents("2");
               for(CometEvent theEvent : theEvents){
+                System.out.println("returning outpuot");
                 theEvent.setOutput( "output" );
               }
             }
@@ -61,9 +63,9 @@ public class WebPeerSenderTest extends TestCase {
       WebToPeerSender theSender = new WebToPeerSender();
 
       SocketPeer theLocalPeer = new SocketPeer("2");
-      assertEquals("output", theSender.sendMessageTo( theWebPeer, theLocalPeer, "event1", 2000));
+      assertEquals("output", theSender.sendMessageTo( theWebPeer, theLocalPeer, "event1", 2000).getReply());
       WebPeer theWebPeer2 = new WebPeer("2", null);
-      assertEquals("output", theSender.sendMessageTo( theWebPeer, theWebPeer2, "event1", 2000));
+      assertEquals("output", theSender.sendMessageTo( theWebPeer, theWebPeer2, "event1", 2000).getReply());
     }finally{
       theServer.stop();
       theService.shutdownNow();

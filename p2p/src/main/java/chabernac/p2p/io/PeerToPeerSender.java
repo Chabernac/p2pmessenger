@@ -40,7 +40,6 @@ public class PeerToPeerSender {
       theRetryDecider.clear();
       SocketProxy theSocket = aPeer.createSocket( aPeer.getPort() );
 
-
       if(theSocket == null) {
         throw new IOException("Could not open socket to peer: " + aPeer.getPeerId() + " " + aPeer.getHosts() + ":" + aPeer.getPort());
       }

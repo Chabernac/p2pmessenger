@@ -92,7 +92,7 @@ public class ProtocolServerTest extends AbstractProtocolTest {
       thePeer.detectLocalInterfaces();
       thePeer.setPort( thePort );
 
-      assertEquals( PingProtocol.Response.PONG.name(), getPeerSender(theMasterProtocol).send(thePeer, PingProtocol.ID + "ping" ) );
+      assertEquals( PingProtocol.Response.PONG.name(), getPeerSender(theMasterProtocol).send(thePeer, PingProtocol.ID + "ping" ).getReply() );
     }finally{
 
       theServer.stop();

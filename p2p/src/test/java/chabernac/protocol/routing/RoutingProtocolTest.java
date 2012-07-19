@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 import org.junit.Ignore;
 import org.mortbay.jetty.Server;
@@ -30,10 +31,10 @@ import chabernac.tools.DummyNetworkInterface;
 public class RoutingProtocolTest extends AbstractProtocolTest {
   private static Logger LOGGER = Logger.getLogger(RoutingProtocolTest.class);
   
-//  static{
-//    BasicConfigurator.resetConfiguration();
-//    BasicConfigurator.configure();
-//  }
+  static{
+    BasicConfigurator.resetConfiguration();
+    BasicConfigurator.configure();
+  }
   
   public void testProperties(){
     Properties theProperties = new Properties();
