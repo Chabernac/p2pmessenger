@@ -18,10 +18,12 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 
+import chabernac.io.HttpCommunicationInterface;
 import chabernac.newcomet.EndPointContainer2;
 import chabernac.protocol.ProtocolContainer;
 import chabernac.protocol.ProtocolException;
 import chabernac.protocol.ProtocolFactory;
+import chabernac.protocol.ProtocolServer;
 import chabernac.protocol.ServerInfo;
 import chabernac.protocol.ServerInfo.Type;
 import chabernac.protocol.echo.EchoProtocol;
@@ -37,6 +39,7 @@ public class ProtocolServlet extends HttpServlet {
 	private static final long serialVersionUID = -1872170586728725631L;
 	private static Logger LOGGER = Logger.getLogger(ProtocolServlet.class);
 	private AtomicLong myConcurrentRequestCounter = new AtomicLong(0);
+	private HttpCommunicationInterface myInterface = new HttpCommunicationInterface();
 
 	public void init() throws ServletException{
 		super.init();
@@ -102,6 +105,7 @@ public class ProtocolServlet extends HttpServlet {
 				String theURL = aRequest.getRequestURL().toString();
 				theURL = theURL.substring(0, theURL.indexOf("/", 7) + 1);
 				getSessionData().putProperty(theSession, "requestor.ip", aRequest.getRemoteAddr());
+				getSessionData().putProperty(theSession, ProtocolServer.NETWORK_INTERFACE, myInterface);
 //				getSessionData().putProperty(theSession, "requestor.url", theURL);
 //				LOGGER.debug("Remote ip '" + getSessionData().getProperty(theSession, "requestor.ip") + "'");
 //				LOGGER.debug("Remote url '" + getSessionData().getProperty(theSession, "requestor.url") + "'");
@@ -149,7 +153,7 @@ public class ProtocolServlet extends HttpServlet {
 	}
 
 	public SessionData getSessionData(){
-		return (SessionData)getServletContext().getAttribute( "SessionData" );
+	  return getProtocolContainer().getSessionData();
 	}
 
 	public Map<String, String> getPeerIpMap(){

@@ -13,9 +13,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import junit.framework.TestCase;
-import chabernac.io.SimpleNetworkInterface;
 import chabernac.io.iObjectPersister;
 import chabernac.tools.DummyNetworkInterface;
+import chabernac.tools.SimpleNetworkInterface;
 
 public class RoutingTablePersisterTest extends TestCase {
   

@@ -8,7 +8,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import chabernac.io.SimpleNetworkInterface;
+import chabernac.tools.SimpleNetworkInterface;
 import chabernac.utils.NamedRunnable;
 
 public class ScanSystem extends NamedRunnable{

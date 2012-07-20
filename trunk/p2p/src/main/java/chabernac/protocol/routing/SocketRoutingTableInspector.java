@@ -9,8 +9,8 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import chabernac.io.SimpleNetworkInterface;
 import chabernac.protocol.ProtocolServer;
+import chabernac.tools.SimpleNetworkInterface;
 import chabernac.utils.IPAddress;
 import chabernac.utils.InvalidIpAddressException;
 

@@ -20,8 +20,8 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
-import chabernac.io.SimpleNetworkInterface;
 import chabernac.io.iObjectPersister;
+import chabernac.tools.SimpleNetworkInterface;
 
 public class RoutingTablePersister implements iObjectPersister<RoutingTable> {
   private static Logger LOGGER = Logger.getLogger( RoutingTablePersister.class );

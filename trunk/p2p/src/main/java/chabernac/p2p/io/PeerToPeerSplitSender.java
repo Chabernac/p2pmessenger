@@ -6,12 +6,12 @@ package chabernac.p2p.io;
 
 import java.io.IOException;
 
-import chabernac.io.SimpleNetworkInterface;
 import chabernac.io.SocketSenderReply;
 import chabernac.io.iSocketSender;
 import chabernac.protocol.routing.PeerMessage;
 import chabernac.protocol.routing.PeerSenderReply;
 import chabernac.protocol.routing.SocketPeer;
+import chabernac.tools.SimpleNetworkInterface;
 
 public class PeerToPeerSplitSender {
   private final iSocketSender mySocketSender;

@@ -22,10 +22,10 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 
-import chabernac.io.SimpleNetworkInterface;
 import chabernac.io.SocketProxy;
 import chabernac.io.iSocketPool;
 import chabernac.p2p.settings.P2PSettings;
+import chabernac.tools.SimpleNetworkInterface;
 import chabernac.utils.IPAddress;
 import chabernac.utils.NetTools;
 

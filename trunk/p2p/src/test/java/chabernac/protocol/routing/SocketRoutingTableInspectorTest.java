@@ -7,9 +7,9 @@ package chabernac.protocol.routing;
 import org.apache.log4j.BasicConfigurator;
 
 import junit.framework.TestCase;
-import chabernac.io.SimpleNetworkInterface;
 import chabernac.protocol.ProtocolServer;
 import chabernac.tools.DummyNetworkInterface;
+import chabernac.tools.SimpleNetworkInterface;
 
 public class SocketRoutingTableInspectorTest extends TestCase {
   static{

@@ -8,7 +8,7 @@ import java.net.SocketException;
 import java.util.List;
 
 import junit.framework.TestCase;
-import chabernac.io.SimpleNetworkInterface;
+import chabernac.tools.SimpleNetworkInterface;
 
 public class PeerTest extends TestCase {
   public void testDetectLocalHost() throws SocketException, NoAvailableNetworkAdapterException{
