@@ -12,7 +12,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 
-import chabernac.io.SimpleNetworkInterface;
 import chabernac.io.SocketProxy;
 import chabernac.io.StreamSplitter;
 import chabernac.io.StreamSplitterPool;
@@ -22,6 +21,7 @@ import chabernac.protocol.routing.PeerMessage.State;
 import chabernac.protocol.routing.PeerSenderReply;
 import chabernac.protocol.routing.SocketPeer;
 import chabernac.protocol.routing.SocketPeer.StreamSplitterSupport;
+import chabernac.tools.SimpleNetworkInterface;
 import chabernac.utils.NamedRunnable;
 import chabernac.utils.NetTools;
 

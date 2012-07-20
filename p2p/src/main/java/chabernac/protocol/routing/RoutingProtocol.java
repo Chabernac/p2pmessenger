@@ -36,7 +36,6 @@ import chabernac.io.Base64ObjectStringConverter;
 import chabernac.io.ClassPathResource;
 import chabernac.io.FileResource;
 import chabernac.io.InMemoryCommunicationInterface;
-import chabernac.io.SimpleNetworkInterface;
 import chabernac.io.iCommunicationInterface;
 import chabernac.io.iObjectPersister;
 import chabernac.io.iObjectStringConverter;
@@ -50,6 +49,7 @@ import chabernac.protocol.ServerInfo;
 import chabernac.protocol.ServerInfo.Type;
 import chabernac.tools.IOTools;
 import chabernac.tools.LocalIPCollecter;
+import chabernac.tools.SimpleNetworkInterface;
 import chabernac.tools.TestTools;
 import chabernac.tools.iIPListener;
 import chabernac.utils.NamedRunnable;
@@ -740,7 +740,7 @@ public class RoutingProtocol extends Protocol {
         }
         LOGGER.debug("Exchange routing tables between " + myLocalPeerId + " and " + thePeer.getPeerId() + " completed");
       } catch ( Exception e ) {
-        if(!e.getMessage().startsWith( "Simulate" )){
+        if(e.getMessage() != null && !e.getMessage().startsWith( "Simulate" )){
           //LOGGER.error( "Could not contact peer '" + thePeer.getPeerId() + "'", e );
           LOGGER.error( "Could not exchange routing tables between '" + myLocalPeerId + "' and '" + thePeer.getPeerId() + "'", e );
         }

@@ -6,7 +6,6 @@ import java.net.SocketException;
 import java.util.Enumeration;
 
 import junit.framework.TestCase;
-import chabernac.io.SimpleNetworkInterface;
 import chabernac.utils.NetTools;
 
 public class NetToolsTest extends TestCase{
