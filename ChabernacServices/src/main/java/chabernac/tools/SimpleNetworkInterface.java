@@ -2,7 +2,7 @@
  * Copyright (c) 2010 Axa Holding Belgium, SA. All rights reserved.
  * This software is the confidential and proprietary information of the AXA Group.
  */
-package chabernac.io;
+package chabernac.tools;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -10,6 +10,10 @@ import java.util.Formatter;
 import java.util.List;
 import java.util.Locale;
 
+import chabernac.io.iCommunicationInterface;
+
+//TODO find a way to move this class to chabernac.io without causing problems with deserialization on other systems
+//which do not have the last version
 public class SimpleNetworkInterface implements Serializable, iCommunicationInterface{
   private static final long serialVersionUID = -2887291844821748090L;
   

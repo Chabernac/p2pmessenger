@@ -13,7 +13,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import chabernac.io.SimpleNetworkInterface;
+import chabernac.tools.SimpleNetworkInterface;
 
 public class NetTools {
   private static final Logger LOGGER = Logger.getLogger(NetTools.class);
@@ -144,12 +144,10 @@ public class NetTools {
     Enumeration<NetworkInterface> theInterfaces = NetworkInterface.getNetworkInterfaces();
     while(theInterfaces.hasMoreElements()){
       NetworkInterface theInterface = theInterfaces.nextElement();
-      if(theInterface.isLoopback()) {
         for(InterfaceAddress theAddress : theInterface.getInterfaceAddresses()){
           if(aLocalIp.equalsIgnoreCase( theAddress.getAddress().getHostAddress() )){
             return new SimpleNetworkInterface(theInterface.getName(), theInterface.getHardwareAddress(), aLocalIp);
           }
-        }
       }
     }
     return null;
