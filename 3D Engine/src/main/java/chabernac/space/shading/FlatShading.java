@@ -20,7 +20,6 @@ public class FlatShading implements iVertexShader{
     Polygon theCurrentPolygon = null;
     float illuminatingFactor = 0;
 
-
     for(int j=0;j<aWorld.myShapes.length;j++){
       theCurrentShape = aWorld.myShapes[j];
       for(int k=0;k<theCurrentShape.myPolygons.length;k++){

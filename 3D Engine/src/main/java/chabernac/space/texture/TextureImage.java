@@ -6,6 +6,7 @@
  */
 package chabernac.space.texture;
 
+import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBuffer;
 import java.awt.image.DataBufferByte;
@@ -16,6 +17,7 @@ public class TextureImage{
   public int height = 0;
   public int halfWidth = 0;
   public int[] colors;
+  private boolean isUseBilinearInterpolation = false;
   
   public TextureImage(BufferedImage anImage){
     image = anImage;
@@ -29,7 +31,7 @@ public class TextureImage{
     colors = getRGB(image);
   }
 
-  public int getColorAt(int x, int y){
+  public int getColorAt(float x, float y){
     if(x < 0 || y <0){
       return 0;
     }
@@ -38,7 +40,31 @@ public class TextureImage{
 //    while(y < 0) y += height;
     while(y >= height) y -= height;
 
-    return colors[y * width + x];
+    if(isUseBilinearInterpolation){
+      int x1 = (int)Math.round( x );
+      if(x1 >= width) x1 -= 1;
+      int x2 = x1 - 1;
+      if(x2 < 0 || x2 >= width) x2 = x1;
+      
+      int y1 = (int)Math.round( y );
+      if(y1 >= height) y1 -= 1;
+      int y2 = y1 - 1;
+      if(y2 < 0 || y2 >= height) y2 = y1;
+      
+      Color theColor1 = new Color( colors[y1 * width + x1]  );
+      Color theColor2 = new Color( colors[y1 * width + x2]  );
+      Color theColor3 = new Color( colors[y2 * width + x1]  );
+      Color theColor4 = new Color( colors[y2 * width + x2]  );
+      
+      int alpha = (theColor1.getAlpha() + theColor2.getAlpha() + theColor3.getAlpha() + theColor4.getAlpha()) / 4;
+      int red = (theColor1.getRed() + theColor2.getRed() + theColor3.getRed() + theColor4.getRed()) / 4;
+      int green = (theColor1.getGreen() + theColor2.getGreen() + theColor3.getGreen() + theColor4.getGreen()) / 4;
+      int blue = (theColor1.getBlue() + theColor2.getBlue() + theColor3.getBlue() + theColor4.getBlue()) / 4;
+      
+      return new Color( red, green, blue, alpha ).getRGB();
+    } else {
+      return colors[(int)y * width + (int)x];
+    }
   }
   
   public int getX(int x){
@@ -51,6 +77,15 @@ public class TextureImage{
     while(y < 0) y += height;
     while(y >= height) y -= height;
     return y;
+  }
+
+  
+  public boolean isUseBilinearInterpolation() {
+    return isUseBilinearInterpolation;
+  }
+
+  public void setUseBilinearInterpolation( boolean aUseBilinearInterpolation ) {
+    isUseBilinearInterpolation = aUseBilinearInterpolation;
   }
 
   /**

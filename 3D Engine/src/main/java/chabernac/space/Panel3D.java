@@ -17,6 +17,7 @@ import chabernac.space.buffer.Graphics3D2D;
 import chabernac.space.geom.Point3D;
 import chabernac.space.shading.GouroudShading;
 import chabernac.space.shading.iVertexShader;
+import chabernac.utils.GraphicsAdapter;
 
 
 public class Panel3D extends JPanel implements  iSynchronizedEvent, MouseListener, ComponentListener{
@@ -64,7 +65,7 @@ public class Panel3D extends JPanel implements  iSynchronizedEvent, MouseListene
         theEyePoint,
         myCamera,
         myWorld,
-        new Graphics3D2D(myWorld, getWidth(), getHeight()));
+        new GraphicsAdapter( myG, new Graphics3D2D(myWorld, getWidth(), getHeight())));
     myGraphics.setVertexShaders(new iVertexShader[]{new GouroudShading((float)0.4)});
   }
 

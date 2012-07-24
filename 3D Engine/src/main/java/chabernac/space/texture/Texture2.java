@@ -90,7 +90,7 @@ public class Texture2 implements iTranslatable{
     //return new Vector2D(width, height);
   }
 
-  public int getColor(int x, int y){
+  public int getColor(float x, float y){
     return myColorGetter.getColorAt( x, y );
   }
 
@@ -158,17 +158,17 @@ public class Texture2 implements iTranslatable{
   }
   
   private interface iColorGetter{
-    public int getColorAt(int x, int y); 
+    public int getColorAt(float x, float y); 
   }
   
   private class BackGroundColorGetter implements iColorGetter{
-    public int getColorAt(int x, int y){
+    public int getColorAt(float x, float y){
       return myColor;
     }
   }
   
   private class TextureColorGetter implements iColorGetter{
-    public int getColorAt(int x, int y){
+    public int getColorAt(float x, float y){
       return myImage.getColorAt(x, y); 
     }
   }

@@ -21,12 +21,6 @@ public class Pixel {
   //the y coordinate of the pixel in texture space
   public float v;
   
-  //the x coordinate of the pixel in texture space rounded to an integer
-  public int uInt;
-  
-  //the y  coordinate of the pixel in texture space rounded to an integer
-  public int vInt;
-  
   //the inverse of the depth in camera space
   public float invZ;
   
@@ -81,7 +75,7 @@ public class Pixel {
    */
   public GVector getNormal(){
     if(normal == null){
-      normal = texture.getNormalVector(uInt, vInt);
+      normal = texture.getNormalVector((int)u, (int)v);
     }
     return normal;
   }

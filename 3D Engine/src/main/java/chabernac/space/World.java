@@ -11,8 +11,6 @@ import chabernac.utils.ArrayTools;
 import chabernac.utils.sort.FastArrayQSortAlgorithm;
 
 public class World{
-  private final Camera myCamera = new Camera();
-  
   private int myCurrentShape = 0;
   public Shape[] myShapes = new Shape[0];
   
@@ -197,9 +195,5 @@ public class World{
 
   public TranslateManagerContainer getTranslateManagerContainer(){
     return myTranslateManagerContainer;
-  }
-
-  public Camera getCamera() {
-    return myCamera;
   }
 }
