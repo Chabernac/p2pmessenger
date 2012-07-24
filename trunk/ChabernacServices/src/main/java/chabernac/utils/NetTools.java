@@ -146,7 +146,7 @@ public class NetTools {
       NetworkInterface theInterface = theInterfaces.nextElement();
         for(InterfaceAddress theAddress : theInterface.getInterfaceAddresses()){
           if(aLocalIp.equalsIgnoreCase( theAddress.getAddress().getHostAddress() )){
-            return new SimpleNetworkInterface(theInterface.getName(), theInterface.getHardwareAddress(), aLocalIp);
+            return new SimpleNetworkInterface(theInterface.getDisplayName(), theInterface.getHardwareAddress(), aLocalIp);
           }
       }
     }
