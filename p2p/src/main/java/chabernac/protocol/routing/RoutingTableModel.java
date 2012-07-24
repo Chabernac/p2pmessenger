@@ -91,7 +91,7 @@ public class RoutingTableModel implements TableModel {
     
     if(anColumnIndex == 6) return theRoutingTableEntry.getPeer().isTestPeer();
     
-    if(anColumnIndex == 7) return theRoutingTableEntry.getLocalNetworkInterface() == null ? "" : theRoutingTableEntry.getLocalNetworkInterface().getId();
+    if(anColumnIndex == 7) return theRoutingTableEntry.getLocalNetworkInterface() == null ? "" : theRoutingTableEntry.getLocalNetworkInterface().getName();
     return "";
   }
   
