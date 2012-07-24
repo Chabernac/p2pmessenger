@@ -23,7 +23,6 @@ import chabernac.space.Panel3D;
 import chabernac.space.PlayRecording;
 import chabernac.space.ToggleRecordingCommand;
 import chabernac.space.World;
-import chabernac.space.shading.BumpShader;
 import chabernac.space.shading.GouroudShading;
 import chabernac.space.shading.PhongShader;
 import chabernac.space.shading.TextureShader;

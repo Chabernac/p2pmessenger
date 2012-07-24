@@ -1,14 +1,12 @@
 package chabernac.space.shapes;
 
-import chabernac.space.MoveableShape;
 import chabernac.space.PolygonException;
 import chabernac.space.Vertex;
 import chabernac.space.geom.Point3D;
 import chabernac.space.geom.Polygon;
+import chabernac.space.geom.Shape;
 
-
-
-public class Cube extends MoveableShape{
+public class Cube extends Shape{
   private Point3D myOrigPoint =null;
   private float myWidth;
   private float myHeight;
@@ -104,7 +102,4 @@ public class Cube extends MoveableShape{
 
     done();
   }
-  
-  public void nextTranslation(){}
-
 }

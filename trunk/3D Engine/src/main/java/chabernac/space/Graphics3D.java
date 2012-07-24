@@ -29,6 +29,7 @@ import chabernac.space.shading.GouroudShading;
 import chabernac.space.shading.iVertexShader;
 import chabernac.space.texture.Texture2;
 import chabernac.space.texture.TextureImage;
+import chabernac.utils.i3DGraphics;
 
 public class Graphics3D{
   public static enum VertextShader{FLAT, GOUROUD};
@@ -55,11 +56,11 @@ public class Graphics3D{
   private boolean isDrawBumpVectors = false;
   private boolean isSingleFullRepaint = true;
 
-  private Graphics3D2D myGraphics3D2D = null;
+  private i3DGraphics myGraphics3D2D = null;
 
   private ExecutorService myService = Executors.newFixedThreadPool( 2 );
 
-  public Graphics3D(ScreenFrustrum aFrustrum, Point3D anEyePoint, Camera aCamera, World aWorld, Graphics3D2D aBuffer){
+  public Graphics3D(ScreenFrustrum aFrustrum, Point3D anEyePoint, Camera aCamera, World aWorld, i3DGraphics aBuffer){
     myFrustrum = aFrustrum;
     myEyePoint = anEyePoint;
     myCamera = aCamera;
@@ -538,7 +539,7 @@ public class Graphics3D{
     private int counter = 0;
     @Override
     public void pixelCalculated(Pixel aPixel) {
-      if(aPixel.uInt % 10 == 0 && aPixel.vInt % 10 == 0){
+      if(aPixel.u % 10 == 0 && aPixel.v % 10 == 0){
         GVector theCamNormalVector = aPixel.getNormal().multip(20);
 
         Point3D theCamPoint = aPixel.getCamPoint();

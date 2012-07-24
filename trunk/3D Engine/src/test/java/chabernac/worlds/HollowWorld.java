@@ -17,7 +17,6 @@ import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.util.concurrent.TimeUnit;
 
 import javax.swing.JButton;
 
@@ -140,7 +139,7 @@ public class HollowWorld extends DefaultExitFrame{
     theFrame.setLocation(new Point(200,200));
     theFrame.setVisible(true);
 
-    myKeyMapContainer.addKeyMap(new KeyMap(KeyEvent.VK_L, new DebugKeyCommand(theFrame.getGraphics3D().getBufferStrategy()), 2));
+    myKeyMapContainer.addKeyMap(new KeyMap(KeyEvent.VK_L, new DebugKeyCommand(), 2));
     myManager.addSyncronizedEvent(theFrame);
     myExitKeyCommand.setFullScreenComponent(theFrame);
     theFrame.addKeyListener(new KeyCommandListener(myKeyMapContainer));
@@ -412,11 +411,15 @@ public class HollowWorld extends DefaultExitFrame{
   }
 
   private class DebugKeyCommand extends KeyCommand{
-    private iBufferStrategy myBufferStrategy = null;
+//    private iBufferStrategy myBufferStrategy = null;
 
+    public DebugKeyCommand(){
+      super("Debug");
+    }
+    
     public DebugKeyCommand(iBufferStrategy aBuffer){
       super("Debug");
-      myBufferStrategy = aBuffer;
+//      myBufferStrategy = aBuffer;
     }
 
     public void keyPressed() {

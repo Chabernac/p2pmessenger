@@ -4,10 +4,10 @@ package chabernac.space;
 import java.util.ArrayList;
 
 public class TranslateManagerContainer {
-	private ArrayList myContainer = null;
+	private ArrayList<TranslateManager> myContainer = null;
 	
 	public TranslateManagerContainer(){
-		myContainer = new ArrayList();
+		myContainer = new ArrayList<TranslateManager>();
 	}
 	
 	public void addTranslateManager(TranslateManager aManager){

@@ -441,7 +441,7 @@ public class Polygon implements iTranslatable{
   public void setPixelShaders(iPixelShader[] anPixelShaders) {
     myPixelShaders = anPixelShaders;
   }
-
+  
   public List<Polygon> triangulate(){
     List<Polygon> thePolygons = new ArrayList<Polygon>();
     if(w.length > 3){
