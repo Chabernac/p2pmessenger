@@ -13,6 +13,7 @@ import chabernac.space.geom.Point2D;
 import chabernac.space.geom.Polygon;
 import chabernac.space.geom.Polygon2D;
 import chabernac.space.geom.VertexLine2D;
+import chabernac.space.shading.iPixelShader;
 
 public interface i3DGraphics {
   public void drawPolygon(Polygon2D aPolygon, Polygon anOrigPolygon);
@@ -26,4 +27,7 @@ public interface i3DGraphics {
   public void cycleDone();
   public void setPixelListener(iPixelListener anPixelListener);
   public Collection<DrawingRectangleContainer> getDrawingRectangles();
+  public void setDimensions(int aWidth, int aHeight);
+  public void setUsePartialClearing( boolean aUsePartialClearing );
+  public void setPixelShaders(iPixelShader[] aPixelShaders);
 }

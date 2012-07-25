@@ -394,10 +394,6 @@ public class Graphics3D{
     myVertexShaders = aVertexShaders;
   }
 
-  public iBufferStrategy getBufferStrategy(){
-    return myGraphics3D2D;
-  }
-
   public boolean isDrawTextureNormals() {
     return drawTextureNormals;
   }
