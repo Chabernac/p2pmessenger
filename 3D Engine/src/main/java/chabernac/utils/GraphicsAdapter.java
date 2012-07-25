@@ -6,12 +6,16 @@ package chabernac.utils;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.util.Collection;
 
+import chabernac.space.buffer.DrawingRectangleContainer;
 import chabernac.space.buffer.Graphics3D2D;
+import chabernac.space.buffer.iPixelListener;
 import chabernac.space.geom.Point2D;
 import chabernac.space.geom.Polygon;
 import chabernac.space.geom.Polygon2D;
 import chabernac.space.geom.VertexLine2D;
+import chabernac.space.shading.iPixelShader;
 
 public class GraphicsAdapter implements i3DGraphics {
   private Graphics myGraphics;
@@ -68,5 +72,37 @@ public class GraphicsAdapter implements i3DGraphics {
   @Override
   public void clear() {
     my3D2DGraphics.clear();
+  }
+
+  @Override
+  public void cycleDone() {
+    my3D2DGraphics.cycleDone();
+    
+  }
+
+  @Override
+  public void setPixelListener( iPixelListener anPixelListener ) {
+    my3D2DGraphics.setPixelListener( anPixelListener );
+    
+  }
+
+  @Override
+  public Collection<DrawingRectangleContainer> getDrawingRectangles() {
+    return my3D2DGraphics.getDrawingRectangles();
+  }
+
+  @Override
+  public void setDimensions( int aWidth, int aHeight ) {
+    my3D2DGraphics.setDimensions( aWidth, aHeight );
+  }
+
+  @Override
+  public void setUsePartialClearing( boolean aUsePartialClearing ) {
+    my3D2DGraphics.setUsePartialClearing( aUsePartialClearing );
+  }
+
+  @Override
+  public void setPixelShaders( iPixelShader[] aPixelShaders ) {
+    my3D2DGraphics.setPixelShaders( aPixelShaders );
   }
 }
