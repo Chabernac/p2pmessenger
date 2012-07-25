@@ -494,11 +494,11 @@ public class Graphics3D{
     drawLightSources = aDrawLightSources;
   }
 
-  public Graphics3D2D getGraphics3D2D() {
+  public i3DGraphics getGraphics3D2D() {
     return myGraphics3D2D;
   }
 
-  public void setGraphics3D2D( Graphics3D2D aGraphics3d2d ) {
+  public void setGraphics3D2D( i3DGraphics aGraphics3d2d ) {
     myGraphics3D2D = aGraphics3d2d;
   }
 
