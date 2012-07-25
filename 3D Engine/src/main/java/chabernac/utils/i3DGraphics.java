@@ -5,7 +5,10 @@
 package chabernac.utils;
 
 import java.awt.Color;
+import java.util.Collection;
 
+import chabernac.space.buffer.DrawingRectangleContainer;
+import chabernac.space.buffer.iPixelListener;
 import chabernac.space.geom.Point2D;
 import chabernac.space.geom.Polygon;
 import chabernac.space.geom.Polygon2D;
@@ -21,4 +24,6 @@ public interface i3DGraphics {
   public void setBackGroundColor(int aBackGroundColor);
   public void clear();
   public void cycleDone();
+  public void setPixelListener(iPixelListener anPixelListener);
+  public Collection<DrawingRectangleContainer> getDrawingRectangles();
 }
