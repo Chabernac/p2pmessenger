@@ -105,4 +105,24 @@ public class GraphicsAdapter implements i3DGraphics {
   public void setPixelShaders( iPixelShader[] aPixelShaders ) {
     my3D2DGraphics.setPixelShaders( aPixelShaders );
   }
+
+  @Override
+  public void drawOval( int x, int y, int width, int height ) {
+    myGraphics.drawOval( x, y, width, height );
+  }
+
+  @Override
+  public void drawImage( long aCycle ) {
+    my3D2DGraphics.drawImage( aCycle, myGraphics );
+  }
+
+  @Override
+  public void setSingleFullRepaint( boolean aB ) {
+    my3D2DGraphics.setSingleFullRepaint( aB );
+  }
+
+  @Override
+  public void setUseClipping( boolean aB ) {
+    my3D2DGraphics.setUseClipping( aB );
+  }
 }

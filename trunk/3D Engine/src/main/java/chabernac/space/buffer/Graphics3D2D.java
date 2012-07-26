@@ -11,6 +11,7 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import java.util.Collection;
@@ -46,6 +47,8 @@ public class Graphics3D2D implements iBufferStrategy {
   private iPixelShader[] myPixelShaders = null;
 
   private boolean isUsePartialClearing = true;
+  private boolean isSingleFullRepaint = true;
+  private boolean isUseClipping = true;
 
   public static enum Shader{TEXTURE, BUMP, DEPTH, PHONG, SPECULAR};
   
@@ -357,6 +360,39 @@ public class Graphics3D2D implements iBufferStrategy {
       Vertex2D.freeInstance(theScanLine[1]);
     }
   }
+  
+  public void drawImage(long aCycle, Graphics aGraphics){
+    Rectangle theOrigClip = aGraphics.getClipBounds();
+
+    if(!isSingleFullRepaint && isUseClipping && !(aCycle >> 8 << 8 == aCycle)){
+      Collection<DrawingRectangleContainer> theDrawingAreas = getDrawingRectangles();
+      for(DrawingRectangleContainer theRect : theDrawingAreas){
+        DrawingRectangle theSpanningRect = theRect.getSpanningRect();
+        aGraphics.setClip( theSpanningRect.getX(), theSpanningRect.getY(), theSpanningRect.getWidth() + 1, theSpanningRect.getHeight() + 1);
+        aGraphics.drawImage(myImage, 0,0, null);
+      }  
+    } else {
+      aGraphics.drawImage(myImage, 0,0, null);
+      //calculate the frame rate
+    }
+    aGraphics.setClip( theOrigClip );
+  }
+  
+  public boolean isSingleFullRepaint() {
+    return isSingleFullRepaint;
+  }
+
+  public void setSingleFullRepaint(boolean anIsSingleFullRepaint) {
+    isSingleFullRepaint = anIsSingleFullRepaint;
+  }
+  
+  public boolean isUseClipping() {
+    return isUseClipping;
+  }
+
+  public void setUseClipping( boolean aUseClipping ) {
+    isUseClipping = aUseClipping;
+  }
 
   public Font getFont() {
     return myFont;
@@ -458,6 +494,4 @@ public class Graphics3D2D implements iBufferStrategy {
       myPixelShaders = aPixelShaders;
     }
   }
-
-
 }

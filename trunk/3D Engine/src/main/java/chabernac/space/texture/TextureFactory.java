@@ -21,7 +21,7 @@ public class TextureFactory {
       BufferedImage theImage = ImageFactory.loadImage(aTexture, isTransparent);
 
       TextureImage theTextureImage = new TextureImage(theImage);
-      theTextureImage.setUseBilinearInterpolation( true );
+      theTextureImage.setUseBilinearInterpolation( false );
       MAP.put(aTexture, theTextureImage);
     }
     return (TextureImage)MAP.get(aTexture);
