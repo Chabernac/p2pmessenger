@@ -162,16 +162,16 @@ public class AXACube extends AbstractWorld implements iSynchronizedEvent{
 //    myWorld.addShape(theWindow);
 //    
     
-    try{
-    theShape = ShapeFactory.makeSinglePolygonShape(new Point3D(-1000,1000,500), 3000,3000);
-    theShape.setTexture("metal006");
-    theShape.triangulate();
-    theShape.setDoubleSided(true);
-    
-    myWorld.addShape(theShape);
-    }catch(Exception e){
-      e.printStackTrace();
-    }
+//    try{
+//    theShape = ShapeFactory.makeSinglePolygonShape(new Point3D(-1000,1000,500), 3000,3000);
+//    theShape.setTexture("metal006");
+//    theShape.triangulate();
+//    theShape.setDoubleSided(true);
+//    
+//    myWorld.addShape(theShape);
+//    }catch(Exception e){
+//      e.printStackTrace();
+//    }
     
     
     
@@ -194,7 +194,7 @@ public class AXACube extends AbstractWorld implements iSynchronizedEvent{
 //    theShape = ShapeFactory.makeCube(new Point3D(-100,50,1000), 94,94,94);
 //    theShape.setColor(new Color(255,0,0));
 //    theShape.setTexture("axa");
-    myWorld.addShape(theShape);
+//    myWorld.addShape(theShape);
 //    
 //    AxisRotationManager theManager = new AxisRotationManager(new Line3D(new Point3D(0,0,0), new GVector(0,1,0)), Math.PI/180);
 //    theManager.addTranslatable(theShape);
