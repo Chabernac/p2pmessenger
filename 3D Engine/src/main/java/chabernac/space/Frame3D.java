@@ -173,7 +173,7 @@ public class Frame3D extends JFrame implements iSynchronizedEvent{
    */
 
   public boolean executeEvent(long aCounter) {
-    myGraphics.drawWorld(myG, aCounter);
+    myGraphics.drawWorld(aCounter);
     return true;
     //myStrategy.show();
   }

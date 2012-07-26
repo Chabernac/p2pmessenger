@@ -2,17 +2,12 @@ package chabernac.space;
 
 import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.Image;
-import java.awt.Rectangle;
-import java.util.Collection;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import chabernac.space.buffer.DrawingRectangle;
 import chabernac.space.buffer.DrawingRectangleContainer;
-import chabernac.space.buffer.Graphics3D2D;
 import chabernac.space.buffer.Pixel;
-import chabernac.space.buffer.iBufferStrategy;
 import chabernac.space.buffer.iPixelListener;
 import chabernac.space.geom.GVector;
 import chabernac.space.geom.GeomFunctions;
@@ -52,9 +47,8 @@ public class Graphics3D{
   private boolean drawTextureCoordinates = false;
   private boolean drawCamZ = false;
   private boolean isShowDrawingAreas = false;
-  private boolean isUseClipping = true;
   private boolean isDrawBumpVectors = false;
-  private boolean isSingleFullRepaint = true;
+  
 
   private i3DGraphics myGraphics3D2D = null;
 
@@ -68,10 +62,10 @@ public class Graphics3D{
     myGraphics3D2D = aBuffer;
   }
 
-  public void drawPoint(Point3D aPoint, Graphics g){
+  public void drawPoint(Point3D aPoint){
     //Debug.log(this,"Drawing point: " + aPoint.toString());
     Point2D thePoint = GeomFunctions.cam2Screen(aPoint, myEyePoint);
-    g.drawOval((int)thePoint.x, (int)thePoint.y, 1, 1);
+    myGraphics3D2D.drawOval((int)thePoint.x, (int)thePoint.y, 1, 1);
   }
 
   public void drawLine(Point3D aStartPoint, Point3D anEndPoint, int aColor){
@@ -138,7 +132,7 @@ public class Graphics3D{
     }
   }
 
-  public void drawShape(Shape aShape, Graphics g){
+  public void drawShape(Shape aShape){
     if(!aShape.visible) return;
 
     for(int i=0;i<aShape.mySize;i++){
@@ -153,7 +147,7 @@ public class Graphics3D{
         }
 
         if(drawRibs){
-          g.setColor(Color.black);
+          myGraphics3D2D.setColor(Color.black);
           //Draw the outlines of the polygons
           drawPolygon(aShape.myPolygons[i]);
         }
@@ -222,10 +216,10 @@ public class Graphics3D{
     return thePolygon;
   }
 
-  public void drawPointShape(PointShape aShape, Graphics g){
-    g.setColor(aShape.myColor);
+  public void drawPointShape(PointShape aShape){
+    myGraphics3D2D.setColor(aShape.myColor);
     for(int i=0;i<aShape.myCamSize;i++){
-      drawPoint(aShape.c[i], g);
+      drawPoint(aShape.c[i]);
     }
   }
 
@@ -262,7 +256,7 @@ public class Graphics3D{
     g.fillPolygon(xPoints, yPoints, aPolygon.myCamSize);
   }
 
-  public void drawWorld(Graphics aG, long aCycle){
+  public void drawWorld(long aCycle){
     myGraphics3D2D.setBackGroundColor(myBackGroundColor);
 
     myGraphics3D2D.clear();
@@ -279,66 +273,48 @@ public class Graphics3D{
     }
 
     for(int i=myWorld.myShapes.length - 1;i>=0;i--){
-      drawShape(myWorld.myShapes[i], aG);
+      drawShape(myWorld.myShapes[i]);
     }
 
     if(drawWorldOrigin) drawWorldAxis();
 
-    drawImage(aG, aCycle);
+    myGraphics3D2D.drawImage(aCycle);
 
     for(int i=myWorld.myPointShapes.length - 1;i>=0;i--){
-      drawPointShape(myWorld.myPointShapes[i], aG);
+      drawPointShape(myWorld.myPointShapes[i]);
     }
 
     if(drawLightSources){
       for(LightSource theLightSource : myWorld.lightSources){
-        drawLightSource( theLightSource, aG );
+        drawLightSource( theLightSource );
       }
     }
 
-    if(isShowDrawingAreas) showDrawingAreas(aG);
+    if(isShowDrawingAreas) showDrawingAreas();
 
     myGraphics3D2D.cycleDone();
 
-    isSingleFullRepaint = false;
+    myGraphics3D2D.setSingleFullRepaint( false );
   }
 
-  private void drawImage(Graphics aG, long aCycle){
-    Rectangle theOrigClip = aG.getClipBounds();
-
-    if(!isSingleFullRepaint && isUseClipping && !(aCycle >> 8 << 8 == aCycle)){
-      Image theImage = myGraphics3D2D.getImage();
-      Collection<DrawingRectangleContainer> theDrawingAreas = myGraphics3D2D.getDrawingRectangles();
-      for(DrawingRectangleContainer theRect : theDrawingAreas){
-        DrawingRectangle theSpanningRect = theRect.getSpanningRect();
-        aG.setClip( theSpanningRect.getX(), theSpanningRect.getY(), theSpanningRect.getWidth() + 1, theSpanningRect.getHeight() + 1);
-        aG.drawImage(theImage, 0,0, null);
-      }  
-    } else {
-      aG.drawImage(myGraphics3D2D.getImage(), 0,0, null);
-      //calculate the frame rate
-    }
-    aG.setClip( theOrigClip );
-  }
-
-  private void showDrawingAreas(Graphics aG){
+  private void showDrawingAreas(){
     for(DrawingRectangleContainer theRectContainer : myGraphics3D2D.getDrawingRectangles()){
       //      aG.setColor( Color.red );
       //      DrawingRectangle theClaeringRect = theRectContainer.getClearingRect();
       //      aG.drawRect( theClaeringRect.getX(), theClaeringRect.getY(), theClaeringRect.getWidth(), theClaeringRect.getHeight());
 
-      aG.setColor( Color.blue);
+      myGraphics3D2D.setColor( Color.blue);
       DrawingRectangle theDrawingRect = theRectContainer.getDrawingRect();
-      aG.drawRect( theDrawingRect.getX(), theDrawingRect.getY(), theDrawingRect.getWidth(), theDrawingRect.getHeight());
+      myGraphics3D2D.drawRect( theDrawingRect.getX(), theDrawingRect.getY(), theDrawingRect.getWidth(), theDrawingRect.getHeight());
     }
   }
 
 
-  private void drawLightSource(LightSource source, Graphics g) {
+  private void drawLightSource(LightSource source) {
     Point3D theLocation = source.getCamLocation();
     Point2D thePoint = GeomFunctions.cam2Screen(theLocation, myEyePoint);
-    g.setColor(Color.white);
-    g.fillOval((int)thePoint.x - 5, (int)thePoint.y - 5, 10,10);
+    myGraphics3D2D.setColor(Color.white);
+    myGraphics3D2D.fillOval((int)thePoint.x - 5, (int)thePoint.y - 5, 10,10);
   }
 
   public boolean isBackFacing(Polygon aPolygon){
@@ -474,13 +450,6 @@ public class Graphics3D{
     isShowDrawingAreas = aShowDrawingAreas;
   }
 
-  public boolean isUseClipping() {
-    return isUseClipping;
-  }
-
-  public void setUseClipping( boolean aUseClipping ) {
-    isUseClipping = aUseClipping;
-  }
 
   public boolean isDrawLightSources() {
     return drawLightSources;
@@ -506,13 +475,6 @@ public class Graphics3D{
     isDrawBumpVectors = anIsDrawBumpVectors;
   }
 
-  public boolean isSingleFullRepaint() {
-    return isSingleFullRepaint;
-  }
-
-  public void setSingleFullRepaint(boolean anIsSingleFullRepaint) {
-    isSingleFullRepaint = anIsSingleFullRepaint;
-  }
 
   public boolean isDrawWorldOrigin() {
     return drawWorldOrigin;
@@ -543,6 +505,14 @@ public class Graphics3D{
         drawLine(theCamPoint, theCamPoint.addition(theCamNormalVector), COLOR);
       }
     }
+  }
+
+  public void setSingleFullRepaint( boolean aB ) {
+    myGraphics3D2D.setSingleFullRepaint(aB);
+  }
+
+  public void setUseClipping( boolean aB ) {
+    myGraphics3D2D.setUseClipping(aB);
   }
 
 }

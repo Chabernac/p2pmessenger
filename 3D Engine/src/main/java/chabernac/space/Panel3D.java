@@ -1,5 +1,6 @@
 package chabernac.space;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -30,6 +31,7 @@ public class Panel3D extends JPanel implements  iSynchronizedEvent, MouseListene
   private Graphics3D myGraphics = null;
   private Camera myCamera = null;
   private Graphics2D myG = null;
+  private GraphicsAdapter myGraphicsAdapter;
 
   public Panel3D(World aWorld, Camera aCamera, Dimension aDimension){
     super(true);
@@ -61,11 +63,12 @@ public class Panel3D extends JPanel implements  iSynchronizedEvent, MouseListene
 
   protected void setupGraphics3d(){
     Point3D theEyePoint = new Point3D(getWidth()/2,getHeight()/2,(getWidth() + getHeight())/2);
+    myGraphicsAdapter  = new GraphicsAdapter( myG, new Graphics3D2D(myWorld, getWidth(), getHeight())); 
     myGraphics = new Graphics3D(new ScreenFrustrum(theEyePoint, new Dimension(getWidth(),getHeight()), NEAR_CLIPPING_PLANE, FAR_CLIPPING_PLANE),
         theEyePoint,
         myCamera,
         myWorld,
-        new GraphicsAdapter( myG, new Graphics3D2D(myWorld, getWidth(), getHeight())));
+        myGraphicsAdapter);
     myGraphics.setVertexShaders(new iVertexShader[]{new GouroudShading((float)0.4)});
   }
 
@@ -132,9 +135,12 @@ public class Panel3D extends JPanel implements  iSynchronizedEvent, MouseListene
           requestFocus();
         }
         
+        myGraphicsAdapter.setGraphics( g );
+        
+        
         //theGraphics.clearRect(0,0,getWidth(),getHeight());
         //super.paint(theGraphics);
-        myGraphics.drawWorld(g, anCounter);
+        myGraphics.drawWorld(anCounter);
         
       }
     }catch(Exception e){

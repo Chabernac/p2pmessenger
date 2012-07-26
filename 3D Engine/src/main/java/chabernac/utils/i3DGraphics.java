@@ -21,6 +21,7 @@ public interface i3DGraphics {
   public void drawText(Point2D aPoint, String aText, Color aColor);
   public void drawRect(int x, int y, int width, int height);
   public void fillOval(int x, int y, int width, int height);
+  public void drawOval(int x, int y, int width, int height);
   public void setColor(Color c);
   public void setBackGroundColor(int aBackGroundColor);
   public void clear();
@@ -30,4 +31,7 @@ public interface i3DGraphics {
   public void setDimensions(int aWidth, int aHeight);
   public void setUsePartialClearing( boolean aUsePartialClearing );
   public void setPixelShaders(iPixelShader[] aPixelShaders);
+  public void drawImage(long aCycle);
+  public void setSingleFullRepaint( boolean aB );
+  public void setUseClipping( boolean aB );
 }
