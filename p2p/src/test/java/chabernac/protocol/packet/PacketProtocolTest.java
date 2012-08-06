@@ -9,6 +9,8 @@ import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
@@ -66,13 +68,16 @@ public class PacketProtocolTest extends AbstractProtocolTest {
       
       PacketListener theSenderListener = new PacketListener();
       PacketListener theReceiverListener = new PacketListener();
+      theReceiverListener.setReceivedCountDownLatch(new CountDownLatch(1));
+      theSenderListener.setDeliveryCountDownLatch(new CountDownLatch(1));
       
       thePacketProtocol1.addPacketListenr( "TEST", theSenderListener );
       thePacketProtocol2.addPacketListenr( "TEST", theReceiverListener );
       Packet thePacket = new Packet( "2", "testid", "TEST", "testbytes", 2, true );
       thePacketProtocol1.sendPacket( thePacket );
       
-      Thread.sleep( 2000 );
+      theReceiverListener.getReceivedCountDownLatch().await(5, TimeUnit.SECONDS);
+      theSenderListener.getDeliveryCountDownLatch().await(5, TimeUnit.SECONDS);
       
       assertEquals( 1, theReceiverListener.getReceivedPackets().size() );
       assertEquals( "testid", theReceiverListener.getReceivedPackets().get( 0 ).getId());
@@ -214,20 +219,51 @@ public class PacketProtocolTest extends AbstractProtocolTest {
     private List<String> myDeliveredPackets = new ArrayList<String>();
     private List<String> myFailedPackets = new ArrayList<String>();
     private List<Packet> myReceivedPackets = new ArrayList<Packet>();
+    
+    private CountDownLatch myReceivedCountDownLatch;
+    private CountDownLatch myDeliveryCountDownLatch;
+    private CountDownLatch myFailedCountDownLatch;
+    
+    public CountDownLatch getReceivedCountDownLatch() {
+      return myReceivedCountDownLatch;
+    }
+
+    public void setReceivedCountDownLatch(CountDownLatch aReceivedCountDownLatch) {
+      myReceivedCountDownLatch = aReceivedCountDownLatch;
+    }
+
+    public CountDownLatch getDeliveryCountDownLatch() {
+      return myDeliveryCountDownLatch;
+    }
+
+    public void setDeliveryCountDownLatch(CountDownLatch aDeliveryCountDownLatch) {
+      myDeliveryCountDownLatch = aDeliveryCountDownLatch;
+    }
+
+    public CountDownLatch getFailedCountDownLatch() {
+      return myFailedCountDownLatch;
+    }
+
+    public void setFailedCountDownLatch(CountDownLatch aFailedCountDownLatch) {
+      myFailedCountDownLatch = aFailedCountDownLatch;
+    }
 
     @Override
     public void packetDelivered( String aPacketId ) {
       myDeliveredPackets.add( aPacketId );
+      if(myDeliveryCountDownLatch != null) myDeliveryCountDownLatch.countDown();
     }
 
     @Override
     public void packetDeliveryFailed( String aPacketId ) {
       myFailedPackets.add(aPacketId);
+      if(myFailedCountDownLatch != null) myFailedCountDownLatch.countDown();
     }
 
     @Override
     public void packetReceived( Packet aPacket ) {
       myReceivedPackets.add(aPacket);
+      if(myReceivedCountDownLatch != null) myReceivedCountDownLatch.countDown();
     }
     
     public List<String> getDeliveredPackets(){
