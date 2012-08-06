@@ -72,7 +72,7 @@ public class WebPeerProtocolTest extends AbstractProtocolTest {
 
       theServer1.start();
       theServer2.start();
-      Thread.sleep( 1000 );
+      Thread.sleep( 3000 );
 
       assertTrue( theWebServer.isRunning() );
 

@@ -329,6 +329,18 @@ public class RoutingTable implements Iterable< RoutingTableEntry >, Serializable
   private Map< String, RoutingTableEntry > copyOfRoutingTable(){
     return new HashMap< String, RoutingTableEntry >(myRoutingTable);
   }
+  
+  public boolean containsEntryForPeer(String aPeerId, int aTimeoutInSeconds){
+    try {
+      getEntryForPeer(aPeerId, aTimeoutInSeconds);
+    } catch (UnknownPeerException e) {
+      return false;
+    }
+    //take a copy and then test it for the key
+    //this way we can not have concurrent modification errors
+    //and we avoid deadlocks because there is no need for synchronization
+    return copyOfRoutingTable().containsKey(aPeerId);
+  }
 
   public boolean containsEntryForPeer(String aPeerId){
     //take a copy and then test it for the key
