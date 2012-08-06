@@ -20,23 +20,30 @@ public class SimpleNetworkInterface implements Serializable, iCommunicationInter
   private final List<String> myIp;
   private final String myMACAddress;
   private final String myName;
+  private final boolean isLoopBack;
   
-  public SimpleNetworkInterface ( String aName, byte[] aMacAddress, String... anIp ) {
+  public SimpleNetworkInterface ( String aName, boolean isLoopBack, byte[] aMacAddress, String... anIp ) {
     super();
     myIp = Arrays.asList( anIp );
     myMACAddress = getMACString( aMacAddress );
     myName = aName;
+    this.isLoopBack = isLoopBack;
   }
   
-  public SimpleNetworkInterface ( String aName, String aMacAddress , String...anIp ) {
+  public SimpleNetworkInterface ( String aName, boolean isLoopBack, String aMacAddress , String...anIp ) {
     super();
     myIp = Arrays.asList( anIp );
     myMACAddress = aMacAddress;
     myName = aName;
+    this.isLoopBack = isLoopBack;
   }
   
   public static SimpleNetworkInterface createFromIpList(String aName, String... anIpList){
-    return new SimpleNetworkInterface( aName, (String)null, anIpList );
+    return new SimpleNetworkInterface( aName, false, (String)null, anIpList );
+  }
+  
+  public static SimpleNetworkInterface createForLoopBack(String aName){
+    return new SimpleNetworkInterface( aName, true, (String)null, "127.0.0.1/8" );
   }
 
   public String getName() {
@@ -99,6 +106,10 @@ public class SimpleNetworkInterface implements Serializable, iCommunicationInter
   public String getId() {
     if(myMACAddress != null) return myMACAddress;
     return myName;
+  }
+
+  public boolean isLoopBack() {
+    return isLoopBack;
   }
   
 }
