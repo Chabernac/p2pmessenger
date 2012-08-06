@@ -22,7 +22,7 @@ public class PeerToWebSender {
 //  private static int LOGCOUNTER = 0;
 
   public PeerSenderReply sendMessageTo(AbstractPeer aSendingPeer, WebPeer aWebPeer, String aMessage, int aTimeoutInSeconds) throws IOException{
-    synchronized (aWebPeer.getPeerId()) {
+//    synchronized (aWebPeer.getPeerId()) {
 
 //      long t1 = System.currentTimeMillis();
 //      LOGGER.debug("Entering peer to web sender for message '" + aMessage + "' logcounter: " + LOGCOUNTER++);
@@ -55,7 +55,7 @@ public class PeerToWebSender {
         theConnectionHelper.close();
       }
     }
-  }
+//  }
   /*
   public String sendMessageTo(AbstractPeer aSendingPeer, WebPeer aWebPeer, String aMessage, int aTimeoutInSeconds) throws IOException{
     long t1 = System.currentTimeMillis();
