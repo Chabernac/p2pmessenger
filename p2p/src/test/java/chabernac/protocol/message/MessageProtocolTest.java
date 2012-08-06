@@ -15,6 +15,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 
+import chabernac.io.DummyNetworkInterface;
 import chabernac.protocol.AbstractProtocolTest;
 import chabernac.protocol.P2PServerFactory.ServerMode;
 import chabernac.protocol.P2PServerFactoryException;
@@ -31,7 +32,6 @@ import chabernac.protocol.routing.RoutingTableEntry;
 import chabernac.protocol.routing.SocketPeer;
 import chabernac.protocol.routing.UnknownPeerException;
 import chabernac.testingutils.MessageCounterListener;
-import chabernac.tools.DummyNetworkInterface;
 
 /**
  * @deprecated

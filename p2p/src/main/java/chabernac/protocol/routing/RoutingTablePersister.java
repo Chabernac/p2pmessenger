@@ -49,7 +49,7 @@ public class RoutingTablePersister implements iObjectPersister<RoutingTable> {
         theSocketPeer.setPort( Integer.parseInt( thePeerVars[1] ) );
         List<SimpleNetworkInterface> theHosts = new ArrayList< SimpleNetworkInterface >();
         for(int i=2;i<thePeerVars.length;i++){
-          theHosts.add(new SimpleNetworkInterface(null, thePeerVars[i]));
+          theHosts.add(new SimpleNetworkInterface(null, false, thePeerVars[i]));
         }
         theSocketPeer.setHosts( theHosts );
       }

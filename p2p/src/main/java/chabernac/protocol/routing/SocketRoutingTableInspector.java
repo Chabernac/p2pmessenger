@@ -63,7 +63,7 @@ public class SocketRoutingTableInspector implements iRoutingTableInspector {
             }
           }
           if(theNewIps.size() > 0){
-            theNewHosts.add( new SimpleNetworkInterface( theHost.getName(), theHost.getMACAddress(), theNewIps.toArray(new String[]{}) ));
+            theNewHosts.add( new SimpleNetworkInterface( theHost.getName(), theHost.isLoopBack(), theHost.getMACAddress(), theNewIps.toArray(new String[]{}) ));
           }
         }
         AbstractPeer theNewPeer;

@@ -12,7 +12,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import junit.framework.TestCase;
-import chabernac.tools.DummyNetworkInterface;
+import chabernac.io.DummyNetworkInterface;
 
 public class RoutingTableTest extends TestCase {
   

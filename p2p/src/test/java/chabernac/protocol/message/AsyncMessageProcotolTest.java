@@ -9,6 +9,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 
+import chabernac.io.DummyNetworkInterface;
 import chabernac.protocol.AbstractProtocolTest;
 import chabernac.protocol.P2PServerFactoryException;
 import chabernac.protocol.ProtocolContainer;
@@ -22,7 +23,6 @@ import chabernac.protocol.routing.SocketPeer;
 import chabernac.protocol.routing.UnknownPeerException;
 import chabernac.testingutils.MessageCounterListener;
 import chabernac.tools.BlockingProtocol;
-import chabernac.tools.DummyNetworkInterface;
 
 public class AsyncMessageProcotolTest extends AbstractProtocolTest {
   private static Logger LOGGER = Logger.getLogger(AsyncMessageProcotolTest.class);
