@@ -9,6 +9,7 @@ import java.net.URL;
 
 import junit.framework.TestCase;
 import chabernac.io.Base64ObjectStringConverter;
+import chabernac.io.DummyNetworkInterface;
 import chabernac.io.iObjectStringConverter;
 import chabernac.protocol.message.Message;
 import chabernac.protocol.routing.RoutingTable;

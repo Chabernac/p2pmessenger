@@ -9,7 +9,7 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
-import chabernac.tools.DummyNetworkInterface;
+import chabernac.io.DummyNetworkInterface;
 
 import junit.framework.TestCase;
 

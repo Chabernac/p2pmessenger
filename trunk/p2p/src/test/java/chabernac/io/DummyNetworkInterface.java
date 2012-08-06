@@ -1,4 +1,4 @@
-package chabernac.tools;
+package chabernac.io;
 
 import java.util.UUID;
 

@@ -13,8 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import junit.framework.TestCase;
+import chabernac.io.DummyNetworkInterface;
 import chabernac.io.iObjectPersister;
-import chabernac.tools.DummyNetworkInterface;
 import chabernac.tools.SimpleNetworkInterface;
 
 public class RoutingTablePersisterTest extends TestCase {
@@ -31,24 +31,24 @@ public class RoutingTablePersisterTest extends TestCase {
     SocketPeer thePeer1 = new SocketPeer("1");
     thePeer1.setTemporaryPeer( false );
     List<SimpleNetworkInterface> theList = new ArrayList< SimpleNetworkInterface >();
-    theList.add( new SimpleNetworkInterface("interface", "x20d1148") );
-    theList.add( new SimpleNetworkInterface("interface", "localhost") );
+    theList.add( new SimpleNetworkInterface("interface", false, "x20d1148") );
+    theList.add( new SimpleNetworkInterface("interface", true, "localhost") );
     thePeer1.setPort( RoutingProtocol.START_PORT );
     thePeer1.setHosts( theList );
     
     SocketPeer thePeer2 = new SocketPeer("2");
     thePeer2.setTemporaryPeer( false );
     List<SimpleNetworkInterface> theList2 = new ArrayList< SimpleNetworkInterface >();
-    theList2.add( new SimpleNetworkInterface("interface", "x20d1149") );
-    theList2.add( new SimpleNetworkInterface("interface", "localhost") );
+    theList2.add( new SimpleNetworkInterface("interface", false, "x20d1149") );
+    theList2.add( new SimpleNetworkInterface("interface", true, "localhost") );
     thePeer2.setPort( RoutingProtocol.START_PORT + 1);
     thePeer2.setHosts( theList2 );
     
     SocketPeer thePeer3 = new SocketPeer("3");
     thePeer3.setTemporaryPeer( true );
     List<SimpleNetworkInterface> theList3 = new ArrayList< SimpleNetworkInterface >();
-    theList3.add( new SimpleNetworkInterface("interface", "x20d1150") );
-    theList3.add( new SimpleNetworkInterface("interface", "localhost") );
+    theList3.add( new SimpleNetworkInterface("interface", false, "x20d1150") );
+    theList3.add( new SimpleNetworkInterface("interface", true, "localhost") );
     thePeer3.setPort( RoutingProtocol.START_PORT + 2 );
     thePeer3.setHosts( theList3 );
     
