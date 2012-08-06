@@ -116,7 +116,7 @@ public class NetTools {
         }
         
         if(theIpAddresses.size() > 0){
-          theIpList.add( new SimpleNetworkInterface(theInterface.getName(), theInterface.getHardwareAddress(), theIpAddresses.toArray(new String[]{})) );
+          theIpList.add( new SimpleNetworkInterface(theInterface.getName(), theInterface.isLoopback(), theInterface.getHardwareAddress(), theIpAddresses.toArray(new String[]{})) );
         }
       }
     }
@@ -133,8 +133,7 @@ public class NetTools {
         for(InterfaceAddress theAddress : theInterface.getInterfaceAddresses()){
           theIpAddresses.add(theAddress.getAddress().getHostAddress() + "/" + theAddress.getNetworkPrefixLength());
         }
-        
-        return  new SimpleNetworkInterface(theInterface.getName(), theInterface.getHardwareAddress(), theIpAddresses.toArray(new String[]{}));
+        return SimpleNetworkInterface.createForLoopBack( theInterface.getDisplayName() );
       }
     }
     return null;
@@ -146,7 +145,7 @@ public class NetTools {
       NetworkInterface theInterface = theInterfaces.nextElement();
         for(InterfaceAddress theAddress : theInterface.getInterfaceAddresses()){
           if(aLocalIp.equalsIgnoreCase( theAddress.getAddress().getHostAddress() )){
-            return new SimpleNetworkInterface(theInterface.getDisplayName(), theInterface.getHardwareAddress(), aLocalIp);
+            return new SimpleNetworkInterface(theInterface.getDisplayName(), theInterface.isLoopback(), theInterface.getHardwareAddress(), aLocalIp);
           }
       }
     }
