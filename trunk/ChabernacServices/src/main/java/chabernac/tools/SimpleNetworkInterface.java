@@ -97,7 +97,8 @@ public class SimpleNetworkInterface implements Serializable, iCommunicationInter
 
   @Override
   public String getId() {
-    return myName + "[" + myMACAddress + "]";
+    if(myMACAddress != null) return myMACAddress;
+    return myName;
   }
   
 }

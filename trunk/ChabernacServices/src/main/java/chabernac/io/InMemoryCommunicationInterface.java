@@ -7,7 +7,7 @@ public class InMemoryCommunicationInterface implements iCommunicationInterface {
   
   @Override
   public String getId() {
-    return "In JVM communication interface [" + myId + "]";
+    return myId;
   }
 
   @Override
