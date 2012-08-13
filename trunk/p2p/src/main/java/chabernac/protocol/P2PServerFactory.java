@@ -10,7 +10,6 @@ import chabernac.io.StreamSplittingServer;
 import chabernac.protocol.routing.JVMPeerSender;
 import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.RoutingTable;
-import chabernac.protocol.routing.SocketRoutingTableInspector;
 
 public class P2PServerFactory {
   public static enum ServerMode{SOCKET, WEB, SPLITTING_SOCKET, BOTH};
@@ -38,7 +37,7 @@ public class P2PServerFactory {
 
     try{
       RoutingProtocol theRoutingProtocol = (RoutingProtocol)aProtocolContainer.getProtocol( RoutingProtocol.ID );
-      theRoutingProtocol.setRoutingTableInspector( new SocketRoutingTableInspector(aProtocolContainer.getSessionData() ) );
+//      theRoutingProtocol.setRoutingTableInspector( new SocketRoutingTableInspector(aProtocolContainer.getSessionData() ) );
       
       addJVMPeerSender(aProtocolContainer);
 

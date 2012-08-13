@@ -8,7 +8,6 @@ import java.awt.BorderLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
-import java.net.URL;
 import java.util.UUID;
 
 import javax.swing.JFrame;
@@ -42,8 +41,6 @@ import chabernac.protocol.pominfoexchange.POMInfo;
 import chabernac.protocol.routing.PeerSender;
 import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.RoutingTable;
-import chabernac.protocol.routing.RoutingTableEntry;
-import chabernac.protocol.routing.WebPeer;
 import chabernac.protocol.userinfo.UserInfoPanel;
 import chabernac.protocol.userinfo.UserInfoProtocol;
 import chabernac.tools.PropertyMap;
