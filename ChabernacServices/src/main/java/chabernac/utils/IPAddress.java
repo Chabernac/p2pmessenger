@@ -18,7 +18,7 @@ public class IPAddress {
   public static enum IPClass{ A, B, C, UNKNOWN};
   private final int[] myParts = new int[4];
   private int myNetworkPrefixLength = -1;
-  private final static Pattern PATTERN = Pattern.compile( "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})(?:/(\\d{1,2}))?" );
+  private final static Pattern PATTERN = Pattern.compile( "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})(?:/(\\d{1,3}))?" );
 
   public static IPAddress getLocalIPAddress() throws InvalidIpAddressException{
     try{
