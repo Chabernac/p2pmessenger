@@ -13,8 +13,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.TableCellRenderer;
 
-import chabernac.protocol.routing.RoutingProtocol;
-
 public class WhoIsRunningPanel extends JPanel {
   /**
 	 * 
@@ -23,12 +21,15 @@ public class WhoIsRunningPanel extends JPanel {
 private final int myScanIntervalTimeoutInSeconds;
   private final WhoIsRunningTableModel myTableModel;
   private final WhoIsRunning myWhoIs;
+  private static int START_PORT = 12700;
+  private static int END_PORT = 12708;  
   
   public WhoIsRunningPanel(int anScanIntervalTimeoutInSeconds) {
     super();
+    
     myScanIntervalTimeoutInSeconds = anScanIntervalTimeoutInSeconds;
-    myTableModel = new WhoIsRunningTableModel(RoutingProtocol.START_PORT, RoutingProtocol.END_PORT);
-    myWhoIs = new WhoIsRunning(myTableModel, "localhost", RoutingProtocol.START_PORT, RoutingProtocol.END_PORT);
+    myTableModel = new WhoIsRunningTableModel(START_PORT, END_PORT);
+    myWhoIs = new WhoIsRunning(myTableModel, "localhost", START_PORT, END_PORT);
     buildGUI();
     startRefresh();
   }

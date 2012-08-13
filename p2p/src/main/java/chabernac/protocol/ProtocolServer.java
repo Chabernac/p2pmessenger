@@ -27,7 +27,6 @@ import chabernac.protocol.ServerInfo.Type;
 import chabernac.thread.DynamicSizeExecutor;
 import chabernac.util.concurrent.MonitorrableRunnable;
 import chabernac.util.concurrent.iRunnableListener;
-import chabernac.utils.IPAddress;
 import chabernac.utils.NetTools;
 
 public class ProtocolServer implements Runnable, iP2PServer{
@@ -198,8 +197,8 @@ public class ProtocolServer implements Runnable, iP2PServer{
           
           //untill we have found a better way to detect the netmask of the remote ip we will assume both hosts are on the same network
           //and thus have the same netmask.  so we use the local netmask and apply it to the remote ip
-          int theNetworkPrefixLength = IPAddress.getIPAddressForLocalIP(mySocket.getLocalAddress().getLocalHost().getHostAddress()).getNetworkPrefixLength();
-          myProtocol.getSessionData().putProperty( theSession, REMOTE_IP, mySocket.getInetAddress().getHostAddress()  + "/" + theNetworkPrefixLength);
+//          int theNetworkPrefixLength = IPAddress.getIPAddressForLocalIP(mySocket.getLocalAddress().getLocalHost().getHostAddress()).getNetworkPrefixLength();
+//          myProtocol.getSessionData().putProperty( theSession, REMOTE_IP, mySocket.getInetAddress().getHostAddress()  + "/" + theNetworkPrefixLength);
           myProtocol.getSessionData().putProperty( theSession, NETWORK_INTERFACE, NetTools.getNetworkInterfaceForLocalIP( mySocket.getLocalAddress().getHostAddress() ));
           String  theResult = myProtocol.handleCommand(theSession, theLine );
           //          LOGGER.debug("Sending result: '" + theResult + "'");
