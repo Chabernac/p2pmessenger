@@ -16,6 +16,7 @@ import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -151,10 +152,15 @@ public class SocketPeer extends AbstractPeer implements Serializable {
       try{
         ExecutorService theExecutorService =  Executors.newCachedThreadPool();
         final BlockingQueue<SocketProxy> theSocketQueue = new ArrayBlockingQueue<SocketProxy>( 1 );
+        final CyclicBarrier theBarrier = new CyclicBarrier( theHost.getIp().size() );
         for(final String theIp : theHost.getIp()){
           theExecutorService.execute( new Runnable(){
             public void run(){
               try{
+                //we use a barrier to make sure the connection attempts to all ip's are started simultaniously
+                //this will make sure that we will choose the fastest network interface in case when the remote
+                //peer is reachable trough different interfaces like wifi and wired network
+                theBarrier.await( 2, TimeUnit.SECONDS );
                 String theHostIP = theIp;
                 if(IPAddress.isIpAddress( theIp )){
                   theHostIP = new IPAddress(theIp).getIPAddressOnly();
@@ -165,7 +171,8 @@ public class SocketPeer extends AbstractPeer implements Serializable {
                   myHost.add( 0, theHost);
                 }
               }catch(Exception e){
-                LOGGER.error( "Error while checking out socket for ip '" + theIp + ":" + aPort + "'", e );
+//                LOGGER.error( "Error while checking out socket for ip '" + theIp + ":" + aPort + "'", e );
+                LOGGER.error( "Could not create socket for ip '" + theIp + ":" + aPort + "'" );
               }
               theCountDownLatch.countDown();
               if(theCountDownLatch.getCount() == 0){

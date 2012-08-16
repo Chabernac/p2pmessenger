@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.net.ConnectException;
 import java.net.InetSocketAddress;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -41,7 +42,7 @@ public class PeerToPeerSender {
       SocketProxy theSocket = aPeer.createSocket( aPeer.getPort() );
 
       if(theSocket == null) {
-        throw new IOException("Could not open socket to peer: " + aPeer.getPeerId() + " " + aPeer.getHosts() + ":" + aPeer.getPort());
+        throw new ConnectException("Could not open socket to peer: " + aPeer.getPeerId() + " " + aPeer.getHosts() + ":" + aPeer.getPort());
       }
 
       theRetryDecider.socketCreated();

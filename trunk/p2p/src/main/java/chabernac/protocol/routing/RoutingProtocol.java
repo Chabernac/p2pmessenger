@@ -11,6 +11,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.ConnectException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
@@ -536,7 +537,7 @@ public class RoutingProtocol extends Protocol {
       //TODO remove extensive logging
       //      try {
       //        if(aPeer.getPort() == RoutingProtocol.START_PORT && aPeer.getHosts().get( 0 ).equalsIgnoreCase( InetAddress.getLocalHost().getHostAddress() )){
-            LOGGER.error( "Error occured while contacting peer '" + aPeer.getPeerId() + "'");
+            LOGGER.error( "Error occured while contacting peer '" + aPeer.getPeerId() + "' at '" + aPeer.getEndPointRepresentation() + "'");
       //        }
       //      } catch ( UnknownHostException e1 ) {
       //        e1.printStackTrace();
@@ -742,7 +743,9 @@ public class RoutingProtocol extends Protocol {
       } catch ( Exception e ) {
         if(e.getMessage() != null && !e.getMessage().startsWith( "Simulate" )){
           //LOGGER.error( "Could not contact peer '" + thePeer.getPeerId() + "'", e );
-          LOGGER.error( "Could not exchange routing tables between '" + myLocalPeerId + "' and '" + thePeer.getPeerId() + "'", e );
+          if(e.getCause() != null && !(e.getCause() instanceof ConnectException)){
+            LOGGER.error( "Could not exchange routing tables between '" + myLocalPeerId + "' and '" + thePeer.getPeerId() + "'", e );
+          }
         }
         //set the peer entry itself to the max hop distance, only if the peer was previously direct reachable
         if(aRoutingTableEntry.getHopDistance() == 1) myRoutingTable.addRoutingTableEntry(aRoutingTableEntry.setHopDistance(RoutingTableEntry.MAX_HOP_DISTANCE));
