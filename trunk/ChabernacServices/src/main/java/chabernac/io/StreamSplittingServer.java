@@ -39,8 +39,6 @@ public class StreamSplittingServer implements iSocketSender{
   private final String LOCK_PREFIX = UUID.randomUUID().toString();
   private StreamSplitterPoolPanel myDebugPanel = null;
   
-  private final InMemoryCommunicationInterface myJVMCommunicationInterface = new InMemoryCommunicationInterface();
-
   public StreamSplittingServer ( iInputOutputHandler aInputOutputHandler, int aPort, boolean isFindUnusedPort, String anId ) {
     super();
     myInputOutputHandler = aInputOutputHandler;
@@ -201,7 +199,7 @@ public class StreamSplittingServer implements iSocketSender{
 
   private SocketSenderReply send(String anId, String aHost, int aPort, String aMessage) throws IOException{
     if(anId != null && anId.equals(myPool.getId())){
-      return new SocketSenderReply( myInputOutputHandler.handle(anId, aMessage), anId, myJVMCommunicationInterface);
+      return new SocketSenderReply( myInputOutputHandler.handle(anId, aMessage), anId, InMemoryCommunicationInterface.getInstance());
     }
 
     String theLock = LOCK_PREFIX + anId;
@@ -221,7 +219,7 @@ public class StreamSplittingServer implements iSocketSender{
       }
       
       if(anId.equals( myPool.getId() )){
-        return new SocketSenderReply(myInputOutputHandler.handle(anId, aMessage), anId, myJVMCommunicationInterface );
+        return new SocketSenderReply(myInputOutputHandler.handle(anId, aMessage), anId, InMemoryCommunicationInterface.getInstance() );
       } else if(myPool.contains( anId )){
         return new SocketSenderReply(myPool.send( anId, aMessage ), anId, NetTools.getNetworkInterfaceForLocalIP( mySockets.get( anId ).getLocalAddress().getHostAddress() ));
       }
