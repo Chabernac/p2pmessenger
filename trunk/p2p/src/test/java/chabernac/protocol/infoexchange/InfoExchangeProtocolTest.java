@@ -9,8 +9,6 @@ import java.util.Map;
 
 import junit.framework.TestCase;
 
-import org.apache.log4j.BasicConfigurator;
-
 import chabernac.protocol.facade.P2PFacade;
 import chabernac.protocol.facade.P2PFacadeException;
 import chabernac.protocol.pominfoexchange.POMInfo;

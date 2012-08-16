@@ -16,8 +16,6 @@ import java.net.UnknownHostException;
 
 import junit.framework.TestCase;
 
-import org.apache.log4j.BasicConfigurator;
-
 import chabernac.nserver.EchoProtocol;
 import chabernac.nserver.Server;
 import chabernac.utils.NetTools;

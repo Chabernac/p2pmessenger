@@ -238,12 +238,8 @@ public class ProtocolServer implements Runnable, iP2PServer{
     protected String getExtraInfo() {
       return mySocket.getInetAddress().getHostName() + ":" + mySocket.getPort();
     }
-
-    public ServerInfo getServerInfo(){
-      return myServerInfo;
-    }
   }
-
+  
   @Override
   public JPanel getDebuggingPanel() {
     return null;

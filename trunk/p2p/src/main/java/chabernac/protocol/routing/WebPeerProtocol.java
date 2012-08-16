@@ -13,10 +13,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.log4j.Logger;
 
 import chabernac.comet.CometEvent;
+import chabernac.io.HttpCommunicationInterface;
 import chabernac.protocol.IProtocol;
 import chabernac.protocol.Protocol;
 import chabernac.protocol.ProtocolContainer;
 import chabernac.protocol.ProtocolException;
+import chabernac.protocol.ProtocolServer;
 
 public class WebPeerProtocol extends Protocol{
   private static Logger LOGGER = Logger.getLogger(WebPeerProtocol.class);
@@ -148,7 +150,9 @@ public class WebPeerProtocol extends Protocol{
             List<CometEvent> theEvents = myWebPeer.waitForEvents(getRoutingTable().getLocalPeerId());
             
             for(CometEvent theEvent : theEvents){
-              String theResult = handleCommand(UUID.randomUUID().toString(), Input.EVENT.name() + " " + theEvent.getInput());
+              String theSession = UUID.randomUUID().toString();
+              getSessionData().putProperty( theSession, ProtocolServer.NETWORK_INTERFACE, HttpCommunicationInterface.getInstance());
+              String theResult = handleCommand(theSession, Input.EVENT.name() + " " + theEvent.getInput());
               theEvent.setOutput( theResult );
             }
           }catch(SocketException e){
