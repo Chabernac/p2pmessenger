@@ -301,7 +301,7 @@ public class RoutingProtocol extends Protocol {
       //by doing this we will avoid all peers to keep track of peer id's which will never occure again
       theLocalPeer.setTemporaryPeer( !isPersistRoutingTable );
 
-      RoutingTableEntry theLocalRoutingTableEntry = new RoutingTableEntry(theLocalPeer, 0, theLocalPeer, System.currentTimeMillis(), 0, new InMemoryCommunicationInterface());
+      RoutingTableEntry theLocalRoutingTableEntry = new RoutingTableEntry(theLocalPeer, 0, theLocalPeer, System.currentTimeMillis(), 0, InMemoryCommunicationInterface.getInstance());
       myRoutingTable.addRoutingTableEntry( theLocalRoutingTableEntry );
     }
 

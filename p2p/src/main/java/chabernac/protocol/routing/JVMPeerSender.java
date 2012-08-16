@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import chabernac.io.InMemoryCommunicationInterface;
+import chabernac.io.HttpCommunicationInterface;
 import chabernac.protocol.IProtocol;
 import chabernac.protocol.ProtocolServer;
 
@@ -15,7 +15,6 @@ public class JVMPeerSender {
   }
   
   private Map<String, IProtocol> myLocalJVMProtocols = new HashMap<String, IProtocol>();
-  private InMemoryCommunicationInterface myCommunicationInterface = new InMemoryCommunicationInterface();
   
   private Object LOCK = new Object();
   
@@ -49,10 +48,10 @@ public class JVMPeerSender {
     if(theProtocol == null) throw new IOException("No protocol for peer '" + aPeer + "'");
     
     String theSession = UUID.randomUUID().toString();
-    theProtocol.getSessionData().putProperty( theSession, ProtocolServer.NETWORK_INTERFACE, myCommunicationInterface);
+    theProtocol.getSessionData().putProperty( theSession, ProtocolServer.NETWORK_INTERFACE, HttpCommunicationInterface.getInstance());
     
     String theReply = theProtocol.handleCommand(theSession, aMessage);
-    return new PeerSenderReply( theReply, myCommunicationInterface );
+    return new PeerSenderReply( theReply, HttpCommunicationInterface.getInstance() );
   }
   
   public void clear(){

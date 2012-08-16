@@ -6,8 +6,6 @@ package chabernac.protocol;
 
 import junit.framework.TestCase;
 
-import org.apache.log4j.BasicConfigurator;
-
 import chabernac.protocol.list.ListProtocol;
 import chabernac.protocol.ping.PingProtocol;
 import chabernac.tools.PropertyMap;

@@ -2,11 +2,7 @@ package chabernac.protocol.packet;
 
 import java.io.IOException;
 import java.io.StreamCorruptedException;
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -19,7 +15,6 @@ import javax.sound.sampled.SourceDataLine;
 import org.apache.log4j.Logger;
 import org.xiph.speex.SpeexDecoder;
 
-import chabernac.utils.Buffer;
 import chabernac.utils.SimpleBuffer;
 
 public class MicrophonePacketPersister implements iDataPacketPersister {

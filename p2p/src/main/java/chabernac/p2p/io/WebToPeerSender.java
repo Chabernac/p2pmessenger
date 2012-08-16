@@ -19,7 +19,6 @@ import chabernac.protocol.routing.WebPeer;
 public class WebToPeerSender {
   private static Logger LOGGER = Logger.getLogger(WebToPeerSender.class);
   private Map<String, AtomicInteger> myPendingMessagesForPeer = Collections.synchronizedMap( new HashMap<String, AtomicInteger>());
-  private HttpCommunicationInterface myCommunicationInterface = new HttpCommunicationInterface();
 
   //TODO currently only 1 endpoint is allowed, so we make this method synchronized because otherwise
   //it might be that no endpoint is available
@@ -37,7 +36,7 @@ public class WebToPeerSender {
       LOGGER.debug("Setting event '" + theCometEvent.getId() + "' for end point '" + theEndPoint.getId() + "' endpointactive '" + theEndPoint.isActive() + "'");
       theEndPoint.addCometEvent(theCometEvent );
       String theReply = theCometEvent.getOutput(5000).replaceAll("\\{plus\\}", "+");
-      return new PeerSenderReply( theReply, myCommunicationInterface );
+      return new PeerSenderReply( theReply, HttpCommunicationInterface.getInstance() );
     }catch(Exception e){
       throw new IOException("Could not send message to peer '" + aPeer.getPeerId() + "' from webpeer '" + aSendingPeer.getPeerId() + "'", e);
     }finally{

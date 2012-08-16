@@ -39,7 +39,6 @@ public class ProtocolServlet extends HttpServlet {
 	private static final long serialVersionUID = -1872170586728725631L;
 	private static Logger LOGGER = Logger.getLogger(ProtocolServlet.class);
 	private AtomicLong myConcurrentRequestCounter = new AtomicLong(0);
-	private HttpCommunicationInterface myInterface = new HttpCommunicationInterface();
 
 	public void init() throws ServletException{
 		super.init();
@@ -105,7 +104,7 @@ public class ProtocolServlet extends HttpServlet {
 				String theURL = aRequest.getRequestURL().toString();
 				theURL = theURL.substring(0, theURL.indexOf("/", 7) + 1);
 				getSessionData().putProperty(theSession, "requestor.ip", aRequest.getRemoteAddr());
-				getSessionData().putProperty(theSession, ProtocolServer.NETWORK_INTERFACE, myInterface);
+				getSessionData().putProperty(theSession, ProtocolServer.NETWORK_INTERFACE, HttpCommunicationInterface.getInstance());
 //				getSessionData().putProperty(theSession, "requestor.url", theURL);
 //				LOGGER.debug("Remote ip '" + getSessionData().getProperty(theSession, "requestor.ip") + "'");
 //				LOGGER.debug("Remote url '" + getSessionData().getProperty(theSession, "requestor.url") + "'");

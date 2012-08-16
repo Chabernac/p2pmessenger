@@ -1,7 +1,5 @@
 package chabernac.protocol.encryption;
 
-import org.apache.log4j.BasicConfigurator;
-
 import chabernac.protocol.message.Message;
 import chabernac.protocol.routing.DummyPeer;
 import junit.framework.TestCase;

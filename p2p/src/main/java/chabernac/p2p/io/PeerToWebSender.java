@@ -18,7 +18,6 @@ import chabernac.protocol.routing.WebPeer;
 
 public class PeerToWebSender {
   private static Logger LOGGER = Logger.getLogger(PeerToWebSender.class);
-  private HttpCommunicationInterface myCommunicationInterface = new HttpCommunicationInterface();
 //  private static int LOGCOUNTER = 0;
 
   public PeerSenderReply sendMessageTo(AbstractPeer aSendingPeer, WebPeer aWebPeer, String aMessage, int aTimeoutInSeconds) throws IOException{
@@ -46,7 +45,7 @@ public class PeerToWebSender {
 //        long t4 = System.currentTimeMillis();
 //        LOGGER.debug("Reading from '" + aWebPeer.getURL()  + "' took " + (t4-t3) +  " ms");
 
-        return new PeerSenderReply( theLine, myCommunicationInterface);
+        return new PeerSenderReply( theLine, HttpCommunicationInterface.getInstance());
       }catch(IOException e){
         LOGGER.error("Could not send message to web peer at endpoint: '" + aWebPeer.getEndPointRepresentation() + "'", e);
         //LOGGER.error("Could not send message to web peer at endpoint: '" + aWebPeer.getEndPointRepresentation() + "'");

@@ -4,8 +4,6 @@
  */
 package chabernac.protocol.stacktrace;
 
-import org.apache.log4j.BasicConfigurator;
-
 import chabernac.protocol.AbstractProtocolTest;
 import chabernac.protocol.P2PServerFactoryException;
 import chabernac.protocol.ProtocolContainer;
