@@ -9,6 +9,17 @@ import java.util.UUID;
 public class HttpCommunicationInterface implements iCommunicationInterface {
 
   private final String myId = UUID.randomUUID().toString();
+  
+  private static class INSTANCE_HOLDER{
+    public static HttpCommunicationInterface INSTANCE = new HttpCommunicationInterface();
+  }
+  
+  private HttpCommunicationInterface(){
+  }
+  
+  public static HttpCommunicationInterface getInstance(){
+    return INSTANCE_HOLDER.INSTANCE;
+  }
 
   @Override
   public String getId() {
