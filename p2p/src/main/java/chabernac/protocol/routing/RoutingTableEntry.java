@@ -129,6 +129,8 @@ public class RoutingTableEntry implements Serializable{
     if(!getPeer().getPeerId().equals(theEntry.getPeer().getPeerId())) return false;
     if(getHopDistance() != theEntry.getHopDistance() ) return false;
     if(!getGateway().getPeerId().equals( theEntry.getGateway().getPeerId())) return false;
+    if( (getLocalNetworkInterface() == null) != (theEntry.getLocalNetworkInterface() == null) ) return false;
+    if( getLocalNetworkInterface() != null && !getLocalNetworkInterface().equals( theEntry.getLocalNetworkInterface() )) return false;
     return true;
   }
   

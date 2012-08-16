@@ -303,7 +303,28 @@ public class RoutingTableTest extends TestCase {
     
     theLatch.await(2, TimeUnit.SECONDS);
     assertEquals(0, theLatch.getCount());
+  }
+  
+  public void testAddRoutingTableEntryWithDifferentNetworkInterface() throws UnknownPeerException{
+    RoutingTable theTable = new RoutingTable("1");
     
+    DummyNetworkInterface theInterface1 = new DummyNetworkInterface();
+    DummyNetworkInterface theInterface2 = new DummyNetworkInterface();
+    theTable.addEntry(new RoutingTableEntry(new SocketPeer("2", 12800, "localhost"), theInterface1));
+    theTable.addEntry(new RoutingTableEntry(new SocketPeer("3", 12801, "localhost"), theInterface1));
+    assertEquals( 2, theTable.getEntries().size() );
+    
+    RoutingTableEntry theNewEntry = new RoutingTableEntry(new SocketPeer("2", 12800, "localhost"), theInterface1);
+    //if we add a new entry with the same hop distance and the same interface then it is ignored
+    
+    theTable.addRoutingTableEntry( theNewEntry );
+    assertFalse( theNewEntry == theTable.getEntryForPeer( "2" ) );
+    
+    //if we add an entry with the same hop distance but another interface then it is added
+    theNewEntry = new RoutingTableEntry(new SocketPeer("2", 12800, "localhost"), theInterface2);
+    theTable.addRoutingTableEntry( theNewEntry );
+    assertTrue( theNewEntry == theTable.getEntryForPeer( "2" ) );
+    assertTrue( theInterface2 == theTable.getEntryForPeer( "2" ).getLocalNetworkInterface() );
   }
   
   public void testNrOfDirectRemoteNeighbours(){
