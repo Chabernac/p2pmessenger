@@ -40,7 +40,7 @@ public class StreamSplittingServer implements iSocketSender{
   private final String myId;
   private final String LOCK_PREFIX = UUID.randomUUID().toString();
   private StreamSplitterPoolPanel myDebugPanel = null;
-  
+
   public StreamSplittingServer ( iInputOutputHandler aInputOutputHandler, int aPort, boolean isFindUnusedPort, String anId ) {
     super();
     myInputOutputHandler = aInputOutputHandler;
@@ -171,7 +171,7 @@ public class StreamSplittingServer implements iSocketSender{
       theSplitter = new StreamSplitter( theSocket.getInputStream(), theSocket.getOutputStream(), myInputOutputHandler );
       theResult = myPool.add( theSplitter );
     }
-    
+
     LOGGER.debug( "Connection attempt '" + theCount + "' success!" );
 
     final StreamSplitter theSplit = theSplitter;
@@ -200,14 +200,14 @@ public class StreamSplittingServer implements iSocketSender{
   }
 
   private SocketSenderReply send(String anId, String aHost, int aPort, String aMessage) throws IOException{
-    if( IPAddress.isIpAddress(aHost)){
-      try {
+    try {
+      if( aHost != null && IPAddress.isIpAddress(aHost)){
         aHost = new IPAddress(aHost).getIPAddressOnly();
-      } catch (InvalidIpAddressException e) {
-        LOGGER.error("Invalid ip address", e);
       }
+    } catch (Exception e) {
+      LOGGER.error("Invalid ip address '" + aHost + "'", e);
     }
-    
+
     if(anId != null && anId.equals(myPool.getId())){
       return new SocketSenderReply( myInputOutputHandler.handle(anId, aMessage), anId, InMemoryCommunicationInterface.getInstance());
     }
@@ -223,11 +223,11 @@ public class StreamSplittingServer implements iSocketSender{
           LOGGER.error("Could not create socket to '" + aHost + ":" + aPort + "'", e);
         }
       }
-      
+
       if(anId == null){
         throw new IOException("Unable to connect to '" + aHost + ":" + aPort);
       }
-      
+
       if(anId.equals( myPool.getId() )){
         return new SocketSenderReply(myInputOutputHandler.handle(anId, aMessage), anId, InMemoryCommunicationInterface.getInstance() );
       } else if(myPool.contains( anId )){
@@ -294,7 +294,7 @@ public class StreamSplittingServer implements iSocketSender{
       myDebugPanel = new StreamSplitterPoolPanel( this, myPool );
     }
     return myDebugPanel;
-    
+
   }
 
   public StreamSplitterPool getStreamSplitterPool() {
