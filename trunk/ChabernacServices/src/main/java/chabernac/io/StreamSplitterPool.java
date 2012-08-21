@@ -151,9 +151,8 @@ public class StreamSplitterPool {
   }
 
   public String send(String aRemoteId, String aMessage) throws IOException{
-    if(!myStreamSplitters.containsKey( aRemoteId )) throw new IOException("No stream splitter found for id '" + aRemoteId + "'");
-
     synchronized(aRemoteId.intern()){
+      if(!myStreamSplitters.containsKey( aRemoteId )) throw new IOException("No stream splitter found for id '" + aRemoteId + "'");
       //      LOGGER.debug("Trying to send message from '" + myId + "' to '" + aRemoteId + "': " + aMessage);
       try {
         return myStreamSplitters.get(aRemoteId).send( aMessage );
