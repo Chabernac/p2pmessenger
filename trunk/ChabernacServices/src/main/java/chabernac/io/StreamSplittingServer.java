@@ -21,6 +21,8 @@ import org.apache.log4j.Logger;
 
 import chabernac.io.StreamSplitterPool.Result;
 import chabernac.thread.DynamicSizeExecutor;
+import chabernac.utils.IPAddress;
+import chabernac.utils.InvalidIpAddressException;
 import chabernac.utils.NamedRunnable;
 import chabernac.utils.NetTools;
 
@@ -198,6 +200,14 @@ public class StreamSplittingServer implements iSocketSender{
   }
 
   private SocketSenderReply send(String anId, String aHost, int aPort, String aMessage) throws IOException{
+    if( IPAddress.isIpAddress(aHost)){
+      try {
+        aHost = new IPAddress(aHost).getIPAddressOnly();
+      } catch (InvalidIpAddressException e) {
+        LOGGER.error("Invalid ip address", e);
+      }
+    }
+    
     if(anId != null && anId.equals(myPool.getId())){
       return new SocketSenderReply( myInputOutputHandler.handle(anId, aMessage), anId, InMemoryCommunicationInterface.getInstance());
     }
@@ -210,7 +220,7 @@ public class StreamSplittingServer implements iSocketSender{
         try{
           anId = createSocket( aHost, aPort );
         } catch ( IOException e ) {
-          LOGGER.error("Could not create socket", e);
+          LOGGER.error("Could not create socket to '" + aHost + ":" + aPort + "'", e);
         }
       }
       
