@@ -46,6 +46,7 @@ public class BasicSocketPool implements iSocketPool{
           myCheckedOutPool.add( theProxy );
           //this is a socket that will be shortly used so update the connect time
           theProxy.setConnectTime( new Date() );
+          LOGGER.debug( "Returning existing proxy for socket address: '" + anAddress.toString() );
           return theProxy;
         }
       }
@@ -71,6 +72,7 @@ public class BasicSocketPool implements iSocketPool{
       myCheckedOutPool.add(theSocket);
     }
 
+    LOGGER.debug( "Returning new proxy for socket address: '" + anAddress.toString() );
     return theSocket;
   }
 
