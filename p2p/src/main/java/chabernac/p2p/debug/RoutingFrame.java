@@ -138,6 +138,8 @@ public class RoutingFrame extends JFrame {
     if(theDebuggingPanel != null){
       thePane.add("Server debug info", theDebuggingPanel);
     }
+    
+    thePane.add( "Charts", new ChartsPanel(myProtocolContainer) );
 
     getContentPane().setLayout( new BorderLayout() );
     getContentPane().add( thePane, BorderLayout.CENTER );
