@@ -56,7 +56,7 @@ public class ChartsPanel extends JPanel {
       public void run(){
         refresh();
       }
-    }, 30, 30, TimeUnit.SECONDS);
+    }, 5, 5, TimeUnit.MINUTES);
   }
 
   public void paint(Graphics g){
