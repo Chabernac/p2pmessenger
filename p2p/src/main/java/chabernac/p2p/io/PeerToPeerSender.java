@@ -7,6 +7,7 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.ConnectException;
 import java.net.InetSocketAddress;
+import java.net.SocketException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -77,9 +78,9 @@ public class PeerToPeerSender {
         //just some code to make peers not using a streamsplitter compatible with those who use one
         if(theReturnMessage != null && theReturnMessage.startsWith(StreamSplitterPool.ID_PREFIX)){
           theReturnMessage = theReader.readLine();
-        }
+      }
         //        LOGGER.debug( "Message received: '" + theReturnMessage + "'" );
-        //TODO why do we sometimes have null replies when using BasicSocketPool
+      //TODO why do we sometimes have null replies when using BasicSocketPool
         if(theReturnMessage == null || "".equals( theReturnMessage )) {
           //          theRetries = 1;
           throw new IOException("empty result, socket corrupt?");
@@ -94,6 +95,7 @@ public class PeerToPeerSender {
       }catch(IOException e){
         //for some reason the socket was corrupt just close the socket and retry untill retry counter is zero
         P2PSettings.getInstance().getSocketPool().close( theSocket );
+        theRetryDecider.exceptionOccured( e );
         if(!theRetryDecider.hasRetry()) {
           throw e;
         }
@@ -156,7 +158,11 @@ public class PeerToPeerSender {
     }
 
     public void exceptionOccured(Exception anException){
-
+      if(anException instanceof SocketException && ((SocketException)anException).getMessage().equals( "socket closed" )){
+        //the socket seems to be closed, so we put socket created to false
+        //hasretry will now return true if retries > 0
+        isSocketCreated = false;
+      }
     }
 
     public void clear(){
