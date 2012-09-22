@@ -155,6 +155,7 @@ public class NetTools {
   
   private static boolean isCandidate(NetworkInterface anInterface) throws SocketException{
     if(anInterface.isLoopback()) return false;
+    if(anInterface.getDisplayName() == null) return true;
     if(anInterface.getDisplayName().toLowerCase().contains( "check point" )) return true;
     if(anInterface.getDisplayName().toLowerCase().contains( "virtual" )) return false;
     return true;
