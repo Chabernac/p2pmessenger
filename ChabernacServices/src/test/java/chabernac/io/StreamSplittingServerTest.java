@@ -69,8 +69,8 @@ public class StreamSplittingServerTest extends TestCase {
       assertEquals( Integer.toString(5 * 3), theServer1.send( "localhost", 13001, Integer.toString(5) ).getReply());
       assertEquals( Integer.toString(5 * 2), theServer2.send( "localhost", 13000, Integer.toString(5) ).getReply());
       for(int i=0;i<times;i++){
-        assertEquals( Integer.toString(i * 3), theServer1.send( "2", Integer.toString(i) ));
-        assertEquals( Integer.toString(i * 2), theServer2.send( "1", Integer.toString(i) ));
+        assertEquals( Integer.toString(i * 3), theServer1.send( "2", Integer.toString(i) ).getReply());
+        assertEquals( Integer.toString(i * 2), theServer2.send( "1", Integer.toString(i) ).getReply());
       }
     }finally{
       theServer1.close();
@@ -84,7 +84,7 @@ public class StreamSplittingServerTest extends TestCase {
   public void testSimultanousConnectionAttempt() throws InterruptedException{
     final CyclicBarrier theBarrier = new CyclicBarrier( 2 );
 
-    final int times = 200;
+    final int times = 100;
 
     ExecutorService theExecutorService= Executors.newFixedThreadPool( 2 );
     
@@ -98,6 +98,7 @@ public class StreamSplittingServerTest extends TestCase {
           theServer.start();
           try {
             theBarrier.await();
+            LOGGER.debug("Server 1, connection attempt " + i);
             assertEquals( Integer.toString(5 * 3), theServer.send( "localhost", 13001, Integer.toString(5) ).getReply());
             theLatch1.countDown();
           } catch ( Exception e ) {
@@ -122,6 +123,7 @@ public class StreamSplittingServerTest extends TestCase {
           theServer.start();
           try {
             theBarrier.await();
+            LOGGER.debug("Server 2, connection attempt " + i);
             assertEquals( Integer.toString(5 * 2), theServer.send( "localhost", 13000, Integer.toString(5) ).getReply());
             theLatch2.countDown();
           } catch ( Exception e ) {
