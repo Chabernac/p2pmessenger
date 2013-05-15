@@ -18,21 +18,22 @@ import org.apache.log4j.Logger;
 public class IOTools {
 	private static Logger logger = Logger.getLogger(IOTools.class);
 
-	public static Object loadObject(File aFile){
-		if(!aFile.exists()) return null;
+	public static Object loadObject(File aFile) {
+		if (!aFile.exists())
+			return null;
 		ObjectInputStream theStream = null;
-		try{
+		try {
 			theStream = new ObjectInputStream(new FileInputStream(aFile));
 			return theStream.readObject();
-		}catch(ClassNotFoundException e){
+		} catch (ClassNotFoundException e) {
 			logger.error("could not load object class", e);
-		}catch(IOException e){
+		} catch (IOException e) {
 			logger.error("could not open inpustream", e);
-		}finally{
-			if(theStream != null){
-				try{
+		} finally {
+			if (theStream != null) {
+				try {
 					theStream.close();
-				}catch(IOException e){
+				} catch (IOException e) {
 					logger.error("Couldn't not close inputstream", e);
 				}
 			}
@@ -40,12 +41,12 @@ public class IOTools {
 		return null;
 	}
 
-	public static Hashtable loadProperties(File aFile){
+	public static Hashtable loadProperties(File aFile) {
 		Properties theUsers = new Properties();
-		if(aFile.exists()){
-			try{
+		if (aFile.exists()) {
+			try {
 				theUsers.load(new FileInputStream(aFile));
-			}catch(FileNotFoundException e){
+			} catch (FileNotFoundException e) {
 				logger.error("user file not found", e);
 			} catch (IOException e) {
 				logger.error("Could not load user list", e);
@@ -54,9 +55,11 @@ public class IOTools {
 		return theUsers;
 	}
 
-	public static void saveObject(Object anObject, File aFile) throws IOException{
-		if(anObject instanceof Properties) saveProperties((Properties)anObject, aFile);
-		else if(anObject instanceof Serializable) saveSerializable((Serializable)anObject, aFile);
+	public static void saveObject(Object anObject, File aFile) throws IOException {
+		if (anObject instanceof Properties)
+			saveProperties((Properties) anObject, aFile);
+		else if (anObject instanceof Serializable)
+			saveSerializable((Serializable) anObject, aFile);
 	}
 
 	private static void saveProperties(Properties properties, File aFile) {
@@ -69,56 +72,67 @@ public class IOTools {
 		}
 	}
 
-	private static void saveSerializable(Serializable anObject, File aFile) throws IOException{
+	private static void saveSerializable(Serializable anObject, File aFile) throws IOException {
 
 		ObjectOutputStream theOutputStream = null;
 		File theTempFile = null;
-		try{
+		try {
 			theTempFile = File.createTempFile("serialize", ".bin");
 			theOutputStream = new ObjectOutputStream(new FileOutputStream(theTempFile));
 			theOutputStream.writeObject(anObject);
 
-		}finally{
-			if(theOutputStream != null){
+		} finally {
+			if (theOutputStream != null) {
 				theOutputStream.flush();
 				theOutputStream.close();
 			}
 		}
 		copyFile(theTempFile, aFile);
 		theTempFile.delete();
+		if (theTempFile.exists())
+			throw new IOException("temp file could not be deleted");
 	}
-
 
 	public static void copyFile(File in, File out) throws IOException {
-		FileInputStream fis  = new FileInputStream(in);
-		FileOutputStream fos = new FileOutputStream(out);
-		
-		copyStream( fis, fos );
-	}
-	
-	public static void copyStream(InputStream anInput, OutputStream anOutput) throws IOException{
-	  try {
-      byte[] buf = new byte[1024];
-      int i = 0;
-      while ((i = anInput.read(buf)) != -1) {
-        anOutput.write(buf, 0, i);
-      }
-    } finally {
-      if (anInput != null) {
-        anOutput.close();
-      }
-      if (anOutput != null) {
-        anOutput.flush();
-        anOutput.close();
-      }
-    }
+		FileInputStream fis = null;
+		FileOutputStream fos = null;
+		try {
+			fis = new FileInputStream(in);
+			fos = new FileOutputStream(out);
+			copyStream(fis, fos);
+		} finally {
+			if (fis != null) {
+				fis.close();
+			}
+			if (fos != null) {
+				fos.close();
+			}
+		}
 	}
 
-	public static byte[] readInputStream(InputStream aStream) throws IOException{
+	public static void copyStream(InputStream anInput, OutputStream anOutput) throws IOException {
+		try {
+			byte[] buf = new byte[1024];
+			int i = 0;
+			while ((i = anInput.read(buf)) != -1) {
+				anOutput.write(buf, 0, i);
+			}
+		} finally {
+			if (anInput != null) {
+				anOutput.close();
+			}
+			if (anOutput != null) {
+				anOutput.flush();
+				anOutput.close();
+			}
+		}
+	}
+
+	public static byte[] readInputStream(InputStream aStream) throws IOException {
 		byte[] theBuffer = new byte[1024];
 		byte[] theBytes = new byte[0];
 		int read = 0;
-		while((read = aStream.read(theBuffer)) != -1){
+		while ((read = aStream.read(theBuffer)) != -1) {
 			byte[] theNewBytes = new byte[theBytes.length + read];
 			System.arraycopy(theBytes, 0, theNewBytes, 0, theBytes.length);
 			System.arraycopy(theBuffer, 0, theNewBytes, theBytes.length, read);
@@ -127,14 +141,11 @@ public class IOTools {
 		return theBytes;
 	}
 
+	// public static byte[] readInputStream(InputStream aStream, int aNrOfBytes){
 
+	// }
 
-
-//	public static byte[] readInputStream(InputStream aStream, int aNrOfBytes){
-
-//	}
-
-	public static void main(String[] args){
+	public static void main(String[] args) {
 		try {
 			byte[] theBytes = readInputStream(IOTools.class.getClassLoader().getResourceAsStream("chabernac/utils/IOTools.class"));
 			System.out.println(new String(theBytes));
@@ -143,6 +154,5 @@ public class IOTools {
 			e.printStackTrace();
 		}
 	}
-
 
 }
