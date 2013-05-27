@@ -73,6 +73,9 @@ public class UserListPanelPopup extends GPanelPopupMenu {
     if("true".equalsIgnoreCase(ApplicationPreferences.getInstance().getProperty("audio.enabled"))){
       add(new CommandMenuItem(new AudioTransferCommand()));
     }
+//    if("true".equalsIgnoreCase(ApplicationPreferences.getInstance().getProperty("technicalmessage.enabled"))){
+//      add(new CommandMenuItem(new TechnicalMessageCommand()));
+//    }
   }
 
   private void buildGroups(){
