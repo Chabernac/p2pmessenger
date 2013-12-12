@@ -52,6 +52,35 @@ public class P2PFacadeTest extends TestCase {
     return ServerMode.SOCKET;
   }
   
+  public void testSendTechnicalMessage() throws P2PFacadeException, InterruptedException{
+    P2PFacade theFacade1 = new P2PFacade()
+    .setExchangeDelay( 300 )
+    .setPersist( false )
+    .setPeerId("P2P1")
+    .setServerMode( getSocketServerMode() )
+    .start();
+    
+    P2PFacade theFacade2 = new P2PFacade()
+    .setExchangeDelay( 300 )
+    .setPersist( false )
+    .setPeerId("P2P2")
+    .setServerMode( getSocketServerMode() )
+    .start();
+    
+    Thread.sleep( 3000 );
+
+    try{
+      assertTrue( theFacade1.getRoutingTable().containsEntryForPeer( theFacade2.getPeerId() ) );
+      assertTrue( theFacade2.getRoutingTable().containsEntryForPeer( theFacade1.getPeerId() ) );
+      
+      assertEquals( "123", theFacade1.sendTechnicalMessage( theFacade2.getPeerId(), "ECO123" ));
+    } finally{
+      theFacade1.stop();
+      theFacade2.stop();
+    }
+
+  }
+  
   public void testP2PSendMessage() throws P2PFacadeException, InterruptedException, ExecutionException{
     LOGGER.debug("Executing test " + new Exception().getStackTrace()[0].getMethodName());
     P2PFacade theFacade1 = new P2PFacade()
