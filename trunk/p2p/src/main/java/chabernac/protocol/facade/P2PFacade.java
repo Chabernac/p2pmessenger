@@ -45,7 +45,9 @@ import chabernac.protocol.filetransfer.iFileHandler;
 import chabernac.protocol.infoexchange.InfoExchangeProtocol;
 import chabernac.protocol.infoexchange.InfoObject;
 import chabernac.protocol.infoexchange.iInfoListener;
+import chabernac.protocol.message.AsyncMessageProcotol;
 import chabernac.protocol.message.FailedMessageResender;
+import chabernac.protocol.message.Message;
 import chabernac.protocol.message.MessageArchive;
 import chabernac.protocol.message.MessageIndicator;
 import chabernac.protocol.message.MultiPeerMessage;
@@ -303,6 +305,20 @@ public class P2PFacade {
       myFileTransferOverviewFrame = new TransferOverviewFrame( getAsyncFileTransferContainer() );
     }
     myFileTransferOverviewFrame.setVisible( true );
+  }
+
+  public String sendTechnicalMessage(String aPeerId, String aMessage) throws P2PFacadeException{
+    if(!isStarted()) throw new P2PFacadeException("Can not execute this action when the server is not started");
+    try{
+      Message theMessage = new Message();
+      theMessage.setProtocolMessage( true );
+      theMessage.setDestination( getPeer( aPeerId ) );
+      theMessage.setSource( getPeer( getPeerId()) );
+      theMessage.setMessage( aMessage );
+      return ((AsyncMessageProcotol)myContainer.getProtocol( AsyncMessageProcotol.ID )).sendAndWaitForResponse( theMessage );
+    }catch(Exception e){
+      throw new P2PFacadeException("An error occured while sending technical message", e);
+    }
   }
 
   public Future<MultiPeerMessage> sendMessage(final MultiPeerMessage aMessage, ExecutorService aService){
@@ -814,7 +830,7 @@ public class P2PFacade {
 
       //retrieve the version protocol so that is starts exchanging versions
       //the version protocol is not used any more, version info is exchanged with info exchange protocol
-//      if(mySupportedProtocols == null || mySupportedProtocols.contains( VersionProtocol.ID)) myContainer.getProtocol( VersionProtocol.ID );
+      //      if(mySupportedProtocols == null || mySupportedProtocols.contains( VersionProtocol.ID)) myContainer.getProtocol( VersionProtocol.ID );
 
       if(mySupportedProtocols == null || mySupportedProtocols.contains( WebPeerProtocol.ID)) myContainer.getProtocol( WebPeerProtocol.ID );
 

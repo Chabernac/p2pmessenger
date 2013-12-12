@@ -12,61 +12,71 @@ import chabernac.protocol.routing.RoutingProtocol;
 import chabernac.protocol.routing.iWhoIsRunningListener;
 import chabernac.thread.DynamicSizeExecutor;
 
-public class WhoIsRunning implements Runnable{
-  private final iWhoIsRunningListener myListener;
-  private final String myHost;
-  private final int myPortFrom;
-  private final int myPortTo;
-  private final ExecutorService myService = DynamicSizeExecutor.getMediumInstance();
+public class WhoIsRunning implements Runnable {
+    private final iWhoIsRunningListener myListener;
+    private String                      myHost;
+    private final int                   myPortFrom;
+    private final int                   myPortTo;
+    private final ExecutorService       myService = DynamicSizeExecutor.getMediumInstance();
 
-  public WhoIsRunning(iWhoIsRunningListener anListener, String aHost, int aPortFrom, int aPortTo) {
-    super();
-    myListener = anListener;
-    myPortFrom = aPortFrom;
-    myPortTo = aPortTo;
-    myHost = aHost;
-  }
-  
-  public void run(){
-    for(int port=myPortFrom;port<=myPortTo;port++){
-      myService.execute(new Scanner(myHost, port));
-    }
-  }
-
-  private class Scanner implements Runnable{
-    private final String myHost;
-    private final int myPort;
-
-    public Scanner(String anHost, int anPort) {
-      super();
-      myHost = anHost;
-      myPort = anPort;
+    public WhoIsRunning( iWhoIsRunningListener anListener, String aHost, int aPortFrom, int aPortTo ) {
+        super();
+        myListener = anListener;
+        myPortFrom = aPortFrom;
+        myPortTo = aPortTo;
+        myHost = aHost;
     }
 
-    public void run(){
-      Socket theSocket = null;
-      try {
-        theSocket = new Socket(myHost, myPort);
-        PrintWriter theWriter = new PrintWriter(new OutputStreamWriter(theSocket.getOutputStream()));
-        BufferedReader theReader = new BufferedReader(new InputStreamReader(theSocket.getInputStream()));
-        String theMessage = RoutingProtocol.ID + RoutingProtocol.Command.WHO_ARE_YOU.name();
-        theWriter.println(theMessage);
-        theWriter.flush();
-        String theReturnMessage = theReader.readLine();
-        myListener.peerDetected(myHost, myPort, theReturnMessage);
-      }catch(Exception e){
-        myListener.noPeerAt(myHost, myPort);
-      } finally {
-        if(theSocket != null){
-          try {
-            theSocket.close();
-          } catch (IOException e) {
-            e.printStackTrace();
-          }
+    public String getHost() {
+        return myHost;
+    }
+
+    public void setHost( String aHost ) {
+        myHost = aHost;
+    }
+
+    @Override
+    public void run() {
+        for ( int port = myPortFrom; port <= myPortTo; port++ ) {
+            myService.execute( new Scanner( myHost, port ) );
         }
-      }
     }
 
-  }
+    private class Scanner implements Runnable {
+        private final String myHost;
+        private final int    myPort;
+
+        public Scanner( String anHost, int anPort ) {
+            super();
+            myHost = anHost;
+            myPort = anPort;
+        }
+
+        @Override
+        public void run() {
+            Socket theSocket = null;
+            try {
+                theSocket = new Socket( myHost, myPort );
+                PrintWriter theWriter = new PrintWriter( new OutputStreamWriter( theSocket.getOutputStream() ) );
+                BufferedReader theReader = new BufferedReader( new InputStreamReader( theSocket.getInputStream() ) );
+                String theMessage = RoutingProtocol.ID + RoutingProtocol.Command.WHO_ARE_YOU.name();
+                theWriter.println( theMessage );
+                theWriter.flush();
+                String theReturnMessage = theReader.readLine();
+                myListener.peerDetected( myHost, myPort, theReturnMessage );
+            } catch ( Exception e ) {
+                myListener.noPeerAt( myHost, myPort );
+            } finally {
+                if ( theSocket != null ) {
+                    try {
+                        theSocket.close();
+                    } catch ( IOException e ) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+
+    }
 
 }
