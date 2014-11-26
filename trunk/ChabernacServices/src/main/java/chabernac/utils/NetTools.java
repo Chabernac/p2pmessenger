@@ -9,8 +9,10 @@ import java.net.SocketException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.Formatter;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -157,9 +159,21 @@ public class NetTools {
 		}
 		return myHostNetworkInterface.get(aLocalIp);
 	}
+	
+	  public static String getMACString(byte[] aMacAddress){
+	      if(aMacAddress == null) return null;
+	      Formatter theFormatter = new Formatter();
+	      for(int i=0;i<aMacAddress.length;i++){
+	        theFormatter.format(Locale.getDefault(), "%02X%s", aMacAddress[i], i+1 < aMacAddress.length ? "-" : "" ); 
+	      }
+	      return theFormatter.toString();
+	    }
 
 
 	private static boolean isCandidate(NetworkInterface anInterface) throws SocketException{
+	    if(anInterface.getHardwareAddress() != null && getMACString( anInterface.getHardwareAddress() ).equals( "00-00-00-00-00-00-00-E0" )){
+	        return false;
+	    }
 		if(anInterface.isLoopback()) return false;
 		if(anInterface.getDisplayName() == null) return true;
 		if(anInterface.getDisplayName().toLowerCase().contains( "check point" )) return true;
