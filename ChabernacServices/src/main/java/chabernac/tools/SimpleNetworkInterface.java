@@ -10,11 +10,14 @@ import java.util.Formatter;
 import java.util.List;
 import java.util.Locale;
 
+import org.apache.log4j.Logger;
+
 import chabernac.io.iCommunicationInterface;
 
 //TODO find a way to move this class to chabernac.io without causing problems with deserialization on other systems
 //which do not have the last version
 public class SimpleNetworkInterface implements Serializable, iCommunicationInterface{
+    private static final Logger LOGGER = Logger.getLogger(SimpleNetworkInterface.class);
   private static final long serialVersionUID = -2887291844821748090L;
   
   private final List<String> myIp;
@@ -54,7 +57,7 @@ public class SimpleNetworkInterface implements Serializable, iCommunicationInter
     return myIp;
   }
 
-  private static String getMACString(byte[] aMacAddress){
+  public static String getMACString(byte[] aMacAddress){
     if(aMacAddress == null) return null;
     Formatter theFormatter = new Formatter();
     for(int i=0;i<aMacAddress.length;i++){
@@ -83,11 +86,15 @@ public class SimpleNetworkInterface implements Serializable, iCommunicationInter
     if(!(anObject instanceof SimpleNetworkInterface)) return false;
     SimpleNetworkInterface theInterface = (SimpleNetworkInterface)anObject;
     if(myMACAddress != null && theInterface.getMACAddress() != null){
+        if(getMACAddress().equalsIgnoreCase( theInterface.getMACAddress() )){
+            LOGGER.debug("Found same mac address for both hosts '" + getMACAddress() + "'");
+        }
       return getMACAddress().equalsIgnoreCase( theInterface.getMACAddress() );
     } else {
       //compare ip addresses
       for(String theIp : myIp){
         if(theInterface.getIp().contains( theIp )){
+            LOGGER.debug( "Found same ip address: '" + theIp + "' in both hosts" );
           return true;
         }
       }
