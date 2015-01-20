@@ -51,223 +51,226 @@ import chabernac.utils.EventDispatchThreadHangMonitor;
 import chabernac.utils.ServiceTools;
 
 public class ApplicationLauncher {
-  private static Logger LOGGER = Logger.getLogger(ApplicationLauncher.class);
-  private static ScheduledExecutorService SERVICE = Executors.newScheduledThreadPool( 1 );
-  private static ChatFrame myChatFrame = null;
-  private static ChatMediator myMediator = null;
-  
-  private static P2PFacade myFacade = null;
+    private static Logger                   LOGGER      = Logger.getLogger( ApplicationLauncher.class );
+    private static ScheduledExecutorService SERVICE     = Executors.newScheduledThreadPool( 1 );
+    private static ChatFrame                myChatFrame = null;
+    private static ChatMediator             myMediator  = null;
 
-  /**
-   * @param args
-   * @throws P2PFacadeException 
-   * @throws UserInfoException 
-   * @throws AWTException 
-   * @throws IOException 
-   */
-  public static void main( String[] args ) {
-    try{
-      ArgsInterPreter theInterPretser = new ArgsInterPreter(args);
-      
-      initLogging();
-      
-      initCommandSession();
+    private static P2PFacade                myFacade    = null;
 
-      initProxy(theInterPretser);
-
-      initLocale(theInterPretser);
-
-      initDefaultSettigns();
-
-      if("true".equals(theInterPretser.getKeyValue("checklock", "true"))){
-        if(!checkLockAndActivate()) return;
-      }
-
-      addRun2Startup();
-
-      SocketProxy.setTraceEnabled( true );
-
-      startTimers();
-
-      startFacade(theInterPretser);
-
-      addActivationListener();
-
-      myMediator = new ChatMediator( myFacade );
-      myChatFrame = new ChatFrame(myMediator);
-      
-      if("true".equals(theInterPretser.getKeyValue( "visible" ))){
-        showChatFrame();
-      }
-
-      SystemTrayMenu theMenu = SystemTrayMenu.buildSystemTray( myChatFrame, myFacade );
-      myMediator.setSystemTrayMenu( theMenu );
-
-      new NewMessageTrayIconDisplayer(myChatFrame.getMediator());
-      new NewUserTrayIconDisplayer(myChatFrame.getMediator());
-      new NewMessageInfoPanelDisplayer(myChatFrame.getMediator());
-
-      initSaveMessages();
-      
-      EventDispatchThreadHangMonitor.initMonitoring();
-      
-      loadPlugins();
-      
-    }catch(Exception e){
-      LOGGER.error("An error occured during boot process", e);
-      System.exit(-1);
-    }
-  }
-  
-  private static void initLogging(){
-    InitLogging theInitLogging = new InitLogging();
-    theInitLogging.run();
-    ScheduledExecutorService theService = Executors.newScheduledThreadPool( 1 );
-    theService.scheduleAtFixedRate( theInitLogging, 1, 1, TimeUnit.MINUTES );
-  }
-  
-  private static void initCommandSession(){
-    CommandSession.getInstance().setNumberOfThreads( 3 );
-  }
-  
-  private static void loadPlugins(){
-    PluginActivator.loadAll( true );
-    List<iP2pClientPlugin> thePlugins = PluginRegistry.getInstance().getPlugins( iP2pClientPlugin.class );
-    for(iP2pClientPlugin thePlugin : thePlugins){
-      thePlugin.init( myMediator );
-    }
-  }
-
-  private static void initSaveMessages(){
-    String theLocation = ApplicationPreferences.getInstance().getProperty( "message.backup.file" );
-    if(theLocation != null){
-      try{
-        new SaveMessagesToFile(new File(theLocation), myFacade);
-      } catch(Exception e){
-        LOGGER.error("Could not init save messages to file", e);
-      }
-    }
-  }
-
-  private static void initDefaultSettigns() {
-    ApplicationPreferences thePrefs = ApplicationPreferences.getInstance();
-    if(!thePrefs.hasEnumType(ReceiveEnveloppe.class)) thePrefs.setEnumProperty(ReceiveEnveloppe.AS_MESSAGE_INDICATES);
-    if(!thePrefs.hasEnumType(SendEnveloppe.class)) thePrefs.setEnumProperty(SendEnveloppe.OPEN);
-  }
-
-  private static void initProxy(ArgsInterPreter anInterpreter){
-    if(anInterpreter.containsKey( "http.proxyHost" ) && anInterpreter.containsKey( "http.proxyPort" )){
-      System.getProperties().put("http.proxyHost", anInterpreter.getKeyValue( "http.proxyHost" ));
-      System.getProperties().put("http.proxyPort", anInterpreter.getKeyValue( "http.proxyPort" ));
-    }
-  }
-
-  private static void initLocale(ArgsInterPreter anInterpreter){
-    Locale.setDefault( new Locale(anInterpreter.getKeyValue( "locale", "nl" )));
-  }
-
-  private static void addActivationListener() throws P2PFacadeException{
-    myFacade.setApplicationProtocolDelegate( new ActivationProtocolDelegate() );
-  }
-
-  public static synchronized void showChatFrame() throws P2PFacadeException{
-    if(myChatFrame == null){
-      myChatFrame = new ChatFrame(myMediator);
-    }
-    myChatFrame.showFrame();
-  }
-
-  private static void startFacade(ArgsInterPreter anInterPreter) throws P2PFacadeException, IOException{
-    iUserInfoProvider theUserInfoProvider = new BackupUserInfoProviderDecorator(new AXALDAPUserInfoProvider());
-
-    myFacade = new P2PFacade()
-    .setExchangeDelay( 300 )
-    .setPersist( "true".equals(anInterPreter.getKeyValue( "persist" )) )
-    .setUserInfoProvider( theUserInfoProvider )
-//    .addSuperNode( "http://localhost:8080/" )
-//    .setSuperNodesDataSource( new ClassPathResource("supernodes.txt") )
-    .setStopWhenAlreadyRunning( true )
-    .setChannel(anInterPreter.getKeyValue("channel", "default"))
-    .setFileHandler( new FileHandlerDialogDispatcher() )
-    .setInfoObject( "pom.info", new POMInfo() )
-    .setInfoObject( "version", "v2012.07.12" )
-    .setSocketReuse( true )
-    .setMessageResenderActivated( true )
-    .setAutoUserStatusDetectionEnabled( true )
-    .setServerMode( ServerMode.SOCKET )
-    .start();
-    
-    if("true".equalsIgnoreCase( anInterPreter.getKeyValue( "routingtable" ) )) myFacade.showRoutingTable();
-  }
-
-  private static void addRun2Startup(){
-    try {
-      ServiceTools.addRun2Startup(new File("p2pclient.cmd"));
-    } catch (IOException e) {
-      LOGGER.error("Could not add p2pclient to startup", e);
-    }
-  }
-
-  private static boolean checkLockAndActivate(){
-    iLock theLock = new FileLock("p2pclient");
-    if(theLock.isLocked()){
-      activate();
-      return false;
-    } else {
-      theLock.createLock();
-    }
-    return true;
-  }
-
-  private static boolean activate(){
-    try {
-      //TODO need to check how we will send the message when using the streamsplitter
-      RoutingProtocol theRoutingProtocol = new RoutingProtocol(null, -1, true, null, false, "AXA", null);
-      RoutingTableEntry theLocalEntry = theRoutingProtocol.getRoutingTable().getEntryForLocalPeer();
-      return "ok".equals( theRoutingProtocol.getPeerSender().send( theLocalEntry.getPeer(), "APPactivate" ));
-    } catch ( Exception e ) {
-      LOGGER.error("Could not activate", e);
-      return false;
-    }
-  }
-
-  private static void startTimers(){
-    SERVICE.scheduleAtFixedRate( new SavePreference(), 5, 10, TimeUnit.MINUTES );
-  }
-
-  private static class SavePreference implements Runnable {
-    @Override
-    public void run() {
-      ApplicationPreferences.save();
-    }
-  }
-
-  private static class ActivationProtocolDelegate implements iProtocolDelegate {
-    @Override
-    public String handleCommand( String aSessionId, String anInput ) {
-      if("activate".equalsIgnoreCase(  anInput )){
+    /**
+     * @param args
+     * @throws P2PFacadeException
+     * @throws UserInfoException
+     * @throws AWTException
+     * @throws IOException
+     */
+    public static void main( String[] args ) {
         try {
-          showChatFrame();
-          SystemTrayMenu.refreshIcon();
-          return "ok";
-        } catch ( P2PFacadeException e ) {
-          LOGGER.error( "Coul not activate", e );
+            ArgsInterPreter theInterPretser = new ArgsInterPreter( args );
+
+            initLogging();
+
+            initCommandSession();
+
+            initProxy( theInterPretser );
+
+            initLocale( theInterPretser );
+
+            initDefaultSettigns();
+
+            if ( "true".equals( theInterPretser.getKeyValue( "checklock", "true" ) ) ) {
+                if ( !checkLockAndActivate() ) {
+                    LOGGER.error( "Lock detected but unable to activate existing instance (no routingtable.bin present?)" );
+                    System.exit( -1 );
+                }
+            }
+
+            addRun2Startup();
+
+            SocketProxy.setTraceEnabled( true );
+
+            startTimers();
+
+            startFacade( theInterPretser );
+
+            addActivationListener();
+
+            myMediator = new ChatMediator( myFacade );
+            myChatFrame = new ChatFrame( myMediator );
+
+            if ( "true".equals( theInterPretser.getKeyValue( "visible" ) ) ) {
+                showChatFrame();
+            }
+
+            SystemTrayMenu theMenu = SystemTrayMenu.buildSystemTray( myChatFrame, myFacade );
+            myMediator.setSystemTrayMenu( theMenu );
+
+            new NewMessageTrayIconDisplayer( myChatFrame.getMediator() );
+            new NewUserTrayIconDisplayer( myChatFrame.getMediator() );
+            new NewMessageInfoPanelDisplayer( myChatFrame.getMediator() );
+
+            initSaveMessages();
+
+            EventDispatchThreadHangMonitor.initMonitoring();
+
+            loadPlugins();
+
+        } catch ( Exception e ) {
+            LOGGER.error( "An error occured during boot process", e );
+            System.exit( -1 );
         }
-      }
-      return "nok";
     }
-  }
-  
-  private static class InitLogging implements Runnable {
-    @Override
-    public void run() {
-      File theLogConfig = new File("log4j.properties");
-      //only if the log file exist use this log file, 
-      //otherwise log4j will fall back on the log config file in the jar
-      if(theLogConfig.exists()){
-        BasicConfigurator.resetConfiguration();
-        PropertyConfigurator.configure( theLogConfig.getName() );
-      }
+
+    private static void initLogging() {
+        InitLogging theInitLogging = new InitLogging();
+        theInitLogging.run();
+        ScheduledExecutorService theService = Executors.newScheduledThreadPool( 1 );
+        theService.scheduleAtFixedRate( theInitLogging, 1, 1, TimeUnit.MINUTES );
     }
-  }
+
+    private static void initCommandSession() {
+        CommandSession.getInstance().setNumberOfThreads( 3 );
+    }
+
+    private static void loadPlugins() {
+        PluginActivator.loadAll( true );
+        List<iP2pClientPlugin> thePlugins = PluginRegistry.getInstance().getPlugins( iP2pClientPlugin.class );
+        for ( iP2pClientPlugin thePlugin : thePlugins ) {
+            thePlugin.init( myMediator );
+        }
+    }
+
+    private static void initSaveMessages() {
+        String theLocation = ApplicationPreferences.getInstance().getProperty( "message.backup.file" );
+        if ( theLocation != null ) {
+            try {
+                new SaveMessagesToFile( new File( theLocation ), myFacade );
+            } catch ( Exception e ) {
+                LOGGER.error( "Could not init save messages to file", e );
+            }
+        }
+    }
+
+    private static void initDefaultSettigns() {
+        ApplicationPreferences thePrefs = ApplicationPreferences.getInstance();
+        if ( !thePrefs.hasEnumType( ReceiveEnveloppe.class ) ) thePrefs.setEnumProperty( ReceiveEnveloppe.AS_MESSAGE_INDICATES );
+        if ( !thePrefs.hasEnumType( SendEnveloppe.class ) ) thePrefs.setEnumProperty( SendEnveloppe.OPEN );
+    }
+
+    private static void initProxy( ArgsInterPreter anInterpreter ) {
+        if ( anInterpreter.containsKey( "http.proxyHost" ) && anInterpreter.containsKey( "http.proxyPort" ) ) {
+            System.getProperties().put( "http.proxyHost", anInterpreter.getKeyValue( "http.proxyHost" ) );
+            System.getProperties().put( "http.proxyPort", anInterpreter.getKeyValue( "http.proxyPort" ) );
+        }
+    }
+
+    private static void initLocale( ArgsInterPreter anInterpreter ) {
+        Locale.setDefault( new Locale( anInterpreter.getKeyValue( "locale", "nl" ) ) );
+    }
+
+    private static void addActivationListener() throws P2PFacadeException {
+        myFacade.setApplicationProtocolDelegate( new ActivationProtocolDelegate() );
+    }
+
+    public static synchronized void showChatFrame() throws P2PFacadeException {
+        if ( myChatFrame == null ) {
+            myChatFrame = new ChatFrame( myMediator );
+        }
+        myChatFrame.showFrame();
+    }
+
+    private static void startFacade( ArgsInterPreter anInterPreter ) throws P2PFacadeException, IOException {
+        iUserInfoProvider theUserInfoProvider = new BackupUserInfoProviderDecorator( new AXALDAPUserInfoProvider() );
+
+        myFacade = new P2PFacade()
+                .setExchangeDelay( 300 )
+                .setPersist( "true".equals( anInterPreter.getKeyValue( "persist" ) ) )
+                .setUserInfoProvider( theUserInfoProvider )
+                // .addSuperNode( "http://localhost:8080/" )
+                // .setSuperNodesDataSource( new ClassPathResource("supernodes.txt") )
+                .setStopWhenAlreadyRunning( true )
+                .setChannel( anInterPreter.getKeyValue( "channel", "default" ) )
+                .setFileHandler( new FileHandlerDialogDispatcher() )
+                .setInfoObject( "pom.info", new POMInfo() )
+                .setInfoObject( "version", "v2015.01.20" )
+                .setSocketReuse( true )
+                .setMessageResenderActivated( true )
+                .setAutoUserStatusDetectionEnabled( true )
+                .setServerMode( ServerMode.SOCKET )
+                .start();
+
+        if ( "true".equalsIgnoreCase( anInterPreter.getKeyValue( "routingtable" ) ) ) myFacade.showRoutingTable();
+    }
+
+    private static void addRun2Startup() {
+        try {
+            ServiceTools.addRun2Startup( new File( "p2pclient.cmd" ) );
+        } catch ( IOException e ) {
+            LOGGER.error( "Could not add p2pclient to startup", e );
+        }
+    }
+
+    private static boolean checkLockAndActivate() {
+        iLock theLock = new FileLock( "p2pclient" );
+        if ( theLock.isLocked() ) {
+            activate();
+            return false;
+        } else {
+            theLock.createLock();
+        }
+        return true;
+    }
+
+    private static boolean activate() {
+        try {
+            // TODO need to check how we will send the message when using the streamsplitter
+            RoutingProtocol theRoutingProtocol = new RoutingProtocol( null, -1, true, null, false, "AXA", null );
+            RoutingTableEntry theLocalEntry = theRoutingProtocol.getRoutingTable().getEntryForLocalPeer();
+            return "ok".equals( theRoutingProtocol.getPeerSender().send( theLocalEntry.getPeer(), "APPactivate" ) );
+        } catch ( Exception e ) {
+            LOGGER.error( "Could not activate", e );
+            return false;
+        }
+    }
+
+    private static void startTimers() {
+        SERVICE.scheduleAtFixedRate( new SavePreference(), 5, 10, TimeUnit.MINUTES );
+    }
+
+    private static class SavePreference implements Runnable {
+        @Override
+        public void run() {
+            ApplicationPreferences.save();
+        }
+    }
+
+    private static class ActivationProtocolDelegate implements iProtocolDelegate {
+        @Override
+        public String handleCommand( String aSessionId, String anInput ) {
+            if ( "activate".equalsIgnoreCase( anInput ) ) {
+                try {
+                    showChatFrame();
+                    SystemTrayMenu.refreshIcon();
+                    return "ok";
+                } catch ( P2PFacadeException e ) {
+                    LOGGER.error( "Coul not activate", e );
+                }
+            }
+            return "nok";
+        }
+    }
+
+    private static class InitLogging implements Runnable {
+        @Override
+        public void run() {
+            File theLogConfig = new File( "log4j.properties" );
+            // only if the log file exist use this log file,
+            // otherwise log4j will fall back on the log config file in the jar
+            if ( theLogConfig.exists() ) {
+                BasicConfigurator.resetConfiguration();
+                PropertyConfigurator.configure( theLogConfig.getName() );
+            }
+        }
+    }
 }
