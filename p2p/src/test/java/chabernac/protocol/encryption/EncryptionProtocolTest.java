@@ -16,9 +16,11 @@ public class EncryptionProtocolTest extends TestCase {
     EncryptionProtocol theReceivingProtocol = new EncryptionProtocol();
 
     theSendingProtocol.setPublicKeyFor("2", theReceivingProtocol.getPublicKey());
+    theReceivingProtocol.setPublicKeyFor( "3", theSendingProtocol.getPublicKey() );
 
     Message theMessage = new Message();
     theMessage.setDestination(new DummyPeer("2"));
+    theMessage.setSource( new DummyPeer( "3" ) );
     theMessage.setMessage("The quick brown fox jumps easily over the fat and lazy dog");
 
     theSendingProtocol.encryptMessage(theMessage);
@@ -36,6 +38,7 @@ public class EncryptionProtocolTest extends TestCase {
     EncryptionProtocol theSendingProtocol = new EncryptionProtocol();
     EncryptionProtocol theReceivingProtocol = new EncryptionProtocol();
     theSendingProtocol.setPublicKeyFor("2", theReceivingProtocol.getPublicKey());
+    theReceivingProtocol.setPublicKeyFor( "3", theSendingProtocol.getPublicKey() );
 
     long t1 = System.currentTimeMillis();
     int times = 100;
@@ -43,6 +46,7 @@ public class EncryptionProtocolTest extends TestCase {
 
       Message theMessage = new Message();
       theMessage.setDestination(new DummyPeer("2"));
+      theMessage.setSource(new DummyPeer("3"));
       theMessage.setMessage("The quick brown fox jumps easily over the fat and lazy dog");
 
       theSendingProtocol.encryptMessage(theMessage);

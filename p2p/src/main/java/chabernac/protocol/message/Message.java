@@ -88,7 +88,9 @@ public class Message implements Serializable{
     if(myIndicators == null){
       myIndicators = new ArrayList< MessageIndicator >();
     }
-    myIndicators.add( anIndicator );
+    if(!myIndicators.contains( anIndicator )){
+        myIndicators.add( anIndicator );
+    }
 //    myMessageId = UUID.randomUUID();
   }
   
@@ -129,6 +131,11 @@ public class Message implements Serializable{
   public String getHeader(String aHeader){
     if(myHeaders == null) return null;
     return myHeaders.get(aHeader);
+  }
+  
+  public String getHeader(String aHeader, String aDefault){
+      if(!containsHeader( aHeader )) return aDefault;
+      return myHeaders.get(aHeader);
   }
   
   public boolean containsHeader(String aHeader){
