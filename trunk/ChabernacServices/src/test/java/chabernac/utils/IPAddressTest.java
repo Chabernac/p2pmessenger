@@ -5,13 +5,6 @@
 package chabernac.utils;
 
 import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -94,5 +87,15 @@ public class IPAddressTest extends TestCase {
   public void testGetNetworkPrefixLengthForLocalIp() throws IOException{
     assertEquals("127.0.0.1/8", IPAddress.getIPAddressForLocalIP("127.0.0.1").getIpAddressWithNetworkPrefixLength());
 //    assertEquals("192.168.1.3/24", IPAddress.getNetworkPrefixLengthForLocalIp("192.168.1.3").getIpAddressWithNetworkPrefixLength());
+  }
+  
+  public void testIsIpAddress(){
+      assertEquals( true, IPAddress.isIpAddress( "10.240.251.46/22" ) );
+      assertEquals( true, IPAddress.isIpAddress( "10.240.251.46/-1" ) );
+  }
+  
+  public void testIpWithNegativeNetworkPrefix() throws InvalidIpAddressException{
+      IPAddress theAddress = new IPAddress( "10.240.251.46/-1" );
+      assertEquals( "10.240.251.46", theAddress.getIPAddressOnly() );
   }
 }

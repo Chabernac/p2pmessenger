@@ -21,7 +21,7 @@ public class IPAddress {
 
 	private final int[] myParts = new int[4];
 	private int myNetworkPrefixLength = -1;
-	private final static Pattern PATTERN = Pattern.compile("(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})(?:/(\\d{1,3}))?");
+	private final static Pattern PATTERN = Pattern.compile("(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})(?:/([-]{0,1}\\d{1,3}))?");
 
 	public static IPAddress getLocalIPAddress() throws InvalidIpAddressException {
 		try {
