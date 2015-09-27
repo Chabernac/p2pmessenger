@@ -1,0 +1,712 @@
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\aa\resource\AATitle_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\aa\resource\AAMessage_SRC.ser
+**********************************************************************
+D;R201103;D1DPO2P;AA0026_-101;ATSafe: deze actie is niet mogelijk in deze periode.;ATSafe: cette action n'est pas autorisée dans cette période.;ATSafe: deze actie is niet mogelijk in deze periode.
+I;R201103;D1DPO2P;AA0026_-101;ATSafe: deze actie is niet mogelijk in deze periode.;ATSafe: cette action n'est pas autorisée dans cette période.;ATSafe: deze actie is niet mogelijk in deze periode.
+I;R201103;D1DAB1L;AA0026_-19;ATSafe: het bezoek werd bewaard ;ATSafe: la visite a été sauvegardée;ATSafe: la visite a été sauvegardée
+D;R201103;D1DPO2P;AA0028;ATSafe is niet beschikbaar;ATSafe n'est pas disponible;ATSafe pas connecté
+I;R201103;D1DPO2P;AA0028;ATSafe is niet beschikbaar;ATSafe n'est pas disponible;ATSafe pas connecté
+I;R201103;D1DAB1L;AA0030;De schijfruimte op het ATS toestel is voor {0} % opgebruikt.;L''espace disque de l''ATS est utilisé pour {0} %;L''espace disque de l''ATS est utilisé pour {0} %
+I;R201103;D1DPO2P;AA0031;Er zijn biljetten die niet aan een kas zijn toegewezen, gelieve het contact center te contacteren;Il y a des billets qui ne sont pas attribués à une caisse, veuillez contacter le Contact Center;Il y a des billets qui ne sont pas attribués à une caisse, veuillez contacter le Contact Center
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\aa\resource\AAMnemonic_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\aa\resource\AALabelParm_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\aa\resource\AAPrintLabel_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\ab\resource\ABTitle_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\ab\resource\ABMessage_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\ab\resource\ABMnemonic_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\ab\resource\ABLabelParm_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\ab\resource\ABPrintLabel_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\ac\resource\ACMessage_SRC.ser
+**********************************************************************
+I;R201103;D1DPO1I;AC0076;Deze aanvraag bestaat reeds.;Cette demande existe déjà.;Cette demande existe déjà.
+I;R201103;D1DPO1I;AC0077;Deze aanvraag is reeds verwerkt.;Cette demande est déjà effectuée.;Cette demande est déjà effectuée.
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\ad\resource\ADTitle_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\ad\resource\ADMessage_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\ad\resource\ADMnemonic_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\ag\resource\AGTitle_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\ag\resource\AGMessage_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\ag\resource\AGMnemonic_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\ah\resource\AHURL_SRC.ser
+**********************************************************************
+I;R201103;D1DAB1L;ATS_APPLET_URL_D;https://www.it.fe.axa.be/bea_wls_internal_proakt/classes/proaktwebservice@ProAKTMgmtApp/-;https://www.it.fe.axa.be/bea_wls_internal_proakt/classes/proaktwebservice@ProAKTMgmtApp/-;https://www.it.fe.axa.be/bea_wls_internal_proakt/classes/proaktwebservice@ProAKTMgmtApp/-
+I;R201103;D1DAB1L;ATS_APPLET_URL_P;https://www.fe.axa.be/bea_wls_internal_proakt/classes/proaktwebservice@ProAKTMgmtApp/-;https://www.fe.axa.be/bea_wls_internal_proakt/classes/proaktwebservice@ProAKTMgmtApp/-;https://www.fe.axa.be/bea_wls_internal_proakt/classes/proaktwebservice@ProAKTMgmtApp/-
+I;R201103;D1DAB1L;ATS_APPLET_URL_STA;https://www.stg.fe.axa.be/bea_wls_internal_proakt/classes/proaktwebservice@ProAKTMgmtApp/-;https://www.stg.fe.axa.be/bea_wls_internal_proakt/classes/proaktwebservice@ProAKTMgmtApp/-;https://www.stg.fe.axa.be/bea_wls_internal_proakt/classes/proaktwebservice@ProAKTMgmtApp/-
+I;R201103;D1DAB1L;ATS_APPLET_URL_STD;https://www.ft.fe.axa.be/bea_wls_internal_proakt/classes/proaktwebservice@ProAKTMgmtApp/-;https://www.ft.fe.axa.be/bea_wls_internal_proakt/classes/proaktwebservice@ProAKTMgmtApp/-;https://www.ft.fe.axa.be/bea_wls_internal_proakt/classes/proaktwebservice@ProAKTMgmtApp/-
+I;R201103;D1DAB1V;ATS_DOWNLOAD_URL_D;\\nc0fsr02\IVATS_Backup_IT\DHAPI.DAT;\\nc0fsr02\IVATS_Backup_IT\DHAPI.DAT;\\nc0fsr02\IVATS_Backup_IT\DHAPI.DAT
+I;R201103;D1DAB1V;ATS_DOWNLOAD_URL_P;\\nc0fsr02\IVATS_Backup\DHAPI.DAT;\\nc0fsr02\IVATS_Backup\DHAPI.DAT;\\nc0fsr02\IVATS_Backup\DHAPI.DAT
+I;R201103;D1DAB1V;ATS_DOWNLOAD_URL_STA;\\nc0fsr02\IVATS_Backup_STG\DHAPI.DAT;\\nc0fsr02\IVATS_Backup_STG\DHAPI.DAT;\\nc0fsr02\IVATS_Backup_STG\DHAPI.DAT
+I;R201103;D1DAB1V;ATS_DOWNLOAD_URL_STD;\\nc0fsr02\IVATS_Backup_FT\DHAPI.DAT;\\nc0fsr02\IVATS_Backup_FT\DHAPI.DAT;\\nc0fsr02\IVATS_Backup_FT\DHAPI.DAT
+D;R201103;D1DAB1L;ATS_WS_URL_D;http://www.it.fe.axa.be/ProAKTWebService/ProAKTDBService?WSDL;http://www.it.fe.axa.be/ProAKTWebService/ProAKTDBService?WSDL;http://www.it.fe.axa.be/ProAKTWebService/ProAKTDBService?WSDL
+I;R201103;D1DAB1L;ATS_WS_URL_D;https://www.it.fe.axa.be/ProAKTWebService/ProAKTDBService?WSDL;https://www.it.fe.axa.be/ProAKTWebService/ProAKTDBService?WSDL;https://www.it.fe.axa.be/ProAKTWebService/ProAKTDBService?WSDL
+I;R201103;D1DAB1L;ATS_WS_URL_STD;https://www.ft.fe.axa.be/ProAKTWebService/ProAKTDBService?WSDL;https://www.ft.fe.axa.be/ProAKTWebService/ProAKTDBService?WSDL;https://www.ft.fe.axa.be/ProAKTWebService/ProAKTDBService?WSDL
+D;R201103;D1DAB1L;ATS_WS_URL_STD;http://www.ft.fe.axa.be/ProAKTWebService/ProAKTDBService?WSDL;http://www.ft.fe.axa.be/ProAKTWebService/ProAKTDBService?WSDL;http://www.ft.fe.axa.be/ProAKTWebService/ProAKTDBService?WSDL
+I;R201103;D1NXA19;AangifteDiefstal Epro;https://www.fe.axa.be/xnp/epro/FileServer?filename=/2742008.pdf&target=sw;https://www.fe.axa.be/xnp/epro/FileServer?filename=/2752008.pdf&target=sw;https://www.fe.axa.be/xnp/epro/FileServer?filename=/2752008.pdf&target=sw
+D;R201103;D1NXA19;AangifteDiefstalCheques Epro;https://www.fe.axa.be/xnp/epro/FileServer?filename=/2742008.pdf;https://www.fe.axa.be/xnp/epro/FileServer?filename=/2752008.pdf;https://www.fe.axa.be/xnp/epro/FileServer?filename=/2742008.pdf
+I;R201103;D1NXA19;AangifteDiefstalCheques Epro;https://www.fe.axa.be/xnp/epro/FileServer?filename=/2742008.pdf&target=sw;https://www.fe.axa.be/xnp/epro/FileServer?filename=/2752008.pdf&target=sw;https://www.fe.axa.be/xnp/epro/FileServer?filename=/2742008.pdf&target=sw
+D;R201103;D1NXA19;Afrekening Epro;https://www.fe.axa.be/xnp/epro/FileServer?filename=/{0}.pdf;https://www.fe.axa.be/xnp/epro/FileServer?filename=/{0}.pdf;https://www.fe.axa.be/xnp/epro/FileServer?filename=/{0}.pdf
+I;R201103;D1NXA19;Afrekening Epro;https://www.fe.axa.be/xnp/epro/FileServer?filename=/{0}.pdf&target=sw;https://www.fe.axa.be/xnp/epro/FileServer?filename=/{0}.pdf&target=sw;https://www.fe.axa.be/xnp/epro/FileServer?filename=/{0}.pdf&target=sw
+D;R201103;D1NXA19;Beurs - Effecten Epro;https://www.fe.axa.be/xnp/epro/FileServer?filename=/{0}.pdf;https://www.fe.axa.be/xnp/epro/FileServer?filename=/{0}.pdf;https://www.fe.axa.be/xnp/epro/FileServer?filename=/{0}.pdf
+I;R201103;D1NXA19;Beurs - Effecten Epro;https://www.fe.axa.be/xnp/epro/FileServer?filename=/{0}.pdf&target=sw;https://www.fe.axa.be/xnp/epro/FileServer?filename=/{0}.pdf&target=sw;https://www.fe.axa.be/xnp/epro/FileServer?filename=/{0}.pdf&target=sw
+I;R201103;D1NXA19;BijlageVereniging Epro;https://www.fe.axa.be/xnp/epro/FileServer?filename=/{0}.pdf&target=sw;https://www.fe.axa.be/xnp/epro/FileServer?filename=/{0}.pdf&target=sw;https://www.fe.axa.be/xnp/epro/FileServer?filename=/{0}.pdf&target=sw
+D;R201103;D1TOO33;Effecten - Coupons Epro;https://www.fe.axa.be/xnp/epro/FileServer?filename=/{0}.pdf;https://www.fe.axa.be/xnp/epro/FileServer?filename=/{0}.pdf;https://www.fe.axa.be/xnp/epro/FileServer?filename=/{0}.pdf
+I;R201103;D1TOO33;Effecten - Coupons Epro;https://www.fe.axa.be/xnp/epro/FileServer?filename=/{0}.pdf&target=sw;https://www.fe.axa.be/xnp/epro/FileServer?filename=/{0}.pdf&target=sw;https://www.fe.axa.be/xnp/epro/FileServer?filename=/{0}.pdf&target=sw
+D;R201103;D1DAB1L;OVADWF_D;http://s01ap278.axa.be:2430/ovadwf/BaliePdfRetrieverServlet;http://s01ap278.axa.be:2430/ovadwf/BaliePdfRetrieverServlet;http://s01ap278.axa.be:2430/ovadwf/BaliePdfRetrieverServlet
+I;R201103;D1DAB1L;OVADWF_D;http://lc0app14:2430/ovadwf/BaliePdfRetrieverServlet;http://lc0app14:2430/ovadwf/BaliePdfRetrieverServlet;http://lc0app14:2430/ovadwf/BaliePdfRetrieverServlet
+D;R201103;D1DAB1L;OVADWF_STD;http://s01ap278.axa.be:4430/ovadwf/BaliePdfRetrieverServlet;http://s01ap278.axa.be:4430/ovadwf/BaliePdfRetrieverServlet;http://s01ap278.axa.be:4430/ovadwf/BaliePdfRetrieverServlet
+I;R201103;D1DAB1L;OVADWF_STD;http://lc0app15:4430/ovadwf/BaliePdfRetrieverServlet;http://lc0app15:4430/ovadwf/BaliePdfRetrieverServlet;http://lc0app15:4430/ovadwf/BaliePdfRetrieverServlet
+D;R201103;D1NXA19;Sicavs - Effecten Epro;https://www.fe.axa.be/xnp/epro/FileServer?filename=/{0}.pdf;https://www.fe.axa.be/xnp/epro/FileServer?filename=/{0}.pdf;https://www.fe.axa.be/xnp/epro/FileServer?filename=/{0}.pdf
+I;R201103;D1NXA19;Sicavs - Effecten Epro;https://www.fe.axa.be/xnp/epro/FileServer?filename=/{0}.pdf&target=sw;https://www.fe.axa.be/xnp/epro/FileServer?filename=/{0}.pdf&target=sw;https://www.fe.axa.be/xnp/epro/FileServer?filename=/{0}.pdf&target=sw
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\ah\resource\AHLabel_SRC.ser
+**********************************************************************
+I;R201103;D1DAB1M;Antenne;Antenne;Antenne;Antenne
+I;R201103;D1NXA19;Beantwoord onderstaande vragen;Beantwoord onderstaande vragen;Répondez aux questions suivantes; 
+I;R201103;D1TOO33;Bewijsstuk;Bewijsstuk factuur, rekeninguittreksel,... :;Justificatif facture, extrait de compte... :;Beleg: Rechnung, Kontoauszug ... :
+I;R201103;D1NXA19;Bijkomende argumentatie;Bijkomende argumentatie/informatie;Arguments/informations complémentaires; 
+I;R201103;D1TOO33;Datum activering;Datum activering;Date d´activation; 
+D;R201103;D1TOO33;Datum activering;Datum activering;Datum activering (FR);
+D;R201103;D1TOO33;Datum laatste ini-file;Datum laatste aanvraag/aanmaak;Datum laatste aanvraag/aanmaak (FR);Datum laatste aanvraag/aanmaak (FR)
+I;R201103;D1TOO33;Datum laatste ini-file;Datum laatste aanvraag/aanmaak;Date dernière demand/création; 
+D;R201103;D1TOO33;Gebruiker laatste aanvraag;Gebruiker laatste aanvraag;Gebruiker laatste aanvraag (FR);
+I;R201103;D1TOO33;Gebruiker laatste aanvraag;Gebruiker laatste aanvraag;Utilisateur dernière demande; 
+D;R201103;D1TOO33;Gebruikers;Gebruikers;Gebruikers (FR);
+I;R201103;D1TOO33;Gebruikers;Gebruikers;Utilisateurs; 
+I;R201103;D1DAB1L;Na openingsuur;Na openingsuur;Après l'heure d'ouverture;Après l'heure d'ouverture
+I;R201103;D1DAB1L;Na sluitingsuur;Na sluitingsuur;Après l'heure de cloture;Après l'heure de cloture
+I;R201103;D1NXA19;Normale transactie voor klant;Voor deze klant een "normale transactie" volgens handelsactiviteit / vermogen? Opinie agent;Pour ce client une "transaction normale" en fonction de l´activité commerciale/du patrimoine? Avis de l´agent; 
+D;R201103;D1TOO33;Parameterbestand aangevraagd;Parameterbestand aangevraagd;Parameterbestand aangevraagd (FR);
+I;R201103;D1TOO33;Parameterbestand aangevraagd;Parameterbestand aangevraagd;Fichier paramètres demandé; 
+D;R201103;D1TOO33;Status pincode;Status pincode;Status pincode (FR);Status pincode
+I;R201103;D1TOO33;Status pincode;Status pincode;Etat code PIN; 
+I;R201103;D1DAB1L;Voor openingsuur;Voor openingsuur;Avant l'heure d'ouverture;Avant l'heure d'ouverture
+I;R201103;D1DAB1L;Voor sluitingsuur;Voor sluitingsuur;Avant l'heure de cloture;Avant l'heure de cloture
+I;R201103;D1TOO33;afkomst cash storting;Eindbedrag cash storting afkomstig van?;Provenance du montant final versement cash?;Endbetrag Bareinzahlung stammt aus?
+I;R201103;D1TOO33;eentest;eentest;eentest;eentest
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\ah\resource\AHTitle_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\ah\resource\AHMessage_SRC.ser
+**********************************************************************
+I;R201103;D1TOO33;AH1069;Cash stortingen groter dan {0} EUR zijn niet toegelaten. Gelieve de nodige verrichtingen te annuleren en met ´Einde bezoek´ af te sluiten.;Les versements supérieurs à {0} EUR ne sont pas autorisés. Veuillez annuler les opérations requises et clôturer à l´aide de ´Fin visite´.; 
+I;R201103;D1DAB1S;AH1159;Actie op dit moment niet mogelijk. Er staat een andere verrichting in uitvoering op deze rekening.;Transaction impossible pour l'instant. Une autre transaction est actuellement en exécution sur ce compte.;Transaction impossible pour l'instant. Une autre transaction est actuellement en exécution sur ce compte.
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\ah\resource\AHMnemonic_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\ah\resource\AHLabelParm_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\ah\resource\AHPrintLabel_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\ah\resource\AHRecordLabel_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\ak\resource\AKTitle_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\ak\resource\AKMessage_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\ak\resource\AKMnemonic_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\am\resource\AMTitle_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\am\resource\AMMessage_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\am\resource\AMMnemonic_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\am\resource\AMLabelParm_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\at\resource\ATTitle_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\at\resource\ATMessage_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\at\resource\ATMnemonic_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\at\resource\ATLabelParm_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\at\resource\ATPrintLabel_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\az\resource\AZMessage_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\az\resource\AZPrintLabel_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\bo\resource\BOTitle_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\bo\resource\BOMessage_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\bo\resource\BOMnemonic_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\bo\resource\BOPrintLabel_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\bp\resource\BPTitle_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\bp\resource\BPMessage_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\bp\resource\BPMnemonic_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\bp\resource\BPPrintLabel_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\cf\resource\CFTitle_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\cf\resource\CFMnemonic_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\cm\resource\CMTitle_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\cm\resource\CMMessage_SRC.ser
+**********************************************************************
+I;R201103;D1DAB1M;CM0069;Opgepast!<br>Deze wijzigingen moeten ook in release {0} toegevoegd worden.;Opgepast!<br>Deze wijzigingen moeten ook in release {0} toegevoegd worden.;Opgepast!<br>Deze wijzigingen moeten ook in release {0} toegevoegd worden.
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\cm\resource\CMMnemonic_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\cm\resource\CMLabelParm_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\ec\resource\ECTitle_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\ec\resource\ECMessage_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\ec\resource\ECMnemonic_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\ff\resource\FFTitle_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\ff\resource\FFMessage_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\ff\resource\FFMnemonic_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\ff\resource\FFLabelParm_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\ff\resource\FFPrintLabel_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\fm\resource\FMTitle_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\fm\resource\FMMessage_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\fm\resource\FMMnemonic_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\fm\resource\FMLabelParm_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\fm\resource\FMPrintLabel_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\fp\resource\FPTitle_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\fp\resource\FPMessage_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\fp\resource\FPMnemonic_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\fp\resource\FPPrintLabel_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\gc\resource\GCMessage_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\gl\resource\GLTitle_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\gl\resource\GLMessage_SRC.ser
+**********************************************************************
+I;R201103;D1DAB1K;GL0167;ITP is verboden voor dit type verkooppunt (enkel voor Agent FM, kantoor en technisch VP zijn ITPs toegelaten.;ITP is verboden voor dit type verkooppunt (enkel voor Agent FM, kantoor en technisch VP zijn ITPs toegelaten; 
+I;R201103;D1DAB1K;GL0168;ITP is verboden ten gevolge van de status van het verkooppunt;ITP is verboden ten gevolge van de status van het verkooppunt; 
+I;R201103;D1DAB1K;GL0169;fout in azimut routine;fout in azimut routine; 
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\gl\resource\GLMnemonic_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\gl\resource\GLLabelParm_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\gl\resource\GLPrintLabel_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\gr\resource\GRTitle_SRC.ser
+**********************************************************************
+I;R201103;D1DAB1M;GRS0006ADD;Toevoegen B2B domiciliëring van {0};Introduction d''une domiciliation B2B pour le {0}; 
+I;R201103;D1DAB1M;GRS0006CHANGE;Wijzigen B2B domiciliëring van {0};Modification d''une domiciliation B2B pour le {0}; 
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\gr\resource\GRMessage_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\gr\resource\GRMnemonic_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\gr\resource\GRLabelParm_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\gr\resource\GRPrintLabel_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\ha\resource\HATitle_SRC.ser
+**********************************************************************
+D;R201103;D1DAB1S;HAS0061;Consultatie/wijziging Euro-obligatie orders;Consulter/modifier les ordres Euro-obligations;
+I;R201103;D1DAB1S;HAS0061;Consultatie Euro-obligatie orders;Consulter les ordres Euro-obligations; 
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\ha\resource\HAMessage_SRC.ser
+**********************************************************************
+I;R201103;D1DAB1S;HA1159;Actie op dit moment niet mogelijk. Er staat een andere verrichting in uitvoering op deze rekening;Transaction impossible pour l'instant. Une autre transaction est actuellement en exécution sur ce compte;Transaction impossible pour l'instant. Une autre transaction est actuellement en   exécution sur ce compte
+I;R201103;D1OFF1Z;HA6990;Nieuw krediet niet fiscaal aftrekbaar;Nouveau credit non-fiscalement déductible;Nieuw krediet niet fiscaal aftrekbaar
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\ha\resource\HAMnemonic_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\ha\resource\HALabelParm_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\ha\resource\HAPrintLabel_SRC.ser
+**********************************************************************
+D;R201103;D1DAB1S;HAD0042_Bd_LOA_mark;<FONT 80>O  Dit vakje dient te worden aangekruist indien de klant niet wil ingelicht te worden over direct marketingacties van de bank ;<FONT 80>O  Cette case doit être cochée si le client ne veut pas être informé des actions de marketing direct de la banque.;<FONT 80>O  Dieses Kästchen ist anzukreuzen, wenn der Kunde nicht über Direktmarketing-Aktionen der Bank nicht informiert werden möchte.
+I;R201103;D1DAB1S;HAD0042_Bd_LOA_mark;<FONT 80>O  Dit vakje dient te worden aangekruist indien de klant niet wil ingelicht worden over direct marketingacties van de bank ;<FONT 80>O  Cette case doit être cochée si le client ne veut pas être informé des actions de marketing direct de la banque.;<FONT 80>O  Dieses Kästchen ist anzukreuzen, wenn der Kunde nicht über Direktmarketing-Aktionen der Bank nicht informiert werden möchte.
+I;R201103;D1DAB1S;HAD0042_Verz_Opgemaakt_3; originelen. Elke partij verklaart haar exemplaar ontvangen te hebben.<BR>; originaux. Chaque partie déclare avoir reçu son exemplaire.<BR>; originalen. Jede Partei erklärt ihr Exemplar erhalten zu haben.
+D;R201103;D1DAB1S;HAD0043_Bd_Bplus_04Bis1_3;<FONT 61>4.3<FONT 60> De kredietnemer heeft het recht om, zonder opgaven van redenen de kredietovereenkomst te herroepen binnen een termijn van 14 dagen. Deze termijn gaat in op de dag van het sluiten van de kredietovereenkomst, of op de dag waarop de kredietnemer de 'Bijzondere' en 'Algemene Voorwaarden' ontvangt als dit na het sluiten van de kredietovereenkomst gebeurt. De kredietnemer die van dit herroepingsrecht gebruik wenst te maken, dient de kredietgever hiervan via een aangetekend schrijven in kennis te stellen. De termijn van 14 dagen wordt geacht te zijn nageleefd indien de kennisgeving voor het verstrijken van deze termijn is verzonden, en de kredietnemer onverwijld en uiterlijk binnen 30 dagen na verzending van de kennisgeving het kapitaal teruggeeft aan de kredietgever. Bovendien is de kredietnemer op dit kapitaal rente verschuldigd vanaf de datum waarop het krediet is opgenomen tot de datum waarop het kapitaal wordt terugbetaald, berekend aan de hand van de overeengekomen debetrentevoet. Deze rente dient betaald te worden uiterlijk binnen de 30 dagen nadat hij de kennisgeving van de herroeping aan de kredietgever heeft gestuurd. De kredietnemer is geen enkele andere vergoeding verschuldigd, met uitzondering van de vergoeding voor niet voor terugbetaling in aanmerking komende kosten die de kredietgever aan een overheidsinstelling heeft betaald. De betalingen die werden verricht na het sluiten van de kredietovereenkomst, worden teruggestort aan de kredietnemer binnen de 30 dagen volgend op de herroeping. De herroeping van de kredietovereenkomst brengt van rechtswege de ontbinding van de aangehechte overeenkomsten met zich mee. <BR>Indien de kredietnemer het herroepingsrecht inroept, zijn de artikelen 53, 54 en 61 van de Wet van 6 april 2010 betreffende de marktrpaktijken en consumentenbescherming niet van toepassing. ;<FONT 61>4.3<FONT 60> Le crédité a le droit de renoncer sans motif au contrat de crédit pendant un délai de 14 jours. Ce délai commence à courir le jour de la conclusion de la convention de crédit ou le jour où les crédités reçoivent  les 'Conditions particulières' et 'générales', si cette réception est postérieure à la conclusion de la convention de crédit. Le crédité qui souhaite exercer son droit de rétractation, doit le notifier au prêteur  par lettre recommandée. Le délai de 14 jours est présumé respecté si la notification a été envoyée avant l'expiration de ce délai et si le crédité restitue le capital au créditeur sans retard et au plus tard 30 jours après avoir envoyé la notification. Par ailleurs, le crédité est redevable d'un intérêt à partir de la date à laquelle le crédit a été prélevé et jusqu'à la date du remboursement du capital, calculé sur la base du taux d'intérêt débiteur convenu. Le crédité n'est redevable d'aucune autre indemnité, excepté une indemnité pour les frais non récupérables que le prêteur aurait payés à une institution publique. Les paiements qui sont effectués après la conclusion du contrat de crédit sont remboursés au crédité dans les 30 jours suivant la rétractation. La rétractation du contrat de crédit entraîne la résolution de plein droit des contrats annexes. Si le crédité invoque le droit de rétractation, les articles 53, 54 et 61 de la loi du 6 avril 2010 relative aux pratiques du marché et à la protection du consommateur, ne s'appliquent pas.;<FONT 61>4.3<FONT 60> Der Kreditnehmer hat das Recht, ohne Begründung vom Darlehensvertrag innerhalb von 14 Tagen zurückzutreten. Diese Frist beginnt zum Abschlusstermin des Darlehensvertrags oder am Tag, an dem der Kreditnehmer die ''Sonderbedingungen'' und die ''Allgemeinen Geschäftsbedingungen'' erhält, wenn dies nach Abschluss des Darlehensvertrags erfolgt. Der Kreditnehmer, der dieses Rücktrittsrecht nutzen möchte, hat dies dem Kreditgeber per Einschreiben zu melden. Die 14-tägige Frist gilt als eingehalten, wenn die Bekanntgabe vor Ablauf dieser Frist versandt wurde und der Kreditnehmer gleichzeitig die erhaltenen Beträge unverzüglich und spätestens innerhalb von 30 Tage nach Versand der Bekanntgabe zurückgibt. Außerdem schuldet der Kreditnehmer Zinsen ab dem Tag, an dem das Darlehen aufgenommen wurde, bis zu dem Tag, an dem das Kapital zurückerstattet wird, berechnet zum vereinbarten Sollzinssatz und anhand folgender Formel: (aufgenommener Darlehensbetrag x Anzahl Tage x Sollzinssatz auf Jahresbasis) / 365 Tage. Diese Zinsen sind spätestens innerhalb von 30 Tagen zu zahlen, nachdem der Kreditnehmer dem Kreditgeber die Bekanntgabe des Rücktritts zugeschickt hat. Der Kreditnehmer schuldet keine andere Entschädigung, außer der Entschädigung für die nicht für eine Rückerstattung in Betracht kommenden Kosten, die der Kreditgeber einer Behörde bezahlt hat. Die Zahlungen nach Abschluss des Darlehensvertrags werden dem Kredietnehmer innerhalb von 30 Tagen nach dem Rücktritt zurückerstattet. <BR>Die Auflösung des Darlehensvertrags geht von Rechts wegen mit der Auflösung der damit zusammenhängenden Verträge einher.  Macht der Kreditnehmer von dem Rücktrittsrecht Gebrauch, so finden die Artikel 53, 54 und 61 des Gesetzes vom 6 April 2010 über die Handelspraktiken sowie die Aufklärung und den Schutz der Verbraucher keine Anwendung.
+I;R201103;D1DAB1S;HAD0043_Bd_Bplus_04Bis1_3;<FONT 61>4.3<FONT 60> De kredietnemer heeft het recht om, zonder opgaven van redenen de kredietovereenkomst te herroepen binnen een termijn van 14 dagen. Deze termijn gaat in op de dag van het sluiten van de kredietovereenkomst, of op de dag waarop de kredietnemer de 'Bijzondere' en 'Algemene Voorwaarden' ontvangt als dit na het sluiten van de kredietovereenkomst gebeurt. De kredietnemer die van dit herroepingsrecht gebruik wenst te maken, dient de kredietgever hiervan via een aangetekend schrijven in kennis te stellen. De termijn van 14 dagen wordt geacht te zijn nageleefd indien de kennisgeving voor het verstrijken van deze termijn is verzonden, en de kredietnemer onverwijld en uiterlijk binnen 30 dagen na verzending van de kennisgeving het kapitaal teruggeeft aan de kredietgever. Bovendien is de kredietnemer op dit kapitaal rente verschuldigd vanaf de datum waarop het krediet is opgenomen tot de datum waarop het kapitaal wordt terugbetaald, berekend aan de hand van de overeengekomen debetrentevoet. Deze rente dient betaald te worden uiterlijk binnen de 30 dagen nadat hij de kennisgeving van de herroeping aan de kredietgever heeft gestuurd. De kredietnemer is geen enkele andere vergoeding verschuldigd, met uitzondering van de vergoeding voor niet voor terugbetaling in aanmerking komende kosten die de kredietgever aan een overheidsinstelling heeft betaald. De betalingen die werden verricht na het sluiten van de kredietovereenkomst, worden teruggestort aan de kredietnemer binnen de 30 dagen volgend op de herroeping. De herroeping van de kredietovereenkomst brengt van rechtswege de ontbinding van de aangehechte overeenkomsten met zich mee. <br>Indien de kredietnemer het herroepingsrecht inroept, zijn de artikelen 53, 54 en 61 van de Wet van 6 april 2010 betreffende de marktpraktijken en consumentenbescherming niet van toepassing. ;<FONT 61>4.3<FONT 60> Le crédité a le droit de renoncer sans motif au contrat de crédit pendant un délai de 14 jours. Ce délai commence à courir le jour de la conclusion de la convention de crédit ou le jour où les crédités reçoivent  les 'Conditions particulières' et 'générales', si cette réception est postérieure à la conclusion de la convention de crédit. Le crédité qui souhaite exercer son droit de rétractation, doit le notifier au prêteur  par lettre recommandée. Le délai de 14 jours est présumé respecté si la notification a été envoyée avant l'expiration de ce délai et si le crédité restitue le capital au créditeur sans retard et au plus tard 30 jours après avoir envoyé la notification. Par ailleurs, le crédité est redevable d'un intérêt à partir de la date à laquelle le crédit a été prélevé et jusqu'à la date du remboursement du capital, calculé sur la base du taux d'intérêt débiteur convenu. Le crédité n'est redevable d'aucune autre indemnité, excepté une indemnité pour les frais non récupérables que le prêteur aurait payés à une institution publique. Les paiements qui sont effectués après la conclusion du contrat de crédit sont remboursés au crédité dans les 30 jours suivant la rétractation. La rétractation du contrat de crédit entraîne la résolution de plein droit des contrats annexes. Si le crédité invoque le droit de rétractation, les articles 53, 54 et 61 de la loi du 6 avril 2010 relative aux pratiques du marché et à la protection du consommateur, ne s'appliquent pas.;<FONT 61>4.3<FONT 60> Der Kreditnehmer hat das Recht, ohne Begründung vom Darlehensvertrag innerhalb von 14 Tagen zurückzutreten. Diese Frist beginnt zum Abschlusstermin des Darlehensvertrags oder am Tag, an dem der Kreditnehmer die ''Sonderbedingungen'' und die ''Allgemeinen Geschäftsbedingungen'' erhält, wenn dies nach Abschluss des Darlehensvertrags erfolgt. Der Kreditnehmer, der dieses Rücktrittsrecht nutzen möchte, hat dies dem Kreditgeber per Einschreiben zu melden. Die 14-tägige Frist gilt als eingehalten, wenn die Bekanntgabe vor Ablauf dieser Frist versandt wurde und der Kreditnehmer gleichzeitig die erhaltenen Beträge unverzüglich und spätestens innerhalb von 30 Tage nach Versand der Bekanntgabe zurückgibt. Außerdem schuldet der Kreditnehmer Zinsen ab dem Tag, an dem das Darlehen aufgenommen wurde, bis zu dem Tag, an dem das Kapital zurückerstattet wird, berechnet zum vereinbarten Sollzinssatz und anhand folgender Formel: (aufgenommener Darlehensbetrag x Anzahl Tage x Sollzinssatz auf Jahresbasis) / 365 Tage. Diese Zinsen sind spätestens innerhalb von 30 Tagen zu zahlen, nachdem der Kreditnehmer dem Kreditgeber die Bekanntgabe des Rücktritts zugeschickt hat. Der Kreditnehmer schuldet keine andere Entschädigung, außer der Entschädigung für die nicht für eine Rückerstattung in Betracht kommenden Kosten, die der Kreditgeber einer Behörde bezahlt hat. Die Zahlungen nach Abschluss des Darlehensvertrags werden dem Kredietnehmer innerhalb von 30 Tagen nach dem Rücktritt zurückerstattet. <BR>Die Auflösung des Darlehensvertrags geht von Rechts wegen mit der Auflösung der damit zusammenhängenden Verträge einher.  Macht der Kreditnehmer von dem Rücktrittsrecht Gebrauch, so finden die Artikel 53, 54 und 61 des Gesetzes vom 6 April 2010 über die Handelspraktiken sowie die Aufklärung und den Schutz der Verbraucher keine Anwendung.
+D;R201103;D1DAB1S;HAD0043_Bd_Bplus_05_02;<FONT 61>5.2<FONT 60> De kredietnemers en waarborgverstrekkers verklaren ingelicht te zijn over het feit dat persoonsgegevens met betrekking tot hen worden verwerkt door AXA Bank Europe nv,  Vorstlaan 25 te 1170 Brussel, met het oog op het beheer van het klantenbestand, rekeningenbeheer, kredietverlening en -beheer, het globaal overzicht van de cliënteel, de controle van verrichtingen om onregelmatigheden en frauduleuze handelingen op te sporen of te voorkomen met inbegrip van deze gesteld door tussenpersonen, en commerciële prospectie. Ze geven toelating tot de verwerking van de meegedeelde gegevens. Om een optimale service te verlenen kunnen deze gegevens worden meegedeeld aan de ondernemingen van de AXA groep in België of aan de ondernemingen die ermee in verbinding staan. Alle informatie zal met de grootste discretie worden behandeld. De betrokkenen kunnen zich gratis en op eenvoudig verzoek verzetten tegen het gebruik van hun gegevens voor commerciële prospectie. Zij hebben kosteloos en volgens door de Koning bepaalde voorwaarden toegang tot de hen betreffende gegevens ten einde verkeerde persoonsgegevens te laten verbeteren. Zij hebben eveneens het recht om toe te zien op de schrapping van gegevens waarvan de verwerking en het behoud door de wet zouden verboden zijn. Zij hebben tot slot het recht om het gebruik van de hen betreffende persoonsgegevens die, rekening houdend met de verwerking, als onvolledig of irrelevant beschouwd worden, te verbieden. Wanneer zij hun rechten wensen uit te oefenen, moet een gedateerd en ondertekend verzoek, vergezeld van een recto-verso fotocopie van hun identiteitskaart, worden gezonden naar AXA Bank Europe nv. Bijkomende inlichtingen kunnen verkregen worden bij de Commissie voor de bescherming van de persoonlijke levenssfeer, Hallepoortlaan 5-8 te 1060 Brussel.;<FONT 61>5.2<FONT 60> Les crédités et garants déclarent avoir été informés du fait que les données personnelles qui les concernent sont traitées par AXA Bank Europe SA,  boulevard du Souverain  25 à 1170 Bruxelles, en vue de la gestion du fichier clients, des comptes, de l'octroi et de la gestion des crédits, de l'aperçu global de la clientèle, du contrôle des opérations en vue de la détection ou de la prévention d'irrégularités et d'actes frauduleux, y compris ceux posés par des intermédiaires, et de la prospection commerciale. Ils autorisent le traitement des données communiquées. En vue d'offrir les services les plus appropriés, ces données peuvent être communiquées aux entreprises du Groupe AXA en Belgique ou aux entreprises en relation avec celles-ci. Toutes les informations seront traitées avec la plus grande discrétion. Les personnes concernées peuvent s'opposer gratuitement et sur simple demande à l'usage de leurs données à des fins de prospection commerciale. Elles ont accès gratuitement et conformément à des conditions fixées par le Roi aux données les concernant dans le but de faire corriger des données personnelles erronées. Elles ont également le droit de veiller à la radiation de données dont le traitement et la conservation seraient interdits par la loi. Enfin, elles ont le droit d'interdire l'usage des données personnelles les concernant qui, compte tenu du traitement, sont considérées comme incomplètes ou non pertinentes. Si elles souhaitent exercer leurs droits, une demande datée et signée accompagnée d'une photocopie recto verso de leur carte d'identité devra être envoyée à AXA Bank Europe sa. De plus amples informations peuvent être obtenues auprès de la Commission pour la protection de la vie privée, avenue de la Porte de Halle 5-8 à 1060 Bruxelles.  ;<FONT 61>5.2<FONT 60> Die Kreditnehmer und Bürger erklären, über die Tatsache informiert zu sein, dass persönliche Daten, die sie betreffen, von der AXA Bank Europe AG, Boulevard du Souverain 25 in 1170 Brüssel, im Hinblick auf die Verwaltung der Kundendatei, die Kontenverwaltung, die Gewährung und die Verwaltung von Krediten, die Gesamtübersicht über die Kunden, die Kontrolle der Verrichtungen,um Unregelmäßigkeiten und Betrug zu ermitteln oder vorzubeugen, einschließlich dieser seitens Vermittler, sowie im Hinblick auf  die Kundenwerbung, verarbeitet werden können. Sie erlauben die Bearbeitung der mitgeteilten Daten. Im Interesse einer optimalen Dienstleistung, können diese Daten den Unternehmen der AXA-Gruppe in Belgien oder den mit ihnen verbundenen Unternehmen mitgeteilt werden. Alle Informationen werden mit größter Diskretion behandelt. Die betroffenen Personen können sich kostenlos und durch einfachen Antrag der Verwendung ihrer Daten zu Zwecken der Kundenwerbung widersetzen. Sie haben unentgeltlich und unter den durch den König festgelegten Bedingungen Zugang zu den Daten, die sie betreffen, um falsche Personenangaben berichtigen zu lassen. Sie haben ebenfalls das Recht, darauf zu achten, dass die Daten, deren Verarbeitung und Aufbewahrung durch das Gesetz verboten ist, gelöscht werden. Schließlich haben sie das Recht, die Nutzung der persönlichen Daten zu verbieten, die im Hinblick auf ihre Verarbeitung als unvollständig oder nicht zweckdienlich erachtet werden. Falls sie diese ihnen zustehenden Rechte ausüben wollen, müssen sie der AXA Bank Europe AG einen unterschriebenen Antrag mit Datum zusammen mit einer Fotokopie der Vorder? und Rückseite ihres Personalausweises zusenden. Weiter Informationen sind bei der Kommission für den Schutz des Privatlebens mit Sitz in 1060 Brüssel, Porte de Hal 5-8 erhältlich. 
+I;R201103;D1DAB1S;HAD0043_Bd_Bplus_05_02;<FONT 61>5.2<FONT 60> De kredietnemers en waarborgverstrekkers verklaren ingelicht te zijn over het feit dat persoonsgegevens met betrekking tot hen worden verwerkt door AXA Bank Europe nv,  Vorstlaan 25 te 1170 Brussel, met het oog op het beheer van het klantenbestand, rekeningenbeheer, kredietverlening en -beheer, het globaal overzicht van de cliënteel, de controle van verrichtingen om onregelmatigheden en frauduleuze handelingen op te sporen of te voorkomen met inbegrip van deze gesteld door tussenpersonen, en commerciële prospectie. Ze geven toelating tot de verwerking van de meegedeelde gegevens. Om een optimale service te verlenen kunnen deze gegevens worden meegedeeld aan de ondernemingen van de AXA groep in België of aan de ondernemingen die ermee in verbinding staan. Alle informatie zal met de grootste discretie worden behandeld. De betrokkenen kunnen zich gratis en op eenvoudig verzoek verzetten tegen het gebruik van hun gegevens voor commerciële prospectie. Zij hebben kosteloos en volgens door de Koning bepaalde voorwaarden toegang tot de hen betreffende gegevens ten einde verkeerde persoonsgegevens te laten verbeteren. Zij hebben eveneens het recht om toe te zien op de schrapping van gegevens waarvan de verwerking en het behoud door de wet zouden verboden zijn. Zij hebben tot slot het recht om het gebruik van de hen betreffende persoonsgegevens die, rekening houdend met de verwerking, als onvolledig of irrelevant beschouwd worden, te verbieden. Wanneer zij hun rechten wensen uit te oefenen, moet een gedateerd en ondertekend verzoek, vergezeld van een recto-verso fotokopie van hun identiteitskaart, worden gezonden naar AXA Bank Europe nv. Bijkomende inlichtingen kunnen verkregen worden bij de Commissie voor de bescherming van de persoonlijke levenssfeer, Hallepoortlaan 5-8 te 1060 Brussel.;<FONT 61>5.2<FONT 60> Les crédités et garants déclarent avoir été informés du fait que les données personnelles qui les concernent sont traitées par AXA Bank Europe SA,  boulevard du Souverain  25 à 1170 Bruxelles, en vue de la gestion du fichier clients, des comptes, de l'octroi et de la gestion des crédits, de l'aperçu global de la clientèle, du contrôle des opérations en vue de la détection ou de la prévention d'irrégularités et d'actes frauduleux, y compris ceux posés par des intermédiaires, et de la prospection commerciale. Ils autorisent le traitement des données communiquées. En vue d'offrir les services les plus appropriés, ces données peuvent être communiquées aux entreprises du Groupe AXA en Belgique ou aux entreprises en relation avec celles-ci. Toutes les informations seront traitées avec la plus grande discrétion. Les personnes concernées peuvent s'opposer gratuitement et sur simple demande à l'usage de leurs données à des fins de prospection commerciale. Elles ont accès gratuitement et conformément à des conditions fixées par le Roi aux données les concernant dans le but de faire corriger des données personnelles erronées. Elles ont également le droit de veiller à la radiation de données dont le traitement et la conservation seraient interdits par la loi. Enfin, elles ont le droit d'interdire l'usage des données personnelles les concernant qui, compte tenu du traitement, sont considérées comme incomplètes ou non pertinentes. Si elles souhaitent exercer leurs droits, une demande datée et signée accompagnée d'une photocopie recto verso de leur carte d'identité devra être envoyée à AXA Bank Europe sa. De plus amples informations peuvent être obtenues auprès de la Commission pour la protection de la vie privée, avenue de la Porte de Halle 5-8 à 1060 Bruxelles.  ;<FONT 61>5.2<FONT 60> Die Kreditnehmer und Bürger erklären, über die Tatsache informiert zu sein, dass persönliche Daten, die sie betreffen, von der AXA Bank Europe AG, Boulevard du Souverain 25 in 1170 Brüssel, im Hinblick auf die Verwaltung der Kundendatei, die Kontenverwaltung, die Gewährung und die Verwaltung von Krediten, die Gesamtübersicht über die Kunden, die Kontrolle der Verrichtungen,um Unregelmäßigkeiten und Betrug zu ermitteln oder vorzubeugen, einschließlich dieser seitens Vermittler, sowie im Hinblick auf  die Kundenwerbung, verarbeitet werden können. Sie erlauben die Bearbeitung der mitgeteilten Daten. Im Interesse einer optimalen Dienstleistung, können diese Daten den Unternehmen der AXA-Gruppe in Belgien oder den mit ihnen verbundenen Unternehmen mitgeteilt werden. Alle Informationen werden mit größter Diskretion behandelt. Die betroffenen Personen können sich kostenlos und durch einfachen Antrag der Verwendung ihrer Daten zu Zwecken der Kundenwerbung widersetzen. Sie haben unentgeltlich und unter den durch den König festgelegten Bedingungen Zugang zu den Daten, die sie betreffen, um falsche Personenangaben berichtigen zu lassen. Sie haben ebenfalls das Recht, darauf zu achten, dass die Daten, deren Verarbeitung und Aufbewahrung durch das Gesetz verboten ist, gelöscht werden. Schließlich haben sie das Recht, die Nutzung der persönlichen Daten zu verbieten, die im Hinblick auf ihre Verarbeitung als unvollständig oder nicht zweckdienlich erachtet werden. Falls sie diese ihnen zustehenden Rechte ausüben wollen, müssen sie der AXA Bank Europe AG einen unterschriebenen Antrag mit Datum zusammen mit einer Fotokopie der Vorder? und Rückseite ihres Personalausweises zusenden. Weiter Informationen sind bei der Kommission für den Schutz des Privatlebens mit Sitz in 1060 Brüssel, Porte de Hal 5-8 erhältlich. 
+D;R201103;D1OFF1Z;HAD0043_Bd_LOA_04;<FONT31>Artikel 4 : Inlichtingen<br><FONT 61>4.1<FONT 60> De kredietnemers verklaren dat zij op verzoek van de bank of van de kredietbemiddelaar juiste en volledige informatie hebben verstrekt, nodig om hun vermogenstoestand en terugbetalingscapaciteit te beoordelen. De kredietnemers verbinden er zich toe de bank zonder uitstel op de hoogte te brengen van alle feiten die van aard zijn hun terugbetalingscapaciteit of solvabiliteit nadelig te beïnvloeden. Ze verklaren bovendien dat de kredieten aangegaan worden met een oogmerk dat geacht kan worden vreemd te zijn aan hun handels-, beroeps-, of ambachtelijke activiteiten.<br><FONT 33>4.2<FONT 33> De consument mag geen wisselbrieven of orderbriefjes ondertekenen om de betaling te beloven of te waarborgen van zijn verbintenissen op grond van een kredietovereenkomst. Evenmin mag hij cheques uitschrijven ter waarborg van zijn verbintenissen op grond van een kredietovereenkomst.;<FONT 31>Article 4 : Renseignements<br><FONT 61>4.1<FONT 60> Les crédités déclarent que, à la requête de la banque ou de l'intermédiaire de crédit, ils ont fourni des informations correctes et complètes, nécessaires pour évaluer leur situation patrimoniale et leur capacité de remboursement. Les crédités s'engagent à informer la banque sans délai de tous les faits de nature à avoir un effet préjudiciable sur leur capacité de remboursement ou leur solvabilité. Ils déclarent en outre que les crédits sont contractés à des fins pouvant être présumées étrangères à leurs activités commerciales, professionnelles ou artisanales.<br><FONT 33>4.2 <FONT 33>Le consommateur ne peut signer ni lettres de change ni billets à ordre pour promettre ou garantir le paiement de ses engagements résultant du contrat de crédit. Il ne peut pas non plus signer de chèques pour garantir ses engagements nés d'un contrat de crédit.;<FONT 31>Artikel 4: Auskünfte<br><FONT 61>4.1<FONT 60> Die Kreditnehmer erklären, dass die Auskünfte, die sie auf Verlangen der Bank oder des Kreditvermittlers erteilt haben, und die eine Beurteilung ihre Vermögenslage  und ihre Rückzahlungsfähigkeit ermöglichen sollen, vollständig und richtig sind. Die Kreditnehmer verpflichten sich, unverzüglich alle Fakten mitzuteilen, die ihre Rückzahlungsfähigkeit oder Solvenz einschränken könnten. Sie erklären ausserdem, dass die Kredite nicht für eine geschäftliche, berufliche oder handwerkliche Aktivität benutzt werden.<br><FONT 33>4.2<FONT 33> Der Verbraucher darf keinerlei Wechsel oder Eigenwechsel unterschreiben, um so die Rückzahlung seiner Verpflichtungen aus dem Kreditvertrag zu versprechen oder zu garantieren. Er darf ebenfalls keine Schecks ausstellen, um seine Verpflichtungen aus einem Kreditvertrag zu garantieren.
+D;R201103;D1DAB1S;HAD0043_Bd_LOA_07_03;<FONT 61>7.3<FONT 60> Behoudens andersluidend beding is het krediet van onbepaalde duur. Indien er slechts één kredietnemer is, eindigt het krediet automatisch bij het overlijden van deze kredietnemer en wordt het verschuldigd saldo op het ogenblik van het overlijden eisbaar. Indien het krediet werd verstrekt aan meerdere kredietnemers en er één overlijdt, dan heeft de bank het recht om het krediet op te zeggen conform artikel 7.8 van de 'Algemene voorwaarden'.<BR><FONT 61>7.4<FONT 60> De kredietnemers van een kredietopening via zichtrekening (Budget Plus) moeten ervoor zorgen dat er op regelmatige basis voldoende inkomsten op de zichtrekening, genoemd in artikel 7.2, worden gestort. In geval van niet-naleving van deze voorwaarden behoudt de bank zich het recht voor om het krediet conform artikel 8.6 te schorsen en/of conform artikel 7.8 op te zeggen.<BR><FONT 61>7.5<FONT 60> De kredietovereenkomst voorziet in een termijn van nulstelling, waarbinnen het totaal terug te betalen bedrag volledig dient te worden betaald. Deze termijn is gelijk aan:<BR> -       12 maanden wanneer het kredietbedrag lager dan of gelijk is aan 2.500 euro;<BR> -       24 maanden wanneer het kredietbedrag hoger is dan 2.500 euro, en gelijk aan of lager dan 5.000 euro;<BR> -       48 maanden wanneer het kredietbedrag hoger is dan 5.000 euro, en gelijk aan of lager dan 10.000 euro;<BR> -       60 maanden wanneer het kredietbedrag hoger is dan 10.000 euro.<BR>De kredietnemers zijn gehouden tenminste eenmaal binnen die termijn hun schuld volledig te vereffenen alvorens een nieuwe kredietopneming te kunnen verrichten.;<FONT 61>7.3<FONT 60> Sauf stipulation contraire, le crédit est à durée indéterminée. S'il n'y a qu'un seul crédité, le crédit prend fin automatiquement au décès de ce crédité et le solde dû au moment du décès devient exigible. Si le crédit a été octroyé à plusieurs crédités et que l'un d'entre eux décède, la banque a le droit de résilier le crédit conformément à l'article 7.8 des 'Conditions générales'.<BR><FONT 61>7.4<FONT 60> Les crédités d'une ouverture de crédit par compte à vue (Budget Plus) doivent veiller à ce que des revenus suffisants soient versés régulièrement sur le compte à vue cité à l'article 7.2. En cas de non-respect de ces conditions, la banque se réserve le droit de suspendre le crédit conformément à l'article 8.6 et/ou de le résilier conformément à l'article 7.8.<BR><FONT 61>7.5<FONT 60> Le contrat de crédit prévoit un délai de zérotage, endéans duquel le montant total du crédit doit être complètement remboursé. Ce délai est équivalent à :<BR> -   12 mois lorsque le montant du crédit est inférieur ou égal à 2.500 euro ;<BR> -   24 mois lorsque le montant du crédit est supérieur à 2.500 euro, et inférieur ou égal à 5.000 euro ;<BR> -   48 mois lorsque le montant du crédit est supérieur à 5.000 euro, et inférieur ou égal à 10.000 euro ;<BR> -   60 mois lorsque le montant du crédit est supérieur à 10.000 euro.<BR>Les emprunteurs sont tenus d'apurer complètement leur dette au moins une fois dans ces délais, avant de pouvoir exécuter un nouveau prélèvement de crédit;<FONT 61>7.3<FONT 60> Ohne gegenteilige Bedingung wird der Kreditvertrag auf unbestimmte Zeit abgeschlossen. Gibt es nur einen einzigen Kreditnehmer, dann endet der Kredit automatisch im Todesfall dieses Kreditnehmers ,und der fällige Saldo wird zum Todesfallzeitpunkt einforderbar. Wurde der Kredit mehrere Kreditnehmer gewährt von denen einer stirbt, kann die Bank den Kredit gemäß Artikel 7.8 der Allgemeinen Geschäftsbedingungen kündigen.<BR><FONT 61>7.4<FONT 60> Die Kreditnehmer einer Krediteröffnung über Girokonto (Budget Plus) müssen dafür sorgen, dass auf regelmäßig ausreichend Einnahmen auf das Girokonto im Sinne von Artikel 7.2 eingezahlt werden. Bei einer Verletzung dieser Bedingungen behält sich die Bank das Recht vor, den Kredit gemäß Artikel 8.6 auszusetzen  und/oder gemäß Artikel 7.8 zu kündigen.<BR><FONT 61>7.5<FONT 60> Im Kreditvertrag ist eine Frist  für Nullstellung vorgesehen, in der der Gesamtbetrag völlig  zurückbezahlt werden soll. Diese Frist belaüft sich auf:<BR> -   12 Monate wenn der Kreditbetrag niedriger als oder gleich 2500 eur ist;<BR> -   24 Monate wenn der Kreditbetrag höher als 2500 eur und niedriger als oder gleich 5000 eur ist;<BR> -   48 Monate wenn der Kreditbetrag höher als 5000 eur und niedriger als oder gleich 10000 eur ist;<BR> -   60 Monate wenn der Kreditvertrag höher als 10000 eur ist.<BR>Die Kreditnehmer verpflichten sich, Ihre Schuld mindestens einmal innerhalb dieser Fristen zu bereinigen, bevor sie eine neue Kreditabnahme verrichten können.
+I;R201103;D1DAB1S;HAD0043_Bd_LOA_07_03;<FONT 61>7.3<FONT 60> Behoudens andersluidend beding is het krediet van onbepaalde duur. Indien er slechts één kredietnemer is, eindigt het krediet automatisch bij het overlijden van deze kredietnemer en wordt het verschuldigd saldo op het ogenblik van het overlijden eisbaar. Indien het krediet werd verstrekt aan meerdere kredietnemers en er één overlijdt, dan heeft de bank het recht om het krediet op te zeggen conform artikel 7.8 van de 'Algemene voorwaarden'.<BR><FONT 61>7.4<FONT 60> De kredietnemers van een kredietopening via zichtrekening (Budget Plus) moeten ervoor zorgen dat er op regelmatige basis voldoende inkomsten op de zichtrekening, genoemd in artikel 7.2, worden gestort. In geval van niet-naleving van deze voorwaarden behoudt de bank zich het recht voor om het krediet conform artikel 8.6 te schorsen en/of conform artikel 7.8 op te zeggen.<BR><FONT 61>7.5<FONT 60> De kredietovereenkomst voorziet in een termijn van nulstelling, waarbinnen het totaal terug te betalen bedrag volledig dient te worden betaald. De kredietnemers zijn gehouden tenminste eenmaal binnen die termijn, zoals vermeld in de Bijzondere voorwaarden, hun schuld volledig te vereffenen alvorens een nieuwe kredietopneming te kunnen verrichten.;<FONT 61>7.3<FONT 60> Sauf stipulation contraire, le crédit est à durée indéterminée. S'il n'y a qu'un seul crédité, le crédit prend fin automatiquement au décès de ce crédité et le solde dû au moment du décès devient exigible. Si le crédit a été octroyé à plusieurs crédités et que l'un d'entre eux décède, la banque a le droit de résilier le crédit conformément à l'article 7.8 des 'Conditions générales'.<BR><FONT 61>7.4<FONT 60> Les crédités d'une ouverture de crédit par compte à vue (Budget Plus) doivent veiller à ce que des revenus suffisants soient versés régulièrement sur le compte à vue cité à l'article 7.2. En cas de non-respect de ces conditions, la banque se réserve le droit de suspendre le crédit conformément à l'article 8.6 et/ou de le résilier conformément à l'article 7.8.<BR><FONT 61>7.5<FONT 60> Le contrat de crédit prévoit un délai de zérotage pendant lequel le montant total du crédit doit être complètement remboursé. Endéans ce délai, les emprunteurs sont tenus d'apurer complètement leur dette au moins une fois avant de pouvoir exécuter un nouveau prélèvement de crédit et ce, conformément aux conditions particulières.;<FONT 61>7.3<FONT 60> Ohne gegenteilige Bedingung wird der Kreditvertrag auf unbestimmte Zeit abgeschlossen. Gibt es nur einen einzigen Kreditnehmer, dann endet der Kredit automatisch im Todesfall dieses Kreditnehmers ,und der fällige Saldo wird zum Todesfallzeitpunkt einforderbar. Wurde der Kredit mehrere Kreditnehmer gewährt von denen einer stirbt, kann die Bank den Kredit gemäß Artikel 7.8 der Allgemeinen Geschäftsbedingungen kündigen.<BR><FONT 61>7.4<FONT 60> Die Kreditnehmer einer Krediteröffnung über Girokonto (Budget Plus) müssen dafür sorgen, dass auf regelmäßig ausreichend Einnahmen auf das Girokonto im Sinne von Artikel 7.2 eingezahlt werden. Bei einer Verletzung dieser Bedingungen behält sich die Bank das Recht vor, den Kredit gemäß Artikel 8.6 auszusetzen  und/oder gemäß Artikel 7.8 zu kündigen.<BR><FONT 61>7.5<FONT 60> Im Kreditvertrag ist eine Frist für Nullstellung vorgesehen, in der der Gesamtbetrag völlig zurückbezahlt werden soll. Die Kreditnehmer verpflichten sich, Ihre Schuld mindestens einmal innerhalb dieser Frist, wie in den Besonderen Bedingungen angegeben, zu bereinigen, bevor sie eine neue Kreditabnahme verrichten können.
+D;R201103;D1DAB1S;HAD0043_Bd_LOA_07_07;<FONT 61>7.6.1<FONT 60> De debetrente van toepassing op dit krediet is veranderlijk. Elke wijziging van de debetrentevoet , evenals het nieuwe jaarlijkse kostenpercentage dat hieruit voortvloeit, zal voorafgaandelijk aan de kredietnemers worden bekendgemaakt, ofwel per brief, ofwel met een bericht ingelast bij de aan de kredietnemers toegezonden rekeninguitttreksels. De kredietnemers worden geacht de nieuwe rentevoet te hebben aanvaard, indien zij het krediet niet opgezegd hebben per aangetekende brief overeenkomstig artikel 7.8 en binnen de vijftien dagen na de verzending door de bank van de brief of het bericht. Wanneer  de wijziging van de debetrentevoet meer dan 25% bedraagt van de aanvankelijk overeengekomen rentevoet, dan heeft de kredietnemer de mogelijkheid om de overeenkomst op te zeggen overeenkomstig artikel 7.8 binnen een termijn van 3 maanden vanaf de kennisgeving van de wijziging door de bank.<BR><FONT 61>7.6.2<FONT 60> De kosten verbonden aan diensten bestaande uit het opnemen van contanten via een geldautomaat welke niet zijn opgenomen in het jaarlijks kostenpercentage, kunnen eenzijdig door de bank worden gewijzigd. In geval van wijziging van deze kosten heeft de kredietnemer het recht om de overeenkomst kosteloos op te zeggen overeenkomstig artikel 7.8 binnen een termijn van 2 maanden vanaf de kennisgeving van de wijziging. De bepalingen van artikel 16, § 1 van de Wet van 10 december 2009 betreffende de betalingsdiensten zijn overeenkomstig van toepassing.;<FONT 61>7.6.1<FONT 60> L'intérêt débiteur applicable au présent crédit est variable. Toute modification du taux débiteur ainsi que le nouveau pourcentage de coût annuel qui en découle, sera notifié au préalable aux crédités, soit par lettre soit par un avis inséré dans les extraits de comptes envoyés aux crédités. Les crédités sont censés avoir accepté le nouveau taux d'intérêt, s'ils n'ont pas résilié le crédit par lettre recommandée, conformément à l'article 7.8, et dans les quinze jours suivant l'expédition par la banque de la lettre ou de l'avis.<BR><FONT 61>7.6.2<FONT 60> Les coûts liés aux services de retrait d'espèces à un distributeur automatique de billets, qui ne sont pas repris dans le taux annuel effectif global, peuvent unilatéralement être modifiés. En cas de modification de ces coûts, le crédité a le droit de résilier son contrat sans frais, conformément à l'article 7.8, dans un délai de deux mois à partir de la notification de cette modification. Les dispositions de l'article 16, § 1 de la loi du 10 décembre 2009 relative aux services de paiement sont d'application.  ;<FONT 61>7.6.1<FONT 60> 1 Der Sollzinssatz für diesen Kredit ist variabel. Jede Änderung des Sollzinssatzes sowie der neue jährliche Kostenprozentsatz, der sich daraus ergibt, werden den Kreditnehmern vorher mitgeteilt, entweder per Brief oder in einer Mitteilung, die den Kontoauszügen beigelegt wird, die den Kreditnehmern übermittelt werden. Es wird davon ausgegangen, dass die Kreditnehmer den neuen Zinssatz angenommen haben, wenn sie den Kredit nicht per Einschreiben gemäß Artikel 7.8 und innerhalb von 15 Tagen nach Versand des Briefs oder der Mitteilung durch die Bank gekündigt haben. Wenn die Änderung des Sollzinssatzes mehr als 25% des anfänglich vereinbarten Zinssatzes beträgt, dann kann der Kreditnehmer den Vertrag gemäß Artikel 7.8 innerhalb von 3 Monaten ab der Bekanntgabe der Änderung durch die Bank kündigen.<br><FONT 61>7.6.2<FONT 60> Die Kosten für die Abhebung von Bargeld über Geldautomaten, die nicht im jährlichen Kostenprozentsatz enthalten sind, können einseitig von der Bank geändert werden. In diesem Fall kann der Kreditnehmer den Vertrag kostenlos gemäß Artikel 7.8 innerhalb von 2 Monaten ab der Bekanntgabe der Änderung ändern. Die Bestimmungen von Artikel 16, § 1 des Gesetzes vom 10. Dezember 2009 über die Zahlungsdienstleistungen finden sinngemäß Anwendung.  
+I;R201103;D1DAB1S;HAD0043_Bd_LOA_07_07;<FONT 61>7.6.1<FONT 60> De debetrente van toepassing op dit krediet is veranderlijk. Elke wijziging van de debetrentevoet, evenals het nieuwe jaarlijkse kostenpercentage dat hieruit voortvloeit, zal voorafgaandelijk aan de kredietnemers worden bekendgemaakt, ofwel per brief, ofwel met een bericht ingelast bij de aan de kredietnemers toegezonden rekeninguittreksels. De kredietnemers worden geacht de nieuwe rentevoet te hebben aanvaard, indien zij het krediet niet opgezegd hebben per aangetekende brief overeenkomstig artikel 7.8 en binnen de vijftien dagen na de verzending door de bank van de brief of het bericht. Wanneer  de wijziging van de debetrentevoet meer dan 25% bedraagt van de aanvankelijk overeengekomen rentevoet, dan heeft de kredietnemer de mogelijkheid om de overeenkomst op te zeggen overeenkomstig artikel 7.8 binnen een termijn van 3 maanden vanaf de kennisgeving van de wijziging door de bank.<br><FONT 61>7.6.2<FONT 60> De kosten verbonden aan diensten bestaande uit het opnemen van contanten via een geldautomaat welke niet zijn opgenomen in het jaarlijks kostenpercentage, kunnen eenzijdig door de bank worden gewijzigd. In geval van wijziging van deze kosten heeft de kredietnemer het recht om de overeenkomst kosteloos op te zeggen overeenkomstig artikel 7.8 binnen een termijn van 2 maanden vanaf de kennisgeving van de wijziging. De bepalingen van artikel 16, § 1 van de Wet van 10 december 2009 betreffende de betalingsdiensten zijn overeenkomstig van toepassing.;<FONT 61>7.6.1<FONT 60> L'intérêt débiteur applicable au présent crédit est variable. Toute modification du taux débiteur ainsi que le nouveau pourcentage de coût annuel qui en découle, sera notifié au préalable aux crédités, soit par lettre soit par un avis inséré dans les extraits de comptes envoyés aux crédités. Les crédités sont censés avoir accepté le nouveau taux d'intérêt, s'ils n'ont pas résilié le crédit par lettre recommandée, conformément à l'article 7.8, et dans les quinze jours suivant l'expédition par la banque de la lettre ou de l'avis.<BR><FONT 61>7.6.2<FONT 60> Les coûts liés aux services de retrait d'espèces à un distributeur automatique de billets, qui ne sont pas repris dans le taux annuel effectif global, peuvent unilatéralement être modifiés. En cas de modification de ces coûts, le crédité a le droit de résilier son contrat sans frais, conformément à l'article 7.8, dans un délai de deux mois à partir de la notification de cette modification. Les dispositions de l'article 16, § 1 de la loi du 10 décembre 2009 relative aux services de paiement sont d'application.  ;<FONT 61>7.6.1<FONT 60> 1 Der Sollzinssatz für diesen Kredit ist variabel. Jede Änderung des Sollzinssatzes sowie der neue jährliche Kostenprozentsatz, der sich daraus ergibt, werden den Kreditnehmern vorher mitgeteilt, entweder per Brief oder in einer Mitteilung, die den Kontoauszügen beigelegt wird, die den Kreditnehmern übermittelt werden. Es wird davon ausgegangen, dass die Kreditnehmer den neuen Zinssatz angenommen haben, wenn sie den Kredit nicht per Einschreiben gemäß Artikel 7.8 und innerhalb von 15 Tagen nach Versand des Briefs oder der Mitteilung durch die Bank gekündigt haben. Wenn die Änderung des Sollzinssatzes mehr als 25% des anfänglich vereinbarten Zinssatzes beträgt, dann kann der Kreditnehmer den Vertrag gemäß Artikel 7.8 innerhalb von 3 Monaten ab der Bekanntgabe der Änderung durch die Bank kündigen.<br><FONT 61>7.6.2<FONT 60> Die Kosten für die Abhebung von Bargeld über Geldautomaten, die nicht im jährlichen Kostenprozentsatz enthalten sind, können einseitig von der Bank geändert werden. In diesem Fall kann der Kreditnehmer den Vertrag kostenlos gemäß Artikel 7.8 innerhalb von 2 Monaten ab der Bekanntgabe der Änderung ändern. Die Bestimmungen von Artikel 16, § 1 des Gesetzes vom 10. Dezember 2009 über die Zahlungsdienstleistungen finden sinngemäß Anwendung.  
+I;R201103;D1DAB1S;HAD0043_Verz_Opgemaakt_3; originelen. Elke partij verklaart haar exemplaar ontvangen te hebben.<BR>; originaux. Chaque partie déclare avoir reçu son exemplaire.<BR>; originalen. Jede Partei erklärt ihr Exemplar erhalten zu haben.
+D;R201103;D1DAB1V;HASecci_Kredietkosten;3. Kosten van het krediet;3. Coût du credit;3. Kreditkosten
+I;R201103;D1DAB1V;HASecci_Kredietkosten;3. Kosten van het krediet;3. Coût du crédit;3. Kreditkosten
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\hb\resource\HBTitle_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\hb\resource\HBMessage_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\hb\resource\HBMnemonic_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\hb\resource\HBPrintLabel_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\hc\resource\HCMessage_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\ic\resource\ICTitle_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\ic\resource\ICMessage_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\ic\resource\ICMnemonic_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\ic\resource\ICLabelParm_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\ic\resource\ICPrintLabel_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\kb\resource\KBTitle_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\kb\resource\KBMessage_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\kb\resource\KBMnemonic_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\kb\resource\KBPrintLabel_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\kk\resource\KKTitle_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\kk\resource\KKMessage_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\kk\resource\KKMnemonic_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\kr\resource\KRTitle_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\kr\resource\KRMnemonic_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\kr\resource\KRPrintLabel_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\ks\resource\KSTitle_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\ks\resource\KSMessage_SRC.ser
+**********************************************************************
+I;R201103;D1DAB1M;KS0044;Antenne moet ingevuld zijn;Antenne moet ingevuld zijn;Antenne moet ingevuld zijn
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\ks\resource\KSMnemonic_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\ks\resource\KSPrintLabel_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\kt\resource\KTTitle_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\kt\resource\KTMessage_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\kt\resource\KTMnemonic_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\kt\resource\KTPrintLabel_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\kx\resource\KXTitle_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\kx\resource\KXMessage_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\kx\resource\KXMnemonic_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\kx\resource\KXLabelParm_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\ma\resource\MATitle_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\ma\resource\MAMessage_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\ma\resource\MAMnemonic_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\ml\resource\MLTitle_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\ml\resource\MLMnemonic_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\ml\resource\MLPrintLabel_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\mo\resource\MOTitle_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\mo\resource\MOMessage_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\mo\resource\MOMnemonic_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\nb\resource\NBTitle_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\nb\resource\NBMessage_SRC.ser
+**********************************************************************
+I;R201103;D1DAB1L;NB0094;Er is een fout opgetreden bij het opslaan van de delays;Er is een fout opgetreden bij het opslaan van de delays (fr);Er is een fout opgetreden bij het opslaan van de delays (fr)
+I;R201103;D1DAB1L;NB0095;Er is een fout opgetreden bij het ophalen van het verkooppunt;Er is een fout opgetreden bij het ophalen van het verkooppunt (fr);Er is een fout opgetreden bij het ophalen van het verkooppunt (fr)
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\nb\resource\NBMnemonic_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\nb\resource\NBLabelParm_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\nb\resource\NBPrintLabel_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\nc\resource\NCTitle_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\nc\resource\NCMessage_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\nc\resource\NCMnemonic_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\nc\resource\NCPrintLabel_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\nk\resource\NKTitle_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\nk\resource\NKMessage_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\nk\resource\NKMnemonic_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\nk\resource\NKPrintLabel_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\np\resource\NPTitle_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\np\resource\NPMessage_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\np\resource\NPMnemonic_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\np\resource\NPPrintLabel_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\nt\resource\NTTitle_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\nt\resource\NTMessage_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\nt\resource\NTMnemonic_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\nt\resource\NTPrintLabel_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\ov\resource\OVTitle_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\ov\resource\OVMessage_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\pd\resource\PDTitle_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\pd\resource\PDMessage_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\pd\resource\PDMnemonic_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\pd\resource\PDPrintLabel_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\ps\resource\PSTitle_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\ps\resource\PSMessage_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\ps\resource\PSMnemonic_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\ps\resource\PSPrintLabel_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\pv\resource\PVTitle_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\pv\resource\PVMessage_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\pv\resource\PVMnemonic_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\py\resource\PYTitle_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\py\resource\PYMessage_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\py\resource\PYMnemonic_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\sa\resource\SATitle_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\sa\resource\SAMessage_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\sa\resource\SAMnemonic_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\sd\resource\SDTitle_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\sd\resource\SDMessage_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\sd\resource\SDMnemonic_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\sd\resource\SDPrintLabel_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\sf\resource\SFTitle_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\sf\resource\SFMessage_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\sf\resource\SFMnemonic_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\si\resource\SITitle_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\si\resource\SIMessage_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\si\resource\SIMnemonic_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\si\resource\SIPrintLabel_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\tl\resource\TLTitle_SRC.ser
+**********************************************************************
+D;R201103;D1TOO33;TLS0001-03;Verwijderen telebank-contract;Verwijderen telebank-contract (FR);
+I;R201103;D1TOO33;TLS0001-03;Verwijderen telebank-contract;Supprimer contrat telebanque; 
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\tl\resource\TLMessage_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\tl\resource\TLMnemonic_SRC.ser
+**********************************************************************
+D;R201103;D1TOO33;TLS0001BTNDelete;%Verwijderen;%Verwijderen (FR);%Verwijderen (FR)
+I;R201103;D1TOO33;TLS0001BTNDelete;%Verwijderen;%Supprimer;%Verwijderen
+I;R201103;D1TOO33;TLS0001BTNEndDate;%Einddateren;%Date de fin;%Einddateren
+I;R201103;D1TOO33;TLS0001BTNEndDate;%Einddateren;%Date de fin;%Einddateren
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\tl\resource\TLPrintLabel_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\tt\resource\TTTitle_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\tt\resource\TTMessage_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\tt\resource\TTMnemonic_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\tz\resource\TZTitle_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\tz\resource\TZMessage_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\tz\resource\TZMnemonic_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\uv\resource\UVTitle_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\uv\resource\UVMessage_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\uv\resource\UVMnemonic_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\uv\resource\UVPrintLabel_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\wb\resource\WBTitle_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\wb\resource\WBMessage_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\wb\resource\WBMnemonic_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\wb\resource\WBPrintLabel_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\wm\resource\WMMessage_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\wm\resource\WMPrintLabel_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\wt\resource\WTTitle_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\wt\resource\WTMessage_SRC.ser
+**********************************************************************
+I;R201103;D1DAB1M;WT0057;Gelieve een datum groter dan of gelijk aan {0} in te geven.;Veuillez saisir une date postérieure ou égale au;Gelieve een datum groter dan of gelijk aan {0} in te geven.
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\wt\resource\WTMnemonic_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\yc\resource\YCTitle_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\yc\resource\YCMessage_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\yc\resource\YCMnemonic_SRC.ser
+**********************************************************************
+**********************************************************************
+K:\ALLROOT\PRD\MASTER\AXA Bank Resources\src\javaroot\be\axa\yp\resource\YPMessage_SRC.ser
+**********************************************************************
