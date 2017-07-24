@@ -1,0 +1,19 @@
+.settings/
+target/
+bin/
+*.log
+*.class
+.svn/
+*.bak
+*.bin
+*.classpath
+*.project
+.metadata/
+corsyca jetty run 7777_guy.launch
+*.versionsBackup
+
+# Intellij
+.idea/
+.idea/
+*.iml
+*.iws

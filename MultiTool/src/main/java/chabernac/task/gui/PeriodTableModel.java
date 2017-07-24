@@ -15,7 +15,7 @@ import chabernac.task.command.DefaultActivityCommand;
 public class PeriodTableModel implements TableModel {
   private long myStartTime = -1;
   private long myEndTime = -1;
-  private ArrayList myPeriods = null;
+  private ArrayList<Period> myPeriods = null;
   private long lastValueAtTime = 0;
 
   public int getColumnCount() {
@@ -82,11 +82,11 @@ public class PeriodTableModel implements TableModel {
   public void removeTableModelListener(TableModelListener l) {
   }
   
-  public ArrayList getPeriods(){
+  public ArrayList<Period> getPeriods(){
     if(myPeriods == null || System.currentTimeMillis() - lastValueAtTime > 1000){
       DefaultActivityCommand theCommand = (DefaultActivityCommand)ApplicationRefBase.getInstance().get(ApplicationRefBase.DEFAULTTASKCOMMAND);
       Task theSelectedTask = theCommand.getSelectedTask();
-      if(theSelectedTask == null) return new ArrayList();
+      if(theSelectedTask == null) return new ArrayList<Period>();
       myPeriods = theCommand.getSelectedTask().getPeriods(myStartTime, myEndTime);
     }
     //Logger.log(this,"Periods: " + myPeriods.size());
