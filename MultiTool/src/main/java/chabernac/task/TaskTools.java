@@ -341,13 +341,13 @@ public class TaskTools {
   }
 
   public static String formatTimeInHours(long aTime){
-    float hours = (float)aTime / (3600000);
+    float hours = (float)Math.abs( aTime ) / (3600000);
     int theHour = (int)Math.floor(hours);
     float minutes = (hours - theHour) * 60;
     int theMinutes = (int)Math.floor(minutes);
     float seconds = (minutes - theMinutes) * 60;
     int theSeconds = (int)Math.floor(seconds);
-    return theHour + "h " + theMinutes + "m " + theSeconds + "s"; 
+    return (aTime < 0  ? "-" : "") + theHour + "h " + theMinutes + "m " + theSeconds + "s"; 
   }
 
   public static String formatTimeInManDays(long aTime){

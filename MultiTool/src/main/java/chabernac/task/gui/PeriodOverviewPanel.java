@@ -435,24 +435,31 @@ public class PeriodOverviewPanel extends JPanel implements iEventListener {
             int nrOfWorkingDays = getWorkingDaysBetweenTwoDates(
                 myModel.getPeriods().get( 0 ).getStartTime(),
                 myModel.getPeriods().get( myModel.getPeriods().size() - 1 ).getStartTime() );
+            
+            long saldoInMs = totalTime - (long) ( nrOfWorkingDays * 7.5 * 60 * 60 * 1000 ) ;
+            mySaldoHours.setText( TaskTools.formatTimeInHours( saldoInMs ));
+        }
+    }
 
-            mySaldoHours.setText( TaskTools.formatTimeInHours( totalTime - (long) ( nrOfWorkingDays * 7.5 * 60 * 60 * 1000 ) ) );
+    private Date getDateWithoutTime( long aTime ) {
+        try {
+            Date theDate = new Date();
+            theDate.setTime( aTime );
+            SimpleDateFormat format = new SimpleDateFormat( "dd/MM/yyyy" );
+            return format.parse( format.format( theDate ) );
+        } catch ( ParseException e ) {
+            throw new IllegalArgumentException( "Could not parse given time '" + aTime + "' to a date" );
         }
     }
 
     private int getWorkingDaysBetweenTwoDates( long startDate, long endDate ) {
         Calendar startCal = Calendar.getInstance();
-        startCal.setTimeInMillis( startDate );
+        startCal.setTime( getDateWithoutTime( startDate ) );
 
         Calendar endCal = Calendar.getInstance();
-        endCal.setTimeInMillis( endDate );
+        endCal.setTime( getDateWithoutTime( endDate ) );
 
         int workDays = 0;
-
-        // Return 0 if start and end are the same
-        if ( startCal.getTimeInMillis() == endCal.getTimeInMillis() ) {
-            return 0;
-        }
 
         if ( startCal.getTimeInMillis() > endCal.getTimeInMillis() ) {
             startCal.setTimeInMillis( endDate );
@@ -464,7 +471,7 @@ public class PeriodOverviewPanel extends JPanel implements iEventListener {
             if ( startCal.get( Calendar.DAY_OF_WEEK ) != Calendar.SATURDAY && startCal.get( Calendar.DAY_OF_WEEK ) != Calendar.SUNDAY ) {
                 ++workDays;
             }
-        } while ( startCal.getTimeInMillis() < endCal.getTimeInMillis() ); // excluding end date
+        } while ( startCal.getTimeInMillis() <= endCal.getTimeInMillis() ); 
 
         return workDays;
     }
