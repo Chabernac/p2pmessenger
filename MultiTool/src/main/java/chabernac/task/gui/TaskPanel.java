@@ -52,7 +52,7 @@ public class TaskPanel extends JPanel{
     myDescription.setLineWrap(true);
 //    myDueTime = new JTextField();
 //    myPriority = new JComboBox(new String[]{"Low","Medium","High"});
-    myAugeoPolicy = new JComboBox(new String[]{"Book on own augeo code", "Book on max augeo code", "Book on min augeo code", "Spread over all augeo codes", "Do not book", "Parent augeo policy"});
+    myAugeoPolicy = new JComboBox(new String[]{"Book on own augeo code", "Book on max augeo code", "Book on min augeo code", "Spread over all augeo codes", "Do not book", "Parent augeo policy","Holiday"});
     myAugeoCode = new JTextField();
   }
   

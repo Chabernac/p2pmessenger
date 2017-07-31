@@ -1,5 +1,5 @@
 #Properties for Activity Logger
-#Tue Jul 25 09:00:02 CEST 2017
+#Mon Jul 31 11:22:12 CEST 2017
 user.userid=dgch804
 frame.light.location.y=300
 frame.light.location.x=300
@@ -19,6 +19,6 @@ Start.width=249
 todo.Gewerkt.width=333
 filter.end=25-07-2017
 frame.heavy.location.y=3
-frame.heavy.location.x=17
 user.firstname=Guy
+frame.heavy.location.x=17
 Duration.width=248

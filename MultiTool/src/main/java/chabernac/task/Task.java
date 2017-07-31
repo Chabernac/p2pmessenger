@@ -80,6 +80,7 @@ public class Task extends DefaultMutableTreeNode implements Comparable, Iterable
     public static final int DO_NOT_BOOK = 4;
     //do not book the time of this item
     public static final int PARENT_AUGEO_POLICY = 5;
+    public static final int HOLIDAY = 6;
   }
   
   public Task(int aType, String aName){

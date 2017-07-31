@@ -15,6 +15,7 @@ import java.util.Enumeration;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -169,7 +170,9 @@ public class TaskTools {
       theTotals.put(theAugeoCode, new Double(0));
     }
 
+    theAugeoLines.put( "Holiday", "Holiday;");
     theAugeoLines.put( "Total", "Total;");
+    theTotals.put( "Holiday", new Double(0));
     theTotals.put( "Total", new Double(0));
 
     GregorianCalendar theCurrentDate = (GregorianCalendar)startDate.clone();
@@ -241,11 +244,12 @@ public class TaskTools {
     }
   }
 
-  private static Map calculateTimesForAugeoCodesBetween(List aTaskList, long aStartTime, long anEndTime){
-    Map theTimes = new HashMap();
+  private static Map<String, Double> calculateTimesForAugeoCodesBetween(List aTaskList, long aStartTime, long anEndTime){
+    Map<String, Double> theTimes = new LinkedHashMap<String, Double>();
     double theSpreadTime = 0;
     double theMaxTime = 0;
     double theMinTime = 0;
+    double theHoliday = 0;
 
     for(Iterator i=aTaskList.iterator();i.hasNext();){
       Task theTask = (Task)i.next();
@@ -266,6 +270,8 @@ public class TaskTools {
           theMinTime += theTaskTime;
         } else if(theTask.getInheritedAugeoPolicy() == Task.AugeoPolicy.BOOK_ON_ALL_AUGEO_CODES){
           theSpreadTime += theTaskTime;
+        } else if(theTask.getInheritedAugeoPolicy() == Task.AugeoPolicy.HOLIDAY){
+          theHoliday += theTaskTime;
         }
       }
     }
@@ -308,7 +314,8 @@ public class TaskTools {
     for(Iterator i=theTimes.values().iterator();i.hasNext();){
       theTotal += ((Double)i.next()).doubleValue();
     }
-    theTimes.put("Total", new Double(theTotal));
+    theTimes.put( "Holiday", theHoliday );
+    theTimes.put("Total", new Double(theTotal + theHoliday));
 
     return theTimes;
   }
