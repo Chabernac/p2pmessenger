@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -128,6 +129,7 @@ public class PeriodOverviewPanel extends JPanel implements iEventListener {
         GUIUtils.addComponent( thePanel, new CommandButton( myFilterCommand, 110 ), 5, 1, 0, 0, GridBagConstraints.NONE, new Insets( 0, 1, 0, 1 ) );
         GUIUtils.addComponent( thePanel, new CommandButton( new ExportCommand( false ), 80 ), 6, 1, 0, 0, GridBagConstraints.NONE, new Insets( 0, 1, 0, 0 ) );
         GUIUtils.addComponent( thePanel, new CommandButton( new ExportCommand( true ), 80 ), 7, 1, 0, 0, GridBagConstraints.NONE, new Insets( 0, 1, 0, 0 ) );
+        GUIUtils.addComponent( thePanel, new CommandButton( new SaldoCommand(), 80 ), 8, 1, 0, 0, GridBagConstraints.NONE, new Insets( 0, 1, 0, 0 ) );
 
         return thePanel;
     }
@@ -259,7 +261,6 @@ public class PeriodOverviewPanel extends JPanel implements iEventListener {
                     myModel.setEndTime( TaskTools.nextDay( DATE_FORMAT_2.parse( myFilterEndField.getText() ).getTime() ) );
                 myTable.tableChanged( new TableModelEvent( myTable.getModel() ) );
                 myPaintPanel.setPeriods( ( (PeriodTableModel) myTable.getModel() ).getPeriods() );
-                calculateSaldoHours();
             } catch ( ParseException e ) {
                 StatusDispatcher.showWarning( "Filter dates must be formatted as dd-mm-yyy" );
                 logger.error( "Could not apply filter", e );
@@ -342,6 +343,23 @@ public class PeriodOverviewPanel extends JPanel implements iEventListener {
         }
     }
 
+    private class SaldoCommand extends AbstractCommand {
+        @Override
+        public String getName() {
+            return "Saldo";
+        }
+
+        @Override
+        public boolean isEnabled() {
+            return true;
+        }
+
+        @Override
+        public void execute() {
+            calculateSaldoHours();
+        }
+    }
+
     private class TodayCommand extends AbstractCommand {
 
         public void execute() {
@@ -421,23 +439,46 @@ public class PeriodOverviewPanel extends JPanel implements iEventListener {
         }
     }
 
+    private long getFilterStartDate() {
+        if ( myFilterStartField.getText().length() == 0 ) {
+            return 0;
+        }
+        try {
+            return DATE_FORMAT_2.parse( myFilterStartField.getText() ).getTime();
+        } catch ( ParseException e ) {
+            throw new IllegalArgumentException( "Could not parse start date", e );
+        }
+    }
+
+    private long getFilterEndDate() {
+        if ( myFilterEndField.getText().length() == 0 ) {
+            return System.currentTimeMillis();
+        }
+        try {
+            return DATE_FORMAT_2.parse( myFilterEndField.getText() ).getTime();
+        } catch ( ParseException e ) {
+            throw new IllegalArgumentException( "Could not parse end date", e );
+        }
+    }
+
     private void calculateSaldoHours() {
-        if ( myModel.getPeriods().isEmpty() ) {
+        List<Period> thePeriods = TaskTools.getRootTask().getPeriods( getFilterStartDate(), getFilterEndDate() );
+
+        if ( thePeriods.isEmpty() ) {
             mySaldoHours.setText( "0" );
         } else {
             long totalTime = 0;
-            for ( int i = 0; i < myModel.getPeriods().size(); i++ ) {
-                Period thePeriod = ( (Period) myModel.getPeriods().get( i ) );
+            for ( Period thePeriod : thePeriods ) {
                 if ( thePeriod.getTask().getAugeoPolicy() != AugeoPolicy.DO_NOT_BOOK ) {
                     totalTime += thePeriod.getTime();
                 }
             }
             int nrOfWorkingDays = getWorkingDaysBetweenTwoDates(
-                myModel.getPeriods().get( 0 ).getStartTime(),
-                myModel.getPeriods().get( myModel.getPeriods().size() - 1 ).getStartTime() );
-            
-            long saldoInMs = totalTime - (long) ( nrOfWorkingDays * 7.5 * 60 * 60 * 1000 ) ;
-            mySaldoHours.setText( TaskTools.formatTimeInHours( saldoInMs ));
+                thePeriods.get( 0 ).getStartTime(),
+                thePeriods.get( thePeriods.size() - 1 ).getStartTime() );
+
+            long saldoInMs = totalTime - (long) ( nrOfWorkingDays * 7.5 * 60 * 60 * 1000 );
+            mySaldoHours.setText( myFilterStartField.getText() + " - " + (myFilterEndField.getText().length() == 0 ? "today" : myFilterEndField.getText() ) + ": " + TaskTools.formatTimeInHours( saldoInMs ) );
         }
     }
 
@@ -471,7 +512,7 @@ public class PeriodOverviewPanel extends JPanel implements iEventListener {
             if ( startCal.get( Calendar.DAY_OF_WEEK ) != Calendar.SATURDAY && startCal.get( Calendar.DAY_OF_WEEK ) != Calendar.SUNDAY ) {
                 ++workDays;
             }
-        } while ( startCal.getTimeInMillis() <= endCal.getTimeInMillis() ); 
+        } while ( startCal.getTimeInMillis() <= endCal.getTimeInMillis() );
 
         return workDays;
     }
@@ -479,9 +520,7 @@ public class PeriodOverviewPanel extends JPanel implements iEventListener {
     public void eventFired( Event evt ) {
         if ( evt instanceof ApplicationSaveEvent ) {
             savePreferences();
-        } else if ( evt instanceof TaskSelectedEvent ) {
-            calculateSaldoHours();
-        }
+        } 
     }
 
 }

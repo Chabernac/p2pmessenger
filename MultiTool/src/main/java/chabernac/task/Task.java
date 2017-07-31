@@ -310,12 +310,12 @@ public class Task extends DefaultMutableTreeNode implements Comparable, Iterable
     return (Task)getParent();
   }
   
-  public ArrayList getAllPeriods(){
+  public ArrayList<Period> getAllPeriods(){
     return getPeriods(-1, -1);
   }
   
-  public ArrayList getPeriods(long aStartTime, long anEndTime){
-    ArrayList thePeriods = new ArrayList();
+  public ArrayList<Period> getPeriods(long aStartTime, long anEndTime){
+    ArrayList<Period> thePeriods = new ArrayList<Period>();
     getPeriods(thePeriods, aStartTime, anEndTime);
     Collections.sort(thePeriods);
     return thePeriods;
