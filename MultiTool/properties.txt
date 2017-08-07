@@ -1,5 +1,5 @@
 #Properties for Activity Logger
-#Mon Jul 31 16:07:49 CEST 2017
+#Mon Aug 07 17:59:18 CEST 2017
 user.userid=dgch804
 frame.light.location.y=300
 frame.light.location.x=300
@@ -9,7 +9,7 @@ todo.Behoort\ tot.width=333
 todo.Taak.width=333
 frame.light.size.width=500
 frame.heavy.size.height=636
-filter.start=31-07-2017
+filter.start=04-08-2017
 tree.showfinished=N
 frame.light.size.height=263
 user.lastname=Chauliac
@@ -17,8 +17,8 @@ chat.light.dividerlocation=80
 Activity.width=249
 Start.width=249
 todo.Gewerkt.width=333
-filter.end=
+filter.end=04-08-2017
 frame.heavy.location.y=3
-user.firstname=Guy
 frame.heavy.location.x=17
+user.firstname=Guy
 Duration.width=248

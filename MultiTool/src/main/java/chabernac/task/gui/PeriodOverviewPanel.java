@@ -48,6 +48,7 @@ import chabernac.task.TaskTools;
 import chabernac.task.command.DefaultActivityCommand;
 import chabernac.task.event.ApplicationSaveEvent;
 import chabernac.task.event.TaskSelectedEvent;
+import chabernac.util.DateUtils;
 import chabernac.util.StatusDispatcher;
 
 public class PeriodOverviewPanel extends JPanel implements iEventListener {
@@ -455,7 +456,7 @@ public class PeriodOverviewPanel extends JPanel implements iEventListener {
             return System.currentTimeMillis();
         }
         try {
-            return DATE_FORMAT_2.parse( myFilterEndField.getText() ).getTime();
+            return TaskTools.nextDay( DATE_FORMAT_2.parse( myFilterEndField.getText() ).getTime() );
         } catch ( ParseException e ) {
             throw new IllegalArgumentException( "Could not parse end date", e );
         }
@@ -473,54 +474,21 @@ public class PeriodOverviewPanel extends JPanel implements iEventListener {
                     totalTime += thePeriod.getTime();
                 }
             }
-            int nrOfWorkingDays = getWorkingDaysBetweenTwoDates(
+            int nrOfWorkingDays = DateUtils.getWorkingDaysCovered( 
                 thePeriods.get( 0 ).getStartTime(),
                 thePeriods.get( thePeriods.size() - 1 ).getStartTime() );
 
             long saldoInMs = totalTime - (long) ( nrOfWorkingDays * 7.5 * 60 * 60 * 1000 );
-            mySaldoHours.setText( myFilterStartField.getText() + " - " + (myFilterEndField.getText().length() == 0 ? "today" : myFilterEndField.getText() ) + ": " + TaskTools.formatTimeInHours( saldoInMs ) );
+            mySaldoHours.setText(
+                myFilterStartField.getText() + " - " + ( myFilterEndField.getText().length() == 0 ? "today" : myFilterEndField.getText() ) + ": " +
+                                  TaskTools.formatTimeInHours( saldoInMs ) );
         }
     }
-
-    private Date getDateWithoutTime( long aTime ) {
-        try {
-            Date theDate = new Date();
-            theDate.setTime( aTime );
-            SimpleDateFormat format = new SimpleDateFormat( "dd/MM/yyyy" );
-            return format.parse( format.format( theDate ) );
-        } catch ( ParseException e ) {
-            throw new IllegalArgumentException( "Could not parse given time '" + aTime + "' to a date" );
-        }
-    }
-
-    private int getWorkingDaysBetweenTwoDates( long startDate, long endDate ) {
-        Calendar startCal = Calendar.getInstance();
-        startCal.setTime( getDateWithoutTime( startDate ) );
-
-        Calendar endCal = Calendar.getInstance();
-        endCal.setTime( getDateWithoutTime( endDate ) );
-
-        int workDays = 0;
-
-        if ( startCal.getTimeInMillis() > endCal.getTimeInMillis() ) {
-            startCal.setTimeInMillis( endDate );
-            endCal.setTimeInMillis( startDate );
-        }
-
-        do {
-            startCal.add( Calendar.DAY_OF_MONTH, 1 );
-            if ( startCal.get( Calendar.DAY_OF_WEEK ) != Calendar.SATURDAY && startCal.get( Calendar.DAY_OF_WEEK ) != Calendar.SUNDAY ) {
-                ++workDays;
-            }
-        } while ( startCal.getTimeInMillis() <= endCal.getTimeInMillis() );
-
-        return workDays;
-    }
-
+    
     public void eventFired( Event evt ) {
         if ( evt instanceof ApplicationSaveEvent ) {
             savePreferences();
-        } 
+        }
     }
 
 }
