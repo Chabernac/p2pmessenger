@@ -13,7 +13,6 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -51,7 +50,7 @@ import chabernac.task.event.TaskSelectedEvent;
 import chabernac.util.DateUtils;
 import chabernac.util.StatusDispatcher;
 
-public class PeriodOverviewPanel extends JPanel implements iEventListener {
+public class PeriodOverviewPanel extends JPanel implements iEventListener<Event> {
     private static Logger          logger             = Logger.getLogger( PeriodOverviewPanel.class );
     public static SimpleDateFormat DATE_FORMAT        = new SimpleDateFormat( "dd-MM-yyyy HH:mm:ss" );
     public static SimpleDateFormat DATE_FORMAT_2      = new SimpleDateFormat( "dd-MM-yyyy" );
@@ -121,6 +120,10 @@ public class PeriodOverviewPanel extends JPanel implements iEventListener {
         GUIUtils.addComponent( thePanel, new CommandButton( new StartCommand(), 70 ), 4, 0, 0, 0, GridBagConstraints.NONE, new Insets( 0, 1, 0, 1 ) );
         GUIUtils.addComponent( thePanel, new CommandButton( new DeleteCommand(), 110 ), 5, 0, 0, 0, GridBagConstraints.NONE, new Insets( 0, 1, 0, 1 ) );
         GUIUtils.addComponent( thePanel, new CommandButton( new ModifyCommand(), 80 ), 6, 0, 0, 0, GridBagConstraints.NONE, new Insets( 0, 1, 0, 0 ) );
+        GUIUtils.addComponent( thePanel, new CommandButton( new AllTasksCommand(), 110 ), 7, 0, 0, 0, GridBagConstraints.NONE, new Insets( 0, 1, 0, 1 ) );
+        GUIUtils.addComponent( thePanel, new CommandButton( new AllDayEvent(), 110 ), 7, 0, 0, 0, GridBagConstraints.NONE, new Insets( 0, 1, 0, 1 ) );
+        GUIUtils.addComponent( thePanel, new CommandButton( new AlignPreviousTask(), 110), 8, 0, 0, 0, GridBagConstraints.NONE, new Insets( 0, 1, 0, 1 ) );
+        GUIUtils.addComponent( thePanel, new CommandButton( new AlignNextTask(), 110 ), 9, 0, 0, 0, GridBagConstraints.NONE, new Insets( 0, 1, 0, 1 ) );
 
         GUIUtils.addComponent( thePanel, new JLabel( "Start date: " ), 0, 1, 0, 0, GridBagConstraints.NONE, theInsets );
         GUIUtils.addComponent( thePanel, myFilterStartField, 1, 1, 1, 0, GridBagConstraints.NONE, theInsets );
@@ -129,7 +132,7 @@ public class PeriodOverviewPanel extends JPanel implements iEventListener {
         GUIUtils.addComponent( thePanel, new CommandButton( new TodayCommand(), 70 ), 4, 1, 0, 0, GridBagConstraints.NONE, new Insets( 0, 1, 0, 1 ) );
         GUIUtils.addComponent( thePanel, new CommandButton( myFilterCommand, 110 ), 5, 1, 0, 0, GridBagConstraints.NONE, new Insets( 0, 1, 0, 1 ) );
         GUIUtils.addComponent( thePanel, new CommandButton( new ExportCommand( false ), 80 ), 6, 1, 0, 0, GridBagConstraints.NONE, new Insets( 0, 1, 0, 0 ) );
-        GUIUtils.addComponent( thePanel, new CommandButton( new ExportCommand( true ), 80 ), 7, 1, 0, 0, GridBagConstraints.NONE, new Insets( 0, 1, 0, 0 ) );
+        GUIUtils.addComponent( thePanel, new CommandButton( new ExportCommand( true ), 110 ), 7, 1, 0, 0, GridBagConstraints.NONE, new Insets( 0, 1, 0, 0 ) );
         GUIUtils.addComponent( thePanel, new CommandButton( new SaldoCommand(), 80 ), 8, 1, 0, 0, GridBagConstraints.NONE, new Insets( 0, 1, 0, 0 ) );
 
         return thePanel;
@@ -236,7 +239,30 @@ public class PeriodOverviewPanel extends JPanel implements iEventListener {
         public String getName() {
             return "Modify";
         }
+    }
 
+    private Period getSelectedPeriod() {
+        int index = myTable.getSelectedRow();
+        if ( index != -1 ) {
+            return (Period) myModel.getPeriods().get( index );
+        }
+        return null;
+    }
+
+    private Period getNextPeriod() {
+        int index = myTable.getSelectedRow();
+        if ( index != -1 ) {
+            return (Period) myModel.getPeriods().get( index + 1 );
+        }
+        return null;
+    }
+
+    private Period getPreivousPeriod() {
+        int index = myTable.getSelectedRow();
+        if ( index >= 1 ) {
+            return (Period) myModel.getPeriods().get( index - 1 );
+        }
+        return null;
     }
 
     /*
@@ -270,6 +296,82 @@ public class PeriodOverviewPanel extends JPanel implements iEventListener {
 
         public String getName() {
             return "Apply filter";
+        }
+
+        public boolean isEnabled() {
+            return true;
+        }
+
+    }
+
+    private class AllTasksCommand extends AbstractCommand {
+
+        public void execute() {
+            TaskTools.selectRootTask();
+            myTable.tableChanged( new TableModelEvent( myTable.getModel() ) );
+        }
+
+        public String getName() {
+            return "All tasks";
+        }
+
+        public boolean isEnabled() {
+            return true;
+        }
+
+    }
+
+    private class AllDayEvent extends AbstractCommand {
+
+        public void execute() {
+            DateUtils.makeIdealDay( getSelectedPeriod() );
+            myTable.tableChanged( new TableModelEvent( myTable.getModel() ) );
+        }
+
+        public String getName() {
+            return "All tasks";
+        }
+
+        public boolean isEnabled() {
+            return true;
+        }
+
+    }
+
+    private class AlignNextTask extends AbstractCommand {
+
+        public void execute() {
+            Period thePeriod = getSelectedPeriod();
+            Period theNextPeriod = getNextPeriod();
+            if ( thePeriod != null && theNextPeriod != null ) {
+                thePeriod.setEndTime( theNextPeriod.getStartTime() );
+            }
+            myTable.tableChanged( new TableModelEvent( myTable.getModel() ) );
+        }
+
+        public String getName() {
+            return "Align next";
+        }
+
+        public boolean isEnabled() {
+            return true;
+        }
+
+    }
+
+    private class AlignPreviousTask extends AbstractCommand {
+
+        public void execute() {
+            Period thePeriod = getSelectedPeriod();
+            Period thePreviousPeriod = getPreivousPeriod();
+            if ( thePeriod != null && thePreviousPeriod != null ) {
+                thePeriod.setStartTime( thePreviousPeriod.getEndTime() );
+            }
+            myTable.tableChanged( new TableModelEvent( myTable.getModel() ) );
+        }
+
+        public String getName() {
+            return "Align previous";
         }
 
         public boolean isEnabled() {
@@ -400,7 +502,7 @@ public class PeriodOverviewPanel extends JPanel implements iEventListener {
         public void mouseClicked( MouseEvent e ) {
 
             if ( e.getClickCount() > 1 ) {
-                ArrayList thePeriods = myModel.getPeriods();
+                ArrayList<Period> thePeriods = myModel.getPeriods();
                 Period thePeriod = (Period) thePeriods.get( myTable.getSelectedRow() );
                 Task theTask = thePeriod.getTask();
                 for ( int i = 0; i < thePeriods.size(); i++ ) {
@@ -474,7 +576,7 @@ public class PeriodOverviewPanel extends JPanel implements iEventListener {
                     totalTime += thePeriod.getTime();
                 }
             }
-            int nrOfWorkingDays = DateUtils.getWorkingDaysCovered( 
+            int nrOfWorkingDays = DateUtils.getWorkingDaysCovered(
                 thePeriods.get( 0 ).getStartTime(),
                 thePeriods.get( thePeriods.size() - 1 ).getStartTime() );
 
@@ -484,7 +586,7 @@ public class PeriodOverviewPanel extends JPanel implements iEventListener {
                                   TaskTools.formatTimeInHours( saldoInMs ) );
         }
     }
-    
+
     public void eventFired( Event evt ) {
         if ( evt instanceof ApplicationSaveEvent ) {
             savePreferences();

@@ -397,6 +397,10 @@ public class TaskTools {
   public static Task getRunningTask(){
     return getRootTask().getRunningTask();
   }
+  
+  public static void selectRootTask(){
+      selectTask( getRootTask() );
+  }
 
   public static ArrayList getToDoList(){
     return (ArrayList)ApplicationRefBase.getObject(ApplicationRefBase.TODO);

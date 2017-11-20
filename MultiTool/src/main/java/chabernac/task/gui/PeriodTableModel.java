@@ -11,103 +11,121 @@ import chabernac.task.Task;
 import chabernac.task.TaskTools;
 import chabernac.task.command.DefaultActivityCommand;
 
-
 public class PeriodTableModel implements TableModel {
-  private long myStartTime = -1;
-  private long myEndTime = -1;
-  private ArrayList<Period> myPeriods = null;
-  private long lastValueAtTime = 0;
+    private long              myStartTime     = -1;
+    private long              myEndTime       = -1;
+    private ArrayList<Period> myPeriods       = null;
+    private long              lastValueAtTime = 0;
 
-  public int getColumnCount() {
-    return 4;
-  }
-
-  public int getRowCount() {
-    return getPeriods().size();
-  }
-
-  public boolean isCellEditable(int rowIndex, int columnIndex) {
-    switch(columnIndex){
-      case 0: return false;
-      case 1: return true;
-      case 2: return true;
-      case 3: return false;
+    public int getColumnCount() {
+        return 4;
     }
-    return false;
-  }
 
-  public Class getColumnClass(int columnIndex) {
-    switch(columnIndex){
-      case 0: return String.class;
-      case 1: return String.class;
-      case 2: return String.class;
-      case 3: return String.class;
+    public int getRowCount() {
+        return getPeriods().size();
     }
-    return null;
-  }
 
-  public Object getValueAt(int rowIndex, int columnIndex) {
-    Period thePeriod = (Period)myPeriods.get(rowIndex);
-    switch(columnIndex){
-      case 0: return thePeriod.getTask().getFullName();
-      case 1: return TaskTools.formatTimestamp(thePeriod.getStartTime());
-      case 2: return TaskTools.formatTimestamp(thePeriod.getEndTime());
-      case 3: return TaskTools.formatTimeInHours(thePeriod.getTime());
+    public boolean isCellEditable( int rowIndex, int columnIndex ) {
+        switch ( columnIndex ) {
+            case 0 :
+                return false;
+            case 1 :
+                return true;
+            case 2 :
+                return true;
+            case 3 :
+                return false;
+        }
+        return false;
     }
-    return null;
-  }
 
-  public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-    Period thePeriod = (Period)myPeriods.get(rowIndex);
-    switch(columnIndex){
-      case 2: thePeriod.setStartTime(((Long)aValue).longValue());
-      case 3: thePeriod.setEndTime(((Long)aValue).longValue());
+    public Class<String> getColumnClass( int columnIndex ) {
+        switch ( columnIndex ) {
+            case 0 :
+                return String.class;
+            case 1 :
+                return String.class;
+            case 2 :
+                return String.class;
+            case 3 :
+                return String.class;
+        }
+        return null;
     }
-    
-  }
 
-  public String getColumnName(int columnIndex) {
-    switch(columnIndex){
-      case 0: return "Activity";
-      case 1: return "Start";
-      case 2: return "End";
-      case 3: return "Duration";
+    public Object getValueAt( int rowIndex, int columnIndex ) {
+        Period thePeriod = (Period) myPeriods.get( rowIndex );
+        switch ( columnIndex ) {
+            case 0 :
+                return thePeriod.getTask().getFullName();
+            case 1 :
+                return TaskTools.formatTimestamp( thePeriod.getStartTime() );
+            case 2 :
+                return TaskTools.formatTimestamp( thePeriod.getEndTime() );
+            case 3 :
+                return TaskTools.formatTimeInHours( thePeriod.getTime() );
+        }
+        return null;
     }
-    return null;
-  }
 
-  public void addTableModelListener(TableModelListener l) {
-  }
+    public void setValueAt( Object aValue, int rowIndex, int columnIndex ) {
+        Period thePeriod = (Period) myPeriods.get( rowIndex );
+        switch ( columnIndex ) {
+            case 2 :
+                thePeriod.setStartTime( ( (Long) aValue ).longValue() );
+            case 3 :
+                thePeriod.setEndTime( ( (Long) aValue ).longValue() );
+        }
 
-  public void removeTableModelListener(TableModelListener l) {
-  }
-  
-  public ArrayList<Period> getPeriods(){
-    if(myPeriods == null || System.currentTimeMillis() - lastValueAtTime > 1000){
-      DefaultActivityCommand theCommand = (DefaultActivityCommand)ApplicationRefBase.getInstance().get(ApplicationRefBase.DEFAULTTASKCOMMAND);
-      Task theSelectedTask = theCommand.getSelectedTask();
-      if(theSelectedTask == null) return new ArrayList<Period>();
-      myPeriods = theCommand.getSelectedTask().getPeriods(myStartTime, myEndTime);
     }
-    //Logger.log(this,"Periods: " + myPeriods.size());
-    return myPeriods;
 
-  }
-  
-  public void setEndTime(long anEndTime){
-    myEndTime = anEndTime;
-  }
-  
-  public long getEndTime(){
-    return myEndTime;
-  }
-  
-  public void setStartTime(long aStartTime){
-    myStartTime = aStartTime;
-  }
-  
-  public long getStartTime(){
-    return myStartTime;
-  }
-} 
+    public String getColumnName( int columnIndex ) {
+        switch ( columnIndex ) {
+            case 0 :
+                return "Activity";
+            case 1 :
+                return "Start";
+            case 2 :
+                return "End";
+            case 3 :
+                return "Duration";
+        }
+        return null;
+    }
 
+    public void addTableModelListener( TableModelListener l ) {
+    }
+
+    public void removeTableModelListener( TableModelListener l ) {
+    }
+
+    public ArrayList<Period> getPeriods() {
+        if ( myPeriods == null || System.currentTimeMillis() - lastValueAtTime > 1000 ) {
+            DefaultActivityCommand theCommand = (DefaultActivityCommand) ApplicationRefBase.getInstance().get( ApplicationRefBase.DEFAULTTASKCOMMAND );
+            Task theSelectedTask = theCommand.getRootOrSelectedTask();
+            myPeriods = theSelectedTask.getPeriods( myStartTime, myEndTime );
+            if ( theCommand.getLastActivePeriod() != null ) {
+                myPeriods.add( theCommand.getLastActivePeriod() );
+            }
+        }
+        // Logger.log(this,"Periods: " + myPeriods.size());
+        return myPeriods;
+
+    }
+
+    public void setEndTime( long anEndTime ) {
+        myEndTime = anEndTime;
+    }
+
+    public long getEndTime() {
+        return myEndTime;
+    }
+
+    public void setStartTime( long aStartTime ) {
+        myStartTime = aStartTime;
+    }
+
+    public long getStartTime() {
+        return myStartTime;
+    }
+}

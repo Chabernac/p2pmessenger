@@ -4,6 +4,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
+
+import chabernac.task.Period;
 
 public class DateUtils {
     public static int getWorkingDaysCovered( long startDate, long endDate ) {
@@ -41,6 +44,17 @@ public class DateUtils {
         } catch ( ParseException e ) {
             throw new IllegalArgumentException( "Could not parse given time '" + aTime + "' to a date" );
         }
+    }
+
+    public static void makeIdealDay( Period aPeriod ) {
+        if(aPeriod == null) return;
+        GregorianCalendar calandar = new GregorianCalendar();
+        calandar.setTime( getDateWithoutTime( aPeriod.getStartTime() ) );
+        calandar.set( Calendar.HOUR, 9 );
+        aPeriod.setStartTime( calandar.getTime().getTime() );
+        calandar.set( Calendar.HOUR, 16 );
+        calandar.set( Calendar.MINUTE, 30 );
+        aPeriod.setEndTime( calandar.getTime().getTime() );
     }
 
 }
