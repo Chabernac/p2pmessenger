@@ -25,7 +25,7 @@ import org.apache.log4j.Logger;
  * TODO To change the template for this generated type comment go to
  * Window - Preferences - Java - Code Generation - Code and Comments
  */
-public class SynchronizedEventManager implements Runnable{
+public class SynchronizedEventManager implements Runnable, ISynchronizedEventManager{
   private static Logger LOGGER = Logger.getLogger(SynchronizedEventManager.class);
 //  private static final int PROCESSORS = Runtime.getRuntime().availableProcessors();
   private static final int PROCESSORS = 1;
@@ -57,11 +57,13 @@ public class SynchronizedEventManager implements Runnable{
     myTimeUnit = aTimeUnit;
   }
 
-  public void addSyncronizedEvent(iSynchronizedEvent anEvent){
+  @Override
+  public void addSyncronizedEventListener(iSynchronizedEvent anEvent){
     myList.add(anEvent);
   }
 
-  public void removeSyncronizedEvent(iSynchronizedEvent anEvent){
+  @Override
+  public void removeSyncronizedEventListener(iSynchronizedEvent anEvent){
     myList.remove(anEvent);
   }
 

@@ -120,7 +120,6 @@ public class PeriodOverviewPanel extends JPanel implements iEventListener<Event>
         GUIUtils.addComponent( thePanel, new CommandButton( new StartCommand(), 70 ), 4, 0, 0, 0, GridBagConstraints.NONE, new Insets( 0, 1, 0, 1 ) );
         GUIUtils.addComponent( thePanel, new CommandButton( new DeleteCommand(), 110 ), 5, 0, 0, 0, GridBagConstraints.NONE, new Insets( 0, 1, 0, 1 ) );
         GUIUtils.addComponent( thePanel, new CommandButton( new ModifyCommand(), 80 ), 6, 0, 0, 0, GridBagConstraints.NONE, new Insets( 0, 1, 0, 0 ) );
-        GUIUtils.addComponent( thePanel, new CommandButton( new AllTasksCommand(), 110 ), 7, 0, 0, 0, GridBagConstraints.NONE, new Insets( 0, 1, 0, 1 ) );
         GUIUtils.addComponent( thePanel, new CommandButton( new AllDayEvent(), 110 ), 7, 0, 0, 0, GridBagConstraints.NONE, new Insets( 0, 1, 0, 1 ) );
         GUIUtils.addComponent( thePanel, new CommandButton( new AlignPreviousTask(), 110), 8, 0, 0, 0, GridBagConstraints.NONE, new Insets( 0, 1, 0, 1 ) );
         GUIUtils.addComponent( thePanel, new CommandButton( new AlignNextTask(), 110 ), 9, 0, 0, 0, GridBagConstraints.NONE, new Insets( 0, 1, 0, 1 ) );
@@ -134,6 +133,7 @@ public class PeriodOverviewPanel extends JPanel implements iEventListener<Event>
         GUIUtils.addComponent( thePanel, new CommandButton( new ExportCommand( false ), 80 ), 6, 1, 0, 0, GridBagConstraints.NONE, new Insets( 0, 1, 0, 0 ) );
         GUIUtils.addComponent( thePanel, new CommandButton( new ExportCommand( true ), 110 ), 7, 1, 0, 0, GridBagConstraints.NONE, new Insets( 0, 1, 0, 0 ) );
         GUIUtils.addComponent( thePanel, new CommandButton( new SaldoCommand(), 80 ), 8, 1, 0, 0, GridBagConstraints.NONE, new Insets( 0, 1, 0, 0 ) );
+        GUIUtils.addComponent( thePanel, new CommandButton( new AllTasksCommand(), 110 ), 9, 1, 0, 0, GridBagConstraints.NONE, new Insets( 0, 1, 0, 1 ) );
 
         return thePanel;
     }
@@ -241,6 +241,15 @@ public class PeriodOverviewPanel extends JPanel implements iEventListener<Event>
         }
     }
 
+    private List<Period> getSelectedPeriods() {
+        int rows[] = myTable.getSelectedRows();
+        List<Period> periods = new ArrayList<Period>();
+        for(int i=0;i<rows.length;i++){
+            periods.add( (Period) myModel.getPeriods().get( rows[i] ) );
+        }
+        return periods;
+    }
+    
     private Period getSelectedPeriod() {
         int index = myTable.getSelectedRow();
         if ( index != -1 ) {
@@ -329,7 +338,7 @@ public class PeriodOverviewPanel extends JPanel implements iEventListener<Event>
         }
 
         public String getName() {
-            return "All tasks";
+            return "All day event";
         }
 
         public boolean isEnabled() {
@@ -341,11 +350,14 @@ public class PeriodOverviewPanel extends JPanel implements iEventListener<Event>
     private class AlignNextTask extends AbstractCommand {
 
         public void execute() {
-            Period thePeriod = getSelectedPeriod();
-            Period theNextPeriod = getNextPeriod();
-            if ( thePeriod != null && theNextPeriod != null ) {
-                thePeriod.setEndTime( theNextPeriod.getStartTime() );
+            List<Period> thePeriods = getSelectedPeriods();
+            if(thePeriods.isEmpty()){
+                return;
             }
+            if(thePeriods.size() == 1){
+                thePeriods.add( getNextPeriod() );
+            }
+            thePeriods.get( 1 ).setStartTime( thePeriods.get( 0 ).getEndTime() );
             myTable.tableChanged( new TableModelEvent( myTable.getModel() ) );
         }
 
@@ -362,11 +374,14 @@ public class PeriodOverviewPanel extends JPanel implements iEventListener<Event>
     private class AlignPreviousTask extends AbstractCommand {
 
         public void execute() {
-            Period thePeriod = getSelectedPeriod();
-            Period thePreviousPeriod = getPreivousPeriod();
-            if ( thePeriod != null && thePreviousPeriod != null ) {
-                thePeriod.setStartTime( thePreviousPeriod.getEndTime() );
+            List<Period> thePeriods = getSelectedPeriods();
+            if(thePeriods.isEmpty()){
+                return;
             }
+            if(thePeriods.size() == 1){
+                thePeriods.add( getPreivousPeriod());
+            }
+            thePeriods.get( 1 ).setEndTime( thePeriods.get( 0 ).getStartTime() );
             myTable.tableChanged( new TableModelEvent( myTable.getModel() ) );
         }
 

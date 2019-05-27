@@ -1,24 +1,24 @@
 #Properties for Activity Logger
-#Mon Aug 07 17:59:18 CEST 2017
+#Wed Nov 22 08:57:14 CET 2017
 user.userid=dgch804
 frame.light.location.y=300
 frame.light.location.x=300
-frame.heavy.size.width=1027
-End.width=248
-todo.Behoort\ tot.width=333
-todo.Taak.width=333
+frame.heavy.size.width=1144
+End.width=274
+todo.Behoort\ tot.width=372
+todo.Taak.width=372
 frame.light.size.width=500
 frame.heavy.size.height=636
-filter.start=04-08-2017
+filter.start=01-11-2017
 tree.showfinished=N
 frame.light.size.height=263
 user.lastname=Chauliac
 chat.light.dividerlocation=80
-Activity.width=249
-Start.width=249
-todo.Gewerkt.width=333
-filter.end=04-08-2017
-frame.heavy.location.y=3
-frame.heavy.location.x=17
+Activity.width=274
+Start.width=275
+todo.Gewerkt.width=372
+filter.end=
+frame.heavy.location.y=5
 user.firstname=Guy
-Duration.width=248
+frame.heavy.location.x=-6
+Duration.width=273

@@ -3,17 +3,17 @@ package chabernac.control;
 
 public abstract class SynchronizedKeyCommand extends KeyCommand implements iSynchronizedEvent{
   private static final long serialVersionUID = 5840724308828111117L;
-  private transient SynchronizedEventManager myManager = null;
+  private transient ISynchronizedEventManager myManager = null;
   private int myTimerInterval;
   private int myEventsAfterRelease = 0;
   private int myEvent = 0;
   private boolean registered = false;
   
-  public SynchronizedKeyCommand(String aDescription, SynchronizedEventManager aManager){
+  public SynchronizedKeyCommand(String aDescription, ISynchronizedEventManager aManager){
     this(aDescription, aManager, 1);
   }
   
-  public SynchronizedKeyCommand(String aDescription, SynchronizedEventManager aManager, int aTimerInterval){
+  public SynchronizedKeyCommand(String aDescription, ISynchronizedEventManager aManager, int aTimerInterval){
     super(aDescription);
     myManager = aManager;
     myTimerInterval = aTimerInterval;
@@ -21,14 +21,14 @@ public abstract class SynchronizedKeyCommand extends KeyCommand implements iSync
   
   public final void keyPressed() {
 	  if(!registered){
-		  myManager.addSyncronizedEvent(this);
+		  myManager.addSyncronizedEventListener(this);
 		  registered = true;
 	  }
   }
 
   public final void keyReleased() {
 	  if(registered){
-		  myManager.removeSyncronizedEvent(this);
+		  myManager.removeSyncronizedEventListener(this);
 		  registered = false;
 	  }
   }

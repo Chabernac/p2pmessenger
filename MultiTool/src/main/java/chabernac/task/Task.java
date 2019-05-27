@@ -172,11 +172,11 @@ public class Task extends DefaultMutableTreeNode implements Comparable, Iterable
         this.notesProblemNr = notesProblemNr;
     }
 
-    public ArrayList getPeriods() {
+    public ArrayList<Period> getPeriods() {
         return periods;
     }
 
-    public void setPeriods( ArrayList periods ) {
+    public void setPeriods( ArrayList<Period> periods ) {
         this.periods = periods;
     }
 
@@ -420,7 +420,7 @@ public class Task extends DefaultMutableTreeNode implements Comparable, Iterable
     }
 
     public Task getRunningTask() {
-        ArrayList thePeriods = getAllPeriods();
+        ArrayList<Period> thePeriods = getAllPeriods();
         Period thePeriod = null;
         for ( int i = 0; i < thePeriods.size(); i++ ) {
             thePeriod = (Period) thePeriods.get( i );
@@ -487,8 +487,8 @@ public class Task extends DefaultMutableTreeNode implements Comparable, Iterable
     }
 
     public Period getLastPeriod() {
-        if(periods.isEmpty()) return null;
-        return periods.get( periods.size() -1 );
+        if ( periods.isEmpty() ) return null;
+        return periods.get( periods.size() - 1 );
     }
 
 }

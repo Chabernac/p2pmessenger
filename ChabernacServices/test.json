@@ -1,0 +1,3408 @@
+{
+  "productSelectionType": "CommercialProductSelection",
+  "context": {
+    "operationCode": null,
+    "activityCode": null,
+    "subActivityCode": null,
+    "channelTypeCode": null,
+    "userTypeCode": null,
+    "invocationModeCode": null,
+    "userProfile": null,
+    "productSpecification": null
+  },
+  "partyRoleSelectionLines": [
+    {
+      "selectionLineType": "PartyRoleSelectionLine",
+      "lineId": "1000",
+      "labelId": "6696ba61-c228-41b7-8699-0de9c75913e1",
+      "itemId": "4167995c-7eba-43ec-baa2-6a766fff9434",
+      "descriptionMessageId": "ed7bf8ca-bd7f-4641-9a90-af4130561cea",
+      "adviceMessageId": "5f68d55c-5228-40a7-9630-de4033c4ecf1",
+      "options": [
+        {
+          "optionId": "8e9dd519-d58b-43d6-93b4-e2b689795240",
+          "sourceLineId": null,
+          "sourceItemId": null,
+          "originalSourceLineId": null,
+          "labelId": "5783c63c-8270-4cb6-9793-2bdd48f77793",
+          "descriptionMessageId": null,
+          "description": "Activité 1",
+          "optionTechnicalName": "activite1",
+          "initial": true,
+          "adviceMessageId": null,
+          "selected": false,
+          "presented": true,
+          "mandatory": false,
+          "attributes": [
+            {
+              "attributeId": "3c436b44-6cf2-4358-8e94-33671102785d",
+              "sourceLineId": null,
+              "sourceItemId": null,
+              "originalSourceLineId": null,
+              "labelId": "a6ba605e-8ac5-406f-8e8e-9ede9bb54f2e",
+              "originLabelId": "a6ba605e-8ac5-406f-8e8e-9ede9bb54f2e",
+              "descriptionMessageId": "78a0a281-34b7-49d1-9517-b1c483505779",
+              "adviceMessageId": "b42789e0-e763-4d56-bad1-b0e119ff1562",
+              "editable": null,
+              "description": "RAXA - Activité",
+              "sequence": null,
+              "status": "active",
+              "attributeDefaultValue": null,
+              "attributeValue": "R43043",
+              "attributeType": "String",
+              "externalSource": null,
+              "imsMappingRetails": [],
+              "attributeLovs": [],
+              "externalLOV": null,
+              "attributeTechnicalName": "raxaActivite1",
+              "initialAttribute": true,
+              "attributeRegEx": null,
+              "externalId": null,
+              "presented": false,
+              "mandatory": true
+            },
+            {
+              "attributeId": "d071c1d1-caed-47d9-80b3-b92d3262d224",
+              "sourceLineId": null,
+              "sourceItemId": null,
+              "originalSourceLineId": null,
+              "labelId": "a92f7703-1485-4995-88c0-80573b832c6f",
+              "originLabelId": "a92f7703-1485-4995-88c0-80573b832c6f",
+              "descriptionMessageId": "ce523aaa-fd29-4cfa-b08a-db78205abe4d",
+              "adviceMessageId": "7d4776db-122c-4fb0-88f5-a23ee48508f7",
+              "editable": null,
+              "description": "RAXA - Pourcentage",
+              "sequence": null,
+              "status": "active",
+              "attributeDefaultValue": null,
+              "attributeValue": 100,
+              "attributeType": "Float",
+              "externalSource": null,
+              "imsMappingRetails": [],
+              "attributeLovs": [],
+              "externalLOV": null,
+              "attributeTechnicalName": "raxaPourcentage1",
+              "initialAttribute": true,
+              "attributeRegEx": null,
+              "externalId": null,
+              "presented": false,
+              "mandatory": true
+            }
+          ]
+        },
+        {
+          "optionId": "cee6e640-8085-4316-abe0-dd5e0f25f07d",
+          "sourceLineId": null,
+          "sourceItemId": null,
+          "originalSourceLineId": null,
+          "labelId": "52d16d43-e522-4caf-8498-a4675ed74b7d",
+          "descriptionMessageId": null,
+          "description": "Activité 2",
+          "optionTechnicalName": "activite2",
+          "initial": true,
+          "adviceMessageId": null,
+          "selected": false,
+          "presented": true,
+          "mandatory": false,
+          "attributes": [
+            {
+              "attributeId": "a9ed1932-922e-402a-9df8-9453f431bbd8",
+              "sourceLineId": null,
+              "sourceItemId": null,
+              "originalSourceLineId": null,
+              "labelId": "d4bf048e-223d-4364-b6e6-73fdb79e9b79",
+              "originLabelId": "d4bf048e-223d-4364-b6e6-73fdb79e9b79",
+              "descriptionMessageId": "ce523aaa-fd29-4cfa-b08a-db78205abe4d",
+              "adviceMessageId": "7d4776db-122c-4fb0-88f5-a23ee48508f7",
+              "editable": null,
+              "description": "RAXA - Pourcentage",
+              "sequence": null,
+              "status": "active",
+              "attributeDefaultValue": null,
+              "attributeValue": null,
+              "attributeType": "Float",
+              "externalSource": null,
+              "imsMappingRetails": [],
+              "attributeLovs": [],
+              "externalLOV": null,
+              "attributeTechnicalName": "raxaPourcentage2",
+              "initialAttribute": true,
+              "attributeRegEx": null,
+              "externalId": null,
+              "presented": false,
+              "mandatory": false
+            },
+            {
+              "attributeId": "7eb8ccb5-c313-4aa2-9762-cd9ae08bd0e0",
+              "sourceLineId": null,
+              "sourceItemId": null,
+              "originalSourceLineId": null,
+              "labelId": "afec8ecd-998a-43b0-8e1e-1b7b0a28e77d",
+              "originLabelId": "afec8ecd-998a-43b0-8e1e-1b7b0a28e77d",
+              "descriptionMessageId": "78a0a281-34b7-49d1-9517-b1c483505779",
+              "adviceMessageId": "b42789e0-e763-4d56-bad1-b0e119ff1562",
+              "editable": null,
+              "description": "RAXA - Activité",
+              "sequence": null,
+              "status": "active",
+              "attributeDefaultValue": null,
+              "attributeValue": null,
+              "attributeType": "String",
+              "externalSource": null,
+              "imsMappingRetails": [],
+              "attributeLovs": [],
+              "externalLOV": null,
+              "attributeTechnicalName": "raxaActivite2",
+              "initialAttribute": true,
+              "attributeRegEx": null,
+              "externalId": null,
+              "presented": false,
+              "mandatory": false
+            }
+          ]
+        },
+        {
+          "optionId": "29ecf414-bee0-4531-b06e-af4aa74c0903",
+          "sourceLineId": null,
+          "sourceItemId": null,
+          "originalSourceLineId": null,
+          "labelId": "e8e618a0-be11-42b2-ace5-f461f616dd1b",
+          "descriptionMessageId": null,
+          "description": "Activité 3",
+          "optionTechnicalName": "activite3",
+          "initial": true,
+          "adviceMessageId": null,
+          "selected": false,
+          "presented": true,
+          "mandatory": false,
+          "attributes": [
+            {
+              "attributeId": "79c4624b-dd27-43e2-8411-029523369651",
+              "sourceLineId": null,
+              "sourceItemId": null,
+              "originalSourceLineId": null,
+              "labelId": "d67123eb-c05e-4260-89f2-bbd688314e8f",
+              "originLabelId": "d67123eb-c05e-4260-89f2-bbd688314e8f",
+              "descriptionMessageId": "78a0a281-34b7-49d1-9517-b1c483505779",
+              "adviceMessageId": "b42789e0-e763-4d56-bad1-b0e119ff1562",
+              "editable": null,
+              "description": "RAXA - Activité",
+              "sequence": null,
+              "status": "active",
+              "a…rnalLOV": null,
+              "attributeTechnicalName": "starter",
+              "initialAttribute": false,
+              "attributeRegEx": null,
+              "externalId": null,
+              "presented": false,
+              "mandatory": false
+            },
+            {
+              "attributeId": "3ec65e1d-1bb1-4748-9be9-dd2d0be5f782",
+              "sourceLineId": "1027",
+              "sourceItemId": "ff0ea9e3-bdde-4d9e-8c1b-73bb8b0f1d8a",
+              "originalSourceLineId": "1000",
+              "labelId": "383c1ee2-95ae-4590-825c-f99b516be6ad",
+              "originLabelId": "383c1ee2-95ae-4590-825c-f99b516be6ad",
+              "descriptionMessageId": "f33f7252-f617-4ab8-a123-c798b34c8f2c",
+              "adviceMessageId": "c949cc13-9045-4c2d-8e02-70f57297938d",
+              "editable": true,
+              "description": "Statistique sinistres favorable",
+              "sequence": null,
+              "status": "active",
+              "attributeDefaultValue": null,
+              "attributeValue": null,
+              "attributeType": "Boolean",
+              "externalSource": null,
+              "imsMappingRetails": [],
+              "attributeLovs": [],
+              "externalLOV": null,
+              "attributeTechnicalName": "statistiqueSinistresFavorable",
+              "initialAttribute": false,
+              "attributeRegEx": null,
+              "externalId": null,
+              "presented": false,
+              "mandatory": false
+            },
+            {
+              "attributeId": "971d199e-18cd-47da-82d6-d230554cc476",
+              "sourceLineId": "1027",
+              "sourceItemId": "ff0ea9e3-bdde-4d9e-8c1b-73bb8b0f1d8a",
+              "originalSourceLineId": "1000",
+              "labelId": "7220ae2e-7870-40b1-a02e-93503f3ed28b",
+              "originLabelId": "7220ae2e-7870-40b1-a02e-93503f3ed28b",
+              "descriptionMessageId": "e88c9c6a-32eb-432f-ac1a-80335522522d",
+              "adviceMessageId": "ad91910d-84b9-4c07-8bc3-80821db45edc",
+              "editable": true,
+              "description": "Subsides maximum atteint",
+              "sequence": null,
+              "status": "active",
+              "attributeDefaultValue": null,
+              "attributeValue": null,
+              "attributeType": "Boolean",
+              "externalSource": null,
+              "imsMappingRetails": [],
+              "attributeLovs": [],
+              "externalLOV": null,
+              "attributeTechnicalName": "subsidesMaxAtteint",
+              "initialAttribute": false,
+              "attributeRegEx": null,
+              "externalId": null,
+              "presented": false,
+              "mandatory": false
+            }
+          ],
+          "selection": {
+            "eligible": true,
+            "advised": false,
+            "selected": false,
+            "editable": true,
+            "presented": true,
+            "accepted": true
+          },
+          "clauses": [],
+          "additionalProperties": null,
+          "itemLevelId": "1",
+          "itemTypeId": null,
+          "externalId": null,
+          "externalSource": "12",
+          "vendingCompany": null,
+          "descriptions": [],
+          "childrenCardinality": null,
+          "pricing": null,
+          "pricingCorporate": null,
+          "messages": []
+        },
+        {
+          "selectionLineType": "ProductSelectionLine",
+          "lineId": "1024",
+          "labelId": "bd7e01b6-50e1-4d0c-8a02-c51bb146dfbc",
+          "itemId": "51964539-2603-4f63-8337-b7dd84f71cdc",
+          "descriptionMessageId": "c0ad3719-9d33-46ca-9dfb-30c0437a4a68",
+          "adviceMessageId": "0370adbf-c90b-4a54-a45f-f9e65e772817",
+          "options": [],
+          "attributes": [],
+          "selection": {
+            "eligible": false,
+            "advised": false,
+            "selected": false,
+            "editable": true,
+            "presented": true,
+            "accepted": false
+          },
+          "clauses": [],
+          "additionalProperties": null,
+          "itemLevelId": "2",
+          "itemTypeId": null,
+          "externalId": null,
+          "externalSource": null,
+          "vendingCompany": null,
+          "descriptions": [],
+          "childrenCardinality": null,
+          "pricing": null,
+          "pricingCorporate": null,
+          "messages": [
+            {
+              "messageId": "ERR010",
+              "messageType": "Error"
+            }
+          ]
+        },
+        {
+          "selectionLineType": "ProductSelectionLine",
+          "lineId": "1025",
+          "labelId": "2ad7cbad-1a0a-4a0b-bab1-94e00dd5696a",
+          "itemId": "b1846055-b01c-4d11-8ed5-41217632e454",
+          "descriptionMessageId": "929dc806-8a34-4954-909f-17c326c2fd51",
+          "adviceMessageId": "7601a7b0-e217-4032-b64d-ea053050a5f5",
+          "options": [],
+          "attributes": [],
+          "selection": {
+            "eligible": false,
+            "advised": false,
+            "selected": false,
+            "editable": true,
+            "presented": true,
+            "accepted": false
+          },
+          "clauses": [],
+          "additionalProperties": null,
+          "itemLevelId": "3",
+          "itemTypeId": null,
+          "externalId": null,
+          "externalSource": null,
+          "vendingCompany": null,
+          "descriptions": [],
+          "childrenCardinality": null,
+          "pricing": null,
+          "pricingCorporate": null,
+          "messages": [
+            {
+              "messageId": "ERR010",
+              "messageType": "Error"
+            }
+          ]
+        }
+      ],
+      "riskObjectProductSelectionRels": [
+        {
+          "productSelectionLineId": "1022",
+          "riskObjectSelectionLineId": "1013"
+        },
+        {
+          "productSelectionLineId": "1023",
+          "riskObjectSelectionLineId": "1015"
+        },
+        {
+          "productSelectionLineId": "1024",
+          "riskObjectSelectionLineId": "1015"
+        },
+        {
+          "productSelectionLineId": "1025",
+          "riskObjectSelectionLineId": "1015"
+        }
+      ],
+      "coverableObjectProductSelectionRels": [],
+      "partyRoleProductSelectionRels": [
+        {
+          "productSelectionLineId": "1022",
+          "partyRoleSelectionLineId": "1000"
+        },
+        {
+          "productSelectionLineId": "1023",
+          "partyRoleSelectionLineId": "1000"
+        },
+        {
+          "productSelectionLineId": "1024",
+          "partyRoleSelectionLineId": "1000"
+        },
+        {
+          "productSelectionLineId": "1025",
+          "partyRoleSelectionLineId": "1000"
+        },
+        {
+          "productSelectionLineId": "1022",
+          "partyRoleSelectionLineId": "1002"
+        },
+        {
+          "productSelectionLineId": "1023",
+          "partyRoleSelectionLineId": "1002"
+        },
+        {
+          "productSelectionLineId": "1024",
+          "partyRoleSelectionLineId": "1002"
+        },
+        {
+          "productSelectionLineId": "1025",
+          "partyRoleSelectionLineId": "1002"
+        }
+      ],
+      "partyProductSelectionRels": [
+        {
+          "productSelectionLineId": "1022",
+          "partySelectionLineId": "1001"
+        },
+        {
+          "productSelectionLineId": "1023",
+          "partySelectionLineId": "1001"
+        },
+        {
+          "productSelectionLineId": "1024",
+          "partySelectionLineId": "1001"
+        },
+        {
+          "productSelectionLineId": "1025",
+          "partySelectionLineId": "1001"
+        },
+        {
+          "productSelectionLineId": "1022",
+          "partySelectionLineId": "1003"
+        },
+        {
+          "productSelectionLineId": "1023",
+          "partySelectionLineId": "1003"
+        },
+        {
+          "productSelectionLineId": "1024",
+          "partySelectionLineId": "1003"
+        },
+        {
+          "productSelectionLineId": "1025",
+          "partySelectionLineId": "1003"
+        }
+      ],
+      "globalPremium": null,
+      "errorReport": null
+    }
+    [
+      {
+        "selectionLineType": "PartyRoleSelectionLine",
+        "lineId": "1000",
+        "labelId": "6696ba61-c228-41b7-8699-0de9c75913e1",
+        "itemId": "4167995c-7eba-43ec-baa2-6a766fff9434",
+        "descriptionMessageId": "ed7bf8ca-bd7f-4641-9a90-af4130561cea",
+        "adviceMessageId": "5f68d55c-5228-40a7-9630-de4033c4ecf1",
+        "options": [
+          {
+            "optionId": "8e9dd519-d58b-43d6-93b4-e2b689795240",
+            "sourceLineId": null,
+            "sourceItemId": null,
+            "originalSourceLineId": null,
+            "labelId": "5783c63c-8270-4cb6-9793-2bdd48f77793",
+            "descriptionMessageId": null,
+            "description": "Activité 1",
+            "optionTechnicalName": "activite1",
+            "initial": true,
+            "adviceMessageId": null,
+            "selected": false,
+            "presented": true,
+            "mandatory": false,
+            "attributes": [
+              {
+                "attributeId": "3c436b44-6cf2-4358-8e94-33671102785d",
+                "sourceLineId": null,
+                "sourceItemId": null,
+                "originalSourceLineId": null,
+                "labelId": "a6ba605e-8ac5-406f-8e8e-9ede9bb54f2e",
+                "originLabelId": "a6ba605e-8ac5-406f-8e8e-9ede9bb54f2e",
+                "descriptionMessageId": "78a0a281-34b7-49d1-9517-b1c483505779",
+                "adviceMessageId": "b42789e0-e763-4d56-bad1-b0e119ff1562",
+                "editable": null,
+                "description": "RAXA - Activité",
+                "sequence": null,
+                "status": "active",
+                "attributeDefaultValue": null,
+                "attributeValue": "R43043",
+                "attributeType": "String",
+                "externalSource": null,
+                "imsMappingRetails": [],
+                "attributeLovs": [],
+                "externalLOV": null,
+                "attributeTechnicalName": "raxaActivite1",
+                "initialAttribute": true,
+                "attributeRegEx": null,
+                "externalId": null,
+                "presented": false,
+                "mandatory": true
+              },
+              {
+                "attributeId": "d071c1d1-caed-47d9-80b3-b92d3262d224",
+                "sourceLineId": null,
+                "sourceItemId": null,
+                "originalSourceLineId": null,
+                "labelId": "a92f7703-1485-4995-88c0-80573b832c6f",
+                "originLabelId": "a92f7703-1485-4995-88c0-80573b832c6f",
+                "descriptionMessageId": "ce523aaa-fd29-4cfa-b08a-db78205abe4d",
+                "adviceMessageId": "7d4776db-122c-4fb0-88f5-a23ee48508f7",
+                "editable": null,
+                "description": "RAXA - Pourcentage",
+                "sequence": null,
+                "status": "active",
+                "attributeDefaultValue": null,
+                "attributeValue": 100,
+                "attributeType": "Float",
+                "externalSource": null,
+                "imsMappingRetails": [],
+                "attributeLovs": [],
+                "externalLOV": null,
+                "attributeTechnicalName": "raxaPourcentage1",
+                "initialAttribute": true,
+                "attributeRegEx": null,
+                "externalId": null,
+                "presented": false,
+                "mandatory": true
+              }
+            ]
+          },
+          {
+            "optionId": "cee6e640-8085-4316-abe0-dd5e0f25f07d",
+            "sourceLineId": null,
+            "sourceItemId": null,
+            "originalSourceLineId": null,
+            "labelId": "52d16d43-e522-4caf-8498-a4675ed74b7d",
+            "descriptionMessageId": null,
+            "description": "Activité 2",
+            "optionTechnicalName": "activite2",
+            "initial": true,
+            "adviceMessageId": null,
+            "selected": false,
+            "presented": true,
+            "mandatory": false,
+            "attributes": [
+              {
+                "attributeId": "a9ed1932-922e-402a-9df8-9453f431bbd8",
+                "sourceLineId": null,
+                "sourceItemId": null,
+                "originalSourceLineId": null,
+                "labelId": "d4bf048e-223d-4364-b6e6-73fdb79e9b79",
+                "originLabelId": "d4bf048e-223d-4364-b6e6-73fdb79e9b79",
+                "descriptionMessageId": "ce523aaa-fd29-4cfa-b08a-db78205abe4d",
+                "adviceMessageId": "7d4776db-122c-4fb0-88f5-a23ee48508f7",
+                "editable": null,
+                "description": "RAXA - Pourcentage",
+                "sequence": null,
+                "status": "active",
+                "attributeDefaultValue": null,
+                "attributeValue": null,
+                "attributeType": "Float",
+                "externalSource": null,
+                "imsMappingRetails": [],
+                "attributeLovs": [],
+                "externalLOV": null,
+                "attributeTechnicalName": "raxaPourcentage2",
+                "initialAttribute": true,
+                "attributeRegEx": null,
+                "externalId": null,
+                "presented": false,
+                "mandatory": false
+              },
+              {
+                "attributeId": "7eb8ccb5-c313-4aa2-9762-cd9ae08bd0e0",
+                "sourceLineId": null,
+                "sourceItemId": null,
+                "originalSourceLineId": null,
+                "labelId": "afec8ecd-998a-43b0-8e1e-1b7b0a28e77d",
+                "originLabelId": "afec8ecd-998a-43b0-8e1e-1b7b0a28e77d",
+                "descriptionMessageId": "78a0a281-34b7-49d1-9517-b1c483505779",
+                "adviceMessageId": "b42789e0-e763-4d56-bad1-b0e119ff1562",
+                "editable": null,
+                "description": "RAXA - Activité",
+                "sequence": null,
+                "status": "active",
+                "attributeDefaultValue": null,
+                "attributeValue": null,
+                "attributeType": "String",
+                "externalSource": null,
+                "imsMappingRetails": [],
+                "attributeLovs": [],
+                "externalLOV": null,
+                "attributeTechnicalName": "raxaActivite2",
+                "initialAttribute": true,
+                "attributeRegEx": null,
+                "externalId": null,
+                "presented": false,
+                "mandatory": false
+              }
+            ]
+          },
+          {
+            "optionId": "29ecf414-bee0-4531-b06e-af4aa74c0903",
+            "sourceLineId": null,
+            "sourceItemId": null,
+            "originalSourceLineId": null,
+            "labelId": "e8e618a0-be11-42b2-ace5-f461f616dd1b",
+            "descriptionMessageId": null,
+            "description": "Activité 3",
+            "optionTechnicalName": "activite3",
+            "initial": true,
+            "adviceMessageId": null,
+            "selected": false,
+            "presented": true,
+            "mandatory": false,
+            "attributes": [
+              {
+                "attributeId": "79c4624b-dd27-43e2-8411-029523369651",
+                "sourceLineId": null,
+                "sourceItemId": null,
+                "originalSourceLineId": null,
+                "labelId": "d67123eb-c05e-4260-89f2-bbd688314e8f",
+                "originLabelId": "d67123eb-c05e-4260-89f2-bbd688314e8f",
+                "descriptionMessageId": "78a0a281-34b7-49d1-9517-b1c483505779",
+                "adviceMessageId": "b42789e0-e763-4d56-bad1-b0e119ff1562",
+                "editable": null,
+                "description": "RAXA - Activité",
+                "sequence": null,
+                "status": "active",
+                "a…rnalLOV": null,
+                "attributeTechnicalName": "starter",
+                "initialAttribute": false,
+                "attributeRegEx": null,
+                "externalId": null,
+                "presented": false,
+                "mandatory": false
+              },
+              {
+                "attributeId": "3ec65e1d-1bb1-4748-9be9-dd2d0be5f782",
+                "sourceLineId": "1027",
+                "sourceItemId": "ff0ea9e3-bdde-4d9e-8c1b-73bb8b0f1d8a",
+                "originalSourceLineId": "1000",
+                "labelId": "383c1ee2-95ae-4590-825c-f99b516be6ad",
+                "originLabelId": "383c1ee2-95ae-4590-825c-f99b516be6ad",
+                "descriptionMessageId": "f33f7252-f617-4ab8-a123-c798b34c8f2c",
+                "adviceMessageId": "c949cc13-9045-4c2d-8e02-70f57297938d",
+                "editable": true,
+                "description": "Statistique sinistres favorable",
+                "sequence": null,
+                "status": "active",
+                "attributeDefaultValue": null,
+                "attributeValue": null,
+                "attributeType": "Boolean",
+                "externalSource": null,
+                "imsMappingRetails": [],
+                "attributeLovs": [],
+                "externalLOV": null,
+                "attributeTechnicalName": "statistiqueSinistresFavorable",
+                "initialAttribute": false,
+                "attributeRegEx": null,
+                "externalId": null,
+                "presented": false,
+                "mandatory": false
+              },
+              {
+                "attributeId": "971d199e-18cd-47da-82d6-d230554cc476",
+                "sourceLineId": "1027",
+                "sourceItemId": "ff0ea9e3-bdde-4d9e-8c1b-73bb8b0f1d8a",
+                "originalSourceLineId": "1000",
+                "labelId": "7220ae2e-7870-40b1-a02e-93503f3ed28b",
+                "originLabelId": "7220ae2e-7870-40b1-a02e-93503f3ed28b",
+                "descriptionMessageId": "e88c9c6a-32eb-432f-ac1a-80335522522d",
+                "adviceMessageId": "ad91910d-84b9-4c07-8bc3-80821db45edc",
+                "editable": true,
+                "description": "Subsides maximum atteint",
+                "sequence": null,
+                "status": "active",
+                "attributeDefaultValue": null,
+                "attributeValue": null,
+                "attributeType": "Boolean",
+                "externalSource": null,
+                "imsMappingRetails": [],
+                "attributeLovs": [],
+                "externalLOV": null,
+                "attributeTechnicalName": "subsidesMaxAtteint",
+                "initialAttribute": false,
+                "attributeRegEx": null,
+                "externalId": null,
+                "presented": false,
+                "mandatory": false
+              }
+            ],
+            "selection": {
+              "eligible": true,
+              "advised": false,
+              "selected": false,
+              "editable": true,
+              "presented": true,
+              "accepted": true
+            },
+            "clauses": [],
+            "additionalProperties": null,
+            "itemLevelId": "1",
+            "itemTypeId": null,
+            "externalId": null,
+            "externalSource": "12",
+            "vendingCompany": null,
+            "descriptions": [],
+            "childrenCardinality": null,
+            "pricing": null,
+            "pricingCorporate": null,
+            "messages": []
+          },
+          {
+            "selectionLineType": "ProductSelectionLine",
+            "lineId": "1024",
+            "labelId": "bd7e01b6-50e1-4d0c-8a02-c51bb146dfbc",
+            "itemId": "51964539-2603-4f63-8337-b7dd84f71cdc",
+            "descriptionMessageId": "c0ad3719-9d33-46ca-9dfb-30c0437a4a68",
+            "adviceMessageId": "0370adbf-c90b-4a54-a45f-f9e65e772817",
+            "options": [],
+            "attributes": [],
+            "selection": {
+              "eligible": false,
+              "advised": false,
+              "selected": false,
+              "editable": true,
+              "presented": true,
+              "accepted": false
+            },
+            "clauses": [],
+            "additionalProperties": null,
+            "itemLevelId": "2",
+            "itemTypeId": null,
+            "externalId": null,
+            "externalSource": null,
+            "vendingCompany": null,
+            "descriptions": [],
+            "childrenCardinality": null,
+            "pricing": null,
+            "pricingCorporate": null,
+            "messages": [
+              {
+                "messageId": "ERR010",
+                "messageType": "Error"
+              }
+            ]
+          },
+          {
+            "selectionLineType": "ProductSelectionLine",
+            "lineId": "1025",
+            "labelId": "2ad7cbad-1a0a-4a0b-bab1-94e00dd5696a",
+            "itemId": "b1846055-b01c-4d11-8ed5-41217632e454",
+            "descriptionMessageId": "929dc806-8a34-4954-909f-17c326c2fd51",
+            "adviceMessageId": "7601a7b0-e217-4032-b64d-ea053050a5f5",
+            "options": [],
+            "attributes": [],
+            "selection": {
+              "eligible": false,
+              "advised": false,
+              "selected": false,
+              "editable": true,
+              "presented": true,
+              "accepted": false
+            },
+            "clauses": [],
+            "additionalProperties": null,
+            "itemLevelId": "3",
+            "itemTypeId": null,
+            "externalId": null,
+            "externalSource": null,
+            "vendingCompany": null,
+            "descriptions": [],
+            "childrenCardinality": null,
+            "pricing": null,
+            "pricingCorporate": null,
+            "messages": [
+              {
+                "messageId": "ERR010",
+                "messageType": "Error"
+              }
+            ]
+          }
+        ],
+        "riskObjectProductSelectionRels": [
+          {
+            "productSelectionLineId": "1022",
+            "riskObjectSelectionLineId": "1013"
+          },
+          {
+            "productSelectionLineId": "1023",
+            "riskObjectSelectionLineId": "1015"
+          },
+          {
+            "productSelectionLineId": "1024",
+            "riskObjectSelectionLineId": "1015"
+          },
+          {
+            "productSelectionLineId": "1025",
+            "riskObjectSelectionLineId": "1015"
+          }
+        ],
+        "coverableObjectProductSelectionRels": [],
+        "partyRoleProductSelectionRels": [
+          {
+            "productSelectionLineId": "1022",
+            "partyRoleSelectionLineId": "1000"
+          },
+          {
+            "productSelectionLineId": "1023",
+            "partyRoleSelectionLineId": "1000"
+          },
+          {
+            "productSelectionLineId": "1024",
+            "partyRoleSelectionLineId": "1000"
+          },
+          {
+            "productSelectionLineId": "1025",
+            "partyRoleSelectionLineId": "1000"
+          },
+          {
+            "productSelectionLineId": "1022",
+            "partyRoleSelectionLineId": "1002"
+          },
+          {
+            "productSelectionLineId": "1023",
+            "partyRoleSelectionLineId": "1002"
+          },
+          {
+            "productSelectionLineId": "1024",
+            "partyRoleSelectionLineId": "1002"
+          },
+          {
+            "productSelectionLineId": "1025",
+            "partyRoleSelectionLineId": "1002"
+          }
+        ],
+        "partyProductSelectionRels": [
+          {
+            "productSelectionLineId": "1022",
+            "partySelectionLineId": "1001"
+          },
+          {
+            "productSelectionLineId": "1023",
+            "partySelectionLineId": "1001"
+          },
+          {
+            "productSelectionLineId": "1024",
+            "partySelectionLineId": "1001"
+          },
+          {
+            "productSelectionLineId": "1025",
+            "partySelectionLineId": "1001"
+          },
+          {
+            "productSelectionLineId": "1022",
+            "partySelectionLineId": "1003"
+          },
+          {
+            "productSelectionLineId": "1023",
+            "partySelectionLineId": "1003"
+          },
+          {
+            "productSelectionLineId": "1024",
+            "partySelectionLineId": "1003"
+          },
+          {
+            "productSelectionLineId": "1025",
+            "partySelectionLineId": "1003"
+          }
+        ],
+        "globalPremium": null,
+        "errorReport": null
+      }
+      [
+        {
+          "selectionLineType": "PartyRoleSelectionLine",
+          "lineId": "1000",
+          "labelId": "6696ba61-c228-41b7-8699-0de9c75913e1",
+          "itemId": "4167995c-7eba-43ec-baa2-6a766fff9434",
+          "descriptionMessageId": "ed7bf8ca-bd7f-4641-9a90-af4130561cea",
+          "adviceMessageId": "5f68d55c-5228-40a7-9630-de4033c4ecf1",
+          "options": [
+            {
+              "optionId": "8e9dd519-d58b-43d6-93b4-e2b689795240",
+              "sourceLineId": null,
+              "sourceItemId": null,
+              "originalSourceLineId": null,
+              "labelId": "5783c63c-8270-4cb6-9793-2bdd48f77793",
+              "descriptionMessageId": null,
+              "description": "Activité 1",
+              "optionTechnicalName": "activite1",
+              "initial": true,
+              "adviceMessageId": null,
+              "selected": false,
+              "presented": true,
+              "mandatory": false,
+              "attributes": [
+                {
+                  "attributeId": "3c436b44-6cf2-4358-8e94-33671102785d",
+                  "sourceLineId": null,
+                  "sourceItemId": null,
+                  "originalSourceLineId": null,
+                  "labelId": "a6ba605e-8ac5-406f-8e8e-9ede9bb54f2e",
+                  "originLabelId": "a6ba605e-8ac5-406f-8e8e-9ede9bb54f2e",
+                  "descriptionMessageId": "78a0a281-34b7-49d1-9517-b1c483505779",
+                  "adviceMessageId": "b42789e0-e763-4d56-bad1-b0e119ff1562",
+                  "editable": null,
+                  "description": "RAXA - Activité",
+                  "sequence": null,
+                  "status": "active",
+                  "attributeDefaultValue": null,
+                  "attributeValue": "R43043",
+                  "attributeType": "String",
+                  "externalSource": null,
+                  "imsMappingRetails": [],
+                  "attributeLovs": [],
+                  "externalLOV": null,
+                  "attributeTechnicalName": "raxaActivite1",
+                  "initialAttribute": true,
+                  "attributeRegEx": null,
+                  "externalId": null,
+                  "presented": false,
+                  "mandatory": true
+                },
+                {
+                  "attributeId": "d071c1d1-caed-47d9-80b3-b92d3262d224",
+                  "sourceLineId": null,
+                  "sourceItemId": null,
+                  "originalSourceLineId": null,
+                  "labelId": "a92f7703-1485-4995-88c0-80573b832c6f",
+                  "originLabelId": "a92f7703-1485-4995-88c0-80573b832c6f",
+                  "descriptionMessageId": "ce523aaa-fd29-4cfa-b08a-db78205abe4d",
+                  "adviceMessageId": "7d4776db-122c-4fb0-88f5-a23ee48508f7",
+                  "editable": null,
+                  "description": "RAXA - Pourcentage",
+                  "sequence": null,
+                  "status": "active",
+                  "attributeDefaultValue": null,
+                  "attributeValue": 100,
+                  "attributeType": "Float",
+                  "externalSource": null,
+                  "imsMappingRetails": [],
+                  "attributeLovs": [],
+                  "externalLOV": null,
+                  "attributeTechnicalName": "raxaPourcentage1",
+                  "initialAttribute": true,
+                  "attributeRegEx": null,
+                  "externalId": null,
+                  "presented": false,
+                  "mandatory": true
+                }
+              ]
+            },
+            {
+              "optionId": "cee6e640-8085-4316-abe0-dd5e0f25f07d",
+              "sourceLineId": null,
+              "sourceItemId": null,
+              "originalSourceLineId": null,
+              "labelId": "52d16d43-e522-4caf-8498-a4675ed74b7d",
+              "descriptionMessageId": null,
+              "description": "Activité 2",
+              "optionTechnicalName": "activite2",
+              "initial": true,
+              "adviceMessageId": null,
+              "selected": false,
+              "presented": true,
+              "mandatory": false,
+              "attributes": [
+                {
+                  "attributeId": "a9ed1932-922e-402a-9df8-9453f431bbd8",
+                  "sourceLineId": null,
+                  "sourceItemId": null,
+                  "originalSourceLineId": null,
+                  "labelId": "d4bf048e-223d-4364-b6e6-73fdb79e9b79",
+                  "originLabelId": "d4bf048e-223d-4364-b6e6-73fdb79e9b79",
+                  "descriptionMessageId": "ce523aaa-fd29-4cfa-b08a-db78205abe4d",
+                  "adviceMessageId": "7d4776db-122c-4fb0-88f5-a23ee48508f7",
+                  "editable": null,
+                  "description": "RAXA - Pourcentage",
+                  "sequence": null,
+                  "status": "active",
+                  "attributeDefaultValue": null,
+                  "attributeValue": null,
+                  "attributeType": "Float",
+                  "externalSource": null,
+                  "imsMappingRetails": [],
+                  "attributeLovs": [],
+                  "externalLOV": null,
+                  "attributeTechnicalName": "raxaPourcentage2",
+                  "initialAttribute": true,
+                  "attributeRegEx": null,
+                  "externalId": null,
+                  "presented": false,
+                  "mandatory": false
+                },
+                {
+                  "attributeId": "7eb8ccb5-c313-4aa2-9762-cd9ae08bd0e0",
+                  "sourceLineId": null,
+                  "sourceItemId": null,
+                  "originalSourceLineId": null,
+                  "labelId": "afec8ecd-998a-43b0-8e1e-1b7b0a28e77d",
+                  "originLabelId": "afec8ecd-998a-43b0-8e1e-1b7b0a28e77d",
+                  "descriptionMessageId": "78a0a281-34b7-49d1-9517-b1c483505779",
+                  "adviceMessageId": "b42789e0-e763-4d56-bad1-b0e119ff1562",
+                  "editable": null,
+                  "description": "RAXA - Activité",
+                  "sequence": null,
+                  "status": "active",
+                  "attributeDefaultValue": null,
+                  "attributeValue": null,
+                  "attributeType": "String",
+                  "externalSource": null,
+                  "imsMappingRetails": [],
+                  "attributeLovs": [],
+                  "externalLOV": null,
+                  "attributeTechnicalName": "raxaActivite2",
+                  "initialAttribute": true,
+                  "attributeRegEx": null,
+                  "externalId": null,
+                  "presented": false,
+                  "mandatory": false
+                }
+              ]
+            },
+            {
+              "optionId": "29ecf414-bee0-4531-b06e-af4aa74c0903",
+              "sourceLineId": null,
+              "sourceItemId": null,
+              "originalSourceLineId": null,
+              "labelId": "e8e618a0-be11-42b2-ace5-f461f616dd1b",
+              "descriptionMessageId": null,
+              "description": "Activité 3",
+              "optionTechnicalName": "activite3",
+              "initial": true,
+              "adviceMessageId": null,
+              "selected": false,
+              "presented": true,
+              "mandatory": false,
+              "attributes": [
+                {
+                  "attributeId": "79c4624b-dd27-43e2-8411-029523369651",
+                  "sourceLineId": null,
+                  "sourceItemId": null,
+                  "originalSourceLineId": null,
+                  "labelId": "d67123eb-c05e-4260-89f2-bbd688314e8f",
+                  "originLabelId": "d67123eb-c05e-4260-89f2-bbd688314e8f",
+                  "descriptionMessageId": "78a0a281-34b7-49d1-9517-b1c483505779",
+                  "adviceMessageId": "b42789e0-e763-4d56-bad1-b0e119ff1562",
+                  "editable": null,
+                  "description": "RAXA - Activité",
+                  "sequence": null,
+                  "status": "active",
+                  "a…rnalLOV": null,
+                  "attributeTechnicalName": "starter",
+                  "initialAttribute": false,
+                  "attributeRegEx": null,
+                  "externalId": null,
+                  "presented": false,
+                  "mandatory": false
+                },
+                {
+                  "attributeId": "3ec65e1d-1bb1-4748-9be9-dd2d0be5f782",
+                  "sourceLineId": "1027",
+                  "sourceItemId": "ff0ea9e3-bdde-4d9e-8c1b-73bb8b0f1d8a",
+                  "originalSourceLineId": "1000",
+                  "labelId": "383c1ee2-95ae-4590-825c-f99b516be6ad",
+                  "originLabelId": "383c1ee2-95ae-4590-825c-f99b516be6ad",
+                  "descriptionMessageId": "f33f7252-f617-4ab8-a123-c798b34c8f2c",
+                  "adviceMessageId": "c949cc13-9045-4c2d-8e02-70f57297938d",
+                  "editable": true,
+                  "description": "Statistique sinistres favorable",
+                  "sequence": null,
+                  "status": "active",
+                  "attributeDefaultValue": null,
+                  "attributeValue": null,
+                  "attributeType": "Boolean",
+                  "externalSource": null,
+                  "imsMappingRetails": [],
+                  "attributeLovs": [],
+                  "externalLOV": null,
+                  "attributeTechnicalName": "statistiqueSinistresFavorable",
+                  "initialAttribute": false,
+                  "attributeRegEx": null,
+                  "externalId": null,
+                  "presented": false,
+                  "mandatory": false
+                },
+                {
+                  "attributeId": "971d199e-18cd-47da-82d6-d230554cc476",
+                  "sourceLineId": "1027",
+                  "sourceItemId": "ff0ea9e3-bdde-4d9e-8c1b-73bb8b0f1d8a",
+                  "originalSourceLineId": "1000",
+                  "labelId": "7220ae2e-7870-40b1-a02e-93503f3ed28b",
+                  "originLabelId": "7220ae2e-7870-40b1-a02e-93503f3ed28b",
+                  "descriptionMessageId": "e88c9c6a-32eb-432f-ac1a-80335522522d",
+                  "adviceMessageId": "ad91910d-84b9-4c07-8bc3-80821db45edc",
+                  "editable": true,
+                  "description": "Subsides maximum atteint",
+                  "sequence": null,
+                  "status": "active",
+                  "attributeDefaultValue": null,
+                  "attributeValue": null,
+                  "attributeType": "Boolean",
+                  "externalSource": null,
+                  "imsMappingRetails": [],
+                  "attributeLovs": [],
+                  "externalLOV": null,
+                  "attributeTechnicalName": "subsidesMaxAtteint",
+                  "initialAttribute": false,
+                  "attributeRegEx": null,
+                  "externalId": null,
+                  "presented": false,
+                  "mandatory": false
+                }
+              ],
+              "selection": {
+                "eligible": true,
+                "advised": false,
+                "selected": false,
+                "editable": true,
+                "presented": true,
+                "accepted": true
+              },
+              "clauses": [],
+              "additionalProperties": null,
+              "itemLevelId": "1",
+              "itemTypeId": null,
+              "externalId": null,
+              "externalSource": "12",
+              "vendingCompany": null,
+              "descriptions": [],
+              "childrenCardinality": null,
+              "pricing": null,
+              "pricingCorporate": null,
+              "messages": []
+            },
+            {
+              "selectionLineType": "ProductSelectionLine",
+              "lineId": "1024",
+              "labelId": "bd7e01b6-50e1-4d0c-8a02-c51bb146dfbc",
+              "itemId": "51964539-2603-4f63-8337-b7dd84f71cdc",
+              "descriptionMessageId": "c0ad3719-9d33-46ca-9dfb-30c0437a4a68",
+              "adviceMessageId": "0370adbf-c90b-4a54-a45f-f9e65e772817",
+              "options": [],
+              "attributes": [],
+              "selection": {
+                "eligible": false,
+                "advised": false,
+                "selected": false,
+                "editable": true,
+                "presented": true,
+                "accepted": false
+              },
+              "clauses": [],
+              "additionalProperties": null,
+              "itemLevelId": "2",
+              "itemTypeId": null,
+              "externalId": null,
+              "externalSource": null,
+              "vendingCompany": null,
+              "descriptions": [],
+              "childrenCardinality": null,
+              "pricing": null,
+              "pricingCorporate": null,
+              "messages": [
+                {
+                  "messageId": "ERR010",
+                  "messageType": "Error"
+                }
+              ]
+            },
+            {
+              "selectionLineType": "ProductSelectionLine",
+              "lineId": "1025",
+              "labelId": "2ad7cbad-1a0a-4a0b-bab1-94e00dd5696a",
+              "itemId": "b1846055-b01c-4d11-8ed5-41217632e454",
+              "descriptionMessageId": "929dc806-8a34-4954-909f-17c326c2fd51",
+              "adviceMessageId": "7601a7b0-e217-4032-b64d-ea053050a5f5",
+              "options": [],
+              "attributes": [],
+              "selection": {
+                "eligible": false,
+                "advised": false,
+                "selected": false,
+                "editable": true,
+                "presented": true,
+                "accepted": false
+              },
+              "clauses": [],
+              "additionalProperties": null,
+              "itemLevelId": "3",
+              "itemTypeId": null,
+              "externalId": null,
+              "externalSource": null,
+              "vendingCompany": null,
+              "descriptions": [],
+              "childrenCardinality": null,
+              "pricing": null,
+              "pricingCorporate": null,
+              "messages": [
+                {
+                  "messageId": "ERR010",
+                  "messageType": "Error"
+                }
+              ]
+            }
+          ],
+          "riskObjectProductSelectionRels": [
+            {
+              "productSelectionLineId": "1022",
+              "riskObjectSelectionLineId": "1013"
+            },
+            {
+              "productSelectionLineId": "1023",
+              "riskObjectSelectionLineId": "1015"
+            },
+            {
+              "productSelectionLineId": "1024",
+              "riskObjectSelectionLineId": "1015"
+            },
+            {
+              "productSelectionLineId": "1025",
+              "riskObjectSelectionLineId": "1015"
+            }
+          ],
+          "coverableObjectProductSelectionRels": [],
+          "partyRoleProductSelectionRels": [
+            {
+              "productSelectionLineId": "1022",
+              "partyRoleSelectionLineId": "1000"
+            },
+            {
+              "productSelectionLineId": "1023",
+              "partyRoleSelectionLineId": "1000"
+            },
+            {
+              "productSelectionLineId": "1024",
+              "partyRoleSelectionLineId": "1000"
+            },
+            {
+              "productSelectionLineId": "1025",
+              "partyRoleSelectionLineId": "1000"
+            },
+            {
+              "productSelectionLineId": "1022",
+              "partyRoleSelectionLineId": "1002"
+            },
+            {
+              "productSelectionLineId": "1023",
+              "partyRoleSelectionLineId": "1002"
+            },
+            {
+              "productSelectionLineId": "1024",
+              "partyRoleSelectionLineId": "1002"
+            },
+            {
+              "productSelectionLineId": "1025",
+              "partyRoleSelectionLineId": "1002"
+            }
+          ],
+          "partyProductSelectionRels": [
+            {
+              "productSelectionLineId": "1022",
+              "partySelectionLineId": "1001"
+            },
+            {
+              "productSelectionLineId": "1023",
+              "partySelectionLineId": "1001"
+            },
+            {
+              "productSelectionLineId": "1024",
+              "partySelectionLineId": "1001"
+            },
+            {
+              "productSelectionLineId": "1025",
+              "partySelectionLineId": "1001"
+            },
+            {
+              "productSelectionLineId": "1022",
+              "partySelectionLineId": "1003"
+            },
+            {
+              "productSelectionLineId": "1023",
+              "partySelectionLineId": "1003"
+            },
+            {
+              "productSelectionLineId": "1024",
+              "partySelectionLineId": "1003"
+            },
+            {
+              "productSelectionLineId": "1025",
+              "partySelectionLineId": "1003"
+            }
+          ],
+          "globalPremium": null,
+          "errorReport": null
+        }
+        [
+          {
+            "selectionLineType": "PartyRoleSelectionLine",
+            "lineId": "1000",
+            "labelId": "6696ba61-c228-41b7-8699-0de9c75913e1",
+            "itemId": "4167995c-7eba-43ec-baa2-6a766fff9434",
+            "descriptionMessageId": "ed7bf8ca-bd7f-4641-9a90-af4130561cea",
+            "adviceMessageId": "5f68d55c-5228-40a7-9630-de4033c4ecf1",
+            "options": [
+              {
+                "optionId": "8e9dd519-d58b-43d6-93b4-e2b689795240",
+                "sourceLineId": null,
+                "sourceItemId": null,
+                "originalSourceLineId": null,
+                "labelId": "5783c63c-8270-4cb6-9793-2bdd48f77793",
+                "descriptionMessageId": null,
+                "description": "Activité 1",
+                "optionTechnicalName": "activite1",
+                "initial": true,
+                "adviceMessageId": null,
+                "selected": false,
+                "presented": true,
+                "mandatory": false,
+                "attributes": [
+                  {
+                    "attributeId": "3c436b44-6cf2-4358-8e94-33671102785d",
+                    "sourceLineId": null,
+                    "sourceItemId": null,
+                    "originalSourceLineId": null,
+                    "labelId": "a6ba605e-8ac5-406f-8e8e-9ede9bb54f2e",
+                    "originLabelId": "a6ba605e-8ac5-406f-8e8e-9ede9bb54f2e",
+                    "descriptionMessageId": "78a0a281-34b7-49d1-9517-b1c483505779",
+                    "adviceMessageId": "b42789e0-e763-4d56-bad1-b0e119ff1562",
+                    "editable": null,
+                    "description": "RAXA - Activité",
+                    "sequence": null,
+                    "status": "active",
+                    "attributeDefaultValue": null,
+                    "attributeValue": "R43043",
+                    "attributeType": "String",
+                    "externalSource": null,
+                    "imsMappingRetails": [],
+                    "attributeLovs": [],
+                    "externalLOV": null,
+                    "attributeTechnicalName": "raxaActivite1",
+                    "initialAttribute": true,
+                    "attributeRegEx": null,
+                    "externalId": null,
+                    "presented": false,
+                    "mandatory": true
+                  },
+                  {
+                    "attributeId": "d071c1d1-caed-47d9-80b3-b92d3262d224",
+                    "sourceLineId": null,
+                    "sourceItemId": null,
+                    "originalSourceLineId": null,
+                    "labelId": "a92f7703-1485-4995-88c0-80573b832c6f",
+                    "originLabelId": "a92f7703-1485-4995-88c0-80573b832c6f",
+                    "descriptionMessageId": "ce523aaa-fd29-4cfa-b08a-db78205abe4d",
+                    "adviceMessageId": "7d4776db-122c-4fb0-88f5-a23ee48508f7",
+                    "editable": null,
+                    "description": "RAXA - Pourcentage",
+                    "sequence": null,
+                    "status": "active",
+                    "attributeDefaultValue": null,
+                    "attributeValue": 100,
+                    "attributeType": "Float",
+                    "externalSource": null,
+                    "imsMappingRetails": [],
+                    "attributeLovs": [],
+                    "externalLOV": null,
+                    "attributeTechnicalName": "raxaPourcentage1",
+                    "initialAttribute": true,
+                    "attributeRegEx": null,
+                    "externalId": null,
+                    "presented": false,
+                    "mandatory": true
+                  }
+                ]
+              },
+              {
+                "optionId": "cee6e640-8085-4316-abe0-dd5e0f25f07d",
+                "sourceLineId": null,
+                "sourceItemId": null,
+                "originalSourceLineId": null,
+                "labelId": "52d16d43-e522-4caf-8498-a4675ed74b7d",
+                "descriptionMessageId": null,
+                "description": "Activité 2",
+                "optionTechnicalName": "activite2",
+                "initial": true,
+                "adviceMessageId": null,
+                "selected": false,
+                "presented": true,
+                "mandatory": false,
+                "attributes": [
+                  {
+                    "attributeId": "a9ed1932-922e-402a-9df8-9453f431bbd8",
+                    "sourceLineId": null,
+                    "sourceItemId": null,
+                    "originalSourceLineId": null,
+                    "labelId": "d4bf048e-223d-4364-b6e6-73fdb79e9b79",
+                    "originLabelId": "d4bf048e-223d-4364-b6e6-73fdb79e9b79",
+                    "descriptionMessageId": "ce523aaa-fd29-4cfa-b08a-db78205abe4d",
+                    "adviceMessageId": "7d4776db-122c-4fb0-88f5-a23ee48508f7",
+                    "editable": null,
+                    "description": "RAXA - Pourcentage",
+                    "sequence": null,
+                    "status": "active",
+                    "attributeDefaultValue": null,
+                    "attributeValue": null,
+                    "attributeType": "Float",
+                    "externalSource": null,
+                    "imsMappingRetails": [],
+                    "attributeLovs": [],
+                    "externalLOV": null,
+                    "attributeTechnicalName": "raxaPourcentage2",
+                    "initialAttribute": true,
+                    "attributeRegEx": null,
+                    "externalId": null,
+                    "presented": false,
+                    "mandatory": false
+                  },
+                  {
+                    "attributeId": "7eb8ccb5-c313-4aa2-9762-cd9ae08bd0e0",
+                    "sourceLineId": null,
+                    "sourceItemId": null,
+                    "originalSourceLineId": null,
+                    "labelId": "afec8ecd-998a-43b0-8e1e-1b7b0a28e77d",
+                    "originLabelId": "afec8ecd-998a-43b0-8e1e-1b7b0a28e77d",
+                    "descriptionMessageId": "78a0a281-34b7-49d1-9517-b1c483505779",
+                    "adviceMessageId": "b42789e0-e763-4d56-bad1-b0e119ff1562",
+                    "editable": null,
+                    "description": "RAXA - Activité",
+                    "sequence": null,
+                    "status": "active",
+                    "attributeDefaultValue": null,
+                    "attributeValue": null,
+                    "attributeType": "String",
+                    "externalSource": null,
+                    "imsMappingRetails": [],
+                    "attributeLovs": [],
+                    "externalLOV": null,
+                    "attributeTechnicalName": "raxaActivite2",
+                    "initialAttribute": true,
+                    "attributeRegEx": null,
+                    "externalId": null,
+                    "presented": false,
+                    "mandatory": false
+                  }
+                ]
+              },
+              {
+                "optionId": "29ecf414-bee0-4531-b06e-af4aa74c0903",
+                "sourceLineId": null,
+                "sourceItemId": null,
+                "originalSourceLineId": null,
+                "labelId": "e8e618a0-be11-42b2-ace5-f461f616dd1b",
+                "descriptionMessageId": null,
+                "description": "Activité 3",
+                "optionTechnicalName": "activite3",
+                "initial": true,
+                "adviceMessageId": null,
+                "selected": false,
+                "presented": true,
+                "mandatory": false,
+                "attributes": [
+                  {
+                    "attributeId": "79c4624b-dd27-43e2-8411-029523369651",
+                    "sourceLineId": null,
+                    "sourceItemId": null,
+                    "originalSourceLineId": null,
+                    "labelId": "d67123eb-c05e-4260-89f2-bbd688314e8f",
+                    "originLabelId": "d67123eb-c05e-4260-89f2-bbd688314e8f",
+                    "descriptionMessageId": "78a0a281-34b7-49d1-9517-b1c483505779",
+                    "adviceMessageId": "b42789e0-e763-4d56-bad1-b0e119ff1562",
+                    "editable": null,
+                    "description": "RAXA - Activité",
+                    "sequence": null,
+                    "status": "active",
+                    "a…rnalLOV": null,
+                    "attributeTechnicalName": "starter",
+                    "initialAttribute": false,
+                    "attributeRegEx": null,
+                    "externalId": null,
+                    "presented": false,
+                    "mandatory": false
+                  },
+                  {
+                    "attributeId": "3ec65e1d-1bb1-4748-9be9-dd2d0be5f782",
+                    "sourceLineId": "1027",
+                    "sourceItemId": "ff0ea9e3-bdde-4d9e-8c1b-73bb8b0f1d8a",
+                    "originalSourceLineId": "1000",
+                    "labelId": "383c1ee2-95ae-4590-825c-f99b516be6ad",
+                    "originLabelId": "383c1ee2-95ae-4590-825c-f99b516be6ad",
+                    "descriptionMessageId": "f33f7252-f617-4ab8-a123-c798b34c8f2c",
+                    "adviceMessageId": "c949cc13-9045-4c2d-8e02-70f57297938d",
+                    "editable": true,
+                    "description": "Statistique sinistres favorable",
+                    "sequence": null,
+                    "status": "active",
+                    "attributeDefaultValue": null,
+                    "attributeValue": null,
+                    "attributeType": "Boolean",
+                    "externalSource": null,
+                    "imsMappingRetails": [],
+                    "attributeLovs": [],
+                    "externalLOV": null,
+                    "attributeTechnicalName": "statistiqueSinistresFavorable",
+                    "initialAttribute": false,
+                    "attributeRegEx": null,
+                    "externalId": null,
+                    "presented": false,
+                    "mandatory": false
+                  },
+                  {
+                    "attributeId": "971d199e-18cd-47da-82d6-d230554cc476",
+                    "sourceLineId": "1027",
+                    "sourceItemId": "ff0ea9e3-bdde-4d9e-8c1b-73bb8b0f1d8a",
+                    "originalSourceLineId": "1000",
+                    "labelId": "7220ae2e-7870-40b1-a02e-93503f3ed28b",
+                    "originLabelId": "7220ae2e-7870-40b1-a02e-93503f3ed28b",
+                    "descriptionMessageId": "e88c9c6a-32eb-432f-ac1a-80335522522d",
+                    "adviceMessageId": "ad91910d-84b9-4c07-8bc3-80821db45edc",
+                    "editable": true,
+                    "description": "Subsides maximum atteint",
+                    "sequence": null,
+                    "status": "active",
+                    "attributeDefaultValue": null,
+                    "attributeValue": null,
+                    "attributeType": "Boolean",
+                    "externalSource": null,
+                    "imsMappingRetails": [],
+                    "attributeLovs": [],
+                    "externalLOV": null,
+                    "attributeTechnicalName": "subsidesMaxAtteint",
+                    "initialAttribute": false,
+                    "attributeRegEx": null,
+                    "externalId": null,
+                    "presented": false,
+                    "mandatory": false
+                  }
+                ],
+                "selection": {
+                  "eligible": true,
+                  "advised": false,
+                  "selected": false,
+                  "editable": true,
+                  "presented": true,
+                  "accepted": true
+                },
+                "clauses": [],
+                "additionalProperties": null,
+                "itemLevelId": "1",
+                "itemTypeId": null,
+                "externalId": null,
+                "externalSource": "12",
+                "vendingCompany": null,
+                "descriptions": [],
+                "childrenCardinality": null,
+                "pricing": null,
+                "pricingCorporate": null,
+                "messages": []
+              },
+              {
+                "selectionLineType": "ProductSelectionLine",
+                "lineId": "1024",
+                "labelId": "bd7e01b6-50e1-4d0c-8a02-c51bb146dfbc",
+                "itemId": "51964539-2603-4f63-8337-b7dd84f71cdc",
+                "descriptionMessageId": "c0ad3719-9d33-46ca-9dfb-30c0437a4a68",
+                "adviceMessageId": "0370adbf-c90b-4a54-a45f-f9e65e772817",
+                "options": [],
+                "attributes": [],
+                "selection": {
+                  "eligible": false,
+                  "advised": false,
+                  "selected": false,
+                  "editable": true,
+                  "presented": true,
+                  "accepted": false
+                },
+                "clauses": [],
+                "additionalProperties": null,
+                "itemLevelId": "2",
+                "itemTypeId": null,
+                "externalId": null,
+                "externalSource": null,
+                "vendingCompany": null,
+                "descriptions": [],
+                "childrenCardinality": null,
+                "pricing": null,
+                "pricingCorporate": null,
+                "messages": [
+                  {
+                    "messageId": "ERR010",
+                    "messageType": "Error"
+                  }
+                ]
+              },
+              {
+                "selectionLineType": "ProductSelectionLine",
+                "lineId": "1025",
+                "labelId": "2ad7cbad-1a0a-4a0b-bab1-94e00dd5696a",
+                "itemId": "b1846055-b01c-4d11-8ed5-41217632e454",
+                "descriptionMessageId": "929dc806-8a34-4954-909f-17c326c2fd51",
+                "adviceMessageId": "7601a7b0-e217-4032-b64d-ea053050a5f5",
+                "options": [],
+                "attributes": [],
+                "selection": {
+                  "eligible": false,
+                  "advised": false,
+                  "selected": false,
+                  "editable": true,
+                  "presented": true,
+                  "accepted": false
+                },
+                "clauses": [],
+                "additionalProperties": null,
+                "itemLevelId": "3",
+                "itemTypeId": null,
+                "externalId": null,
+                "externalSource": null,
+                "vendingCompany": null,
+                "descriptions": [],
+                "childrenCardinality": null,
+                "pricing": null,
+                "pricingCorporate": null,
+                "messages": [
+                  {
+                    "messageId": "ERR010",
+                    "messageType": "Error"
+                  }
+                ]
+              }
+            ],
+            "riskObjectProductSelectionRels": [
+              {
+                "productSelectionLineId": "1022",
+                "riskObjectSelectionLineId": "1013"
+              },
+              {
+                "productSelectionLineId": "1023",
+                "riskObjectSelectionLineId": "1015"
+              },
+              {
+                "productSelectionLineId": "1024",
+                "riskObjectSelectionLineId": "1015"
+              },
+              {
+                "productSelectionLineId": "1025",
+                "riskObjectSelectionLineId": "1015"
+              }
+            ],
+            "coverableObjectProductSelectionRels": [],
+            "partyRoleProductSelectionRels": [
+              {
+                "productSelectionLineId": "1022",
+                "partyRoleSelectionLineId": "1000"
+              },
+              {
+                "productSelectionLineId": "1023",
+                "partyRoleSelectionLineId": "1000"
+              },
+              {
+                "productSelectionLineId": "1024",
+                "partyRoleSelectionLineId": "1000"
+              },
+              {
+                "productSelectionLineId": "1025",
+                "partyRoleSelectionLineId": "1000"
+              },
+              {
+                "productSelectionLineId": "1022",
+                "partyRoleSelectionLineId": "1002"
+              },
+              {
+                "productSelectionLineId": "1023",
+                "partyRoleSelectionLineId": "1002"
+              },
+              {
+                "productSelectionLineId": "1024",
+                "partyRoleSelectionLineId": "1002"
+              },
+              {
+                "productSelectionLineId": "1025",
+                "partyRoleSelectionLineId": "1002"
+              }
+            ],
+            "partyProductSelectionRels": [
+              {
+                "productSelectionLineId": "1022",
+                "partySelectionLineId": "1001"
+              },
+              {
+                "productSelectionLineId": "1023",
+                "partySelectionLineId": "1001"
+              },
+              {
+                "productSelectionLineId": "1024",
+                "partySelectionLineId": "1001"
+              },
+              {
+                "productSelectionLineId": "1025",
+                "partySelectionLineId": "1001"
+              },
+              {
+                "productSelectionLineId": "1022",
+                "partySelectionLineId": "1003"
+              },
+              {
+                "productSelectionLineId": "1023",
+                "partySelectionLineId": "1003"
+              },
+              {
+                "productSelectionLineId": "1024",
+                "partySelectionLineId": "1003"
+              },
+              {
+                "productSelectionLineId": "1025",
+                "partySelectionLineId": "1003"
+              }
+            ],
+            "globalPremium": null,
+            "errorReport": null
+        
+      
+    
+  [
+    {
+      "selectionLineType": "PartyRoleSelectionLine",
+      "lineId": "1000",
+      "labelId": "6696ba61-c228-41b7-8699-0de9c75913e1",
+      "itemId": "4167995c-7eba-43ec-baa2-6a766fff9434",
+      "descriptionMessageId": "ed7bf8ca-bd7f-4641-9a90-af4130561cea",
+      "adviceMessageId": "5f68d55c-5228-40a7-9630-de4033c4ecf1",
+      "options": [
+        {
+          "optionId": "8e9dd519-d58b-43d6-93b4-e2b689795240",
+          "sourceLineId": null,
+          "sourceItemId": null,
+          "originalSourceLineId": null,
+          "labelId": "5783c63c-8270-4cb6-9793-2bdd48f77793",
+          "descriptionMessageId": null,
+          "description": "Activité 1",
+          "optionTechnicalName": "activite1",
+          "initial": true,
+          "adviceMessageId": null,
+          "selected": false,
+          "presented": true,
+          "mandatory": false,
+          "attributes": [
+            {
+              "attributeId": "3c436b44-6cf2-4358-8e94-33671102785d",
+              "sourceLineId": null,
+              "sourceItemId": null,
+              "originalSourceLineId": null,
+              "labelId": "a6ba605e-8ac5-406f-8e8e-9ede9bb54f2e",
+              "originLabelId": "a6ba605e-8ac5-406f-8e8e-9ede9bb54f2e",
+              "descriptionMessageId": "78a0a281-34b7-49d1-9517-b1c483505779",
+              "adviceMessageId": "b42789e0-e763-4d56-bad1-b0e119ff1562",
+              "editable": null,
+              "description": "RAXA - Activité",
+              "sequence": null,
+              "status": "active",
+              "attributeDefaultValue": null,
+              "attributeValue": "R43043",
+              "attributeType": "String",
+              "externalSource": null,
+              "imsMappingRetails": [],
+              "attributeLovs": [],
+              "externalLOV": null,
+              "attributeTechnicalName": "raxaActivite1",
+              "initialAttribute": true,
+              "attributeRegEx": null,
+              "externalId": null,
+              "presented": false,
+              "mandatory": true
+            },
+            {
+              "attributeId": "d071c1d1-caed-47d9-80b3-b92d3262d224",
+              "sourceLineId": null,
+              "sourceItemId": null,
+              "originalSourceLineId": null,
+              "labelId": "a92f7703-1485-4995-88c0-80573b832c6f",
+              "originLabelId": "a92f7703-1485-4995-88c0-80573b832c6f",
+              "descriptionMessageId": "ce523aaa-fd29-4cfa-b08a-db78205abe4d",
+              "adviceMessageId": "7d4776db-122c-4fb0-88f5-a23ee48508f7",
+              "editable": null,
+              "description": "RAXA - Pourcentage",
+              "sequence": null,
+              "status": "active",
+              "attributeDefaultValue": null,
+              "attributeValue": 100,
+              "attributeType": "Float",
+              "externalSource": null,
+              "imsMappingRetails": [],
+              "attributeLovs": [],
+              "externalLOV": null,
+              "attributeTechnicalName": "raxaPourcentage1",
+              "initialAttribute": true,
+              "attributeRegEx": null,
+              "externalId": null,
+              "presented": false,
+              "mandatory": true
+            }
+          ]
+        },
+        {
+          "optionId": "cee6e640-8085-4316-abe0-dd5e0f25f07d",
+          "sourceLineId": null,
+          "sourceItemId": null,
+          "originalSourceLineId": null,
+          "labelId": "52d16d43-e522-4caf-8498-a4675ed74b7d",
+          "descriptionMessageId": null,
+          "description": "Activité 2",
+          "optionTechnicalName": "activite2",
+          "initial": true,
+          "adviceMessageId": null,
+          "selected": false,
+          "presented": true,
+          "mandatory": false,
+          "attributes": [
+            {
+              "attributeId": "a9ed1932-922e-402a-9df8-9453f431bbd8",
+              "sourceLineId": null,
+              "sourceItemId": null,
+              "originalSourceLineId": null,
+              "labelId": "d4bf048e-223d-4364-b6e6-73fdb79e9b79",
+              "originLabelId": "d4bf048e-223d-4364-b6e6-73fdb79e9b79",
+              "descriptionMessageId": "ce523aaa-fd29-4cfa-b08a-db78205abe4d",
+              "adviceMessageId": "7d4776db-122c-4fb0-88f5-a23ee48508f7",
+              "editable": null,
+              "description": "RAXA - Pourcentage",
+              "sequence": null,
+              "status": "active",
+              "attributeDefaultValue": null,
+              "attributeValue": null,
+              "attributeType": "Float",
+              "externalSource": null,
+              "imsMappingRetails": [],
+              "attributeLovs": [],
+              "externalLOV": null,
+              "attributeTechnicalName": "raxaPourcentage2",
+              "initialAttribute": true,
+              "attributeRegEx": null,
+              "externalId": null,
+              "presented": false,
+              "mandatory": false
+            },
+            {
+              "attributeId": "7eb8ccb5-c313-4aa2-9762-cd9ae08bd0e0",
+              "sourceLineId": null,
+              "sourceItemId": null,
+              "originalSourceLineId": null,
+              "labelId": "afec8ecd-998a-43b0-8e1e-1b7b0a28e77d",
+              "originLabelId": "afec8ecd-998a-43b0-8e1e-1b7b0a28e77d",
+              "descriptionMessageId": "78a0a281-34b7-49d1-9517-b1c483505779",
+              "adviceMessageId": "b42789e0-e763-4d56-bad1-b0e119ff1562",
+              "editable": null,
+              "description": "RAXA - Activité",
+              "sequence": null,
+              "status": "active",
+              "attributeDefaultValue": null,
+              "attributeValue": null,
+              "attributeType": "String",
+              "externalSource": null,
+              "imsMappingRetails": [],
+              "attributeLovs": [],
+              "externalLOV": null,
+              "attributeTechnicalName": "raxaActivite2",
+              "initialAttribute": true,
+              "attributeRegEx": null,
+              "externalId": null,
+              "presented": false,
+              "mandatory": false
+            }
+          ]
+        },
+        {
+          "optionId": "29ecf414-bee0-4531-b06e-af4aa74c0903",
+          "sourceLineId": null,
+          "sourceItemId": null,
+          "originalSourceLineId": null,
+          "labelId": "e8e618a0-be11-42b2-ace5-f461f616dd1b",
+          "descriptionMessageId": null,
+          "description": "Activité 3",
+          "optionTechnicalName": "activite3",
+          "initial": true,
+          "adviceMessageId": null,
+          "selected": false,
+          "presented": true,
+          "mandatory": false,
+          "attributes": [
+            {
+              "attributeId": "79c4624b-dd27-43e2-8411-029523369651",
+              "sourceLineId": null,
+              "sourceItemId": null,
+              "originalSourceLineId": null,
+              "labelId": "d67123eb-c05e-4260-89f2-bbd688314e8f",
+              "originLabelId": "d67123eb-c05e-4260-89f2-bbd688314e8f",
+              "descriptionMessageId": "78a0a281-34b7-49d1-9517-b1c483505779",
+              "adviceMessageId": "b42789e0-e763-4d56-bad1-b0e119ff1562",
+              "editable": null,
+              "description": "RAXA - Activité",
+              "sequence": null,
+              "status": "active",
+              "a…rnalLOV": null,
+              "attributeTechnicalName": "starter",
+              "initialAttribute": false,
+              "attributeRegEx": null,
+              "externalId": null,
+              "presented": false,
+              "mandatory": false
+            },
+            {
+              "attributeId": "3ec65e1d-1bb1-4748-9be9-dd2d0be5f782",
+              "sourceLineId": "1027",
+              "sourceItemId": "ff0ea9e3-bdde-4d9e-8c1b-73bb8b0f1d8a",
+              "originalSourceLineId": "1000",
+              "labelId": "383c1ee2-95ae-4590-825c-f99b516be6ad",
+              "originLabelId": "383c1ee2-95ae-4590-825c-f99b516be6ad",
+              "descriptionMessageId": "f33f7252-f617-4ab8-a123-c798b34c8f2c",
+              "adviceMessageId": "c949cc13-9045-4c2d-8e02-70f57297938d",
+              "editable": true,
+              "description": "Statistique sinistres favorable",
+              "sequence": null,
+              "status": "active",
+              "attributeDefaultValue": null,
+              "attributeValue": null,
+              "attributeType": "Boolean",
+              "externalSource": null,
+              "imsMappingRetails": [],
+              "attributeLovs": [],
+              "externalLOV": null,
+              "attributeTechnicalName": "statistiqueSinistresFavorable",
+              "initialAttribute": false,
+              "attributeRegEx": null,
+              "externalId": null,
+              "presented": false,
+              "mandatory": false
+            },
+            {
+              "attributeId": "971d199e-18cd-47da-82d6-d230554cc476",
+              "sourceLineId": "1027",
+              "sourceItemId": "ff0ea9e3-bdde-4d9e-8c1b-73bb8b0f1d8a",
+              "originalSourceLineId": "1000",
+              "labelId": "7220ae2e-7870-40b1-a02e-93503f3ed28b",
+              "originLabelId": "7220ae2e-7870-40b1-a02e-93503f3ed28b",
+              "descriptionMessageId": "e88c9c6a-32eb-432f-ac1a-80335522522d",
+              "adviceMessageId": "ad91910d-84b9-4c07-8bc3-80821db45edc",
+              "editable": true,
+              "description": "Subsides maximum atteint",
+              "sequence": null,
+              "status": "active",
+              "attributeDefaultValue": null,
+              "attributeValue": null,
+              "attributeType": "Boolean",
+              "externalSource": null,
+              "imsMappingRetails": [],
+              "attributeLovs": [],
+              "externalLOV": null,
+              "attributeTechnicalName": "subsidesMaxAtteint",
+              "initialAttribute": false,
+              "attributeRegEx": null,
+              "externalId": null,
+              "presented": false,
+              "mandatory": false
+            }
+          ],
+          "selection": {
+            "eligible": true,
+            "advised": false,
+            "selected": false,
+            "editable": true,
+            "presented": true,
+            "accepted": true
+          },
+          "clauses": [],
+          "additionalProperties": null,
+          "itemLevelId": "1",
+          "itemTypeId": null,
+          "externalId": null,
+          "externalSource": "12",
+          "vendingCompany": null,
+          "descriptions": [],
+          "childrenCardinality": null,
+          "pricing": null,
+          "pricingCorporate": null,
+          "messages": []
+        },
+        {
+          "selectionLineType": "ProductSelectionLine",
+          "lineId": "1024",
+          "labelId": "bd7e01b6-50e1-4d0c-8a02-c51bb146dfbc",
+          "itemId": "51964539-2603-4f63-8337-b7dd84f71cdc",
+          "descriptionMessageId": "c0ad3719-9d33-46ca-9dfb-30c0437a4a68",
+          "adviceMessageId": "0370adbf-c90b-4a54-a45f-f9e65e772817",
+          "options": [],
+          "attributes": [],
+          "selection": {
+            "eligible": false,
+            "advised": false,
+            "selected": false,
+            "editable": true,
+            "presented": true,
+            "accepted": false
+          },
+          "clauses": [],
+          "additionalProperties": null,
+          "itemLevelId": "2",
+          "itemTypeId": null,
+          "externalId": null,
+          "externalSource": null,
+          "vendingCompany": null,
+          "descriptions": [],
+          "childrenCardinality": null,
+          "pricing": null,
+          "pricingCorporate": null,
+          "messages": [
+            {
+              "messageId": "ERR010",
+              "messageType": "Error"
+            }
+          ]
+        },
+        {
+          "selectionLineType": "ProductSelectionLine",
+          "lineId": "1025",
+          "labelId": "2ad7cbad-1a0a-4a0b-bab1-94e00dd5696a",
+          "itemId": "b1846055-b01c-4d11-8ed5-41217632e454",
+          "descriptionMessageId": "929dc806-8a34-4954-909f-17c326c2fd51",
+          "adviceMessageId": "7601a7b0-e217-4032-b64d-ea053050a5f5",
+          "options": [],
+          "attributes": [],
+          "selection": {
+            "eligible": false,
+            "advised": false,
+            "selected": false,
+            "editable": true,
+            "presented": true,
+            "accepted": false
+          },
+          "clauses": [],
+          "additionalProperties": null,
+          "itemLevelId": "3",
+          "itemTypeId": null,
+          "externalId": null,
+          "externalSource": null,
+          "vendingCompany": null,
+          "descriptions": [],
+          "childrenCardinality": null,
+          "pricing": null,
+          "pricingCorporate": null,
+          "messages": [
+            {
+              "messageId": "ERR010",
+              "messageType": "Error"
+            }
+          ]
+        }
+      ],
+      "riskObjectProductSelectionRels": [
+        {
+          "productSelectionLineId": "1022",
+          "riskObjectSelectionLineId": "1013"
+        },
+        {
+          "productSelectionLineId": "1023",
+          "riskObjectSelectionLineId": "1015"
+        },
+        {
+          "productSelectionLineId": "1024",
+          "riskObjectSelectionLineId": "1015"
+        },
+        {
+          "productSelectionLineId": "1025",
+          "riskObjectSelectionLineId": "1015"
+        }
+      ],
+      "coverableObjectProductSelectionRels": [],
+      "partyRoleProductSelectionRels": [
+        {
+          "productSelectionLineId": "1022",
+          "partyRoleSelectionLineId": "1000"
+        },
+        {
+          "productSelectionLineId": "1023",
+          "partyRoleSelectionLineId": "1000"
+        },
+        {
+          "productSelectionLineId": "1024",
+          "partyRoleSelectionLineId": "1000"
+        },
+        {
+          "productSelectionLineId": "1025",
+          "partyRoleSelectionLineId": "1000"
+        },
+        {
+          "productSelectionLineId": "1022",
+          "partyRoleSelectionLineId": "1002"
+        },
+        {
+          "productSelectionLineId": "1023",
+          "partyRoleSelectionLineId": "1002"
+        },
+        {
+          "productSelectionLineId": "1024",
+          "partyRoleSelectionLineId": "1002"
+        },
+        {
+          "productSelectionLineId": "1025",
+          "partyRoleSelectionLineId": "1002"
+        }
+      ],
+      "partyProductSelectionRels": [
+        {
+          "productSelectionLineId": "1022",
+          "partySelectionLineId": "1001"
+        },
+        {
+          "productSelectionLineId": "1023",
+          "partySelectionLineId": "1001"
+        },
+        {
+          "productSelectionLineId": "1024",
+          "partySelectionLineId": "1001"
+        },
+        {
+          "productSelectionLineId": "1025",
+          "partySelectionLineId": "1001"
+        },
+        {
+          "productSelectionLineId": "1022",
+          "partySelectionLineId": "1003"
+        },
+        {
+          "productSelectionLineId": "1023",
+          "partySelectionLineId": "1003"
+        },
+        {
+          "productSelectionLineId": "1024",
+          "partySelectionLineId": "1003"
+        },
+        {
+          "productSelectionLineId": "1025",
+          "partySelectionLineId": "1003"
+        }
+      ],
+      "globalPremium": null,
+      "errorReport": null
+    }
+    [
+      {
+        "selectionLineType": "PartyRoleSelectionLine",
+        "lineId": "1000",
+        "labelId": "6696ba61-c228-41b7-8699-0de9c75913e1",
+        "itemId": "4167995c-7eba-43ec-baa2-6a766fff9434",
+        "descriptionMessageId": "ed7bf8ca-bd7f-4641-9a90-af4130561cea",
+        "adviceMessageId": "5f68d55c-5228-40a7-9630-de4033c4ecf1",
+        "options": [
+          {
+            "optionId": "8e9dd519-d58b-43d6-93b4-e2b689795240",
+            "sourceLineId": null,
+            "sourceItemId": null,
+            "originalSourceLineId": null,
+            "labelId": "5783c63c-8270-4cb6-9793-2bdd48f77793",
+            "descriptionMessageId": null,
+            "description": "Activité 1",
+            "optionTechnicalName": "activite1",
+            "initial": true,
+            "adviceMessageId": null,
+            "selected": false,
+            "presented": true,
+            "mandatory": false,
+            "attributes": [
+              {
+                "attributeId": "3c436b44-6cf2-4358-8e94-33671102785d",
+                "sourceLineId": null,
+                "sourceItemId": null,
+                "originalSourceLineId": null,
+                "labelId": "a6ba605e-8ac5-406f-8e8e-9ede9bb54f2e",
+                "originLabelId": "a6ba605e-8ac5-406f-8e8e-9ede9bb54f2e",
+                "descriptionMessageId": "78a0a281-34b7-49d1-9517-b1c483505779",
+                "adviceMessageId": "b42789e0-e763-4d56-bad1-b0e119ff1562",
+                "editable": null,
+                "description": "RAXA - Activité",
+                "sequence": null,
+                "status": "active",
+                "attributeDefaultValue": null,
+                "attributeValue": "R43043",
+                "attributeType": "String",
+                "externalSource": null,
+                "imsMappingRetails": [],
+                "attributeLovs": [],
+                "externalLOV": null,
+                "attributeTechnicalName": "raxaActivite1",
+                "initialAttribute": true,
+                "attributeRegEx": null,
+                "externalId": null,
+                "presented": false,
+                "mandatory": true
+              },
+              {
+                "attributeId": "d071c1d1-caed-47d9-80b3-b92d3262d224",
+                "sourceLineId": null,
+                "sourceItemId": null,
+                "originalSourceLineId": null,
+                "labelId": "a92f7703-1485-4995-88c0-80573b832c6f",
+                "originLabelId": "a92f7703-1485-4995-88c0-80573b832c6f",
+                "descriptionMessageId": "ce523aaa-fd29-4cfa-b08a-db78205abe4d",
+                "adviceMessageId": "7d4776db-122c-4fb0-88f5-a23ee48508f7",
+                "editable": null,
+                "description": "RAXA - Pourcentage",
+                "sequence": null,
+                "status": "active",
+                "attributeDefaultValue": null,
+                "attributeValue": 100,
+                "attributeType": "Float",
+                "externalSource": null,
+                "imsMappingRetails": [],
+                "attributeLovs": [],
+                "externalLOV": null,
+                "attributeTechnicalName": "raxaPourcentage1",
+                "initialAttribute": true,
+                "attributeRegEx": null,
+                "externalId": null,
+                "presented": false,
+                "mandatory": true
+              }
+            ]
+          },
+          {
+            "optionId": "cee6e640-8085-4316-abe0-dd5e0f25f07d",
+            "sourceLineId": null,
+            "sourceItemId": null,
+            "originalSourceLineId": null,
+            "labelId": "52d16d43-e522-4caf-8498-a4675ed74b7d",
+            "descriptionMessageId": null,
+            "description": "Activité 2",
+            "optionTechnicalName": "activite2",
+            "initial": true,
+            "adviceMessageId": null,
+            "selected": false,
+            "presented": true,
+            "mandatory": false,
+            "attributes": [
+              {
+                "attributeId": "a9ed1932-922e-402a-9df8-9453f431bbd8",
+                "sourceLineId": null,
+                "sourceItemId": null,
+                "originalSourceLineId": null,
+                "labelId": "d4bf048e-223d-4364-b6e6-73fdb79e9b79",
+                "originLabelId": "d4bf048e-223d-4364-b6e6-73fdb79e9b79",
+                "descriptionMessageId": "ce523aaa-fd29-4cfa-b08a-db78205abe4d",
+                "adviceMessageId": "7d4776db-122c-4fb0-88f5-a23ee48508f7",
+                "editable": null,
+                "description": "RAXA - Pourcentage",
+                "sequence": null,
+                "status": "active",
+                "attributeDefaultValue": null,
+                "attributeValue": null,
+                "attributeType": "Float",
+                "externalSource": null,
+                "imsMappingRetails": [],
+                "attributeLovs": [],
+                "externalLOV": null,
+                "attributeTechnicalName": "raxaPourcentage2",
+                "initialAttribute": true,
+                "attributeRegEx": null,
+                "externalId": null,
+                "presented": false,
+                "mandatory": false
+              },
+              {
+                "attributeId": "7eb8ccb5-c313-4aa2-9762-cd9ae08bd0e0",
+                "sourceLineId": null,
+                "sourceItemId": null,
+                "originalSourceLineId": null,
+                "labelId": "afec8ecd-998a-43b0-8e1e-1b7b0a28e77d",
+                "originLabelId": "afec8ecd-998a-43b0-8e1e-1b7b0a28e77d",
+                "descriptionMessageId": "78a0a281-34b7-49d1-9517-b1c483505779",
+                "adviceMessageId": "b42789e0-e763-4d56-bad1-b0e119ff1562",
+                "editable": null,
+                "description": "RAXA - Activité",
+                "sequence": null,
+                "status": "active",
+                "attributeDefaultValue": null,
+                "attributeValue": null,
+                "attributeType": "String",
+                "externalSource": null,
+                "imsMappingRetails": [],
+                "attributeLovs": [],
+                "externalLOV": null,
+                "attributeTechnicalName": "raxaActivite2",
+                "initialAttribute": true,
+                "attributeRegEx": null,
+                "externalId": null,
+                "presented": false,
+                "mandatory": false
+              }
+            ]
+          },
+          {
+            "optionId": "29ecf414-bee0-4531-b06e-af4aa74c0903",
+            "sourceLineId": null,
+            "sourceItemId": null,
+            "originalSourceLineId": null,
+            "labelId": "e8e618a0-be11-42b2-ace5-f461f616dd1b",
+            "descriptionMessageId": null,
+            "description": "Activité 3",
+            "optionTechnicalName": "activite3",
+            "initial": true,
+            "adviceMessageId": null,
+            "selected": false,
+            "presented": true,
+            "mandatory": false,
+            "attributes": [
+              {
+                "attributeId": "79c4624b-dd27-43e2-8411-029523369651",
+                "sourceLineId": null,
+                "sourceItemId": null,
+                "originalSourceLineId": null,
+                "labelId": "d67123eb-c05e-4260-89f2-bbd688314e8f",
+                "originLabelId": "d67123eb-c05e-4260-89f2-bbd688314e8f",
+                "descriptionMessageId": "78a0a281-34b7-49d1-9517-b1c483505779",
+                "adviceMessageId": "b42789e0-e763-4d56-bad1-b0e119ff1562",
+                "editable": null,
+                "description": "RAXA - Activité",
+                "sequence": null,
+                "status": "active",
+                "a…rnalLOV": null,
+                "attributeTechnicalName": "starter",
+                "initialAttribute": false,
+                "attributeRegEx": null,
+                "externalId": null,
+                "presented": false,
+                "mandatory": false
+              },
+              {
+                "attributeId": "3ec65e1d-1bb1-4748-9be9-dd2d0be5f782",
+                "sourceLineId": "1027",
+                "sourceItemId": "ff0ea9e3-bdde-4d9e-8c1b-73bb8b0f1d8a",
+                "originalSourceLineId": "1000",
+                "labelId": "383c1ee2-95ae-4590-825c-f99b516be6ad",
+                "originLabelId": "383c1ee2-95ae-4590-825c-f99b516be6ad",
+                "descriptionMessageId": "f33f7252-f617-4ab8-a123-c798b34c8f2c",
+                "adviceMessageId": "c949cc13-9045-4c2d-8e02-70f57297938d",
+                "editable": true,
+                "description": "Statistique sinistres favorable",
+                "sequence": null,
+                "status": "active",
+                "attributeDefaultValue": null,
+                "attributeValue": null,
+                "attributeType": "Boolean",
+                "externalSource": null,
+                "imsMappingRetails": [],
+                "attributeLovs": [],
+                "externalLOV": null,
+                "attributeTechnicalName": "statistiqueSinistresFavorable",
+                "initialAttribute": false,
+                "attributeRegEx": null,
+                "externalId": null,
+                "presented": false,
+                "mandatory": false
+              },
+              {
+                "attributeId": "971d199e-18cd-47da-82d6-d230554cc476",
+                "sourceLineId": "1027",
+                "sourceItemId": "ff0ea9e3-bdde-4d9e-8c1b-73bb8b0f1d8a",
+                "originalSourceLineId": "1000",
+                "labelId": "7220ae2e-7870-40b1-a02e-93503f3ed28b",
+                "originLabelId": "7220ae2e-7870-40b1-a02e-93503f3ed28b",
+                "descriptionMessageId": "e88c9c6a-32eb-432f-ac1a-80335522522d",
+                "adviceMessageId": "ad91910d-84b9-4c07-8bc3-80821db45edc",
+                "editable": true,
+                "description": "Subsides maximum atteint",
+                "sequence": null,
+                "status": "active",
+                "attributeDefaultValue": null,
+                "attributeValue": null,
+                "attributeType": "Boolean",
+                "externalSource": null,
+                "imsMappingRetails": [],
+                "attributeLovs": [],
+                "externalLOV": null,
+                "attributeTechnicalName": "subsidesMaxAtteint",
+                "initialAttribute": false,
+                "attributeRegEx": null,
+                "externalId": null,
+                "presented": false,
+                "mandatory": false
+              }
+            ],
+            "selection": {
+              "eligible": true,
+              "advised": false,
+              "selected": false,
+              "editable": true,
+              "presented": true,
+              "accepted": true
+            },
+            "clauses": [],
+            "additionalProperties": null,
+            "itemLevelId": "1",
+            "itemTypeId": null,
+            "externalId": null,
+            "externalSource": "12",
+            "vendingCompany": null,
+            "descriptions": [],
+            "childrenCardinality": null,
+            "pricing": null,
+            "pricingCorporate": null,
+            "messages": []
+          },
+          {
+            "selectionLineType": "ProductSelectionLine",
+            "lineId": "1024",
+            "labelId": "bd7e01b6-50e1-4d0c-8a02-c51bb146dfbc",
+            "itemId": "51964539-2603-4f63-8337-b7dd84f71cdc",
+            "descriptionMessageId": "c0ad3719-9d33-46ca-9dfb-30c0437a4a68",
+            "adviceMessageId": "0370adbf-c90b-4a54-a45f-f9e65e772817",
+            "options": [],
+            "attributes": [],
+            "selection": {
+              "eligible": false,
+              "advised": false,
+              "selected": false,
+              "editable": true,
+              "presented": true,
+              "accepted": false
+            },
+            "clauses": [],
+            "additionalProperties": null,
+            "itemLevelId": "2",
+            "itemTypeId": null,
+            "externalId": null,
+            "externalSource": null,
+            "vendingCompany": null,
+            "descriptions": [],
+            "childrenCardinality": null,
+            "pricing": null,
+            "pricingCorporate": null,
+            "messages": [
+              {
+                "messageId": "ERR010",
+                "messageType": "Error"
+              }
+            ]
+          },
+          {
+            "selectionLineType": "ProductSelectionLine",
+            "lineId": "1025",
+            "labelId": "2ad7cbad-1a0a-4a0b-bab1-94e00dd5696a",
+            "itemId": "b1846055-b01c-4d11-8ed5-41217632e454",
+            "descriptionMessageId": "929dc806-8a34-4954-909f-17c326c2fd51",
+            "adviceMessageId": "7601a7b0-e217-4032-b64d-ea053050a5f5",
+            "options": [],
+            "attributes": [],
+            "selection": {
+              "eligible": false,
+              "advised": false,
+              "selected": false,
+              "editable": true,
+              "presented": true,
+              "accepted": false
+            },
+            "clauses": [],
+            "additionalProperties": null,
+            "itemLevelId": "3",
+            "itemTypeId": null,
+            "externalId": null,
+            "externalSource": null,
+            "vendingCompany": null,
+            "descriptions": [],
+            "childrenCardinality": null,
+            "pricing": null,
+            "pricingCorporate": null,
+            "messages": [
+              {
+                "messageId": "ERR010",
+                "messageType": "Error"
+              }
+            ]
+          }
+        ],
+        "riskObjectProductSelectionRels": [
+          {
+            "productSelectionLineId": "1022",
+            "riskObjectSelectionLineId": "1013"
+          },
+          {
+            "productSelectionLineId": "1023",
+            "riskObjectSelectionLineId": "1015"
+          },
+          {
+            "productSelectionLineId": "1024",
+            "riskObjectSelectionLineId": "1015"
+          },
+          {
+            "productSelectionLineId": "1025",
+            "riskObjectSelectionLineId": "1015"
+          }
+        ],
+        "coverableObjectProductSelectionRels": [],
+        "partyRoleProductSelectionRels": [
+          {
+            "productSelectionLineId": "1022",
+            "partyRoleSelectionLineId": "1000"
+          },
+          {
+            "productSelectionLineId": "1023",
+            "partyRoleSelectionLineId": "1000"
+          },
+          {
+            "productSelectionLineId": "1024",
+            "partyRoleSelectionLineId": "1000"
+          },
+          {
+            "productSelectionLineId": "1025",
+            "partyRoleSelectionLineId": "1000"
+          },
+          {
+            "productSelectionLineId": "1022",
+            "partyRoleSelectionLineId": "1002"
+          },
+          {
+            "productSelectionLineId": "1023",
+            "partyRoleSelectionLineId": "1002"
+          },
+          {
+            "productSelectionLineId": "1024",
+            "partyRoleSelectionLineId": "1002"
+          },
+          {
+            "productSelectionLineId": "1025",
+            "partyRoleSelectionLineId": "1002"
+          }
+        ],
+        "partyProductSelectionRels": [
+          {
+            "productSelectionLineId": "1022",
+            "partySelectionLineId": "1001"
+          },
+          {
+            "productSelectionLineId": "1023",
+            "partySelectionLineId": "1001"
+          },
+          {
+            "productSelectionLineId": "1024",
+            "partySelectionLineId": "1001"
+          },
+          {
+            "productSelectionLineId": "1025",
+            "partySelectionLineId": "1001"
+          },
+          {
+            "productSelectionLineId": "1022",
+            "partySelectionLineId": "1003"
+          },
+          {
+            "productSelectionLineId": "1023",
+            "partySelectionLineId": "1003"
+          },
+          {
+            "productSelectionLineId": "1024",
+            "partySelectionLineId": "1003"
+          },
+          {
+            "productSelectionLineId": "1025",
+            "partySelectionLineId": "1003"
+          }
+        ],
+        "globalPremium": null,
+        "errorReport": null
+      }
+    
+  [
+    {
+      "selectionLineType": "PartyRoleSelectionLine",
+      "lineId": "1000",
+      "labelId": "6696ba61-c228-41b7-8699-0de9c75913e1",
+      "itemId": "4167995c-7eba-43ec-baa2-6a766fff9434",
+      "descriptionMessageId": "ed7bf8ca-bd7f-4641-9a90-af4130561cea",
+      "adviceMessageId": "5f68d55c-5228-40a7-9630-de4033c4ecf1",
+      "options": [
+        {
+          "optionId": "8e9dd519-d58b-43d6-93b4-e2b689795240",
+          "sourceLineId": null,
+          "sourceItemId": null,
+          "originalSourceLineId": null,
+          "labelId": "5783c63c-8270-4cb6-9793-2bdd48f77793",
+          "descriptionMessageId": null,
+          "description": "Activité 1",
+          "optionTechnicalName": "activite1",
+          "initial": true,
+          "adviceMessageId": null,
+          "selected": false,
+          "presented": true,
+          "mandatory": false,
+          "attributes": [
+            {
+              "attributeId": "3c436b44-6cf2-4358-8e94-33671102785d",
+              "sourceLineId": null,
+              "sourceItemId": null,
+              "originalSourceLineId": null,
+              "labelId": "a6ba605e-8ac5-406f-8e8e-9ede9bb54f2e",
+              "originLabelId": "a6ba605e-8ac5-406f-8e8e-9ede9bb54f2e",
+              "descriptionMessageId": "78a0a281-34b7-49d1-9517-b1c483505779",
+              "adviceMessageId": "b42789e0-e763-4d56-bad1-b0e119ff1562",
+              "editable": null,
+              "description": "RAXA - Activité",
+              "sequence": null,
+              "status": "active",
+              "attributeDefaultValue": null,
+              "attributeValue": "R43043",
+              "attributeType": "String",
+              "externalSource": null,
+              "imsMappingRetails": [],
+              "attributeLovs": [],
+              "externalLOV": null,
+              "attributeTechnicalName": "raxaActivite1",
+              "initialAttribute": true,
+              "attributeRegEx": null,
+              "externalId": null,
+              "presented": false,
+              "mandatory": true
+            },
+            {
+              "attributeId": "d071c1d1-caed-47d9-80b3-b92d3262d224",
+              "sourceLineId": null,
+              "sourceItemId": null,
+              "originalSourceLineId": null,
+              "labelId": "a92f7703-1485-4995-88c0-80573b832c6f",
+              "originLabelId": "a92f7703-1485-4995-88c0-80573b832c6f",
+              "descriptionMessageId": "ce523aaa-fd29-4cfa-b08a-db78205abe4d",
+              "adviceMessageId": "7d4776db-122c-4fb0-88f5-a23ee48508f7",
+              "editable": null,
+              "description": "RAXA - Pourcentage",
+              "sequence": null,
+              "status": "active",
+              "attributeDefaultValue": null,
+              "attributeValue": 100,
+              "attributeType": "Float",
+              "externalSource": null,
+              "imsMappingRetails": [],
+              "attributeLovs": [],
+              "externalLOV": null,
+              "attributeTechnicalName": "raxaPourcentage1",
+              "initialAttribute": true,
+              "attributeRegEx": null,
+              "externalId": null,
+              "presented": false,
+              "mandatory": true
+            }
+          ]
+        },
+        {
+          "optionId": "cee6e640-8085-4316-abe0-dd5e0f25f07d",
+          "sourceLineId": null,
+          "sourceItemId": null,
+          "originalSourceLineId": null,
+          "labelId": "52d16d43-e522-4caf-8498-a4675ed74b7d",
+          "descriptionMessageId": null,
+          "description": "Activité 2",
+          "optionTechnicalName": "activite2",
+          "initial": true,
+          "adviceMessageId": null,
+          "selected": false,
+          "presented": true,
+          "mandatory": false,
+          "attributes": [
+            {
+              "attributeId": "a9ed1932-922e-402a-9df8-9453f431bbd8",
+              "sourceLineId": null,
+              "sourceItemId": null,
+              "originalSourceLineId": null,
+              "labelId": "d4bf048e-223d-4364-b6e6-73fdb79e9b79",
+              "originLabelId": "d4bf048e-223d-4364-b6e6-73fdb79e9b79",
+              "descriptionMessageId": "ce523aaa-fd29-4cfa-b08a-db78205abe4d",
+              "adviceMessageId": "7d4776db-122c-4fb0-88f5-a23ee48508f7",
+              "editable": null,
+              "description": "RAXA - Pourcentage",
+              "sequence": null,
+              "status": "active",
+              "attributeDefaultValue": null,
+              "attributeValue": null,
+              "attributeType": "Float",
+              "externalSource": null,
+              "imsMappingRetails": [],
+              "attributeLovs": [],
+              "externalLOV": null,
+              "attributeTechnicalName": "raxaPourcentage2",
+              "initialAttribute": true,
+              "attributeRegEx": null,
+              "externalId": null,
+              "presented": false,
+              "mandatory": false
+            },
+            {
+              "attributeId": "7eb8ccb5-c313-4aa2-9762-cd9ae08bd0e0",
+              "sourceLineId": null,
+              "sourceItemId": null,
+              "originalSourceLineId": null,
+              "labelId": "afec8ecd-998a-43b0-8e1e-1b7b0a28e77d",
+              "originLabelId": "afec8ecd-998a-43b0-8e1e-1b7b0a28e77d",
+              "descriptionMessageId": "78a0a281-34b7-49d1-9517-b1c483505779",
+              "adviceMessageId": "b42789e0-e763-4d56-bad1-b0e119ff1562",
+              "editable": null,
+              "description": "RAXA - Activité",
+              "sequence": null,
+              "status": "active",
+              "attributeDefaultValue": null,
+              "attributeValue": null,
+              "attributeType": "String",
+              "externalSource": null,
+              "imsMappingRetails": [],
+              "attributeLovs": [],
+              "externalLOV": null,
+              "attributeTechnicalName": "raxaActivite2",
+              "initialAttribute": true,
+              "attributeRegEx": null,
+              "externalId": null,
+              "presented": false,
+              "mandatory": false
+            }
+          ]
+        },
+        {
+          "optionId": "29ecf414-bee0-4531-b06e-af4aa74c0903",
+          "sourceLineId": null,
+          "sourceItemId": null,
+          "originalSourceLineId": null,
+          "labelId": "e8e618a0-be11-42b2-ace5-f461f616dd1b",
+          "descriptionMessageId": null,
+          "description": "Activité 3",
+          "optionTechnicalName": "activite3",
+          "initial": true,
+          "adviceMessageId": null,
+          "selected": false,
+          "presented": true,
+          "mandatory": false,
+          "attributes": [
+            {
+              "attributeId": "79c4624b-dd27-43e2-8411-029523369651",
+              "sourceLineId": null,
+              "sourceItemId": null,
+              "originalSourceLineId": null,
+              "labelId": "d67123eb-c05e-4260-89f2-bbd688314e8f",
+              "originLabelId": "d67123eb-c05e-4260-89f2-bbd688314e8f",
+              "descriptionMessageId": "78a0a281-34b7-49d1-9517-b1c483505779",
+              "adviceMessageId": "b42789e0-e763-4d56-bad1-b0e119ff1562",
+              "editable": null,
+              "description": "RAXA - Activité",
+              "sequence": null,
+              "status": "active",
+              "a…rnalLOV": null,
+              "attributeTechnicalName": "starter",
+              "initialAttribute": false,
+              "attributeRegEx": null,
+              "externalId": null,
+              "presented": false,
+              "mandatory": false
+            },
+            {
+              "attributeId": "3ec65e1d-1bb1-4748-9be9-dd2d0be5f782",
+              "sourceLineId": "1027",
+              "sourceItemId": "ff0ea9e3-bdde-4d9e-8c1b-73bb8b0f1d8a",
+              "originalSourceLineId": "1000",
+              "labelId": "383c1ee2-95ae-4590-825c-f99b516be6ad",
+              "originLabelId": "383c1ee2-95ae-4590-825c-f99b516be6ad",
+              "descriptionMessageId": "f33f7252-f617-4ab8-a123-c798b34c8f2c",
+              "adviceMessageId": "c949cc13-9045-4c2d-8e02-70f57297938d",
+              "editable": true,
+              "description": "Statistique sinistres favorable",
+              "sequence": null,
+              "status": "active",
+              "attributeDefaultValue": null,
+              "attributeValue": null,
+              "attributeType": "Boolean",
+              "externalSource": null,
+              "imsMappingRetails": [],
+              "attributeLovs": [],
+              "externalLOV": null,
+              "attributeTechnicalName": "statistiqueSinistresFavorable",
+              "initialAttribute": false,
+              "attributeRegEx": null,
+              "externalId": null,
+              "presented": false,
+              "mandatory": false
+            },
+            {
+              "attributeId": "971d199e-18cd-47da-82d6-d230554cc476",
+              "sourceLineId": "1027",
+              "sourceItemId": "ff0ea9e3-bdde-4d9e-8c1b-73bb8b0f1d8a",
+              "originalSourceLineId": "1000",
+              "labelId": "7220ae2e-7870-40b1-a02e-93503f3ed28b",
+              "originLabelId": "7220ae2e-7870-40b1-a02e-93503f3ed28b",
+              "descriptionMessageId": "e88c9c6a-32eb-432f-ac1a-80335522522d",
+              "adviceMessageId": "ad91910d-84b9-4c07-8bc3-80821db45edc",
+              "editable": true,
+              "description": "Subsides maximum atteint",
+              "sequence": null,
+              "status": "active",
+              "attributeDefaultValue": null,
+              "attributeValue": null,
+              "attributeType": "Boolean",
+              "externalSource": null,
+              "imsMappingRetails": [],
+              "attributeLovs": [],
+              "externalLOV": null,
+              "attributeTechnicalName": "subsidesMaxAtteint",
+              "initialAttribute": false,
+              "attributeRegEx": null,
+              "externalId": null,
+              "presented": false,
+              "mandatory": false
+            }
+          ],
+          "selection": {
+            "eligible": true,
+            "advised": false,
+            "selected": false,
+            "editable": true,
+            "presented": true,
+            "accepted": true
+          },
+          "clauses": [],
+          "additionalProperties": null,
+          "itemLevelId": "1",
+          "itemTypeId": null,
+          "externalId": null,
+          "externalSource": "12",
+          "vendingCompany": null,
+          "descriptions": [],
+          "childrenCardinality": null,
+          "pricing": null,
+          "pricingCorporate": null,
+          "messages": []
+        },
+        {
+          "selectionLineType": "ProductSelectionLine",
+          "lineId": "1024",
+          "labelId": "bd7e01b6-50e1-4d0c-8a02-c51bb146dfbc",
+          "itemId": "51964539-2603-4f63-8337-b7dd84f71cdc",
+          "descriptionMessageId": "c0ad3719-9d33-46ca-9dfb-30c0437a4a68",
+          "adviceMessageId": "0370adbf-c90b-4a54-a45f-f9e65e772817",
+          "options": [],
+          "attributes": [],
+          "selection": {
+            "eligible": false,
+            "advised": false,
+            "selected": false,
+            "editable": true,
+            "presented": true,
+            "accepted": false
+          },
+          "clauses": [],
+          "additionalProperties": null,
+          "itemLevelId": "2",
+          "itemTypeId": null,
+          "externalId": null,
+          "externalSource": null,
+          "vendingCompany": null,
+          "descriptions": [],
+          "childrenCardinality": null,
+          "pricing": null,
+          "pricingCorporate": null,
+          "messages": [
+            {
+              "messageId": "ERR010",
+              "messageType": "Error"
+            }
+          ]
+        },
+        {
+          "selectionLineType": "ProductSelectionLine",
+          "lineId": "1025",
+          "labelId": "2ad7cbad-1a0a-4a0b-bab1-94e00dd5696a",
+          "itemId": "b1846055-b01c-4d11-8ed5-41217632e454",
+          "descriptionMessageId": "929dc806-8a34-4954-909f-17c326c2fd51",
+          "adviceMessageId": "7601a7b0-e217-4032-b64d-ea053050a5f5",
+          "options": [],
+          "attributes": [],
+          "selection": {
+            "eligible": false,
+            "advised": false,
+            "selected": false,
+            "editable": true,
+            "presented": true,
+            "accepted": false
+          },
+          "clauses": [],
+          "additionalProperties": null,
+          "itemLevelId": "3",
+          "itemTypeId": null,
+          "externalId": null,
+          "externalSource": null,
+          "vendingCompany": null,
+          "descriptions": [],
+          "childrenCardinality": null,
+          "pricing": null,
+          "pricingCorporate": null,
+          "messages": [
+            {
+              "messageId": "ERR010",
+              "messageType": "Error"
+            }
+          ]
+        }
+      ],
+      "riskObjectProductSelectionRels": [
+        {
+          "productSelectionLineId": "1022",
+          "riskObjectSelectionLineId": "1013"
+        },
+        {
+          "productSelectionLineId": "1023",
+          "riskObjectSelectionLineId": "1015"
+        },
+        {
+          "productSelectionLineId": "1024",
+          "riskObjectSelectionLineId": "1015"
+        },
+        {
+          "productSelectionLineId": "1025",
+          "riskObjectSelectionLineId": "1015"
+        }
+      ],
+      "coverableObjectProductSelectionRels": [],
+      "partyRoleProductSelectionRels": [
+        {
+          "productSelectionLineId": "1022",
+          "partyRoleSelectionLineId": "1000"
+        },
+        {
+          "productSelectionLineId": "1023",
+          "partyRoleSelectionLineId": "1000"
+        },
+        {
+          "productSelectionLineId": "1024",
+          "partyRoleSelectionLineId": "1000"
+        },
+        {
+          "productSelectionLineId": "1025",
+          "partyRoleSelectionLineId": "1000"
+        },
+        {
+          "productSelectionLineId": "1022",
+          "partyRoleSelectionLineId": "1002"
+        },
+        {
+          "productSelectionLineId": "1023",
+          "partyRoleSelectionLineId": "1002"
+        },
+        {
+          "productSelectionLineId": "1024",
+          "partyRoleSelectionLineId": "1002"
+        },
+        {
+          "productSelectionLineId": "1025",
+          "partyRoleSelectionLineId": "1002"
+        }
+      ],
+      "partyProductSelectionRels": [
+        {
+          "productSelectionLineId": "1022",
+          "partySelectionLineId": "1001"
+        },
+        {
+          "productSelectionLineId": "1023",
+          "partySelectionLineId": "1001"
+        },
+        {
+          "productSelectionLineId": "1024",
+          "partySelectionLineId": "1001"
+        },
+        {
+          "productSelectionLineId": "1025",
+          "partySelectionLineId": "1001"
+        },
+        {
+          "productSelectionLineId": "1022",
+          "partySelectionLineId": "1003"
+        },
+        {
+          "productSelectionLineId": "1023",
+          "partySelectionLineId": "1003"
+        },
+        {
+          "productSelectionLineId": "1024",
+          "partySelectionLineId": "1003"
+        },
+        {
+          "productSelectionLineId": "1025",
+          "partySelectionLineId": "1003"
+        }
+      ],
+      "globalPremium": null,
+      "errorReport": null
+    }
+  [
+    {
+      "selectionLineType": "PartyRoleSelectionLine",
+      "lineId": "1000",
+      "labelId": "6696ba61-c228-41b7-8699-0de9c75913e1",
+      "itemId": "4167995c-7eba-43ec-baa2-6a766fff9434",
+      "descriptionMessageId": "ed7bf8ca-bd7f-4641-9a90-af4130561cea",
+      "adviceMessageId": "5f68d55c-5228-40a7-9630-de4033c4ecf1",
+      "options": [
+        {
+          "optionId": "8e9dd519-d58b-43d6-93b4-e2b689795240",
+          "sourceLineId": null,
+          "sourceItemId": null,
+          "originalSourceLineId": null,
+          "labelId": "5783c63c-8270-4cb6-9793-2bdd48f77793",
+          "descriptionMessageId": null,
+          "description": "Activité 1",
+          "optionTechnicalName": "activite1",
+          "initial": true,
+          "adviceMessageId": null,
+          "selected": false,
+          "presented": true,
+          "mandatory": false,
+          "attributes": [
+            {
+              "attributeId": "3c436b44-6cf2-4358-8e94-33671102785d",
+              "sourceLineId": null,
+              "sourceItemId": null,
+              "originalSourceLineId": null,
+              "labelId": "a6ba605e-8ac5-406f-8e8e-9ede9bb54f2e",
+              "originLabelId": "a6ba605e-8ac5-406f-8e8e-9ede9bb54f2e",
+              "descriptionMessageId": "78a0a281-34b7-49d1-9517-b1c483505779",
+              "adviceMessageId": "b42789e0-e763-4d56-bad1-b0e119ff1562",
+              "editable": null,
+              "description": "RAXA - Activité",
+              "sequence": null,
+              "status": "active",
+              "attributeDefaultValue": null,
+              "attributeValue": "R43043",
+              "attributeType": "String",
+              "externalSource": null,
+              "imsMappingRetails": [],
+              "attributeLovs": [],
+              "externalLOV": null,
+              "attributeTechnicalName": "raxaActivite1",
+              "initialAttribute": true,
+              "attributeRegEx": null,
+              "externalId": null,
+              "presented": false,
+              "mandatory": true
+            },
+            {
+              "attributeId": "d071c1d1-caed-47d9-80b3-b92d3262d224",
+              "sourceLineId": null,
+              "sourceItemId": null,
+              "originalSourceLineId": null,
+              "labelId": "a92f7703-1485-4995-88c0-80573b832c6f",
+              "originLabelId": "a92f7703-1485-4995-88c0-80573b832c6f",
+              "descriptionMessageId": "ce523aaa-fd29-4cfa-b08a-db78205abe4d",
+              "adviceMessageId": "7d4776db-122c-4fb0-88f5-a23ee48508f7",
+              "editable": null,
+              "description": "RAXA - Pourcentage",
+              "sequence": null,
+              "status": "active",
+              "attributeDefaultValue": null,
+              "attributeValue": 100,
+              "attributeType": "Float",
+              "externalSource": null,
+              "imsMappingRetails": [],
+              "attributeLovs": [],
+              "externalLOV": null,
+              "attributeTechnicalName": "raxaPourcentage1",
+              "initialAttribute": true,
+              "attributeRegEx": null,
+              "externalId": null,
+              "presented": false,
+              "mandatory": true
+            }
+          ]
+        },
+        {
+          "optionId": "cee6e640-8085-4316-abe0-dd5e0f25f07d",
+          "sourceLineId": null,
+          "sourceItemId": null,
+          "originalSourceLineId": null,
+          "labelId": "52d16d43-e522-4caf-8498-a4675ed74b7d",
+          "descriptionMessageId": null,
+          "description": "Activité 2",
+          "optionTechnicalName": "activite2",
+          "initial": true,
+          "adviceMessageId": null,
+          "selected": false,
+          "presented": true,
+          "mandatory": false,
+          "attributes": [
+            {
+              "attributeId": "a9ed1932-922e-402a-9df8-9453f431bbd8",
+              "sourceLineId": null,
+              "sourceItemId": null,
+              "originalSourceLineId": null,
+              "labelId": "d4bf048e-223d-4364-b6e6-73fdb79e9b79",
+              "originLabelId": "d4bf048e-223d-4364-b6e6-73fdb79e9b79",
+              "descriptionMessageId": "ce523aaa-fd29-4cfa-b08a-db78205abe4d",
+              "adviceMessageId": "7d4776db-122c-4fb0-88f5-a23ee48508f7",
+              "editable": null,
+              "description": "RAXA - Pourcentage",
+              "sequence": null,
+              "status": "active",
+              "attributeDefaultValue": null,
+              "attributeValue": null,
+              "attributeType": "Float",
+              "externalSource": null,
+              "imsMappingRetails": [],
+              "attributeLovs": [],
+              "externalLOV": null,
+              "attributeTechnicalName": "raxaPourcentage2",
+              "initialAttribute": true,
+              "attributeRegEx": null,
+              "externalId": null,
+              "presented": false,
+              "mandatory": false
+            },
+            {
+              "attributeId": "7eb8ccb5-c313-4aa2-9762-cd9ae08bd0e0",
+              "sourceLineId": null,
+              "sourceItemId": null,
+              "originalSourceLineId": null,
+              "labelId": "afec8ecd-998a-43b0-8e1e-1b7b0a28e77d",
+              "originLabelId": "afec8ecd-998a-43b0-8e1e-1b7b0a28e77d",
+              "descriptionMessageId": "78a0a281-34b7-49d1-9517-b1c483505779",
+              "adviceMessageId": "b42789e0-e763-4d56-bad1-b0e119ff1562",
+              "editable": null,
+              "description": "RAXA - Activité",
+              "sequence": null,
+              "status": "active",
+              "attributeDefaultValue": null,
+              "attributeValue": null,
+              "attributeType": "String",
+              "externalSource": null,
+              "imsMappingRetails": [],
+              "attributeLovs": [],
+              "externalLOV": null,
+              "attributeTechnicalName": "raxaActivite2",
+              "initialAttribute": true,
+              "attributeRegEx": null,
+              "externalId": null,
+              "presented": false,
+              "mandatory": false
+            }
+          ]
+        },
+        {
+          "optionId": "29ecf414-bee0-4531-b06e-af4aa74c0903",
+          "sourceLineId": null,
+          "sourceItemId": null,
+          "originalSourceLineId": null,
+          "labelId": "e8e618a0-be11-42b2-ace5-f461f616dd1b",
+          "descriptionMessageId": null,
+          "description": "Activité 3",
+          "optionTechnicalName": "activite3",
+          "initial": true,
+          "adviceMessageId": null,
+          "selected": false,
+          "presented": true,
+          "mandatory": false,
+          "attributes": [
+            {
+              "attributeId": "79c4624b-dd27-43e2-8411-029523369651",
+              "sourceLineId": null,
+              "sourceItemId": null,
+              "originalSourceLineId": null,
+              "labelId": "d67123eb-c05e-4260-89f2-bbd688314e8f",
+              "originLabelId": "d67123eb-c05e-4260-89f2-bbd688314e8f",
+              "descriptionMessageId": "78a0a281-34b7-49d1-9517-b1c483505779",
+              "adviceMessageId": "b42789e0-e763-4d56-bad1-b0e119ff1562",
+              "editable": null,
+              "description": "RAXA - Activité",
+              "sequence": null,
+              "status": "active",
+              "a…rnalLOV": null,
+              "attributeTechnicalName": "starter",
+              "initialAttribute": false,
+              "attributeRegEx": null,
+              "externalId": null,
+              "presented": false,
+              "mandatory": false
+            },
+            {
+              "attributeId": "3ec65e1d-1bb1-4748-9be9-dd2d0be5f782",
+              "sourceLineId": "1027",
+              "sourceItemId": "ff0ea9e3-bdde-4d9e-8c1b-73bb8b0f1d8a",
+              "originalSourceLineId": "1000",
+              "labelId": "383c1ee2-95ae-4590-825c-f99b516be6ad",
+              "originLabelId": "383c1ee2-95ae-4590-825c-f99b516be6ad",
+              "descriptionMessageId": "f33f7252-f617-4ab8-a123-c798b34c8f2c",
+              "adviceMessageId": "c949cc13-9045-4c2d-8e02-70f57297938d",
+              "editable": true,
+              "description": "Statistique sinistres favorable",
+              "sequence": null,
+              "status": "active",
+              "attributeDefaultValue": null,
+              "attributeValue": null,
+              "attributeType": "Boolean",
+              "externalSource": null,
+              "imsMappingRetails": [],
+              "attributeLovs": [],
+              "externalLOV": null,
+              "attributeTechnicalName": "statistiqueSinistresFavorable",
+              "initialAttribute": false,
+              "attributeRegEx": null,
+              "externalId": null,
+              "presented": false,
+              "mandatory": false
+            },
+            {
+              "attributeId": "971d199e-18cd-47da-82d6-d230554cc476",
+              "sourceLineId": "1027",
+              "sourceItemId": "ff0ea9e3-bdde-4d9e-8c1b-73bb8b0f1d8a",
+              "originalSourceLineId": "1000",
+              "labelId": "7220ae2e-7870-40b1-a02e-93503f3ed28b",
+              "originLabelId": "7220ae2e-7870-40b1-a02e-93503f3ed28b",
+              "descriptionMessageId": "e88c9c6a-32eb-432f-ac1a-80335522522d",
+              "adviceMessageId": "ad91910d-84b9-4c07-8bc3-80821db45edc",
+              "editable": true,
+              "description": "Subsides maximum atteint",
+              "sequence": null,
+              "status": "active",
+              "attributeDefaultValue": null,
+              "attributeValue": null,
+              "attributeType": "Boolean",
+              "externalSource": null,
+              "imsMappingRetails": [],
+              "attributeLovs": [],
+              "externalLOV": null,
+              "attributeTechnicalName": "subsidesMaxAtteint",
+              "initialAttribute": false,
+              "attributeRegEx": null,
+              "externalId": null,
+              "presented": false,
+              "mandatory": false
+            }
+          ],
+          "selection": {
+            "eligible": true,
+            "advised": false,
+            "selected": false,
+            "editable": true,
+            "presented": true,
+            "accepted": true
+          },
+          "clauses": [],
+          "additionalProperties": null,
+          "itemLevelId": "1",
+          "itemTypeId": null,
+          "externalId": null,
+          "externalSource": "12",
+          "vendingCompany": null,
+          "descriptions": [],
+          "childrenCardinality": null,
+          "pricing": null,
+          "pricingCorporate": null,
+          "messages": []
+        },
+        {
+          "selectionLineType": "ProductSelectionLine",
+          "lineId": "1024",
+          "labelId": "bd7e01b6-50e1-4d0c-8a02-c51bb146dfbc",
+          "itemId": "51964539-2603-4f63-8337-b7dd84f71cdc",
+          "descriptionMessageId": "c0ad3719-9d33-46ca-9dfb-30c0437a4a68",
+          "adviceMessageId": "0370adbf-c90b-4a54-a45f-f9e65e772817",
+          "options": [],
+          "attributes": [],
+          "selection": {
+            "eligible": false,
+            "advised": false,
+            "selected": false,
+            "editable": true,
+            "presented": true,
+            "accepted": false
+          },
+          "clauses": [],
+          "additionalProperties": null,
+          "itemLevelId": "2",
+          "itemTypeId": null,
+          "externalId": null,
+          "externalSource": null,
+          "vendingCompany": null,
+          "descriptions": [],
+          "childrenCardinality": null,
+          "pricing": null,
+          "pricingCorporate": null,
+          "messages": [
+            {
+              "messageId": "ERR010",
+              "messageType": "Error"
+            }
+          ]
+        },
+        {
+          "selectionLineType": "ProductSelectionLine",
+          "lineId": "1025",
+          "labelId": "2ad7cbad-1a0a-4a0b-bab1-94e00dd5696a",
+          "itemId": "b1846055-b01c-4d11-8ed5-41217632e454",
+          "descriptionMessageId": "929dc806-8a34-4954-909f-17c326c2fd51",
+          "adviceMessageId": "7601a7b0-e217-4032-b64d-ea053050a5f5",
+          "options": [],
+          "attributes": [],
+          "selection": {
+            "eligible": false,
+            "advised": false,
+            "selected": false,
+            "editable": true,
+            "presented": true,
+            "accepted": false
+          },
+          "clauses": [],
+          "additionalProperties": null,
+          "itemLevelId": "3",
+          "itemTypeId": null,
+          "externalId": null,
+          "externalSource": null,
+          "vendingCompany": null,
+          "descriptions": [],
+          "childrenCardinality": null,
+          "pricing": null,
+          "pricingCorporate": null,
+          "messages": [
+            {
+              "messageId": "ERR010",
+              "messageType": "Error"
+            }
+          ]
+        }
+      ],
+      "riskObjectProductSelectionRels": [
+        {
+          "productSelectionLineId": "1022",
+          "riskObjectSelectionLineId": "1013"
+        },
+        {
+          "productSelectionLineId": "1023",
+          "riskObjectSelectionLineId": "1015"
+        },
+        {
+          "productSelectionLineId": "1024",
+          "riskObjectSelectionLineId": "1015"
+        },
+        {
+          "productSelectionLineId": "1025",
+          "riskObjectSelectionLineId": "1015"
+        }
+      ],
+      "coverableObjectProductSelectionRels": [],
+      "partyRoleProductSelectionRels": [
+        {
+          "productSelectionLineId": "1022",
+          "partyRoleSelectionLineId": "1000"
+        },
+        {
+          "productSelectionLineId": "1023",
+          "partyRoleSelectionLineId": "1000"
+        },
+        {
+          "productSelectionLineId": "1024",
+          "partyRoleSelectionLineId": "1000"
+        },
+        {
+          "productSelectionLineId": "1025",
+          "partyRoleSelectionLineId": "1000"
+        },
+        {
+          "productSelectionLineId": "1022",
+          "partyRoleSelectionLineId": "1002"
+        },
+        {
+          "productSelectionLineId": "1023",
+          "partyRoleSelectionLineId": "1002"
+        },
+        {
+          "productSelectionLineId": "1024",
+          "partyRoleSelectionLineId": "1002"
+        },
+        {
+          "productSelectionLineId": "1025",
+          "partyRoleSelectionLineId": "1002"
+        }
+      ],
+      "partyProductSelectionRels": [
+        {
+          "productSelectionLineId": "1022",
+          "partySelectionLineId": "1001"
+        },
+        {
+          "productSelectionLineId": "1023",
+          "partySelectionLineId": "1001"
+        },
+        {
+          "productSelectionLineId": "1024",
+          "partySelectionLineId": "1001"
+        },
+        {
+          "productSelectionLineId": "1025",
+          "partySelectionLineId": "1001"
+        },
+        {
+          "productSelectionLineId": "1022",
+          "partySelectionLineId": "1003"
+        },
+        {
+          "productSelectionLineId": "1023",
+          "partySelectionLineId": "1003"
+        },
+        {
+          "productSelectionLineId": "1024",
+          "partySelectionLineId": "1003"
+        },
+        {
+          "productSelectionLineId": "1025",
+          "partySelectionLineId": "1003"
+        }
+      ],
+      "globalPremium": null,
+      "errorReport": null
+    
+  }

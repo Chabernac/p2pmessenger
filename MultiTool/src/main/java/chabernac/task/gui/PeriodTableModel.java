@@ -104,7 +104,7 @@ public class PeriodTableModel implements TableModel {
             DefaultActivityCommand theCommand = (DefaultActivityCommand) ApplicationRefBase.getInstance().get( ApplicationRefBase.DEFAULTTASKCOMMAND );
             Task theSelectedTask = theCommand.getRootOrSelectedTask();
             myPeriods = theSelectedTask.getPeriods( myStartTime, myEndTime );
-            if ( theCommand.getLastActivePeriod() != null ) {
+            if ( theCommand.getLastActivePeriod() != null && !myPeriods.contains( theCommand.getLastActivePeriod() )) {
                 myPeriods.add( theCommand.getLastActivePeriod() );
             }
         }
